@@ -128,11 +128,11 @@ Our organisation has the capacity to deliver the project condition audit data, s
 
 ## 11   Respondents Experience
 
-[TBC - Jayden: three similar projects by the tenderer in the last five years with referees. JCE has no condition audit or revaluation project of its own (Jayden's Tablelands Regional Council work was done while at Langtrees, so it is shown in Returnable 12, not here); use the data capture and valuation partners' projects from their quotes (due 21/10/2026), labelled as the partner's projects, with referees who have agreed to be contacted.]
+[TBC - Jayden: three similar projects by the tenderer in the last five years with referees. JCE has no condition audit or revaluation project of its own (Jayden's Tablelands Regional Council work was done while at Langtree Consulting, so it is shown in Returnable 12, not here); use the data capture and valuation partners' projects from their quotes (due 21/10/2026), labelled as the partner's projects, with referees who have agreed to be contacted.]
 
 Related capability project (supports capability only; it is a private farm drainage job, not one of the three similar council transport-asset projects): Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Referee: Craig Sullivan, private client, phone and email [TBC - Jayden, with his consent].
 
-Additional referee for Defence and head-contractor delivery (not one of the three similar projects): RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor). Referee: Maverick Partner, CPB Contractors, phone and email [TBC - Jayden, with consent].
+Additional referee for Defence and head-contractor delivery (not one of the three similar projects): RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor). Referee: Maverick Parker, CPB Contractors, Maverick.Parker@cpbcon.com.au, phone [TBC - Jayden, with consent].
 
 | Previous project | Referee contact details |
 |---|---|
@@ -145,7 +145,7 @@ Additional referee for Defence and head-contractor delivery (not one of the thre
 
 | Employee name and position | Years employed | Qualification / experience | Proposed role |
 |---|---|---|---|
-| Jayden Callen, Director | Since 2024 (practice); 2026 (company) | BEng (Hons) Civil; MIEAust (11036201); 8+ years civil engineering and design management. While at Langtrees: floodway rectification on Council's road network and a landfill leachate storage facility for Tablelands Regional Council (QLD), referee Darren Quilliam | Project manager; Prime Contractor representative; signs all documents |
+| Jayden Callen, Director | Since 2024 (practice); 2026 (company) | BEng (Hons) Civil; MIEAust (11036201); 8+ years civil engineering and design management. While at Langtree Consulting: floodway rectification on Council's road network and the Ravenshoe leachate storage facility design modification (2025) for Tablelands Regional Council (QLD), referee Darren Quilliam | Project manager; Prime Contractor representative; signs all documents |
 | Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil | Standing associate agreement with JCE (not an employee) | RPEQ, NER | Core team: technical reviewer and certifying engineer on JCE commissions; audit sampling; backup project lead |
 | Livio Chiarot, Associate (SCP Consulting) [TBC - Jayden: confirm] | Associate | FIEAust [TBC - Jayden: confirm years of experience] | Independent technical reviewer |
 | [TBC - Jayden: casual GIS technician] | Casual (Feb to Mar 2027) | [TBC - Jayden: GIS qualifications, QGIS experience] | GIS build, register update files, automated QA, maps |

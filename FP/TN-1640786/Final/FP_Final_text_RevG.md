@@ -178,13 +178,13 @@ The indicative program assumes award in early November 2026. JCE will align it w
 
 BEng (Hons) Civil, Deakin University; MIEAust (EA 11036201). Accountable for delivery, team coordination, the works schedule, cost estimates, the heavy haulage review and all engineering content. Relevant experience:
 
-- **Design and team management.** Civil Design Manager and Senior Engineer, Langtree Consulting Engineers, Townsville (03/2025 to 05/2026): managed four civil designers, coordinated flood modelling, electrical and hydraulic subconsultants into joint packages, and prepared fee proposals, engineer's estimates and bills of quantities.
-- **Regional and remote delivery.** Civil design management, subconsultant coordination, site inspections and engineering services reports for subdivisions in the remote Cape York communities of Aurukun, Pormpuraaw and Napranum (Langtree).
+- **Design and team management.** Civil Design Manager and Senior Engineer, Langtree Consulting, Townsville (03/2025 to 05/2026): managed four civil designers, coordinated flood modelling, electrical and hydraulic subconsultants into joint packages, and prepared fee proposals, engineer's estimates and bills of quantities.
+- **Regional and remote delivery.** Civil design management, subconsultant coordination, site inspections and engineering services reports for subdivisions in the remote Cape York communities of Aurukun, Pormpuraaw and Napranum (Langtree Consulting).
 - **Infrastructure programs.** Senior Engineer and Design Manager, SCP Consulting (06/2023 to 03/2025): primary contact for tier-one contractors on Defence projects, including the North Queensland Mid-Term Refresh at RAAF Base Townsville, Townsville Field Training Area and HMAS Cairns (about $104 million combined).
 - **Roads, pavements and drainage.** Road geometry to the Austroads guides with Transport for NSW supplements; pavement design with CIRCLY; stormwater in DRAINS and MUSIC X; flood impact assessment to ARR 2019.
 - **Council work.** Has worked for a regional council in Far North Queensland, including shortlisting consultants for a council tender.
-- **Council projects (Jayden Callen, while at Langtrees).** Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network. Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility. Referee: Darren Quilliam, Tablelands Regional Council.
-- **Head contractor delivery.** RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor). Referee: Maverick Partner, CPB Contractors.
+- **Council projects (Jayden Callen, while at Langtree Consulting).** Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network. Ravenshoe leachate storage facility design modification, Tablelands Regional Council (QLD), 2025 (Jayden Callen while at Langtree Consulting). Referee: Darren Quilliam, Tablelands Regional Council.
+- **Head contractor delivery.** RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor). Referee: Maverick Parker, CPB Contractors.
 
 ### Sunny Lotay, Associate Principal Engineer
 
@@ -204,10 +204,10 @@ This is a planning engagement with no engineering certification requirement. Eng
 
 ### Referees
 
-- Brett Langtree, Director and Principal Civil Engineer, Langtree Consulting Engineers. 0400 699 979, brett@langtreeconsulting.com.au.
+- Brett Langtree, Director and Principal Civil Engineer, Langtree Consulting. 0400 699 979, brett@langtreeconsulting.com.au.
 - Livio Chiarot FIEAust, Director, SCP Consulting. 0418 150 028, livio.chiarot@scpconsult.com.au.
-- Maverick Partner, CPB Contractors (RAAF Base Townsville, Defence delivery project). Contact details available on request.
-- Darren Quilliam, Tablelands Regional Council (Jayden's Tablelands projects while at Langtrees). Contact details available on request.
+- Maverick Parker, CPB Contractors (RAAF Base Townsville, Defence delivery project). Contact details available on request.
+- Darren Quilliam, Tablelands Regional Council (Jayden's Tablelands projects while at Langtree Consulting). Contact details available on request.
 - Planning partner referees: [TBC - Jayden, from the partner's quote].
 
 ## 8. Fee schedule

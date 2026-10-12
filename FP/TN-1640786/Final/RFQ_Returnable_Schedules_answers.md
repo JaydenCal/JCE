@@ -37,16 +37,16 @@ Prepared 12/10/2026. Council's returnable schedules have NOT been seen (they are
 ## Experience / capability (free text)
 - Use FP Section 7 (Jayden, Rev G) plus the planning partner's projects [TBC - Jayden].
 - JCE has no previous contributions plan commission of its own. Do not claim one.
-- Key personnel experience only (NOT company projects): Jayden Callen (while at Langtrees): Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network. Jayden Callen (while at Langtrees): Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility. If Council's form asks for the tenderer's own projects, put these in the key personnel / CV field instead.
+- Key personnel experience only (NOT company projects): Jayden Callen (while at Langtree Consulting): Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network. Ravenshoe leachate storage facility design modification, Tablelands Regional Council (QLD), 2025 (Jayden Callen while at Langtree Consulting). If Council's form asks for the tenderer's own projects, put these in the key personnel / CV field instead.
 
 ## Methodology / program (free text)
 - Use FP Sections 2, 3 and 6 (six stages, hold points HP1 to HP3, award early November 2026, adoption by about July 2027).
 
 ## Referees
-1. Brett Langtree, Director and Principal Civil Engineer, Langtree Consulting Engineers. 0400 699 979, brett@langtreeconsulting.com.au
+1. Brett Langtree, Director and Principal Civil Engineer, Langtree Consulting. 0400 699 979, brett@langtreeconsulting.com.au
 2. Livio Chiarot FIEAust, Director, SCP Consulting. 0418 150 028, livio.chiarot@scpconsult.com.au
-3. Maverick Partner, CPB Contractors (RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor)). Contact details available on request.
-4. Darren Quilliam, Tablelands Regional Council (referee for Jayden's work while at Langtrees). Contact details available on request.
+3. Maverick Parker, CPB Contractors (RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor)). Contact details available on request.
+4. Darren Quilliam, Tablelands Regional Council (referee for Jayden's work while at Langtree Consulting). Contact details available on request.
 5. Planning partner's council referee [TBC - Jayden]
 
 ## Declarations (Jayden to read and decide; do not tick without reading)
