@@ -229,7 +229,7 @@ Variations directed by Council under clause 6 of the draft contract are valued a
 |---|---|
 | Public / products liability $20 million | JCE currently holds $10 million (Zurich, to 02/07/2027). A quote to increase cover to $20 million was requested on 12/10/2026. [TBC - Jayden: replace with "$20 million held" and attach the certificate once bound.] |
 | Professional indemnity $5 million, maintained for seven years after Completion | Held: $10 million any one claim, $20 million aggregate (Lloyd's, led by Markel, to 02/07/2027). Certificate attached. |
-| Workers compensation | Certificate attached (icare). |
+| Workers compensation | Held. Letter of appointment attached. [TBC - Jayden: attach the certificate of currency.] |
 | Subconsultant professional indemnity | Planning partner and cost planner PI to be confirmed against Item 10(c). [TBC - Jayden] |
 
 **WHS.** JCE will sign Proforma 1 (WHS Expectations and Responsibilities, Medium Risk Work) and provide a risk assessment for a similar activity within the last 12 months, as required by Council's WHS702 document.
