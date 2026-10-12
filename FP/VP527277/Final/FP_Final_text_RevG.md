@@ -259,7 +259,7 @@ Jayden Callen is a civil engineer with more than eight years of experience acros
 - Drone photogrammetry project. Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Referee details available on request.
 - Condition inspection. Condition inspection and certification of an existing earthen flood levee about 647 m long at Gunnedah, with field dispersion and plasticity testing (JCE, 2026).
 - Roads and costs. Road geometry to the Austroads guides with Transport for NSW supplements, pavement design with CIRCLY, and engineer's estimates and bills of quantities, which are the basis of replacement cost unit rates.
-- Data, drone and GIS. Civil 3D, Navisworks and InfraWorks; CAD standards and automation in AutoLISP and Excel VBA; drone photogrammetry and GIS. Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
+- Data, drone and GIS. Civil 3D, Navisworks and InfraWorks; CAD standards and automation in AutoLISP and Excel VBA; Autodesk ReCap Pro, DroneDeploy and QGIS (drone capability above).
 
 JCE has not yet delivered a network condition audit or valuation as lead consultant. The road imaging partner's, bridge partner's and valuer's staff, comparable council projects and referees are set out in Schedules 3 to 5 and Attachment B: [TBC - Jayden: insert from partner quotes due 28/10/2026].
 
@@ -402,6 +402,7 @@ Applies to variations directed by Council. Rates are exclusive of GST; Schedule 
 | CAD / GIS Technician | $160/hr  ·  $1,280/day | $176.00/hr |
 | Administration / Document Control | $140/hr  ·  $1,120/day | $154.00/hr |
 | Vehicle travel | $0.96/km | $1.06/km |
+| Drone equipment (with JCE hourly rates for flying and processing) | $250/field day | $275.00/field day |
 | Partner services | At cost + 10% | At cost + 10% |
 
 Partner rates for directed additional work, including JCE's 10% mark-up: imaging crew day, road imaging and rating per km (sealed and unsealed), additional asset inspection per asset, bridge inspector per hour and valuer per hour [TBC - Jayden: from partner quotes, parts B and C]. A day comprises eight (8) hours. Disbursements other than vehicle travel are charged at cost.

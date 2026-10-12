@@ -103,7 +103,7 @@ Partner experience still carries most of the 20% criterion. With JCE as the imag
 
 ## 8. Files (repo `FP/VP527277/Final`, Rev G)
 
-- `JCE_FP_VP527277_Final_RevG.docx` and `.pdf` (16 pages; offer and signature block kept together on one page)
+- `JCE_FP_VP527277_Final_RevG.docx` and `.pdf` (15 pages; offer and signature block kept together on one page)
 - `FP_Final_text_RevG.md`
 - `MRC-2645_Tender_Response_Schedules_JCE_FILLED_RevG.docx` and `.pdf`
 - `JCE_CostSheet_VP527277_RevG.xlsx` (Jayden's lines against Rev F hours, casual labour, equipment and travel, provisional sums, pricing schedule, category split, monthly hours)
