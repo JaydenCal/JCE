@@ -14,6 +14,7 @@ Prepared 12/10/2026. Council's returnable schedules have NOT been seen (they are
 - Email: jayden@jceinfrastructure.com.au
 - Website: jceinfrastructure.com.au
 - Structure: sole director company; lead consultant with sub-consultants (planning partner and quantity surveyor)
+- Core team: Jayden Callen (Director); Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. Not a JCE employee, director or shareholder.
 
 ## Sub-consultants
 - Planning partner (contributions planning): [TBC - Jayden, from quotes due 12:00pm Thu 15/10/2026. Candidates: Navigate Planning, Bartlett Planning Solutions, All About Planning]
@@ -25,13 +26,13 @@ Prepared 12/10/2026. Council's returnable schedules have NOT been seen (they are
 - Workers compensation: icare letter of appointment in Returnables [TBC - Jayden: policy number]
 
 ## Price (if Council's form has a lump sum field)
-- JCE lump sum (excl. GST): $78,165.88
+- JCE lump sum (excl. GST): $80,565.88 (includes $2,400 associate review allowance, Sunny Lotay)
 - Provisional sums (excl. GST): $58,300.00 (planner $49,500.00; QS $8,800.00)
-- Total price (excl. GST): $136,465.88
-- GST: $13,646.59
-- Total (incl. GST): $150,112.46
+- Total price (excl. GST): $138,865.88
+- GST: $13,886.59
+- Total (incl. GST): $152,752.47
 - If the form asks for a per-stage breakdown, use FP Section 8. If it asks for hourly rates, use Attachment B.
-- If Council's form has no place for provisional sums, enter the total $136,465.88 and note "includes provisional sums of $58,300 for sub-consultants; see fee proposal Section 8".
+- If Council's form has no place for provisional sums, enter the total $138,865.88 and note "includes provisional sums of $58,300 for sub-consultants; see fee proposal Section 8".
 
 ## Experience / capability (free text)
 - Use FP Section 7 (Jayden, Rev G) plus the planning partner's projects [TBC - Jayden].

@@ -21,13 +21,14 @@ Items marked **[TBC - Jayden]** need your input.
 | Website | jceinfrastructure.com.au |
 | Agree to sign contracts electronically (DocuSign)? | Yes (delete "No") |
 | Authorised signatory: name / position / email | Jayden Callen / Director / jayden@jceinfrastructure.com.au |
-| Key personnel: Project Manager | Jayden Callen; BEng (Hons) Civil, MIEAust (EA 11036201); Civil Design Manager, Langtree Consulting Engineers (2025 to 2026); JCE levee inspection and certification, Gunnedah (2026); commitment: PT, about 25 hours a week over 16 weeks (404 hours) |
+| Key personnel: Project Manager | Jayden Callen; BEng (Hons) Civil, MIEAust (EA 11036201); Civil Design Manager, Langtree Consulting Engineers (2025 to 2026), including floodway rectification for Tablelands Regional Council; RAAF Base Townsville Defence delivery for CPB Contractors; commitment: PT, about 25 hours a week over 16 weeks (404 hours) |
 | Site Manager / Foreman | Not applicable: design-only engagement (RFI 7 asks Council to confirm) |
 | Quality Management Representative | Jayden Callen; JCE Quality Policy JCE-QMS-POL-001; PT, within the hours above |
 | Environmental Management Representative | Jayden Callen; JCE Environmental Policy JCE-ENV-POL-001; PT, within the hours above |
 | First Aid Officer | Not applicable: design-only engagement (site visits under JCE's WHS Management Plan JCE-WHS-PLN-001) |
-| Referee 1: name / company | Darren Quilliam / Tablelands Regional Council (floodway rectification; contact details [TBC - Jayden: title, phone, email, consent]) |
-| Referee 2 (alternative to Langtree or Chiarot below; Schedule A has two lines) | Brett Langtree, Director and Principal Civil Engineer / Langtree Consulting Engineers (0400 699 979, brett@langtreeconsulting.com.au) [TBC - Jayden: confirm he agrees to be a referee for this tender] |
+| Referee 1: name / company | Darren Quilliam / Tablelands Regional Council (Jayden's floodway rectification work while at Langtrees); contact details available on request [TBC - Jayden: title, phone, email, consent] |
+| Referee 2: name / company | Maverick Partner / CPB Contractors (RAAF Base Townsville Defence delivery); contact details available on request [TBC - Jayden: confirm name and title, phone, email, consent] |
+| Alternative referee: name / company | Brett Langtree, Director and Principal Civil Engineer / Langtree Consulting Engineers (0400 699 979, brett@langtreeconsulting.com.au) [TBC - Jayden: confirm he agrees to be a referee for this tender] |
 | Alternative referee: name / company | Livio Chiarot FIEAust, Director / SCP Consulting (0418 150 028, livio.chiarot@scpconsult.com.au) [TBC - Jayden: confirm] |
 | Signed / for and on behalf of / dated | [signature] / JCE Infrastructure Pty Ltd / [dd] October 2026 |
 
@@ -98,12 +99,12 @@ Items marked **[TBC - Jayden]** need your input.
 
 | Description | Organisation | Value | Completed on time |
 |---|---|---|---|
-| Flood levee inspection and certification (existing earthen levee about 647 m), 6887 Oxley Highway, Gunnedah NSW, report JCE-INS-001 (JCE, 2026) | [TBC - Jayden: client] | [TBC - Jayden] | [TBC - Jayden: Yes/No] |
-| Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network (JCE / Jayden Callen) | Tablelands Regional Council (referee: Darren Quilliam, contact details available on request) | [TBC - Jayden] | [TBC - Jayden] |
 | Harcourt Flood Study, Mount Alexander Shire (Venant Solutions, key personnel Michael South) | [TBC - Jayden: confirm client, value and date with Venant] | [TBC] | [TBC] |
 | Western Sydney International Airport Business Precinct Stage One: SRM-01 sewer rising main design program and SPS technical review (JCE, subconsultant to Underscore Projects) | Underscore Projects (client AT&L) [TBC - Jayden: confirm contact before listing] | [TBC - Jayden] | [TBC - Jayden] |
 
 **Previous projects:** Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works (JCE / Jayden Callen; location, year and value [TBC - Jayden]; referee Craig Sullivan, contact details [TBC - Jayden], or write "Referee details available on request"). Katherine Aquatics, Katherine NT (about $10 million D&C for Sitzler and Katherine Town Council; Jayden prepared about 80% of the civil design including flood-immune earthworks pads above the 1% AEP level, while at SCP Consulting) [TBC - Jayden: confirm it may be listed]. Venant: Charlton Flood and Drainage Management Plan; Murchison Floodplain Management Study [TBC - Jayden: values and dates from Venant].
+
+**Key personnel project experience (not company projects):** Jayden Callen (while at Langtrees): Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network; referee Darren Quilliam, Tablelands Regional Council, contact details available on request. RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor); referee Maverick Partner, CPB Contractors, contact details available on request.
 
 **Key personnel (CVs attached)**
 

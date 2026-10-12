@@ -18,11 +18,11 @@ Dear [TBC - Jayden: contact officer name, or Sir or Madam],
 
 JCE Infrastructure (JCE) submits this proposal in response to Council's Request for Quotation MWRCCMS001497 for the review of the Mid-Western Regional Contributions Plan 2019, the preparation of new Section 7.11 and Section 7.12 contributions plans, and a framework for future contributions plans.
 
-JCE will deliver the engagement as lead consultant, with a specialist contributions planner and a quantity surveyor working to one program under JCE's Director, Jayden Callen. Jayden leads the commission personally and is Council's single point of contact. His recent roles have been in civil design management: coordinating several disciplines and subconsultants into one package, preparing engineer's estimates and bills of quantities, and reviewing work before it reaches the client. He has also worked for a regional council in Far North Queensland, where he shortlisted consultants for a council tender, so he knows what a council officer needs after award: clear hold points, no surprises on scope or fee, and records Council can audit.
+JCE will deliver the engagement as lead consultant, with a specialist contributions planner and a quantity surveyor working to one program under JCE's Director, Jayden Callen. Sunny Lotay (RPEQ, NER), JCE's associate principal engineer, provides independent technical review of the engineering outputs. Jayden leads the commission personally and is Council's single point of contact. His recent roles have been in civil design management: coordinating several disciplines and subconsultants into one package, preparing engineer's estimates and bills of quantities, and reviewing work before it reaches the client. He has also worked for a regional council in Far North Queensland, where he shortlisted consultants for a council tender, so he knows what a council officer needs after award: clear hold points, no surprises on scope or fee, and records Council can audit.
 
 Roads, bridges, pathways and drainage make up well over half of the 2019 works schedule by value, and the heavy haulage contribution is a pavement engineering calculation. JCE will scope and cost these items directly. The planning partner will lead growth forecasts, nexus, apportionment and plan drafting.
 
-Our lump sum for JCE's services is $78,165.88 excluding GST. With provisional sums of $58,300.00 for the planning partner and the quantity surveyor, the total is $136,465.88 excluding GST ($150,112.46 including GST). The provisional sums will be replaced with quoted figures before award if Council requests.
+Our lump sum for JCE's services is $80,565.88 excluding GST. With provisional sums of $58,300.00 for the planning partner and the quantity surveyor, the total is $138,865.88 excluding GST ($152,752.47 including GST). The provisional sums will be replaced with quoted figures before award if Council requests.
 
 Please contact me on 0477 207 027 or jayden@jceinfrastructure.com.au with any questions.
 
@@ -66,6 +66,7 @@ JCE will deliver the services in six stages, with project management throughout.
 
 - Jayden Callen manages the team to one program, with monthly progress reports, one comments and actions register, and design reviews before anything reaches Council.
 - JCE coordinates the planning partner and quantity surveyor and is accountable to Council for all deliverables.
+- Sunny Lotay (RPEQ, NER) carries out independent technical review of the works schedule, cost estimates, heavy haulage calculation and background report before issue, and is backup project lead.
 
 ### Stage 1: Inception, review and site inspection
 
@@ -164,6 +165,15 @@ The indicative program assumes award in early November 2026. JCE will align it w
 
 ## 7. Team and experience
 
+### Core team
+
+| Role | Person | Responsibility |
+|---|---|---|
+| Project Director and Lead Engineer | Jayden Callen, Director, JCE | Delivery, coordination, works schedule, cost estimates, heavy haulage review, engineering content |
+| Associate Principal Engineer | Sunny Lotay (RPEQ, NER), Lotay Civil, standing associate of JCE | Independent technical review of engineering outputs; certification where required; backup project lead |
+| Lead contributions planner | [TBC - Jayden] (planning partner) | Growth, nexus, apportionment, plan drafting, exhibition |
+| Cost planner | [TBC - Jayden] (quantity surveyor) | Community, recreation and open space estimates |
+
 ### Jayden Callen, Project Director and Lead Engineer (JCE)
 
 BEng (Hons) Civil, Deakin University; MIEAust (EA 11036201). Accountable for delivery, team coordination, the works schedule, cost estimates, the heavy haulage review and all engineering content. Relevant experience:
@@ -176,6 +186,10 @@ BEng (Hons) Civil, Deakin University; MIEAust (EA 11036201). Accountable for del
 - **Council projects (Jayden Callen, while at Langtrees).** Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network. Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility. Referee: Darren Quilliam, Tablelands Regional Council.
 - **Head contractor delivery.** RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor). Referee: Maverick Partner, CPB Contractors.
 
+### Sunny Lotay, Associate Principal Engineer
+
+Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. On this commission he reviews the engineering outputs before issue, provides certification if Council requires a suitably qualified engineer's sign-off, and is backup project lead.
+
 ### Lead contributions planner (planning partner)
 
 [TBC - Jayden: firm, principal's name, qualifications and two or three contributions plan projects with referees, from the quotes due 15/10/2026.] Responsible for growth forecasts, nexus, apportionment, plan drafting, IPART threshold check and exhibition.
@@ -186,7 +200,7 @@ BEng (Hons) Civil, Deakin University; MIEAust (EA 11036201). Accountable for del
 
 ### Sign-off
 
-This is a planning engagement with no engineering certification requirement. Engineering content is prepared and verified by JCE's Director, and planning content by the planning partner's principal.
+This is a planning engagement with no engineering certification requirement. Engineering content is prepared and verified by JCE's Director and independently reviewed by Sunny Lotay (RPEQ, NER), who also provides certification if Council requires it. Planning content is signed off by the planning partner's principal.
 
 ### Referees
 
@@ -211,13 +225,14 @@ JCE's services are offered as a lump sum. Sub-consultant fees are shown as provi
 | Stage 6 | Framework for future contributions plans | $3,040.00 |
 | Expenses | Travel and accommodation for the site inspection; sundries | $1,700.00 |
 | Risk | Risk and contingency allowance (5%) | $6,498.38 |
-|  | **JCE lump sum (excl. GST)** | **$78,165.88** |
+| Review | Independent technical review and certification allowance, Sunny Lotay (RPEQ, NER), 12 hours | $2,400.00 |
+|  | **JCE lump sum (excl. GST)** | **$80,565.88** |
 | PS 1 | Provisional sum: planning partner (contributions planning), including JCE coordination | $49,500.00 |
 | PS 2 | Provisional sum: cost planner (community and recreation facilities) | $8,800.00 |
 |  | **Total provisional sums (excl. GST)** | **$58,300.00** |
-|  | **Total (excl. GST)** | **$136,465.88** |
-|  | GST (10%) | $13,646.59 |
-|  | **Total (incl. GST)** | **$150,112.46** |
+|  | **Total (excl. GST)** | **$138,865.88** |
+|  | GST (10%) | $13,886.59 |
+|  | **Total (incl. GST)** | **$152,752.47** |
 
 **Payment.** Monthly invoices for work completed, payable within 30 days, or as set by Council's RFQ conditions.
 
@@ -233,7 +248,7 @@ Services beyond the agreed scope are carried out on a time-and-expenses basis at
 
 ## 10. Insurance
 
-JCE holds professional indemnity insurance of $10 million for any one claim and $20 million in the aggregate, public liability insurance of $10 million, and workers compensation insurance. Certificates of currency are attached. If Council's conditions require public liability of $20 million, JCE will lift its cover to $20 million on award. The planning partner and quantity surveyor carry their own professional indemnity cover.
+JCE holds professional indemnity insurance of $10 million for any one claim and $20 million in the aggregate, public liability insurance of $10 million, and workers compensation insurance. Certificates of currency are attached. If Council's conditions require public liability of $20 million, JCE will lift its cover to $20 million on award. The planning partner and quantity surveyor carry their own professional indemnity cover. [TBC - Jayden: insurance position for Sunny Lotay's work under the associate agreement.]
 
 ## 11. Conditions of contract
 

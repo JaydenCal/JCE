@@ -8,14 +8,14 @@ JCE Infrastructure Pty Ltd | ABN 29 699 165 663 | 0477 207 027 | jayden@jceinfra
 | **Date** | 12/10/2026 | **Attention** | Procurement, via VendorPanel |
 | **Revision** | G (final for lodgement) | **Council contact** | Derek Langman, Principal's Representative |
 | **Prepared by** | Jayden Callen, Director | **Project** | 2026-092 Port Douglas Marine Industry Precinct Scoping Study |
-| **RPEQ sign-off** | Sunny Lotay (RPEQ, Lotay Civil) | **Site** | Greenfield site of about 3 ha on Dickson Inlet, Port Douglas QLD 4877 |
+| **RPEQ sign-off** | Sunny Lotay (RPEQ, NER), Lotay Civil, JCE associate certifying engineer | **Site** | Greenfield site of about 3 ha on Dickson Inlet, Port Douglas QLD 4877 |
 | **Closes** | Thu 22/10/2026, 2:00pm AEST | **Validity** | 90 calendar days from closing |
 
 Dear Procurement Team,
 
 JCE Infrastructure Pty Ltd (JCE) submits this proposal for the Port Douglas Marine Industry Precinct Scoping Study (RFQ 2026-092). JCE will lead the study as lead consultant and integrator. Jayden Callen, Director, will manage every specialist personally as Council's single point of contact, to one program with four hold points and one register of comments and actions. Until 05/2026 he was based in Townsville, managing engineering work across North Queensland and Cape York, and he has worked on the client side for a Far North Queensland council, where he shortlisted consultants for a council tender.
 
-Engineering opinions in the study (marine, geotechnical and civil) will be prepared by, or under the direct supervision of, and signed by, a Registered Professional Engineer of Queensland (RPEQ) under the Professional Engineers Act 2002 (Qld). Sunny Lotay (RPEQ, Lotay Civil) signs JCE's engineering outputs for this commission, and the marine partner's RPEQ signs the marine and coastal engineering.
+Engineering opinions in the study (marine, geotechnical and civil) will be prepared by, or under the direct supervision of, and signed by, a Registered Professional Engineer of Queensland (RPEQ) under the Professional Engineers Act 2002 (Qld). Sunny Lotay (RPEQ, NER, Lotay Civil), JCE's associate certifying engineer, reviews and signs JCE's engineering outputs for this commission, and the marine partner's RPEQ signs the marine and coastal engineering.
 
 The proposal responds to the Request for Quotations Parts 1 to 6, the Part 5 Scope, the draft Council Contract (Goods and Services) LGT2.4 and the addendum of 30/09/2026 [TBC - Jayden: confirm no later addenda on VendorPanel]. The completed Response Schedules (Part 6) are lodged with it. The lump sum is $277,700.00 excluding GST ($305,470.00 including GST).
 
@@ -57,7 +57,7 @@ JCE is lead consultant and integrator. Jayden Callen leads the study, manages th
 | Discipline | Who | Registration or sign-off |
 |---|---|---|
 | Study lead, master planning, infrastructure, delivery, risk | JCE: Jayden Callen | BEng (Hons), MIEAust (EA 11036201), NER application in progress; not RPEQ |
-| RPEQ supervision and sign-off of JCE engineering | Sunny Lotay (RPEQ, Lotay Civil) | RPEQ; signs JCE engineering outputs for this commission |
+| Associate Principal Engineer: independent technical review, RPEQ sign-off, backup project lead | Sunny Lotay, Lotay Civil (standing associate agreement with JCE) | RPEQ, NER; signs JCE engineering outputs for this commission |
 | Marine and coastal engineering | Marine partner [TBC - Jayden: from quotes] | RPEQ in the relevant area, signs marine content |
 | Desktop geotechnical assessment | Geotechnical partner [TBC - Jayden] | RPEQ (Geotechnical), signs memo |
 | Economics, market research, stakeholder engagement | Economics partner, FNQ preferred [TBC - Jayden] | Not an engineering service |
@@ -72,7 +72,7 @@ How Jayden will manage the team:
 - Technical review of every input before it reaches Council, and RPEQ sign-off of all engineering content before issue.
 - One register of Council comments and actions, closed out and returned with each issue.
 
-Continuity. Each specialist firm will name a lead and a backup. JCE's backup project lead is [TBC - Jayden: name the JCE backup]. Jayden Callen is available for the whole contract.
+Continuity. Each specialist firm will name a lead and a backup. JCE's backup project lead is Sunny Lotay. Jayden Callen is available for the whole contract.
 
 ## 3.  Scope of services and methodology
 
@@ -186,6 +186,8 @@ Jayden Callen, Director, JCE Infrastructure. BEng (Hons) Civil, MIEAust (EA 1103
 - **Jayden Callen (while at Langtree Consulting Engineers): Leachate storage facility, Tablelands Regional Council (QLD).** Engineering for a landfill leachate storage facility.
 - **Drone photogrammetry.** Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Referee details available on request.
 
+Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. On this commission he reviews JCE design outputs independently before issue, provides RPEQ sign-off of JCE engineering outputs, and is the backup project lead.
+
 ### Resources and equipment
 
 JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE delivers drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category. CASA operator accreditation and drone registration will be in place before services start. JCE will deploy a DJI Mavic 3 Enterprise with RTK on this study. The workflow is flight planning in DroneDeploy (or DJI Pilot 2 or DJI FlightHub), capture with RTK corrections from the AUSCORS network or a local base station, ground control and independent check points to verify accuracy, processing in Autodesk ReCap Pro for point clouds and surfaces, design integration in Autodesk InfraWorks and Civil 3D, and QGIS for GIS delivery; the orthophoto is produced in ReCap Pro or DJI Terra.
@@ -247,7 +249,7 @@ The fee is a lump sum in AUD, exclusive of GST, and includes travel and expenses
 | PS1 | Economics: marine industry research, market review, economic need and drivers, economic benefits, delivery strategy and grant case input | $49,500.00 |
 | PS2 | Stakeholder engagement: interviews and industry sounding, industry workshop in Port Douglas, consultation record | $22,000.00 |
 | PS3 | Marine and coastal engineering (RPEQ): water depths, groynes, dredging, piling, waterside layouts for three concepts and the master plan, coastal hazards, staging | $35,200.00 |
-| PS4 | RPEQ (Civil) direct supervision and sign-off of JCE engineering inputs | $4,400.00 |
+| PS4 | Sunny Lotay (RPEQ, NER), Lotay Civil: independent technical review and RPEQ sign-off of JCE engineering outputs | $4,400.00 |
 | PS5 | Desktop geotechnical assessment (RPEQ): landside and marine foundations, acid sulfate soils, dredging implications | $6,600.00 |
 | PS6 | Planning and approvals review (local, State, Commonwealth), approvals pathway and timeframes; amenity, streetscape and urban design guidance | $17,600.00 |
 | PS7 | Environmental constraints and approvals: marine plants, fisheries, marine parks, MNES, terrestrial ecology (desktop and walkover) | $15,400.00 |
@@ -270,7 +272,7 @@ The same lump sum, allocated to the items in Council's Schedule I1 (Response Sch
 | 1.2 | Site inspections | HP | LS | $8,200.00 | Site visit 1 (3 days) incl. travel (S1) |
 | 1.3 | Project Management including fortnightly progress updates, project accruals and administration |  | LS | $15,500.00 | PM, fortnightly meetings, monthly reports, accruals, document control |
 | 1.4 | Prepare and implement stakeholder engagement plan, consultation with relevant stakeholders |  | LS | $29,100.00 | Activity Plan engagement plan; S3; PS2 |
-| 1.5 | Master planning including options analysis | HP | LS | $88,100.00 | S4 master plan and infrastructure; PS3 marine (RPEQ); PS4 RPEQ civil; PS5 geotechnical; PS6 planning, approvals and urban design |
+| 1.5 | Master planning including options analysis | HP | LS | $88,100.00 | S4 master plan and infrastructure; PS3 marine (RPEQ); PS4 RPEQ review and sign-off (Sunny Lotay); PS5 geotechnical; PS6 planning, approvals and urban design |
 | 1.6 | Concept plans development | HP | LS | $16,300.00 | Background review, GIS base mapping, three concept plans and drawings |
 | 1.7 | Costings estimate for precinct | HP | LS | $15,400.00 | Civil quantities and cost review (S5); PS8 cost planner |
 | 1.8 | Economic viability assessment | HP | LS | $54,800.00 | S2 benchmarking and sizing; PS1 economics |

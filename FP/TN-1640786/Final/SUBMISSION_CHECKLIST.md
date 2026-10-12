@@ -23,7 +23,7 @@ Prepared 12/10/2026. Nothing has been lodged, sent or signed.
 | Conditions of contract | Liability, indemnity, payment terms, IP (editable files to Council already offered). List departures or write "JCE offers no departures". | FP Section 11 |
 | Scope | Does Council's scope include the heavy haulage review, land acquisition, community facility costing, number of meetings, second exhibition? Adjust Sections 2, 4, 5 and fee. | FP Sections 2 to 5, 8 |
 | Program | Council's target dates and adoption date. | FP Section 6 |
-| Budget | Any budget figure. Compare with $136,465.88. | FP Section 8 |
+| Budget | Any budget figure. Compare with $138,865.88. | FP Section 8 |
 | Question cut-off | Lodge the questions in Section 5 below before it. | Register |
 | Lodgement rules | File types, size limits, naming, whether a signed PDF is required. | Section 2 below |
 | Recent amendments | A web search shows a "Mid-Western Regional Council Contributions Plan" exhibition on the NSW Planning Portal (about 03/03/2025). Check whether the 2019 Plan was amended in 2025 and cite the current version. | FP Section 1 |
@@ -61,7 +61,8 @@ Prepared 12/10/2026. Nothing has been lodged, sent or signed.
 8. Signature and date in the Offered by block and cover letter.
 9. Referee Maverick Partner, CPB Contractors (added Rev G, replacing the Gunnedah levee example): confirm full name and title as written, consent to be named, phone and email; project year (five-year window), package scope, JCE's role (as JCE or as a previous employer), value; any Defence confidentiality limits on what can be described.
 10. Tablelands Regional Council projects (Rev G, Jayden's experience while at Langtrees, NOT JCE projects): floodway rectification [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]; leachate storage facility [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]. Darren Quilliam: get consent to be named, title, phone and email. If Council's forms ask for the tenderer's own projects, keep these in the key personnel / CV field only. If Council sets a recency window (e.g. last 5 years), confirm the years qualify.
-11. Returnables answers file: ACN, GST status, address check, workers comp policy number, local content.
+11. Sunny Lotay (Rev G core team): signed standing associate agreement with Lotay Civil (scope, fee basis, availability); insurance: does JCE's PI cover his work or does Lotay Civil hold its own PI/PL (attach certificates; FP Section 10 has a [TBC]); Sunny's written consent to be named on this bid; RPEQ and NER numbers; CV for Attachment C. Associate rate assumed $200/hr x 12 hours = $2,400 [TBC - Jayden].
+12. Returnables answers file: ACN, GST status, address check, workers comp policy number, local content.
 
 ## 4. Insurance and certificates
 
@@ -99,12 +100,12 @@ Assumed typical council RFQ criteria, to be replaced with Council's real ones.
 
 | Criterion (assumed weight) | Draft Rev A | Final Rev F | Reason |
 |---|---|---|---|
-| Price (40%) | 6 | 6 | Unchanged; provisional sums are 43% of price, so firm figures will matter |
-| Relevant experience and team (25%) | 3 | 5.5 | Added Jayden's evidence and referees. Rev G: CPB referee for RAAF Base Townsville replaces Gunnedah levee; two Tablelands Regional Council projects (Jayden's work at Langtrees, counted as key personnel, not company, experience) with council referee raise 5 to 5.5; capped until planning partner's contributions plan record is named |
+| Price (40%) | 6 | 6 | Rev G adds $2,400 (1.8%); no score change; provisional sums are 43% of price, so firm figures will matter |
+| Relevant experience and team (25%) | 3 | 5.5 | Added Jayden's evidence and referees. Rev G: CPB referee for RAAF Base Townsville replaces Gunnedah levee; two Tablelands Regional Council projects (Jayden's work at Langtrees, counted as key personnel, not company, experience) with council referee raise 5 to 5.5; Sunny Lotay (RPEQ, NER) as associate reviewer adds depth but stays at 5.5 until agreement and CV in hand; capped until planning partner's contributions plan record is named |
 | Methodology and understanding (20%) | 6 | 7.5 | Added risk table, hold points HP1 to HP3, editable files to Council |
 | Program and capacity (10%) | 5 | 7 | Gantt chart, hold points, single point of contact |
-| Compliance, WHS, local content (5%) | 3 | 5 | Insurance stated honestly with PL uplift, conflict and conditions sections; forms still unseen |
-| **Weighted total (out of 10)** | **5.0** | **6.2** (Rev F 6.1) | |
+| Compliance, WHS, local content, sign-off (5%) | 3 | 5.5 | Insurance stated honestly with PL uplift, conflict and conditions sections; forms still unseen |
+| **Weighted total (out of 10)** | **5.0** | **6.3** (Rev F 6.1) | |
 
 Five changes most likely to raise the score:
 1. Name the planning partner with real contributions plan projects and referees (done when quotes arrive; [TBC]).
@@ -117,12 +118,12 @@ Five changes most likely to raise the score:
 
 | Item | Amount |
 |---|---|
-| JCE lump sum (stages, expenses, 5% risk) | $78,165.88 |
+| JCE lump sum (stages, expenses, 5% risk, $2,400 Sunny Lotay review allowance) | $80,565.88 |
 | PS 1 planning partner | $49,500.00 |
 | PS 2 quantity surveyor | $8,800.00 |
-| **Total excl. GST** | **$136,465.88** |
-| GST | $13,646.59 |
-| **Total incl. GST** | **$150,112.46** |
+| **Total excl. GST** | **$138,865.88** (Rev F $136,465.88) |
+| GST | $13,886.59 |
+| **Total incl. GST** | **$152,752.47** (Rev F $150,112.46) |
 
 No budget is known. A planning-led RFQ may attract town planning firms pricing lower; check any published budget once documents are downloaded.
 

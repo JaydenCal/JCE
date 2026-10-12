@@ -14,7 +14,7 @@ Text of JCE_FP_VP523438_Final_RevG.docx, for pasting into the JCE branded templa
 | Site | Hawthorn Road, Adelaide Road to Liebelt Summer Track, Mount Barker SA 5251 |
 | Date / Revision | 12/10/2026 / Revision G (final for signature) |
 | Prepared by | Jayden Callen, Director |
-| Offer | Lump sum $258,460 excl. GST ($284,306 incl. GST) for Separable Portion 1; PC Sums $339,400 excl. GST for Separable Portions 2 and 3 |
+| Offer | Lump sum $263,500 excl. GST ($289,850 incl. GST) for Separable Portion 1; PC Sums $339,400 excl. GST for Separable Portions 2 and 3 |
 
 Dear Procurement Team,
 
@@ -22,7 +22,7 @@ JCE Infrastructure Pty Ltd (JCE) offers to deliver the 30% concept design and co
 
 Jayden has also worked for a regional council in Far North Queensland, where he shortlisted consultants for a council RFT. He knows what an evaluation panel looks for and what a council officer needs after award: clear hold points, no surprises on scope or fee, and records Council can audit.
 
-JCE confirms it can meet Council's program in Brief Table 1. Our lump sum is $258,460 excluding GST, and the PC Sums for the later design stages total $339,400 excluding GST. The items in Brief section 9 are answered as follows:
+JCE confirms it can meet Council's program in Brief Table 1. Our lump sum is $263,500 excluding GST, and the PC Sums for the later design stages total $339,400 excluding GST. The items in Brief section 9 are answered as follows:
 
 
 | Brief 9 | Requirement | Where answered |
@@ -74,7 +74,7 @@ The methodology follows Brief sections 3 to 6 in three stages that match Council
 - Jayden reviews every sub-consultant deliverable against the Brief and the Concept Design Basis Report before it is issued to Council.
 - One comments and actions register (on Council's template) covers Council, road safety audit and Safe System Assessment comments, with JCE's response and close-out for each item.
 - A short written progress report with each monthly online meeting: progress against program, decisions needed from Council, risks and early warnings.
-- Independent technical review of the civil documentation before each issue by Livio Chiarot, FIEAust [TBC - Jayden: confirm Livio's availability].
+- Independent technical review of the design outputs at the preliminary 30% and final concept issues by Sunny Lotay (RPEQ, NER), JCE's associate certifying engineer.
 
 ### Stage 1: Start-up, investigations and Concept Design Basis (to the 10% workshop, 12/02/2027)
 
@@ -156,6 +156,16 @@ The program assumes Council returns consolidated comments within ten business da
 
 **Jayden Callen, BEng (Civil)(Hons), MIEAust (EA 11036201).** Director, design lead, Contractor's Representative and Council's single point of contact. Civil engineer with more than eight years of continuous experience across roads and pavements, stormwater and flooding, land development, and water and sewerage, including Defence infrastructure delivery with tier-one contractors. National Engineering Register application in progress. Detailed CV in Attachment B.
 
+**Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil:** engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. On Hawthorn Road he will carry out the independent technical review of the preliminary 30% and final concept design outputs, provide sign-off where a suitably qualified or registered engineer is required, and act as backup project lead. Sunny is not a JCE employee.
+
+
+| Core team | Role on Hawthorn Road |
+|---|---|
+| Jayden Callen, Director, JCE (MIEAust; NER application in progress) | Design lead, Contractor's Representative and Council's single point of contact |
+| Sunny Lotay, Associate Principal Engineer, Lotay Civil (RPEQ, NER) | Independent technical review, certification where required, backup project lead |
+
+Jayden's technical skills:
+
 - Roads and pavements: road geometry to the Austroads guides; mechanistic pavement design with CIRCLY (Centre for Pavement Engineering Education training).
 - Stormwater and flooding: DRAINS (core workshop) and MUSIC X; flood impact assessment to ARR 2019 with specialist flood modellers.
 - Costs: engineer's estimates, bills of quantities and variation pricing.
@@ -165,7 +175,7 @@ The program assumes Council returns consolidated comments within ten business da
 
 **Resources and equipment.** JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE delivers drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery). JCE will deploy a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category, with CASA operator accreditation in place before services start. Hawthorn Road is more than 30 km from the nearest controlled aerodromes (Adelaide Airport and Parafield), well outside the 5.5 km limit for the excluded category; flights will be in daylight, within visual line of sight, below 120 m and clear of road users and the public as CASA's standard operating conditions require.
 
-**Registration.** The Brief and Agreement do not require CPEng, NER or any State registration for this work. South Australia does not currently require engineers to be registered to provide these services [TBC - Jayden: confirm on legislation.sa.gov.au before lodging]. If a registration requirement starts during the commission and applies to these services, JCE will comply, including by engaging a registered engineer for review and sign-off.
+**Registration.** The Brief and Agreement do not require CPEng, NER or any State registration for this work. South Australia does not currently require engineers to be registered to provide these services [TBC - Jayden: confirm on legislation.sa.gov.au before lodging]. If a registration requirement starts during the commission and applies to these services, JCE will comply, including through its associate certifying engineer, Sunny Lotay (RPEQ, NER).
 
 
 ### 5.2   Schedule of proposed sub-consultants
@@ -248,11 +258,11 @@ JCE offers to deliver Separable Portion 1 for a fixed lump sum, excluding GST an
 | Stage | Description | Fee (excl. GST) |
 |---|---|---|
 | Stage 1 | Start-up, site appraisal, engineering survey and Concept Design Basis Report | $64,020 |
-| Stage 2 | Investigations, options and preliminary 30% concept design | $135,940 |
-| Stage 3 | Final concept design, reports, plans and cost estimate | $58,500 |
-|  | Total lump sum (excl. GST) | $258,460 |
-|  | GST (10%) | $25,846 |
-|  | Total lump sum (incl. GST) | $284,306 |
+| Stage 2 | Investigations, options and preliminary 30% concept design | $138,460 |
+| Stage 3 | Final concept design, reports, plans and cost estimate | $61,020 |
+|  | Total lump sum (excl. GST) | $263,500 |
+|  | GST (10%) | $26,350 |
+|  | Total lump sum (incl. GST) | $289,850 |
 
 
 ### 8.2   Breakdown by component (Brief 9 f)
@@ -272,8 +282,9 @@ JCE offers to deliver Separable Portion 1 for a fixed lump sum, excluding GST an
 | Sub-consultant: traffic, SSA and road safety audits (provisional allowance) | allowance plus 10% coordination | $23,100 |
 | Sub-consultant: arborist (provisional allowance) | allowance plus 10% coordination | $9,240 |
 | Sub-consultant: street lighting (provisional allowance) | allowance plus 10% coordination | $10,395 |
+| Associate review and certification: Sunny Lotay, Lotay Civil (RPEQ, NER) | 24 hours | $5,040 |
 | Disbursements (Section 8.3) | at cost | $3,790 |
-| Total (excl. GST) |  | $258,460 |
+| Total (excl. GST) |  | $263,500 |
 
 Component values include JCE's 5% risk allowance and are rounded; the lump sum governs. The sub-consultant values are provisional allowances until the quotations due on 23/10/2026 are received. [TBC - Jayden: replace with the quotes and adjust the lump sum before lodgement.]
 
@@ -281,7 +292,7 @@ Component values include JCE's 5% risk allowance and are rounded; the lump sum g
 ### 8.3   Breakdown by person and task (Brief 9 h) and disbursements (Brief 9 i)
 
 
-| Role (all performed or directly supervised by Jayden Callen) | Hours: PM / Stage 1 / Stage 2 / Stage 3 | Labour (excl. GST) |
+| Role (JCE roles performed or directly supervised by Jayden Callen) | Hours: PM / Stage 1 / Stage 2 / Stage 3 | Labour (excl. GST) |
 |---|---|---|
 | Director / Principal Engineer ($200/hr) | 34 / 0 / 0 / 22 = 56 | $11,200 |
 | Senior Engineer ($190/hr) | 0 / 36 / 66 / 44 = 146 | $27,740 |
@@ -290,6 +301,8 @@ Component values include JCE's 5% risk allowance and are rounded; the lump sum g
 | CAD / Drafting ($160/hr) | 0 / 0 / 121.5 / 35 = 156.5 | $25,040 |
 | Administration / Document Control ($140/hr) | 12 / 0 / 0 / 0 = 12 | $1,680 |
 | Total JCE labour (760.5 hours, before the 5% risk allowance) |  | $133,640 |
+| Associate Principal Engineer, Sunny Lotay, Lotay Civil ($200/hr) | 0 / 0 / 12 / 12 = 24 | $4,800 |
+| Total labour including associate review (784.5 hours, before the 5% risk allowance) |  | $138,440 |
 
 Each task is charged at the rate for the type of work, as JCE's Schedule of Rates (Attachment A) sets out. The task-by-task build-up is available to Council on request.
 
@@ -335,7 +348,7 @@ JCE accepts the terms and conditions of Council's draft Services Agreement (DOC/
 - Clause 12.1: the indemnity to be reduced to the extent a loss is caused or contributed to by Council or third parties, and to exclude indirect and consequential loss.
 - New clause: JCE's aggregate liability under the Agreement to be limited to the Professional Indemnity amount in Item 14 ($2 million), except for personal injury, death and third-party property damage.
 - Clause 20.15 and Item 14: Return to Work SA registration to apply where the law requires it (consistent with clause 10.4), with the alternative cover in clause 20.15.6 accepted otherwise.
-- Clause 19: Council's consent to the sub-consultants named at award, on the information in Section 5.2.
+- Clause 19: Council's consent to the sub-consultants named at award, on the information in Section 5.2, and to Sunny Lotay (Lotay Civil) as JCE's associate certifying engineer.
 
 ## 13.0   Validity and offer
 
