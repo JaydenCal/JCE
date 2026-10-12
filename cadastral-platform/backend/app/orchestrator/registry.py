@@ -24,6 +24,7 @@ log = logging.getLogger(__name__)
 REAL_AGENT_PATHS: dict[AgentCode, str] = {
     AgentCode.SA7_PDF_ALIGN: "app.agents.sa7_pdf_align.agent:Sa7PdfAligner",
     AgentCode.SA5_CAD_DXF: "app.agents.sa5_cad_dxf.agent:Sa5CadDxf",
+    AgentCode.SA4_HYDRO: "app.agents.sa4_hydro.agent:Sa4Hydro",
 }
 
 _STUB_SCHEMAS: dict[AgentCode, tuple[str, str]] = {
