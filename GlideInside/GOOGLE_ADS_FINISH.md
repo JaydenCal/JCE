@@ -69,7 +69,8 @@ Open the responsive search ad and check each line:
 - [ ] Headlines are 30 characters or fewer and descriptions 90 or fewer (the editor flags any that are over).
 - [ ] No ALL CAPS words, repeated punctuation (!!) or emoji.
 - [ ] No "JCE" or civil engineering wording.
-- [ ] Final URL is **https://glideinside.com.au/** (or the #upload anchor), and it loads on your phone.
+- [ ] Final URL is **https://glideinside.com.au/** (or `https://glideinside.com.au/services/display-home-virtual-tours.html` for builder ads), and it loads on your phone. The order form anchor is `#enquire`.
+- [ ] If an ad mentions $249, it matches the site's scope: "$249 per home, interior only, pay when you upload".
 - [ ] Ad strength is at least "Good". If it says "Poor", add more distinct headlines; don't just reword existing ones.
 
 ## 7. Link conversion actions
