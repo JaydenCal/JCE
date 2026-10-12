@@ -184,11 +184,27 @@ def _draw_paper(doc: Drawing, model: PlanModel, fit: FitResult, acks: list[AckKi
     doc.layouts.set_active_layout(LAYOUT_NAME)
 
 
+def _attach_basemap(doc: Drawing, model: PlanModel, dxf_path) -> None:
+    """Optional georeferenced IMAGE entity (lower-left insert, metres per pixel from extent)."""
+    req = model.request
+    img, ext = getattr(req, "basemap_image_path", None), getattr(req, "basemap_extent", None)
+    if not img or not ext or not Path(img).exists():
+        return
+    from PIL import Image
+    w, h = Image.open(img).size
+    if "C-AERIAL" not in doc.layers:
+        doc.layers.add("C-AERIAL", color=8)
+    idef = doc.add_image_def(filename=str(img), size_in_pixel=(w, h))
+    doc.modelspace().add_image(idef, insert=(ext[0], ext[1]), size_in_units=(ext[2] - ext[0], ext[3] - ext[1]),
+                               rotation=0, dxfattribs={"layer": "C-AERIAL"})
+
+
 def build_dxf(model: PlanModel, aset: AnnotationSet, fit: FitResult, acks: list[AckKind],
               path: str | Path | None = None) -> DxfBuild:
     doc = ezdxf.new("R2018", setup=True, units=6)
     _setup_styles(doc, model.scale)
     ensure_layers(doc)
+    _attach_basemap(doc, model, path)
     _draw_model(doc, model, aset)
     _draw_paper(doc, model, fit, acks)
     ext = (fit.centre[0], fit.centre[1])

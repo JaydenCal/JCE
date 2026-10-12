@@ -19,7 +19,7 @@ Fetcher = Callable[[str, dict], "tuple[bytes, str | None]"]
 NSW_LOT_LAYER = "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9"  # unverified
 QLD_PARCEL_LAYER = "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4"  # unverified
 NSW_ZONING_LAYER = "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2"  # unverified
-NSW_GEOCODER = "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Geocoded_Addressing_Theme/GeocodeServer"  # unverified
+NSW_GEOCODER = "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Property/MapServer"  # verified live 2026-10-12: layers 1-4 carry an `address` field
 
 
 def default_fetcher(url: str, params: dict, timeout: float = 30.0):
@@ -118,6 +118,8 @@ class ArcGISClient:
         return QueryResult(feats, snap)
 
     def geocode(self, url: str, address: str) -> tuple[float, float]:
+        if "NSW_Property" in url:
+            return self._geocode_nsw_property(url, address)
         body, _, js = self._get(url.rstrip("/") + "/findAddressCandidates",
                                 {"f": "json", "SingleLine": address, "outSR": 7844, "maxLocations": 1})
         c = js.get("candidates") or []
@@ -125,6 +127,38 @@ class ArcGISClient:
             raise AgentError("SA1_ADDRESS_NOT_FOUND", address)
         loc = c[0]["location"]
         return float(loc["x"]), float(loc["y"])
+
+
+def _norm_address(address: str) -> tuple[str, str, str]:
+    """'756 Quia Road, Gunnedah' -> ('756', 'QUIA ROAD', 'GUNNEDAH')."""
+    import re
+    parts = [x.strip() for x in address.upper().replace(" NSW", "").split(",") if x.strip()]
+    m = re.match(r"^(?:UNIT\s+\S+\s*[/,]?\s*)?(\d+[A-Z]?)\s+(.+)$", parts[0]) if parts else None
+    if not m:
+        raise AgentError("SA1_ADDRESS_UNPARSEABLE", address)
+    suburb = parts[1] if len(parts) > 1 else ""
+    return m.group(1), m.group(2), suburb
+
+
+def _geocode_nsw_property(self, url: str, address: str) -> tuple[float, float]:
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+    num, road, suburb = _norm_address(address)
+    like = f"{num} {road}" + (f" {suburb}" if suburb else "")
+    where = f"housenumber = '{num}' AND UPPER(address) = '" + like.replace("'", "''") + "'"
+    for layer in (4, 3, 2, 1):  # urban, semi-rural, rural, large rural
+        _, _, js = self._get(url.rstrip("/") + f"/{layer}/query",
+                             {"f": "json", "where": where, "outFields": "propid,address",
+                              "returnGeometry": "true", "outSR": 7844})
+        feats = js.get("features") or []
+        if feats:
+            rings = [Polygon(r) for r in feats[0]["geometry"]["rings"] if len(r) >= 4]
+            pt = unary_union(rings).representative_point()
+            return float(pt.x), float(pt.y)
+    raise AgentError("SA1_ADDRESS_NOT_FOUND", address)
+
+
+ArcGISClient._geocode_nsw_property = _geocode_nsw_property
 
 
 def make_snapshot(layer: LayerConfig, params: dict, digest: bytes, etag: str | None) -> Snapshot:

@@ -60,7 +60,10 @@ def compute_zones(lot_gda, features, srid: int, jurisdiction: str, cfg: ZoningCo
         try:
             g = to_mga(shape(f["geometry"]), srid)
             if not g.is_valid:
-                continue
+                # Third-party zoning polygons are often self-intersecting at map-sheet edges.
+                # Repair for the overlap calculation only (the lot boundary is never repaired).
+                from shapely.validation import make_valid
+                g = make_valid(g)
             ov = lot.intersection(g)
         except Exception:  # noqa: BLE001
             continue

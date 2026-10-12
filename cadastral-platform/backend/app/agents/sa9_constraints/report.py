@@ -18,6 +18,8 @@ from app.agents.sa9_constraints.intersect import LayerResult
 from app.agents.sa9_constraints.layers import REGISTRY
 from app.agents.sa9_constraints.triggers import TriggerResult
 from app.common.contracts import OverlayPolygon
+from app.imagery.figure import OverlaySpec, render_figure
+from app.imagery.provider import provider_from_env
 
 LEGAL = ("This report is informational only. It is NOT a planning certificate (NSW s10.7 certificate) or a council "
          "property/planning report. Verify all matters with the council and the relevant authority. Mapping data may "
@@ -71,7 +73,9 @@ def _map(lot_wkt, fp_wkt, r: LayerResult, w=170 * mm, h=110 * mm) -> Drawing:
 
 
 def build_report(path_pdf: Path, path_json: Path, meta: dict, results: list[LayerResult], triggers: list[TriggerResult],
-                 lot_wkt: str, fp_wkt: str | None, acknowledgements: list[str]) -> None:
+                 lot_wkt: str, fp_wkt: str | None, acknowledgements: list[str], imagery=None) -> None:
+    imagery = imagery if imagery is not None else provider_from_env(meta.get('jurisdiction', 'NSW'))
+    fig_no = 0
     ss = getSampleStyleSheet(); P = lambda t, s="BodyText": Paragraph(escape(t), ss[s])
     st = [Spacer(1, 40 * mm), P("Planning Constraints & Triggers Report", "Title"),
           P(f"Lot/Plan: {meta['lotplan']}"), P(f"Council: {meta['lga_name']} ({meta['jurisdiction']})"),
@@ -88,7 +92,11 @@ def build_report(path_pdf: Path, path_json: Path, meta: dict, results: list[Laye
     st += [t]
     for r in results:
         if r.status == "affected" and REGISTRY.get(r.key) and REGISTRY[r.key].significant:
-            st += [PageBreak(), P(f"Map: {r.label}", "Heading2"), _map(lot_wkt, fp_wkt, r),
+            fig_no += 1
+            fig = render_figure(lot_wkt, [OverlaySpec(wkt.loads(g), label=r.label) for g in r.geometries_wkt], imagery,
+                                srid=int(meta.get("mga_srid", 7856)), number=fig_no, footprint=fp_wkt,
+                                caption=f"{r.label}: constraint overlay on lot (MGA, indicative)")
+            st += [PageBreak(), P(f"Map: {r.label}", "Heading2"), fig.as_flowable(),
                    P(f"Overlap {r.overlap_area_m2:.1f} m2 ({r.pct_of_lot:.1f}% of lot); nearest distance {r.nearest_distance_m} m.")]
     st += [PageBreak(), P("Triggers and next steps", "Heading1")]
     if not triggers:

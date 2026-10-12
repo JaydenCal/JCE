@@ -157,6 +157,28 @@ def _draw_dim(pg: _Page, d) -> None:
     pg.text(tx, ty, h, d.text, "MIDDLE_CENTER", rot, halo=True)
 
 
+def _draw_basemap(pg: _Page) -> None:
+    """Optional aerial underlay at 50% fade, with a legend note (inside the clipped viewport)."""
+    req = pg.model.request
+    path, ext = getattr(req, "basemap_image_path", None), getattr(req, "basemap_extent", None)
+    if not path or not ext or not Path(path).exists():
+        return
+    c = pg.c
+    c.saveState()
+    c.setFillAlpha(0.5)
+    c.drawImage(str(path), pg.mx(ext[0]) * mm, pg.my(ext[1]) * mm, (ext[2] - ext[0]) * pg.s * mm,
+                (ext[3] - ext[1]) * pg.s * mm, mask=None)
+    c.restoreState()
+    note = "Aerial underlay at 50% fade" + (f": {req.basemap_note}" if getattr(req, "basemap_note", "") else "")
+    c.saveState()
+    c.setFillColorRGB(1, 1, 1)
+    c.rect(VIEWPORT[0] * mm, VIEWPORT[1] * mm, (stringWidth(note, "Helvetica", 5.5) / mm) * mm + 4 * mm, 4 * mm, stroke=0, fill=1)
+    c.setFillColorRGB(0.2, 0.2, 0.2)
+    c.setFont("Helvetica", 5.5)
+    c.drawString((VIEWPORT[0] + 2) * mm, (VIEWPORT[1] + 1.3) * mm, note)
+    c.restoreState()
+
+
 def _draw_plan(pg: _Page, aset: AnnotationSet) -> None:
     m = pg.model
     c = pg.c
@@ -165,6 +187,7 @@ def _draw_plan(pg: _Page, aset: AnnotationSet) -> None:
     clip = c.beginPath()
     clip.rect(VIEWPORT[0] * mm, VIEWPORT[1] * mm, (VIEWPORT[2] - VIEWPORT[0]) * mm, (VIEWPORT[3] - VIEWPORT[1]) * mm)
     c.clipPath(clip, stroke=0, fill=0)
+    _draw_basemap(pg)
 
     for o in m.overlays:
         aci, _pat, ang = OVERLAY_STYLE.get(o.kind.lower(), DEFAULT_OVERLAY_STYLE)

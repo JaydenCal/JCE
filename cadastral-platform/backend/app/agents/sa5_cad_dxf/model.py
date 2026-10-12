@@ -39,6 +39,10 @@ class CadRequestSa5(CadRequest):
     """CadRequest plus optional level spots (x, y, RL) - proposed contract addition."""
 
     level_spots: list[tuple[float, float, float]] = Field(default_factory=list)
+    # optional aerial underlay: image north-up in plan coordinates; extent = (xmin, ymin, xmax, ymax) metres
+    basemap_image_path: str | None = None
+    basemap_extent: tuple[float, float, float, float] | None = None
+    basemap_note: str = ""   # source / imagery date line for the legend
 
 
 @dataclass

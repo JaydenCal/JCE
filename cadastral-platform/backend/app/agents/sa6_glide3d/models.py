@@ -180,6 +180,9 @@ class Info(M):
     srid: int
     status: Literal["unverified"] = "unverified"
     schema_name: str = "scene_bundle.v1"
+    ground_texture: str | None = None   # optional aerial ground-texture URL/path (north-up in `srid`)
+    ground_texture_extent: tuple[float, float, float, float] | None = None
+    ground_texture_attribution: str | None = None
 
 
 class Floor(M):
