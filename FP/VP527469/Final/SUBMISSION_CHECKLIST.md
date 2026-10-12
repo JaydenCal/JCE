@@ -32,7 +32,7 @@ Draft Rev A was $610,823 ex GST but excluded full-time presence outside the lini
 
 | # | File | Where it is |
 |---|---|---|
-| 1 | JCE_FP_VP527469_Final_RevF.pdf (sign first; or paste FP_Final_text.md into the branded template and export) | Repo FP/VP527469/Final/ |
+| 1 | JCE_FP_VP527469_Final_RevF.pdf (sign first; or paste FP_Final_text.md into the branded template and export) | Repo FP/VP527469/Final/ (text also in Dropbox 02_Submission/FINAL_2026-10-12_FP_Final_text.md) |
 | 2 | Part_B1_Tender_Return_Forms_CT2027005_JCE_FILLED.docx (or Council's original filled from Part_B1_..._answers.md), signed and witnessed, as PDF and Word | Repo FP/VP527469/Final/ (original form: Dropbox 00_Tender_Docs; part-filled copy: 02_Submission) |
 | 3 | Part_B2-Returnable_Schedules-CQA_Engineer_JCE_FILLED.xlsx (Excel format is mandatory) | Repo FP/VP527469/Final/ |
 | 4 | Jayden_Callen_Detailed_CV_2026-09.pdf | Dropbox 02_Submission/Returnables |
@@ -43,7 +43,7 @@ Draft Rev A was $610,823 ex GST but excluded full-time presence outside the lini
 | 9 | Partner CVs, landfill CQA project sheets, example CQA plan/report extract (Form 3, 5, 7), with the partner's permission | From the RFQ response |
 | 10 | Sub-consultant quotes are NOT uploaded; they set the PS amounts | - |
 
-Mark each file with "RFT CT2027005 GWMC CQA Engineer" (Part A 5.1). PDF, Word or Excel only.
+The FP, B1 and B2 files are in the repo only (binary upload to Dropbox is not possible from this session): copy them into 02_Submission. Mark each file with "RFT CT2027005 GWMC CQA Engineer" (Part A 5.1). PDF, Word or Excel only.
 
 ## 4. Lodgement steps (VendorPanel)
 

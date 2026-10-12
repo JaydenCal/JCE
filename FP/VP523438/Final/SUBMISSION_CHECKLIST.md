@@ -11,7 +11,7 @@ Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status:
 | JCE labour (760.5 h) | $133,640 |
 | Sub-consultant allowances (raw $99,000, plus 10% coordination) | $108,900 |
 | Disbursements | $3,610 |
-| 5% risk allowance | $12,310 |
+| 5% risk allowance (rounded) | $12,310 |
 | **Lump sum, Separable Portion 1** | **$258,460** (GST $25,846; $284,306 incl. GST) |
 | PC Sum SP2 Detailed Design (70%) | $221,700 |
 | PC Sum SP3 IFC (100%) | $117,700 |
@@ -54,7 +54,8 @@ Stage split: Stage 1 $64,020; Stage 2 $135,940; Stage 3 $58,500. No budget figur
 6. Conflict of interest declaration confirmation (FP 10.0).
 7. FP number (FP-0xx), date of issue, and signature.
 8. Agreement Schedule: business, registered and postal addresses; ACN 699 165 663 (check); company execution (sole director and secretary?).
-9. Keep or drop the four requested amendments (FP 12.0). Compliance may be scored; the liability cap is the one most likely to be marked as a departure.
+9. SA registration: confirm on legislation.sa.gov.au (FP 5.1).
+10. Keep or drop the four requested amendments (FP 12.0). Compliance may be scored; the liability cap is the one most likely to be marked as a departure.
 
 ## 5. Insurance and certificate actions
 
