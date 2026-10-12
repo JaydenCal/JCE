@@ -1,13 +1,7 @@
 {
- "candidates": 114,
+ "candidates": 113,
  "validated": 113,
- "rejected": [
-  {
-   "id": "n_dcp_pbp",
-   "key": "bushfire.dcp_landscaping_considers_pbp",
-   "reason": "quote not found in any chunk of the cited document"
-  }
- ],
+ "rejected": [],
  "table_parser_rules": [
   {
    "zone": "R2",
@@ -44,5 +38,5 @@
   "nsw_pp_basix_water": 1,
   "nsw_page_bushfires": 2
  },
- "unresolved_items": 0
+ "unresolved_items": 19
 }

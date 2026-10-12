@@ -1,26 +1,127 @@
 import Link from "next/link";
-const feats = [
-  ["Lot and cadastre", "Pull the lot, boundary, zone and frontage in seconds."],
-  ["Setbacks with citations", "Controls extracted from council instruments, each linked to its clause."],
-  ["Plan alignment", "Drop in an architect's PDF and see it placed on the lot with a stated error."],
-  ["Driveway and crossover", "Screen grades, widths and swept paths before you lodge."],
-  ["Services and BYDA", "Spot conflicts between proposed works and known assets."],
-  ["DXF and PDF export", "Hand off CAD-ready drawings once every acknowledgement is given."],
+import type { ReactNode } from "react";
+import { AppWindow, NorthArrow, ScaleBar } from "@/components/home/AppWindow";
+import { Pipeline, STEPS } from "@/components/home/Pipeline";
+import { PlanShowcase } from "@/components/home/PlanShowcase";
+import { EngineerEnquiryButton } from "@/components/enquiry/EngineerEnquiryButton";
+import { ENGINEER_BTN } from "@/components/Shell";
+
+const W = "mx-auto max-w-7xl px-4 sm:px-8";
+const Eyebrow = ({ children }: { children: ReactNode }) => <p className="h-eyebrow">{children}</p>;
+const Rule = () => <div className={W}><div className="ticks" aria-hidden /></div>;
+const faqs: [string, string][] = [
+  ["Which states does it cover?", "New South Wales and Queensland. Layers and controls are drawn from each state's public sources and council instruments."],
+  ["Is this survey, engineering or planning advice?", "No. Outputs are indicative only. Boundaries are not a survey, civil quantities are not engineering design, and approval pathways need to be confirmed with the council or a certifier."],
+  ["What can I upload?", "An architect's plan as PDF or DXF, up to 200 MB. It is aligned to the lot with a stated error, and you are asked to confirm the scale if it cannot be read with confidence."],
+  ["What development types are supported?", "Dwelling house, secondary dwelling (granny flat) and shed or outbuilding. Dual occupancy is selectable but not yet supported, so its requirements are reported as unresolved."],
+  ["Why nine acknowledgements before export?", "Each one covers a limit that matters on site, from BYDA and physical service location to the indicative nature of cut and fill. Export unlocks only when all are given."],
+  ["What happens when a value cannot be found?", "It is shown as unresolved with the next step to take. The tool does not guess a setback, height or pathway."],
 ];
 export default function Home() {
   return (<>
-    <section className="relative overflow-hidden py-20 text-center sm:py-28">
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-24 -z-10 mx-auto h-72 max-w-3xl rounded-full bg-brand/20 blur-3xl" />
-      <p className="h-eyebrow">Site planning, automated</p>
-      <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-extrabold tracking-tight sm:text-6xl">From lot to lodgement-ready plan, in minutes.</h1>
-      <p className="mx-auto mt-6 max-w-2xl text-lg text-muted">JCE Site Planner reads the cadastre and council controls, aligns your plans, and checks driveways, services and rainwater tanks, so you can plan with confidence.</p>
-      <div className="mt-9 flex flex-wrap justify-center gap-3"><Link href="/projects" className="btn-primary">Start a project</Link><Link href="/legal/terms" className="btn-ghost">Read the terms</Link></div>
+    {/* HERO */}
+    <section className="relative overflow-hidden">
+      <div className="grid-paper absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_85%)]" aria-hidden />
+      <div className={`${W} relative grid items-center gap-12 pb-16 pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:pb-20 lg:pt-20`}>
+        <div className="rise">
+          <Eyebrow>Site and civil planning &middot; NSW &amp; QLD</Eyebrow>
+          <h1 className="h-display mt-5 text-[clamp(2.9rem,7.2vw,6.2rem)]">Site to civil plan in <span className="accent">minutes</span>.</h1>
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted">Start from the lot. JCE Site Planner reads the cadastre, zoning and mapped constraints, helps you design the dwelling, granny flat or shed, then draws the civil plan and lets you walk it in 3D before anything is built.</p>
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Link href="/projects" className="btn-primary !px-6 !py-3">Start free trial</Link>
+            <Link href="#plans" className="btn-ghost !px-6 !py-3">See a sample report</Link>
+          </div>
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted"><span>Indicative outputs, every value cited.</span>
+            <EngineerEnquiryButton className="font-medium text-gold underline decoration-brand/50 underline-offset-4 hover:decoration-brand">Talk to an engineer &rarr;</EngineerEnquiryButton></div>
+          <div className="mt-10 flex items-end gap-5 text-muted" aria-hidden><NorthArrow className="h-14 w-11" /><div><ScaleBar /><p className="mt-1.5 font-mono text-[10px] uppercase tracking-widest">Scale 1:250 @ A3</p></div></div>
+        </div>
+        <div className="relative rise [animation-delay:.12s]">
+          <AppWindow title="Civil plan"><div className="bg-scene p-2.5 sm:p-3"><img src="/samples/civil-plan.webp" alt="Civil plan sheet generated by JCE Site Planner showing lot, envelope, driveway, swept path and services" width={2646} height={1871} className="block h-auto w-full rounded-sm border border-line bg-white" /></div></AppWindow>
+          <div className="absolute -bottom-8 -left-3 hidden w-[46%] sm:block lg:-left-10"><AppWindow title="3D walk-through" className="shadow-paper"><img src="/samples/viewer-orbit.webp" alt="3D viewer orbit view of a lot with dwelling" width={1000} height={620} className="block h-auto w-full" /></AppWindow></div>
+        </div>
+      </div>
+      {/* hero timeline */}
+      <div className={`${W} relative pb-10`}>
+        <ol className="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-ink/30 pt-6 sm:grid-cols-3 lg:grid-cols-6">
+          {STEPS.map((s) => <li key={s.n} className="relative"><span className="absolute -top-[29px] left-0 h-2.5 w-2.5 rounded-full border border-ink bg-bg" aria-hidden /><span className="font-mono text-xs text-gold">{s.n}</span><p className="mt-1 font-display text-lg font-medium leading-tight">{s.t}</p></li>)}
+        </ol>
+      </div>
     </section>
-    <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {feats.map(([t, d]) => <div key={t} className="card"><div className="mb-4 h-9 w-9 rounded-xl bg-brand-soft" /><h3 className="font-bold">{t}</h3><p className="mt-2 text-sm text-muted">{d}</p></div>)}
+
+    {/* FACTS */}
+    <section className={`${W} py-6`} aria-label="At a glance">
+      <dl className="titleblock grid-cols-2 lg:grid-cols-4 [&>div]:border-b lg:[&>div]:border-b-0 lg:[&>div:not(:last-child)]:border-r [&>div:nth-child(odd)]:border-r lg:[&>div:nth-child(odd)]:border-r">
+        {[["Jurisdictions", "NSW + QLD"], ["Before export", "9 acknowledgements"], ["Deliverables", "DXF + PDF"], ["Every value", "Cited or unresolved"]].map(([k, v]) => <div key={k}><dt className="font-mono text-[10.5px] uppercase tracking-[.18em] text-muted">{k}</dt><dd className="mt-1.5 font-display text-2xl font-medium">{v}</dd></div>)}
+      </dl>
     </section>
-    <section className="card mt-16 grid gap-6 text-center sm:grid-cols-3">
-      {[["NSW + QLD", "Jurisdictions"], ["9", "Safety acknowledgements"], ["DXF + PDF", "Export formats"]].map(([a, b]) => <div key={b}><div className="text-3xl font-extrabold text-brand">{a}</div><div className="text-sm text-muted">{b}</div></div>)}
+
+    {/* HOW IT WORKS */}
+    <section id="how" className={`${W} py-20 lg:py-28`}>
+      <Eyebrow>How it works</Eyebrow>
+      <h2 className="h-display mt-4 max-w-3xl text-[clamp(2.2rem,4.6vw,3.8rem)]">Six steps from <span className="accent">lot</span> to lodgement pack.</h2>
+      <div className="mt-12"><Pipeline /></div>
     </section>
+    <Rule />
+
+    {/* CIVIL PLANS */}
+    <section id="plans" className={`${W} py-20 lg:py-28`}>
+      <div className="grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-end">
+        <div><Eyebrow>Civil plans</Eyebrow><h2 className="h-display mt-4 text-[clamp(2.2rem,4.6vw,3.8rem)]">Not just planning. The <span className="accent">civil</span> design too.</h2></div>
+        <p className="max-w-xl text-[17px] leading-relaxed text-muted lg:justify-self-end">Driveway crossover and swept path, services and exclusion buffers, rainwater tank, levels for cut and fill, setbacks and the title block, on one A3 sheet you can zoom, check and export as DXF.</p>
+      </div>
+      <div className="mt-10"><PlanShowcase /></div>
+      <div className="mt-8 flex flex-col items-start justify-between gap-5 border border-ink/40 bg-surface p-6 sm:flex-row sm:items-center">
+        <div><h3 className="font-display text-2xl font-medium">Need an engineer to certify or design it?</h3>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">JCE Infrastructure is our industry partner. Everything this tool produces is indicative until an engineer is engaged to design, check and certify the works.</p></div>
+        <EngineerEnquiryButton className={`${ENGINEER_BTN} shrink-0 !px-6 !py-3`}>Talk to an engineer</EngineerEnquiryButton>
+      </div>
+    </section>
+    <Rule />
+
+    {/* 3D */}
+    <section className={`${W} py-20 lg:py-28`}>
+      <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.4fr)]">
+        <div><Eyebrow>3D walk-through</Eyebrow><h2 className="h-display mt-4 text-[clamp(2.2rem,4.2vw,3.4rem)]">Orbit it. Then <span className="accent">walk</span> it.</h2>
+          <p className="mt-5 text-[17px] leading-relaxed text-muted">Review the lot from above, switch on cut and fill, then drop into first person to check sightlines, clearances and driveway grade. Furnish rooms from store products with real dimensions.</p>
+          <Link href="/viewer-demo" className="btn-primary mt-7">Open the live 3D demo</Link></div>
+        <div className="grid gap-4 sm:grid-cols-2"><AppWindow title="Orbit"><img src="/samples/viewer-orbit.webp" alt="Orbit view in the 3D viewer" width={1000} height={620} loading="lazy" className="block h-auto w-full" /></AppWindow>
+          <AppWindow title="First person" className="sm:mt-10"><img src="/samples/viewer-walk.webp" alt="First-person view in the 3D viewer" width={1000} height={620} loading="lazy" className="block h-auto w-full" /></AppWindow></div>
+      </div>
+    </section>
+
+    {/* HONEST */}
+    <section id="honest" className="border-y border-ink/20 bg-surface py-20 lg:py-28">
+      <div className={W}>
+        <Eyebrow>Honest by design</Eyebrow>
+        <h2 className="h-display mt-4 max-w-3xl text-[clamp(2.2rem,4.6vw,3.8rem)]">It tells you what it <span className="accent">does not</span> know.</h2>
+        <div className="titleblock mt-12 sm:grid-cols-2 lg:grid-cols-4 [&>div]:border-b lg:[&>div:not(:last-child)]:border-r lg:[&>div]:border-b-0 sm:[&>div:nth-child(odd)]:border-r lg:[&>div:nth-child(even)]:border-r">
+          {[["Every value cited", "Setbacks and controls link back to the instrument and clause they came from, so you can check the source."],
+            ["Unresolved is shown, not guessed", "If a rule cannot be found, the report says so and lists the next step, such as obtaining the s10.7 planning certificate."],
+            ["Verify before excavation", "Service locations are indicative. You acknowledge that BYDA plans and physical location (potholing) come first, every time."],
+            ["Indicative only", "Not a survey, not engineering design, not planning advice. Export is gated behind nine plain-language acknowledgements."]].map(([t, d], i) => <div key={t}><span className="font-mono text-xs text-gold">0{i + 1}</span><h3 className="mt-3 font-display text-xl font-medium">{t}</h3><p className="mt-2 text-sm leading-relaxed text-muted">{d}</p></div>)}
+        </div>
+        <figure className="mt-10 max-w-3xl border-l-2 border-brand pl-5"><blockquote className="font-mono text-[13px] leading-relaxed">&ldquo;TO BE CONFIRMED. Obtain the s10.7 planning certificate (EP&amp;A Act) for the lot and confirm with the council.&rdquo;</blockquote><figcaption className="mt-2 font-mono text-[10.5px] text-muted">Wording from a real generated report, where a rule could not be resolved.</figcaption></figure>
+      </div>
+    </section>
+
+    {/* PRICING */}
+    <section id="pricing" className={`${W} py-20 lg:py-28`}>
+      <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
+        <div><Eyebrow>Pricing</Eyebrow><h2 className="h-display mt-4 text-[clamp(2.2rem,4.2vw,3.4rem)]">Pricing <span className="accent">coming soon</span>.</h2>
+          <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-muted">We are finalising plans. Start a free trial now and run your first lot end to end.</p></div>
+        <div className="titleblock"><div className="flex flex-wrap items-center justify-between gap-4 !p-8"><div><p className="font-mono text-[10.5px] uppercase tracking-[.18em] text-muted">Plans</p><p className="mt-1 font-display text-3xl font-medium">Coming soon</p></div><Link href="/projects" className="btn-primary">Start free trial</Link></div></div>
+      </div>
+    </section>
+
+    {/* FAQ */}
+    <section id="faq" className={`${W} pb-20 lg:pb-28`}>
+      <div className="grid gap-10 lg:grid-cols-[.8fr_1.4fr]"><div><Eyebrow>FAQ</Eyebrow><h2 className="h-display mt-4 text-[clamp(2.2rem,4.2vw,3.4rem)]">Questions, <span className="accent">answered</span>.</h2></div>
+        <div className="border-t border-ink/30">{faqs.map(([q, a]) => <details key={q} className="group border-b border-ink/20 py-5"><summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-display text-xl font-medium [&::-webkit-details-marker]:hidden">{q}<span aria-hidden className="font-mono text-lg text-gold transition-transform group-open:rotate-45">+</span></summary><p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted">{a}</p></details>)}</div></div>
+    </section>
+
+    {/* CTA */}
+    <section className={`${W}`}><div className="grid-paper flex flex-col items-start justify-between gap-6 border border-ink/40 bg-surface p-8 sm:flex-row sm:items-center sm:p-12">
+      <h2 className="h-display max-w-xl text-[clamp(2rem,3.8vw,3rem)]">Put your next lot on the <span className="accent">drawing board</span>.</h2>
+      <div className="flex flex-wrap gap-3"><Link href="/projects" className="btn-primary !px-6 !py-3">Start free trial</Link><EngineerEnquiryButton className={`${ENGINEER_BTN} !px-6 !py-3`}>Talk to an engineer</EngineerEnquiryButton></div></div></section>
   </>);
 }

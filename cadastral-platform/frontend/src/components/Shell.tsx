@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { EngineerEnquiryButton } from "@/components/enquiry/EngineerEnquiryButton";
+export const ENGINEER_BTN = "inline-flex items-center justify-center rounded-md border border-brand-strong px-4 py-2 text-sm font-semibold text-gold transition-colors hover:bg-brand-strong hover:text-brand-fg";
 export const Logo = () => (
   <span className="flex items-center gap-2.5 font-display text-[19px] font-semibold tracking-tight">
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
@@ -28,13 +30,13 @@ export function Header() {
           {links.map(([t, h]) => <Link key={h} href={h} className="hover:text-ink">{t}</Link>)}
         </nav>
         <div className="hidden items-center gap-4 md:flex">
-          <ThemeToggle /><Link href="/projects" className="text-sm font-medium hover:text-gold">Log in</Link>
+          <ThemeToggle /><EngineerEnquiryButton className={ENGINEER_BTN + " !py-[7px]"}>Talk to an engineer</EngineerEnquiryButton><Link href="/projects" className="text-sm font-medium hover:text-gold">Log in</Link>
           <Link href="/projects" className="btn-primary !py-2">Start free trial</Link>
         </div>
         <button className="btn-ghost !px-3 !py-1.5 md:hidden" aria-expanded={open} aria-label="Menu" onClick={() => setOpen(!open)}>{open ? "Close" : "Menu"}</button>
       </div>
       {open && <div className="flex flex-col gap-3 border-t border-line px-4 py-4 md:hidden">{[...links, ["Projects", "/projects"] as [string, string], ["Terms", "/legal/terms"] as [string, string]].map(([t, h]) => <Link key={h} href={h} onClick={() => setOpen(false)} className="py-1">{t}</Link>)}
-        <div className="flex items-center gap-3 pt-2"><ThemeToggle /><Link href="/projects" className="btn-primary">Start free trial</Link></div></div>}
+        <div className="flex flex-wrap items-center gap-3 pt-2"><ThemeToggle /><EngineerEnquiryButton className={ENGINEER_BTN}>Talk to an engineer</EngineerEnquiryButton><Link href="/projects" className="btn-primary">Start free trial</Link></div></div>}
     </header>
   );
 }
@@ -44,7 +46,7 @@ export const Footer = () => (
     <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 text-sm text-muted sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
       <div><Logo /><p className="mt-4 max-w-sm leading-relaxed">Site and civil planning for NSW and QLD builders, designers and civil consultants.</p></div>
       <nav aria-label="Product" className="flex flex-col gap-2"><span className="h-eyebrow">Product</span>{links.map(([t, h]) => <Link key={h} href={h} className="hover:text-ink">{t}</Link>)}</nav>
-      <nav aria-label="Legal" className="flex flex-col gap-2"><span className="h-eyebrow">Legal</span><Link href="/legal/terms" className="hover:text-ink">Terms of Use</Link><Link href="/projects" className="hover:text-ink">Projects</Link></nav>
+      <nav aria-label="Legal" className="flex flex-col gap-2"><span className="h-eyebrow">Legal</span><Link href="/legal/terms" className="hover:text-ink">Terms of Use</Link><EngineerEnquiryButton className="text-left hover:text-ink">Talk to an engineer</EngineerEnquiryButton><Link href="/projects" className="hover:text-ink">Projects</Link></nav>
     </div>
     <div className="border-t border-line"><p className="mx-auto max-w-7xl px-4 py-5 font-mono text-[11px] leading-relaxed text-muted sm:px-8">Outputs are indicative only and are not survey, engineering or planning advice. Verify BYDA plans and locate services before excavation. JCE Site Planner.</p></div>
   </footer>

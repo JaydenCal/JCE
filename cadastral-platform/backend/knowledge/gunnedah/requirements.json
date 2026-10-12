@@ -1,6 +1,6 @@
 {
  "region": "Gunnedah Shire (NSW)",
- "generated_at": "2026-10-12T16:49:39+00:00",
+ "generated_at": "2026-10-12T16:50:56+00:00",
  "requirements": [
   {
    "key": "setback.dwelling_house.front_m",
@@ -2943,7 +2943,7 @@
    "extraction_method": "llm",
    "confidence": 0.85,
    "status": "resolved",
-   "prompt": null,
+   "prompt": "Engineering Standards Table 2-H allows up to 2 crossings per street frontage but DCP C.1.4(d) says multiple access points and laybacks are not permitted (unless two road frontages): confirm with Council.",
    "alternatives": [],
    "verified_by": null
   },

@@ -8,7 +8,7 @@
    "value": 6.5,
    "unit": "m",
    "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
-   "page": null,
+   "page": 37,
    "zone": "R2",
    "value_struct": {
     "rule": "6.5 m or the average of the adjoining dwellings, whichever is less"
@@ -22,7 +22,7 @@
    "value": 0.9,
    "unit": "m",
    "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
-   "page": null,
+   "page": 37,
    "zone": "R2",
    "value_struct": {
     "rule": "0.9 m or compliance with the BCA (less than 900 mm considered where BCA fire rating satisfied)"
@@ -36,7 +36,7 @@
    "value": 0.9,
    "unit": "m",
    "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
-   "page": null,
+   "page": 37,
    "zone": "R2",
    "value_struct": {
     "rule": "0.9 m or compliance with the BCA"
@@ -50,7 +50,7 @@
    "value": 3,
    "unit": "m",
    "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
-   "page": null,
+   "page": 37,
    "zone": "R2",
    "value_struct": {
     "applies": "building wall, corner or parallel lots"
@@ -64,7 +64,7 @@
    "value": 5.5,
    "unit": "m",
    "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
-   "page": null,
+   "page": 37,
    "zone": "R2",
    "value_struct": {
     "applies": "garage or carport attached to the building wall, corner or parallel lots"
@@ -78,7 +78,7 @@
    "value": 1,
    "unit": "m",
    "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
-   "page": null,
+   "page": 37,
    "zone": "R2"
   },
   {
@@ -89,7 +89,7 @@
    "value": 0.5,
    "unit": "m",
    "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
-   "page": null,
+   "page": 38,
    "zone": "R2",
    "value_struct": {
     "max_frontage_pct": 10
@@ -103,7 +103,7 @@
    "value": 6.5,
    "unit": "m",
    "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
-   "page": null,
+   "page": 37,
    "zone": "R2",
    "also_quotes": [
     "Refer to section C.1.1 above."
@@ -120,7 +120,7 @@
    "value": 0.9,
    "unit": "m",
    "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
-   "page": null,
+   "page": 37,
    "zone": "R2",
    "also_quotes": [
     "Refer to section C.1.1 above."
@@ -137,7 +137,7 @@
    "value": 0.9,
    "unit": "m",
    "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
-   "page": null,
+   "page": 37,
    "zone": "R2",
    "also_quotes": [
     "Refer to section C.1.1 above."
@@ -154,7 +154,7 @@
    "value": 3,
    "unit": "m",
    "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
-   "page": null,
+   "page": 37,
    "zone": "R2",
    "also_quotes": [
     "Refer to section C.1.1 above."
@@ -171,7 +171,7 @@
    "value": 5.5,
    "unit": "m",
    "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
-   "page": null,
+   "page": 37,
    "zone": "R2",
    "also_quotes": [
     "Refer to section C.1.1 above."
@@ -188,7 +188,7 @@
    "value": 15,
    "unit": "m2",
    "section_ref": "C.2.2 Private open space",
-   "page": null,
+   "page": 40,
    "value_struct": {
     "min_depth_m": 3,
     "applies": "secondary dwellings visually screened from the principal dwelling"
@@ -202,7 +202,7 @@
    "value": 3,
    "unit": "m",
    "section_ref": "C.2.2 Private open space",
-   "page": null
+   "page": 40
   },
   {
    "id": "sd_area_m2",
@@ -212,7 +212,7 @@
    "value": 60,
    "unit": "m2",
    "section_ref": "C.2 Secondary dwellings (summarising GLEP cl 5.4)",
-   "page": null,
+   "page": 40,
    "value_struct": {
     "rule": "60 m2 or 25% of principal dwelling floor area, whichever is greater",
     "source_is_secondary_citation_of": "Gunnedah LEP 2012 cl 5.4 (LEP text not obtained)"
@@ -227,7 +227,7 @@
    "value": 25,
    "unit": "percent",
    "section_ref": "C.2 Secondary dwellings (summarising GLEP cl 5.4)",
-   "page": null,
+   "page": 40,
    "value_struct": {
     "rule": "60 m2 or 25% of principal dwelling floor area, whichever is greater"
    },
@@ -241,7 +241,7 @@
    "value": 2,
    "unit": "count",
    "section_ref": "B.1.2 Parking provision requirements, Table 1",
-   "page": null
+   "page": 16
   },
   {
    "id": "park_sd",
@@ -251,7 +251,7 @@
    "value": true,
    "unit": null,
    "section_ref": "B.1.2 Parking provision requirements, Table 1",
-   "page": null
+   "page": 16
   },
   {
    "id": "park_r2_behind",
@@ -261,7 +261,7 @@
    "value": true,
    "unit": null,
    "section_ref": "B.1.2 Parking provision requirements, Table 1",
-   "page": null,
+   "page": 16,
    "zone": "R2"
   },
   {
@@ -272,7 +272,7 @@
    "value": "Council standard access drawings + AS2890 series",
    "unit": null,
    "section_ref": "C.1.4 Internal driveway, access and parking",
-   "page": null
+   "page": 39
   },
   {
    "id": "acc_surf_urban",
@@ -282,7 +282,7 @@
    "value": "concrete, bitumen, interlocking pavers or asphalt",
    "unit": null,
    "section_ref": "C.1.4 Internal driveway, access and parking",
-   "page": null,
+   "page": 39,
    "zone": "R2"
   },
   {
@@ -293,7 +293,7 @@
    "value": "alternative material permitted; must enable all weather 2WD access and dust suppression",
    "unit": null,
    "section_ref": "C.1.4 Internal driveway, access and parking",
-   "page": null,
+   "page": 39,
    "zone": "RU1"
   },
   {
@@ -304,7 +304,7 @@
    "value": "not permitted unless lot has two road frontages",
    "unit": null,
    "section_ref": "C.1.4 Internal driveway, access and parking",
-   "page": null
+   "page": 39
   },
   {
    "id": "acc_rural_sight",
@@ -314,7 +314,7 @@
    "value": "safe intersection sight distance in both directions (safe stopping distance where not practical)",
    "unit": null,
    "section_ref": "D.1 Rural access",
-   "page": null,
+   "page": 45,
    "zone": "RU1"
   },
   {
@@ -325,7 +325,7 @@
    "value": 12.5,
    "unit": "m",
    "section_ref": "D.1 Rural access",
-   "page": null,
+   "page": 45,
    "zone": "RU1",
    "value_struct": {
     "use": "gate setback so design vehicle can wait clear of through traffic"
@@ -339,7 +339,7 @@
    "value": "GSC Engineering Design Minimum Standards",
    "unit": null,
    "section_ref": "D.1 Rural access",
-   "page": null,
+   "page": 45,
    "zone": "RU1"
   },
   {
@@ -350,7 +350,7 @@
    "value": 72,
    "unit": "m2",
    "section_ref": "C.4 Outbuildings, carports and detached garages, Table 5",
-   "page": null,
+   "page": 43,
    "zone": "R2",
    "value_struct": {
     "applies": "total floor area of all outbuildings (exempt-development structures excluded); lots <= 900 m2"
@@ -364,7 +364,7 @@
    "value": 4.8,
    "unit": "m",
    "section_ref": "C.4 Outbuildings, carports and detached garages, Table 5",
-   "page": null,
+   "page": 43,
    "zone": "R2"
   },
   {
@@ -375,7 +375,7 @@
    "value": 100,
    "unit": "m2",
    "section_ref": "C.4 Outbuildings, carports and detached garages, Table 5",
-   "page": null,
+   "page": 43,
    "zone": "R2",
    "value_struct": {
     "applies": "R2 lots with area > 900 m2"
@@ -389,7 +389,7 @@
    "value": 4.8,
    "unit": "m",
    "section_ref": "C.4 Outbuildings, carports and detached garages, Table 5",
-   "page": null,
+   "page": 43,
    "zone": "R2"
   },
   {
@@ -400,7 +400,7 @@
    "value": 50,
    "unit": "m2",
    "section_ref": "C.4 Outbuildings, carports and detached garages, control e",
-   "page": null
+   "page": 43
   },
   {
    "id": "r2_ob_front",
@@ -410,7 +410,7 @@
    "value": 5.5,
    "unit": "m",
    "section_ref": "C.4 Additional controls for the R2, R3 and RU5 zones, a",
-   "page": null,
+   "page": 43,
    "zone": "R2"
   },
   {
@@ -421,7 +421,7 @@
    "value": 5.5,
    "unit": "m",
    "section_ref": "C.4 Additional controls for the R2, R3 and RU5 zones, a",
-   "page": null,
+   "page": 43,
    "zone": "R2"
   },
   {
@@ -432,7 +432,7 @@
    "value": 1.5,
    "unit": "m",
    "section_ref": "C.4 Additional controls for the R2, R3 and RU5 zones, b",
-   "page": null,
+   "page": 43,
    "zone": "R2"
   },
   {
@@ -443,7 +443,7 @@
    "value": "two-thirds of the length of the adjacent property boundary (lots <= 1,000 m2)",
    "unit": null,
    "section_ref": "C.4 Additional controls for the R2, R3 and RU5 zones, d",
-   "page": null,
+   "page": 43,
    "zone": "R2"
   },
   {
@@ -454,7 +454,7 @@
    "value": true,
    "unit": null,
    "section_ref": "C.4 Outbuildings, carports and detached garages, control a",
-   "page": null
+   "page": 42
   },
   {
    "id": "ob_materials",
@@ -464,7 +464,7 @@
    "value": true,
    "unit": null,
    "section_ref": "C.4 control b (same external materials and matching roof profile if in front of the dwelling)",
-   "page": null,
+   "page": 42,
    "value_struct": {
     "lot_area_lt_m2": 4000
    }
@@ -477,7 +477,7 @@
    "value": 25,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
-   "page": null,
+   "page": 45,
    "zone": "RU1",
    "value_struct": {
     "road": "sealed",
@@ -494,7 +494,7 @@
    "value": 200,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
-   "page": null,
+   "page": 45,
    "zone": "RU1",
    "value_struct": {
     "road": "unsealed"
@@ -511,7 +511,7 @@
    "value": 25,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
-   "page": null,
+   "page": 45,
    "zone": "RU1",
    "value_struct": {
     "road": "sealed",
@@ -526,7 +526,7 @@
    "value": 10,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
-   "page": null,
+   "page": 45,
    "zone": "RU1"
   },
   {
@@ -537,7 +537,7 @@
    "value": 10,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
-   "page": null,
+   "page": 45,
    "zone": "RU1"
   },
   {
@@ -548,7 +548,7 @@
    "value": 25,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
-   "page": null,
+   "page": 45,
    "zone": "RU1",
    "value_struct": {
     "road": "sealed",
@@ -565,7 +565,7 @@
    "value": 200,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
-   "page": null,
+   "page": 45,
    "zone": "RU1",
    "value_struct": {
     "road": "unsealed"
@@ -582,7 +582,7 @@
    "value": 25,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
-   "page": null,
+   "page": 45,
    "zone": "RU1",
    "value_struct": {
     "road": "sealed",
@@ -597,7 +597,7 @@
    "value": 10,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
-   "page": null,
+   "page": 45,
    "zone": "RU1"
   },
   {
@@ -608,7 +608,7 @@
    "value": 10,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
-   "page": null,
+   "page": 45,
    "zone": "RU1"
   },
   {
@@ -619,7 +619,7 @@
    "value": 25,
    "unit": "m",
    "section_ref": "D.2 Table 6 (applied to secondary dwelling)",
-   "page": null,
+   "page": 45,
    "zone": "RU1",
    "confidence": 0.6,
    "confirm": "DCP D.2 Table 6 applies to 'Dwelling houses and ancillary structures'; whether it is intended to govern a secondary dwelling in RU1 should be confirmed with Council.",
@@ -635,7 +635,7 @@
    "value": 10,
    "unit": "m",
    "section_ref": "D.2 Table 6 (applied to secondary dwelling)",
-   "page": null,
+   "page": 45,
    "zone": "RU1",
    "confidence": 0.6,
    "confirm": "DCP D.2 Table 6 applies to 'Dwelling houses and ancillary structures'; whether it is intended to govern a secondary dwelling in RU1 should be confirmed with Council.",
@@ -651,7 +651,7 @@
    "value": 10,
    "unit": "m",
    "section_ref": "D.2 Table 6 (applied to secondary dwelling)",
-   "page": null,
+   "page": 45,
    "zone": "RU1",
    "confidence": 0.6,
    "confirm": "DCP D.2 Table 6 applies to 'Dwelling houses and ancillary structures'; whether it is intended to govern a secondary dwelling in RU1 should be confirmed with Council.",
@@ -667,7 +667,7 @@
    "value": 10,
    "unit": "m",
    "section_ref": "D.2 Dwellings & dual occupancy, control b",
-   "page": null,
+   "page": 45,
    "zone": "RU1"
   },
   {
@@ -678,7 +678,7 @@
    "value": 25,
    "unit": "m",
    "section_ref": "D.3 Farm buildings and outbuildings, control f",
-   "page": null,
+   "page": 46,
    "zone": "RU1",
    "value_struct": {
     "rule": "25 m from front boundary or behind the dwelling building line, whichever is greater"
@@ -692,7 +692,7 @@
    "value": 25,
    "unit": "m",
    "section_ref": "D.3 Farm buildings and outbuildings, control f",
-   "page": null,
+   "page": 46,
    "zone": "RU1",
    "value_struct": {
     "rule": "25 m from front boundary or behind the dwelling building line, whichever is greater"
@@ -706,7 +706,7 @@
    "value": 10,
    "unit": "m",
    "section_ref": "D.3 Farm buildings and outbuildings, control g",
-   "page": null,
+   "page": 46,
    "zone": "RU1"
   },
   {
@@ -717,7 +717,7 @@
    "value": 7,
    "unit": "m",
    "section_ref": "D.3 Farm buildings and outbuildings, control a",
-   "page": null,
+   "page": 46,
    "zone": "RU1",
    "value_struct": {
     "applies_when": "site area < 10 ha",
@@ -732,7 +732,7 @@
    "value": 3,
    "unit": "m",
    "section_ref": "D.3 Farm buildings and outbuildings, control d",
-   "page": null,
+   "page": 46,
    "zone": "RU1"
   },
   {
@@ -743,7 +743,7 @@
    "value": "via an existing legal access",
    "unit": null,
    "section_ref": "D.3 Farm buildings and outbuildings, control c",
-   "page": null,
+   "page": 46,
    "zone": "RU1"
   },
   {
@@ -754,7 +754,7 @@
    "value": 0.5,
    "unit": "m",
    "section_ref": "B.5 Flooding (introduction)",
-   "page": null
+   "page": 22
   },
   {
    "id": "fl_fpl_aep",
@@ -764,7 +764,7 @@
    "value": 1,
    "unit": "percent",
    "section_ref": "B.5 Flooding (introduction)",
-   "page": null
+   "page": 22
   },
   {
    "id": "fl_floor",
@@ -774,7 +774,7 @@
    "value": true,
    "unit": null,
    "section_ref": "B.5.2 Residential - new development, control b",
-   "page": null
+   "page": 24
   },
   {
    "id": "fl_access",
@@ -784,7 +784,7 @@
    "value": 0.5,
    "unit": "m",
    "section_ref": "B.5.2 Residential - new development, control c",
-   "page": null
+   "page": 24
   },
   {
    "id": "fl_garage",
@@ -794,7 +794,7 @@
    "value": true,
    "unit": null,
    "section_ref": "B.5.2 Residential - new development, control d",
-   "page": null
+   "page": 24
   },
   {
    "id": "fl_outb",
@@ -804,7 +804,7 @@
    "value": true,
    "unit": null,
    "section_ref": "B.5.4 Non habitable extensions or alterations, outbuildings and swimming pools, control a",
-   "page": null
+   "page": 24
   },
   {
    "id": "fl_outb_eq",
@@ -814,7 +814,7 @@
    "value": true,
    "unit": null,
    "section_ref": "B.5.4 Non habitable extensions or alterations, outbuildings and swimming pools, control c",
-   "page": null
+   "page": 24
   },
   {
    "id": "fl_ossm",
@@ -824,7 +824,7 @@
    "value": true,
    "unit": null,
    "section_ref": "B.5.1 General, control d",
-   "page": null
+   "page": 23
   },
   {
    "id": "slope",
@@ -834,7 +834,7 @@
    "value": 15,
    "unit": "percent",
    "section_ref": "B.3 Slope and land stability",
-   "page": null
+   "page": 21
   },
   {
    "id": "w_tank",
@@ -844,7 +844,7 @@
    "value": 60000,
    "unit": "L",
    "section_ref": "B.7 Utilities and services, control d",
-   "page": null,
+   "page": 26,
    "value_struct": {
     "applies": "where no potable water supply is available (e.g. unserviced rural lot)"
    }
@@ -857,7 +857,7 @@
    "value": true,
    "unit": null,
    "section_ref": "B.7 Utilities and services, control d",
-   "page": null
+   "page": 26
   },
   {
    "id": "w_strategy",
@@ -867,7 +867,7 @@
    "value": true,
    "unit": null,
    "section_ref": "B.7 Utilities and services, control a",
-   "page": null
+   "page": 26
   },
   {
    "id": "w_tankht",
@@ -877,7 +877,7 @@
    "value": 3.2,
    "unit": "m",
    "section_ref": "B.7 Utilities and services, control e",
-   "page": null
+   "page": 27
   },
   {
    "id": "w_tankloc",
@@ -887,7 +887,7 @@
    "value": true,
    "unit": null,
    "section_ref": "B.7 Utilities and services, control e",
-   "page": null
+   "page": 27
   },
   {
    "id": "sew_over",
@@ -897,7 +897,7 @@
    "value": "Council Building over Sewer Policy (policy document not obtained)",
    "unit": null,
    "section_ref": "B.7 Utilities and services, control c",
-   "page": null
+   "page": 26
   },
   {
    "id": "storm",
@@ -907,7 +907,7 @@
    "value": "GSC Engineering Design Minimum Standards",
    "unit": null,
    "section_ref": "C.5 Stormwater, control a",
-   "page": null
+   "page": 43
   },
   {
    "id": "e_wmin",
@@ -917,7 +917,7 @@
    "value": 3.0,
    "unit": "m",
    "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
-   "page": null,
+   "page": 44,
    "value_struct": {
     "allotment_type": "residential",
     "excludes": "layback splays"
@@ -931,7 +931,7 @@
    "value": 4.5,
    "unit": "m",
    "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
-   "page": null,
+   "page": 44,
    "value_struct": {
     "allotment_type": "residential",
     "excludes": "layback splays"
@@ -945,7 +945,7 @@
    "value": 6,
    "unit": "m",
    "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
-   "page": null,
+   "page": 44,
    "value_struct": {
     "allotment_type": "residential",
     "measured": "crossing to corner allotment boundary"
@@ -959,7 +959,7 @@
    "value": 2,
    "unit": "m",
    "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
-   "page": null
+   "page": 44
   },
   {
    "id": "e_bnd",
@@ -969,7 +969,7 @@
    "value": 0.5,
    "unit": "m",
    "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
-   "page": null
+   "page": 44
   },
   {
    "id": "e_max",
@@ -979,7 +979,7 @@
    "value": 2,
    "unit": "count",
    "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
-   "page": null,
+   "page": 44,
    "value_struct": {
     "note": "DCP C.1.4(d) says multiple access points are generally not permitted unless the lot has two road frontages"
    },
@@ -993,7 +993,7 @@
    "value": 450,
    "unit": "mm",
    "section_ref": "2.8.7 Vehicular crossings and accesses",
-   "page": null,
+   "page": 45,
    "value_struct": {
     "rural_residential_mm": 375
    }
@@ -1006,7 +1006,7 @@
    "value": 4.5,
    "unit": "m",
    "section_ref": "2.8.7 Vehicular crossings and accesses",
-   "page": null
+   "page": 45
   },
   {
    "id": "e_gate",
@@ -1016,7 +1016,7 @@
    "value": true,
    "unit": null,
    "section_ref": "2.8.7 Vehicular crossings and accesses",
-   "page": null
+   "page": 45
   },
   {
    "id": "e_wcov",
@@ -1026,7 +1026,7 @@
    "value": 0.5,
    "unit": "m",
    "section_ref": "4.7.7.4 Service connections - locations (water)",
-   "page": null,
+   "page": 119,
    "service": "water",
    "value_struct": {
     "location": "under carriageways",
@@ -1041,7 +1041,7 @@
    "value": 0.3,
    "unit": "m",
    "section_ref": "4.7.7.4 Service connections - locations (water)",
-   "page": null,
+   "page": 119,
    "service": "water"
   },
   {
@@ -1052,7 +1052,7 @@
    "value": 150,
    "unit": "mm",
    "section_ref": "5.5.10 Design criteria (sewer)",
-   "page": null,
+   "page": 130,
    "service": "sewer"
   },
   {
@@ -1063,7 +1063,7 @@
    "value": 0.3,
    "unit": "m",
    "section_ref": "5.5.10 Design criteria (sewer)",
-   "page": null,
+   "page": 130,
    "service": "sewer"
   },
   {
@@ -1074,7 +1074,7 @@
    "value": 60,
    "unit": "ratio (1 in N)",
    "section_ref": "5.5.10 Design criteria (sewer)",
-   "page": null,
+   "page": 130,
    "service": "sewer",
    "value_struct": {
     "equivalent_pct": "approx 1.67 (derived, not stated)"
@@ -1088,7 +1088,7 @@
    "value": 5,
    "unit": "percent",
    "section_ref": "3.10.4.2-3.10.4.3 On-site detention systems in small developments",
-   "page": null
+   "page": 96
   },
   {
    "id": "e_rwt_osd",
@@ -1098,7 +1098,7 @@
    "value": true,
    "unit": null,
    "section_ref": "3.10.4.2 On-site detention systems in small developments",
-   "page": null
+   "page": 96
   },
   {
    "id": "e_rwt_basix",
@@ -1108,7 +1108,7 @@
    "value": true,
    "unit": null,
    "section_ref": "3.10.4.2 On-site detention systems in small developments",
-   "page": null
+   "page": 96
   },
   {
    "id": "e_rwt_ug",
@@ -1118,7 +1118,7 @@
    "value": 1.0,
    "unit": "m",
    "section_ref": "3.11 Underground storage tanks",
-   "page": null
+   "page": 97
   },
   {
    "id": "n_sd_lot",
@@ -1128,7 +1128,7 @@
    "value": 450,
    "unit": "m2",
    "section_ref": "Secondary dwellings FAQ (SEPP (Housing) 2021 Sch 1)",
-   "page": null,
+   "page": 1,
    "value_struct": {
     "pathway": "complying development"
    }
@@ -1141,7 +1141,7 @@
    "value": "R1, R2, R3, R4, R5 (other zones only if the LEP permits)",
    "unit": null,
    "section_ref": "Secondary dwellings (SEPP (Housing) 2021)",
-   "page": null
+   "page": 1
   },
   {
    "id": "n_sd_sub",
@@ -1151,7 +1151,7 @@
    "value": true,
    "unit": null,
    "section_ref": "Secondary dwellings (SEPP (Housing) 2021)",
-   "page": null
+   "page": 1
   },
   {
    "id": "n_sd_park",
@@ -1161,7 +1161,7 @@
    "value": false,
    "unit": null,
    "section_ref": "Secondary dwellings FAQ (SEPP (Housing) 2021)",
-   "page": null
+   "page": 1
   },
   {
    "id": "n_sd_one",
@@ -1171,7 +1171,7 @@
    "value": "one principal dwelling and one secondary dwelling",
    "unit": null,
    "section_ref": "Secondary dwellings (SEPP (Housing) 2021)",
-   "page": null
+   "page": 1
   },
   {
    "id": "n_bf10",
@@ -1181,7 +1181,7 @@
    "value": 10,
    "unit": "m",
    "section_ref": "Bushfires: 10/50 vegetation clearing entitlement",
-   "page": null,
+   "page": 1,
    "value_struct": {
     "pointer": "Planning for Bush Fire Protection 2019 (not obtained) governs BAL/APZ"
    }
@@ -1194,7 +1194,7 @@
    "value": 50,
    "unit": "m",
    "section_ref": "Bushfires: 10/50 vegetation clearing entitlement",
-   "page": null
+   "page": 1
   },
   {
    "id": "x_rwt_cap",
@@ -1204,7 +1204,7 @@
    "value": 10000,
    "unit": "L",
    "section_ref": "Rainwater tanks (above ground): exempt development, Codes SEPP cl 2.63 (via fact sheet)",
-   "page": null,
+   "page": 2,
    "zone": "R2",
    "also_quotes": [
     "R5, E2, E3 or E4."
@@ -1223,7 +1223,7 @@
    "value": 10,
    "unit": "m",
    "section_ref": "Rainwater tanks (above ground): exempt development, Codes SEPP cl 2.63 (via fact sheet)",
-   "page": null,
+   "page": 2,
    "zone": "RU1",
    "also_quotes": [
     "If the development is on land zoned RU1, RU2, RU3, RU4, RU6, R5, E2, E3 or E4, it must be at"
@@ -1237,7 +1237,7 @@
    "value": 0.45,
    "unit": "m",
    "section_ref": "Rainwater tanks (above ground): exempt development (via fact sheet)",
-   "page": null,
+   "page": 2,
    "also_quotes": [
     "if the tank is more than 1.8"
    ],
@@ -1253,7 +1253,7 @@
    "value": 50,
    "unit": "m2",
    "section_ref": "Carports as exempt development: maximum size (via fact sheet; Codes SEPP)",
-   "page": null,
+   "page": 2,
    "zone": "RU1",
    "also_quotes": [
     "zones and residential Zone R5"
@@ -1267,7 +1267,7 @@
    "value": 25,
    "unit": "m2",
    "section_ref": "Carports as exempt development: maximum size (via fact sheet; Codes SEPP)",
-   "page": null,
+   "page": 2,
    "zone": "R2"
   },
   {
@@ -1278,7 +1278,7 @@
    "value": 3,
    "unit": "m",
    "section_ref": "Carports as exempt development (via fact sheet; Codes SEPP)",
-   "page": null
+   "page": 2
   },
   {
    "id": "x_cp_set_rural",
@@ -1288,7 +1288,7 @@
    "value": 5,
    "unit": "m",
    "section_ref": "Carports as exempt development: location (via fact sheet; Codes SEPP)",
-   "page": null,
+   "page": 2,
    "zone": "RU1",
    "also_quotes": [
     "RU1, RU2, RU3, RU4, RU6, R5"
@@ -1302,7 +1302,7 @@
    "value": 0.9,
    "unit": "m",
    "section_ref": "Carports as exempt development: location (via fact sheet; Codes SEPP)",
-   "page": null,
+   "page": 2,
    "zone": "R2"
   },
   {
@@ -1313,7 +1313,7 @@
    "value": 1,
    "unit": "m",
    "section_ref": "Carports as exempt development: location (via fact sheet; Codes SEPP)",
-   "page": null
+   "page": 2
   },
   {
    "id": "x_cp_bf",
@@ -1323,7 +1323,7 @@
    "value": 5,
    "unit": "m",
    "section_ref": "Carports as exempt development: other standards (via fact sheet)",
-   "page": null,
+   "page": 3,
    "also_quotes": [
     "On bushfire-prone land, carports must be"
    ]
@@ -1336,7 +1336,7 @@
    "value": true,
    "unit": null,
    "section_ref": "BASIX overview",
-   "page": null,
+   "page": 1,
    "also_quotes": [
     "If you're building a new home"
    ]
@@ -1349,7 +1349,7 @@
    "value": 50000,
    "unit": "AUD",
    "section_ref": "BASIX overview",
-   "page": null
+   "page": 1
   },
   {
    "id": "b_pool",
@@ -1359,7 +1359,7 @@
    "value": 40000,
    "unit": "L",
    "section_ref": "BASIX overview",
-   "page": null
+   "page": 1
   },
   {
    "id": "b_w40",
@@ -1369,7 +1369,7 @@
    "value": 40,
    "unit": "percent",
    "section_ref": "BASIX Water section",
-   "page": null,
+   "page": 1,
    "value_struct": {
     "note": "percentages range 0%-40% by climate zone (Water Use Maps in SEPP (Sustainable Buildings) 2022 not obtained); Gunnedah-specific % unresolved"
    },
@@ -1384,7 +1384,7 @@
    "value": 90340,
    "unit": "L",
    "section_ref": "BASIX Water section",
-   "page": null
+   "page": 1
   }
  ]
 }
