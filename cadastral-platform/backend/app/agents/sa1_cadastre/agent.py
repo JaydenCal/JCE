@@ -122,14 +122,47 @@ class Sa1Cadastre:
         if not zones:
             flags.append("no_zoning_data")
         overlays = fetch_overlays(zcfg, self.client, lot_gda, snaps)
+        neighbours = self._neighbours(layer, lot_gda, mga, srid, snaps, f, jur)
         lot = LotContext(lot_id=uuid5(NAMESPACE_URL, f"sa1:{jur}:{ident.lotplan}"), jurisdiction=jur,
                          lotplan=ident.lotplan, lga_name=str(props.get(f.get("lga")) or ""), mga_srid=srid,
                          area_m2_calculated=calc, area_m2_registered=reg, boundary_wkt=mga.wkt, segments=segs,
-                         road_names=names, zone_code=zones[0].zone_code if zones else None)
+                         road_names=names, zone_code=zones[0].zone_code if zones else None, neighbours=neighbours)
         return Sa1Result(lot=lot, identifier=ident, segment_details=det, zones=zones, overlays=overlays,
                          multi_zone=len(zones) > 1, is_residential=zones[0].is_residential if zones else None,
                          area_mismatch=mism, flags=flags, snapshots=snaps, boundary_wkt_gda2020=as_multi(lot_gda).wkt,
                          attributes={"locality": props.get(f.get("locality"))})
+
+    def _neighbours(self, layer, lot_gda, mga, srid, snaps, f, jur) -> list:
+        """Adjoining parcels (lot layer, 30 m buffer). Best-effort: a failed query yields [] and never fails SA1."""
+        from app.common.contracts import NeighbourLot
+        try:
+            minx, miny, maxx, maxy = lot_gda.buffer(0.0003).bounds
+            r = self.client.query(layer, geometry={"xmin": minx, "ymin": miny, "xmax": maxx, "ymax": maxy,
+                                                   "spatialReference": {"wkid": 7844}}, geometry_type="esriGeometryEnvelope")
+            snaps.append(r.snapshot)
+        except Exception:  # noqa: BLE001
+            return []
+        out, own = [], mga.buffer(0.01)
+        for ft in r.features:
+            try:
+                g = to_mga(parse_polygonal(ft.get("geometry")), srid)
+            except Exception:  # noqa: BLE001
+                continue
+            if g.is_empty or g.buffer(0.05).intersection(own).area > 0.5 * min(g.area, own.area) or not g.buffer(0.5).intersects(mga):
+                continue            # the lot itself / not adjoining
+            p = ft.get("properties") or {}
+            key = p.get(f.get("lotidstring" if jur == "NSW" else "lotplan"))
+            lot_no, plan = p.get(f.get("lot")), p.get(f.get("plan"))
+            road = not (key or lot_no)
+            if road:
+                label = "ROAD RESERVE"
+            elif jur == "NSW":
+                sec = p.get(f.get("section"))
+                label = f"LOT {lot_no}" + (f" SEC {sec}" if sec not in (None, "", "-") else "") + (f" {plan}" if plan else "")
+            else:
+                label = f"LOT {lot_no} {plan}" if plan else str(key)
+            out.append(NeighbourLot(label=label.strip(), wkt=as_multi(g).wkt, is_road=road))
+        return out
 
     @staticmethod
     def _ident_from_props(jur, props, f) -> LotIdentifier:

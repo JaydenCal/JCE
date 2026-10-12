@@ -126,6 +126,13 @@ class BoundarySegment(Model):
     end_xy: tuple[float, float]
 
 
+class NeighbourLot(Model):
+    """Adjoining parcel (SA1): display label (e.g. 'LOT 1 DP123456') and polygon WKT in the lot's MGA CRS. Not a survey."""
+    label: str
+    wkt: str
+    is_road: bool = False
+
+
 class LotContext(Model):
     """lot_context.v1 (SA1 output). Geometry as WKT in MGA metres for portability."""
     lot_id: UUID
@@ -140,6 +147,7 @@ class LotContext(Model):
     road_names: list[str] = []
     zone_code: str | None = None
     envelope_wkt: str | None = None
+    neighbours: list[NeighbourLot] = []      # adjoining parcels incl. road reserves (SA1 lot layer buffer query); default empty
 
 
 class PlanUpload(Model):

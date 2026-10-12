@@ -341,7 +341,11 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     sa2 = None
     if getattr(args, "rules_json", None):
         try:
-            sa2 = _user_rules_sa2(json.loads(Path(args.rules_json).read_text()), params.get("zone_code") or lot.zone_code, dev.rule_dwelling_type)
+            raw_rules = json.loads(Path(args.rules_json).read_text())
+            if profile is not None:      # rules may be typed in the profile's units (ft, in, ...)
+                from app.jurisdiction.adapter import normalize_sa2_rules
+                raw_rules = normalize_sa2_rules(raw_rules, profile)
+            sa2 = _user_rules_sa2(raw_rules, params.get("zone_code") or lot.zone_code, dev.rule_dwelling_type)
             R["SA2"] = sa2
             ctx.upstream["SA2"] = _json(sa2)
             rep.add("SA2 DCP rules", UNRESOLVED if sa2.setback_ruleset.unresolved else OK,
