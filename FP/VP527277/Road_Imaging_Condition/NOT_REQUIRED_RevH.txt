@@ -1,0 +1,5 @@
+VP527277 / MRC-2645 - Road imaging RFQs: NOT REQUIRED FOR THE BID (Rev H, 12/10/2026)
+
+From Rev H, JCE delivers the vehicle-mounted road imaging and road condition rating in-house (Jayden's decision, 12/10/2026). The road imaging partner provisional sum has been removed from the price.
+
+The Rev C RFQs and Emails_RevC.txt in this folder are kept on file as a contingency only. Send them only if Jayden wants a fallback price (for example, to check JCE's in-house cost or to line up a firm to call in if the capture rig fails). They are not part of the bid. The Rev B files are superseded.
