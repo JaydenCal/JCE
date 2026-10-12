@@ -1,8 +1,23 @@
 # Submission checklist: VP527469 / WWCC RFT CT2027005 Gregadoo WMC CQA Engineer
 
-Prepared 12/10/2026 (FINAL Rev F). Nothing has been lodged, sent or uploaded. Lodging is Jayden's action.
+Prepared 12/10/2026 (FINAL Rev F, updated to **Rev G** the same day). Lodge the Rev G files; Rev F is kept for reference. Nothing has been lodged, sent or uploaded. Lodging is Jayden's action.
 
 **Closes: Friday 30/10/2026, 2:00 pm AEDT** on VendorPanel. Late tenders are excluded (Part A 5.4). Aim to lodge by Thursday 29/10/2026.
+
+## 0. Rev G changes (12/10/2026)
+
+- New council experience from Jayden: (A) Leachate storage facility, Tablelands Regional Council (QLD), placed first in FP Section 8, Form 3, Form 7 and Form 10 Contract 1; (B) Floodway rectification, Tablelands Regional Council (QLD), second. Referee Darren Quilliam, Tablelands Regional Council ("contact details available on request" in the FP).
+- Cover letter and risk table corrected: JCE has not been CQA Engineer on a landfill cell liner, but has delivered engineering for a council landfill leachate storage facility. Not overstated as CQA.
+- Drone capability added (Jayden-approved Glide Inside paragraph, drone experience sentence, farm drainage example for Craig Sullivan). Used for CQA: orthophoto, 3D layer surface and high-resolution progress and defect imagery at each JCE site visit, processed in ReCap Pro and compared with design surfaces in Civil 3D; new deliverable row; exclusion notes drone surfaces are CQA records, not survey. No LiDAR wording. Price unchanged (captured during JCE's 22 site days).
+- B2 Rev G: revision label and item 1.1 note only; totals unchanged ($696,814.80 ex GST / $766,496.28 inc GST). B2 asks for no projects or referees.
+- Files: JCE_FP_VP527469_Final_RevG.docx/.pdf, Part_B1_..._JCE_FILLED_RevG.docx/.pdf, Part_B1_..._answers_RevG.md, Part_B2-..._JCE_FILLED_RevG.xlsx. FP_Final_text.md now holds the Rev G text.
+
+### Rev G [TBC - Jayden] items
+- Leachate storage facility (A): site, year, value, JCE's role and scope, RPEQ sign-off arrangement. Confirm whether it included any liner or CQA element (if so, the FP can say more). Confirm it is one of JCE's three most recent contracts for Form 10, or swap it out.
+- Floodway rectification (B): site, year, value, JCE's role and scope, RPEQ sign-off arrangement.
+- Darren Quilliam: consent to be named as a referee, his title, phone and email (Form 3 and Form 10 fields left [TBC - Jayden]).
+- Farm drainage (Craig Sullivan): location, year, approx. area. Get Craig Sullivan's consent to be named as a referee and his phone/email.
+- Drone: CASA operator accreditation in place before services start; check site airspace (Wagga Wagga Airport / RAAF Base Wagga lies north of the city; confirm Gregadoo is outside 5.5 km of the controlled aerodrome and other restrictions using a CASA-verified drone safety app) and Council landfill operations approval to fly. If an orthophoto is produced in DJI Terra instead of ReCap Pro, confirm DJI Terra licence.
 
 ## 1. What changed in Rev F
 
@@ -32,9 +47,9 @@ Draft Rev A was $610,823 ex GST but excluded full-time presence outside the lini
 
 | # | File | Where it is |
 |---|---|---|
-| 1 | JCE_FP_VP527469_Final_RevF.pdf (sign first; or paste FP_Final_text.md into the branded template and export) | Repo FP/VP527469/Final/ (text also in Dropbox 02_Submission/FINAL_2026-10-12_FP_Final_text.md) |
-| 2 | Part_B1_Tender_Return_Forms_CT2027005_JCE_FILLED.docx (or Council's original filled from Part_B1_..._answers.md), signed and witnessed, as PDF and Word | Repo FP/VP527469/Final/ (original form: Dropbox 00_Tender_Docs; part-filled copy: 02_Submission) |
-| 3 | Part_B2-Returnable_Schedules-CQA_Engineer_JCE_FILLED.xlsx (Excel format is mandatory) | Repo FP/VP527469/Final/ |
+| 1 | JCE_FP_VP527469_Final_RevG.pdf (sign first; or paste FP_Final_text.md into the branded template and export) | Repo FP/VP527469/Final/ (Rev G text also in Dropbox 02_Submission/FINAL_2026-10-12_RevG_FP_Final_text.md) |
+| 2 | Part_B1_Tender_Return_Forms_CT2027005_JCE_FILLED_RevG.docx (or Council's original filled from Part_B1_..._answers_RevG.md), signed and witnessed, as PDF and Word | Repo FP/VP527469/Final/ (original form: Dropbox 00_Tender_Docs; part-filled copy: 02_Submission) |
+| 3 | Part_B2-Returnable_Schedules-CQA_Engineer_JCE_FILLED_RevG.xlsx (Excel format is mandatory) | Repo FP/VP527469/Final/ |
 | 4 | Jayden_Callen_Detailed_CV_2026-09.pdf | Dropbox 02_Submission/Returnables |
 | 5 | JCE_Certificate_of_Currency_PI-PL_to_02-07-2027.pdf | Dropbox 02_Submission/Returnables |
 | 6 | JCE_WHS_Management_System_2026-06-22.pdf (Form 4 and Form 10) plus WHS-POL-001, PLN-001, SWMS-001, PRO-005, PRO-006, PRO-009, POL-004, POL-005 | Dropbox 02_Submission/Returnables |
@@ -101,16 +116,16 @@ Portal cut-off is Mon 26/10/2026 2:00 pm, but Part A 1.7 closes questions 5 days
 
 ## 8. Evaluator pass (strict council panel; no weightings published, equal weights assumed)
 
-| Criterion | Draft Rev A | Final Rev F (as built) | After partner details inserted |
-|---|---|---|---|
-| Price (transparency, exclusions) | 5 | 6 | 6 |
-| Relevant experience and past performance | 2 | 3 | 6 |
-| Methodology and understanding | 5 | 7 | 7 |
-| Personnel and resources | 3 | 4 | 6 |
-| Regional preference | 2 | 3 | 4 to 5 |
-| **Average** | **3.4** | **4.6** | **5.8 to 6.0** |
+| Criterion | Draft Rev A | Rev F | Rev G (as built) | Rev G after partner details inserted |
+|---|---|---|---|---|
+| Price (transparency, exclusions) | 5 | 6 | 6 | 6 |
+| Relevant experience and past performance | 2 | 3 | 4 | 7 |
+| Methodology and understanding | 5 | 7 | 7 | 7 |
+| Personnel and resources | 3 | 4 | 5 | 6 |
+| Regional preference | 2 | 3 | 3 | 4 to 5 |
+| **Average** | **3.4** | **4.6** | **5.0** | **6.0 to 6.2** |
 
-Five changes most likely to raise the score: (1) name the partner with its landfill CQA projects and referees [Jayden]; (2) conform to Part D 1.13 by pricing full-time presence (done, PS1/PS2); (3) show who does what and how hold points are released from 630 km away (done, Section 2 and 4); (4) program and risk treatment (done, Gantt and risk table); (5) transparent pricing by team member hours with separate provisional sums (done, B2). Main residual weakness: no JCE landfill record and price above what a single Wagga firm acting alone would likely charge.
+Rev G raises experience by one point: a council landfill leachate storage facility with a council referee, and a second council project (floodway), but still no landfill cell CQA by JCE and no details (year, value, scope) yet. Personnel and resources up one for the drone capability and the aerial CQA records. Five changes most likely to raise the score: (1) name the partner with its landfill CQA projects and referees [Jayden]; (2) add year, value and scope for the leachate storage facility and Darren Quilliam's contact details [Jayden]; (3) Part D 1.13 priced (done); (4) roles, hold point protocol, program and risk treatment (done); (5) transparent pricing with separate provisional sums (done). Main residual weakness: no JCE landfill cell CQA record and price above what a single Wagga firm would likely charge.
 
 ## 9. Blocking lodgement
 

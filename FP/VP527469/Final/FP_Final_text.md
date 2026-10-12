@@ -21,7 +21,7 @@ JCE Infrastructure Pty Ltd (JCE) offers to act as CQA Engineer for General Waste
 
 Our team is built around a Wagga Wagga based geotechnical partner, [Riverina CQA partner, TBC - Jayden from RFQ], which supplies experienced CQA technicians on site during all working hours of the works (Part D 1.13), a NATA-accredited soils laboratory in Wagga Wagga and a senior engineer with landfill liner and cap CQA experience. JCE is the contracting party and the CQA Engineer of record. Jayden Callen, Director, leads the commission personally: he reviews every daily record, hold point package and test result, attends site at the critical hold points, and signs the as-constructed CQA report for each cell, co-signed by the partner's senior landfill CQA engineer.
 
-We state openly that JCE has not previously acted as CQA Engineer on a landfill cell liner. JCE's landfill experience is engineering for a landfill leachate storage facility for Tablelands Regional Council (QLD), and the landfill CQA record in this team is the partner's, set out in Section 8 and Form 3. Jayden brings council client experience,  site quality assurance and earthworks inspection experience on Defence and civil projects, the management of specialist sub-consultants to one program, and a single point of accountability to Council for hold point releases against the 30/09/2027 deadline for Cell 3.1.
+We state openly that JCE has not previously acted as CQA Engineer on a landfill cell liner. JCE's landfill experience is engineering for a landfill leachate storage facility for Tablelands Regional Council (QLD), and the landfill CQA record in this team is the partner's, set out in Section 8 and Form 3. Jayden brings council client experience, site quality assurance and earthworks inspection experience on Defence and civil projects, the management of specialist sub-consultants to one program, and a single point of accountability to Council for hold point releases against the 30/09/2027 deadline for Cell 3.1.
 
 The price is $696,815 excluding GST ($766,496 including GST). It comprises JCE's lump sum of $218,865 and provisional sums of $477,950 for the partner's resident technicians, the NATA testing, the liner integrity surveys and the check survey. Travel, accommodation and all other costs are included, as Annexure Item 9 requires.
 
@@ -127,7 +127,7 @@ The program follows the Contractor's approved construction program, which Counci
 | Resident CQA technicians | [Names], [Riverina CQA partner, TBC - Jayden from RFQ] | [Landfill liner and earthworks CQA experience, Level 1 earthworks experience, NATA field testing. TBC from RFQ] |
 | Specialist testing and survey | [Geosynthetics laboratory; leak location specialist; Wagga Wagga surveyor] | [NATA scopes and project lists TBC from RFQ] |
 
-**Jayden Callen.** Jayden Callen leads every JCE commission personally. Experience relevant to this role, as recorded in his CV:
+**Jayden Callen.** Jayden Callen leads every JCE commission personally. Experience relevant to this role:
 
 - Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility.
 - Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network.
