@@ -20,6 +20,7 @@ class RoadConfig:
     name_field: str = "roadname"
     name_fields: tuple = ()  # if set, non-empty values are joined with spaces (overrides name_field)
     tolerance_m: float = 15.0
+    fallback_tolerance_m: float | None = None  # retried only when no front found at tolerance_m (rural: centreline ~18-19 m from boundary, verified 2026-10-12)
 
 
 @dataclass
@@ -28,7 +29,7 @@ class Sa1Config:
     zoning: dict = field(default_factory=lambda: {"NSW": ZoningConfig(layer=C.nsw_zoning_layer()), "QLD": ZoningConfig()})
     geocoders: dict = field(default_factory=lambda: {"NSW": C.NSW_GEOCODER, "QLD": None})
     # jurisdiction -> RoadConfig. NSW default: RoadSegment centrelines (verified live 2026-10-12, see clients.NSW_ROADS_LAYER)
-    roads: dict = field(default_factory=lambda: {"NSW": RoadConfig(layer=C.nsw_roads_layer(), name_fields=C.NSW_ROAD_NAME_FIELDS)})
+    roads: dict = field(default_factory=lambda: {"NSW": RoadConfig(layer=C.nsw_roads_layer(), name_fields=C.NSW_ROAD_NAME_FIELDS, fallback_tolerance_m=25.0)})
 
 
 class Sa1Cadastre:
@@ -45,7 +46,7 @@ class Sa1Cadastre:
     def _roads(self, jur, lot_gda, snaps):
         rc = self.cfg.roads.get(jur)
         if not rc:
-            return [], 15.0
+            return [], 15.0, None
         if rc.geojson_path:
             import json
             feats = json.load(open(rc.geojson_path)).get("features", [])
@@ -61,7 +62,7 @@ class Sa1Cadastre:
                 pr = f.get("properties") or {}
                 nm = " ".join(str(pr[k]) for k in rc.name_fields if pr.get(k)) if rc.name_fields else str(pr.get(rc.name_field) or "")
                 out.append((nm.title(), shape(f["geometry"])))
-        return out, rc.tolerance_m
+        return out, rc.tolerance_m, rc.fallback_tolerance_m
 
     def run(self, payload: Sa1Request) -> Sa1Result:
         jur = payload.jurisdiction
@@ -96,9 +97,13 @@ class Sa1Cadastre:
         lon = lot_gda.centroid.x
         srid = mga_srid_for_lon(lon)
         mga = as_multi(to_mga(lot_gda, srid))
-        roads_gda, tol = self._roads(jur, lot_gda, snaps)
+        roads_gda, tol, tol2 = self._roads(jur, lot_gda, snaps)
         roads = [(n, to_mga(g, srid)) for n, g in roads_gda]
         segs, det, names = compute_segments(mga, roads, tol)
+        if roads and tol2 and not any(x.is_front for x in segs):
+            segs, det, names = compute_segments(mga, roads, tol2)
+            if any(x.is_front for x in segs):
+                flags.append(f"road_tolerance_widened_to_{tol2:g}m")
         if not roads:
             flags.append("no_road_data_front_unknown")
         elif not any(s.is_front for s in segs):

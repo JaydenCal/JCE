@@ -1,0 +1,359 @@
+{
+ "_meta": {
+  "host": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services",
+  "date_verified": "2026-10-12",
+  "method": "Each layer's metadata (fields, geometry type) read live and a statewide count query returned >0 features; a point query over Lot 3 DP263990 Gunnedah returned valid JSON.",
+  "not_found": {
+   "nsw_contamination": "no public layer on the reachable hosts (EPA contaminated land record is not an ArcGIS layer there)",
+   "nsw_transport_corridor": "only Sydney interim rail corridor maps (SEPP Transport and Infrastructure layers 3-7); no statewide road/rail corridor layer found",
+   "nsw_coastal_management_other": "Coastal Environment/Use areas exist (SEPP R&H layers 6,7) but one endpoint per key"
+  },
+  "not_reachable": "maps.six.nsw.gov.au services directory returned non-JSON for /arcgis/rest/services; portal.spatial.nsw.gov.au /server/rest/services lists only base/admin/hosted data (Hosted/NSW_BushFire_Prone_Land FeatureServer duplicates Fire/BFPL); spatial.industry.nsw.gov.au has Crown Land/Minerals/Fisheries only",
+  "extra_verified_alternates": {
+   "flood_planning_map": "ePlanning/Planning_Portal_Hazard/MapServer/230 (629)",
+   "bushfire_planning_portal": "ePlanning/Planning_Portal_Hazard/MapServer/229",
+   "obstacle_limitation_surface": "Planning/Protection/MapServer/6",
+   "coastal_environment_area": "Planning/SEPP_Resilience_and_Hazards_2021/MapServer/6",
+   "landslide": "Planning/Hazard/MapServer/2",
+   "zoning": "Planning/EPI_Primary_Planning_Layers/MapServer/2"
+  }
+ },
+ "layers": {
+  "nsw_flood": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/Hazard/MapServer/1",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/Hazard",
+   "layer_id": 1,
+   "layer_name": "Flood Planning",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "LAY_CLASS",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 629,
+   "notes": "LEP flood planning maps only (629 polygons statewide); council flood studies are NOT covered, so not_affected is not flood-free"
+  },
+  "nsw_bushfire": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Fire/BFPL/MapServer/0",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Fire/BFPL",
+   "layer_id": 0,
+   "layer_name": "NSW Bush Fire Prone Lands",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "Category",
+    "d_Category"
+   ],
+   "currency_fields": [
+    "LastUpdate",
+    "VerDate"
+   ],
+   "where": null,
+   "copyright": "The NSW BFPL Map is collated and merged together from individual NSW local council maps which are submitted by the local council for certification. The maps are often a product of or derived from local and state vegetation mapping with input from Local Council and RFS staff. In some cases the maps are produced under contract for local council by various companies. Please refer to the individual metadata statements for each LGA BFPL Map. (text from ePlanning/Planning_Portal_Hazard layer 229, same dataset)",
+   "feature_count_statewide": 229946,
+   "notes": "RFS Bush Fire Prone Land; Category 1/2/3 vegetation, buffer"
+  },
+  "nsw_heritage_item": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/0",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/EPI_Primary_Planning_Layers",
+   "layer_id": 0,
+   "layer_name": "Heritage",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "H_NAME",
+    "SIG",
+    "LAY_CLASS",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": "LAY_CLASS NOT LIKE 'Conservation Area%' AND LAY_CLASS <> 'Heritage Conservation Area'",
+   "copyright": null,
+   "feature_count_statewide": 39217,
+   "notes": "LEP heritage polygons (items); state/local"
+  },
+  "nsw_heritage_conservation": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/0",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/EPI_Primary_Planning_Layers",
+   "layer_id": 0,
+   "layer_name": "Heritage",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "H_NAME",
+    "LAY_CLASS",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": "LAY_CLASS LIKE 'Conservation Area%' OR LAY_CLASS = 'Heritage Conservation Area'",
+   "copyright": null,
+   "feature_count_statewide": 1123,
+   "notes": "same layer, conservation-area classes"
+  },
+  "nsw_acid_sulfate": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/Protection/MapServer/1",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/Protection",
+   "layer_id": 1,
+   "layer_name": "Acid Sulfate Soils",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "LAY_CLASS",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 9089,
+   "notes": "LEP ASS class maps"
+  },
+  "nsw_biodiversity": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/BiodiversityValuesMap/MapServer/1",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "ePlanning/BiodiversityValuesMap",
+   "layer_id": 1,
+   "layer_name": "Biodiversity Values",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "BV_Category",
+    "Criteria"
+   ],
+   "currency_fields": [
+    "VerDate",
+    "Date_Added"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 600625,
+   "notes": "Biodiversity Values Map (BC Act)"
+  },
+  "nsw_coastal": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/SEPP_Resilience_and_Hazards_2021/MapServer/3",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/SEPP_Resilience_and_Hazards_2021",
+   "layer_id": 3,
+   "layer_name": "Coastal Wetlands",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "LABEL",
+    "MAP_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 7795,
+   "notes": "Coastal Wetlands only; Coastal Environment (layer 6) and Coastal Use (layer 7) areas not queried"
+  },
+  "nsw_riparian": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/Protection/MapServer/7",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/Protection",
+   "layer_id": 7,
+   "layer_name": "Riparian Lands and Watercourses",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "LAY_NAME",
+    "LAY_CLASS",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 95500,
+   "notes": "LEP riparian lands/watercourses maps"
+  },
+  "nsw_land_reservation": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/3",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/EPI_Primary_Planning_Layers",
+   "layer_id": 3,
+   "layer_name": "Land Reservation Acquisition",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "AUTHORITY",
+    "LRA_TYPE",
+    "LAY_CLASS",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 5462,
+   "notes": "LEP Land Reservation Acquisition"
+  },
+  "nsw_airport": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/Protection/MapServer/2",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/Protection",
+   "layer_id": 2,
+   "layer_name": "Airport Noise",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "ANEF_CODE",
+    "LAY_NAME",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 29,
+   "notes": "LEP airport noise (29 polygons); Obstacle Limitation Surface is Planning/Protection layer 6, not wired"
+  },
+  "nsw_mine_subsidence": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/ePlanning/Planning_Portal_Subsidence_Advisory/MapServer/248",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "ePlanning/Planning_Portal_Subsidence_Advisory",
+   "layer_id": 248,
+   "layer_name": "Mine Subsidence District",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "DISTRICTNAME"
+   ],
+   "currency_fields": [
+    "LASTUPDATE",
+    "MODIFIEDDATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 30,
+   "notes": "Subsidence Advisory NSW districts"
+  },
+  "nsw_sepp_area": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/SEPP_Resilience_and_Hazards_2021/MapServer/1",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/SEPP_Resilience_and_Hazards_2021",
+   "layer_id": 1,
+   "layer_name": "Land Application Map",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "EPI_NAME",
+    "LAY_CLASS"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 14889,
+   "notes": "Only the Resilience and Hazards SEPP land application map; other SEPP services not combined"
+  },
+  "nsw_urban_release": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/Development_Control/MapServer/7",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/Development_Control",
+   "layer_id": 7,
+   "layer_name": "Urban Release Area",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "LABEL",
+    "LAY_CLASS",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 570,
+   "notes": "LEP Urban Release Area"
+  },
+  "nsw_lot_size_map": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/4",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/EPI_Primary_Planning_Layers",
+   "layer_id": 4,
+   "layer_name": "Lot Size",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "LOT_SIZE",
+    "UNITS",
+    "LAY_CLASS",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 42648,
+   "notes": "verified earlier by caller"
+  },
+  "nsw_height_map": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/5",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/EPI_Primary_Planning_Layers",
+   "layer_id": 5,
+   "layer_name": "Height of Building",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "MAX_B_H",
+    "MAX_B_H_M",
+    "UNITS",
+    "LAY_CLASS",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 41532,
+   "notes": ""
+  },
+  "nsw_fsr_map": {
+   "endpoint": "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/1",
+   "verified": true,
+   "date_verified": "2026-10-12",
+   "service": "Planning/EPI_Primary_Planning_Layers",
+   "layer_id": 1,
+   "layer_name": "Floor Space Ratio",
+   "geometry_type": "esriGeometryPolygon",
+   "key_fields": [
+    "FSR",
+    "LAY_CLASS",
+    "EPI_NAME"
+   ],
+   "currency_fields": [
+    "CURRENCY_DATE"
+   ],
+   "where": null,
+   "copyright": null,
+   "feature_count_statewide": 40432,
+   "notes": ""
+  }
+ }
+}

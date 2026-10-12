@@ -1,0 +1,115 @@
+{
+ "facts": {
+  "development_type": "dwelling_house",
+  "started": "2026-10-12T16:40:10+00:00",
+  "args": {
+   "check_network": false,
+   "lga": null,
+   "address": null,
+   "lotplan": "2//DP227508",
+   "random_vacant": false,
+   "centre": null,
+   "radius_m": 1500.0,
+   "min_area": 300.0,
+   "max_area": 2500.0,
+   "seed": null,
+   "buildings_url": null,
+   "development_type": "dwelling_house",
+   "zone_code": null,
+   "params_json": null,
+   "sa9_endpoints": null,
+   "acknowledge": false,
+   "scale": 200,
+   "base_rl": 0.0,
+   "title": null,
+   "out": "../test-runs/layer_check/lot2_dp227508"
+  },
+  "lotplan": "2//DP227508",
+  "lga": "",
+  "zone": "R2",
+  "area_m2": 955.827,
+  "area_registered": null,
+  "flags": [
+   "no_road_data_front_unknown",
+   "multi_zone"
+  ],
+  "snapshots": [
+   "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+   "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2"
+  ],
+  "sa2_unresolved": [
+   "front",
+   "side",
+   "rear",
+   "garage_front",
+   "site_cover_max"
+  ],
+  "sa9_not_checked": 2,
+  "sa9_unresolved_rules": [
+   "bushfire.habitable",
+   "generic",
+   "generic",
+   "generic"
+  ]
+ },
+ "steps": [
+  {
+   "name": "locate lot",
+   "status": "OK",
+   "detail": "lot identifier 2//DP227508",
+   "files": []
+  },
+  {
+   "name": "SA1 result",
+   "status": "OK",
+   "detail": "2//DP227508, , 956 m2, zone R2; flags ['no_road_data_front_unknown', 'multi_zone']",
+   "files": []
+  },
+  {
+   "name": "SA2 DCP rules",
+   "status": "UNRESOLVED",
+   "detail": "0 cited rules for 'dwelling_house'; unresolved: front, side, rear, garage_front, site_cover_max; no DCP document ingested for LGA  (set SA2_DCP_DOCS to ingest a council DCP PDF)",
+   "files": []
+  },
+  {
+   "name": "ENV setbacks/driveway",
+   "status": "FAILED",
+   "detail": "NO_FRONT_SEGMENT: no boundary segment flagged is_front",
+   "files": []
+  },
+  {
+   "name": "SA3 terrain",
+   "status": "SKIPPED",
+   "detail": "no survey supplied (params.terrain.survey via --params-json); no levels invented",
+   "files": []
+  },
+  {
+   "name": "SA4 services/RWT",
+   "status": "SKIPPED",
+   "detail": "needs ENV output",
+   "files": []
+  },
+  {
+   "name": "SA5 DXF + PDF plan",
+   "status": "SKIPPED",
+   "detail": "needs ENV and SA4 outputs",
+   "files": []
+  },
+  {
+   "name": "SA6 scene bundle",
+   "status": "SKIPPED",
+   "detail": "needs ENV and SA4 outputs",
+   "files": []
+  },
+  {
+   "name": "SA9 constraints report",
+   "status": "UNRESOLVED",
+   "detail": "18 layers: 4 affected, 2 NOT CHECKED (no endpoint in endpoints_nsw.json, SA9_ENDPOINT_<KEY> or --sa9-endpoints); 4 trigger(s); rules with unresolved values: bushfire.habitable, generic, generic, generic",
+   "files": [
+    "../test-runs/layer_check/lot2_dp227508/constraints_report.pdf",
+    "../test-runs/layer_check/lot2_dp227508/constraints_report.json",
+    "../test-runs/layer_check/lot2_dp227508/constraints.geojson"
+   ]
+  }
+ ]
+}

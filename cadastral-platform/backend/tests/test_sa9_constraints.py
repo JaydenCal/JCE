@@ -74,4 +74,4 @@ def test_trigger_unresolved_and_resolved(tmp_path):
 def test_no_endpoint_not_checked():
     L._CONFIG.clear()
     from app.agents.sa9_constraints.intersect import check_layer
-    assert check_layer(L.get_layer("nsw_flood"), LOT, FP, Loader()).status == "not_checked"
+    assert check_layer(L.get_layer("nsw_contamination"), LOT, FP, Loader()).status == "not_checked"

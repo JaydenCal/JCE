@@ -39,6 +39,7 @@ from app.agents.sa6_glide3d.presets import DEFAULTS_NOTE, building_preset, prese
 from app.agents.sa9_constraints import Sa9Constraints, Sa9Input  # noqa: E402
 from app.agents.sa9_constraints import layers as L9  # noqa: E402
 from app.agents.sa9_constraints.intersect import Feature, LayerData  # noqa: E402
+from app.agents.sa9_constraints.arcgis_loader import ArcGisLayerLoader as Sa9ArcGisLoader  # noqa: E402
 from app.common.contracts import AckKind, AgentCode, DevelopmentType  # noqa: E402
 from app.orchestrator.adapters.config import sa1_config_from_env  # noqa: E402
 from app.orchestrator.adapters.nodes import lot_with_envelope  # noqa: E402
@@ -376,7 +377,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     try:
         L9.set_endpoints(json.loads(Path(args.sa9_endpoints).read_text()) if args.sa9_endpoints else {})
         configured = [lt.key for lt in L9.layers_for("NSW") if lt.endpoint]
-        r9 = Sa9Constraints(ArcGisLayerLoader(client, lot.mga_srid) if configured else None).run(Sa9Input(
+        r9 = Sa9Constraints(Sa9ArcGisLoader(lot.mga_srid, getter=(lambda u, p: json.loads(fetcher(u, p)[0])) if fetcher else None, sleep=(lambda s: None) if fetcher else time.sleep) if configured else None).run(Sa9Input(
             lot=lot_with_envelope(sa1, env_out) if env_out is not None else lot, footprint_wkt=footprint_wkt,
             output_dir=str(out), development_type=dev))
         n_aff = sum(1 for x in r9.layers if x.status == "affected")
@@ -384,7 +385,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         unres = [t.rule_id for t in r9.triggers if t.unresolved]
         rep.facts.update(sa9_not_checked=n_nc, sa9_unresolved_rules=unres)
         rep.add("SA9 constraints report", UNRESOLVED if (n_nc or unres) else OK,
-                f"{len(r9.layers)} layers: {n_aff} affected, {n_nc} NOT CHECKED (no endpoint: set SA9_ENDPOINT_<KEY> or --sa9-endpoints); "
+                f"{len(r9.layers)} layers: {n_aff} affected, {n_nc} NOT CHECKED (no endpoint in endpoints_nsw.json, SA9_ENDPOINT_<KEY> or --sa9-endpoints); "
                 f"{len(r9.triggers)} trigger(s); rules with unresolved values: {', '.join(unres) or 'none'}",
                 [r9.pdf_path, r9.json_path, r9.geojson_path])
     except Exception as ex:  # noqa: BLE001

@@ -2,7 +2,9 @@
 All shipped entries have endpoint=None and verified=False until an operator confirms a service URL."""
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 from dataclasses import dataclass, field, replace
 
 
@@ -19,6 +21,9 @@ class LayerType:
     endpoint: str | None = None            # ArcGIS REST FeatureServer/MapServer layer URL (config)
     verified: bool = False                 # False => "unverified" endpoint/config
     kind: str = "constraint"               # OverlayPolygon.kind
+    where: str | None = None               # optional ArcGIS where filter (e.g. class subset of a shared layer)
+    currency_fields: tuple[str, ...] = ()  # attribute names carrying the data currency date
+    copyright: str | None = None
 
 
 def _L(j, key, label, cat, trig, attrs=(), buf=0.0, sig=True, kind=None):
@@ -66,6 +71,16 @@ for j, rows in (("NSW", _N), ("QLD", _Q)):
         REGISTRY[lt.key] = lt
 
 _CONFIG: dict[str, dict] = {}
+ENDPOINTS_PATH = Path(__file__).with_name("endpoints_nsw.json")
+_DEFAULTS: dict[str, dict] | None = None
+
+
+def defaults() -> dict[str, dict]:
+    """Committed, live-verified NSW endpoints (endpoints_nsw.json). Entries with no endpoint stay 'not checked'."""
+    global _DEFAULTS
+    if _DEFAULTS is None:
+        _DEFAULTS = json.loads(ENDPOINTS_PATH.read_text(encoding="utf-8"))["layers"] if ENDPOINTS_PATH.exists() else {}
+    return _DEFAULTS
 
 
 def set_endpoints(cfg: dict[str, dict]) -> None:
@@ -75,9 +90,15 @@ def set_endpoints(cfg: dict[str, dict]) -> None:
 
 def get_layer(key: str) -> LayerType:
     lt = REGISTRY[key]
-    c = _CONFIG.get(key, {})
-    ep = c.get("endpoint") or os.environ.get("SA9_ENDPOINT_" + key.upper())
-    return replace(lt, endpoint=ep, verified=bool(c.get("verified", False))) if ep else lt
+    c = _CONFIG.get(key) or defaults().get(key, {})
+    env = os.environ.get("SA9_ENDPOINT_" + key.upper())
+    ep = env or c.get("endpoint")
+    if not ep:
+        return lt
+    use = c if not env else {}      # env override replaces the default endpoint; its verification is unknown
+    return replace(lt, endpoint=ep, verified=bool(use.get("verified", False)), where=use.get("where"),
+                   currency_fields=tuple(use.get("currency_fields", ())), copyright=use.get("copyright"),
+                   attr_fields=tuple(use.get("key_fields", lt.attr_fields)) if use else lt.attr_fields)
 
 
 def layers_for(jurisdiction: str) -> list[LayerType]:

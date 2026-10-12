@@ -243,6 +243,7 @@ def test_address_geocode():
     cfg = Sa1Config()
     cfg.geocoders = {"NSW": "http://geo/GeocodeServer"}
     cfg.zoning = {}
+    cfg.roads = {}
     lon, lat = INV.transform(325010, 6265025)
     m = Mock({"findAddressCandidates": json.dumps({"candidates": [{"location": {"x": lon, "y": lat}}]}).encode(),
               "NSW_Cadastre": fc(NSW_LOT)})
