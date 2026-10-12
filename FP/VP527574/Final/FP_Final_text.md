@@ -21,14 +21,9 @@ JCE Infrastructure Pty Ltd (JCE) submits this quotation for the detailed design,
 - carried geotechnical, cultural heritage, ecology, utility locating, contamination and any bespoke structural design as stated provisional sums that proceed only on the Superintendent's written direction (Brief 1.6, RFQ Note 2); and
 - kept JCE site attendance to one visit, with local attendance by our Ballarat-based registered engineer and online meetings.
 
-**A fuller scope is offered as Alternative A** ($237,220.00 excluding GST) for Council to compare: two concept alignment iterations, full corridor survey, structural design of outlets and floodwalls within the lump sum, and a larger drawing set. Both offers are in Section 10.0 and Schedule K.
+**Alternative A** offers the fuller scope for $237,220.00 excluding GST: two concept alignment iterations, full corridor survey, structural design within the lump sum and a larger drawing set (Section 10.0 and Schedule K).
 
-The team:
-
-- **JCE Infrastructure**: project management, civil and hydraulic design of the levee, drainage and crossings, specification, quantities and estimate.
-- **Venant Solutions** (Melbourne): floodplain modelling and the hydraulic impact assessment, led by Registered Professional Engineers (Victoria) whose work includes the Harcourt Flood Study for Mount Alexander Shire.
-- **Lotay Civil** (Ballarat): direct supervision and approval of the civil design by a Registered Professional Engineer (Victoria), as Schedule F requires.
-- **A licensed surveyor** from central Victoria for the supplementary survey, and investigation specialists as directed under the provisional sums.
+**The team.** JCE delivers project management and the civil and hydraulic design. Venant Solutions (Melbourne) provides the floodplain modelling and hydraulic impact assessment, led by Registered Professional Engineers (Victoria) whose work includes the Harcourt Flood Study for Mount Alexander Shire. Lotay Civil (Ballarat) directly supervises and approves the civil design as a Registered Professional Engineer (Victoria), as Schedule F requires. A licensed surveyor from central Victoria carries out the supplementary survey.
 
 Jayden has also worked for a regional council in Far North Queensland, where he shortlisted consultants for a council tender. He knows what a Council officer needs after award: clear hold points, no surprises on scope or fee, and records Council can audit.
 

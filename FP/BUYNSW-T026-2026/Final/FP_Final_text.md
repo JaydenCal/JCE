@@ -108,9 +108,9 @@ JCE's services follow the four phases of RFT Schedule 3. JCE will hold one Civil
 
 | Risk | JCE's response |
 |---|---|
-| RAP and geotechnical report arrive late or change the containment approach | Early workshop with Council and the remediation consultant in Phase 1; levels model built so cell and capping levels can be revised quickly; RFI 3 and 4 lodged before 28/10/2026 |
-| Precinct levels conflict with raised Heath Road, future Rickard Road or the creek open space | Obtain the road and GroupGSA designs in CAD at inception (RFI 6); interface levels agreed in writing at the end of Phase 1 |
-| Stormwater treatment and detention responsibility unclear between Project 5 and Project 6 | Confirm with Council (RFI 5) before the stormwater strategy is fixed; MUSIC-Link model prepared to Council's targets |
+| RAP and geotechnical report arrive late or change the containment approach | Early workshop with Council and the remediation consultant in Phase 1; levels model built so cell and capping levels can be revised quickly; questions 2 and 3 to Council lodged before 28/10/2026 |
+| Precinct levels conflict with raised Heath Road, future Rickard Road or the creek open space | Obtain the road and GroupGSA designs in CAD at inception (question 5 to Council); interface levels agreed in writing at the end of Phase 1 |
+| Stormwater treatment and detention responsibility unclear between Project 5 and Project 6 | Confirm with Council (question 4) before the stormwater strategy is fixed; MUSIC-Link model prepared to Council's targets |
 | Stage 1 cost exceeds the $10.0 million budget | Civil quantities to the QS at concept, 50%, 80% and pre-tender; value management options for earthworks, pavements and drainage |
 | Contaminated material disturbed by civil works | Drainage and service corridors set above the capping where possible; contamination interfaces shown on the drawings and covered in the Safety in Design report |
 
@@ -468,7 +468,7 @@ Certificates attached: JCE_Certificate_of_Currency_PI-PL_to_02-07-2027.pdf. The 
 
 | Item | Detail |
 |---|---|
-| Project and location | Western Sydney International Airport Business Precinct Stage One, Badgerys Creek NSW |
+| Project and location | Western Sydney International Airport Business Precinct Stage One, Western Sydney NSW |
 | Client | AT&L, through Underscore Projects (JCE sub-consultant) |
 | Value and size | [TBC - Jayden] |
 | Dates | 2026 |
@@ -501,7 +501,7 @@ Organisation chart entry: Lead Architect > Civil Engineer: JCE Infrastructure (J
 
 ### C6  Schedule 7: Project appreciation, civil input
 
-Site and outcomes. The 12,000 m2 precinct sits on contaminated former land at the corner of Heath Road and Rickard Road, between the raised Heath Road, a future widened Rickard Road and the Scalabrini Creek open space. The civil outcome Council needs is a set of finished levels that contain the contamination under capping, give accessible grades to the plaza, car park and paths, match the road and open-space edges, and drain to a lawful outlet with MUSIC-Link compliant treatment, within the Stage 1 budget.
+Site and outcomes. The 12,000 m2 precinct sits on contaminated land at the corner of Heath Road and Rickard Road, between the raised Heath Road, a future widened Rickard Road and the Scalabrini Creek open space. The civil outcome Council needs is a set of finished levels that contain the contamination under capping, give accessible grades to the plaza, car park and paths, match the road and open-space edges, and drain to a lawful outlet with MUSIC-Link compliant treatment, within the Stage 1 budget.
 
 Constraints: contamination and the RAP still in preparation; levels raised behind a creek-side retaining wall; Heath Road raising in 2027; Rickard Road widening land in private ownership; Project 5 biobasins and creek works outside the boundary; $10.0 million total budget including fees.
 
