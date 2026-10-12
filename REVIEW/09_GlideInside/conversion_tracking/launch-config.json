@@ -1,0 +1,23 @@
+{
+  "_JAYDEN_READ_ME": "Before uploading, replace AW-XXXXXXXXXX and the two PASTE_ labels with the real values from Google Ads > Goals > Conversions > (action) > Tag setup > Install the tag yourself. Tag ID looks like AW-123456789; the label is the text after the slash in send_to (e.g. AW-123456789/AbC-dEfGhIjK -> label AbC-dEfGhIjK). While any placeholder is left in, the Google tag does not load at all (safe).",
+  "publicSiteUrl": "https://glideinside.com.au/",
+  "primaryRegion": "Regional NSW",
+  "targetHubs": [
+    "Orange",
+    "Bathurst",
+    "Dubbo",
+    "Mudgee",
+    "Tamworth",
+    "Wagga Wagga",
+    "Albury"
+  ],
+  "analyticsEnabled": false,
+  "analyticsMeasurementId": "",
+  "searchConsoleVerification": "",
+  "adsEnabled": true,
+  "adsTagId": "AW-XXXXXXXXXX",
+  "adsUploadStartedConversionLabel": "PASTE_UPLOAD_STARTED_LABEL",
+  "adsPurchaseConversionLabel": "PASTE_PURCHASE_LABEL",
+  "adsLeadConversionLabel": "",
+  "orderValue": 249.0
+}

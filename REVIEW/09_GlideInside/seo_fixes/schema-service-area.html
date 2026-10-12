@@ -1,0 +1,51 @@
+<!--
+  Glide Inside: LocalBusiness + Service structured data (service-area business, no street address shown).
+  Paste just before </head> in public_html/index.html, keeping the existing Organization JSON-LD block.
+  Check it first at https://search.google.com/test/rich-results (paste the code). Facts below come from the live site
+  (ABN footer, contact details, $249 interior fly-through, Regions we serve list). Upload with permissions 0644.
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://glideinside.com.au/#business",
+      "name": "Glide Inside",
+      "url": "https://glideinside.com.au/",
+      "email": "hello@glideinside.com.au",
+      "telephone": "+61477207027",
+      "logo": "https://glideinside.com.au/assets/Glideinside_Logo_ink_v4.svg",
+      "image": "https://glideinside.com.au/assets/living.webp",
+      "priceRange": "$249+",
+      "description": "3D fly-through videos and 3D floor plans for real estate agents and builders in regional Australia.",
+      "areaServed": [
+        {"@type": "City", "name": "Orange, NSW"},
+        {"@type": "City", "name": "Bathurst, NSW"},
+        {"@type": "City", "name": "Dubbo, NSW"},
+        {"@type": "City", "name": "Mudgee, NSW"},
+        {"@type": "City", "name": "Tamworth, NSW"},
+        {"@type": "City", "name": "Gunnedah, NSW"},
+        {"@type": "City", "name": "Wagga Wagga, NSW"},
+        {"@type": "City", "name": "Albury, NSW"},
+        {"@type": "Country", "name": "Australia"}
+      ]
+    },
+    {
+      "@type": "Service",
+      "@id": "https://glideinside.com.au/#flythrough",
+      "name": "3D floor plan fly-through video",
+      "serviceType": "3D floor plan fly-through video",
+      "provider": {"@id": "https://glideinside.com.au/#business"},
+      "areaServed": {"@type": "Country", "name": "Australia"},
+      "offers": {
+        "@type": "Offer",
+        "price": "249.00",
+        "priceCurrency": "AUD",
+        "url": "https://glideinside.com.au/#enquire",
+        "description": "Interior of a single-level home up to four bedrooms, about 60 seconds, MP4 1920 x 1080, one round of changes, delivered in 5 business days. No GST charged."
+      }
+    }
+  ]
+}
+</script>

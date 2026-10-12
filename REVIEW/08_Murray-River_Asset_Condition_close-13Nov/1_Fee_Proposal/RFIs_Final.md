@@ -1,0 +1,14 @@
+# Questions for the buyer (final): VP527277 / MRC-2645
+
+**Lodge by:** before 2:00 pm Friday 23/10/2026. The VendorPanel cut-off is 2:00 pm Friday 06/11/2026, but the Conditions of Tender and Schedules still show a 23/10/2026 close, so ask early.
+**How:** VendorPanel question function for VP527277 (contact Peter Beaumont, Procurement Lead). Drafted only; asking is Jayden's call.
+**Changes from the 11/10 list:** the old question 2 (accept $10m public liability) is dropped because JCE will lift public liability to $20m on award. A new question 8 asks about subconsultant public liability. Question 6 now quotes clause 3.8.
+
+1. The VendorPanel notice gives the closing time as 2:00 pm Friday 13 November 2026, but the Conditions of Tender and the Tender Response Schedules still say 2:00 pm 23 October 2026. Could Council please confirm the closing date by addendum, and the last date for questions?
+2. The brief sets a valuation date of 30 June 2027 but no commencement or completion date. What commencement date should tenderers assume, and does Council need the final valuation report issued by 30 June 2027, or may it be issued after that date (for example by 31 July) to suit the audit timetable?
+3. Council requires one supplier for the whole scope. Will Council accept a lead consultant using specialist subconsultants (road imaging, bridge inspection and a valuer), and will the subconsultants' staff, projects and referees be assessed under Resources and Relevant Experience and Schedule 5?
+4. Schedule 1 has a single lump sum line, while the brief asks for a breakdown by asset category and valuation year. Should the 2028 to 2031 rolling inspection and valuation prices be included in the Schedule 1 lump sum, with the breakdown attached, and will Council accept escalation built into the later years' prices?
+5. Item 12 and clause 3.8 of the draft Agreement require a quality assurance system that complies with ISO 9001. Will a documented quality system that follows ISO 9001 but is not third-party certified satisfy this requirement?
+6. For the unsealed road network (about 1,890 km), is imagery required at 10 m increments on every road, and is a single pass acceptable on single-lane unsealed roads? Will Council supply, at commencement, its asset register with Asset IDs, MapInfo layers, the current valuation working papers and unit rates, and recent contract rates for road and bridge works?
+7. For the Level 3/4 bridge inspection option, how many bridges does Council expect to require, and will Council supply design or as-constructed drawings for the load capacity assessments?
+8. Clause 14.1 requires the Consultant's public liability policy to cover subconsultants unless Council approves otherwise. Will Council approve subconsultants holding their own public liability insurance of $20 million in place of cover under the Consultant's policy?

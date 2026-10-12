@@ -1,0 +1,75 @@
+=== INTERNAL NOTES (delete before sending) ===
+VP527574 Newstead Levee Design: Geotechnical investigation and design advice (provisional sum PS-A). Firms: 1 Geotechnical Testing Services (Sandhurst Geotech Pty Ltd), Bendigo: geotechnical investigations, drilling and NATA soil testing; info@geotestsouthern.com.au and 03 5441 4881 from a council planning document seen in search results; VicRoads prequalification record names Braam Haasbroek, Business Development Manager, 0468 309 929. Bendigo = 'our region' for Schedule H. 2 Provincial Geotechnical (Ballarat, Geelong, South Melbourne per the 11/10 draft): the 11/10 draft listed admin@pgvic.com.au from a web search, but it could not be confirmed today, so it is shown as [email TBC]. 3 Civiltest Pty Ltd (geotechnical consulting and NATA laboratories; offices include Mitcham and Mildura): email not found.
+Prepared 12/10/2026. Nothing has been sent. Send one email per firm (no shared To or CC). Attach the PDF RFQ from this repo folder (the Dropbox connector cannot upload it) and the Brief PDF that is already in the Dropbox discipline folder.
+Emails marked [email TBC] were not found in JCE's files or by web search: ring the number or use the firm's website contact page. Do not guess an address.
+=== END INTERNAL NOTES ===
+
+To: info@geotestsouthern.com.au
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Geotechnical investigation and design advice (provisional sum), quote due Fri 16/10/2026 12:00pm
+
+Dear Geotechnical Testing Services team,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+I would like your firm to quote the geotechnical investigation and design advice for the Newstead levee, as a sub-consultant to JCE. A Bendigo-based geotechnical consultant and laboratory would also help our local content response to Council.
+
+JCE will carry this work as a provisional sum that proceeds only if Council directs it after the Design Basis Memorandum (HP2), so itemised prices and unit rates matter. Please price a lean Stage 1 (8 locations on the existing levee, focused on the southern section) separately from Stage 2 (the new and realigned sections).
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Geotechnical_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf
+
+======================================================================
+
+To: [email TBC] (Provincial Geotechnical; the 11/10 draft listed admin@pgvic.com.au, not confirmed: check the firm website first)
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Geotechnical investigation and design advice (provisional sum), quote due Fri 16/10/2026 12:00pm
+
+Dear Provincial Geotechnical team,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+I would like your firm to quote the geotechnical investigation and design advice for the Newstead levee, as a sub-consultant to JCE.
+
+JCE will carry this work as a provisional sum that proceeds only if Council directs it after HP2, so itemised prices and unit rates matter. Please price Stage 1 (8 locations on the existing levee) separately from Stage 2.
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Geotechnical_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf
+
+======================================================================
+
+To: [email TBC] (Civiltest Pty Ltd; use the firm website contact page)
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Geotechnical investigation and design advice (provisional sum), quote due Fri 16/10/2026 12:00pm
+
+Dear Civiltest team,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+I would like Civiltest to quote the geotechnical investigation and design advice for the Newstead levee, as a sub-consultant to JCE.
+
+JCE will carry this work as a provisional sum that proceeds only if Council directs it after HP2, so itemised prices and unit rates matter. Please price Stage 1 (8 locations on the existing levee) separately from Stage 2.
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Geotechnical_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf
