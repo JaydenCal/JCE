@@ -1,0 +1,144 @@
+{
+ "facts": {
+  "development_type": "shed",
+  "started": "2026-10-12T16:58:59+00:00",
+  "args": {
+   "check_network": false,
+   "lga": null,
+   "address": null,
+   "lotplan": "3//DP263990",
+   "random_vacant": false,
+   "centre": null,
+   "radius_m": 1500.0,
+   "min_area": 300.0,
+   "max_area": 2500.0,
+   "seed": null,
+   "buildings_url": null,
+   "development_type": "shed",
+   "zone_code": null,
+   "levels": "nsw",
+   "levels_accuracy_m": null,
+   "rules_json": "../test-runs/rules/RU1_outbuilding.json",
+   "params_json": null,
+   "sa9_endpoints": null,
+   "acknowledge": true,
+   "scale": 200,
+   "base_rl": 0.0,
+   "title": null,
+   "out": "../test-runs/quia_shed"
+  },
+  "lotplan": "3//DP263990",
+  "lga": "",
+  "zone": "RU1",
+  "area_m2": 509264.46,
+  "area_registered": null,
+  "flags": [
+   "road_tolerance_widened_to_25m"
+  ],
+  "snapshots": [
+   "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+   "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Transport_Theme/MapServer/5",
+   "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2"
+  ],
+  "levels_provenance": {
+   "source": "NSW_5M_Elevation ImageServer exportImage",
+   "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_5M_Elevation/ImageServer",
+   "retrieved": "2026-10-12T16:59:34+00:00",
+   "copyright": "DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata)",
+   "datum": "AHD (orthometric, per service heightModelInfo)",
+   "native_cell_web_mercator_units": 5.0,
+   "stride": 4,
+   "requests": 1,
+   "points": 1848,
+   "vertical_accuracy_m": 5.0,
+   "vertical_accuracy_source": "unknown (placeholder)"
+  },
+  "levels_warnings": [
+   "coarse sampling: every 4th cell used (cap 2000 points) - about 17.1 m mean spacing",
+   "vertical accuracy UNKNOWN: not stated in NSW_5M_Elevation metadata; 5.0 m placeholder used only so uncertainty is not understated (not a stated figure)"
+  ],
+  "env_unresolved": [
+   "site_cover_max",
+   "height_max"
+  ],
+  "sa4_unresolved": [],
+  "sa9_not_checked": 2,
+  "sa9_unresolved_rules": [
+   "bushfire.class10a",
+   "generic",
+   "generic",
+   "pathway.shed"
+  ]
+ },
+ "steps": [
+  {
+   "name": "locate lot",
+   "status": "OK",
+   "detail": "lot identifier 3//DP263990",
+   "files": []
+  },
+  {
+   "name": "SA1 result",
+   "status": "OK",
+   "detail": "3//DP263990, , 509264 m2, zone RU1; flags ['road_tolerance_widened_to_25m']",
+   "files": []
+  },
+  {
+   "name": "levels (NSW 5 m DEM)",
+   "status": "UNRESOLVED",
+   "detail": "1848 points, NSW_5M_Elevation ImageServer exportImage, DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata); coarse sampling: every 4th cell used (cap 2000 points) - about 17.1 m mean spacing; vertical accuracy UNKNOWN: not stated in NSW_5M_Elevation metadata; 5.0 m placeholder used only so uncertainty is not understated (not a stated figure)",
+   "files": []
+  },
+  {
+   "name": "SA2 DCP rules",
+   "status": "UNRESOLVED",
+   "detail": "4 rule(s) USER ENTERED from ../test-runs/rules/RU1_outbuilding.json (not extracted from a DCP; unverified); not supplied: garage_front, site_cover_max",
+   "files": []
+  },
+  {
+   "name": "ENV result",
+   "status": "UNRESOLVED",
+   "detail": "envelope 470606 m2; unresolved rules: site_cover_max, height_max; 0 unresolved driveway requirement(s)",
+   "files": []
+  },
+  {
+   "name": "SA3 terrain/earthworks",
+   "status": "OK",
+   "detail": "TIN built from the supplied survey",
+   "files": []
+  },
+  {
+   "name": "SA4 result",
+   "status": "OK",
+   "detail": "0 service assets, 0 connections; 0 unresolved requirement(s); no DBYD/RWT inputs supplied; No service assets supplied; results contain no existing-service constraints.; Depths are never inferred; unknown depths must be confirmed by potholing. All outputs unverified.",
+   "files": []
+  },
+  {
+   "name": "SA5 result",
+   "status": "OK",
+   "detail": "13 annotations",
+   "files": [
+    "../test-runs/quia_shed/plan.dxf",
+    "../test-runs/quia_shed/plan.pdf"
+   ]
+  },
+  {
+   "name": "SA6 scene bundle",
+   "status": "UNRESOLVED",
+   "detail": "Shed preset at placeholder RL 0 (NO survey, not AHD). Default dimensions are editable drawing inputs, NOT compliance limits; verify size, height and setback limits against the cited planning requirements. Setbacks UNRESOLVED: placement illustrative only. 9 parts; no terrain (no survey)",
+   "files": [
+    "../test-runs/quia_shed/scene_bundle.json"
+   ]
+  },
+  {
+   "name": "SA9 constraints report",
+   "status": "UNRESOLVED",
+   "detail": "18 layers: 3 affected, 2 NOT CHECKED (no endpoint in endpoints_nsw.json, SA9_ENDPOINT_<KEY> or --sa9-endpoints); 4 trigger(s); rules with unresolved values: bushfire.class10a, generic, generic, pathway.shed",
+   "files": [
+    "../test-runs/quia_shed/constraints_report.pdf",
+    "../test-runs/quia_shed/constraints_report.json",
+    "../test-runs/quia_shed/constraints.geojson"
+   ]
+  }
+ ]
+}

@@ -82,7 +82,7 @@ def _ground_at(ground_levels: Any, existing_ground_at_footprint: float | None, f
     if ground_levels is None or footprint is None:
         return None
     import numpy as np
-    from shapely import contains_xy
+    from shapely import intersects_xy as contains_xy
     minx, miny, maxx, maxy = footprint.bounds
     gx, gy = np.meshgrid(np.linspace(minx, maxx, 15), np.linspace(miny, maxy, 15))
     z = ground_levels.z_at(gx.ravel(), gy.ravel())
