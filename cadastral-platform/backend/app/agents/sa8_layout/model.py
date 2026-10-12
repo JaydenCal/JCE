@@ -351,6 +351,6 @@ def resolve_material(m: BuildingModel, spec: str, kind: str = "other") -> str:
     if re.fullmatch(r"#[0-9a-f]{6}", low):
         mid = slug(f"custom {low[1:]}")
         if mid not in m.materials:
-            m.materials[mid] = Material(id=mid, name=f"Custom {low}", kind=kind if kind in Material.model_fields["kind"].annotation.__args__ else "other", hex=low)
+            m.materials[mid] = Material(id=mid, name=f"Custom {low}", kind="frame" if kind == "frame" else "other", hex=low)
         return mid
     raise KeyError(f"unknown material or colour '{spec}'")
