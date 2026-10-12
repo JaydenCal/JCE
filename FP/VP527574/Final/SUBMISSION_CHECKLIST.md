@@ -52,26 +52,27 @@ The .docx, .pdf, .xlsx and .png files are only in the repo (the Dropbox connecto
 ## 4. [TBC - Jayden] items (all must be cleared)
 
 Top priority first:
-1. **Public liability $20M.** Win Themes allow "lift to $20M on award (Webber)", and the proposal says so. Schedule I item 2 asks for a $20M certificate **with the submission**: ask Webber this week for the $20M certificate (or a binder letter). If obtained, delete Schedule K item 2.
+1. **Public liability $20M.** PL $20M quote requested 12/10; bind PL $20M before lodgement on 23/10 and attach the certificate (Schedule I item 2 requires it with the submission). The FP keeps "JCE will lift PL to $20M on award" until the policy is bound; once bound, update Section 15.0, Schedule J and delete Schedule K item 2.
 2. **Workers compensation certificate** (Schedules I and J; Brief 1.13). None on file.
 3. **Registration numbers** for Sunny Lotay (Civil), Michael South and Atoosa Towzihian (check registers.consumer.vic.gov.au/PEsearch), and written consent from Venant and Lotay to be named.
 4. **Sub quotes by 16/10**: replace the allowances (Venant, Lotay, survey); insert the survey day rate in Schedule C item 2.1; Schedule D rates for Venant and Lotay.
 5. **Liability cap** wording (Schedule K item 1): amount or fee multiple.
 6. Business address, ACN check, landline, turnover, financial information (Schedules A, G, H, Schedule C consultant details).
 7. Referees: confirm Brett Langtree and Livio Chiarot agree (Schedule A).
-8. Schedule F projects: client, value and completion for the Gunnedah levee; Venant's Harcourt study details; permission to list the WSI airport and Katherine work.
+8. Schedule F projects: Venant's Harcourt study details; permission to list the WSI airport and Katherine work.
 9. Schedule H answers (ATSI, environmental management system score, social questions) and Schedule I OHS questionnaire (Q2 to Q7).
 10. Conflict of interest confirmation (yours, Venant, Lotay).
 11. Statutory declaration (Schedule L): full legal name; the form says "declared in the State of Victoria". Use a witness authorised under the Oaths and Affirmations Act 2018 (Vic) (remote witnessing by audio-visual link is permitted, confirm before relying on it) or ask Council (RFI 7).
 12. Date the cover letter and the offer block; sign every schedule.
-14. Rev G council experience: Floodway rectification, Tablelands Regional Council (added to FP 7.0, Attachment C, Schedule F) [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]; get Darren Quilliam's consent to be named, his title, phone and email; choose two Schedule A referees from Quilliam, Langtree and Chiarot. (The leachate storage facility job is not relevant to this levee bid and is not used.)
+14. Rev G experience changes: the earlier JCE levee inspection example is removed (Jayden's instruction). Floodway rectification, Tablelands Regional Council is Jayden's work while at Langtrees, shown as key personnel experience only (FP 7.0, Attachment C, Schedule A/F key personnel field, not as a JCE project) [TBC - Jayden: site, year, value, role and scope, RPEQ sign-off arrangement]; get Darren Quilliam's consent, title, phone and email. RAAF Base Townsville, Defence delivery for CPB Contractors, referee Maverick Partner, CPB Contractors [TBC - Jayden: confirm full name and title as written, consent, phone/email; project year (five-year window), package scope, JCE's role (JCE or previous employer), value; Defence confidentiality limits]. Schedule A referees now Quilliam and Maverick Partner; Langtree and Chiarot are alternates.
+15. Rev G core team: Sunny Lotay shown as Associate Principal Engineer (RPEQ, NER), Lotay Civil, under a standing associate agreement (not an employee). [TBC - Jayden: signed standing associate agreement with Lotay Civil (scope, fee basis, availability, and whether JCE's PI covers his work or Lotay Civil holds its own PI/PL, with certificates); Sunny's written consent to be named; RPEQ, NER and RPE (Vic) numbers; current CV; associate hourly rate]. His review and certification role is already priced in the $9,900 allowance, so the price is unchanged.
 13. Rev G drone items: Craig Sullivan farm drainage example [TBC - Jayden: location, year, approx. area]; **get Craig Sullivan's consent to be named as a referee and his phone/email** (the FP says "Referee details available on request"); [TBC - Jayden to confirm] DJI Terra for orthophoto production (ReCap Pro is the alternative); CASA operator accreditation in place before services start.
 
 ## 5. Insurance and certificates
 
 | Cover | Required | JCE | Action |
 |---|---|---|---|
-| PL | $20M | $10M (Pacific Indemnity, to 02/07/2027) | Get $20M certificate before lodging, or rely on "lift on award" + Schedule K item 2 |
+| PL | $20M | $10M (Pacific Indemnity, to 02/07/2027) | Quote requested 12/10; bind $20M before 23/10 and attach the certificate |
 | PI | $5M, held 5 years after completion | $10M / $20M agg | OK; confirm run-off with broker |
 | WC | Certificate covering all workers | Not on file | Obtain (icare, or WorkSafe Victoria advice for Victorian work) |
 
@@ -107,8 +108,8 @@ RFIs.md (11/10) is still right in substance; updated wording for the final offer
 |---|---|---|---|
 | 1.1 Risk management (pass/fail) | At risk of FAIL (PL $10M, no WC, no position stated) | Conditional PASS (PL lift stated per Win Themes; WC still open) | Needs the WC and ideally $20M PL certificates |
 | 1.2 Response to specification | 6/10 | 8/10 | Statement of compliance added; Gantt with critical path, review periods and weather allowance; Inception Report date corrected to within 14 days; offer structure table |
-| 1.3 Experience and qualifications | 5/10 | 7/10 after the Tablelands floodway project and council referee (was 6/10 in Rev F; conditional on Jayden confirming details); drone photogrammetry and ReCap experience added but no named project or referee yet, so 6.5 at most once one is supplied) | Named referees; principal-led design management proof points; council-side experience; Venant's Harcourt study. Still no JCE levee design project and registration numbers TBC |
-| 1.4 Business and financial capacity incl. QM | 4/10 | 5/10 | Brief 1.8 hours and team breakdown (Attachment D); capacity shown at about 25 h/week; not ISO certified; financials TBC |
+| 1.3 Experience and qualifications | 5/10 | 6/10 (Rev G: no JCE levee project now; Tablelands floodway counts as key personnel experience only; council and CPB referees added; Sunny Lotay in the core team) | Named referees; principal-led design management proof points; council-side experience; Venant's Harcourt study. Registration numbers TBC |
+| 1.4 Business and financial capacity incl. QM | 4/10 | 6/10 (Rev G: standing associate agreement gives a registered backup project lead) | Brief 1.8 hours and team breakdown (Attachment D); capacity shown at about 25 h/week; not ISO certified; financials TBC |
 | 1.5 Sustainability | 3/10 | 4/10 | Environmental justification drafted; Bendigo survey and geotech firms targeted for local content. JCE scores 0 on location questions |
 | Stage Two price | $237,220 (1.9x budget) | $113,600 (within budget) | VFM = price / score roughly halves |
 

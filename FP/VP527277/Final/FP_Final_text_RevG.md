@@ -10,7 +10,7 @@ Murray River Council · Tender MRC-2645 (VendorPanel VP527277) · Schedule 6 met
 | Date | 12/10/2026 | Contact | Peter Beaumont, Procurement Lead (via VendorPanel) |
 | Revision | G (final for review and signature; JCE drone capture and GIS) | Project | MRC-2645 Transport Infrastructure Assessment and Valuation 2026 |
 | Prepared and reviewed by | Jayden Callen, Director | Site | Murray River LGA: Barham, Mathoura, Moama and Moulamein zones |
-| Tender closes | 2:00 pm Friday 13/11/2026 (VendorPanel) | Lump sum (incl. GST) | $ 1,635,724.20 |
+| Tender closes | 2:00 pm Friday 13/11/2026 (VendorPanel) | Lump sum (incl. GST) | $ 1,648,999.00 |
 
 ## Cover letter
 
@@ -28,7 +28,7 @@ I lead every JCE commission personally. My recent roles have been in design mana
 
 The road imaging partner captures about 3,000 km of road with vehicle-mounted geo-referenced cameras and rates the roads. The bridge partner carries out Level 2 inspections of 127 bridges, major culverts and footbridges, and a qualified valuer signs the valuation. JCE captures drone imagery of bridges and approaches, culverts, stormwater outlets, kerb and footpath hotspots and assets with poor vehicle access, rates the non-road assets, builds the GIS and asset register, and carries the methodology, Council liaison, data quality, remaining life, defect and safety assessment, the 10-year programs and the reporting.
 
-The lump sum is $ 1,635,724.20 including GST for all five valuation years, with Level 3/4 bridge inspections priced separately as Council's option. Our offer stays open for 60 days after the closing time.
+The lump sum is $ 1,648,999.00 including GST for all five valuation years, with Level 3/4 bridge inspections priced separately as Council's option. Our offer stays open for 60 days after the closing time.
 
 Yours faithfully,
 
@@ -149,7 +149,7 @@ Where Schedule 6 is answered:
 - Automated completeness checks in QGIS by JCE on every partner and JCE data delivery (Asset IDs, segment continuity, mandatory fields, image naming and GPS).
 - JCE re-rating of a random sample of at least 2% of partner road segments in each zone, and a blind re-rate by Jayden of 2% of the technician's ratings; a rater whose sample differs by more than one rating point on more than 10% of items re-rates that batch.
 - Bridge reports checked by JCE against the Level 2 scope and Council's rating scale before issue.
-- Director review of every deliverable before it reaches Council, recorded on a checklist; one register of Council comments and how each was closed.
+- Director review of every deliverable before it reaches Council, and independent technical review by Sunny Lotay (RPEQ, NER) of the condition, defect and safety reports and the 10-year programs, recorded on a checklist; one register of Council comments and how each was closed.
 
 ### Data management, reporting and integration
 
@@ -172,9 +172,9 @@ Where Schedule 6 is answered:
 | Bridge access or safety constraints | Access methodology and site safety plan for each structure as hold points; no under-bridge units, rope access or diving in Level 2 |
 | Level 3/4 needs found late | Bridge inspections run from February, ahead of the road reports, and recommendations go to Council as they arise |
 | Valuation not ready for audit | Valuer reviews methodology in January and unit rates in March; draft valuation by 28/05/2027 |
-| Lead consultant availability | Road capture and bridge inspection are carried by partner crews; a casual field assistant and a casual GIS and rating technician support JCE; Jayden's time is planned at about 35 hours a week (Section 5.0) with other work kept out of February to March and May |
+| Lead consultant availability | Road capture and bridge inspection are carried by partner crews; a casual field assistant and a casual GIS and rating technician support JCE; Sunny Lotay, JCE's associate certifying engineer, is backup project lead; Jayden's time is planned at about 35 hours a week (Section 5.0) with other work kept out of February to March and May |
 
-Sign-off. Reports are prepared and signed by Jayden Callen, BEng (Hons), MIEAust, as JCE's project manager. Bridge inspection reports are signed by the bridge partner's nominated bridge engineer, and the valuation report by the valuer.
+Sign-off. Reports are prepared and signed by Jayden Callen, BEng (Hons), MIEAust, as JCE's project manager, after independent technical review by Sunny Lotay (RPEQ, NER), JCE's associate certifying engineer, who certifies where a registered engineer is required. Bridge inspection reports are signed by the bridge partner's nominated bridge engineer, and the valuation report by the valuer.
 
 ## 3.0 Deliverables
 
@@ -223,6 +223,7 @@ The brief sets the valuation date of 30/06/2027 and no start date. The program a
 | Role | Person | Responsibility |
 |---|---|---|
 | Project manager, drone pilot and GIS lead | Jayden Callen, BEng (Hons), MIEAust (JCE) | Single point of contact; methodology, drone capture, GIS and register, QA, remaining life, defect and safety assessment, programs, valuation inputs and reports |
+| Associate Principal Engineer, technical reviewer and certifying engineer | Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil | Engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions: independent technical review of the condition, remaining life, defect and safety reports and 10-year programs; certification where a registered engineer is required; backup project lead |
 | Casual field assistant and visual observer | [TBC - Jayden: name] | Drone visual observer on road sites, driving and site safety during the two drone campaigns |
 | Casual GIS and rating technician | [TBC - Jayden: name] | First-pass rating of non-road assets from imagery, GIS layers, register population, image index and maps, checked by Jayden |
 | Road imaging partner | [TBC - Jayden: firm selected after quotes due 28/10/2026] | Vehicle-mounted imaging of the network with the roadside, and condition rating of sealed and unsealed roads |
@@ -302,14 +303,14 @@ Council's Schedule 1 asks for one lump sum inclusive of GST, broken down by valu
 
 | Item | Schedule 1 breakdown by valuation year | Total (excl. GST) |
 |---|---|---|
-| 1 | Year 1 (2027): comprehensive inspection, defects, safety assessment, 10-year programs and comprehensive valuation as at 30/06/2027 | $ 662,032.00 |
-| 2 | 2028: Zone 1 Barham inspection and desktop revaluation | $ 195,380.00 |
-| 3 | 2029: Zone 2 Mathoura inspection and desktop revaluation | $ 207,720.00 |
-| 4 | 2030: Zone 3 Moama inspection and desktop revaluation | $ 167,500.00 |
-| 5 | 2031: Zone 4 Moulamein inspection and comprehensive valuation | $ 254,390.00 |
-|  | Lump sum (excl. GST) | $ 1,487,022.00 |
-|  | GST (10%) | $ 148,702.20 |
-|  | Lump sum for Schedule 1 (incl. GST) | $ 1,635,724.20 |
+| 1 | Year 1 (2027): comprehensive inspection, defects, safety assessment, 10-year programs and comprehensive valuation as at 30/06/2027 | $ 667,840.00 |
+| 2 | 2028: Zone 1 Barham inspection and desktop revaluation | $ 196,880.00 |
+| 3 | 2029: Zone 2 Mathoura inspection and desktop revaluation | $ 209,260.00 |
+| 4 | 2030: Zone 3 Moama inspection and desktop revaluation | $ 169,090.00 |
+| 5 | 2031: Zone 4 Moulamein inspection and comprehensive valuation | $ 256,020.00 |
+|  | Lump sum (excl. GST) | $ 1,499,090.00 |
+|  | GST (10%) | $ 149,909.00 |
+|  | Lump sum for Schedule 1 (incl. GST) | $ 1,648,999.00 |
 
 | Part | Breakdown of Item 1 (Year 1) | Amount (excl. GST) |
 |---|---|---|
@@ -319,6 +320,7 @@ Council's Schedule 1 asks for one lump sum inclusive of GST, broken down by valu
 | Stage 4 | Partner data audit, non-road ratings, GIS and register, remaining life, defect report, safety assessment, 10-year programs and condition report | $ 62,750.00 |
 | Stage 5 | Valuation inputs, reconciliation and valuer coordination | $ 13,720.00 |
 | Stage 6 | Project management, quality review and close-out | $ 21,600.00 |
+| AS | Associate certifying engineer (Sunny Lotay, Lotay Civil): independent technical review and certification of JCE reports, 24 h at $220/h allowance (cost plus 10%) [TBC - Jayden to confirm rate] | $ 5,808.00 |
 | K1 | Casual field assistant and drone visual observer: 16 field days plus travel (192 h at $55/h cost allowance) (cost plus 10%) | $ 11,616.00 |
 | K2 | Casual GIS and desktop rating technician: first-pass rating from partner and drone imagery, GIS layers, register population, image index, maps (298 h at $65/h cost allowance) (cost plus 10%) | $ 21,307.00 |
 | EQ | Drone equipment day rate (DJI Mavic 3 Enterprise with RTK, batteries, RTK corrections, processing software and storage): 17 field days at $250 per day [TBC - Jayden to confirm rate] | $ 4,250.00 |
@@ -327,22 +329,22 @@ Council's Schedule 1 asks for one lump sum inclusive of GST, broken down by valu
 | PS2 | Bridge inspection partner: Level 2 inspections of 127 structures (provisional sum, cost plus 10%) | $ 129,140.00 |
 | PS3 | Valuer: methodology and unit rate review, signed valuation report (provisional sum, cost plus 10%) | $ 33,000.00 |
 | PS3b | Valuer: valuation calculations and benchmark unit rates (provisional sum, cost plus 10%) | $ 19,800.00 |
-|  | Item 1 (excl. GST) | $ 662,032.00 |
+|  | Item 1 (excl. GST) | $ 667,840.00 |
 
 | No | Year 1 by asset category | Total (excl. GST) |
 |---|---|---|
-| 1 | Sealed roads (urban, regional, local) | $ 173,736.12 |
-| 2 | Unsealed roads | $ 180,779.47 |
-| 3 | Kerb and gutter | $ 9,182.45 |
-| 4 | Footpaths and cycleways | $ 23,147.42 |
-| 5 | Roundabouts, traffic islands and medians | $ 6,495.54 |
-| 6 | Carparks | $ 13,147.60 |
-| 7 | Rural culverts | $ 48,677.42 |
-| 8 | Guardrail | $ 21,738.75 |
-| 9 | Bus shelters | $ 1,826.06 |
-| 10 | Bridges and major culverts | $ 171,127.47 |
-| 11 | Footbridges | $ 12,173.70 |
-|  | Year 1 (excl. GST) | $ 662,032.00 |
+| 1 | Sealed roads (urban, regional, local) | $ 175,260.30 |
+| 2 | Unsealed roads | $ 182,365.45 |
+| 3 | Kerb and gutter | $ 9,263.01 |
+| 4 | Footpaths and cycleways | $ 23,350.50 |
+| 5 | Roundabouts, traffic islands and medians | $ 6,552.52 |
+| 6 | Carparks | $ 13,262.94 |
+| 7 | Rural culverts | $ 49,104.46 |
+| 8 | Guardrail | $ 21,929.47 |
+| 9 | Bus shelters | $ 1,842.08 |
+| 10 | Bridges and major culverts | $ 172,628.77 |
+| 11 | Footbridges | $ 12,280.50 |
+|  | Year 1 (excl. GST) | $ 667,840.00 |
 
 Option (not in the lump sum). Level 3/4 bridge inspection, including component visual rating, structural safety inspection, load capacity assessment, component inventory and photographic record of condition 4 and 5 defects: $ 7,400.00 excl. GST ($ 8,140.00 incl. GST) per bridge.
 
@@ -412,5 +414,7 @@ Partner rates for directed additional work, including JCE's 10% mark-up: imaging
 ## Attachment B: Key personnel
 
 Jayden Callen, BEng (Hons), MIEAust. Director and Principal Engineer, JCE Infrastructure. Project manager, drone pilot and GIS lead, and single point of contact. Bachelor of Engineering (Honours) Civil, Deakin University; Engineers Australia member 11036201; application for the National Engineering Register (civil) in progress. Drone operations under CASA's sub-2 kg excluded category (operator accreditation and drone registration in place before services start). Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models. Detailed CV attached.
+
+Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. His role on MRC-2645 is independent technical review of JCE's outputs, certification where a registered engineer is required, and backup project lead.
 
 Partner key personnel: names, qualifications, years of experience and comparable council projects for the road imaging partner, the bridge inspection partner (at least five years of bridge condition assessment of concrete, steel and timber bridges; TfNSW experience desirable) and the valuer. [TBC - Jayden: from partner quotes due 28/10/2026]

@@ -75,7 +75,7 @@ Items marked **[TBC - Jayden]** need your input.
 | Others: Project Engineer | JCE Infrastructure | $180 |
 | Others: Design Engineer | JCE Infrastructure | $170 |
 | Others: Administration / Document Control | JCE Infrastructure | $140 |
-| Others: Registered Civil Engineer (Vic) | Lotay Civil (Sunny Lotay) | [TBC - Jayden: from Lotay quote] |
+| Others: Associate Principal Engineer / Registered Civil Engineer (Vic) | Lotay Civil (Sunny Lotay) | [TBC - Jayden: from Lotay quote] |
 | Others: Licensed surveyor | [firm on quotation] | [TBC - Jayden] |
 | Signed and dated | [signature] / [dd] October 2026 | |
 
@@ -113,7 +113,7 @@ Items marked **[TBC - Jayden]** need your input.
 | Jayden Callen | JCE, civil and hydraulic design | Project manager and civil design lead | About 60% of fee hours [TBC - Jayden: confirm the % basis] |
 | Michael South | Venant Solutions, flood modelling | Flood modelling lead | [TBC - from Venant quote] |
 | Atoosa Towzihian | Venant Solutions, flood and hydrology | Flood and hydrology engineer | [TBC - from Venant quote] |
-| Sunny Lotay | Lotay Civil (Ballarat), registered civil engineer | Supervision and design approval | [TBC - from Lotay quote] |
+| Sunny Lotay | Associate Principal Engineer (RPEQ, NER), Lotay Civil, under a standing associate agreement with JCE | Technical review, supervision and design approval, backup project lead | [TBC - from Lotay quote] |
 | [surveyor] | Licensed surveyor | Supplementary survey | [TBC] |
 
 **Sub-consultants**
@@ -141,8 +141,8 @@ Items marked **[TBC - Jayden]** need your input.
 |---|---|
 | Company profile and resources | Civil and hydraulic engineering consultancy led by its Director, Jayden Callen, who delivers every commission personally, with specialist sub-consultants for flood modelling, registered civil supervision, survey and investigations. Civil 3D, DRAINS and MUSIC X licences. Equipment (Rev G): JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE delivers drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK. JCE will deploy a DJI Mavic 3 Enterprise with RTK on this project, operated under CASA's sub-2 kg excluded category, with operator accreditation in place before services start. Workflow: DroneDeploy (or DJI Pilot 2 / FlightHub) flight planning, RTK corrections from AUSCORS or a local base, ground control and independent check points, Autodesk ReCap Pro point clouds and surfaces, InfraWorks and Civil 3D design integration, QGIS for GIS. |
 | Annual turnover | [TBC - Jayden] |
-| Total number of staff | 1 (Director), plus sub-consultants |
-| Proposed personnel / role / % allocation / internal / external | Jayden Callen / PM and civil design lead / [TBC] / Y / -; Michael South / flood modelling lead / [TBC] / N / Venant Solutions; Atoosa Towzihian / flood and hydrology engineer / [TBC] / N / Venant Solutions; Sunny Lotay / registered civil engineer / [TBC] / N / Lotay Civil; [surveyor] / survey / [TBC] / N / [firm] |
+| Total number of staff | 1 (Director), plus Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil, under a standing associate agreement, and sub-consultants |
+| Proposed personnel / role / % allocation / internal / external | Jayden Callen / PM and civil design lead / [TBC] / Y / -; Michael South / flood modelling lead / [TBC] / N / Venant Solutions; Atoosa Towzihian / flood and hydrology engineer / [TBC] / N / Venant Solutions; Sunny Lotay / Associate Principal Engineer (RPEQ, NER): technical reviewer, certifying engineer, backup project lead / [TBC] / N (standing associate agreement) / Lotay Civil; [surveyor] / survey / [TBC] / N / [firm] |
 | QMS? | Yes (JCE Quality Policy JCE-QMS-POL-001) |
 | Certified to ISO 9001 / 9002? | No / No |
 | In the process of certification? | [TBC - Jayden: Yes/No] |

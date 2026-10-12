@@ -6,18 +6,23 @@ Prepared 12/10/2026 (FINAL Rev F, updated to **Rev G** the same day). Lodge the 
 
 ## 0. Rev G changes (12/10/2026)
 
-- New council experience from Jayden: (A) Leachate storage facility, Tablelands Regional Council (QLD), placed first in FP Section 8, Form 3, Form 7 and Form 10 Contract 1; (B) Floodway rectification, Tablelands Regional Council (QLD), second. Referee Darren Quilliam, Tablelands Regional Council ("contact details available on request" in the FP).
-- Cover letter and risk table corrected: JCE has not been CQA Engineer on a landfill cell liner, but has delivered engineering for a council landfill leachate storage facility. Not overstated as CQA.
-- Drone capability added (Jayden-approved Glide Inside paragraph, drone experience sentence, farm drainage example for Craig Sullivan). Used for CQA: orthophoto, 3D layer surface and high-resolution progress and defect imagery at each JCE site visit, processed in ReCap Pro and compared with design surfaces in Civil 3D; new deliverable row; exclusion notes drone surfaces are CQA records, not survey. No LiDAR wording. Price unchanged (captured during JCE's 22 site days).
-- B2 Rev G: revision label and item 1.1 note only; totals unchanged ($696,814.80 ex GST / $766,496.28 inc GST). B2 asks for no projects or referees.
-- Files: JCE_FP_VP527469_Final_RevG.docx/.pdf, Part_B1_..._JCE_FILLED_RevG.docx/.pdf, Part_B1_..._answers_RevG.md, Part_B2-..._JCE_FILLED_RevG.xlsx. FP_Final_text.md now holds the Rev G text.
+**Price changed:** Rev F $696,814.80 ex GST ($766,496.28 inc) -> **Rev G $702,014.80 ex GST ($772,216.28 inc GST)**. The only change is a $5,200 allowance for Sunny Lotay (16 h Portion 1, 10 h Portion 2 at $200/h). P1 $453,246.80; P2 $248,768.00; JCE lump sum $224,064.80; provisional sums unchanged at $477,950.
+
+- Tablelands Regional Council (QLD) projects added as **Jayden's experience while at Langtree Consulting Engineers** (not JCE projects): (A) leachate storage facility, placed first; (B) floodway rectification. Referee Darren Quilliam, Tablelands Regional Council. In B1 they sit in Form 7 (key personnel), not in Form 3 company contracts or Form 10 company references.
+- Gunnedah levee project removed everywhere. Replaced by "RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor)", referee Maverick Partner, CPB Contractors (FP Section 8, Form 3 referees, Form 7). Form 10 company references now use JCE contracts only: WSIA (Underscore), Clarence Village (Uniplan), relocatable footing service (Uniplan).
+- Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil, added to the core team under a standing associate agreement: independent review of the CQA Implementation Plan and reports, certification where a registration applies (RFI 7), backup lead. Shown in FP Sections 2, 8 and 10, Attachment A, B2 items 3.1 and 7.1, Forms 6 and 7.
+- Drone capability: Glide Inside paragraph, Jayden's drone experience, farm drainage example (Craig Sullivan). Used for aerial CQA records at JCE site visits; new deliverable; no LiDAR wording; no price change.
+- Cover letter and risk table: JCE has not been CQA Engineer on a landfill cell liner; Jayden's leachate storage work at Langtree is stated without calling it CQA.
+- Files: JCE_FP_VP527469_Final_RevG.docx/.pdf, Part_B1_..._JCE_FILLED_RevG.docx/.pdf, Part_B1_..._answers_RevG.md, Part_B2-..._JCE_FILLED_RevG.xlsx. FP_Final_text.md holds the Rev G text. Rev F files are kept unchanged.
 
 ### Rev G [TBC - Jayden] items
-- Leachate storage facility (A): site, year, value, JCE's role and scope, RPEQ sign-off arrangement. Confirm whether it included any liner or CQA element (if so, the FP can say more). Confirm it is one of JCE's three most recent contracts for Form 10, or swap it out.
-- Floodway rectification (B): site, year, value, JCE's role and scope, RPEQ sign-off arrangement.
-- Darren Quilliam: consent to be named as a referee, his title, phone and email (Form 3 and Form 10 fields left [TBC - Jayden]).
-- Farm drainage (Craig Sullivan): location, year, approx. area. Get Craig Sullivan's consent to be named as a referee and his phone/email.
-- Drone: CASA operator accreditation in place before services start; check site airspace (Wagga Wagga Airport / RAAF Base Wagga lies north of the city; confirm Gregadoo is outside 5.5 km of the controlled aerodrome and other restrictions using a CASA-verified drone safety app) and Council landfill operations approval to fly. If an orthophoto is produced in DJI Terra instead of ReCap Pro, confirm DJI Terra licence.
+- Tablelands (A) leachate storage facility and (B) floodway rectification: site, year, value, Jayden's role and scope at Langtree, RPEQ sign-off arrangement. Did (A) include any liner or CQA element?
+- Darren Quilliam: consent to be named, title, phone, email.
+- Maverick Partner (CPB Contractors): confirm the full name and title as written, consent to be named, phone and email; project year, package scope, Jayden's role (as SCP employee on secondment, per CV), value; any Defence confidentiality limits on what can be described.
+- Craig Sullivan farm drainage: location, year, approx. area; consent to be named and phone/email.
+- Sunny Lotay: signed standing associate agreement with Lotay Civil (scope, fee basis, availability); insurance (does JCE's PI cover his work, or does Lotay Civil hold its own PI/PL? attach certificates); written consent to be named on this bid; RPEQ and NER numbers; CV; confirm the $200/h associate rate.
+- Drone: CASA operator accreditation in place before services start; check airspace for Gregadoo against Wagga Wagga Airport / RAAF Base Wagga with a CASA-verified drone safety app; Council landfill operations approval to fly. Confirm DJI Terra licence only if used for orthophotos instead of ReCap Pro.
+- Form 1 now $772,216.28: seven hundred and seventy-two thousand, two hundred and sixteen dollars and twenty-eight cents (update again after partner quotes).
 
 ## 1. What changed in Rev F
 
@@ -29,13 +34,13 @@ Prepared 12/10/2026 (FINAL Rev F, updated to **Rev G** the same day). Lodge the 
 - Insurance: PL lift to $20M on award stated (Win Themes allow). Motor vehicle $20M and workers compensation left as [TBC - Jayden].
 - Sub-consultant quote due date moved to 12:00 pm Fri 23/10/2026.
 
-## 2. Final price summary (ex GST unless stated)
+## 2. Price summary (Rev F table; Rev G adds $5,200 for Sunny Lotay, see section 0: Rev G total $702,014.80 ex GST / $772,216.28 inc GST)
 
 | | JCE lump sum | Provisional sums | Total |
 |---|---|---|---|
 | Portion 1, Cell 3.1 | $137,096.80 | $312,950.00 | $450,046.80 |
 | Portion 2, Monocell M1.1 | $81,768.00 | $165,000.00 | $246,768.00 |
-| **Total ex GST** | $218,864.80 | $477,950.00 | **$696,814.80** |
+| **Total ex GST (Rev F)** | $218,864.80 | $477,950.00 | **$696,814.80** |
 | GST | | | $69,681.48 |
 | **Total incl GST (Form 1)** | | | **$766,496.28** |
 
@@ -74,7 +79,7 @@ The FP, B1 and B2 files are in the repo only (binary upload to Dropbox is not po
 1. **Partner**: choose the Riverina CQA partner; insert firm name, senior landfill CQA engineer (name, qualifications, registration), technicians, at least two NSW landfill CQA projects and a referee (FP 2 and 8; Forms 3, 6, 7, 8). Without this the experience score stays low.
 2. **Motor vehicle insurance**: confirm $20M third-party property cover with the Principal noted (Part A 5.10.2), or list it in Form 9.
 3. **Workers compensation / insurance of employees**: JCE has no employees; confirm icare position or personal accident cover.
-4. **Public liability**: arrange the lift to $20M including products liability with Webber, effective on award; confirm the PI policy covers landfill CQA.
+4. **Public liability**: PL $20M quote requested 12/10; bind before lodgement if possible and attach the certificate. Confirm the PI policy covers landfill CQA.
 5. **Form 1**: date, witness, final lump sum in figures and words after quotes.
 6. FP number (JCE-FP-VP527469 placeholder).
 7. Form 3: values/durations of current contracts; Form 10: contacts and person days for the three reference contracts, incident statistics for the last 6 months, confirm no notices; CoR policy position.
@@ -119,13 +124,13 @@ Portal cut-off is Mon 26/10/2026 2:00 pm, but Part A 1.7 closes questions 5 days
 | Criterion | Draft Rev A | Rev F | Rev G (as built) | Rev G after partner details inserted |
 |---|---|---|---|---|
 | Price (transparency, exclusions) | 5 | 6 | 6 | 6 |
-| Relevant experience and past performance | 2 | 3 | 4 | 7 |
+| Relevant experience and past performance | 2 | 3 | 3 | 6 |
 | Methodology and understanding | 5 | 7 | 7 | 7 |
-| Personnel and resources | 3 | 4 | 5 | 6 |
+| Personnel and resources | 3 | 4 | 6 | 7 |
 | Regional preference | 2 | 3 | 3 | 4 to 5 |
 | **Average** | **3.4** | **4.6** | **5.0** | **6.0 to 6.2** |
 
-Rev G raises experience by one point: a council landfill leachate storage facility with a council referee, and a second council project (floodway), but still no landfill cell CQA by JCE and no details (year, value, scope) yet. Personnel and resources up one for the drone capability and the aerial CQA records. Five changes most likely to raise the score: (1) name the partner with its landfill CQA projects and referees [Jayden]; (2) add year, value and scope for the leachate storage facility and Darren Quilliam's contact details [Jayden]; (3) Part D 1.13 priced (done); (4) roles, hold point protocol, program and risk treatment (done); (5) transparent pricing with separate provisional sums (done). Main residual weakness: no JCE landfill cell CQA record and price above what a single Wagga firm would likely charge.
+Experience (company criterion) stays at 3: the Tablelands and RAAF work is Jayden's at previous employers, so a strict panel credits it under personnel, not as JCE's record, and JCE still has no landfill CQA commission. Personnel rises from 4 to 6: council landfill leachate work and a council referee, head contractor referee (CPB), an RPEQ/NER associate certifying engineer, and drone capability. Price is up $5,200 (0.7%), no score change. Five changes most likely to raise the score: (1) name the partner with its landfill CQA projects and referees; (2) add year, value and scope for the Tablelands leachate facility and referee contacts; (3) Sunny Lotay's CV and registration numbers; (4) bind PL $20M and attach the certificate; (5) Council's answers to RFI 1 and 2 to firm PS1, PS2 and PS6.
 
 ## 9. Blocking lodgement
 

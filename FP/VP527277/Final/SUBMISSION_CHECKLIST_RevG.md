@@ -13,17 +13,17 @@ Prepared 12/10/2026 for Jayden Callen. Rev G replaces Rev F (Rev F files are kep
 
 | Item | Ex GST | Incl GST |
 |---|---|---|
-| Year 1 (2027) comprehensive inspection and valuation | $662,032.00 | $728,235.20 |
-| 2028 Zone 1 Barham | $195,380.00 | $214,918.00 |
-| 2029 Zone 2 Mathoura | $207,720.00 | $228,492.00 |
-| 2030 Zone 3 Moama | $167,500.00 | $184,250.00 |
-| 2031 Zone 4 Moulamein (comprehensive) | $254,390.00 | $279,829.00 |
-| **Lump sum (Schedule 1)** | **$1,487,022.00** | **$1,635,724.20** |
+| Year 1 (2027) comprehensive inspection and valuation | $667,840.00 | $734,624.00 |
+| 2028 Zone 1 Barham | $196,880.00 | $216,568.00 |
+| 2029 Zone 2 Mathoura | $209,260.00 | $230,186.00 |
+| 2030 Zone 3 Moama | $169,090.00 | $185,999.00 |
+| 2031 Zone 4 Moulamein (comprehensive) | $256,020.00 | $281,622.00 |
+| **Lump sum (Schedule 1)** | **$1,499,090.00** | **$1,648,999.00** |
 | Option: Level 3/4 bridge inspection, per bridge | $7,400.00 | $8,140.00 |
 
-Change from Rev F ($1,646,150.55): minus $10,426.35 incl GST. Year 1 is $34,638.50 lower ex GST; the rolling years are $25,160 higher ex GST because JCE now does the drone, GIS and non-road rating work in each zone year.
+Change from Rev F ($1,646,150.55): plus $2,848.45 incl GST. Adding Sunny Lotay as associate certifying engineer raised the Rev G price from $1,635,724.20 to $1,648,999.00 (+$13,274.80 incl GST). His allowance is 24 h in Year 1 and 6 h a year from 2028 to 2031 at $220/h plus 10% (rate [TBC - Jayden]). Year 1 is $28,830.50 lower than Rev F ex GST; the rolling years are $31,420 higher ex GST because JCE now does the drone, GIS and non-road rating work in each zone year, plus Sunny's review.
 
-Year 1 build-up (ex GST): JCE labour $167,140 (902 h, Jayden); casual field assistant and drone observer $11,616 (192 h at $55/h cost + 10%); casual GIS and rating technician $21,307 (298 h at $65/h cost + 10%); drone equipment day rate $4,250 (17 days at $250); vehicle, accommodation and meals $20,744; PS1 road imaging partner $255,035 (allowance $231,850: 1,110 km at $90, 1,890 km at $55, $28,000 mobilisation and outputs, plus 10%); PS2 bridges $129,140; PS3 valuer $33,000; PS3b valuer calculations $19,800.
+Year 1 build-up (ex GST): JCE labour $167,140 (902 h, Jayden); casual field assistant and drone observer $11,616 (192 h at $55/h cost + 10%); casual GIS and rating technician $21,307 (298 h at $65/h cost + 10%); drone equipment day rate $4,250 (17 days at $250); associate certifying engineer $5,808 (24 h at $220/h + 10%); vehicle, accommodation and meals $20,744; PS1 road imaging partner $255,035 (allowance $231,850: 1,110 km at $90, 1,890 km at $55, $28,000 mobilisation and outputs, plus 10%); PS2 bridges $129,140; PS3 valuer $33,000; PS3b valuer calculations $19,800.
 
 Removed from Rev F: PS1 kerb, footpath and point-asset rating ($71,425 allowance), $7,000 of PS1 mobilisation, PS1k GIS and register ($20,500, now JCE), the field verification visits and their travel (replaced by the drone campaigns).
 
@@ -84,6 +84,7 @@ Lodgement steps (Jayden): sign in to VendorPanel, open VP527277, list any addend
 15. Tablelands Regional Council floodway rectification. Delivered by Jayden while at Langtree Consulting Engineers, not by JCE, so it is shown as key personnel experience (FP 5.0, Schedule 3) and moved out of Schedule 5, which asks for the tenderer's projects. [TBC - Jayden: site, year, value, Jayden's role and scope, RPEQ sign-off arrangement]. Confirm the year is recent enough.
 16. Tablelands Regional Council leachate storage facility. Also delivered at Langtree and shown the same way. [TBC - Jayden: site, year, value, Jayden's role and scope, RPEQ sign-off arrangement].
 17. Darren Quilliam (referee for Jayden's Langtree work): get his consent to be named, plus his title, phone and email (Schedule 2 referee 3). The printed FP says "contact details available on request".
+19. Sunny Lotay (Lotay Civil), associate certifying engineer, is shown in the team table, Attachment B and Schedules 3 and 4. He is described as engaged under a standing associate agreement, not as an employee, director or shareholder. Needed: a signed standing associate agreement with Lotay Civil (scope, fee basis, availability, and insurance: does JCE's PI cover his work, or does Lotay Civil hold its own PI and PL? attach certificates); Sunny's written consent to be named on this bid; his RPEQ and NER numbers; his CV; and his rate ($220/h assumed). Council's clause 8 approval also applies to Lotay Civil as a subconsultant.
 18. Maverick Partner, CPB Contractors (RAAF Base Townsville Defence delivery; replaces the Gunnedah levee example, which is removed from the FP and schedules): confirm the full name and title exactly as printed, his consent to be named, and his phone and email. [TBC - Jayden: project year (five-year window), package scope, Jayden's role (as JCE or with a previous employer, e.g. the SCP secondment to CPB), value, and any Defence confidentiality limits on what can be described.]
 
 ## 6. Compliance notes for Rev G
@@ -97,11 +98,11 @@ Lodgement steps (Jayden): sign in to VendorPanel, open VP527277, list any addend
 
 | Criterion (weight) | Rev A | Rev F | Rev G | Notes |
 |---|---|---|---|---|
-| Financial benefit (40%) | 6 | 6 | 6 | Rev G is $10,426 cheaper; still depends on quotes and other bids |
+| Financial benefit (40%) | 6 | 6 | 6 | Rev G is $2,848 dearer than Rev F; still depends on quotes and other bids |
 | Methodology and technical approach (35%) | 6 | 8 | 8 | Drone workflow, RTK with check points and an existing-condition baseline are added. Two-way data handling between the partner and JCE adds some risk, which the risk table covers |
-| Resources and relevant experience (20%) | 3 | 4 | 5.5 | JCE is hands-on for capture, GIS and register, with drone photogrammetry experience. Jayden's personal experience now includes two Tablelands Regional Council projects from his time at Langtree (a floodway on a council road network, and a leachate storage facility) with a council referee, plus Defence delivery for CPB at RAAF Base Townsville with a CPB referee. These count as key personnel experience, not company experience, so the tenderer-experience half stays weak. No condition audit or valuation yet, and partners unnamed. Expect 6.5 to 7 once partner council projects are added |
+| Resources and relevant experience (20%) | 3 | 4 | 6 | JCE is hands-on for capture, GIS and register, with drone photogrammetry experience. Jayden's personal experience now includes two Tablelands Regional Council projects from his time at Langtree (a floodway on a council road network, and a leachate storage facility) with a council referee, plus Defence delivery for CPB at RAAF Base Townsville with a CPB referee. These count as key personnel experience, not company experience. Sunny Lotay (RPEQ, NER) now gives registered review and certification and a backup lead, which lifts the skilled resources half (5.5 to 6). No condition audit or valuation yet, and partners unnamed. Expect 6.5 to 7 once partner council projects are added |
 | Local content (5%) | 1 | 2 | 2 | More local nights (44); no local staff |
-| **Weighted** | **5.2** | **6.1** | **6.4** | Rev G scored 6.3 before the Tablelands projects, 6.5 while they were counted as JCE projects, and 6.4 now they are shown as personnel experience |
+| **Weighted** | **5.2** | **6.1** | **6.5** | Rev G: 6.3 before the Tablelands projects; 6.4 with them as personnel experience; 6.5 with Sunny Lotay added. Price score held at 6 for a 0.8% increase |
 
 Partner experience still carries most of the 20% criterion (weighting unchanged). Jayden's personal experience is stronger with the Tablelands and CPB referees, but JCE has no council asset condition or valuation project of its own. Naming partner council projects remains the single biggest lift.
 
@@ -115,4 +116,4 @@ Partner experience still carries most of the 20% criterion (weighting unchanged)
 - `SUBMISSION_CHECKLIST_RevG.md`
 - Road imaging RFQs Rev C in `FP/VP527277/Road_Imaging_Condition/` (`*_Final_RevC*.docx` and `.pdf`, `Emails_RevC.txt`)
 
-Dropbox copies (current): `02_Submission/FINAL_RevG_v3_2026-10-12_FP_Final_text.md` and `02_Submission/FINAL_RevG_v3_2026-10-12_SUBMISSION_CHECKLIST.md`. The earlier FINAL_RevG_ and FINAL_RevG_v2_ copies are out of date; ignore them. Copy the Word, PDF, Excel and PNG files into Dropbox yourself; the connector cannot upload them.
+Dropbox copies (current): `02_Submission/FINAL_RevG_v4_2026-10-12_FP_Final_text.md` and `02_Submission/FINAL_RevG_v4_2026-10-12_SUBMISSION_CHECKLIST.md`. The earlier FINAL_RevG_, v2 and v3 copies are out of date; ignore them. Copy the Word, PDF, Excel and PNG files into Dropbox yourself; the connector cannot upload them.
