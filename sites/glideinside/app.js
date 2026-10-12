@@ -587,7 +587,7 @@ const CAPTIONS = [
 const STYLE = `
 .gi-stage{position:relative;overflow:hidden;background:#dfe7ec;container-type:inline-size}
 .gi-stage canvas{display:block;width:100%;height:100%}
-.gi-ov{position:absolute;inset:0;pointer-events:none;font-family:var(--gi-font,'DM Sans','Helvetica Neue',Arial,sans-serif)}
+.gi-ov{position:absolute;inset:0;pointer-events:none;font-family:var(--gi-font,'Urbanist','Helvetica Neue',Arial,sans-serif)}
 .gi-cap{position:absolute;left:4.2cqw;bottom:5.6cqw;display:flex;align-items:center;gap:1.1cqw;opacity:0;transition:none}
 .gi-cap i{display:block;width:3.2cqw;height:0.32cqw;background:#ffffff;border-radius:1cqw}
 .gi-cap span{color:#fff;font-weight:650;font-size:3.1cqw;letter-spacing:0.02em;text-shadow:0 0.15cqw 0.9cqw rgba(0,0,0,.45)}
@@ -595,10 +595,10 @@ const STYLE = `
 .gi-mark{position:absolute;right:2.4cqw;bottom:2.2cqw;color:rgba(255,255,255,.9);font-size:1.5cqw;font-weight:700;letter-spacing:.02em;text-shadow:0 0.1cqw .6cqw rgba(0,0,0,.4)}
 .gi-end{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0}
 .gi-card{background:rgba(250,250,247,.94);border-radius:1.2cqw;padding:3.2cqw 4.6cqw;text-align:center;box-shadow:0 1.2cqw 4cqw rgba(20,30,28,.25)}
-.gi-word{font-size:5.4cqw;font-weight:700;color:#14304A;letter-spacing:-0.01em;line-height:1}
-.gi-word b{color:#0B7A85;font-weight:700}
-.gi-line{margin-top:1.2cqw;font-size:2.1cqw;font-weight:500;color:#3d5366}
-.gi-offer{margin-top:1.6cqw;font-size:1.7cqw;font-weight:650;color:#0B7A85;letter-spacing:.02em}
+.gi-word{font-size:5.4cqw;font-weight:700;color:#1B201D;letter-spacing:-0.01em;line-height:1}
+.gi-word b{color:#1F3D2E;font-weight:700}
+.gi-line{margin-top:1.2cqw;font-size:2.1cqw;font-weight:500;color:#3f4842}
+.gi-offer{margin-top:1.6cqw;font-size:1.7cqw;font-weight:650;color:#1F3D2E;letter-spacing:.02em}
 `;
 
 export function createDemo(container, opts = {}) {
@@ -657,7 +657,7 @@ export function createDemo(container, opts = {}) {
 
   // overlay
   const ov = document.createElement('div'); ov.className = 'gi-ov';
-  ov.innerHTML = `<div class="gi-tag">Sample: original demo plan</div><div class="gi-cap"><i></i><span></span></div><div class="gi-mark">Glide Inside</div>` +
+  ov.innerHTML = `<div class="gi-tag">Sample · original demo plan</div><div class="gi-cap"><i></i><span></span></div><div class="gi-mark">Glide Inside</div>` +
     `<div class="gi-end"><div class="gi-card"><div class="gi-word">Glide <b>Inside</b></div><div class="gi-line">3D fly-throughs from your floor plan</div><div class="gi-offer">$249 per fly-through, delivered in 48 hours</div></div></div>`;
   container.appendChild(ov);
   const capEl = ov.querySelector('.gi-cap'), capText = ov.querySelector('.gi-cap span'), endEl = ov.querySelector('.gi-end'), markEl = ov.querySelector('.gi-mark');
