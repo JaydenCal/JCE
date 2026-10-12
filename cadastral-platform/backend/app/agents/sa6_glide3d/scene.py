@@ -57,6 +57,7 @@ def build_scene(req: SceneRequest) -> SceneBundle:
     ntri = sum(len(p.v) // 9 for p in b.parts if p.v and p.c != "cutfill")
     # summary
     S = b.summary
+    S.append(("Development type", r.development_type.label))
     S.append(("Lot", f"{r.lot.lotplan}, {lot.area:.0f} m2, {r.lot.lga_name}"))
     if b.ffl is not None:
         S.append(("FFL (AHD)", f"{b.ffl:.2f}"))

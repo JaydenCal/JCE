@@ -26,6 +26,7 @@ class SetbackRule(M):
     unit: str = "m"
     zone_code: str | None = None
     lot_condition: dict[str, Any] = {}
+    dwelling_type: str | None = None       # None = rule applies to any development type
 
 
 class EnvelopeResult(M):
@@ -37,6 +38,8 @@ class EnvelopeResult(M):
     area_m2: float
     max_height_m: float | None = None
     max_site_cover_pct: float | None = None
+    unresolved_elements: list[str] = []    # rules not found for the dwelling_type: reported, never defaulted
+    dwelling_type: str = "dwelling_house"
     warnings: list[str] = []
 
 

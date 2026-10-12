@@ -11,7 +11,7 @@ from app.agents.sa9_constraints.intersect import LayerLoader, LayerResult, check
 from app.agents.sa9_constraints.layers import layers_for
 from app.agents.sa9_constraints.report import build_report, geojson, overlay_polygons
 from app.agents.sa9_constraints.triggers import Resolver, TriggerResult, evaluate
-from app.common.contracts import AckKind, LotContext, Model, OverlayPolygon
+from app.common.contracts import AckKind, DevelopmentType, LotContext, Model, OverlayPolygon
 
 # AgentCode has no SA9 member and contracts.py is not edited here; orchestrator should add it.
 AGENT_CODE_NAME = "SA9_CONSTRAINTS"
@@ -22,6 +22,7 @@ class Sa9Input(Model):
     footprint_wkt: str | None = None
     output_dir: str
     report_date: str | None = None
+    development_type: DevelopmentType = DevelopmentType.dwelling_house
     acknowledgements: list[str] = [k.value for k in AckKind]
 
 
@@ -48,9 +49,9 @@ class Sa9Constraints:
         lot = wkt.loads(p.lot.boundary_wkt)
         fp = wkt.loads(p.footprint_wkt) if p.footprint_wkt else (wkt.loads(p.lot.envelope_wkt) if p.lot.envelope_wkt else None)
         res = [check_layer(l, lot, fp, self.loader) for l in layers_for(p.lot.jurisdiction)]
-        trig = evaluate(res, p.lot.jurisdiction, self.resolver)
+        trig = evaluate(res, p.lot.jurisdiction, self.resolver, development_type=p.development_type.value)
         cur = sorted({r.data_currency for r in res if r.data_currency})
-        meta = {"lotplan": p.lot.lotplan, "lga_name": p.lot.lga_name, "jurisdiction": p.lot.jurisdiction,
+        meta = {"lotplan": p.lot.lotplan, "lga_name": p.lot.lga_name, "jurisdiction": p.lot.jurisdiction, "development_type": p.development_type.label,
                 "date": p.report_date or date.today().isoformat(), "data_currency": "; ".join(cur) or "unknown"}
         out = Path(p.output_dir); out.mkdir(parents=True, exist_ok=True)
         pdf, js, gj = out / "constraints_report.pdf", out / "constraints_report.json", out / "constraints.geojson"

@@ -220,6 +220,8 @@ class Sa4Request(Model):
     proposed_cover_m: float | None = None          # explicit user value; else resolved/placeholder
     rwt: RwtInput | None = None
     requirements: RequirementSet | None = None     # None => legacy placeholders (stamped)
+    skip_connections: bool = False                 # Class 10a shed: no sewer/water connection is modelled
+    require_connections: bool = False              # secondary dwelling: sewer + water connection inputs expected
     use_placeholders: bool = False                 # with requirements: fall back to stamped placeholders when unresolved
 
 

@@ -8,7 +8,7 @@ from uuid import UUID
 import numpy as np
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.common.contracts import (DrivewayDesign, LotContext, OverlayPolygon, PlanOverlay,
+from app.common.contracts import (DevelopmentType, DrivewayDesign, LotContext, OverlayPolygon, PlanOverlay,
                                   RwtSummary, ServiceLine)
 
 
@@ -59,6 +59,14 @@ class PitIn(M):
     depth_m: float = 0.9
 
 
+class RollerDoorIn(M):
+    """Roller door on one footprint edge (edge_index into the counter-clockwise exterior ring)."""
+    width_m: float = 2.4
+    height_m: float = 2.1
+    edge_index: int = 0
+    colour: str = "#8a8f94"
+
+
 class BuildingIn(M):
     """Generic extruded footprint with optional roof (from the future design module)."""
     name: str
@@ -72,6 +80,9 @@ class BuildingIn(M):
     roof_colour: str = "#4a4f55"
     door_xy: tuple[float, float] | None = None    # absolute MGA; adds a stair link when rise > 0.15 m
     is_existing: bool = False
+    use: DevelopmentType = DevelopmentType.dwelling_house
+    habitable: bool = True                        # False: no habitable rooms (Class 10a shed)
+    roller_door: RollerDoorIn | None = None
 
 
 class PlacedItem(M):
@@ -125,6 +136,7 @@ class SceneRequest(M):
     buildings: list[BuildingIn] = []
     council_overlays: list[OverlayPolygon] = []
     items: list[PlacedItem] = []
+    development_type: DevelopmentType = DevelopmentType.dwelling_house
     terms_version_id: UUID | None = None
     options: SceneOptions = SceneOptions()
 

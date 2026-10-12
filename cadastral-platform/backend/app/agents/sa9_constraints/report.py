@@ -75,7 +75,7 @@ def build_report(path_pdf: Path, path_json: Path, meta: dict, results: list[Laye
     ss = getSampleStyleSheet(); P = lambda t, s="BodyText": Paragraph(escape(t), ss[s])
     st = [Spacer(1, 40 * mm), P("Planning Constraints & Triggers Report", "Title"),
           P(f"Lot/Plan: {meta['lotplan']}"), P(f"Council: {meta['lga_name']} ({meta['jurisdiction']})"),
-          P(f"Report date: {meta['date']}"), P(f"Data currency: {meta['data_currency']}"), Spacer(1, 10 * mm), P(LEGAL), PageBreak(),
+          P(f"Development type: {meta.get('development_type', 'not stated')}"), P(f"Report date: {meta['date']}"), P(f"Data currency: {meta['data_currency']}"), Spacer(1, 10 * mm), P(LEGAL), PageBreak(),
           P("Summary of layers", "Heading1")]
     rows = [["Layer", "Status", "Overlap m2", "% of lot", "Footprint", "Currency"]]
     for r in results:

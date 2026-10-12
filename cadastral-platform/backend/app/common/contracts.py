@@ -25,6 +25,31 @@ class AgentCode(str, Enum):
     SA7_PDF_ALIGN = "SA7_PDF_ALIGN"
 
 
+class DevelopmentType(str, Enum):
+    """What is being designed. ``dual_occupancy`` is a STUB: no preset or rules are wired for it yet."""
+    dwelling_house = "dwelling_house"
+    secondary_dwelling = "secondary_dwelling"     # granny flat
+    shed = "shed"                                 # Class 10a domestic outbuilding (shed / garage)
+    dual_occupancy = "dual_occupancy"             # stub
+
+    @property
+    def label(self) -> str:
+        return DEVELOPMENT_TYPE_LABELS[self.value]
+
+    @property
+    def rule_dwelling_type(self) -> str:
+        """Value of planning.setback_rules.dwelling_type used to select rules."""
+        return "outbuilding" if self is DevelopmentType.shed else self.value
+
+    @property
+    def habitable(self) -> bool:
+        return self is not DevelopmentType.shed
+
+
+DEVELOPMENT_TYPE_LABELS = {"dwelling_house": "Dwelling house", "secondary_dwelling": "Secondary dwelling (granny flat)",
+                           "shed": "Shed / outbuilding (Class 10a)", "dual_occupancy": "Dual occupancy (stub)"}
+
+
 class RunStatus(str, Enum):
     queued = "queued"
     running = "running"
@@ -209,6 +234,7 @@ class CadRequest(Model):
     project_title: str
     drawn_by: str
     output_path: str
+    development_type: DevelopmentType = DevelopmentType.dwelling_house
 
 
 class CadResult(Model):

@@ -123,14 +123,22 @@ class Sa4Hydro:
         ph = ph or (cover == 0.6 and cnote is None and req.proposed_cover_m is None)
 
         conns = []
-        if req.outlet_xy:
+        if req.skip_connections:
+            warnings.append("Shed (Class 10a): no sewer/water connection modelled; rainwater roof catchment only if supplied.")
+        elif req.require_connections and not req.outlet_xy:
+            warnings.append("UNRESOLVED: secondary dwelling needs a sewer connection; supply the outlet position (outlet_xy). Not proposed.")
+        if req.skip_connections:
+            pass
+        elif req.outlet_xy:
             c = propose_sewer(req.outlet_xy, assets, junction=req.sewer_junction_xy, outlet_invert_m=req.outlet_invert_m,
                               main_invert_m=req.main_invert_m, min_grade_pct=grade, rules=rules, grade_note=gnote)
             if c:
                 conns.append(c)
             else:
                 warnings.append("No sewer main found; sewer connection not proposed.")
-        meter = req.meter_xy or default_meter(req.lot.boundary_wkt, req.lot.segments)
+        meter = None if req.skip_connections else (req.meter_xy or default_meter(req.lot.boundary_wkt, req.lot.segments))
+        if req.require_connections and req.meter_xy is None:
+            warnings.append("Secondary dwelling water connection: meter position not supplied; default meter position used - confirm with the water authority.")
         if meter:
             c = propose_water(meter, assets, dia_mm=req.water_dia_mm, cover_m=cover, rules=rules, cover_note=cnote)
             if c:

@@ -13,6 +13,8 @@ from uuid import UUID
 from psycopg import Connection
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.common.contracts import DevelopmentType
+
 
 class RunRequest(BaseModel):
     """What the caller asks for. ``params`` is opaque to the orchestrator and is handed to
@@ -27,6 +29,12 @@ class RunRequest(BaseModel):
     drawing_scale_denominator: int = Field(default=100, gt=0)
     export_formats: list[str] = Field(default_factory=lambda: ["dxf", "pdf"])
     project_title: str | None = None
+    development_type: DevelopmentType = DevelopmentType.dwelling_house
+
+
+def run_params(request: RunRequest) -> dict[str, Any]:
+    """``request.params`` with the request-level development type merged in (params may override)."""
+    return {"development_type": request.development_type.value, **request.params}
 
 
 class InputError(Exception):
@@ -57,7 +65,7 @@ def _sa1(c: BuildContext) -> dict:
     row = c.conn.execute("SELECT jurisdiction::text AS j FROM core.projects WHERE project_id = %s",
                          (c.project_id,)).fetchone()
     return {"project_id": str(c.project_id), "project_jurisdiction": row["j"] if row else None,
-            "params": c.request.params}
+            "params": run_params(c.request)}
 
 
 def _sa7(c: BuildContext) -> dict:
@@ -84,22 +92,22 @@ def _sa7(c: BuildContext) -> dict:
 # Node payloads carry the upstream *outputs* verbatim; the typed models in
 # ``app.orchestrator.adapters.nodes`` validate them and convert to each agent's request.
 def _sa2(c: BuildContext) -> dict:
-    return {"sa1": c.need("SA1"), "params": c.request.params}
+    return {"sa1": c.need("SA1"), "params": run_params(c.request)}
 
 
 def _env(c: BuildContext) -> dict:
-    return {"node": "ENV", "env": {"sa1": c.need("SA1"), "sa2": c.need("SA2"), "params": c.request.params}}
+    return {"node": "ENV", "env": {"sa1": c.need("SA1"), "sa2": c.need("SA2"), "params": run_params(c.request)}}
 
 
 def _sa3(c: BuildContext) -> dict:
     return {"node": "SA3", "terrain": {"sa1": c.need("SA1"), "env": c.need("ENV"),
-                                       "overlay": c.upstream.get("SA7"), "params": c.request.params}}
+                                       "overlay": c.upstream.get("SA7"), "params": run_params(c.request)}}
 
 
 def _sa4(c: BuildContext) -> dict:
     c.need("SA3")   # ordering/dependency: earthworks must have succeeded
     return {"sa1": c.need("SA1"), "env": c.need("ENV"), "overlay": c.upstream.get("SA7"),
-            "params": c.request.params}
+            "params": run_params(c.request)}
 
 
 def _sa5(c: BuildContext) -> dict:
@@ -123,6 +131,7 @@ def _sa5(c: BuildContext) -> dict:
         "export_formats": c.request.export_formats,
         "acknowledgements_present": acks,
         "project_title": title,
+        "development_type": c.request.development_type.value,
         "drawn_by": u["display_name"] if u else "unknown",
         "output_path": f"{c.export_dir.rstrip('/')}/{c.project_id}",
     }

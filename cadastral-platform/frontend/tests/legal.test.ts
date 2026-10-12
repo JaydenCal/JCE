@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { canAccept, extractKeyRisks, isScrolledToEnd, needsReacceptance } from "@/lib/terms";
 import { ALL_KINDS, exportEnabled, missingAcks } from "@/lib/acks";
-import { ApiError, createApi, interceptError } from "@/lib/api";
+import { ApiError, createApi, DEVELOPMENT_TYPES, interceptError, isDevelopmentType } from "@/lib/api";
 import { checkFile } from "@/components/PlanUpload";
 
 describe("terms scroll gating", () => {
@@ -51,5 +51,19 @@ describe("api interceptor", () => {
 describe("upload checks", () => {
   it("validates type and size", () => {
     expect(checkFile({ name: "a.png", size: 5 })).toMatch(/PDF/); expect(checkFile({ name: "a.pdf", size: 201 * 1024 * 1024 })).toMatch(/200/); expect(checkFile({ name: "a.PDF", size: 5 })).toBeNull();
+  });
+});
+
+describe("development type", () => {
+  it("lists the four types with dwelling_house first", () => {
+    expect(DEVELOPMENT_TYPES.map((d) => d.value)).toEqual(["dwelling_house", "secondary_dwelling", "shed", "dual_occupancy"]);
+    expect(isDevelopmentType("shed")).toBe(true); expect(isDevelopmentType("mansion")).toBe(false);
+  });
+  it("createRun sends development_type (default dwelling_house)", async () => {
+    const f = vi.fn(async () => new Response(JSON.stringify({ run_id: "r", status: "queued" }), { status: 200 }));
+    const a = createApi({ fetchImpl: f as unknown as typeof fetch, baseUrl: "http://x" });
+    await a.createRun("p", "u"); await a.createRun("p", "u", undefined, "shed");
+    const bodies = f.mock.calls.map((c) => JSON.parse((c as unknown as [string, RequestInit])[1].body as string));
+    expect(bodies[0].development_type).toBe("dwelling_house"); expect(bodies[1].development_type).toBe("shed");
   });
 });

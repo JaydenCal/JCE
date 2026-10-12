@@ -39,9 +39,12 @@ def load_rules(path: Path = RULES_PATH) -> dict:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
-def find_rule(rules: dict, layer_key: str) -> dict:
+def find_rule(rules: dict, layer_key: str, development_type: str | None = None) -> dict:
     generic = None
     for r in rules["rules"]:
+        dts = r.get("development_types")
+        if dts is not None and development_type not in dts:
+            continue
         if layer_key in r["layers"]:
             return r
         if "*" in r["layers"]:
@@ -50,24 +53,30 @@ def find_rule(rules: dict, layer_key: str) -> dict:
 
 
 def evaluate(results: list[LayerResult], jurisdiction: str, resolver: Resolver | None = None,
-             rules: dict | None = None) -> list[TriggerResult]:
+             rules: dict | None = None, development_type: str | None = None) -> list[TriggerResult]:
     rules = rules or load_rules()
     instr = rules["instruction"][jurisdiction]
     out = []
     for lr in results:
         if lr.status != "affected":
             continue
-        r = find_rule(rules, lr.key)
-        cons = []
-        for item in r["consequences"]:
-            res = resolver(r["id"], item, lr.key, lr.attributes) if resolver else None
-            if res and res.get("citation") and res.get("value") is not None:
-                cons.append(Consequence(item=item, status="resolved", value=str(res["value"]), citation=res["citation"]))
-            else:  # decision 8: no citation, no value
-                cons.append(Consequence(item=item, instruction=instr))
-        out.append(TriggerResult(rule_id=r["id"], layer_key=lr.key, layer_label=lr.label, title=r["title"],
-                                 attributes=lr.attributes, consequences=cons,
-                                 next_steps=r["next_steps"] + ([instr] if not cons or any(c.status != "resolved" for c in cons) else []),
-                                 development_pathway_hint=r["development_pathway_hint"], source=r["source"],
-                                 unresolved=any(c.status != "resolved" for c in cons) or not cons))
+        out.append(_trigger(find_rule(rules, lr.key, development_type), lr.key, lr.label, lr.attributes, instr, resolver))
+    for r in rules["rules"]:        # rules driven by the development type alone (no mapped layer)
+        if not r["layers"] and development_type in (r.get("development_types") or []):
+            out.append(_trigger(r, "development_type", development_type, [], instr, resolver))
     return out
+
+
+def _trigger(r: dict, layer_key: str, label: str, attrs: list, instr: str, resolver: Resolver | None) -> TriggerResult:
+    cons = []
+    for item in r["consequences"]:
+        res = resolver(r["id"], item, layer_key, attrs) if resolver else None
+        if res and res.get("citation") and res.get("value") is not None:
+            cons.append(Consequence(item=item, status="resolved", value=str(res["value"]), citation=res["citation"]))
+        else:  # decision 8: no citation, no value
+            cons.append(Consequence(item=item, instruction=instr))
+    return TriggerResult(rule_id=r["id"], layer_key=layer_key, layer_label=label, title=r["title"], attributes=attrs,
+                         consequences=cons,
+                         next_steps=r["next_steps"] + ([instr] if not cons or any(c.status != "resolved" for c in cons) else []),
+                         development_pathway_hint=r["development_pathway_hint"], source=r["source"],
+                         unresolved=any(c.status != "resolved" for c in cons) or not cons)

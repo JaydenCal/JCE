@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { api, TERMINAL, type AlignmentResult, type RunDetail } from "@/lib/api";
+import { api, DEFAULT_DEVELOPMENT_TYPE, TERMINAL, type AlignmentResult, type DevelopmentType, type RunDetail } from "@/lib/api";
 export const MAX_BYTES = 200 * 1024 * 1024;
 export function checkFile(f: { name: string; size: number }): string | null {
   if (!/\.(pdf|dxf)$/i.test(f.name)) return "Only PDF or DXF files are accepted.";
@@ -20,7 +20,7 @@ export function AlignmentCard({ a, onScale }: { a: AlignmentResult; onScale: (n:
       <button className="btn-primary" disabled={!(Number(s) > 0)}>Re-run alignment</button></form>}
   </div>);
 }
-export function PlanUpload({ projectId }: { projectId: string }) {
+export function PlanUpload({ projectId, developmentType = DEFAULT_DEVELOPMENT_TYPE }: { projectId: string; developmentType?: DevelopmentType }) {
   const [file, setFile] = useState<File | null>(null), [warranty, setW] = useState(false), [err, setErr] = useState(""), [pct, setPct] = useState(0), [busy, setBusy] = useState(false);
   const [upload, setUpload] = useState<string>(), [runId, setRunId] = useState<string>(), [run, setRun] = useState<RunDetail>(), [over, setOver] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -32,9 +32,9 @@ export function PlanUpload({ projectId }: { projectId: string }) {
   }, [runId]);
   async function go() {
     if (!file) return; setBusy(true); setErr(""); setPct(0);
-    try { const r = await api.upload(projectId, file, warranty, setPct); setUpload(r.upload_id); setRunId(r.run_id); } catch (e) { setErr((e as Error).message); } finally { setBusy(false); }
+    try { const r = await api.upload(projectId, file, warranty, setPct, developmentType); setUpload(r.upload_id); setRunId(r.run_id); } catch (e) { setErr((e as Error).message); } finally { setBusy(false); }
   }
-  async function rerun(n: number) { if (!upload) return; try { setRun(undefined); setRunId((await api.createRun(projectId, upload, n)).run_id); } catch (e) { setErr((e as Error).message); } }
+  async function rerun(n: number) { if (!upload) return; try { setRun(undefined); setRunId((await api.createRun(projectId, upload, n, developmentType)).run_id); } catch (e) { setErr((e as Error).message); } }
   return (<div className="space-y-5">
     <div className="card">
       <div onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)} onDrop={(e) => { e.preventDefault(); setOver(false); pick(e.dataTransfer.files[0]); }}

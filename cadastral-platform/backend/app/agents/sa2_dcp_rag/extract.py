@@ -94,6 +94,8 @@ def parse_setback_table(chunk: Chunk, zone_code: str, dwelling_type: str = "dwel
     if len(rows) < 2:
         return []
     hdr, out = rows[0], []
+    if dwelling_type != "dwelling_house" and not any("dwelling" in h.lower() or "development" in h.lower() for h in hdr):
+        return []          # table does not distinguish development types: do NOT label it as another type's rule
     zi = next((i for i, h in enumerate(hdr) if "zone" in h.lower()), None)
     di = next((i for i, h in enumerate(hdr) if "dwelling" in h.lower() or "development" in h.lower()), None)
     cols = {i: _header_element(h) for i, h in enumerate(hdr) if i != zi and i != di}
@@ -188,7 +190,9 @@ def extract_rules(chunks: list[Chunk], zone_code: str, required: list[str], llm:
         by_id = {c.chunk_id: c for c in chunks}
         for raw in resp.get("rules", []):
             r, why = validate_rule(raw, by_id, zone_code, set(unresolved))
-            if r:
+            if r and r.dwelling_type != dwelling_type:
+                warnings.append(f"rule for dwelling_type '{r.dwelling_type}' ignored (requested '{dwelling_type}')")
+            elif r:
                 rules.append(r)
             else:
                 warnings.append(why)

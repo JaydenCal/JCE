@@ -5,6 +5,7 @@ from typing import Literal
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
+from app.common.contracts import DevelopmentType
 from app.agents.sa3_terrain.models import SurveyInput, TinOptions
 from app.agents.sa4_hydro.models import DigitisedAsset, LegendEntry, RwtInput
 
@@ -49,6 +50,7 @@ class DbydParams(_Strict):
     sewer_junction_xy: XY | None = None
     meter_xy: XY | None = None
     rwt: RwtInput | None = None
+    occupants: int | None = Field(default=None, ge=0)   # secondary dwelling: drives RWT demand
 
 
 class SiteParams(BaseModel):
@@ -59,8 +61,13 @@ class SiteParams(BaseModel):
     lot_identifier: str | None = Field(default=None, validation_alias=AliasChoices("lot_identifier", "lotplan"))
     address: str | None = None
     point: XY | None = None
-    dwelling_type: str = "dwelling_house"
+    development_type: DevelopmentType = DevelopmentType.dwelling_house
+    dwelling_type: str | None = None          # explicit override of the setback-rule dwelling_type
     zone_code: str | None = None              # override when SA1 could not determine the zone
     terrain: TerrainParams = Field(default_factory=TerrainParams)
     driveway: DrivewayParams = Field(default_factory=DrivewayParams)
     dbyd: DbydParams = Field(default_factory=DbydParams)
+
+    @property
+    def rule_dwelling_type(self) -> str:
+        return self.dwelling_type or self.development_type.rule_dwelling_type

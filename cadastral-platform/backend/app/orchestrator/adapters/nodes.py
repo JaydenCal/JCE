@@ -33,7 +33,7 @@ from app.agents.sa4_hydro.models import Sa4Request, Sa4Result
 from app.agents.sa5_cad_dxf.agent import Sa5CadDxf
 from app.agents.sa5_cad_dxf.model import CadRequestSa5
 from app.agents.sa7_pdf_align.agent import Sa7PdfAligner
-from app.common.contracts import AckKind, AgentCode, LotContext, PlanOverlay, PlanUpload
+from app.common.contracts import AckKind, AgentCode, DevelopmentType, LotContext, PlanOverlay, PlanUpload
 
 from .params import SiteParams
 
@@ -110,6 +110,7 @@ class Sa5Node(NodeModel):
     project_title: str
     drawn_by: str
     output_path: str
+    development_type: DevelopmentType = DevelopmentType.dwelling_house
 
 
 # --------------------------------------------------------------------------- conversions
@@ -144,7 +145,7 @@ def sa2_input(n: Sa2Node) -> Sa2Input:
     front = next((s for s in lot.segments if s.is_front), None)
     return Sa2Input(lga=lot.lga_name, zone_code=zone, corner_lot=road_frontages(lot) >= 2,
                     area_m2=lot.area_m2_calculated, frontage_m=front.distance_m if front else None,
-                    dwelling_type=n.params.dwelling_type)
+                    dwelling_type=n.params.rule_dwelling_type)
 
 
 def driveway_rules(sa2: Sa2Output) -> list[DrivewayRule]:
@@ -154,14 +155,14 @@ def driveway_rules(sa2: Sa2Output) -> list[DrivewayRule]:
             continue
         out.append(DrivewayRule(rule_id=f"{r.source_chunk_id}:{r.element}", element=r.element,
                                 value_numeric=r.value_numeric, unit=r.unit, zone_code=r.zone_code,
-                                lot_condition=r.lot_condition))
+                                lot_condition=r.lot_condition, dwelling_type=r.dwelling_type))
     return out
 
 
 def driveway_request(n: EnvNode) -> Sa3DrivewayRequest:
     d = n.params.driveway
     return Sa3DrivewayRequest(
-        lot=agent_lot(n.sa1), setback_rules=driveway_rules(n.sa2), dwelling_type=n.params.dwelling_type,
+        lot=agent_lot(n.sa1), setback_rules=driveway_rules(n.sa2), dwelling_type=n.params.rule_dwelling_type,
         easements_wkt=d.easements_wkt, exclusion_polygons_wkt=d.exclusion_polygons_wkt,
         preferred_offset_m=d.preferred_offset_m, garage_xy=d.garage_xy, parking=d.parking, width_m=d.width_m,
         kerb_to_boundary_m=d.kerb_to_boundary_m, vehicle=d.vehicle, levels=d.levels, on_site_turn=d.on_site_turn)
@@ -193,15 +194,30 @@ def lot_with_envelope(sa1: Sa1Result, env: Sa3DrivewayResult) -> LotContext:
     return agent_lot(sa1).model_copy(update={"envelope_wkt": _largest_polygon_wkt(env.envelope.envelope_wkt)})
 
 
+def dev_rwt(n: Sa4Node):
+    """Development-type adjustments to the user-supplied RWT input (never invents a tank/roof)."""
+    rwt, d, dt = n.params.dbyd.rwt, n.params.dbyd, n.params.development_type
+    if rwt is None:
+        return None
+    if dt is DevelopmentType.shed:      # optional roof catchment only: no indoor (toilet/laundry) demand, no occupants
+        return rwt.model_copy(update={"demand": rwt.demand.model_copy(update={
+            "occupants": 0, "use_toilet": False, "use_laundry": False})})
+    if dt is DevelopmentType.secondary_dwelling and d.occupants is not None:
+        return rwt.model_copy(update={"demand": rwt.demand.model_copy(update={"occupants": d.occupants})})
+    return rwt
+
+
 def sa4_request(n: Sa4Node) -> Sa4Request:
     d = n.params.dbyd
+    shed = n.params.development_type is DevelopmentType.shed    # no sewer / water connection for a Class 10a shed
     return Sa4Request(
         lot=lot_with_envelope(n.sa1, n.env), pdf_path=d.pdf_path, pdf_page=d.pdf_page, legend=d.legend,
         control_points=d.control_points, scale_denominator=d.scale_denominator, boundary_rgb=d.boundary_rgb,
         digitised_assets=d.digitised_assets, tolerance_m=d.tolerance_m,
         slab_wkt=_largest_polygon_wkt(n.overlay.footprint_wkt) if n.overlay else None, driveway=n.env.driveway,
-        outlet_xy=d.outlet_xy, outlet_invert_m=d.outlet_invert_m, main_invert_m=d.main_invert_m,
-        sewer_junction_xy=d.sewer_junction_xy, meter_xy=d.meter_xy, rwt=d.rwt)
+        outlet_xy=None if shed else d.outlet_xy, outlet_invert_m=d.outlet_invert_m, main_invert_m=d.main_invert_m,
+        sewer_junction_xy=None if shed else d.sewer_junction_xy, meter_xy=None if shed else d.meter_xy, rwt=dev_rwt(n),
+        skip_connections=shed, require_connections=n.params.development_type is DevelopmentType.secondary_dwelling)
 
 
 def cad_request(n: Sa5Node) -> CadRequestSa5:
@@ -209,7 +225,7 @@ def cad_request(n: Sa5Node) -> CadRequestSa5:
     return CadRequestSa5(
         project_id=n.project_id, mga_srid=lot.mga_srid, drawing_scale_denominator=n.drawing_scale_denominator,
         lot=lot, overlay=n.overlay, driveway=n.env.driveway, services=n.sa4.to_cad_services(),
-        rwt=n.sa4.to_cad_rwt(), council_overlays=[], council_name=lot.lga_name or None,
+        rwt=n.sa4.to_cad_rwt(), development_type=n.development_type, council_overlays=[], council_name=lot.lga_name or None,
         export_formats=n.export_formats, acknowledgements_present=n.acknowledgements_present,
         project_title=n.project_title, drawn_by=n.drawn_by, output_path=n.output_path)
 

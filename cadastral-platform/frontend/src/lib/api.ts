@@ -8,8 +8,18 @@ export const USE_MOCK = process.env.NEXT_PUBLIC_MOCK === "1";
 export class ApiError extends Error {
   constructor(public status: number, public code: string, message: string, public extra: Record<string, unknown> = {}) { super(message); }
 }
+export type DevelopmentType = "dwelling_house" | "secondary_dwelling" | "shed" | "dual_occupancy";
+export const DEFAULT_DEVELOPMENT_TYPE: DevelopmentType = "dwelling_house";
+/** dual_occupancy is a stub: selectable, but no preset or rules are wired for it yet. */
+export const DEVELOPMENT_TYPES: { value: DevelopmentType; label: string; note: string }[] = [
+  { value: "dwelling_house", label: "Dwelling house", note: "Habitable dwelling (default)." },
+  { value: "secondary_dwelling", label: "Secondary dwelling (granny flat)", note: "Small habitable building; adds sewer/water connection and occupant-based rainwater tank inputs." },
+  { value: "shed", label: "Shed / outbuilding (Class 10a)", note: "Non-habitable shed or garage; optional rainwater roof catchment only." },
+  { value: "dual_occupancy", label: "Dual occupancy (stub)", note: "Not yet supported: results will report requirements as unresolved." },
+];
+export const isDevelopmentType = (v: unknown): v is DevelopmentType => DEVELOPMENT_TYPES.some((d) => d.value === v);
 export interface Terms { terms_version_id: string; version_label: string; effective_from: string; body_markdown: string; body_sha256: string; accepted: boolean | null }
-export interface Project { project_id: string; title: string; lotplan?: string; jurisdiction?: "NSW" | "QLD"; updated_at?: string }
+export interface Project { project_id: string; title: string; development_type?: DevelopmentType; lotplan?: string; jurisdiction?: "NSW" | "QLD"; updated_at?: string }
 export interface Invocation { invocation_id: string; agent: string; attempt: number; status: string; error_code?: string | null; error_detail?: string | null }
 export interface AlignmentResult {
   scale_denominator_used: number; scale_source: "title_block_text" | "scale_bar_measure" | "dimension_string" | "user_entered";
@@ -67,16 +77,16 @@ export function createApi(o: ClientOpts = {}) {
     projects: () => optional(() => req<Project[]>("/projects"), mockProjects),
     project: async (id: string) => (await optional(() => req<Project[]>("/projects"), mockProjects)).find((p) => p.project_id === id) ?? { project_id: id, title: "Project " + id.slice(0, 8) },
     run: (id: string) => req<RunDetail>(`/runs/${id}`),
-    createRun: (project_id: string, upload_id: string, scale?: number) =>
-      post<{ run_id: string; status: string }>("/runs", { project_id, upload_id, targets: ["SA7"], params: scale ? { user_scale_denominator: scale } : {} }),
+    createRun: (project_id: string, upload_id: string, scale?: number, development_type: DevelopmentType = DEFAULT_DEVELOPMENT_TYPE) =>
+      post<{ run_id: string; status: string }>("/runs", { project_id, upload_id, targets: ["SA7"], development_type, params: scale ? { user_scale_denominator: scale } : {} }),
     acknowledge: (pid: string, kinds: string[]) => post<{ recorded: number; export_gate_missing: string[] }>(`/projects/${pid}/acknowledgements`, { kinds }),
     /** Documented: GET /projects/{id}/results (not yet implemented) */
     results: (pid: string) => optional(() => req<ProjectResults>(`/projects/${pid}/results`), mockResults),
     /** Documented: POST /projects/{id}/export {formats} -> ExportResult. Mocked with text blobs when absent. */
     exportFiles: (pid: string) => optional(() => post<ExportResult>(`/projects/${pid}/export`, { formats: ["dxf", "pdf"] }), mockExport()),
-    upload(pid: string, file: File, warranty: boolean, onProgress: (pct: number) => void): Promise<{ upload_id: string; run_id: string; page_count: number }> {
+    upload(pid: string, file: File, warranty: boolean, onProgress: (pct: number) => void, development_type: DevelopmentType = DEFAULT_DEVELOPMENT_TYPE): Promise<{ upload_id: string; run_id: string; page_count: number }> {
       return new Promise((resolve, reject) => {
-        const fd = new FormData(); fd.append("file", file); fd.append("upload_rights_warranty", String(warranty));
+        const fd = new FormData(); fd.append("file", file); fd.append("upload_rights_warranty", String(warranty)); fd.append("development_type", development_type);
         const x = new XMLHttpRequest(); x.open("POST", `${base}/projects/${pid}/plans`); x.setRequestHeader("X-User-Id", uid);
         x.upload.onprogress = (e) => e.lengthComputable && onProgress(Math.round((e.loaded / e.total) * 100));
         x.onload = () => {

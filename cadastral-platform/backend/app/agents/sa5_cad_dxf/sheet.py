@@ -175,6 +175,7 @@ def build_panel(model: PlanModel, scale: int, acks: list[AckKind], fit: FitResul
     zone = {7854: "54", 7855: "55", 7856: "56"}[req.mga_srid]
     rows = [
         ("LOT / PLAN", _lotplan(req.lot.lotplan)),
+        ("DEVELOPMENT", req.development_type.label),
         ("COUNCIL", req.council_name or req.lot.lga_name),
         ("SCALE", f"1:{scale} @ A3"),
         ("DATE", issue_date),

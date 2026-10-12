@@ -6,7 +6,7 @@ from app.agents.sa2_dcp_rag.models import Citation, DocMeta, Sa2Input, Sa2Output
 from app.agents.sa2_dcp_rag.retrieve import InMemoryRetriever
 from app.common.contracts import AgentCode
 
-QUERY = "front side rear secondary frontage garage setback site coverage {zone} dwelling house corner lot"
+QUERY = "front side rear secondary frontage garage setback site coverage {zone} {dwelling} corner lot"
 
 
 class Sa2DcpRag:
@@ -33,7 +33,7 @@ class Sa2DcpRag:
         if not any(payload.zone_code.upper() in c.content.upper().split() or f" {payload.zone_code.upper()} " in
                    f" {c.content.upper()} " for c in chunks):
             warns.append(f"zone {payload.zone_code} not found in documents")
-        top = InMemoryRetriever(chunks, self.emb).search(QUERY.format(zone=payload.zone_code), self.top_k,
+        top = InMemoryRetriever(chunks, self.emb).search(QUERY.format(zone=payload.zone_code, dwelling=payload.dwelling_type.replace("_", " ")), self.top_k,
                                                           payload.zone_code)
         cand = {c.chunk_id: c for c in top}
         for c in chunks:  # setback tables are critical: always offer them
@@ -46,6 +46,8 @@ class Sa2DcpRag:
         if any("performance" in c.content.lower() and ("alternative" in c.content.lower() or "outcome" in
                c.content.lower()) for c in cand.values()):
             warns.append("performance-based alternative exists")
+        if unresolved and payload.dwelling_type != "dwelling_house":
+            warns.append(f"UNRESOLVED for dwelling_type '{payload.dwelling_type}': dwelling-house rules are NOT substituted")
         cites, seen = [], set()
         for r in rules:
             if r.source_chunk_id not in seen:
@@ -61,4 +63,5 @@ class Sa2DcpRag:
     @staticmethod
     def _required(p: Sa2Input) -> list[str]:
         return ["front", "side", "rear"] + (["secondary_frontage"] if p.corner_lot else []) + ["garage_front",
-                                                                                              "site_cover_max"]
+                                                                                              "site_cover_max"] + (
+            ["height_max"] if p.dwelling_type != "dwelling_house" else [])

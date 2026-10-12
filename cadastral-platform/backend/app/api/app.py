@@ -22,6 +22,7 @@ from app.common.contracts import AckKind
 from app.common.db import make_pool, user_connection
 from app.orchestrator.core import (GateBlocked, InvalidRunState, Orchestrator, OrchestratorConfig,
                                    RunNotFound)
+from app.common.contracts import DevelopmentType
 from app.orchestrator.inputs import RunRequest
 
 log = logging.getLogger(__name__)
@@ -160,6 +161,7 @@ def create_app(settings: Settings | None = None, pool=None, orchestrator: Orches
     def upload_plan(project_id: UUID, request: Request, background: BackgroundTasks,
                     file: UploadFile = File(...), upload_rights_warranty: bool = Form(...),
                     selected_page: int | None = Form(default=None),
+                    development_type: DevelopmentType = Form(default=DevelopmentType.dwelling_house),
                     user_id: UUID = Depends(require_terms), conn: Connection = Depends(get_conn)):
         require_project(project_id, conn)
         if not upload_rights_warranty:
@@ -189,7 +191,7 @@ def create_app(settings: Settings | None = None, pool=None, orchestrator: Orches
         conn.commit()    # make the upload visible to the run before it starts
         o = orch(request)
         run = o.create_run(user_id, RunRequest(project_id=project_id, upload_id=upload_id,
-                                               targets=["SA7"], params={}))
+                                               targets=["SA7"], params={}, development_type=development_type))
         background.add_task(_run_background, o, run.run_id, user_id)
         return {"upload_id": str(upload_id), "sha256": pdf.sha256, "page_count": pdf.page_count,
                 "run_id": str(run.run_id), "status": "uploaded"}

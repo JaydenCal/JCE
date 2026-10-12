@@ -220,6 +220,21 @@ class Builder:
                                                size=(round(L, 3), round(thick, 3), round(z1 - z0, 3)),
                                                yaw_deg=round(math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])), 2)))
 
+    def _roller_door(self, pre, fp, b):
+        from shapely.geometry import Polygon as _P
+        ring = np.array(G.orient(fp, 1.0).exterior.coords)[:-1]
+        i = b.roller_door.edge_index % len(ring)
+        p, q = ring[i], ring[(i + 1) % len(ring)]
+        L = float(np.linalg.norm(q - p))
+        t = (q - p) / L
+        n = np.array([t[1], -t[0]])                     # outward for a CCW ring
+        w = min(b.roller_door.width_m, L - 0.2)
+        m = (p + q) / 2
+        a0, a1 = m - t * w / 2, m + t * w / 2
+        quad = _P([a0, a1, a1 + n * 0.06, a0 + n * 0.06])
+        self.add(pre + "_RollerDoor", "buildings", b.roller_door.colour,
+                 G.prism(quad, b.base_rl, b.base_rl + min(b.roller_door.height_m, b.wall_height_m)), ro=0.4, me=0.5, cs=1)
+
     def buildings(self):
         slab = None
         if self.r.slab_wkt:
@@ -234,8 +249,10 @@ class Builder:
             self.add(pre + "_Slab", "buildings", "#cfcfc9", G.prism(fp, b.base_rl - 0.2, b.base_rl, sides=True), tex="conc", cs=1)
             if b.roof_type != "none":
                 self.add(pre + "_Roof", "buildings", b.roof_colour, G.roof(fp, top, b.roof_type, b.roof_pitch_deg, b.eaves_m), ro=0.5, me=0.3, cs=1)
+            if b.roller_door:
+                self._roller_door(pre, fp, b)
             c = fp.centroid
-            self.label(f"{b.name}: FFL {b.base_rl:.2f}, {b.roof_type} roof" + (f" {b.roof_pitch_deg:g} deg" if b.roof_type not in ("flat", "none") else ""),
+            self.label(f"{b.name}{'' if b.habitable else ' (non-habitable, Class 10a)'}: FFL {b.base_rl:.2f}, {b.roof_type} roof" + (f" {b.roof_pitch_deg:g} deg" if b.roof_type not in ("flat", "none") else ""),
                        (c.x, c.y, top + 3.0))
             ring = [(round(x, 3), round(y, 3)) for x, y in G.orient(fp, 1.0).exterior.coords][:-1]
             self.walk["floors"].append(Floor(id=pre, kind="floor", level=b.base_rl, ring=ring))

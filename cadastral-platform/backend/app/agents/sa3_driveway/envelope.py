@@ -62,7 +62,7 @@ def select_rule(rules: list[SetbackRule], element: str, lot: LotContext, corner:
     """Most specific matching rule (more satisfied lot_condition keys wins)."""
     best, best_score = None, -1
     for r in rules:
-        if r.element != element or (r.zone_code and lot.zone_code and r.zone_code != lot.zone_code):
+        if r.element != element or (r.dwelling_type and r.dwelling_type != dwelling) or (r.zone_code and lot.zone_code and r.zone_code != lot.zone_code):
             continue
         c, score, ok = r.lot_condition, 0, True
         if "corner_lot" in c:
@@ -88,13 +88,16 @@ def build_envelope(lot: LotContext, rules: list[SetbackRule], easements_wkt=(), 
     roles = classify_segments(lot, overrides)
     corner = any(r == "secondary" for r in roles.values())
     warns: list[str] = []
+    unresolved: list[str] = []
     applied: list[str] = []
     cache: dict[str, float] = {}
 
     def val(el: str, fallback: str | None = None) -> float:
         r = select_rule(rules, el, lot, corner, dwelling_type) or (select_rule(rules, fallback, lot, corner, dwelling_type) if fallback else None)
         if r is None:
-            warns.append(f"no setback rule for '{el}'; 0 m assumed")
+            unresolved.append(el)
+            warns.append(f"UNRESOLVED: no '{el}' setback rule for dwelling_type '{dwelling_type}'; no value defaulted "
+                         "(0 m used ONLY to draw the geometry - the envelope is not a valid setback line)")
             cache[el] = 0.0
             return 0.0
         if str(r.rule_id) not in applied:
@@ -131,6 +134,10 @@ def build_envelope(lot: LotContext, rules: list[SetbackRule], easements_wkt=(), 
         warns.append("envelope is empty after setbacks/exclusions")
     cover = select_rule(rules, "site_cover_max", lot, corner, dwelling_type)
     height = select_rule(rules, "height_max", lot, corner, dwelling_type)
+    for el, r in (("site_cover_max", cover), ("height_max", height)):
+        if r is None:
+            unresolved.append(el)
+            warns.append(f"UNRESOLVED: no '{el}' rule for dwelling_type '{dwelling_type}'; not defaulted")
     for r in (cover, height):
         if r and str(r.rule_id) not in applied:
             applied.append(str(r.rule_id))
@@ -138,7 +145,8 @@ def build_envelope(lot: LotContext, rules: list[SetbackRule], easements_wkt=(), 
         envelope_wkt=env.wkt, upper_envelope_wkt=up.wkt if up is not None else None, applied_rule_ids=applied,
         segment_roles=roles, setbacks_m=cache, area_m2=env.area,
         max_height_m=float(height.value_numeric) if height else None,
-        max_site_cover_pct=float(cover.value_numeric) if cover else None, warnings=warns)
+        max_site_cover_pct=float(cover.value_numeric) if cover else None,
+        unresolved_elements=list(dict.fromkeys(unresolved)), dwelling_type=dwelling_type, warnings=warns)
 
 
 def _inward_pt(poly: Polygon, s, inside) -> tuple[float, float]:

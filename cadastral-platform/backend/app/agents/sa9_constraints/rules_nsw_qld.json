@@ -1,31 +1,275 @@
-{"_note": "Rule SKELETONS. Values are unresolved (to_be_confirmed) until supplied by the Requirements Resolver from cited documents. Never treat as fact.",
- "instruction": {"NSW": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council.", "QLD": "Obtain the council property/planning report (and check the SARA DA mapping) for the lot."},
+{
+ "_note": "Rule SKELETONS. Values are unresolved (to_be_confirmed) until supplied by the Requirements Resolver from cited documents. Never treat as fact.",
+ "instruction": {
+  "NSW": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council.",
+  "QLD": "Obtain the council property/planning report (and check the SARA DA mapping) for the lot."
+ },
  "rules": [
-  {"id":"flood.fpl","layers":["nsw_flood","qld_flood"],"when":{},"title":"Flood-affected lot",
-   "consequences":["flood_planning_level","freeboard","floor_level","fill","materials","evacuation","da_requirement"],
-   "next_steps":["Request flood certificate / flood information from council","Engage a flood engineer if required by council"],
-   "development_pathway_hint":"may apply: DA with flood assessment; verify with council","source":"to be cited from flood development control plan / planning scheme overlay code"},
-  {"id":"bushfire.bal","layers":["nsw_bushfire","qld_bushfire"],"when":{},"title":"Bushfire prone land",
-   "consequences":["bal_assessment_as3959","pbp_compliance","spp_bushfire_hazard","asset_protection_zone","rfs_referral"],
-   "next_steps":["Commission a BAL assessment (AS 3959) by an accredited practitioner","NSW: check Planning for Bushfire Protection; integrated development may need an RFS bush fire safety authority","QLD: check State Planning Policy bushfire hazard"],
-   "development_pathway_hint":"may apply: integrated development / referral; verify with council","source":"to be cited from Planning for Bushfire Protection (NSW) / State Planning Policy (QLD) / AS 3959"},
-  {"id":"heritage.hia","layers":["nsw_heritage_item","nsw_heritage_conservation","qld_heritage"],"when":{},"title":"Heritage",
-   "consequences":["heritage_impact_statement","referral","da_requirement"],
-   "next_steps":["Prepare a heritage impact statement","Seek pre-lodgement advice from council heritage adviser"],
-   "development_pathway_hint":"may apply: DA required, possible referral; verify with council","source":"to be cited from LEP heritage clause / planning scheme heritage code"},
-  {"id":"ass.plan","layers":["nsw_acid_sulfate","qld_acid_sulfate"],"when":{},"title":"Acid sulfate soils",
-   "consequences":["ass_management_plan","work_below_rl"],
-   "next_steps":["Confirm class and works depth thresholds","Prepare an ASS management plan if works disturb affected soil"],
-   "development_pathway_hint":"may apply: consent for works below mapped level; verify with council","source":"to be cited from LEP ASS clause / SPP acid sulfate soils"},
-  {"id":"biodiversity.assess","layers":["nsw_biodiversity","qld_biodiversity"],"when":{},"title":"Biodiversity",
-   "consequences":["bdar","boc_threshold","ecological_assessment","offset"],
-   "next_steps":["Engage an accredited assessor to determine whether a BDAR / ecological assessment is needed"],
-   "development_pathway_hint":"may apply: referral / offsets; verify with council","source":"to be cited from Biodiversity Conservation Act (NSW) / MSES guidelines (QLD)"},
-  {"id":"airport.limits","layers":["nsw_airport","qld_airport"],"when":{},"title":"Airport noise / obstacles",
-   "consequences":["height_limit","noise_attenuation","referral"],
-   "next_steps":["Confirm obstacle limitation surface height and ANEF contour with the airport/council"],
-   "development_pathway_hint":"may apply: referral to airport operator; verify with council","source":"to be cited from LEP airport clause / AS 2021"},
-  {"id":"generic","layers":["*"],"when":{},"title":"Mapped constraint",
-   "consequences":[],"next_steps":["Obtain the authoritative statement of what this layer triggers"],
-   "development_pathway_hint":"may apply: verify with council","source":"to be cited"}
- ]}
+  {
+   "id": "flood.fpl",
+   "layers": [
+    "nsw_flood",
+    "qld_flood"
+   ],
+   "when": {},
+   "title": "Flood-affected lot",
+   "consequences": [
+    "flood_planning_level",
+    "freeboard",
+    "floor_level",
+    "fill",
+    "materials",
+    "evacuation",
+    "da_requirement"
+   ],
+   "next_steps": [
+    "Request flood certificate / flood information from council",
+    "Engage a flood engineer if required by council"
+   ],
+   "development_pathway_hint": "may apply: DA with flood assessment; verify with council",
+   "source": "to be cited from flood development control plan / planning scheme overlay code"
+  },
+  {
+   "id": "bushfire.habitable",
+   "layers": [
+    "nsw_bushfire",
+    "qld_bushfire"
+   ],
+   "development_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "dual_occupancy"
+   ],
+   "when": {},
+   "title": "Bushfire prone land (habitable building)",
+   "consequences": [
+    "bal_assessment_as3959",
+    "pbp_compliance",
+    "spp_bushfire_hazard",
+    "asset_protection_zone",
+    "rfs_referral"
+   ],
+   "next_steps": [
+    "Commission a BAL assessment (AS 3959) by an accredited practitioner",
+    "NSW: check Planning for Bushfire Protection (habitable buildings)"
+   ],
+   "development_pathway_hint": "may apply: BAL construction requirements for a habitable building; verify with council / certifier",
+   "source": "to be cited from Planning for Bushfire Protection / AS 3959 / NCC"
+  },
+  {
+   "id": "bushfire.class10a",
+   "layers": [
+    "nsw_bushfire",
+    "qld_bushfire"
+   ],
+   "development_types": [
+    "shed"
+   ],
+   "when": {},
+   "title": "Bushfire prone land (Class 10a non-habitable shed)",
+   "consequences": [
+    "class10a_bushfire_applicability",
+    "bal_assessment_as3959",
+    "separation_from_dwelling",
+    "da_requirement"
+   ],
+   "next_steps": [
+    "Confirm whether bushfire construction requirements apply to a Class 10a building at this location (they differ from habitable buildings)",
+    "Confirm any separation distance from a dwelling or boundary"
+   ],
+   "development_pathway_hint": "may apply: bushfire requirements for a Class 10a building differ from habitable buildings; verify with council / certifier",
+   "source": "to be cited from Planning for Bushfire Protection / AS 3959 / NCC"
+  },
+  {
+   "id": "bushfire.bal",
+   "layers": [
+    "nsw_bushfire",
+    "qld_bushfire"
+   ],
+   "when": {},
+   "title": "Bushfire prone land",
+   "consequences": [
+    "bal_assessment_as3959",
+    "pbp_compliance",
+    "spp_bushfire_hazard",
+    "asset_protection_zone",
+    "rfs_referral"
+   ],
+   "next_steps": [
+    "Commission a BAL assessment (AS 3959) by an accredited practitioner",
+    "NSW: check Planning for Bushfire Protection; integrated development may need an RFS bush fire safety authority",
+    "QLD: check State Planning Policy bushfire hazard"
+   ],
+   "development_pathway_hint": "may apply: integrated development / referral; verify with council",
+   "source": "to be cited from Planning for Bushfire Protection (NSW) / State Planning Policy (QLD) / AS 3959"
+  },
+  {
+   "id": "heritage.hia",
+   "layers": [
+    "nsw_heritage_item",
+    "nsw_heritage_conservation",
+    "qld_heritage"
+   ],
+   "when": {},
+   "title": "Heritage",
+   "consequences": [
+    "heritage_impact_statement",
+    "referral",
+    "da_requirement"
+   ],
+   "next_steps": [
+    "Prepare a heritage impact statement",
+    "Seek pre-lodgement advice from council heritage adviser"
+   ],
+   "development_pathway_hint": "may apply: DA required, possible referral; verify with council",
+   "source": "to be cited from LEP heritage clause / planning scheme heritage code"
+  },
+  {
+   "id": "ass.plan",
+   "layers": [
+    "nsw_acid_sulfate",
+    "qld_acid_sulfate"
+   ],
+   "when": {},
+   "title": "Acid sulfate soils",
+   "consequences": [
+    "ass_management_plan",
+    "work_below_rl"
+   ],
+   "next_steps": [
+    "Confirm class and works depth thresholds",
+    "Prepare an ASS management plan if works disturb affected soil"
+   ],
+   "development_pathway_hint": "may apply: consent for works below mapped level; verify with council",
+   "source": "to be cited from LEP ASS clause / SPP acid sulfate soils"
+  },
+  {
+   "id": "biodiversity.assess",
+   "layers": [
+    "nsw_biodiversity",
+    "qld_biodiversity"
+   ],
+   "when": {},
+   "title": "Biodiversity",
+   "consequences": [
+    "bdar",
+    "boc_threshold",
+    "ecological_assessment",
+    "offset"
+   ],
+   "next_steps": [
+    "Engage an accredited assessor to determine whether a BDAR / ecological assessment is needed"
+   ],
+   "development_pathway_hint": "may apply: referral / offsets; verify with council",
+   "source": "to be cited from Biodiversity Conservation Act (NSW) / MSES guidelines (QLD)"
+  },
+  {
+   "id": "airport.limits",
+   "layers": [
+    "nsw_airport",
+    "qld_airport"
+   ],
+   "when": {},
+   "title": "Airport noise / obstacles",
+   "consequences": [
+    "height_limit",
+    "noise_attenuation",
+    "referral"
+   ],
+   "next_steps": [
+    "Confirm obstacle limitation surface height and ANEF contour with the airport/council"
+   ],
+   "development_pathway_hint": "may apply: referral to airport operator; verify with council",
+   "source": "to be cited from LEP airport clause / AS 2021"
+  },
+  {
+   "id": "pathway.secondary_dwelling",
+   "layers": [],
+   "development_types": [
+    "secondary_dwelling"
+   ],
+   "when": {},
+   "title": "Secondary dwelling approval pathway",
+   "consequences": [
+    "exempt_development_eligibility",
+    "complying_development_eligibility",
+    "da_requirement",
+    "max_floor_area",
+    "min_lot_size",
+    "setbacks",
+    "private_open_space",
+    "parking",
+    "basix_certificate"
+   ],
+   "next_steps": [
+    "Check whether exempt or complying development may apply to this lot and design (verify with council / accredited certifier)",
+    "If not, a development application is likely required"
+   ],
+   "development_pathway_hint": "may apply: complying development or DA; verify with council / certifier",
+   "source": "to be cited from the State planning policy for secondary dwellings and the LEP/DCP"
+  },
+  {
+   "id": "services.secondary_dwelling",
+   "layers": [],
+   "development_types": [
+    "secondary_dwelling"
+   ],
+   "when": {},
+   "title": "Secondary dwelling services connection",
+   "consequences": [
+    "sewer_connection",
+    "water_connection",
+    "electricity_connection",
+    "separate_metering",
+    "section_73_certificate",
+    "stormwater_disposal"
+   ],
+   "next_steps": [
+    "Contact the water authority about sewer and water capacity and connection",
+    "Contact the electricity distributor about connection and metering"
+   ],
+   "development_pathway_hint": "may apply: authority approval / certificate before occupation; verify with the authorities",
+   "source": "to be cited from the water authority and distributor requirements"
+  },
+  {
+   "id": "pathway.shed",
+   "layers": [],
+   "development_types": [
+    "shed"
+   ],
+   "when": {},
+   "title": "Shed (Class 10a outbuilding) approval pathway",
+   "consequences": [
+    "exempt_development_eligibility",
+    "complying_development_eligibility",
+    "da_requirement",
+    "max_floor_area",
+    "max_height",
+    "setbacks",
+    "max_site_cover",
+    "stormwater_disposal"
+   ],
+   "next_steps": [
+    "Check whether exempt development may apply (size, height, setback, easement conditions) - verify with council / certifier",
+    "If not, complying development or a DA may be needed"
+   ],
+   "development_pathway_hint": "may apply: exempt or complying development; verify with council / certifier",
+   "source": "to be cited from the State exempt and complying development code and the LEP/DCP"
+  },
+  {
+   "id": "generic",
+   "layers": [
+    "*"
+   ],
+   "when": {},
+   "title": "Mapped constraint",
+   "consequences": [],
+   "next_steps": [
+    "Obtain the authoritative statement of what this layer triggers"
+   ],
+   "development_pathway_hint": "may apply: verify with council",
+   "source": "to be cited"
+  }
+ ],
+ "_dev_note": "Rules with development_types apply only to those types; layers [] = evaluated from the development type alone. All values unresolved until cited."
+}
