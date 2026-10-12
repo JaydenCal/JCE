@@ -1,8 +1,8 @@
-> FINAL Rev F, 12/10/2026. Plain-text copy of JCE_FP_VP527574_Final_RevF.docx for pasting into the JCE branded template. Items marked [TBC - Jayden] must be completed before lodgement.
+> FINAL Rev G, 12/10/2026. Plain-text copy of JCE_FP_VP527574_Final_RevG.docx for pasting into the JCE branded template. Items marked [TBC - Jayden] must be completed before lodgement.
 
-# JCE Infrastructure Pty Ltd: Fee proposal for Newstead Levee Design 26/27 (RFQ M2025-125), Rev F FINAL
+# JCE Infrastructure Pty Ltd: Fee proposal for Newstead Levee Design 26/27 (RFQ M2025-125), Rev G FINAL
 
-_Our ref: JCE-FP-VP527574 Rev F | Council ref: RFQ M2025-125 (VendorPanel VP527574) | Date: [dd/10/2026]_
+_Our ref: JCE-FP-VP527574 Rev G | Council ref: RFQ M2025-125 (VendorPanel VP527574) | Date: [dd/10/2026]_
 
 Manager Engineering  
 Mount Alexander Shire Council  
@@ -16,7 +16,7 @@ JCE Infrastructure Pty Ltd (JCE) submits this quotation for the detailed design,
 
 **Our main offer fits Council's budget.** The lump sum is **$113,600.00 excluding GST ($124,960.00 including GST)** against the indicative budget of $125,000 including GST (Brief 1.8). It covers every hold point and all 14 deliverables in Brief 1.7. To reach that figure we have:
 
-- designed from the Water Technology TUFLOW model and NCCMA LiDAR already held by Council, with one design-case modelling set for the preferred alignment and a final impact check;
+- designed from the Water Technology TUFLOW model and NCCMA digital terrain data already held by Council, with one design-case modelling set for the preferred alignment and a final impact check;
 - limited the supplementary survey to the levee crest, structures and the floor levels needed for impact reporting, with any further survey at the Schedule C item 2.1 day rate;
 - carried geotechnical, cultural heritage, ecology, utility locating, contamination and any bespoke structural design as stated provisional sums that proceed only on the Superintendent's written direction (Brief 1.6, RFQ Note 2); and
 - kept JCE site attendance to one visit, with local attendance by our Ballarat-based registered engineer and online meetings.
@@ -70,7 +70,7 @@ JCE offers two priced scopes. The main offer is entered in Schedule C and is the
 | Hold points and deliverables | All six hold points; all 14 deliverables | All six hold points; all 14 deliverables |
 | Alignment options at concept | One preferred Option 6b alignment; the northern variant (Codrington Road or Mia Mia Creek) settled by desktop review at HP2 | Two alignment variants taken to concept |
 | Hydraulic modelling (Venant) | Model review, one design-case set with one sensitivity, final impact check and report | Two concept iterations, residual risk (breach) scenarios, internal drainage ponding and final report |
-| Supplementary survey | Levee crest long section, cross-sections at about 50 m, structures and up to 20 floor levels; LiDAR elsewhere | Full corridor feature survey (about 40 m wide), up to 50 floor levels and cadastral re-establishment |
+| Supplementary survey | Levee crest long section, cross-sections at about 50 m, structures and up to 20 floor levels; NCCMA terrain data elsewhere | Full corridor feature survey (about 40 m wide), up to 50 floor levels and cadastral re-establishment |
 | Structures | Standard precast headwalls and proprietary flap gates designed by JCE; bespoke structures under PS-F | Structural design and certification of outlets and any floodwall in the lump sum |
 | Drawings | About 21 sheets (5 concept, 16 detailed) | About 38 sheets (10 concept, 28 detailed) |
 | JCE site visits | One (inception); concept workshop online | Two (inception and concept workshop or community session) |
@@ -83,17 +83,18 @@ The scope follows Brief Sections 1.3 to 1.5 and is grouped by Council's six hold
 ### 3.1   HP1: Inception and information review (Schedule C item 1.1)
 
 - Inception meeting with Council within two weeks of award, and a full-length site inspection of the levee corridor, tie-ins, waterway interfaces, drainage outlets, access, utilities, vegetation and private property interfaces (Brief 1.4 item 2).
-- Review with Venant of the Water Technology flood study (reports, GIS and TUFLOW model), the 2017 levee alignment modelling, the GHD 2015 levee investigation, NCCMA LiDAR, and the LSIO and FO overlays.
+- Review with Venant of the Water Technology flood study (reports, GIS and TUFLOW model), the 2017 levee alignment modelling, the GHD 2015 levee investigation, NCCMA digital terrain data, and the LSIO and FO overlays.
 - Project Management Plan, program and risk register, and the Inception Report, within 10 business days of award (Brief 1.7 and 1.10).
 - Information gap register and investigation plan (deliverable 2); BYDA search and data requests to NCCMA, Coliban Water, the Department of Transport and Planning, Powercor and NBN/Telstra.
+- During the inception site inspection JCE flies a drone photogrammetry capture of the levee corridor, giving a geotagged orthophoto and 3D model that records existing crest, batter and outlet condition and serves as the base for concept mapping and community session visuals.
 
 ### 3.2   HP2: Design Basis Memorandum (item 1.2)
 
 - Design Basis Memorandum (deliverable 3): design event (1% AEP with the agreed climate allowance), freeboard, crest width and batters, controlled overtopping, materials and compaction, crossings, drainage and floodgates, design life, maintenance access, the standards applied (including the Victorian Levee Management Guidelines 2015) and the certification pathway.
-- Desktop comparison of the two northern variants (Codrington Road or closer to Mia Mia Creek) using the existing model results, LiDAR and land tenure, with a recommendation for Council to adopt at HP2.
+- Desktop comparison of the two northern variants (Codrington Road or closer to Mia Mia Creek) using the existing model results, terrain data and land tenure, with a recommendation for Council to adopt at HP2.
 - Investigation requirements for Council's acceptance: supplementary survey [Sub], and the scope, extent and cost of geotechnical [PS-A], cultural heritage [PS-B], ecology and arboriculture [PS-C], utility locating [PS-D] and contamination [PS-E] investigations.
 - Approvals pathway (waterway, planning, native vegetation, cultural heritage, road authority, property owner) and the related stakeholder and approval risks.
-- Supplementary survey [Sub]: levee crest long section, cross-sections at about 50 m and at grade changes, outlets and structures, and floor levels of up to 20 properties where the design changes flood levels.
+- Supplementary survey [Sub]: levee crest long section, cross-sections at about 50 m and at grade changes, outlets and structures, and floor levels of up to 20 properties where the design changes flood levels. The drone capture lowers the risk of missed features between surveyed cross-sections, but it does not replace the licensed surveyor's levels, so the survey allowance is unchanged.
 
 ### 3.3   HP3: Concept alignment and hydraulic impact review (item 1.3)
 
@@ -231,6 +232,8 @@ Schedule F requires the designer or supervisor and the design approver to be reg
 
 **Levee experience.** JCE inspected and certified the existing earthen levee (about 647 m) at 6887 Oxley Highway, Gunnedah NSW in 2026: condition inspection, field dispersion and plasticity testing, and certification report JCE-INS-001 for a development application under Gunnedah LEP 2012 clause 5.21. Venant's directors bring Victorian floodplain and levee work, including the Harcourt Flood Study in Mount Alexander Shire and the Best Practice for Planning Behind Levees review for the City of Launceston. Short CVs are in Attachment C and full CVs accompany Schedule F.
 
+**Resources and equipment.** JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE delivers drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category, with operator accreditation in place before services start. Flights at Newstead follow CASA's standard operating conditions (visual line of sight, below 120 m, clear of people) and need landowner permission over private land.
+
 ## 8.0   QUALITY, DESIGN REVIEW AND NON-COMPLIANCE MANAGEMENT
 
 - Every deliverable is checked by its author, verified by a second engineer and approved by the registered design approver before issue. Verification records are issued at HP6 (deliverable 13).
@@ -313,7 +316,7 @@ The Schedule C subtotal formula adds the Value Add Option lines (3.1, 3.2) to th
 
 ### Information required from Council
 
-- The Water Technology flood study reports, GIS layers and TUFLOW model, the 2017 alignment modelling, the GHD 2015 investigation and NCCMA LiDAR, supplied within one week of award with any licence conditions.
+- The Water Technology flood study reports, GIS layers and TUFLOW model, the 2017 alignment modelling, the GHD 2015 investigation and NCCMA digital terrain data, supplied within one week of award with any licence conditions.
 - The Option 6b alignment (Appendix 2) in CAD or GIS format, and community consultation records.
 - Asset and floodgate records, landowner contacts and access arrangements for site inspection and survey on private land.
 - Council standard drawings and specifications, and the construction contract conditions for the tender package.
