@@ -217,7 +217,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 <script>
 (function () {
   if (/[?&]still=1/.test(location.search)) document.documentElement.classList.add('still');
-  var m = (/[?&]m=(\w+)/.exec(location.search) || [])[1] || 'subdivision';
+  var m = window.__jceM || (/[?&]m=(\w+)/.exec(location.search) || [])[1] || 'subdivision';
   var panels = document.querySelectorAll('[data-panel]'), found = false;
   panels.forEach(function (p) { if (p.getAttribute('data-panel') === m) found = true; });
   if (!found) m = 'subdivision';
