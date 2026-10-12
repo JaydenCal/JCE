@@ -298,6 +298,78 @@ rule("exempt.general.critical_habitat", "exempt_general", "exempt", "Land is not
      cite("pp_exempt_development", 1, "Exempt development cannot take place within a wilderness area or critical habitat", "Exempt development exclusions (NSW Planning Portal)", "raw"),
      dev=["shed"], category="exclusion", field="critical_habitat_or_wilderness", op="is_false")
 
+
+# ----------------------------------------------------------------------------------------------------------------------
+# 7. Submission checklists (Gunnedah Shire Council's own checklists) and lodgement guidance
+# ----------------------------------------------------------------------------------------------------------------------
+CHECKS: list[dict] = []
+GUIDE: list[dict] = []
+
+def chk(id, pathway, label, evidence, requirement, c, *, dev=None, applies=None, na_if=None, note=""):
+    CHECKS.append(dict(id=id, pathway=pathway, label=label, evidence=evidence, requirement=requirement, dev_types=dev or ALL_DEV,
+                       applies=applies or {}, na_if=na_if or {}, note=note, cite=c))
+
+GD, GF1, GC = "g_da_checklist", "g_fact1", "g_cdc_checklist"
+chk("da.form", "da", "Development application form lodged via the NSW Planning Portal", ["portal_form"], "required", cite(GD, 1, "All applications are to be lodged via the NSW Planning Portal", "DA Lodgement Checklist"))
+chk("da.owner_consent", "da", "Landowner's consent", ["owner_consent"], "required", cite(GD, 1, "Landowner’s Consent", "DA Lodgement Checklist"))
+chk("da.site_plan", "da", "Site plan (scaled, distances from all boundaries, existing buildings, north arrow)", ["site_plan"], "required", cite(GD, 1, "Must include distances from lot all boundaries, location and use of existing buildings,", "DA Lodgement Checklist"))
+chk("da.floor_plan", "da", "Floor plan (building dimensions)", ["floor_plan"], "required", cite(GD, 1, "Must include building dimensions", "DA Lodgement Checklist"))
+chk("da.elevations", "da", "Elevations (height, external finishes, finished ground level)", ["elevations"], "required", cite(GD, 1, "Must include height of the building, all external finishes and finished ground level", "DA Lodgement Checklist"))
+chk("da.sections", "da", "Section plans (footings to top of proposed works)", ["section_plans"], "required", cite(GD, 1, "Showing a through image of the development from the footings to the top of the proposed works", "DA Lodgement Checklist"))
+chk("da.soee", "da", "Statement of Environmental Effects (generic residential form for single dwellings)", ["soee"], "required", cite(GD, 1, "Generic – Residential (Not including dual occupancies or multi-unit developments)", "DA Lodgement Checklist"))
+chk("da.eis", "da", "Environmental Impact Statement (designated development only)", ["eis"], "not_applicable", cite(GD, 1, "Environmental Impact Statement (Designated development only)", "DA Lodgement Checklist"), na_if={"always": True}, note="Not applicable unless the development is designated development.")
+chk("da.fire_cat1", "da", "Category 1 fire safety provisions (change of use only)", ["fire_cat1"], "not_applicable", cite(GD, 1, "Category 1 Fire Safety Provisions (Change of use only", "DA Lodgement Checklist"), na_if={"always": True})
+chk("da.basix", "da", "BASIX certificate (dwellings/additions over $50,000, pools over 40,000 L)", ["basix"], "required", cite(GD, 1, "(For dwellings/additions over $50,000 and swimming pools over 40,000L and assessors’", "DA Lodgement Checklist"), dev=["dwelling_house", "secondary_dwelling"])
+chk("da.shadow", "da", "Shadow diagram (two storey buildings: 9 am and 3 pm, 21 June)", ["shadow_diagram"], "required", cite(GF1, 2, "Required for buildings that are two storeys or greater.", "Fact Sheet 1"), applies={"storeys_ge": 2}, na_if={"storeys_lt": 2})
+chk("da.notification", "da", "Notification plans (A4 site and elevation plans)", ["notification_plans"], "may_be_required", cite(GF1, 2, "A4 site and elevation plans are required to allow Council to", "Fact Sheet 1"))
+chk("da.landscape", "da", "Landscaping plan", ["landscape_plan"], "may_be_required", cite(GF1, 2, "Should identify the quantities, botanical names and mature", "Fact Sheet 1"))
+chk("da.escp", "da", "Erosion and sediment control plan", ["escp"], "may_be_required", cite(GF1, 2, "Required for construction works in order to minimise", "Fact Sheet 1"))
+chk("da.finishes", "da", "External finishes and materials (samples of colours and materials)", ["finishes"], "may_be_required", cite(GF1, 2, "Samples of all external colours and materials are required.", "Fact Sheet 1"))
+chk("da.contamination", "da", "Preliminary contamination assessment (if the site has a history of contaminating uses)", ["contamination"], "may_be_required", cite(GF1, 2, "If the site has a history of potentially contaminating land", "Fact Sheet 1"))
+chk("da.servicing", "da", "Servicing strategy", ["servicing"], "may_be_required", cite(GF1, 2, "For all resident development proposals and subdivision.", "Fact Sheet 1"), dev=["dwelling_house", "secondary_dwelling"])
+chk("da.donations", "da", "Political donation and gift disclosure statement (where a donation or gift has been made)", ["donation_statement"], "may_be_required", cite(GF1, 2, "To be completed for all development applications, where", "Fact Sheet 1"))
+chk("da.flood", "da", "Flood information / floor level evidence (if flood affected)", ["flood_evidence"], "may_be_required", cite("g_da_checklist", 1, "All applications are to be lodged via the NSW Planning Portal", "DA Lodgement Checklist"), applies={"flood": True},
+    note="Triggered by the SA9 flood layer; the council's flood requirement is in the DCP (see compliance table). Not listed on the checklist itself.")
+chk("da.bushfire", "da", "Bushfire assessment (BAL) if bushfire prone land", ["bushfire_evidence"], "may_be_required", cite("g_da_checklist", 1, "All applications are to be lodged via the NSW Planning Portal", "DA Lodgement Checklist"), applies={"bushfire": True},
+    note="Triggered by the SA9 bushfire layer; not listed on the council checklist itself (Council has a BAL Certificate Application form).")
+chk("cdc.form", "cdc", "Complying Development Certificate application form (with landowner's declaration)", ["cdc_form", "owner_consent"], "required", cite(GC, 1, "Complying Development Certificate Application Form", "CDC Lodgement Checklist"))
+chk("cdc.site_plan", "cdc", "Site plan (boundaries, distances, existing buildings and vegetation, adjoining buildings, north arrow, existing ground levels, scale)", ["site_plan"], "required", cite(GC, 1, "Must include location and measurements of the boundaries of the land", "CDC Lodgement Checklist"))
+chk("cdc.floor_plan", "cdc", "Floor plan", ["floor_plan"], "required", cite(GC, 1, "Must include existing building layout and building dimensions", "CDC Lodgement Checklist"))
+chk("cdc.elevations", "cdc", "Elevations", ["elevations"], "required", cite(GC, 1, "Must include height of the building, all external finishes and finished ground level and should include", "CDC Lodgement Checklist"))
+chk("cdc.sections", "cdc", "Section plans (with fire safety and resistance measures)", ["section_plans"], "required", cite(GC, 1, "and details of fire safety and resistance measures for their full extent)", "CDC Lodgement Checklist"))
+chk("cdc.specs", "cdc", "Specifications (materials, drainage of sewerage and water, second-hand materials)", ["specifications"], "required", cite(GC, 1, "To include construction materials and description, and their compliance with relevant standards", "CDC Lodgement Checklist"))
+chk("cdc.bca", "cdc", "Documentation demonstrating compliance with the Building Code of Australia", ["bca_compliance"], "required", cite(GC, 1, "Documentation demonstrating compliance with the Building Code of Australia", "CDC Lodgement Checklist"))
+chk("cdc.compliance_cert", "cdc", "A compliance certificate", ["compliance_certificate"], "required", cite(GC, 1, "A Compliance Certificate", "CDC Lodgement Checklist"))
+chk("cdc.basix", "cdc", "BASIX certificate (dwellings/additions $50,000 and over)", ["basix"], "required", cite(GC, 1, "(For dwellings/additions $50,000 and over and swimming pools 40,000L and over", "CDC Lodgement Checklist"), dev=["dwelling_house", "secondary_dwelling"])
+chk("cdc.fire_existing", "cdc", "List of existing fire safety measures (if existing buildings onsite)", ["fire_measures"], "may_be_required", cite(GC, 1, "List of existing fire safety measures", "CDC Lodgement Checklist"))
+chk("ex.none", "exempt", "No application is lodged for exempt development (confirm the standards are met; keep records)", [], "not_applicable",
+    cite("pp_exempt_development", 1, "Exempt development does not need planning or construction approval from a council or private certifier.", "Exempt development (NSW Planning Portal)", "raw"), na_if={"always": True})
+
+def guide(text, c, note=""):
+    GUIDE.append(dict(text=text, note=note, cite=c))
+guide("From 1 July 2021, development applications and certificates must be lodged through the NSW Planning Portal.", cite("g_portal", 1, "From 1 July 2021, development applications and certificates must be lodged through the", "NSW Planning Portal (Gunnedah Shire Council)", "raw"))
+guide("Council can no longer accept hardcopy or emailed documents and cannot place applications on the portal on behalf of applicants.", cite("g_portal", 1, "These changes mean Council can no longer accept hardcopy or emailed documents", "NSW Planning Portal (Gunnedah Shire Council)", "raw"))
+guide("Before using the portal, get advice from the council's planning team; a free Duty Planner service is offered (02 6740 2100).", cite("g_portal", 1, "Council provides a free Duty Planner Service to assist with enquiries", "NSW Planning Portal (Gunnedah Shire Council)", "raw"))
+guide("Log in with an existing Service NSW account or register for a NSW Planning Portal account.", cite("g_portal", 1, "Use your existing Service NSW account or register for a NSW Planning Portal account.", "NSW Planning Portal (Gunnedah Shire Council)", "raw"))
+guide("Click 'New' to start the application, fill in the online form, and upload the required documents; the application can be saved and resumed.", cite("g_portal", 1, "Upload required documents to the portal. You can save your application and come back to it later.", "NSW Planning Portal (Gunnedah Shire Council)", "raw"))
+guide("A council officer reviews the application in the portal for completeness and emails if more information is needed.", cite("g_portal", 1, "A Council officer will review your application in the portal to make sure all documentation is correct.", "NSW Planning Portal (Gunnedah Shire Council)", "raw"))
+guide("Once accepted for lodgement an 'Additional Information Request' with the tax invoice is issued; fees must be paid and confirmed by responding in the portal before the DA is formally lodged.", cite("g_portal", 1, "Fees must be paid before your DA is formally lodged in Council’s system.", "NSW Planning Portal (Gunnedah Shire Council)", "raw"))
+guide("A development consent application must include a description of the development, the estimated cost, a plan of the land, a sketch of the development and an environmental assessment (e.g. a statement of environmental effects).", cite("pp_local_development", 1, "environmental assessment, for example, environmental impact statement or statement of environment effects.", "Local development (NSW Planning Portal)", "raw"))
+guide("The fee is calculated on the value of the work proposed and/or the type of development.", cite("g_lodging", 1, "The fee payable for the development application is calculated on the value of the work proposed", "Lodging an Application (Gunnedah Shire Council)", "raw"))
+guide("CONFLICT TO CONFIRM WITH COUNCIL: the council's Lodging an Application page asks for a minimum of three paper copies, which conflicts with its own NSW Planning Portal page (no hardcopy accepted).", cite("g_lodging", 1, "A minimum of three (3) paper copies of all the required documentation must be prepared", "Lodging an Application (Gunnedah Shire Council)", "raw"))
+guide("For complying development, the applicant provides the council with an electronic copy of all documentation and at least 1 copy of the development plans.", cite(GC, 1, "Applicant is to provide Council with an electronic copy of all documentation", "CDC Lodgement Checklist"))
+
+def resolve_list(items):
+    out, bad = [], []
+    for it in items:
+        c = it.pop("cite"); r, err = resolve(dict(cite=c, id=it.get("id") or it["text"][:30]))
+        if err:
+            bad.append(dict(id=it.get("id") or it["text"][:40], reason=err)); it["citation"] = None; it["unverified"] = True
+        else:
+            it["citation"] = r["citation"]
+        out.append(it)
+    return out, bad
+
 UNKNOWN_DOCS = {"inland_page_sd": ("nsw_page_granny_flats_rebuild",)}
 
 def resolve(r):
@@ -347,6 +419,9 @@ def main():
         currency_warning=INL_V, inland_code_lgas=inland, rules=out), indent=1, ensure_ascii=False))
     unres = [dict(id=r["id"], label=r["label"], prompt=r.get("prompt"), code=r["code"]) for r in out if r["status"] == "unresolved"]
     (HERE / "unresolved.json").write_text(json.dumps(dict(unresolved=unres, failed_validation=bad, blocked_documents=json.loads((HERE / "sources.json").read_text())["blocked"]), indent=1))
+    ck, b1 = resolve_list(CHECKS); gd, b2 = resolve_list(GUIDE)
+    (HERE / "checklists.json").write_text(json.dumps(dict(schema=1, council="Gunnedah Shire Council", checklists=ck, lodgement_guidance=gd, failed_validation=b1 + b2), indent=1, ensure_ascii=False))
+    for b in b1 + b2: print("  CHECK FAIL", b)
     res = sum(r["status"] == "resolved" for r in out)
     print(f"{res} resolved, {len(unres)} unresolved, {len(bad)} failed validation")
     for b in bad: print("  FAIL", b)
