@@ -1,6 +1,6 @@
 # Submission checklist: VP523438, MBDC RFT 2026.013 Concept Design for Hawthorn Road
 
-**Rev G (12/10/2026, updated):** adds the Glide Inside / RTK drone capability paragraph and Jayden's drone photogrammetry experience and workflow (DroneDeploy flight planning, RTK via AUSCORS or local base, check points, ReCap Pro, InfraWorks / Civil 3D, QGIS) in FP 5.1, CASA sub-2 kg excluded category with accreditation in place before services start (site more than 30 km from Adelaide Airport and Parafield), and a Stage 1 line where the ReCap surface feeds the concept model; lodge Rev G (13 pages), not Rev F. Experience criterion re-scored: unchanged at 6 until a drone project and referee can be named.
+**Rev G (12/10/2026, updated):** adds the Glide Inside / RTK drone capability paragraph and Jayden's drone photogrammetry experience and workflow (DroneDeploy flight planning, RTK via AUSCORS or local base, check points, ReCap Pro, InfraWorks / Civil 3D, QGIS) in FP 5.1, CASA sub-2 kg excluded category with accreditation in place before services start (site more than 30 km from Adelaide Airport and Parafield), and a Stage 1 line where the ReCap surface feeds the concept model; lodge Rev G (13 pages), not Rev F. Adds the Craig Sullivan farm drainage drone survey to FP 5.4. Experience criterion re-scored: unchanged at 6 (a private farm job supports capability but is not similar council road work).
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status: draft ready (no Pursue/Pass decision yet).
 
@@ -57,7 +57,7 @@ Stage split: Stage 1 $64,020; Stage 2 $135,940; Stage 3 $58,500. No budget figur
 7. FP number (FP-0xx), date of issue, and signature.
 8. Agreement Schedule: business, registered and postal addresses; ACN 699 165 663 (check); company execution (sole director and secretary?).
 9. SA registration: confirm on legislation.sa.gov.au (FP 5.1).
-11. [TBC - Jayden: drone photogrammetry project and referee] (not printed in the FP).
+11. Drone project example (FP 5.4, Craig Sullivan farm drainage): [TBC - Jayden: location, year, approx. area]. Get Craig Sullivan's consent to be named as a referee and his phone/email (FP prints "Referee details available on request").
 12. [TBC - Jayden to confirm] DJI Terra licence, if orthophotos are produced in DJI Terra rather than ReCap Pro.
 10. Keep or drop the four requested amendments (FP 12.0). Compliance may be scored; the liability cap is the one most likely to be marked as a departure.
 

@@ -179,6 +179,7 @@ Jayden Callen, Director, JCE Infrastructure. BEng (Hons) Civil, MIEAust (EA 1103
 - **Lead BIM services coordinator, AIR7000 Phase 1B MQ-4C Triton Facilities, RAAF Base Tindal (about $250 million).** Combined external consultant models to deconflict stormwater and fire mains.
 - **Katherine Aquatics, Katherine NT (about $10 million, design and construct for Sitzler and Katherine Town Council).** About 80 per cent of the civil design, including earthworks pads raised above the 1% AEP flood level, pavements, stormwater and water quality.
 - **JCE, Western Sydney International Airport Business Precinct Stage One (2026).** Managed the design program for the SRM-01 sewer rising main and the technical review of the contractor's sewage pumping station package.
+- **Drone photogrammetry.** Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Referee details available on request.
 
 ### Resources and equipment
 

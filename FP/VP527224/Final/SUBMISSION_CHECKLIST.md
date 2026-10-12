@@ -1,5 +1,7 @@
 # Submission checklist: VP527224 / DSC RFQ 2026-092 Port Douglas Marine Industry Precinct Scoping Study
 
+**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience and the Craig Sullivan farm drainage example, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
+
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status unchanged (draft ready, no Pursue/Pass tick yet).
 
 - **Closes:** Thu 22/10/2026, 2:00pm AEST (VendorPanel shows 3:00pm AEDT). Lodge by Wed 21/10/2026 to allow for upload problems.
@@ -13,7 +15,7 @@ Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status 
 2. Lodge the questions in Section 6 through VendorPanel (tender communications) by Sat 17/10/2026, 2:00pm AEST.
 3. Log in to VendorPanel yourself and open VP527224 (2026-092). Check for addenda after 30/09/2026 and record the last addendum number on the Quotation Form.
 4. Thu 15/10 to Mon 19/10: fold the sub-consultant quotes into the price (Section 5), name the partners, and rebuild the final files.
-5. Transfer the answers from `03. 2026-092 Response Schedule (PART 6)_JCE_FILLED.docx` into Council's own Word file (`00_Tender_Docs/03. 2026-092 Response Schedule (PART 6).docx`) or the 11/10 filled copy (`02_Submission/JCE_Response_Schedule_2026-092_DRAFT.docx`), which keep Council's layout. Tick every checklist box and answer every Yes/No declaration.
+5. Transfer the answers from `03. 2026-092 Response Schedule (PART 6)_JCE_FILLED_RevG.docx` into Council's own Word file (`00_Tender_Docs/03. 2026-092 Response Schedule (PART 6).docx`) or the 11/10 filled copy (`02_Submission/JCE_Response_Schedule_2026-092_DRAFT.docx`), which keep Council's layout. Tick every checklist box and answer every Yes/No declaration.
 6. Sign the Quotation Form (e-signature allowed) and the fee proposal offer block.
 7. Upload every file in Section 2 to the VendorPanel Tender Box, submit, and save the submission receipt to `02_Submission`.
 8. Update the register (status and note) after lodgement.
@@ -22,8 +24,8 @@ Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status 
 
 | # | File | Where it is now |
 |---|---|---|
-| 1 | Response Schedule (Part 6), completed and signed, with the checklist attached | Answers in repo `FP/VP527224/Final/03. 2026-092 Response Schedule (PART 6)_JCE_FILLED.docx` (+ .pdf); transfer into Council's Word file in Dropbox `00_Tender_Docs` |
-| 2 | Fee proposal (methodology, program, team, Price Schedule) `JCE_FP_VP527224_Final_RevF.pdf` | Repo `FP/VP527224/Final/` (Word copy beside it). Text for the branded template: `FP_Final_text.md` (repo and Dropbox) |
+| 1 | Response Schedule (Part 6), completed and signed, with the checklist attached | Answers in repo `FP/VP527224/Final/03. 2026-092 Response Schedule (PART 6)_JCE_FILLED_RevG.docx` (+ .pdf); transfer into Council's Word file in Dropbox `00_Tender_Docs` |
+| 2 | Fee proposal (methodology, program, team, Price Schedule) `JCE_FP_VP527224_Final_RevG.pdf` | Repo `FP/VP527224/Final/` (Word copy beside it). Text for the branded template: `FP_Final_text.md` (repo and Dropbox) |
 | 3 | Certificate of currency (PI and PL) `Certificate_of_Currency_-_2026-07-14T105420.82.pdf` | Dropbox `02_Submission/Returnables` |
 | 4 | PL $20M confirmation from Webber, workers compensation certificate, motor vehicle certificate | Not on file: obtain |
 | 5 | CV: `Callen-Pell_NER-02_Detailed_CV.pdf`, plus RPEQ (Ben Lancini) and partner CVs | Dropbox `02_Submission/Returnables`; partner CVs to come with quotes |
@@ -48,6 +50,9 @@ Most important first:
 8. Schedule E1 and E2: values and client contacts for the JCE projects listed (WSI Airport SRM-01, Gunnedah levee, Shoalhaven Water peer review), and any current engagement for E1.
 9. Last addendum number on VendorPanel (Quotation Form).
 10. Sign the Quotation Form and the offer block; date both.
+11. Drone (Rev G): get Craig Sullivan's consent to be named as a referee and his phone and email; [TBC - Jayden: location, year, approx. area] of the farm drainage survey (not printed in the FP).
+12. Drone (Rev G): CASA operator accreditation and drone registration in place before services start; [TBC - Jayden to confirm] DJI Terra licence if ReCap Pro is not used for the orthophoto.
+13. Drone airspace (Rev G): Port Douglas is about 60 km from Cairns Airport, far outside the 5.5 km controlled aerodrome limit. Nearby limits: helicopter landing sites on Dickson Inlet (Nautilus Aviation base at 35-39 Port Street, expected to open early 2027, with pads over the inlet; existing pad opposite the Sheraton), plus the 30 m from people and no-populous-area rules at the marinas and boat ramp. Check a CASA-verified drone app before each flight and coordinate with Nautilus Aviation. The FP states these limits in Section 7.
 
 ## 4. RFQs to send (final versions built today)
 
@@ -117,5 +122,7 @@ RFIs.md (11/10) is still right, with one change: question 8 no longer asks wheth
 | Methodology and program (15%) | 6 | 8 | 8 |
 | Price (40%) | 5 | 5 | 5 to 7 (depends on quotes) |
 | Weighted score | 4.4 | 5.3 | 6.4 to 7.2 |
+
+Rev G re-score: no change. The drone capability and example support capacity (criterion 3) but do not lift any score by a whole point; capacity stays at 5.
 
 Changes made in RevF: North Queensland evidence (based in Townsville to 05/2026, Cape York DATSIP subdivisions, HMAS Cairns) and the client-side council statement; RPEQ sign-off named; study lead and integrator role with hold points and a management method; risks, non-conformance and coordination (H1 points); Gantt chart; Schedule I1 completed item by item; insurance position stated per the Win Themes; contractions and dashes removed. The remaining gap is partner evidence, which only the quotes can fill.

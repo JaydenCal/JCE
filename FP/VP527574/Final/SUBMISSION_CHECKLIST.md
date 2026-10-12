@@ -64,7 +64,7 @@ Top priority first:
 10. Conflict of interest confirmation (yours, Venant, Lotay).
 11. Statutory declaration (Schedule L): full legal name; the form says "declared in the State of Victoria". Use a witness authorised under the Oaths and Affirmations Act 2018 (Vic) (remote witnessing by audio-visual link is permitted, confirm before relying on it) or ask Council (RFI 7).
 12. Date the cover letter and the offer block; sign every schedule.
-13. Rev G drone items: [TBC - Jayden: drone photogrammetry project and referee] (kept out of the printed FP); [TBC - Jayden to confirm] DJI Terra for orthophoto production (ReCap Pro is the alternative); CASA operator accreditation in place before services start.
+13. Rev G drone items: Craig Sullivan farm drainage example [TBC - Jayden: location, year, approx. area]; **get Craig Sullivan's consent to be named as a referee and his phone/email** (the FP says "Referee details available on request"); [TBC - Jayden to confirm] DJI Terra for orthophoto production (ReCap Pro is the alternative); CASA operator accreditation in place before services start.
 
 ## 5. Insurance and certificates
 
