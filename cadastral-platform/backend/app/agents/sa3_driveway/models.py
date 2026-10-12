@@ -10,6 +10,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.agents.requirements.models import RequirementSet, UnresolvedItem
 from app.common.contracts import DrivewayDesign, LotContext
 
 
@@ -42,7 +43,7 @@ class EnvelopeResult(M):
 class CouncilDrivewayStandard(M):
     council_name: str
     source_label: str
-    max_grade_pct: float = 25.0
+    max_grade_pct: float | None = 25.0              # None => unresolved (not checked)
     max_change_of_grade_pct: float | None = None   # overrides both summit & sag limits when set
     min_crossover_width_m: float | None = None
     max_crossover_width_m: float | None = None
@@ -115,6 +116,8 @@ class Sa3DrivewayRequest(M):
     tin_sampler: Callable[[float, float], float] | None = Field(default=None, exclude=True)
     on_site_turn: bool = False
     clearance_min_m: float = 0.3                   # VERIFY
+    requirements: RequirementSet | None = None     # None => legacy default standard (stamped placeholder)
+    use_placeholders: bool = False                 # with requirements: allow stamped fallback when unresolved
 
 
 class Sa3DrivewayResult(M):
@@ -123,5 +126,9 @@ class Sa3DrivewayResult(M):
     checks: list[CheckItem]
     warnings: list[str]
     status: Literal["unverified"] = "unverified"
+    unresolved: list[UnresolvedItem] = []
+    requirement_citations: list[str] = []
+    placeholders_used: bool = False
+    verifiable: bool = False
     disclaimer: str = ("Indicative design check only; not certified. Verify against AS/NZS 2890.1 and the "
                        "council's driveway standard.")

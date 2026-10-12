@@ -33,7 +33,12 @@ class Sa3Driveway:
         env = build_envelope(lot, req.setback_rules, req.easements_wkt, req.exclusion_polygons_wkt, req.dwelling_type,
                              req.segment_role_overrides)
         warns += env.warnings
-        std = council_standard(lot.lga_name, req.council_standard)
+        items, cites = [], []
+        std = council_standard(lot.lga_name, req.council_standard, requirements=req.requirements,
+                               use_placeholders=req.use_placeholders, unresolved=items, citations=cites,
+                               selectors=dict(jurisdiction=lot.jurisdiction, lga=lot.lga_name))
+        ph = req.council_standard is None and (req.requirements is None or any(
+            i.key == "driveway.max_grade_pct" for i in items) and req.use_placeholders)
         width = driveway_width(req.parking, req.width_m, req.widths, std, warns)
         depth = env.setbacks_m.get("front", 0.0) or 6.0
         lay = plan_crossover(lot, std, width, preferred_offset_m=req.preferred_offset_m, garage_xy=req.garage_xy,
@@ -49,7 +54,7 @@ class Sa3Driveway:
         n = np.array(lay.inward_normal)
         xy_at = lambda s: tuple(bp + n * (s - req.kerb_to_boundary_m))  # noqa: E731
         st = pf.build_stations(req.levels, req.kerb_to_boundary_m, gd, sampler=req.tin_sampler, xy_at=xy_at)
-        pchecks = pf.check_profile(st, std)
+        pchecks = pf.check_profile(st, std, strict=req.requirements is not None and not req.use_placeholders)
         checks += pchecks
         mg = next((c.value for c in pchecks if c.name == "max_grade"), None)
 
@@ -80,4 +85,10 @@ class Sa3Driveway:
             turning_circle_centre_xy=(float(c[0]), float(c[1])), turning_circle_radius_m=float(outer), dimensions=lay.dimensions)
         if not st:
             warns.append("no levels supplied: grade/scraping checks not evaluated")
-        return Sa3DrivewayResult(envelope=env, driveway=drive, checks=checks, warnings=warns)
+        if ph:
+            warns.append("PLACEHOLDER, NOT A REQUIREMENT: default driveway standard values used; cannot be verified.")
+        if items:
+            warns.append(f"{len(items)} requirement(s) unresolved: " + "; ".join(i.key for i in items))
+        return Sa3DrivewayResult(envelope=env, driveway=drive, checks=checks, warnings=warns, unresolved=items,
+                                 requirement_citations=cites, placeholders_used=ph,
+                                 verifiable=(req.requirements is not None and not items and not ph))

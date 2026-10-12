@@ -7,6 +7,7 @@ import numpy as np
 from shapely.geometry import LineString, Point, Polygon
 
 from app.agents.base import AgentError
+from app.agents.requirements.models import UnresolvedRequirement, to_item
 from app.common.contracts import LotContext
 
 from .models import (CouncilDrivewayStandard, CrossoverLayout, DEFAULT_STANDARD, DrivewayWidths, Exclusion)
@@ -15,9 +16,36 @@ from .models import (CouncilDrivewayStandard, CrossoverLayout, DEFAULT_STANDARD,
 COUNCIL_REGISTRY: dict[str, CouncilDrivewayStandard] = {}
 
 
-def council_standard(name: str | None, override: CouncilDrivewayStandard | None = None) -> CouncilDrivewayStandard:
+PH_STAMP = "PLACEHOLDER, NOT A REQUIREMENT"
+_FIELDS = (("driveway.max_grade_pct", "max_grade_pct"), ("driveway.max_grade_change_pct", "max_change_of_grade_pct"),
+           ("driveway.min_width_m", "min_crossover_width_m"), ("driveway.max_width_m", "max_crossover_width_m"),
+           ("driveway.min_separation_m", "min_separation_m"))
+
+
+def council_standard(name: str | None, override: CouncilDrivewayStandard | None = None, *, requirements=None,
+                     use_placeholders: bool = False, selectors: dict | None = None,
+                     unresolved: list | None = None, citations: list | None = None) -> CouncilDrivewayStandard:
+    """override (user supplied) > resolved RequirementSet (unresolved fields stay None and are reported) > legacy default."""
     if override is not None:
         return override
+    if requirements is not None:
+        vals, cites = {}, []
+        for key, fld in _FIELDS:
+            try:
+                r = requirements.get_requirement(key, **(selectors or {}))
+                vals[fld] = float(r.value)
+                cites.append(f"{key}={r.value}: {r.citation()}")
+            except UnresolvedRequirement as e:
+                vals[fld] = None
+                if unresolved is not None:
+                    unresolved.append(to_item(e))
+        if vals["max_grade_pct"] is None and use_placeholders:
+            vals["max_grade_pct"] = DEFAULT_STANDARD.max_grade_pct
+        if citations is not None:
+            citations += cites
+        label = "Resolved requirements (cited)" + (f"; {PH_STAMP} for max grade" if use_placeholders and any(
+            i.key == "driveway.max_grade_pct" for i in (unresolved or [])) else "")
+        return CouncilDrivewayStandard(council_name=name or "resolved", source_label=label, **vals)
     if name and name.lower() in COUNCIL_REGISTRY:
         return COUNCIL_REGISTRY[name.lower()]
     return DEFAULT_STANDARD

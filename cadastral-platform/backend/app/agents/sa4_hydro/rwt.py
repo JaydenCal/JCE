@@ -8,6 +8,9 @@ from shapely.geometry import Point
 from shapely.geometry.base import BaseGeometry
 from shapely.ops import unary_union
 
+from app.agents.requirements.models import UnresolvedRequirement, to_item
+
+from .buffers import PH_STAMP
 from .models import MonthTrace, RwtInput, RwtRegime, RwtSizing, TankResult, default_regimes
 
 DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -89,14 +92,49 @@ def place_tank(diameter_m: float, downpipe: tuple[float, float], lot: BaseGeomet
 
 def size_rwt(inp: RwtInput, *, regimes: dict[str, RwtRegime] | None = None, lot_wkt: str | None = None,
              envelope_wkt: str | None = None, slab_wkt: str | None = None, avoid_wkts: list[str] = (),
-             outside_envelope: bool = True) -> RwtSizing:
-    reg = inp.regime_override or (regimes or default_regimes())[inp.regime]
-    msgs = [f"Regime {reg.name}: target {reg.target_reliability_pct}% is a PLACEHOLDER - verify against the current instrument."
-            if reg.verify_against_current_instrument else f"Regime {reg.name}"]
+             outside_envelope: bool = True, requirements=None, use_placeholders: bool = False,
+             selectors: dict | None = None) -> RwtSizing:
+    """requirements=None => legacy placeholder regimes (stamped). With a RequirementSet the target/min volume come from
+    cited requirements; unresolved ones are reported in `unresolved` and never defaulted (unless use_placeholders)."""
+    sel, items, cites, msgs, placeholder = selectors or {}, [], [], [], False
+    reg = inp.regime_override
+    if reg is None and requirements is None:
+        reg, placeholder = (regimes or default_regimes())[inp.regime], True
+    elif reg is None:
+        try:
+            r = requirements.get_requirement("rwt.water_target_pct", **sel)
+            reg = RwtRegime(name=inp.regime, target_reliability_pct=float(r.value), note=r.citation(),
+                            verify_against_current_instrument=False)
+            cites.append(f"rwt.water_target_pct={r.value}: {r.citation()}")
+        except UnresolvedRequirement as e:
+            items.append(to_item(e))
+            if use_placeholders:
+                reg, placeholder = (regimes or default_regimes())[inp.regime], True
+    min_vol = None
+    if requirements is not None:
+        for k in ("rwt.min_tank_volume_l", "rwt.roof_connection_pct", "rwt.demand_connections"):
+            try:
+                r = requirements.get_requirement(k, **sel)
+                cites.append(f"{k}={r.value}: {r.citation()}")
+                if k == "rwt.min_tank_volume_l":
+                    min_vol = float(r.value)
+            except UnresolvedRequirement as e:
+                items.append(to_item(e))
+    if reg is None:
+        msgs.append("Water target UNRESOLVED: no tank selected until the requirement is cited or user-entered.")
+    elif placeholder:
+        msgs.append(f"{PH_STAMP}: regime {reg.name} target {reg.target_reliability_pct}% is a placeholder.")
+    else:
+        msgs.append(f"Regime {reg.name}: target {reg.target_reliability_pct}% " + ("(user/override)" if not cites else "(cited)"))
     cands = [simulate(inp, v)[0] for v in sorted(inp.candidate_sizes_l)]
-    ok = [c for c in cands if c.reliability_pct >= reg.target_reliability_pct]
+    if reg is None:
+        return RwtSizing(regime=inp.regime, target_reliability_pct=None, verify_against_current_instrument=True,
+                         target_met=None, chosen=None, candidates=cands, diameter_m=None, location_xy=None,
+                         monthly_trace=[], messages=msgs, unresolved=items, citations=cites)
+    pool = [c for c in cands if min_vol is None or c.volume_l >= min_vol] or cands[-1:]
+    ok = [c for c in pool if c.reliability_pct >= reg.target_reliability_pct]
     met = bool(ok)
-    chosen = ok[0] if ok else cands[-1]
+    chosen = ok[0] if ok else pool[-1]
     if not met:
         msgs.append("No candidate tank reaches the target; largest candidate reported.")
     if inp.roof_area_m2 <= 0:
@@ -116,5 +154,6 @@ def size_rwt(inp: RwtInput, *, regimes: dict[str, RwtRegime] | None = None, lot_
         if loc is None:
             msgs.append("No clear tank position found; place manually.")
     return RwtSizing(regime=reg.name, target_reliability_pct=reg.target_reliability_pct,
-                     verify_against_current_instrument=reg.verify_against_current_instrument, target_met=met,
-                     chosen=chosen, candidates=cands, diameter_m=dia, location_xy=loc, monthly_trace=trace, messages=msgs)
+                     verify_against_current_instrument=reg.verify_against_current_instrument or placeholder, target_met=met,
+                     chosen=chosen, candidates=cands, diameter_m=dia, location_xy=loc, monthly_trace=trace, messages=msgs, unresolved=items, citations=cites,
+                     placeholder=placeholder)

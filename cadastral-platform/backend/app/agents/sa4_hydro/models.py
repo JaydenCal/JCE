@@ -6,6 +6,7 @@ from uuid import UUID, uuid4
 
 from pydantic import Field
 
+from app.agents.requirements.models import RequirementSet, UnresolvedItem
 from app.common.contracts import DrivewayDesign, LotContext, Model, RwtSummary, ServiceLine
 
 Service = Literal["water", "sewer", "stormwater", "electricity", "gas", "telecom", "other"]
@@ -180,15 +181,18 @@ class TankResult(Model):
 
 class RwtSizing(Model):
     regime: str
-    target_reliability_pct: float
+    target_reliability_pct: float | None      # None => target unresolved (see `unresolved`)
     verify_against_current_instrument: bool
-    target_met: bool
-    chosen: TankResult
+    target_met: bool | None
+    chosen: TankResult | None
     candidates: list[TankResult]
-    diameter_m: float
+    diameter_m: float | None
     location_xy: XY | None
     monthly_trace: list[MonthTrace]
     messages: list[str] = []
+    unresolved: list[UnresolvedItem] = []
+    citations: list[str] = []
+    placeholder: bool = False
 
 
 class Sa4Request(Model):
@@ -210,11 +214,13 @@ class Sa4Request(Model):
     outlet_invert_m: float | None = None
     main_invert_m: float | None = None
     sewer_junction_xy: XY | None = None
-    min_sewer_grade_pct: float = 1.65
+    min_sewer_grade_pct: float | None = None       # explicit user value; else resolved/placeholder
     meter_xy: XY | None = None
     water_dia_mm: int = 20
-    proposed_cover_m: float = 0.6
+    proposed_cover_m: float | None = None          # explicit user value; else resolved/placeholder
     rwt: RwtInput | None = None
+    requirements: RequirementSet | None = None     # None => legacy placeholders (stamped)
+    use_placeholders: bool = False                 # with requirements: fall back to stamped placeholders when unresolved
 
 
 class Sa4Result(Model):
@@ -226,6 +232,10 @@ class Sa4Result(Model):
     rwt: RwtSizing | None = None
     georef: dict = {}
     warnings: list[str] = []
+    unresolved: list[UnresolvedItem] = []
+    requirement_citations: list[str] = []
+    placeholders_used: bool = False
+    verifiable: bool = False        # True only when every needed requirement is cited/confirmed (no placeholders)
 
     def to_cad_services(self, include_exclusions: bool = True) -> list[ServiceLine]:
         bmap = {b.asset_id: b.geometry_wkt for b in self.buffers}
@@ -236,8 +246,8 @@ class Sa4Result(Model):
 
     def to_cad_rwt(self) -> RwtSummary | None:
         r = self.rwt
-        if r is None or r.location_xy is None:
+        if r is None or r.location_xy is None or r.chosen is None:
             return None
         return RwtSummary(tank_volume_l=r.chosen.volume_l, location_xy=r.location_xy, diameter_m=r.diameter_m,
                           regime=r.regime, note=f"Reliability {r.chosen.reliability_pct:.0f}% (target {r.target_reliability_pct:.0f}%, "
-                                                f"unverified placeholder target)")
+                                                f"{'PLACEHOLDER, NOT A REQUIREMENT' if r.placeholder else 'cited target'}; unverified)")

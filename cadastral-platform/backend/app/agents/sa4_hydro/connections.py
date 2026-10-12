@@ -7,22 +7,22 @@ from shapely import wkt
 from shapely.geometry import LineString, Point
 from shapely.ops import nearest_points
 
-from .buffers import clearance_for, default_clearance_rules
+from .buffers import PH_STAMP, default_clearance_rules, find_rule
 from .models import Asset, Check, ClearanceRule, ProposedConnection
 
-SEWER_GRADE_NOTE = ("Minimum grade default 1.65% (1:60) for DN100 property drain per AS/NZS 3500.2 as indicative - "
+SEWER_GRADE_NOTE = (PH_STAMP + ": minimum grade default 1.65% (1:60) for DN100 property drain per AS/NZS 3500.2 as indicative - "
                     "verify with the water authority and current code.")
 
 
 def check_line(line: LineString, assets: list[Asset], rules: list[ClearanceRule] | None, target_id: str | None,
                cover_m: float | None, vertical_clearance_m: float = 0.3) -> list[Check]:
-    rules = rules or default_clearance_rules()
+    rules = rules if rules is not None else default_clearance_rules()
     out: list[Check] = []
     for a in assets:
         if a.asset_id == target_id:
             continue
         g = wkt.loads(a.geometry_wkt)
-        rule = clearance_for(a.service, a.diameter_mm, rules)
+        rule = find_rule(a.service, a.diameter_mm, rules)
         if line.intersects(g):
             ang = _crossing_angle(line, g)
             msg = f"Proposed line crosses {a.service} {a.label or a.asset_id}"
@@ -37,6 +37,9 @@ def check_line(line: LineString, assets: list[Asset], rules: list[ClearanceRule]
                 msg += f"; vertical separation < {vertical_clearance_m} m (asset depth {a.depth_m} m vs proposed cover {cover_m} m)"
                 sev = "warning"
             out.append(Check(asset_id=a.asset_id, service=a.service, kind="crossing", severity=sev, message=msg + "."))
+        elif rule is None:
+            out.append(Check(asset_id=a.asset_id, service=a.service, kind="clearance", severity="info",
+                             message=f"Clearance to {a.service} {a.label or a.asset_id} UNRESOLVED (no cited requirement); not checked."))
         else:
             d = line.distance(g)
             if d < rule.clearance_m:
@@ -81,10 +84,11 @@ def _nearest(assets: list[Asset], service: str, pt: Point):
 
 
 def propose_sewer(outlet: tuple[float, float], assets: list[Asset], *, junction: tuple[float, float] | None = None,
-                  outlet_invert_m: float | None = None, main_invert_m: float | None = None, min_grade_pct: float = 1.65,
-                  rules: list[ClearanceRule] | None = None, dia_mm: int = 100) -> ProposedConnection | None:
+                  outlet_invert_m: float | None = None, main_invert_m: float | None = None, min_grade_pct: float | None = 1.65,
+                  rules: list[ClearanceRule] | None = None, dia_mm: int = 100,
+                  grade_note: str | None = None) -> ProposedConnection | None:
     o = Point(outlet)
-    notes = [SEWER_GRADE_NOTE]
+    notes = [SEWER_GRADE_NOTE if grade_note is None else grade_note]
     target_id = None
     if junction is not None:
         t = Point(junction)
@@ -101,10 +105,10 @@ def propose_sewer(outlet: tuple[float, float], assets: list[Asset], *, junction:
     grade = ok = fall = None
     if outlet_invert_m is not None and main_invert_m is not None and L > 0:
         grade = (outlet_invert_m - main_invert_m) / L * 100
-        ok = grade >= min_grade_pct
+        ok = grade >= min_grade_pct if min_grade_pct is not None else None
     else:
         notes.append("Invert levels unknown: report required fall only.")
-    fall = min_grade_pct * L / 100
+    fall = min_grade_pct * L / 100 if min_grade_pct is not None else None
     checks = check_line(line, assets, rules, target_id, None)
     if ok is False:
         checks.append(Check(asset_id=target_id or "", service="sewer", kind="grade", severity="blocking",
@@ -131,14 +135,14 @@ def default_meter(lot_wkt: str, segments, inset_m: float = 0.5) -> tuple[float, 
     return (mx, my)
 
 
-def propose_water(meter: tuple[float, float], assets: list[Asset], *, dia_mm: int = 20, cover_m: float = 0.6,
-                  rules: list[ClearanceRule] | None = None) -> ProposedConnection | None:
+def propose_water(meter: tuple[float, float], assets: list[Asset], *, dia_mm: int = 20, cover_m: float | None = 0.6,
+                  rules: list[ClearanceRule] | None = None, cover_note: str | None = None) -> ProposedConnection | None:
     n = _nearest(assets, "water", Point(meter))
     if n is None:
         return None
     _, a, t = n
     line = LineString([(t.x, t.y), meter])
-    notes = [f"Cover {cover_m} m is an assumed placeholder - verify minimum cover with the water authority.",
+    notes = [cover_note or f"{PH_STAMP}: cover {cover_m} m is an assumed placeholder - verify minimum cover with the water authority.",
              f"Service tapped from nearest water main {a.label or a.asset_id}; authority approval required."]
     return ProposedConnection(kind="water", geometry_wkt=line.wkt, start_xy=(t.x, t.y), end_xy=meter, target_asset_id=a.asset_id,
                               length_m=line.length, diameter_mm=dia_mm, cover_m=cover_m,

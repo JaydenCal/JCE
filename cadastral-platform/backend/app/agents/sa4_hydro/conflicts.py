@@ -21,7 +21,9 @@ def detect_conflicts(assets: list[Asset], buffers: list[AssetBuffer], features: 
     bmap = {b.asset_id: b for b in buffers}
     out: list[Conflict] = []
     for a in assets:
-        b = bmap[a.asset_id]
+        b = bmap.get(a.asset_id)
+        if b is None:      # clearance unresolved: no buffer, reported by the agent
+            continue
         line = wkt.loads(a.geometry_wkt)
         full = wkt.loads(b.geometry_wkt)
         clear = line.buffer(b.clearance_m, cap_style="flat", join_style="mitre", mitre_limit=2.0)

@@ -161,7 +161,7 @@ def driveway_rules(sa2: Sa2Output) -> list[DrivewayRule]:
 def driveway_request(n: EnvNode) -> Sa3DrivewayRequest:
     d = n.params.driveway
     return Sa3DrivewayRequest(
-        lot=n.sa1.lot, setback_rules=driveway_rules(n.sa2), dwelling_type=n.params.dwelling_type,
+        lot=agent_lot(n.sa1), setback_rules=driveway_rules(n.sa2), dwelling_type=n.params.dwelling_type,
         easements_wkt=d.easements_wkt, exclusion_polygons_wkt=d.exclusion_polygons_wkt,
         preferred_offset_m=d.preferred_offset_m, garage_xy=d.garage_xy, parking=d.parking, width_m=d.width_m,
         kerb_to_boundary_m=d.kerb_to_boundary_m, vehicle=d.vehicle, levels=d.levels, on_site_turn=d.on_site_turn)
@@ -173,14 +173,24 @@ def terrain_request(n: TerrainNode) -> Sa3TerrainRequest:
         raise AgentError("SURVEY_MISSING", "params.terrain.survey is required for earthworks")
     design = None
     if t.pad_level_m is not None:
-        fp = n.overlay.footprint_wkt if n.overlay else _largest_polygon_wkt(n.env.envelope.envelope_wkt)
+        fp = _largest_polygon_wkt(n.overlay.footprint_wkt if n.overlay else n.env.envelope.envelope_wkt)
         design = PadDesign(pad_level_m=t.pad_level_m, footprint_wkt=fp)
     kw = {"options": t.options} if t.options else {}
-    return Sa3TerrainRequest(lot=n.sa1.lot, survey=t.survey, design=design, **kw)
+    return Sa3TerrainRequest(lot=agent_lot(n.sa1), survey=t.survey, design=design, **kw)
+
+
+def _single_part(w: str) -> str:
+    """SA1 emits MultiPolygon WKT; downstream agents expect a Polygon. Single-part multis are unwrapped."""
+    g = shw.loads(w)
+    return g.geoms[0].wkt if isinstance(g, MultiPolygon) and len(g.geoms) == 1 else w
+
+
+def agent_lot(sa1: Sa1Result) -> LotContext:
+    return sa1.lot.model_copy(update={"boundary_wkt": _single_part(sa1.lot.boundary_wkt)})
 
 
 def lot_with_envelope(sa1: Sa1Result, env: Sa3DrivewayResult) -> LotContext:
-    return sa1.lot.model_copy(update={"envelope_wkt": env.envelope.envelope_wkt})
+    return agent_lot(sa1).model_copy(update={"envelope_wkt": _largest_polygon_wkt(env.envelope.envelope_wkt)})
 
 
 def sa4_request(n: Sa4Node) -> Sa4Request:
@@ -189,7 +199,7 @@ def sa4_request(n: Sa4Node) -> Sa4Request:
         lot=lot_with_envelope(n.sa1, n.env), pdf_path=d.pdf_path, pdf_page=d.pdf_page, legend=d.legend,
         control_points=d.control_points, scale_denominator=d.scale_denominator, boundary_rgb=d.boundary_rgb,
         digitised_assets=d.digitised_assets, tolerance_m=d.tolerance_m,
-        slab_wkt=n.overlay.footprint_wkt if n.overlay else None, driveway=n.env.driveway,
+        slab_wkt=_largest_polygon_wkt(n.overlay.footprint_wkt) if n.overlay else None, driveway=n.env.driveway,
         outlet_xy=d.outlet_xy, outlet_invert_m=d.outlet_invert_m, main_invert_m=d.main_invert_m,
         sewer_junction_xy=d.sewer_junction_xy, meter_xy=d.meter_xy, rwt=d.rwt)
 
@@ -206,7 +216,7 @@ def cad_request(n: Sa5Node) -> CadRequestSa5:
 
 def plan_upload(n: Sa7Node) -> PlanUpload:
     return PlanUpload(upload_id=n.upload_id, project_id=n.project_id, storage_path=n.storage_path,
-                      file_sha256=n.file_sha256, selected_page=n.selected_page, lot=n.sa1.lot)
+                      file_sha256=n.file_sha256, selected_page=n.selected_page, lot=agent_lot(n.sa1))
 
 
 # --------------------------------------------------------------------------- adapter agents

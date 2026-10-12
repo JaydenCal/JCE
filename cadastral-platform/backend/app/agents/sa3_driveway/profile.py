@@ -75,18 +75,23 @@ def scraping_margin(z: Callable[[float], float], s_lo: float, s_hi: float, tpl=B
 
 
 def check_profile(stations: list[tuple[float, float, str]], std: CouncilDrivewayStandard = DEFAULT_STANDARD,
-                  transition_len_m: float | None = None) -> list[CheckItem]:
+                  transition_len_m: float | None = None, strict: bool = False) -> list[CheckItem]:
     items: list[CheckItem] = []
     if len(stations) < 2:
         return [CheckItem(name="profile", passed=None, note="insufficient levels supplied; profile not checked")]
     st = sorted(stations)
     grades = [100 * (b[1] - a[1]) / (b[0] - a[0]) for a, b in zip(st, st[1:])]
     mg = max(abs(g) for g in grades)
-    items.append(CheckItem(name="max_grade", passed=mg <= std.max_grade_pct + 1e-9, value=round(mg, 2),
-                           limit=std.max_grade_pct, unit="%", note=f"grades by section: {[round(g, 2) for g in grades]}"))
+    items.append(CheckItem(name="max_grade", passed=None if std.max_grade_pct is None else mg <= std.max_grade_pct + 1e-9, value=round(mg, 2),
+                           limit=std.max_grade_pct, unit="%",
+                           note=f"grades by section: {[round(g, 2) for g in grades]}" + ("; max grade requirement UNRESOLVED" if std.max_grade_pct is None else "")))
     for i in range(1, len(st) - 1):
         d = grades[i] - grades[i - 1]
         kind = "summit" if d < 0 else "sag"
+        if strict and std.max_change_of_grade_pct is None:
+            items.append(CheckItem(name=f"change_of_grade@{st[i][2]}", passed=None, value=round(abs(d), 2),
+                                   note="max change-of-grade requirement UNRESOLVED; not checked"))
+            continue
         lim = std.max_change_of_grade_pct or (SUMMIT_MAX_CHANGE_PCT if kind == "summit" else SAG_MAX_CHANGE_PCT)
         need = min_transition_length(d, kind)
         ok = abs(d) <= lim + 1e-9
