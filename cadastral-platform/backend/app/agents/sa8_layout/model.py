@@ -94,6 +94,7 @@ class Room(BaseModel):
     @field_validator("polygon")
     @classmethod
     def _poly(cls, v):
+        v = [(round(float(x), 5) + 0.0, round(float(y), 5) + 0.0) for x, y in v]
         if len(v) > 1 and tuple(v[0]) == tuple(v[-1]):
             v = v[:-1]
         if len(v) < 3:

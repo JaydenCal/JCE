@@ -182,7 +182,7 @@ def _opening(m, wall, typ, pos, width=None, height=None, sill=None, frame=None, 
     width, height, sill = width or dw, height or dh, ds if sill is None else sill
     if typ == "sliding_door" or typ == "garage_door":
         sill = 0.0 if sill is None else sill
-    pos = wall.length / 2 if pos is None else pos
+    pos = round(wall.length / 2 if pos is None else pos, 6)
     if width <= 0 or height <= 0 or sill < 0:
         raise OpError("BAD_SIZE", "opening width/height must be > 0 and sill >= 0")
     if pos - width / 2 < 0.05 or pos + width / 2 > wall.length - 0.05:

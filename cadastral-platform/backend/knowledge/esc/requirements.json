@@ -1,7 +1,48 @@
 {
  "region": "NSW (ESC: Blue Book vol 1, Building Sites 2024, Gunnedah Eng. Standards 7.4.1)",
- "generated_at": "2026-10-12T17:04:41+00:00",
+ "generated_at": "2026-10-12T17:05:36+00:00",
  "requirements": [
+  {
+   "key": "esc.sediment_fence.post_spacing_m",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": 2.5,
+   "value_struct": null,
+   "unit": "m",
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 25,
+    "section_ref": "4.5 Install sediment fencing, step 2",
+    "quote": "Place star pickets into the ground, usually 2.5 m apart",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0072",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
   {
    "key": "esc.sediment_fence.trench_depth_mm",
    "applies_to": {
@@ -28,6 +69,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0075",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -36,7 +80,214 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.sediment_fence.return_interval_m",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": 20.0,
+   "value_struct": null,
+   "unit": "m",
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 25,
+    "section_ref": "4.5 Install sediment fencing, step 5",
+    "quote": "You must have small returns usually every 20 m to limit the amount of water that might flow to any one section.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0072",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.sediment_fence.joint_overlap_mm",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": 150.0,
+   "value_struct": null,
+   "unit": "mm",
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 25,
+    "section_ref": "4.5 Install sediment fencing, step 6",
+    "quote": "When joining separate sections of fabric at a post, ensure there is usually 150 mm of overlap.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0072",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.sediment_fence.along_contour",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 25,
+    "section_ref": "4.5 Install sediment fencing, step 1",
+    "quote": "Place the sediment fence along (parallel to) the contours of the site wherever possible",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0072",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.sediment_fence.ends_turn_upslope",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 25,
+    "section_ref": "4.5 Install sediment fencing, step 5",
+    "quote": "The ends of the fence must angle upslope to prevent run-off around it.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0072",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.sediment_fence.no_material_against_fence",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 26,
+    "section_ref": "4.5 Install sediment fencing, step 8",
+    "quote": "Ensure there is no build-up of material (including stockpiles) against the sediment fence",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0079",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.sediment_fence.not_across_drainage_line",
@@ -64,6 +315,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0083",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -72,7 +326,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.sediment_fence.design_life_months",
@@ -100,6 +356,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0081",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -108,7 +367,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.sediment_fence.place_downslope",
@@ -136,6 +397,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0146",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -144,7 +408,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.sediment_fence.max_subcatchment_flow_l_s",
@@ -172,6 +438,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0250",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -180,7 +449,9 @@
    "status": "resolved",
    "prompt": "Blue Book states the 50 L/s limit; the design-storm catchment area that satisfies it is site specific and is not stated as a general area/length limit. To be confirmed by the designer/certifier.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.sediment_fence.near_source",
@@ -208,6 +479,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0247",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -216,7 +490,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.maintenance.sediment_removal_capacity_loss_pct",
@@ -244,6 +520,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0247",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -252,7 +531,132 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.access.min_length_building_sites_m",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": 3.0,
+   "value_struct": null,
+   "unit": "m",
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 19,
+    "section_ref": "4.1 Stabilised site entry/exit point, step 1",
+    "quote": "Be a minimum of 3 m long to ensure that there is enough time for sediment to be shaken off",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0046",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.access.surface",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": "gravel, aggregate or recycled concrete",
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 19,
+    "section_ref": "4.1 step 3",
+    "quote": "You can use gravel, aggregate or recycled concrete on the surface. Avoid using sandstone",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0046",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.access.diversion_berm_if_sloping_to_road",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 19,
+    "section_ref": "4.1 step 4",
+    "quote": "Include a diversion berm across the stabilised site entry/exit point if the access slopes towards the road.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0046",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.access.min_width_m",
@@ -280,6 +684,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0260",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -288,7 +695,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.access.min_length_m",
@@ -316,6 +725,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0260",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -324,7 +736,9 @@
    "status": "resolved",
    "prompt": "Blue Book (15 m) is more onerous than the 2024 Building Sites guidelines (min 3 m). The plan draws the Blue Book length where the lot allows and reports the shortfall otherwise; designer/certifier to confirm the length adopted.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.access.max_aggregate_mm",
@@ -352,6 +766,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0260",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -360,7 +777,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.access.thickness_mm",
@@ -388,6 +807,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0260",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -396,7 +818,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.access.geotextile_underlay",
@@ -424,6 +848,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0260",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -432,7 +859,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.access.divert_surface_water",
@@ -460,6 +889,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0260",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -468,7 +900,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.access.build_on_level_area",
@@ -496,6 +930,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0263",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -504,7 +941,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.stockpile.min_distance_from_hazard_m",
@@ -532,6 +971,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0115",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -540,7 +982,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.stockpile.preferred_distance_from_hazard_m",
@@ -568,6 +1012,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0115",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -576,7 +1023,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.stockpile.min_distance_from_hazard_m",
@@ -604,6 +1053,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0062",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -612,7 +1064,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.stockpile.preferred_distance_from_hazard_m",
@@ -640,6 +1094,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0062",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -648,7 +1105,50 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.stockpile.max_height_m",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": 2.0,
+   "value_struct": null,
+   "unit": "m",
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 23,
+    "section_ref": "4.4 Manage stockpiles, step 3",
+    "quote": "Aim to ensure your stockpile is no more than 2 m high (if possible)",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0061",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.stockpile.within_site_behind_sediment_controls",
@@ -676,6 +1176,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0061",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -684,7 +1187,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.stockpile.upslope_diversion_and_downslope_filter",
@@ -712,6 +1217,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0063",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -720,7 +1228,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.stockpile.avoid_downslope_of_construction",
@@ -748,6 +1258,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0062",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -756,7 +1269,91 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.stockpile.cover_when_unattended",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 23,
+    "section_ref": "4.4 step 5",
+    "quote": "Cover your stockpiles securely when no one is on site, or when you expect rainy or windy conditions",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0061",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.stockpile.not_on_footpath_or_road_reserve",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 24,
+    "section_ref": "4.4 Take note",
+    "quote": "Do not store stockpiles and building materials on the footpath or within the road reserve.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0068",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.stockpile.stabilise_if_longer_than_days",
@@ -784,6 +1381,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0115",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -792,7 +1392,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.stockpile.hazard_areas",
@@ -820,6 +1422,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0115",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -828,7 +1433,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.stockpile.hazard_slope_pct",
@@ -856,6 +1463,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0115",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -864,7 +1474,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.topsoil.strip_depth_min_mm",
@@ -892,6 +1504,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0115",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -900,7 +1515,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.topsoil.strip_depth_max_mm",
@@ -928,6 +1545,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0115",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -936,7 +1556,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.topsoil.stockpile_max_depth_m",
@@ -964,6 +1586,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0115",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -972,7 +1597,9 @@
    "status": "resolved",
    "prompt": "Blue Book states this for topsoil from remnant native bushland where seed viability is wanted; applied here as a conservative limit only. Designer to confirm.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.topsoil.reinstate_min_mm",
@@ -1000,6 +1627,9 @@
     "retrieved_at": "2026-10-12T16:45:53Z",
     "sha256": "c9bcf75eff19cec881495b6571803adb7e29e86e6fed23ab40e8fcd345c35a52",
     "chunk_id": "gunnedah_eng_standards_2025-c0572",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1008,7 +1638,9 @@
    "status": "resolved",
    "prompt": "Gunnedah Engineering Standards 7.4.1 is written for allotment filling in subdivisions/developments; applied to a single-lot build by analogy. Council/certifier to confirm.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.removal.controls_remain_until_revegetation_pct",
@@ -1036,6 +1668,9 @@
     "retrieved_at": "2026-10-12T16:45:53Z",
     "sha256": "c9bcf75eff19cec881495b6571803adb7e29e86e6fed23ab40e8fcd345c35a52",
     "chunk_id": "gunnedah_eng_standards_2025-c0574",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1044,7 +1679,132 @@
    "status": "resolved",
    "prompt": "Gunnedah Engineering Standards 7.4.1 (bulk earthworks); applied to the single-lot build by analogy. Council/certifier to confirm.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.stabilisation.no_bare_soil_after_construction",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 35,
+    "section_ref": "6 Clean up and stabilise the site, step 3",
+    "quote": "Avoid leaving any bare soils on site as these will continue to act as a source of sediment",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0119",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.stabilisation.remove_temporary_controls_after_stabilised",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 35,
+    "section_ref": "6 Clean up and stabilise the site, step 5",
+    "quote": "It is vital to remove any temporary erosion and sediment control methods after construction ends",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0119",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.stabilisation.matting_on_unstable_soil",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 35,
+    "section_ref": "6 step 2",
+    "quote": "Use erosion control matting as an extra measure until vegetation cover has been fully established if the soil is unstable",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0119",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.diversion.upslope_catch_drain_or_bund",
@@ -1072,6 +1832,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0054",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1080,7 +1843,50 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.diversion.graded_bund_option",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 21,
+    "section_ref": "4.2 option 3",
+    "quote": "Installing a graded bund (a ridge of compacted earth) or diversion bank upslope of the site or disturbed area to slow and divert water",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0054",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.diversion.no_discharge_to_neighbour_without_consent",
@@ -1108,6 +1914,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0054",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1116,7 +1925,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.diversion.no_discharge_toward_access",
@@ -1144,6 +1955,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0054",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1152,7 +1966,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.diversion.no_straw_bales",
@@ -1180,6 +1996,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0057",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1188,7 +2007,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.diversion.max_slope_length_m",
@@ -1216,6 +2037,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0114",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1224,7 +2048,9 @@
    "status": "resolved",
    "prompt": "Blue Book applies the 80 m slope-length limit where more than 1,000 m2 is disturbed; check against the actual disturbed area.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.diversion.connect_downpipes_when_roof_installed",
@@ -1252,6 +2078,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0057",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1260,7 +2089,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.check_dam.install_if_necessary",
@@ -1288,6 +2119,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0057",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1296,7 +2130,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.check_dam.purpose",
@@ -1324,6 +2160,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0128",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1332,7 +2171,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.inlet.protect_downslope_drains_and_gutters",
@@ -1360,6 +2201,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0082",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1368,7 +2212,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.inlet.consult_council_on_method",
@@ -1396,6 +2242,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0085",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1404,7 +2253,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.inlet.downstream_pit_protection",
@@ -1432,6 +2283,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0258",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1440,7 +2294,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.inlet.methods",
@@ -1468,6 +2324,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0085",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1476,7 +2335,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.filter_strip.min_width_mm",
@@ -1504,6 +2365,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0093",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1512,7 +2376,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.filter_strip.cross_strip_interval_m",
@@ -1540,6 +2406,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0093",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1548,7 +2417,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.washout.buffer_around_largest_equipment_m",
@@ -1576,6 +2447,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0032",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1584,7 +2458,132 @@
    "status": "resolved",
    "prompt": "Guideline recommendation for wash-down areas; size of the largest equipment to be washed is not known to this tool.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.washout.bunded",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 30,
+    "section_ref": "4.8 Manage construction activity areas, step 2",
+    "quote": "Surround your designated construction activity area with bunds that will contain the dirty water",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0096",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.washout.level_area",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 30,
+    "section_ref": "4.8 step 3",
+    "quote": "your construction activity area should be in a level area with no steep slopes",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0096",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.washout.not_drain_to_stormwater_or_no_go",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 30,
+    "section_ref": "4.8 Take note",
+    "quote": "Do not locate construction activity areas where dirty water and waste materials can drain directly into the stormwater system or any no-go areas.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0096",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.washout.sediment_controls_downslope",
@@ -1612,6 +2611,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0094",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1620,7 +2622,50 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.washout.concrete_pump_plastic_sheet",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 30,
+    "section_ref": "4.8 step 5",
+    "quote": "you should place a plastic sheet under the concrete pump to capture any spillage.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0096",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.washout.collect_and_treat_wastewater",
@@ -1648,6 +2693,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0263",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1656,7 +2704,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.waste.bin_clearance_interval",
@@ -1684,6 +2734,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0308",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1692,7 +2745,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.waste.provide_approved_bins",
@@ -1720,6 +2775,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0328",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1728,7 +2786,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.amenities.staff_facilities_contain_effluent",
@@ -1756,6 +2816,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0328",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1764,7 +2827,50 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.trench.max_open_days",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": 3.0,
+   "value_struct": null,
+   "unit": "days",
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 31,
+    "section_ref": "4.9 Manage service trenches, step 1",
+    "quote": "Try to limit the time trenches are open to less than 3 days",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0104",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.trench.spoil_on_uphill_side",
@@ -1792,6 +2898,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0106",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1800,7 +2909,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.nogo.mark_sensitive_areas_and_trees",
@@ -1828,6 +2939,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0022",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1836,7 +2950,50 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.nogo.fence_trees_to_protect",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 22,
+    "section_ref": "4.3 Keep vegetation and ground cover",
+    "quote": "Fence off any trees or sections of vegetation that you want to protect from harm and install clear signage to mark these out as",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0058",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.nogo.no_materials_in_tree_drip_line",
@@ -1864,6 +3021,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0058",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1872,7 +3032,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.inspection.designated_person_daily",
@@ -1900,6 +3062,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0110",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1908,7 +3073,91 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.inspection.min_frequency",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "Landcom",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": "at least weekly, and immediately before site closure and following rainfall events that cause runoff",
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Managing Urban Stormwater: Soils and Construction, Volume 1 (the Blue Book), 4th edition",
+    "authority": "Landcom",
+    "version": "4th edition, March 2004 (reprinted 2006)",
+    "effective_date": "2004-03-01",
+    "page": 192,
+    "section_ref": "8.1(n) Maintenance (inspection program)",
+    "quote": "at least weekly, and",
+    "source_url": "https://www.environment.nsw.gov.au/sites/default/files/managing-urban-stormwater-soils-construction-volume-1-fourth-edition.pdf",
+    "retrieved_at": "2026-10-12T16:55:42Z",
+    "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
+    "chunk_id": "bluebook_v1-c0313",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.inspection.after_rainfall_event",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 34,
+    "section_ref": "5 Take note",
+    "quote": "It is vital to carefully check controls after rainy or windy weather and remove any built-up sediment.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0114",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.inspection.stockpiles_covered_end_of_day",
@@ -1936,6 +3185,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0112",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1944,7 +3196,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.inspection.sweep_road_footpath_daily",
@@ -1972,6 +3226,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0111",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -1980,7 +3237,50 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.inspection.keep_spare_materials_on_site",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 44,
+    "section_ref": "Attachment C, Table C1",
+    "quote": "You have extra materials on site for erosion and sediment controls in case any of your controls are damaged or new controls are needed",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0141",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.inspection.rainfall_trigger_mm",
@@ -2008,6 +3308,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0379",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -2016,7 +3319,9 @@
    "status": "resolved",
    "prompt": "Taken from the Blue Book Chapter 9 model plan (example conditions), not a general rule. Designer/certifier to confirm the post-rainfall inspection trigger.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.design_storm.percentile_disturbance_6_months_or_less",
@@ -2044,6 +3349,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0225",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -2052,7 +3360,9 @@
    "status": "resolved",
    "prompt": "Blue Book sets this for sediment basin settling zones (Type D/F soils). A small-lot ESCP using sediment fences does not size a basin; applies only if a basin is proposed.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.design_storm.percentile_disturbance_over_6_months",
@@ -2080,6 +3390,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0225",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -2088,7 +3401,9 @@
    "status": "resolved",
    "prompt": "As above: applies only if a sediment basin is proposed.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.design_storm.percentile_sensitive_receiving_waters_over_6_months",
@@ -2116,6 +3431,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0225",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -2124,7 +3442,9 @@
    "status": "resolved",
    "prompt": "As above: applies only if a sediment basin is proposed and receiving waters are considered particularly sensitive.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.design_storm.settling_zone_duration_days",
@@ -2152,6 +3472,9 @@
     "retrieved_at": "2026-10-12T16:55:42Z",
     "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
     "chunk_id": "bluebook_v1-c0219",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -2160,7 +3483,132 @@
    "status": "resolved",
    "prompt": "Applies to basin settling zones in Type D/F soils.",
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.design_rainfall.gunnedah_5day_75th_mm",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "Landcom",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": 20.0,
+   "value_struct": null,
+   "unit": "mm",
+   "source": {
+    "document_title": "Managing Urban Stormwater: Soils and Construction, Volume 1 (the Blue Book), 4th edition",
+    "authority": "Landcom",
+    "version": "4th edition, March 2004 (reprinted 2006)",
+    "effective_date": "2004-03-01",
+    "page": 144,
+    "section_ref": "Table 6.3a (Gunnedah row, 5-day columns)",
+    "quote": "Gunnedah 14.2 17.3 21.3 27.7 39.2 20.0 24.1 30.2 38.4 53.0",
+    "source_url": "https://www.environment.nsw.gov.au/sites/default/files/managing-urban-stormwater-soils-construction-volume-1-fourth-edition.pdf",
+    "retrieved_at": "2026-10-12T16:55:42Z",
+    "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
+    "chunk_id": "bluebook_v1-c0230",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.8,
+   "status": "resolved",
+   "prompt": "Blue Book Table 6.3a: 5-day columns are 75th, 80th, 85th, 90th, 95th percentile (20.0 / 24.1 / 30.2 / 38.4 / 53.0 mm). Informational; only needed if a sediment basin is proposed.",
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.design_rainfall.gunnedah_5day_80th_mm",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "Landcom",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": 24.1,
+   "value_struct": null,
+   "unit": "mm",
+   "source": {
+    "document_title": "Managing Urban Stormwater: Soils and Construction, Volume 1 (the Blue Book), 4th edition",
+    "authority": "Landcom",
+    "version": "4th edition, March 2004 (reprinted 2006)",
+    "effective_date": "2004-03-01",
+    "page": 144,
+    "section_ref": "Table 6.3a (Gunnedah row, 5-day columns)",
+    "quote": "Gunnedah 14.2 17.3 21.3 27.7 39.2 20.0 24.1 30.2 38.4 53.0",
+    "source_url": "https://www.environment.nsw.gov.au/sites/default/files/managing-urban-stormwater-soils-construction-volume-1-fourth-edition.pdf",
+    "retrieved_at": "2026-10-12T16:55:42Z",
+    "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
+    "chunk_id": "bluebook_v1-c0230",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.8,
+   "status": "resolved",
+   "prompt": "Blue Book Table 6.3a: 5-day columns are 75th, 80th, 85th, 90th, 95th percentile (20.0 / 24.1 / 30.2 / 38.4 / 53.0 mm). Informational; only needed if a sediment basin is proposed.",
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.design_rainfall.gunnedah_5day_85th_mm",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "Landcom",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": 30.2,
+   "value_struct": null,
+   "unit": "mm",
+   "source": {
+    "document_title": "Managing Urban Stormwater: Soils and Construction, Volume 1 (the Blue Book), 4th edition",
+    "authority": "Landcom",
+    "version": "4th edition, March 2004 (reprinted 2006)",
+    "effective_date": "2004-03-01",
+    "page": 144,
+    "section_ref": "Table 6.3a (Gunnedah row, 5-day columns)",
+    "quote": "Gunnedah 14.2 17.3 21.3 27.7 39.2 20.0 24.1 30.2 38.4 53.0",
+    "source_url": "https://www.environment.nsw.gov.au/sites/default/files/managing-urban-stormwater-soils-construction-volume-1-fourth-edition.pdf",
+    "retrieved_at": "2026-10-12T16:55:42Z",
+    "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
+    "chunk_id": "bluebook_v1-c0230",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.8,
+   "status": "resolved",
+   "prompt": "Blue Book Table 6.3a: 5-day columns are 75th, 80th, 85th, 90th, 95th percentile (20.0 / 24.1 / 30.2 / 38.4 / 53.0 mm). Informational; only needed if a sediment basin is proposed.",
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.escp.min_site_area_m2",
@@ -2188,6 +3636,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0014",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -2196,7 +3647,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.escp.max_site_area_m2",
@@ -2224,6 +3677,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0014",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -2232,7 +3688,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.escp.prepared_by_suitably_qualified_person",
@@ -2260,6 +3718,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0039",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -2268,7 +3729,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.escp.wet_weather_plan_required",
@@ -2296,6 +3759,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0042",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -2304,7 +3770,9 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   },
   {
    "key": "esc.escp.refer_blue_book",
@@ -2332,6 +3800,9 @@
     "retrieved_at": "2026-10-12T16:55:52Z",
     "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
     "chunk_id": "bs2024-c0007",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
     "entered_by": null,
     "entered_at": null
    },
@@ -2340,7 +3811,214 @@
    "status": "resolved",
    "prompt": null,
    "alternatives": [],
-   "verified_by": null
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.maintenance.access_top_up_when_worn",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 34,
+    "section_ref": "5 Maintain, step 8",
+    "quote": "Top up the gravel, crushed rock or recycled concrete along the access points if the surface has worn down.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0114",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.maintenance.replace_damaged_sediment_fence",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 33,
+    "section_ref": "5 Maintain, step 5",
+    "quote": "Replace damaged sediment fences and their posts.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0113",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.maintenance.remove_collected_sediment",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 33,
+    "section_ref": "5 Maintain, step 2",
+    "quote": "Remove sediment collected by controls such as sediment fences, catch drains and diversion banks.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0110",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.sediment_fence.trench_backfill_compact",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 25,
+    "section_ref": "4.5 step 3",
+    "quote": "Fill the trench in and compact the soil on either side of the fence so that the fence is secured, and water will not flow under it.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0075",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
+  },
+  {
+   "key": "esc.stockpile.cover_wet_or_windy",
+   "applies_to": {
+    "jurisdiction": "NSW",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "lga": null,
+    "zone": null,
+    "service": null,
+    "dia_min_mm": null,
+    "dia_max_mm": null
+   },
+   "value": true,
+   "value_struct": null,
+   "unit": null,
+   "source": {
+    "document_title": "Guidelines for erosion and sediment control on building sites",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "October 2024",
+    "effective_date": "2024-10-01",
+    "page": 34,
+    "section_ref": "5 Maintain",
+    "quote": "always be aware of the weather forecast so you can cover stockpiles, secure building materials, and stabilise disturbed areas before wet or windy weather.",
+    "source_url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+    "retrieved_at": "2026-10-12T16:55:52Z",
+    "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+    "chunk_id": "bs2024-c0117",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   },
+   "extraction_method": "llm",
+   "confidence": 0.85,
+   "status": "resolved",
+   "prompt": null,
+   "alternatives": [],
+   "verified_by": null,
+   "entered_value": null,
+   "entered_unit": null
   }
  ]
 }

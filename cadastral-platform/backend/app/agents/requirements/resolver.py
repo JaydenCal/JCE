@@ -15,7 +15,7 @@ from app.agents.sa2_dcp_rag.ingest import ingest_pdf
 from app.agents.sa2_dcp_rag.models import Chunk
 from app.agents.sa2_dcp_rag.retrieve import InMemoryRetriever
 
-from .models import KEY_HELP, Requirement, RequirementKey, RequirementSet, Selectors, Source
+from .models import KEY_HELP, key_help, Requirement, RequirementKey, RequirementSet, Selectors, Source
 from .sources import DocRef, DocumentSource
 
 REGISTRY_PATH = Path(__file__).with_name("registry.json")
@@ -257,7 +257,7 @@ class RequirementsResolver:
                       "Never guess; omit if not explicitly stated. 'quote' must be an exact verbatim substring of the cited "
                       f"chunk containing the value. Value unit: {reg.get('unit', 'boolean')}.")
             ctx = "\n\n".join(f"[chunk_id={c.chunk_id} pages={c.page_from}-{c.page_to}]\n{c.content}" for c in chunks)
-            user = (f"Requirement: {key} - {KEY_HELP.get(RequirementKey(key), key)}\nLot: {self.ctx.model_dump_json()}\n\n"
+            user = (f"Requirement: {key} - {key_help(key)}\nLot: {self.ctx.model_dump_json()}\n\n"
                     f"CHUNKS:\n{ctx}")
             self.llm_calls += 1
             resp = self.llm.complete(system, user, {"type": "object"})
@@ -298,7 +298,7 @@ class RequirementsResolver:
                 titles = ", ".join(d.title for d in docs) or "no governing document supplied"
                 rs.add(Requirement(key=key, applies_to=self._stamp(key, docs[0]) if docs else Selectors(),
                                    status="unresolved",
-                                   prompt=f"Could not find {KEY_HELP.get(RequirementKey(key), key)} in: {titles}. "
+                                   prompt=f"Could not find {key_help(key)} in: {titles}. "
                                           f"Please enter the value and cite the document, or supply the governing document."))
                 continue
             groups: dict[str, list[Requirement]] = {}

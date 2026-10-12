@@ -111,6 +111,7 @@ class Sa5Node(NodeModel):
     drawn_by: str
     output_path: str
     development_type: DevelopmentType = DevelopmentType.dwelling_house
+    ffl_label: str | None = None    # flood-based floor level statement (app.flood.ffl_label)
 
 
 # --------------------------------------------------------------------------- conversions
@@ -225,7 +226,7 @@ def cad_request(n: Sa5Node) -> CadRequestSa5:
     return CadRequestSa5(
         project_id=n.project_id, mga_srid=lot.mga_srid, drawing_scale_denominator=n.drawing_scale_denominator,
         lot=lot, overlay=n.overlay, driveway=n.env.driveway, services=n.sa4.to_cad_services(),
-        rwt=n.sa4.to_cad_rwt(), development_type=n.development_type, council_overlays=[], council_name=lot.lga_name or None,
+        rwt=n.sa4.to_cad_rwt(), development_type=n.development_type, ffl_label=n.ffl_label, council_overlays=[], council_name=lot.lga_name or None,
         export_formats=n.export_formats, acknowledgements_present=n.acknowledgements_present,
         project_title=n.project_title, drawn_by=n.drawn_by, output_path=n.output_path)
 

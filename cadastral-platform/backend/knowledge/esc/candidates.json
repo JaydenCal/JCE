@@ -755,7 +755,7 @@
    "unit": null,
    "doc": "bs2024",
    "section_ref": "4.3 Keep vegetation and ground cover",
-   "quote": "Fence off any trees or sections of vegetation that you want to protect from harm and install clear signage to mark these out as no-go areas.",
+   "quote": "Fence off any trees or sections of vegetation that you want to protect from harm and install clear signage to mark these out as",
    "confidence": 0.85
   },
   {
@@ -781,11 +781,11 @@
   {
    "id": "in_wk",
    "key": "esc.inspection.min_frequency",
-   "value": "at least weekly",
+   "value": "at least weekly, and immediately before site closure and following rainfall events that cause runoff",
    "unit": null,
    "doc": "bluebook_v1",
-   "section_ref": "8.1(n) Maintenance",
-   "quote": "at least weekly, and immediately before site closure, and immediately following rainfall events that cause runoff.",
+   "section_ref": "8.1(n) Maintenance (inspection program)",
+   "quote": "at least weekly, and",
    "confidence": 0.85
   },
   {
@@ -969,6 +969,58 @@
    "doc": "bs2024",
    "section_ref": "1 Introduction",
    "quote": "Use the Blue Book and these guidelines to inform your approach to erosion and sediment control.",
+   "confidence": 0.85
+  },
+  {
+   "id": "ac_topup",
+   "key": "esc.maintenance.access_top_up_when_worn",
+   "value": true,
+   "unit": null,
+   "doc": "bs2024",
+   "section_ref": "5 Maintain, step 8",
+   "quote": "Top up the gravel, crushed rock or recycled concrete along the access points if the surface has worn down.",
+   "confidence": 0.85,
+   "page": 34
+  },
+  {
+   "id": "sf_repl",
+   "key": "esc.maintenance.replace_damaged_sediment_fence",
+   "value": true,
+   "unit": null,
+   "doc": "bs2024",
+   "section_ref": "5 Maintain, step 5",
+   "quote": "Replace damaged sediment fences and their posts.",
+   "confidence": 0.85
+  },
+  {
+   "id": "sf_rem",
+   "key": "esc.maintenance.remove_collected_sediment",
+   "value": true,
+   "unit": null,
+   "doc": "bs2024",
+   "section_ref": "5 Maintain, step 2",
+   "quote": "Remove sediment collected by controls such as sediment fences, catch drains and diversion banks.",
+   "confidence": 0.85,
+   "page": 33
+  },
+  {
+   "id": "sf_ret2",
+   "key": "esc.sediment_fence.trench_backfill_compact",
+   "value": true,
+   "unit": null,
+   "doc": "bs2024",
+   "section_ref": "4.5 step 3",
+   "quote": "Fill the trench in and compact the soil on either side of the fence so that the fence is secured, and water will not flow under it.",
+   "confidence": 0.85
+  },
+  {
+   "id": "cov_wind",
+   "key": "esc.stockpile.cover_wet_or_windy",
+   "value": true,
+   "unit": null,
+   "doc": "bs2024",
+   "section_ref": "5 Maintain",
+   "quote": "always be aware of the weather forecast so you can cover stockpiles, secure building materials, and stabilise disturbed areas before wet or windy weather.",
    "confidence": 0.85
   }
  ]

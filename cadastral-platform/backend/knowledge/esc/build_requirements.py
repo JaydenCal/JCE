@@ -56,6 +56,13 @@ def number_in_quote(v: float, q: str) -> bool:
 _pdfs: dict[str, pdfplumber.PDF] = {}
 
 
+def page_text(doc: str, page: int) -> str:
+    s = SRC[doc]
+    path = (RAW / "esc" / s["filename"]) if not doc.startswith("gunnedah") else (RAW / s["filename"])
+    pdf = _pdfs.setdefault(doc, pdfplumber.open(path))
+    return pdf.pages[page - 1].extract_text() or ""
+
+
 def page_of(doc: str, ch: Chunk, quote: str) -> int | None:
     """Exact PDF page: search the chunk's pages one by one (a quote may not span a page break)."""
     if ch.page_from == ch.page_to:
@@ -72,29 +79,35 @@ def page_of(doc: str, ch: Chunk, quote: str) -> int | None:
 def main() -> int:
     cands = json.loads((HERE / "candidates.json").read_text())["candidates"]
     chunks: dict[str, list[Chunk]] = {}
-    rs, rejected = RequirementSet(), []
+    rs, rejected, validated_on = RequirementSet(), [], {}
     for c in cands:
         doc = c["doc"]
         s = SRC[doc]
         chunks.setdefault(doc, load_chunks(doc))
         q = norm(c["quote"])
         hits = [k for k in chunks[doc] if q in norm(k.content)]
-        if not hits:
-            rejected.append({"id": c["id"], "key": c["key"], "reason": "quote not found in any chunk"})
-            continue
+        how = "chunk"
         v = c["value"]
         if not isinstance(v, (bool, str)) and not number_in_quote(float(v), c["quote"]):
             rejected.append({"id": c["id"], "key": c["key"], "reason": f"value {v} not in quote"})
             continue
-        ch, page = hits[0], None
+        ch, page = None, None
         for h in hits:
             page = page_of(doc, h, c["quote"])
             if page:
                 ch = h
                 break
-        if page is None:
-            rejected.append({"id": c["id"], "key": c["key"], "reason": "quote spans a page break; page not resolvable"})
-            continue
+        if ch is None:
+            # The SA2 ingester turns short numbered lines into headings and merges table columns, so such quotes are absent
+            # from chunk content. Fall back to the exact text of the cited PDF page (page given by the reader of the document).
+            pg = c.get("page")
+            if pg and q in norm(page_text(doc, pg)):
+                near = [k for k in chunks[doc] if k.page_from <= pg <= k.page_to]
+                ch, page, how = (near[0] if near else chunks[doc][0]), pg, "page_text"
+            else:
+                rejected.append({"id": c["id"], "key": c["key"], "reason": "quote not found in any chunk or on the cited page"})
+                continue
+        validated_on[c["id"]] = how
         sel = Selectors(jurisdiction=s.get("jurisdiction", "NSW"), authority=s["authority"], lga=s.get("lga"), zone=c.get("zone"))
         eff = s.get("effective_date")
         rs.add(Requirement(
@@ -111,7 +124,8 @@ def main() -> int:
          "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
          "requirements": [r.model_dump(mode="json") for r in rs.requirements]}, indent=1, ensure_ascii=False) + "\n")
     (HERE / "validation_report.json").write_text(json.dumps(
-        {"candidates": len(cands), "validated": len(rs.requirements), "rejected": rejected, "unresolved_items": len(unresolved),
+        {"candidates": len(cands), "validated": len(rs.requirements), "rejected": rejected,
+         "validated_on_page_text": sorted(k for k, v in validated_on.items() if v == "page_text"), "unresolved_items": len(unresolved),
          "chunks": {k: len(v) for k, v in chunks.items()}}, indent=1) + "\n")
     print(f"candidates={len(cands)} validated={len(rs.requirements)} rejected={len(rejected)} unresolved={len(unresolved)}")
     for r in rejected:

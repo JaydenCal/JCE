@@ -46,6 +46,16 @@ KEY_HELP = {
 }
 
 
+EXTRA_KEY_HELP: dict[str, str] = {}      # keys registered by extensions (e.g. app.jurisdiction custom keys)
+
+
+def key_help(key: str) -> str:
+    try:
+        return KEY_HELP.get(RequirementKey(key), key)
+    except ValueError:
+        return EXTRA_KEY_HELP.get(key, key)
+
+
 def _now() -> datetime:
     return datetime.now(timezone.utc)
 

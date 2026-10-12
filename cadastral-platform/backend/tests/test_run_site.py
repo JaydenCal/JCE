@@ -16,7 +16,9 @@ from test_sa1_cadastre import NSW_LOT, ROAD, Mock, fc, zone  # noqa: E402
 def routes():
     geo = json.dumps({"candidates": [{"location": {"x": NSW_LOT["geometry"]["coordinates"][0][0][0],
                                                    "y": NSW_LOT["geometry"]["coordinates"][0][0][1]}}]}).encode()
-    return {"GeocodeServer": geo, "NSW_Cadastre": fc(NSW_LOT), "EPI_Primary": fc(zone(324990, 6264990, 60, 80, "R2")), "roads/0": fc(ROAD)}
+    prop = json.dumps({"features": [{"attributes": {"propid": 1, "address": "1 TEST ST HORNSBY"},
+                                     "geometry": {"rings": (NSW_LOT["geometry"]["coordinates"] if NSW_LOT["geometry"]["type"] == "Polygon" else NSW_LOT["geometry"]["coordinates"][0])}}]}).encode()
+    return {"NSW_Property": prop, "GeocodeServer": geo, "NSW_Cadastre": fc(NSW_LOT), "EPI_Primary": fc(zone(324990, 6264990, 60, 80, "R2")), "roads/0": fc(ROAD)}
 
 
 ENV = {"SA1_ROADS_URL_NSW": "http://roads/0", "SA2_DCP_DOCS": ""}

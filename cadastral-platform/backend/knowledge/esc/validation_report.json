@@ -1,149 +1,38 @@
 {
- "candidates": 93,
- "validated": 65,
- "rejected": [
-  {
-   "id": "sf_spacing",
-   "key": "esc.sediment_fence.post_spacing_m",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "sf_return",
-   "key": "esc.sediment_fence.return_interval_m",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "sf_overlap",
-   "key": "esc.sediment_fence.joint_overlap_mm",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "sf_contour",
-   "key": "esc.sediment_fence.along_contour",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "sf_ends",
-   "key": "esc.sediment_fence.ends_turn_upslope",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "sf_nobuild",
-   "key": "esc.sediment_fence.no_material_against_fence",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "ac_len_bs",
-   "key": "esc.access.min_length_building_sites_m",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "ac_surf",
-   "key": "esc.access.surface",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "ac_berm",
-   "key": "esc.access.diversion_berm_if_sloping_to_road",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "sp_h",
-   "key": "esc.stockpile.max_height_m",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "sp_cov",
-   "key": "esc.stockpile.cover_when_unattended",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "sp_road",
-   "key": "esc.stockpile.not_on_footpath_or_road_reserve",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "ts_bare",
-   "key": "esc.stabilisation.no_bare_soil_after_construction",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "ts_rem",
-   "key": "esc.stabilisation.remove_temporary_controls_after_stabilised",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "ts_matt",
-   "key": "esc.stabilisation.matting_on_unstable_soil",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "dv_bund",
-   "key": "esc.diversion.graded_bund_option",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "wa_bund",
-   "key": "esc.washout.bunded",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "wa_lvl",
-   "key": "esc.washout.level_area",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "wa_dr",
-   "key": "esc.washout.not_drain_to_stormwater_or_no_go",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "wa_conc",
-   "key": "esc.washout.concrete_pump_plastic_sheet",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "sf_trench2",
-   "key": "esc.trench.max_open_days",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "ng_tree",
-   "key": "esc.nogo.fence_trees_to_protect",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "in_wk",
-   "key": "esc.inspection.min_frequency",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "in_rain",
-   "key": "esc.inspection.after_rainfall_event",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "in_spare",
-   "key": "esc.inspection.keep_spare_materials_on_site",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "rf_g75",
-   "key": "esc.design_rainfall.gunnedah_5day_75th_mm",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "rf_g80",
-   "key": "esc.design_rainfall.gunnedah_5day_80th_mm",
-   "reason": "quote not found in any chunk"
-  },
-  {
-   "id": "rf_g85",
-   "key": "esc.design_rainfall.gunnedah_5day_85th_mm",
-   "reason": "quote not found in any chunk"
-  }
+ "candidates": 98,
+ "validated": 98,
+ "rejected": [],
+ "validated_on_page_text": [
+  "ac_berm",
+  "ac_len_bs",
+  "ac_surf",
+  "ac_topup",
+  "dv_bund",
+  "in_rain",
+  "in_spare",
+  "rf_g75",
+  "rf_g80",
+  "rf_g85",
+  "sf_contour",
+  "sf_ends",
+  "sf_nobuild",
+  "sf_overlap",
+  "sf_rem",
+  "sf_return",
+  "sf_spacing",
+  "sf_trench2",
+  "sp_cov",
+  "sp_h",
+  "sp_road",
+  "ts_bare",
+  "ts_matt",
+  "ts_rem",
+  "wa_bund",
+  "wa_conc",
+  "wa_dr",
+  "wa_lvl"
  ],
- "unresolved_items": 14,
+ "unresolved_items": 15,
  "chunks": {
   "bs2024": 147,
   "bluebook_v1": 803,
