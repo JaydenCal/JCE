@@ -2,7 +2,7 @@
 
 **JCE Infrastructure Pty Ltd** | ABN 29 699 165 663 | 0477 207 027 | jayden@jceinfrastructure.com.au | jceinfrastructure.com.au
 
-Text of JCE_FP_VP523438_Final_RevF.docx, for pasting into the JCE branded template.
+Text of JCE_FP_VP523438_Final_RevG.docx, for pasting into the JCE branded template.
 
 
 | Item | Detail |
@@ -12,7 +12,7 @@ Text of JCE_FP_VP523438_Final_RevF.docx, for pasting into the JCE branded templa
 | Attention | Procurement, via VendorPanel |
 | Project | RFT 2026.013 Concept Design for Hawthorn Road: Separable Portion 1 (30% concept design), with PC Sums for Separable Portions 2 and 3 |
 | Site | Hawthorn Road, Adelaide Road to Liebelt Summer Track, Mount Barker SA 5251 |
-| Date / Revision | 12/10/2026 / Revision F (final for signature) |
+| Date / Revision | 12/10/2026 / Revision G (final for signature) |
 | Prepared by | Jayden Callen, Director |
 | Offer | Lump sum $258,460 excl. GST ($284,306 incl. GST) for Separable Portion 1; PC Sums $339,400 excl. GST for Separable Portions 2 and 3 |
 
@@ -78,7 +78,7 @@ The methodology follows Brief sections 3 to 6 in three stages that match Council
 
 ### Stage 1: Start-up, investigations and Concept Design Basis (to the 10% workshop, 12/02/2027)
 
-- Start-up meeting with Council and a two-day site appraisal of the whole corridor: drainage lines, culvert condition, verges, accesses, stobie poles, trees and interfaces, with a photo log (by 04/12/2026).
+- Start-up meeting with Council and a two-day site appraisal of the whole corridor: drainage lines, culvert condition, verges, accesses, stobie poles, trees and interfaces, with a photo log (by 04/12/2026). JCE will also fly the corridor with its RTK drone to produce an orthophoto and 3D model of existing conditions (verges, accesses, culvert inlets and outlets, trees and stobie poles) as context for the options and the workshops; this supplements the engineering survey and does not replace it.
 - Project management plan, program, risk register and Safety in Design hazard register.
 - Collection and review of DIT's intersection design, Council's CWMS and stormwater layout plans, the approved #73 CHR design, the Bollen Road closure, the link road and roundabout options, development plans, AADT and crash data.
 - BYDA search and services conflict register; liaison with SA Power Networks, SA Water, NBN Co and the gas network operator.
@@ -159,6 +159,8 @@ The program assumes Council returns consolidated comments within ten business da
 - Stormwater and flooding: DRAINS (core workshop) and MUSIC X; flood impact assessment to ARR 2019 with specialist flood modellers.
 - Costs: engineer's estimates, bills of quantities and variation pricing.
 - Software: Civil 3D (advanced, with AutoLISP automation), Navisworks and InfraWorks.
+
+**Resources and equipment.** JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE delivers drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category, with CASA operator accreditation in place before services start. Hawthorn Road is more than 30 km from the nearest controlled aerodromes (Adelaide Airport and Parafield), well outside the 5.5 km limit for the excluded category; flights will be in daylight, within visual line of sight, below 120 m and clear of road users and the public as CASA's standard operating conditions require.
 
 **Registration.** The Brief and Agreement do not require CPEng, NER or any State registration for this work. South Australia does not currently require engineers to be registered to provide these services [TBC - Jayden: confirm on legislation.sa.gov.au before lodging]. If a registration requirement starts during the commission and applies to these services, JCE will comply, including by engaging a registered engineer for review and sign-off.
 

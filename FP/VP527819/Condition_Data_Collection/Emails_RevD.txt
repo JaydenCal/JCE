@@ -1,0 +1,110 @@
+VP527819 Inner West Council RFT 47-26: RFQ emails, field data capture partner (inventory and condition audit)
+Prepared 12/10/2026 (Rev D: JCE now does all GIS processing, register updates and QA in-house). NOT SENT. Jayden sends each email separately (one firm per email, no group email).
+RFQ ref: JCE-RFQ-VP527819-01 Rev D. Quote due 12:00 pm Wednesday 21/10/2026.
+
+Attach to every email:
+- The firm's own RFQ PDF from per_firm/ (JCE_RFQ_Condition_Data_Collection_IWC-Transport-Audit_Final_RevD_<Firm>.pdf)
+- From Dropbox 00_Tender_Docs (for preparing the quote only, under the RFT's confidentiality and IP conditions):
+  Transport Assets Condition Audit RFT 47-26 Scope_Spec Final.pdf
+  Transport Audit - Scope table.xlsx
+  IWC-Consultancy Agreement Transport Assets Condition Audit RFT 47-26 DRAFT.pdf
+- Do NOT attach the Rev B or Rev C RFQs in the Dropbox discipline folders, the old Email_Draft.txt, or JCE's cost sheet.
+
+======================================================================
+EMAIL 1 OF 3: Infrastructure Management Group Pty Ltd (IMG), Sydney office
+======================================================================
+To: Infrastructure Management Group, asset condition team [email TBC]
+   (no email found in public sources; IMG has Sydney and Melbourne offices per its WALGA supplier listing. Get the address from IMG's website or by phone.)
+Subject: RFQ JCE-RFQ-VP527819-01: transport asset inventory and condition audit, Inner West Council RFT 47-26, quote due 21/10/2026
+Attach: JCE_RFQ_Condition_Data_Collection_IWC-Transport-Audit_Final_RevD_IMG.pdf plus the three Council documents listed above
+
+Hello,
+
+JCE Infrastructure is tendering for Inner West Council's RFT 47-26, Transport Assets Condition Audit & Revaluations 2026/27 (VendorPanel VP527819), as Prime Contractor. I would like a quote from your firm as our field data capture partner and key subcontractor, for field and vehicle capture and condition rating. JCE will do all GIS processing, asset register updates, data QA and audit sampling in-house.
+
+The attached RFQ (JCE_RFQ_Condition_Data_Collection_IWC-Transport-Audit_Final_RevD_IMG.pdf) sets out the scope from Council's Contractor Brief: inventory verification and condition audit of 464 km of roads (50 m intervals), 844 km of footpaths (20 m intervals, with lifts for a maintenance program), 866 km of kerb and gutter (10 m intervals), traffic devices, street furniture, artwork, car parks, a new white way lighting class and about 50,000 signs, with mapping-grade DGPS positions and geo-referenced photos, plus five optional classes priced separately. Council expects to award in November 2026, with a two-week pilot in January and data due to JCE by 12/03/2027.
+
+IMG carried out Inner West Council's 2021 footpath, kerb and road inspection, so I expect you may be tendering for RFT 47-26 yourselves. If so, please let me know early. If you would consider quoting as a subcontractor, that earlier work would need to be declared to Council, and it is valuable experience.
+
+The RFQ asks for lump sums by asset class, unit rates, hourly and day rates, exclusions, insurances at Council's levels (public liability $20 million, professional indemnity $10 million), 90-day price validity, two to three comparable council projects with referees, and a declaration of any conflict of interest. Council's Contractor Brief, Scope table and draft Consultancy Agreement are attached for preparing the quote only.
+
+Key dates:
+- Please confirm you intend to quote: Wednesday 14/10/2026
+- Questions to JCE: 12:00 pm Friday 16/10/2026
+- Quote due to JCE: 12:00 pm Wednesday 21/10/2026
+- Tender closes: 2:00 pm Wednesday 28/10/2026 (no further extensions)
+
+Engagement depends on JCE winning the tender and Council approving your firm as a subcontractor. I am happy to talk it through by phone.
+
+Regards,
+
+Jayden Callen
+Director, JCE Infrastructure Pty Ltd
+0477 207 027
+jayden@jceinfrastructure.com.au
+
+======================================================================
+EMAIL 2 OF 3: Pavement Management Services Pty Ltd, Seven Hills NSW
+======================================================================
+To: Pavement Management Services Pty Ltd, Regional Manager [email TBC]
+   (NSW office Unit B7/26 Powers Road, Seven Hills NSW 2147, phone 02 9674 9488, per a VicRoads prequalification listing; the email in that listing could not be read. Formerly Fugro-PMS; PitchBook shows it as acquired or merged, so confirm the current entity and whether it does footpath and roadside asset inventory, not only pavement surveys.)
+Subject: RFQ JCE-RFQ-VP527819-01: transport asset inventory and condition audit, Inner West Council RFT 47-26, quote due 21/10/2026
+Attach: JCE_RFQ_Condition_Data_Collection_IWC-Transport-Audit_Final_RevD_PMS.pdf plus the three Council documents listed above
+
+Hello,
+
+JCE Infrastructure is tendering for Inner West Council's RFT 47-26, Transport Assets Condition Audit & Revaluations 2026/27 (VendorPanel VP527819), as Prime Contractor. I would like a quote from your firm as our field data capture partner and key subcontractor, for field and vehicle capture and condition rating. JCE will do all GIS processing, asset register updates, data QA and audit sampling in-house.
+
+The attached RFQ (JCE_RFQ_Condition_Data_Collection_IWC-Transport-Audit_Final_RevD_PMS.pdf) sets out the scope from Council's Contractor Brief: inventory verification and condition audit of 464 km of roads (50 m intervals), 844 km of footpaths (20 m intervals, with lifts for a maintenance program), 866 km of kerb and gutter (10 m intervals), traffic devices, street furniture, artwork, car parks, a new white way lighting class and about 50,000 signs, with mapping-grade DGPS positions and geo-referenced photos, plus five optional classes priced separately. Council expects to award in November 2026, with a two-week pilot in January and data due to JCE by 12/03/2027.
+
+I understand your firm carries out network pavement condition surveys and tendered for the City of Sydney's road reserve condition assessment. Please tell me whether you also capture footpath, kerb and roadside asset inventory to this level, or would team with another firm for it.
+
+The RFQ asks for lump sums by asset class, unit rates, hourly and day rates, exclusions, insurances at Council's levels (public liability $20 million, professional indemnity $10 million), 90-day price validity, two to three comparable council projects with referees, and a declaration of any conflict of interest. Council's Contractor Brief, Scope table and draft Consultancy Agreement are attached for preparing the quote only.
+
+Key dates:
+- Please confirm you intend to quote: Wednesday 14/10/2026
+- Questions to JCE: 12:00 pm Friday 16/10/2026
+- Quote due to JCE: 12:00 pm Wednesday 21/10/2026
+- Tender closes: 2:00 pm Wednesday 28/10/2026 (no further extensions)
+
+Engagement depends on JCE winning the tender and Council approving your firm as a subcontractor. I am happy to talk it through by phone.
+
+Regards,
+
+Jayden Callen
+Director, JCE Infrastructure Pty Ltd
+0477 207 027
+jayden@jceinfrastructure.com.au
+
+======================================================================
+EMAIL 3 OF 3: Moloney Asset Management Systems (Peter Moloney)
+======================================================================
+To: peter@moloneys.com.au
+   (address from Moloney road survey reports for Tumbarumba Shire (January 2015) and Pyrenees Shire (December 2015). These are older documents: confirm the address is current before sending.)
+Subject: RFQ JCE-RFQ-VP527819-01: transport asset inventory and condition audit, Inner West Council RFT 47-26, quote due 21/10/2026
+Attach: JCE_RFQ_Condition_Data_Collection_IWC-Transport-Audit_Final_RevD_Moloney.pdf plus the three Council documents listed above
+
+Hello,
+
+JCE Infrastructure is tendering for Inner West Council's RFT 47-26, Transport Assets Condition Audit & Revaluations 2026/27 (VendorPanel VP527819), as Prime Contractor. I would like a quote from your firm as our field data capture partner and key subcontractor, for field and vehicle capture and condition rating. JCE will do all GIS processing, asset register updates, data QA and audit sampling in-house.
+
+The attached RFQ (JCE_RFQ_Condition_Data_Collection_IWC-Transport-Audit_Final_RevD_Moloney.pdf) sets out the scope from Council's Contractor Brief: inventory verification and condition audit of 464 km of roads (50 m intervals), 844 km of footpaths (20 m intervals, with lifts for a maintenance program), 866 km of kerb and gutter (10 m intervals), traffic devices, street furniture, artwork, car parks, a new white way lighting class and about 50,000 signs, with mapping-grade DGPS positions and geo-referenced photos, plus five optional classes priced separately. Council expects to award in November 2026, with a two-week pilot in January and data due to JCE by 12/03/2027.
+
+I have seen your road condition and asset survey work for NSW and Victorian councils. Please tell me whether you can also cover footpath, kerb and point asset inventory across a dense metropolitan network of this size, or would team with another firm for parts of it.
+
+The RFQ asks for lump sums by asset class, unit rates, hourly and day rates, exclusions, insurances at Council's levels (public liability $20 million, professional indemnity $10 million), 90-day price validity, two to three comparable council projects with referees, and a declaration of any conflict of interest. Council's Contractor Brief, Scope table and draft Consultancy Agreement are attached for preparing the quote only.
+
+Key dates:
+- Please confirm you intend to quote: Wednesday 14/10/2026
+- Questions to JCE: 12:00 pm Friday 16/10/2026
+- Quote due to JCE: 12:00 pm Wednesday 21/10/2026
+- Tender closes: 2:00 pm Wednesday 28/10/2026 (no further extensions)
+
+Engagement depends on JCE winning the tender and Council approving your firm as a subcontractor. I am happy to talk it through by phone.
+
+Regards,
+
+Jayden Callen
+Director, JCE Infrastructure Pty Ltd
+0477 207 027
+jayden@jceinfrastructure.com.au

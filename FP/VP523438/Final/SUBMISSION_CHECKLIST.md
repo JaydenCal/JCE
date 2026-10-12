@@ -1,5 +1,7 @@
 # Submission checklist: VP523438, MBDC RFT 2026.013 Concept Design for Hawthorn Road
 
+**Rev G (12/10/2026):** adds the Glide Inside / RTK drone photogrammetry capability paragraph (FP 5.1, CASA sub-2 kg excluded category, accreditation in place before services start; site more than 30 km from Adelaide Airport and Parafield, outside the 5.5 km limit) and a drone orthophoto line in the Stage 1 site appraisal; lodge Rev G, not Rev F.
+
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status: draft ready (no Pursue/Pass decision yet).
 
 **Closes:** Friday 30/10/2026, 5:00 pm Adelaide time (ACDT) = 5:30 pm NSW time. **Questions cut-off:** Tuesday 27/10/2026, 5:00 pm Adelaide time. **Sub-consultant quotes due:** 12:00 pm ACDT Friday 23/10/2026. **Decision:** 20/11/2026.
@@ -23,9 +25,9 @@ Stage split: Stage 1 $64,020; Stage 2 $135,940; Stage 3 $58,500. No budget figur
 
 1. Decide Pursue or Pass in the register.
 2. Fold in sub-consultant quotes (due 23/10/2026), pick one firm per discipline, update FP Section 5.2 and the fee, and fill the [TBC - Jayden] items below.
-3. Paste `FP_Final_text.md` into the JCE branded template (or use `JCE_FP_VP523438_Final_RevF.docx`), insert the Gantt chart (Figure 1), add the FP number, sign the offer block, and export to PDF.
+3. Paste `FP_Final_text.md` into the JCE branded template (or use `JCE_FP_VP523438_Final_RevG.docx`), insert the Gantt chart (Figure 1), add the FP number, sign the offer block, and export to PDF.
 4. Build **one** PDF named **`2026.013 JCE Infrastructure SUBMISSION.pdf`** (Brief 10, cl 8.2), in this order:
-   - Signed fee proposal Rev F (includes Attachment A, Schedule of Rates)
+   - Signed fee proposal Rev G (includes Attachment A, Schedule of Rates)
    - Attachment B: `Callen-Pell_NER-02_Detailed_CV.pdf`
    - Attachment C: `Certificate_of_Currency_-_2026-07-14T105420.82.pdf`; `JCE Capability Statement - Councils.pdf`; `JCE-WHS-POL-001-Work_Health_and_Safety_Policy.pdf`; `JCE-WHS-PLN-001-WHS_Management_Plan.pdf`; `JCE-WHS-PRO-011-Safety_in_Design_Procedure.pdf`; `JCE-QMS-POL-001-Quality_Policy.pdf`; `JCE-ENV-POL-001-Environmental_Policy.pdf`; `JCE-WHS-POL-003-Modern_Slavery_Policy.pdf`
    - Optional appendix: the Agreement Schedule answers (from `2026.013-...Schedule_answers.md`)
@@ -35,7 +37,7 @@ Stage split: Stage 1 $64,020; Stage 2 $135,940; Stage 3 $58,500. No budget figur
 
 | File | Where |
 |---|---|
-| JCE_FP_VP523438_Final_RevF.docx / .pdf (12 pages) | Repo `FP/VP523438/Final/` (binary; copy to Dropbox `02_Submission` yourself) |
+| JCE_FP_VP523438_Final_RevG.docx / .pdf (12 pages; Rev F kept for reference) | Repo `FP/VP523438/Final/` (binary; copy to Dropbox `02_Submission` yourself) |
 | FP_Final_text.md | Repo `Final/` and Dropbox `02_Submission/FINAL_2026-10-12_FP_Final_text.md` |
 | SUBMISSION_CHECKLIST.md | Repo `Final/` and Dropbox `02_Submission/FINAL_2026-10-12_SUBMISSION_CHECKLIST.md` |
 | RFIs_FINAL.md | Repo `Final/` and Dropbox `02_Submission/FINAL_2026-10-12_RFIs_FINAL.md` |

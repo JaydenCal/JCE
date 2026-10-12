@@ -247,6 +247,11 @@ JCE's hours by month, with weekly loads for Jayden (working weeks to 31/03/2027,
 To keep Jayden at about 35 hours a week in March, the unit rates, useful lives and revaluation model are built in January and February on Council's register data, report and program frameworks are drafted in February, and a casual GIS technician and Sunny Lotay carry the March GIS and audit load.
 
 
+### Related capability and equipment
+
+JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE offers drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category, with operator accreditation in place before services start. On this contract that capability is limited to the optional per-site rate (Item 10) for a specific asset outside 5.5 km of Sydney and Bankstown airports and clear of people; it is not used for network capture (Section 2.1).
+
+
 ### Jayden Callen
 
 Jayden is a civil engineer with more than eight years of experience across Commonwealth Defence infrastructure, land development, roads and pavements, stormwater and water infrastructure, progressing from civil design to design management. Relevant experience includes civil design management at Langtree Consulting Engineers, Townsville (03/2025 to 05/2026), coordinating flood, electrical and hydraulic subconsultants into joint-discipline packages; senior engineer and design manager roles with SCP Consulting (06/2023 to 03/2025) on Defence projects at HMAS Watson, RAAF Base Tindal, RAAF Base Townsville and HMAS Cairns, including construction-phase inspection and quality assurance; engineer's estimates and bills of quantities, the basis of replacement cost unit rates; road and pavement design to the Austroads guides and CIRCLY; condition inspection and certification of a 647 m earthen flood levee at Gunnedah (JCE, 2026); and Civil 3D and GIS data management. His summary is in Attachment B and his detailed CV is attached to the tender. [TBC - Jayden: GIS and drone projects to cite, with referees]
