@@ -4,6 +4,7 @@ import json
 from dataclasses import dataclass, field
 
 from shapely.geometry import MultiPolygon, shape
+from shapely.ops import unary_union
 
 from .clients import ArcGISClient, LayerConfig
 from .geometry import as_multi, to_mga
@@ -70,17 +71,18 @@ def compute_zones(lot_gda, features, srid: int, jurisdiction: str, cfg: ZoningCo
         key = (code, str(p.get(cfg.instrument_field) or ""))
         a = acc.setdefault(key, [0.0, str(p.get(cfg.name_field) or code), []])
         a[0] += ov.area
-        a[2].append(ov)
+        a[2].append(shape(f["geometry"]))
     out = []
     for (code, inst), (area, name, parts) in acc.items():
         frac = area / total
         if frac < min_frac:
             continue
-        from shapely.ops import unary_union
+        gz = unary_union(parts)
+        gz = gz if isinstance(gz, MultiPolygon) else MultiPolygon([gz]) if gz.geom_type == "Polygon" else MultiPolygon()
         out.append(ZoneShare(zone_code=code, zone_name=name, instrument=inst,
                              is_residential=is_residential(code, jurisdiction),
                              overlap_area_m2=round(area, 3), overlap_fraction=round(min(frac, 1.0), 5),
-                             is_dominant=False))
+                             is_dominant=False, geom_wkt_gda2020=gz.wkt))
     out.sort(key=lambda z: -z.overlap_area_m2)
     if out:
         out[0] = out[0].model_copy(update={"is_dominant": True})

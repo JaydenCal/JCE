@@ -110,8 +110,6 @@ def build_envelope(lot: LotContext, rules: list[SetbackRule], easements_wkt=(), 
     if has_upper:
         upper["side"] = val("side_upper", "side")
         upper["rear"] = val("rear_upper", "rear")
-        if corner:
-            upper["secondary"] = max(ground["secondary"], upper["side"] if ground["secondary"] == 0 else ground["secondary"])
 
     inside = poly.representative_point()
 

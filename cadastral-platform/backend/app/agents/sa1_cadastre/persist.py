@@ -42,7 +42,7 @@ def segment_inserts(r: Sa1Result):
     out = []
     for s, d in zip(c.segments, r.segment_details):
         w = f"LINESTRING({s.start_xy[0]} {s.start_xy[1]}, {s.end_xy[0]} {s.end_xy[1]})"
-        out.append((sql, (c.lot_id, d.ring_index, d.polygon_index, d.seq_in_ring, w, c.mga_srid, s.distance_m,
+        out.append((sql, (c.lot_id, d.ring_index, d.polygon_index, d.seq_in_ring, w, c.mga_srid, c.mga_srid, s.distance_m,
                           s.bearing_deg, s.bearing_dms, s.adjoins, s.is_front)))
     return out
 
