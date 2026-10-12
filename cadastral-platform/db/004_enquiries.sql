@@ -93,11 +93,16 @@ LANGUAGE sql SECURITY DEFINER SET search_path = core, pg_temp AS $$
      WHERE enquiry_id = p_id;
 $$;
 
-REVOKE ALL ON FUNCTION core.enquiry_recent_count(inet, interval), core.enquiry_load(uuid),
+CREATE OR REPLACE FUNCTION core.enquiry_attachments(p_ref text) RETURNS jsonb
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = core, pg_temp AS $$
+    SELECT attachments FROM core.enquiries WHERE reference = p_ref;
+$$;
+
+REVOKE ALL ON FUNCTION core.enquiry_attachments(text), core.enquiry_recent_count(inet, interval), core.enquiry_load(uuid),
     core.enquiry_pending(integer, integer), core.enquiry_record_delivery(uuid, boolean, boolean, text) FROM PUBLIC;
 COMMIT;
 
 -- After loading, grant the API's login role (not done here: role names are deployment-specific):
 --   GRANT INSERT ON core.enquiries TO <api_role>;  GRANT SELECT ON core.enquiries TO <api_role>;
---   GRANT EXECUTE ON FUNCTION core.enquiry_recent_count, core.enquiry_load, core.enquiry_pending, core.enquiry_record_delivery TO <api_role>;
+--   GRANT EXECUTE ON FUNCTION core.enquiry_attachments, core.enquiry_recent_count, core.enquiry_load, core.enquiry_pending, core.enquiry_record_delivery TO <api_role>;
 --   GRANT enquiry_partner TO <partner_reader_role>;
