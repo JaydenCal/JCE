@@ -13,7 +13,7 @@ JCE Infrastructure Pty Ltd | ABN 29 699 165 663 | 0477 207 027 | jayden@jceinfra
 
 Dear Procurement Team,
 
-JCE Infrastructure Pty Ltd (JCE) submits this proposal for the Port Douglas Marine Industry Precinct Scoping Study (RFQ 2026-092). JCE will lead the study as lead consultant and integrator. Jayden Callen, Director, will manage every specialist personally as Council's single point of contact, to one program with four hold points and one register of comments and actions. He has spent the last three years delivering engineering work from Townsville across North Queensland and Cape York, and has worked on the client side for a Far North Queensland council, where he shortlisted consultants for a council tender.
+JCE Infrastructure Pty Ltd (JCE) submits this proposal for the Port Douglas Marine Industry Precinct Scoping Study (RFQ 2026-092). JCE will lead the study as lead consultant and integrator. Jayden Callen, Director, will manage every specialist personally as Council's single point of contact, to one program with four hold points and one register of comments and actions. Until 05/2026 he was based in Townsville, managing engineering work across North Queensland and Cape York, and he has worked on the client side for a Far North Queensland council, where he shortlisted consultants for a council tender.
 
 Engineering opinions in the study (marine, geotechnical and civil) will be prepared by, or under the direct supervision of, and signed by, a Registered Professional Engineer of Queensland (RPEQ) under the Professional Engineers Act 2002 (Qld). JCE's civil and infrastructure inputs will be signed by Ben Lancini, CPEng, NER, RPEQ (Lancini Consulting) [TBC - Jayden: confirm availability and RPEQ number], and the marine and coastal engineering by the marine partner's RPEQ.
 
@@ -43,7 +43,7 @@ Existing work. JCE will build on the Port Douglas Waterfront South Tourism and M
 
 ### Local knowledge (evaluation criterion 1, 10%)
 
-- Jayden Callen worked in Townsville from 2023 to 2026, first as Senior Engineer and Design Manager with SCP Consulting and then as Civil Design Manager with Langtree Consulting Engineers.
+- Jayden Callen was based in Townsville as Senior Engineer and Design Manager with SCP Consulting and then as Civil Design Manager with Langtree Consulting Engineers (to 05/2026).
 - He managed civil design for Department of Aboriginal and Torres Strait Islander Partnerships (DATSIP) subdivisions in the remote Cape York communities of Aurukun, Pormpuraaw and Napranum, including site inspections and engineering services reports.
 - He was the contractor's point of contact for Defence works at HMAS Cairns and RAAF Base Townsville under the North Queensland Mid-Term Refresh (about $104 million combined).
 - He has worked on the client side for a Far North Queensland regional council, where he shortlisted consultants for a council tender [TBC - Jayden: name the council and referee once cleared].

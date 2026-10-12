@@ -1,0 +1,53 @@
+=== INTERNAL NOTES (delete before sending) ===
+VP527574 Newstead Levee Design: Floodplain modelling and hydraulic impact assessment. Firms: 1 Venant Solutions (JCE partner, CVs on file; michael.south@ and atoosa.towzihian@ from Venant CVs and the Part 3 draft; Richard Gale is in JCE's register with a reply owed). 2 HARC (Hydrology and Risk Consulting), Blackburn VIC, Victorian flood studies (Lower Thomson River Flood Study, Rochester Flood Management Plan) per harc.com.au: email not found, phone 03 9908 2160. Water Technology is excluded: it wrote the Newstead Flood Study and is a likely competitor.
+Prepared 12/10/2026. Nothing has been sent. Send one email per firm (no shared To or CC). Attach the PDF RFQ from this repo folder (the Dropbox connector cannot upload it) and the Brief PDF that is already in the Dropbox discipline folder.
+Emails marked [email TBC] were not found in JCE's files or by web search: ring the number or use the firm's website contact page. Do not guess an address.
+=== END INTERNAL NOTES ===
+
+To: michael.south@venantsolutions.com.au; cc atoosa.towzihian@venantsolutions.com.au
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Floodplain modelling and hydraulic impact assessment, quote due Fri 16/10/2026 12:00pm
+
+Hi Michael,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+I would like Venant to quote the floodplain modelling and hydraulic impact assessment as JCE's partner, building on Water Technology's calibrated TUFLOW model. Your Harcourt Flood Study work in the same shire and your Victorian registration are central to our bid, and with your consent I will name you and Atoosa as key personnel.
+
+Council's indicative budget for the whole commission is $125,000 including GST, so JCE is leading with a lean main offer: model review, one concept design-case set with one sensitivity test, and a certified final check (items F1 to F4, where JCE has allowed $20,000 excluding GST). The fuller scope (second iteration, breach and internal ponding scenarios) is priced separately as Alternative A.
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+Could you also confirm your registration numbers (RPE Vic) and your hourly rates for Council's Schedule D?
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Floodplain-Modelling_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf
+
+======================================================================
+
+To: [email TBC] (HARC, Blackburn office, phone 03 9908 2160; harc.com.au contact page)
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Floodplain modelling and hydraulic impact assessment, quote due Fri 16/10/2026 12:00pm
+
+Dear HARC team,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+I would like HARC to quote the floodplain modelling and hydraulic impact assessment as a sub-consultant to JCE, building on Water Technology's calibrated TUFLOW model for Newstead.
+
+Council's indicative budget for the whole commission is $125,000 including GST, so JCE is leading with a lean main offer (items F1 to F4: model review, one concept design-case set and a certified final check), with a fuller scope priced separately as Alternative A.
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Floodplain-Modelling_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf

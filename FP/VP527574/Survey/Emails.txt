@@ -1,0 +1,75 @@
+=== INTERNAL NOTES (delete before sending) ===
+VP527574 Newstead Levee Design: Supplementary survey and survey day rate. Firms: 1 Adrian Cummins & Associates, 7 Contempo Court, East Bendigo (licensed surveyor, feature and level surveys, ISO 9001, per Yellow Pages; phone (03) 5442 5133 per the listing; email not found). 2 Spiire, Bendigo office (03 5448 2500 per a 2017 drawing; on Coliban Water's consultant register; email not found). 3 BCE Spatial Pty Ltd, Gerald Donn, Travancore VIC (gerald@bcespatial.com.au from a surveyor register entry seen in search results; Melbourne-based, so no local content). Bendigo firms count as 'our region' in Schedule H.
+Prepared 12/10/2026. Nothing has been sent. Send one email per firm (no shared To or CC). Attach the PDF RFQ from this repo folder (the Dropbox connector cannot upload it) and the Brief PDF that is already in the Dropbox discipline folder.
+Emails marked [email TBC] were not found in JCE's files or by web search: ring the number or use the firm's website contact page. Do not guess an address.
+=== END INTERNAL NOTES ===
+
+To: [email TBC] (Adrian Cummins & Associates, East Bendigo, phone (03) 5442 5133)
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Supplementary survey and survey day rate, quote due Fri 16/10/2026 12:00pm
+
+Dear Adrian Cummins & Associates team,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+I would like your firm to quote the supplementary survey of the Newstead levee and a survey crew day rate, as a sub-consultant to JCE. A Bendigo surveyor would also help our local content response to Council.
+
+Council's indicative budget for the whole commission is $125,000 including GST, so JCE's main offer uses NCCMA LiDAR for the wider area and a targeted levee survey: control, crest long section, cross-sections at about 50 m, structures and up to 20 floor levels (items V1 to V3). The day rate (V4) goes into Council's price schedule, and a full corridor survey is priced separately as Alternative A.
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Survey_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf
+
+======================================================================
+
+To: [email TBC] (Spiire Bendigo office, phone 03 5448 2500)
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Supplementary survey and survey day rate, quote due Fri 16/10/2026 12:00pm
+
+Dear Spiire Bendigo team,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+I would like Spiire to quote the supplementary survey of the Newstead levee and a survey crew day rate, as a sub-consultant to JCE.
+
+Council's indicative budget for the whole commission is $125,000 including GST, so JCE's main offer uses NCCMA LiDAR for the wider area and a targeted levee survey (items V1 to V3), with the day rate (V4) for Council's price schedule and a full corridor survey priced separately.
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Survey_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf
+
+======================================================================
+
+To: gerald@bcespatial.com.au
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Supplementary survey and survey day rate, quote due Fri 16/10/2026 12:00pm
+
+Dear Gerald,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+I would like BCE Spatial to quote the supplementary survey of the Newstead levee and a survey crew day rate, as a sub-consultant to JCE.
+
+Council's indicative budget for the whole commission is $125,000 including GST, so JCE's main offer uses NCCMA LiDAR for the wider area and a targeted levee survey (items V1 to V3), with the day rate (V4) for Council's price schedule and a full corridor survey priced separately. Please include travel to Newstead in your rates.
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Survey_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf

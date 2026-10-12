@@ -1,0 +1,77 @@
+=== INTERNAL NOTES (delete before sending) ===
+VP527574 Newstead Levee Design: Direct supervision and approval of the civil design (RPE Vic, Civil). Firms: 1 Lotay Civil, Sunny Lotay, Ballarat (info@lotaycivil.com.au and 0449 018 519 from JCE's files and the 11/10 Part 3 draft; not confirmed online today; capability statement lists him as RPEng (Vic)). 2 Venant Solutions, Michael South (RPE Vic): only if his registered area includes civil and Venant will take the approver role as well as the modelling. 3 Spiire, Bendigo office (civil engineering and surveying; 16 Bridge St, 03 5448 2500 per a 2017 Spiire drawing; email not found): a Bendigo approver would add local content.
+Prepared 12/10/2026. Nothing has been sent. Send one email per firm (no shared To or CC). Attach the PDF RFQ from this repo folder (the Dropbox connector cannot upload it) and the Brief PDF that is already in the Dropbox discipline folder.
+Emails marked [email TBC] were not found in JCE's files or by web search: ring the number or use the firm's website contact page. Do not guess an address.
+=== END INTERNAL NOTES ===
+
+To: info@lotaycivil.com.au
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Direct supervision and approval of the civil design (RPE Vic, Civil), quote due Fri 16/10/2026 12:00pm
+
+Hi Sunny,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+I would like you to quote the role of Registered Professional Engineer (Victoria, Civil) who directly supervises and approves JCE's civil design for the levee, as Council's Schedule F requires. With your consent I will name you in the tender as the design approver.
+
+Council's indicative budget for the whole commission is $125,000 including GST, so the main offer keeps your role to a supervision plan, online reviews at HP2 to HP5 and the final design approval (items C1 to C4, where JCE has allowed $9,000 excluding GST). Site visits and tender-period support are priced as options.
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+Please confirm your registration number and area (Civil) for Council's Schedule F, and your hourly rate for Schedule D.
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Civil-Supervision-RPEV_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf
+
+======================================================================
+
+To: michael.south@venantsolutions.com.au
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Direct supervision and approval of the civil design (alternative approver), quote due Fri 16/10/2026 12:00pm
+
+Hi Michael,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+Separately from the modelling RFQ, could Venant quote the role of registered engineer who supervises and approves JCE's civil levee design, if your registered area covers civil engineering? This is a fallback to our primary approver, so please tell me if it does not suit.
+
+The main offer limits the role to a supervision plan, online reviews at HP2 to HP5 and the final design approval (items C1 to C4).
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Civil-Supervision-RPEV_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf
+
+======================================================================
+
+To: [email TBC] (Spiire Bendigo office, phone 03 5448 2500; spiire.com.au contact page)
+Subject: RFQ: Newstead Levee Design 26/27 (Mount Alexander Shire Council RFQ M2025-125): Direct supervision and approval of the civil design (RPE Vic, Civil), quote due Fri 16/10/2026 12:00pm
+
+Dear Spiire Bendigo team,
+
+JCE Infrastructure is tendering for Mount Alexander Shire Council's Newstead Levee Design 26/27 (RFQ M2025-125), which closes at 2:00 pm on Friday 23/10/2026. The work is the detailed design, approvals support and construction tender package for the raised, extended and realigned Newstead levee (Option 6b), with the final package due on Friday 26/02/2027.
+
+I would like Spiire to quote the role of Registered Professional Engineer (Victoria, Civil) who directly supervises and approves JCE's civil design for the levee, as Council's Schedule F requires.
+
+Council's indicative budget for the whole commission is $125,000 including GST, so the main offer keeps the role to a supervision plan, online reviews at HP2 to HP5 and the final design approval (items C1 to C4).
+
+Please send your quotation by 12:00 pm (AEDT) on Friday 16/10/2026 to jayden@jceinfrastructure.com.au, priced against the items in Section 6.0 of the attached RFQ, with hourly rates, your assumptions and exclusions, and validity of at least 90 days. Council requires public liability of $20 million, professional indemnity of $5 million held for five years after completion, and workers compensation; please attach certificates of currency or tell me if your cover differs. Please also declare any conflict of interest, including whether you are working with another tenderer on this RFQ.
+
+The RFQ and Council's brief are confidential and are provided only for your quotation. Any engagement depends on JCE winning the contract. If you have questions, please call me on 0477 207 027 or reply by 5:00 pm Wednesday 14/10/2026.
+
+Kind regards,
+Jayden Callen
+Director | JCE Infrastructure Pty Ltd
+0477 207 027 | jayden@jceinfrastructure.com.au
+
+Attachments: JCE_RFQ_Civil-Supervision-RPEV_Newstead-Levee-Design_Final.pdf; Attachment_1-Project_Brief_and_General_Specification.pdf
