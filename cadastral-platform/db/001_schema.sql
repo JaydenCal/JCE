@@ -272,9 +272,12 @@ CREATE TABLE legal.project_acknowledgements (
     subject_table    text,
     subject_id       uuid,
     subject_sha256   bytea,
-    ip_address       inet,
-    UNIQUE (project_id, user_id, kind, subject_table, subject_id)
+    ip_address       inet
 );
+-- NULL-safe uniqueness: one acknowledgement per user, project, kind and subject.
+CREATE UNIQUE INDEX ux_ack_unique ON legal.project_acknowledgements
+    (project_id, user_id, kind, COALESCE(subject_table, ''),
+     COALESCE(subject_id, '00000000-0000-0000-0000-000000000000'::uuid));
 CREATE INDEX ix_ack_project_kind ON legal.project_acknowledgements (project_id, kind);
 CREATE TRIGGER trg_ack_append_only
     BEFORE UPDATE OR DELETE ON legal.project_acknowledgements
@@ -1172,8 +1175,7 @@ BEGIN
             ('plans','plan_overlays','project_id'),
             ('annotations','text_annotations','project_id'),
             ('annotations','export_jobs','project_id'),
-            ('agents','runs','project_id'),
-            ('legal','project_acknowledgements','project_id')
+            ('agents','runs','project_id')
         ) AS v(schema_name, table_name, project_col)
     LOOP
         EXECUTE format('ALTER TABLE %I.%I ENABLE ROW LEVEL SECURITY', t.schema_name, t.table_name);
@@ -1184,6 +1186,13 @@ BEGIN
     END LOOP;
 END;
 $$;
+
+-- Acknowledgements: project access, and a user may only record their own.
+ALTER TABLE legal.project_acknowledgements ENABLE ROW LEVEL SECURITY;
+CREATE POLICY p_ack_select ON legal.project_acknowledgements FOR SELECT
+    USING (core.can_access_project(project_id));
+CREATE POLICY p_ack_insert ON legal.project_acknowledgements FOR INSERT
+    WITH CHECK (core.can_access_project(project_id) AND user_id = core.current_user_id());
 
 -- Projects: owner or member may read/update; only a Terms-accepted user may create their own.
 ALTER TABLE core.projects ENABLE ROW LEVEL SECURITY;
