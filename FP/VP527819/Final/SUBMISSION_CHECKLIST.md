@@ -1,145 +1,98 @@
-# Submission checklist: VP527819 Inner West Council RFT 47-26
+# Submission checklist: VP527819 Inner West Council RFT 47-26 (Rev G)
 
-Transport Assets Condition Audit & Revaluations 2026/27. Prepared 12/10/2026 for Jayden Callen. Nothing has been sent, lodged or signed.
+Transport Assets Condition Audit & Revaluations 2026/27. Updated 12/10/2026 for Rev G. Nothing has been sent, lodged or signed. **Lodge Rev G**; Rev F files are kept for the record only.
 
-- **Closes:** 2:00 pm Wednesday 28/10/2026, VendorPanel public tender box (www.vendorpanel.com.au/innerwest/tenders). No further extensions. Email tenders are not accepted.
-- **Questions:** lodge by Wednesday 21/10/2026 (portal cut-off 2:00 pm Saturday 24/10/2026; Council may not answer in the last 7 days).
+Rev G basis (from Jayden, 12/10/2026): the field data capture partner keeps vehicle and walk-through capture and condition rating; JCE does all GIS processing, asset register updates, data QA and weekly desktop audit sampling of the partner's imagery in-house; drone capture is not used for the network (most of the LGA is within 5.5 km of Sydney Airport and inside its controlled airspace, and the streets are busy with people) and appears only as an optional per-site rate for a specific asset outside 5.5 km of Sydney and Bankstown airports and clear of people; the valuer is unchanged.
+
+- **Closes:** 2:00 pm Wednesday 28/10/2026, VendorPanel public tender box. No further extensions.
+- **Questions:** lodge by Wednesday 21/10/2026 (portal cut-off 2:00 pm Saturday 24/10/2026).
 - **Partner quotes due:** 12:00 pm Wednesday 21/10/2026.
-- **Register status:** draft ready. You have not ticked Pursue or Pass yet. Decide first (see "Blocking items").
+- **Register status:** draft ready. You have not ticked Pursue or Pass yet.
 
-## 1. Final price (excl. GST unless stated)
+## 1. Final price, Rev G (excl. GST unless stated)
 
-| Item | Amount |
-|---|---|
-| 1 Mandatory audit and comprehensive revaluation | $445,880.00 (JCE $96,080; PS1 data capture $322,300; PS2 valuer $27,500) |
-| 2 PCG meetings | $3,240.00 |
-| 3 Reports | Included in Item 1 |
-| 10 Other | Nil |
-| **Mandatory total** | **$449,120.00** (GST $44,912.00; **$494,032.00 incl. GST**) |
-| 4 Pram ramps / 5 Tree pits / 6 Vehicle crossings / 7 Markings / 8 Retaining walls / 9 Optional Service A | $54,240 / $34,440 / $45,440 / $39,940 / $20,980 / $13,680 |
-| All options | $208,720.00 ($229,592.00 incl. GST) |
-| Everything | $657,840.00 ($723,624.00 incl. GST) |
+| Item | Rev F | Rev G |
+|---|---|---|
+| 1 Mandatory audit and comprehensive revaluation | $445,880.00 | **$432,330.00** (JCE $124,880; PS1 capture partner $279,950; PS2 valuer $27,500) |
+| 2 PCG meetings | $3,240.00 | $3,240.00 |
+| 3 Reports / 10 Other | Included / Nil | Included / Nil |
+| **Mandatory total** | $449,120.00 | **$435,570.00** (GST $43,557.00; **$479,127.00 incl. GST**) |
+| 4 / 5 / 6 / 7 / 8 / 9 | $54,240 / $34,440 / $45,440 / $39,940 / $20,980 / $13,680 | $51,220 / $32,760 / $43,120 / $38,060 / $20,380 / $13,680 |
+| All options | $208,720.00 | **$199,220.00** ($219,142.00 incl. GST) |
+| Optional drone rate (Item 10, not in totals) | - | $1,450 per site [TBC - Jayden] |
 
-Unchanged from the Rev B draft: the tender documents did not show any figure to be wrong. PS1, PS2 and the partner parts of Items 4 to 8 are still JCE allowances (78% of the mandatory price is PS1 and PS2). Replace them with the quotes due 21/10/2026, then update the cost sheet, FP Section 9.0, Attachment A partner rates and Returnable 2.
+How it moved: the GIS, data packaging and QA share of the capture allowance ($38,500 before mark-up: RFQ item C10 plus about 8% of the class allowances, and 8% of the partner part of Items 4 to 8) moved to JCE hours at market rates: JCE Stage 3 up from $19,780 to $26,400 (weekly audit sampling) and Stage 4 up from $29,160 to $51,340 (in-house GIS build, register update files, data QA), including a casual GIS technician at $120/h [TBC - Jayden] and $3,000 for GIS software share and imagery storage [TBC - Jayden]. Partner amounts remain allowances until quotes arrive.
 
-## 2. Blocking items (decide or fix before lodging)
+## 2. Hours check (sole practitioner, about 35 h/week)
 
-1. **Pursue or pass.** Returnable 11 needs three similar projects in the last five years with referees. JCE has none of its own, so the bid stands on a data capture partner. IMG did Council's 2021 inspection and will probably bid directly. If no capture partner agrees to be named by about 21/10/2026, do not lodge as Prime Contractor.
-2. **Public liability $20m.** JCE holds $10m. The final proposal says JCE will lift PL to $20m on award (per the Win Themes). Better: ask Webber this week for a $20m certificate before 28/10/2026, or lodge RFI 8 (confidential).
-3. **Workers compensation certificate of currency.** Only the icare letter of appointment is on file. Get the policy number and certificate from icare.
-4. **Site inspection (Returnable 9).** Inspect a sample of the network before signing the declaration.
-5. **Capacity statement (Returnable 10).** Keep it only once the capture partner commits crews.
+| Person | Dec | Jan | Feb | Mar | Total |
+|---|---|---|---|---|---|
+| Jayden | 75 h (22/wk) | 95 h (25/wk) | 128 h (32/wk) | 158 h (36/wk) | 456 h |
+| Sunny Lotay (associate) [TBC] | - | - | 5 h | 46 h | 51 h |
+| Casual GIS technician [TBC] | - | - | 53 h | 160 h (36/wk) | 213 h |
 
-## 3. RFQs still to send (today) and quotes to fold in
+Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the new GIS and QA work). The fix, now in FP Section 5.1: unit rates and useful lives moved to January; revaluation model and report and program frameworks built in February; one field verification visit instead of two (desktop audit sampling replaces the March visit); a casual GIS technician takes the GIS build, register files, automated QA and maps; Sunny Lotay takes most March audit sampling and supports the programs. March is still at the limit (36 h/week), so a slip in the partner's data drops will push Jayden over. **Hire the casual GIS technician (start early February) and confirm Sunny before lodging.**
 
-Files: /home/user/JCE/FP/VP527819/<Discipline>/ (generic RFQ docx/pdf, per_firm/ copies, Emails.txt). Email texts are also in Dropbox at 03_Subconsultants/<Discipline>/Email_Drafts_Final_2026-10-12.txt. Bridge inspection: not required (no bridges in scope); do not send.
+## 3. Blocking items
+
+1. **Returnable 11 experience is still the main risk.** Council wants three similar projects in the last five years with referees. JCE has none of its own. In-house GIS, QA and drone capability do not fix this unless Jayden has qualifying projects with referees [TBC - Jayden]. Otherwise it rests on the capture partner's projects.
+2. **Pursue or pass:** if no capture partner agrees to be named by about 21/10/2026, do not lodge as Prime Contractor.
+3. **Public liability $20m** (JCE holds $10m; FP says it will be lifted on award). Also confirm PL covers drone operations or arrange aviation liability before any drone flight.
+4. **Workers compensation certificate**; **site inspection** before signing Returnable 9; **capacity statement** in Returnable 10 only once the partner commits crews.
+
+## 4. RFQs
+
+- **Data capture (needed):** send **Rev D** (JCE-RFQ-VP527819-01 Rev D): field and vehicle capture and rating only; partner delivers raw imagery, GNSS logs and rated data in JCE's schema with weekly drops from 08/02/2027; JCE builds shapefiles, Excel database and register updates. Files: FP/VP527819/Condition_Data_Collection/..._Final_RevD.docx/.pdf and per_firm/..._RevD_<Firm>.pdf; emails in Emails_RevD.txt. Do not send the Rev C files.
+- **Valuer:** Rev C unchanged (it never included GIS work).
 
 | Discipline | Firm | Email |
 |---|---|---|
-| Data capture | Infrastructure Management Group (IMG), Sydney | [email TBC] |
-| Data capture | Pavement Management Services Pty Ltd, Seven Hills (02 9674 9488) | [email TBC] |
-| Data capture | Moloney Asset Management Systems (Peter Moloney) | peter@moloneys.com.au (from 2015 council reports; confirm current) |
+| Data capture | Infrastructure Management Group (IMG) | [email TBC] |
+| Data capture | Pavement Management Services, Seven Hills (02 9674 9488) | [email TBC] |
+| Data capture | Moloney Asset Management Systems | peter@moloneys.com.au (2015 source; confirm) |
 | Valuer | APV Valuers & Asset Management | [email TBC] |
 | Valuer | Australis Asset Advisory Group | [email TBC] |
-| Valuer | Jeff Roorda & Associates | [email TBC] (confirm still trading) |
+| Valuer | Jeff Roorda & Associates | [email TBC] |
 
-Reserve data capture contact if the three decline: NTRO (Network Survey Vehicle); the only NTRO email found is its Tasmanian business leader (Vibeke.matthews@ntro.org.au), so ask her for the NSW contact.
+## 5. [TBC - Jayden] items (Rev G)
 
-When quotes arrive: pick one firm per discipline; put the firm, key staff, three projects and referees, and insurances into Returnables 11 to 13 and FP Section 5.0 and Attachment B; replace PS1 and PS2; add partner rates to Attachment A; ask the capture partner for a traffic management plan example (WHS Checklist item 4).
+1. Three similar projects with referees (R11), including any JCE GIS or drone projects that qualify.
+2. Capture partner firm, field lead and equipment; valuer and signing valuer (FP 2.1, 5.0, R12, R13).
+3. Casual GIS technician: name, qualifications, QGIS experience, February start (FP 5.0 and 5.1, R12).
+4. Sunny Lotay and Livio Chiarot availability.
+5. Charge-out rates: casual GIS technician $120/h; drone rate $1,450 per site; GIS software and storage $3,000.
+6. Drone: CASA operator accreditation (ARN) and drone registration in place before services start (being obtained this week); confirm insurance cover for drone operations. Agisoft Metashape Professional only if the optional drone line is used [TBC - Jayden to confirm purchase].
+7. Provisional sums replaced from quotes; partner rates in Attachment A.
+8. Returnables: registered address, signatures and dates, R4 rows for clauses 12.7 and 11.3 (recommend deleting), insurance policy numbers, addenda re-check, site inspection, staff numbers, QA, WHS, IR, sustainability, modern slavery and ATSI answers (as listed in Rev F).
+9. FP number.
 
-## 4. Questions to lodge (by Wednesday 21/10/2026)
+Note on wording: the approved Glide Inside capability paragraph is in FP Section 5.0 and Returnable 10 as given, with one word fitted ("offers" instead of "delivers") because no drone work has been delivered yet and the earlier brief ruled out track record claims. Change it back only if JCE has delivered drone photogrammetry before. It states the capability is used only for the optional Item 10, consistent with the Sydney Airport limits in Section 2.1. No LiDAR is mentioned.
 
-Eight questions in FP/VP527819/Final/RFIs_Final.md (the seven from 01_Working/RFIs.md, still correct, plus RFI 8 on the PL timing). RFIs 1 and 2 matter most.
+## 6. Files (repo FP/VP527819/Final/)
 
-## 5. Every [TBC - Jayden] item
-
-Fee proposal (JCE_FP_VP527819_Final_RevF):
-1. FP number (cover table).
-2. Sunny Lotay and Livio Chiarot: confirm availability before naming (Section 5.0, Returnable 12).
-3. Capture partner firm and field lead; valuer firm and signing valuer (Section 5.0, Attachment B).
-4. Three similar projects with referees (Section 5.0, Returnable 11).
-5. Partner equipment for the capture platform (Section 2.1).
-6. Any prioritisation or capital works ranking work to cite for Optional Service A (Section 7.0).
-7. Replace provisional sums with quotes (Section 9.0) and partner rates (Attachment A).
-8. Workers compensation policy number and certificate (Section 12.0).
-
-Returnable Documents (..._JCE_FILLED):
-9. Registered address (R1); lodgement date and e-signature (R1, R9).
-10. Requested amendments: delete the clause 12.7 and 11.3 rows unless you decide to request them (R4). Contract compliance is scored, so I recommend requesting only the monthly payment claims row.
-11. Insurance policy numbers and expiry for workers compensation and motor vehicle (R5).
-12. Addenda re-check before lodging (R8).
-13. Site inspection date and areas (R9).
-14. Staff numbers and corporate structure wording (R10); capacity statement (R10).
-15. QA checklist items 3 (sub-points), 5, 6, 8, 9 to 11 (R14).
-16. WHS checklist: COVID-19 plan, traffic control and TMP example, worksite inspections, SafeWork notices and convictions (R15).
-17. Industrial Relations checklist, all items (R16).
-18. Sustainability items 1, 3, 4, 5 (R17).
-19. Modern slavery reporting threshold (R18).
-20. ATSI business, social enterprise, staff with a disability (R19).
-21. Partner profiles, CVs and certificates for the attachment list (R20).
-
-## 6. Insurance and certificate actions
-
-- Webber (engineers@webberinsurance.com.au): lift PL to $20m per occurrence; confirm PI run-off for 7 years after completion (clause 12.4) and that "Civil Engineering and Hydraulic Engineering" covers condition audits and revaluation services.
-- icare: workers compensation certificate of currency and policy number.
-- NRMA: motor vehicle policy number and expiry from the 18/09/2026 certificate.
-- Partners: certificates at PL $20m, PI $10m, workers compensation.
-
-## 7. Lodgement steps (VendorPanel)
-
-1. Re-check VendorPanel for addenda (Members > View all Tenders > RFT-47). Do not use the public tsi.axd link: it signs you out.
-2. Finish every [TBC - Jayden] item above. Update prices from partner quotes.
-3. Copy the answers from `IWC Transport Condition Audit_Reval RFT 47-26 Returnable Documents_JCE_FILLED.docx` (or the `_answers.md`) into Council's own form (00_Tender_Docs, a pre-filled copy is 02_Submission/JCE_RFT47-26_Returnable_Documents_DRAFT.docx), or use the rebuilt document if it suits. Insert the Gantt chart in Returnable 7. E-sign Returnables 1 and 9. Save as PDF.
-4. Paste FP_Final_text.md into your branded template (or use JCE_FP_VP527819_Final_RevF.pdf), sign the Offered By block, save as PDF.
-5. Start lodging by 1:00 pm Wednesday 28/10/2026 at the latest (Council recommends at least one hour early). Every file must reference RFT 47-26. Upload the files below, confirm all uploads are receipted, and save the VendorPanel receipt.
-
-## 8. Files to upload
-
-| File | Where it is now |
+| File | Lodge? |
 |---|---|
-| Council Returnable Documents, completed and signed (PDF) | Build from repo FP/VP527819/Final/IWC Transport Condition Audit_Reval RFT 47-26 Returnable Documents_JCE_FILLED.docx/.pdf (repo only) |
-| JCE fee proposal Rev F, signed (PDF) | Repo FP/VP527819/Final/JCE_FP_VP527819_Final_RevF.pdf (repo only; text also in Dropbox 02_Submission) |
-| Gantt chart (in R7 and the FP) | Repo FP/VP527819/Final/JCE_RFT47-26_Gantt.png, embedded in both documents |
-| JCE Capability Statement - Councils.pdf | Dropbox 02_Submission/Returnables |
-| Callen-Pell_NER-02_Detailed_CV.pdf | Dropbox 02_Submission/Returnables |
-| Certificate_of_Currency_-_2026-07-14T105420.82.pdf (PI and PL) | Dropbox 02_Submission/Returnables |
-| Workers compensation and motor vehicle certificates | To obtain |
-| JCE-QMS-POL-001, JCE-WHS-POL-001, JCE_WHS_Management_System_2026-06-22 (contents page), JCE-WHS-PLN-001, JCE-WHS-SWMS-001, JCE-WHS-PRO-008, JCE-WHS-PRO-009, JCE-WHS-FRM-001, JCE-WHS-FRM-002, JCE-WHS-POL-003, JCE-ENV-POL-001 | Dropbox 02_Submission/Returnables |
-| Partner profiles, CVs, certificates, TMP example | From quotes |
+| JCE_FP_VP527819_Final_RevG.docx / .pdf (12 pages) | Yes, signed |
+| FP_Final_text_RevG.md (also in Dropbox 02_Submission as FINAL_RevG_2026-10-12_FP_Final_text.md) | Paste into branded template |
+| IWC Transport Condition Audit_Reval RFT 47-26 Returnable Documents_JCE_FILLED_RevG.docx / .pdf, and _answers_RevG.md | Copy into Council's form, sign, PDF |
+| JCE_RFT47-26_Gantt_RevG.png | In FP and R7 |
+| RFIs_Final.md | Lodge questions by 21/10/2026 (unchanged; RFI 3 on capture method still relevant) |
+| Rev F files | Do not lodge |
 
-The Dropbox connector cannot upload binary files, so copy the repo Word and PDF files into Dropbox 02_Submission yourself.
+Plus the Dropbox 02_Submission/Returnables documents and certificates listed in the Rev F checklist (FINAL_2026-10-12_SUBMISSION_CHECKLIST.md). Lodgement steps are unchanged: re-check addenda, finish TBCs, update prices from quotes, sign, start lodging by 1:00 pm on 28/10/2026, keep the receipt.
 
-## 9. Compliance check (step 2) and what changed from the Rev B draft
+## 7. Evaluator scores (out of 10)
 
-| Check | Finding | Action taken |
-|---|---|---|
-| Returnables 1 to 18 (Schedule 1) and 19 (evaluation criterion) | All present; many [TBC] answers in the 11/10 pre-fill | Rebuilt complete set; R6 and R7 now point to new FP sections and the Gantt chart |
-| Gantt chart (Contractor Brief, Timetable; R7) | Missing | Drawn and embedded (start, milestones, practical completion, reports, workshop) |
-| GIS system description (R6) and audit criteria (R14) | Thin | New FP Sections 2.1 and 2.2 |
-| Optional Service A returnable (methodology, data, deliverables, program, experience, price) | Partial | New FP Section 7.0 |
-| Dates | Close 28/10/2026, questions 21/10/2026, validity 26/01/2027, completion 31/03/2027, Option A 30/06/2027: all correct and in the future. Council's documents still print 21/10/2026 (superseded by the 09/10 notice) | R8 lists the extension notice |
-| Insurance | PL gap stated honestly; JCE commits to lift to $20m on award (Win Themes) | FP Section 12.0, R5, RFI 8 |
-| Sign-off | Register certLabel "Audit, no sign-off gate". All documents signed by Jayden as project manager (Contractor Brief); revaluation signed by the partner's qualified valuer | No CPEng/RPEQ claim made |
-| Pricing format | Matches Returnable 2 items 1 to 10, GST shown | Partner amounts labelled as provisional sums |
-| Contract compliance (scored) | Draft listed four amendments | Cut to one recommended (monthly claims); 12.7 and 11.3 left for Jayden |
-| Draft notes and "draft" marking | Present in Rev B | Removed; date 12/10/2026; Rev F |
-
-## 10. Evaluator scores (strict council panel, no weightings published, each out of 10)
-
-| Criterion | Before (Rev B) | After (Rev F) | Still limiting |
+| Criterion | Rev B | Rev F | Rev G |
 |---|---|---|---|
-| Capacity and past performance | 3 | 4 | No JCE projects; partner unnamed |
-| Methodology and schedule | 6 | 8 | Partner equipment TBC |
-| Compliance with proposed contract | 6 | 7 (8 if 12.7 and 11.3 rows deleted) | |
-| WHS | 6 | 6.5 | No TMP example yet |
-| Key personnel | 5 | 6 | Associates to confirm |
-| Key subcontractors | 2 | 3 | Unnamed until quotes |
-| Modern slavery checklist | 6 | 7 | |
-| Environmental, social, local, ATSI | 3 | 3.5 | Not local; TBC answers |
-| Value (price and other criteria) | 5 | 5.5 | Price rests on allowances |
+| Capacity and past performance | 3 | 4 | 4.5 |
+| Methodology and schedule | 6 | 8 | 8.5 |
+| Contract compliance | 6 | 7 | 7 |
+| WHS | 6 | 6.5 | 6.5 |
+| Key personnel | 5 | 6 | 6 |
+| Key subcontractors | 2 | 3 | 3 |
+| Modern slavery | 6 | 7 | 7 |
+| Environmental, local, ATSI | 3 | 3.5 | 3.5 |
+| Value | 5 | 5.5 | 6 |
 
-The five changes made: (1) Gantt chart and hold-point program; (2) GIS and data system description (R6) with audit and verification criteria (R14); (3) lead theme and council-side experience in the cover letter, and a "how Jayden manages the team" section; (4) contract amendments cut to one recommended row; (5) full Optional Service A response and a risk and mitigation table. The biggest remaining lift (to about 6 or 7 on capacity and subcontractors) only comes from a named capture partner with three projects and referees.
-
-## 11. Register
-
-fp/VP527819 note updated 12/10/2026 (status unchanged: draft ready).
+Rev G gains: in-house GIS and audit sampling with a resourcing table (capacity, methodology), clear drone limits, lower price (value). Capacity and subcontractor scores stay low until a capture partner is named and Returnable 11 has three qualifying projects.

@@ -1,6 +1,6 @@
 # Submission checklist: VP527574 Newstead Levee Design 26/27 (RFQ M2025-125)
 
-Mount Alexander Shire Council (VIC), VendorPanel. Prepared 12/10/2026. Nothing has been lodged, sent or signed.
+Mount Alexander Shire Council (VIC), VendorPanel. Prepared 12/10/2026. **Rev G (12/10/2026):** adds the Jayden-approved Glide Inside / drone photogrammetry capability paragraph (Section 7.0, Schedule G) and one methodology use (inception condition capture and community visuals); price unchanged; use JCE_FP_VP527574_Final_RevG.docx/.pdf in place of Rev F. Nothing has been lodged, sent or signed.
 
 - **Closes: 2:00 pm (AEDT) Friday 23/10/2026**, VendorPanel only. Late, email, fax or hard copy = rejected.
 - **Questions cut-off: 2:00 pm (AEDT) Wednesday 21/10/2026**, VendorPanel question function only. Lodge by **Monday 19/10/2026**.
@@ -95,7 +95,7 @@ RFIs.md (11/10) is still right in substance; updated wording for the final offer
 3. Item 24 states the consultant's liability as "No Limit". Would Council consider a limit, for example equal to the $5 million professional indemnity cover required?
 4. The Stage One criteria are a weighted score totalling 100%, but no weightings are given. Could Council publish the weighting for each criterion?
 5. Is the "permit-ready" design expected to have approvals obtained by 26/02/2027, or is the scope to prepare and support the approval documentation (approval timeframes, including any CHMP, being outside the consultant's control)?
-6. Will Council provide at award the Water Technology TUFLOW model and GIS outputs, the 2017 alignment modelling, the GHD 2015 investigation, NCCMA LiDAR and the Option 6b alignment in CAD or GIS, and are there licence conditions?
+6. Will Council provide at award the Water Technology TUFLOW model and GIS outputs, the 2017 alignment modelling, the GHD 2015 investigation, NCCMA digital topographic data and the Option 6b alignment in CAD or GIS, and are there licence conditions?
 7. Annexure Part B is blank although Item 31 says the contract has been amended: are there amendments to allow for? May the Schedule A roles of Site Manager/Foreman and First Aid Officer be marked not applicable for a design-only engagement? May an interstate consultant have the Schedule L declaration witnessed outside Victoria?
 8. Will Council consider an alternative offer with a fuller scope in Schedule K alongside the conforming price, and should optional services be left out of the Schedule C Value Add lines (which the formula adds to the tender amount)?
 

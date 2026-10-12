@@ -6,7 +6,7 @@ JCE Infrastructure Pty Ltd | ABN 29 699 165 663 | 0477 207 027 | jayden@jceinfra
 |---|---|---|---|
 | **Proposal No** | JCE-VP527224 (RFQ 2026-092) | **Client** | Douglas Shire Council |
 | **Date** | 12/10/2026 | **Attention** | Procurement, via VendorPanel |
-| **Revision** | F (final for lodgement) | **Council contact** | Derek Langman, Principal's Representative |
+| **Revision** | G (final for lodgement) | **Council contact** | Derek Langman, Principal's Representative |
 | **Prepared by** | Jayden Callen, Director | **Project** | 2026-092 Port Douglas Marine Industry Precinct Scoping Study |
 | **RPEQ sign-off** | Ben Lancini, CPEng, NER, RPEQ (Lancini Consulting) [TBC - Jayden: confirm availability and RPEQ number] | **Site** | Greenfield site of about 3 ha on Dickson Inlet, Port Douglas QLD 4877 |
 | **Closes** | Thu 22/10/2026, 2:00pm AEST | **Validity** | 90 calendar days from closing |
@@ -81,7 +81,8 @@ The methodology has seven stages that deliver the four milestone deliverables in
 
 - Inception meeting with Council at Mossman, combined with site visit 1: objectives, stakeholders, adjacent projects, communication protocols and the information Council will provide (JCE, with the economics partner).
 - Inspection of the site, Dickson Inlet, the public boat ramp, the marinas and the fuel facility, and initial meetings with key operators where Council arranges them (JCE; ecology walkover by the ecology partner).
-- Review of previous studies, Council reports, the Douglas Shire Planning Scheme, the FNQ Regional Plan, State Planning Policy, Destination 2045 and the Mossman Transition Plan; GIS base mapping of tenure, overlays, LiDAR, storm tide and flood data (JCE).
+- Review of previous studies, Council reports, the Douglas Shire Planning Scheme, the FNQ Regional Plan, State Planning Policy, Destination 2045 and the Mossman Transition Plan; GIS base mapping of tenure, overlays, ground elevation, storm tide and flood data (JCE).
+- Drone photogrammetry of the site, the Dickson Inlet frontage and the boat ramp during site visit 1 (orthophoto and 3D model), used as the current base for the constraints mapping and concept plans and for engagement visuals, within the airspace limits in Section 7 (JCE).
 - Activity Plan and Program within one month of award: comparable marine precincts to be researched, industry partners and community representatives to be engaged, the engagement plan and the detailed program. HP1: Council accepts the Activity Plan.
 
 #### Stage 2  Marine industry research, market and economic analysis
@@ -178,6 +179,12 @@ Jayden Callen, Director, JCE Infrastructure. BEng (Hons) Civil, MIEAust (EA 1103
 - **Lead BIM services coordinator, AIR7000 Phase 1B MQ-4C Triton Facilities, RAAF Base Tindal (about $250 million).** Combined external consultant models to deconflict stormwater and fire mains.
 - **Katherine Aquatics, Katherine NT (about $10 million, design and construct for Sitzler and Katherine Town Council).** About 80 per cent of the civil design, including earthworks pads raised above the 1% AEP flood level, pavements, stormwater and water quality.
 - **JCE, Western Sydney International Airport Business Precinct Stage One (2026).** Managed the design program for the SRM-01 sewer rising main and the technical review of the contractor's sewage pumping station package.
+
+### Resources and equipment
+
+JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE delivers drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category. CASA operator accreditation and drone registration will be in place before services start.
+
+Airspace limits for this site. Port Douglas is about 60 km from Cairns Airport, well outside the 5.5 km limit around a controlled aerodrome, so flights will stay at or below 120 m above ground in uncontrolled airspace, in daylight and within visual line of sight. The site is close to helicopter landing sites on Dickson Inlet, including the Nautilus Aviation base under construction at Port Street (expected to open in 2027), so each flight will be planned on a CASA-verified drone safety app, kept clear of helicopter approach and departure paths and coordinated with the operator, and kept at least 30 m from people and away from the marinas, boat ramp and other populous areas while they are in use.
 
 Relevant experience (criterion 2, 20%). Marine, maritime, environmental, planning and geotechnical experience for this study comes from the specialist partners, whose projects, staff and referees will be listed in Schedules E2, F1 and F2 once confirmed [TBC - Jayden: partner projects and referees after quotes]. Jayden's experience is in leading multidisciplinary infrastructure work, civil infrastructure and costing, including at HMAS Cairns and in remote North Queensland communities.
 

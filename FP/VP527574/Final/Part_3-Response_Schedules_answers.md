@@ -1,6 +1,6 @@
 # Part 3 Response Schedules: JCE answers (RFQ M2025-125, Newstead Levee Design)
 
-FINAL answers, 12/10/2026. The editable Part_3-Response_Schedules.docx is in Dropbox (00_Tender_Docs) and the 11/10 draft fill is `02_Submission/Part_3-Response_Schedules_JCE_DRAFT.docx`. The Dropbox connector cannot download Word files, so the schedule could not be rebuilt here. Copy each answer below into the blue-shaded field of the draft fill, in order, replacing the 11/10 values (several prices and dates changed). Every schedule is signed "For and on behalf of JCE Infrastructure Pty Ltd" by Jayden Callen and dated.
+FINAL answers, 12/10/2026 (Rev G: drone photogrammetry capability added to Schedule G). The editable Part_3-Response_Schedules.docx is in Dropbox (00_Tender_Docs) and the 11/10 draft fill is `02_Submission/Part_3-Response_Schedules_JCE_DRAFT.docx`. The Dropbox connector cannot download Word files, so the schedule could not be rebuilt here. Copy each answer below into the blue-shaded field of the draft fill, in order, replacing the 11/10 values (several prices and dates changed). Every schedule is signed "For and on behalf of JCE Infrastructure Pty Ltd" by Jayden Callen and dated.
 
 Items marked **[TBC - Jayden]** need your input.
 
@@ -136,7 +136,7 @@ Items marked **[TBC - Jayden]** need your input.
 
 | Field | Answer |
 |---|---|
-| Company profile and resources | Civil and hydraulic engineering consultancy led by its Director, Jayden Callen, who delivers every commission personally, with specialist sub-consultants for flood modelling, registered civil supervision, survey and investigations. Civil 3D, DRAINS and MUSIC X licences. |
+| Company profile and resources | Civil and hydraulic engineering consultancy led by its Director, Jayden Callen, who delivers every commission personally, with specialist sub-consultants for flood modelling, registered civil supervision, survey and investigations. Civil 3D, DRAINS and MUSIC X licences. Equipment (Rev G): JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE delivers drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category, with operator accreditation in place before services start. |
 | Annual turnover | [TBC - Jayden] |
 | Total number of staff | 1 (Director), plus sub-consultants |
 | Proposed personnel / role / % allocation / internal / external | Jayden Callen / PM and civil design lead / [TBC] / Y / -; Michael South / flood modelling lead / [TBC] / N / Venant Solutions; Atoosa Towzihian / flood and hydrology engineer / [TBC] / N / Venant Solutions; Sunny Lotay / registered civil engineer / [TBC] / N / Lotay Civil; [surveyor] / survey / [TBC] / N / [firm] |
