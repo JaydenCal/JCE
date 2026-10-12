@@ -1,0 +1,960 @@
+<title>Glide Inside, 3D Floor Plans for Real Estate, Regional</title>
+<meta name="description" content="3D fly-through videos and 3D floor plans for real estate agents and builders in regional Australia. $249, pay when you upload.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Glide Inside, 3D Floor Plans for Real Estate, Regional">
+<meta property="og:description" content="3D fly-through videos and 3D floor plans for real estate agents and builders in regional Australia. $249, pay when you upload.">
+<meta name="theme-color" content="#14304A">
+<!-- PLACEHOLDER [TBC]: once the domain is live, uncomment and set the real address.
+<link rel="canonical" href="https://YOUR-DOMAIN/">
+<meta property="og:url" content="https://YOUR-DOMAIN/">
+<meta property="og:image" content="https://YOUR-DOMAIN/og-image.jpg">
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700;9..40,800&family=Source+Sans+3:wght@400;600;700&display=swap">
+
+<!-- =====================================================================
+     ANALYTICS (PLACEHOLDERS). Paste your real IDs here.
+     GA4:        replace G-XXXXXXXXXX with your Measurement ID (Admin > Data streams).
+     Meta Pixel: replace 000000000000000 with your Pixel ID (Events Manager).
+     Nothing loads while the placeholder values are in place.
+     Events sent by this page:
+       form_start      / FormStart (custom)     first interaction with the order form
+       file_upload     / PlanUploaded (custom)  a valid plan file is chosen
+       generate_lead   / Lead                   order form passes checks
+       begin_checkout  / InitiateCheckout       "Pay $249" link clicked (opens Stripe)
+       purchase        / Purchase               customer lands back on #order-complete
+                                                (set this as the Stripe Payment Link's
+                                                after-payment redirect: https://YOUR-DOMAIN/#order-complete)
+     ===================================================================== -->
+<script>
+window.GI_CONFIG = {
+  GA4_ID: 'G-XXXXXXXXXX',              // PLACEHOLDER: GA4 Measurement ID
+  META_PIXEL_ID: '000000000000000',    // PLACEHOLDER: Meta Pixel ID
+  // PLACEHOLDER: your Stripe Payment Link for the $249 product (Stripe Dashboard > Payment Links).
+  STRIPE_PAYMENT_LINK: 'https://buy.stripe.com/PLACEHOLDER_REPLACE_ME',
+  // PLACEHOLDER: where the order form (with the plan file) is sent, e.g. a Formspree,
+  // Netlify Forms or Basin endpoint that accepts file uploads. Leave '' until set up.
+  UPLOAD_ENDPOINT: '',
+  PRICE: 249,
+  CURRENCY: 'AUD'
+};
+(function () {
+  var c = window.GI_CONFIG;
+  // ---- GA4 gtag block ----
+  if (c.GA4_ID && c.GA4_ID !== 'G-XXXXXXXXXX') {
+    var s = document.createElement('script');
+    s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + c.GA4_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { dataLayer.push(arguments); };
+    gtag('js', new Date()); gtag('config', c.GA4_ID);
+  }
+  // ---- Meta Pixel block ----
+  if (c.META_PIXEL_ID && c.META_PIXEL_ID !== '000000000000000') {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', c.META_PIXEL_ID); fbq('track', 'PageView');
+  }
+  // One helper for every tracked event: GA4 name, Meta name, Meta standard (true) or custom (false).
+  window.giTrack = function (ga, meta, standard, params) {
+    params = params || {};
+    try { if (window.gtag) gtag('event', ga, params); } catch (e) {}
+    try { if (window.fbq && meta) fbq(standard ? 'track' : 'trackCustom', meta, params); } catch (e) {}
+  };
+})();
+</script>
+
+<!-- Structured data. [TBC] items: add "url", "email", "telephone" once confirmed. Address is left out on purpose (service-area business). -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Glide Inside",
+  "description": "3D fly-through videos and 3D floor plans made from a 2D floor plan, for real estate agents and builders in regional Australia.",
+  "priceRange": "$249",
+  "currenciesAccepted": "AUD",
+  "paymentAccepted": "Credit card",
+  "areaServed": [
+    { "@type": "State", "name": "New South Wales", "description": "Regional New South Wales only. Capital cities are not served." }
+  ],
+  "makesOffer": {
+    "@type": "Offer",
+    "price": "249",
+    "priceCurrency": "AUD",
+    "itemOffered": {
+      "@type": "Service",
+      "name": "3D fly-through video and 3D floor plan",
+      "serviceType": "3D floor plans for real estate",
+      "description": "A 60-second HD 3D fly-through video built from your 2D floor plan, delivered within 48 hours. No site visit."
+    }
+  }
+}
+</script>
+
+<style>
+/* Layout: navy full-bleed bands (hero, CTA bands, order) alternate with pale plan-paper bands;
+   a faint 1 m drafting grid runs behind the dark bands; content column max 1200px. */
+:root {
+  /* light bands */
+  --bg: #F3F6F7;
+  --surface: #FFFFFF;
+  --ink: #14304A;        /* Ink Navy */
+  --muted: #4A5F70;
+  --line: #D3DDE3;
+  --accent: #0B7A85;     /* Glide Teal */
+  --tint: #E3EEF0;
+  --cta-bg: #C2410C;     /* Sunlit Orange */
+  --cta-ink: #FFFFFF;
+  --grid: rgba(20, 48, 74, 0.06);
+  --shadow: 0 30px 80px -30px rgba(9, 25, 40, 0.45);
+  /* dark bands */
+  --d-bg: #0E2236;
+  --d-surface: #163049;
+  --d-ink: #F2F6F8;
+  --d-muted: #A9BCCB;
+  --d-line: rgba(255, 255, 255, 0.14);
+  --d-accent: #5CC3CC;
+  --d-tint: #12344A;
+  --d-cta-bg: #F08A4B;
+  --d-cta-ink: #14304A;
+  --d-grid: rgba(255, 255, 255, 0.05);
+  --sheet: #FFFFFF;      /* the plan sheet stays paper-white in both themes */
+  --error: #B42318;
+
+  --font-display: 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --gi-font: var(--font-display);
+  --wrap: 1200px;
+  --gutter: 20px;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B1622; --surface: #12212F; --ink: #E7EEF2; --muted: #A3B4C2; --line: #24384A;
+    --accent: #5CC3CC; --tint: #11303A; --cta-bg: #F08A4B; --cta-ink: #14304A; --grid: rgba(255,255,255,0.04);
+    --shadow: 0 30px 80px -30px rgba(0,0,0,0.8);
+    --d-bg: #071019; --d-surface: #0F1E2C; --d-ink: #F2F6F8; --d-muted: #A9BCCB; --d-line: rgba(255,255,255,0.12);
+    --d-accent: #5CC3CC; --d-tint: #0D2533; --d-cta-bg: #F08A4B; --d-cta-ink: #14304A; --d-grid: rgba(255,255,255,0.045);
+    --error: #FF8A80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0B1622; --surface: #12212F; --ink: #E7EEF2; --muted: #A3B4C2; --line: #24384A;
+  --accent: #5CC3CC; --tint: #11303A; --cta-bg: #F08A4B; --cta-ink: #14304A; --grid: rgba(255,255,255,0.04);
+  --shadow: 0 30px 80px -30px rgba(0,0,0,0.8);
+  --d-bg: #071019; --d-surface: #0F1E2C; --d-ink: #F2F6F8; --d-muted: #A9BCCB; --d-line: rgba(255,255,255,0.12);
+  --d-accent: #5CC3CC; --d-tint: #0D2533; --d-cta-bg: #F08A4B; --d-cta-ink: #14304A; --d-grid: rgba(255,255,255,0.045);
+  --error: #FF8A80;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(76px + env(safe-area-inset-top, 0px)); }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.dark { --bg: var(--d-bg); --surface: var(--d-surface); --ink: var(--d-ink); --muted: var(--d-muted); --line: var(--d-line);
+  --accent: var(--d-accent); --tint: var(--d-tint); --cta-bg: var(--d-cta-bg); --cta-ink: var(--d-cta-ink); --grid: var(--d-grid);
+  background: var(--bg); color: var(--ink); }
+.wrap { max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gutter); }
+.band { padding-block: clamp(64px, 9vw, 120px); }
+.grid-bg { background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 200px 200px, 200px 200px, 40px 40px, 40px 40px; }
+
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; color: var(--ink); }
+h1 { font-size: clamp(2.4rem, 6.2vw, 4.75rem); line-height: 1.0; letter-spacing: -0.035em; font-weight: 800; }
+h2 { font-size: clamp(1.9rem, 4vw, 3rem); line-height: 1.06; letter-spacing: -0.03em; font-weight: 800; }
+h3 { font-size: 1.25rem; line-height: 1.25; letter-spacing: -0.01em; font-weight: 700; }
+p { margin: 0; }
+.lede { font-size: clamp(1.1rem, 1.6vw, 1.3rem); color: var(--muted); max-width: 60ch; }
+.kicker { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: var(--accent); }
+.section-head { display: grid; gap: 14px; max-width: 760px; margin-bottom: clamp(32px, 5vw, 56px); }
+a { color: var(--accent); text-underline-offset: 3px; }
+.tbc { background: rgba(194, 65, 12, 0.12); color: inherit; border-radius: 4px; padding: 0 4px; font-weight: 600; white-space: nowrap; }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 100; background: var(--surface); color: var(--ink); padding: 10px 14px; border-radius: 8px; }
+.skip:focus { top: calc(12px + env(safe-area-inset-top, 0px)); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 12px 24px; border-radius: 999px;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.02rem; text-decoration: none; border: 0; cursor: pointer;
+  background: var(--cta-bg); color: var(--cta-ink); transition: transform .15s ease, box-shadow .15s ease, filter .15s ease; }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -10px var(--cta-bg); filter: saturate(1.08); }
+.btn-ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+.btn-ghost:hover { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn-lg { min-height: 56px; padding: 14px 30px; font-size: 1.1rem; }
+.btn[disabled] { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* Sticky header */
+.site-head { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: color-mix(in srgb, var(--d-bg) 92%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--d-line); }
+.site-head .wrap { display: flex; align-items: center; gap: 24px; min-height: 68px; }
+.brand { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.02em; color: var(--d-ink); text-decoration: none; white-space: nowrap; }
+.brand span { color: var(--d-accent); }
+.nav { display: flex; gap: 22px; margin-left: auto; }
+.nav a { color: var(--d-muted); text-decoration: none; font-weight: 600; font-size: 0.98rem; }
+.nav a:hover { color: var(--d-ink); }
+.site-head .btn { background: var(--d-cta-bg); color: var(--d-cta-ink); min-height: 42px; padding: 8px 18px; font-size: 0.98rem; }
+@media (max-width: 900px) { .nav { display: none; } .site-head .btn { margin-left: auto; } }
+
+/* Hero */
+.hero { position: relative; overflow: hidden; padding-block: clamp(40px, 6vw, 80px) clamp(56px, 7vw, 96px); }
+.hero::before { content: ''; position: absolute; inset: auto -20% -40% -20%; height: 80%; pointer-events: none;
+  background: radial-gradient(60% 60% at 50% 50%, rgba(92, 195, 204, 0.20), transparent 70%); }
+.hero .wrap { position: relative; display: grid; gap: clamp(28px, 4vw, 44px); }
+.hero-top { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 32px 48px; align-items: end; }
+.hero-copy { display: grid; gap: 20px; min-width: 0; }
+.hero-offer { display: grid; gap: 16px; justify-items: start; min-width: 0; }
+.price-big { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.price-big strong { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 800; letter-spacing: -0.04em; line-height: 0.9; color: var(--d-cta-bg); }
+.price-big span { color: var(--muted); font-weight: 600; max-width: 18ch; line-height: 1.35; }
+.hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--muted); font-weight: 600; font-size: 0.98rem; }
+.facts li { display: flex; align-items: center; gap: 8px; }
+.facts li::before { content: ''; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); }
+@media (max-width: 860px) { .hero-top { grid-template-columns: minmax(0, 1fr); align-items: start; } }
+
+.player { display: grid; gap: 12px; }
+.frame { position: relative; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow), 0 0 0 1px var(--d-line); background: #dfe7ec; }
+#stage { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; touch-action: pan-y; }
+#stage.exploring { touch-action: none; }
+.poster { position: absolute; inset: 0; display: grid; place-items: center; background: #f6f8f9; transition: opacity .6s ease; z-index: 2; }
+.poster img { width: auto; height: 92%; max-width: 92%; object-fit: contain; }
+.poster p { position: absolute; left: 16px; bottom: 14px; margin: 0; font: 600 0.9rem var(--font-display); color: #14304A; background: rgba(255,255,255,.9); padding: 6px 12px; border-radius: 999px; }
+.poster.gone { opacity: 0; pointer-events: none; }
+.fallback { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; text-align: center; font-weight: 600; color: #14304A; background: rgba(255,255,255,.88); z-index: 3; }
+.controls { display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; }
+.ctl { font: 700 0.95rem var(--font-display); min-height: 44px; min-width: 96px; padding: 8px 18px; border-radius: 999px; border: 0; cursor: pointer; background: var(--ink); color: var(--bg); }
+.scrub { flex: 1 1 220px; min-width: 0; display: flex; align-items: center; gap: 12px; }
+.scrub input { flex: 1; min-width: 0; accent-color: var(--accent); min-height: 44px; }
+.time { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 600; font-size: 0.92rem; white-space: nowrap; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+.seg button { font: 600 0.9rem var(--font-display); min-height: 38px; border: 0; background: transparent; color: var(--muted); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.caption { color: var(--muted); font-size: 0.95rem; max-width: 80ch; }
+
+/* How it works */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; counter-reset: s; }
+.steps li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 26px; display: grid; gap: 10px; align-content: start; }
+.steps li::before { content: counter(s); font: 800 2.6rem/1 var(--font-display); color: var(--accent); letter-spacing: -0.04em; }
+.steps p { color: var(--muted); }
+@media (max-width: 860px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+/* Dimension string: the 48-hour turnaround drawn the way a plan dimension is drawn */
+.dim { margin-top: 36px; display: grid; gap: 10px; }
+.dim-line { position: relative; height: 18px; }
+.dim-line::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px solid var(--ink); }
+.dim-line i { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1.5px solid var(--ink); }
+.dim-line i:nth-child(1) { left: 0; } .dim-line i:nth-child(2) { left: 50%; } .dim-line i:nth-child(3) { right: 0; }
+.dim-line i::after { content: ''; position: absolute; top: 50%; left: -6px; width: 12px; border-top: 1.5px solid var(--ink); transform: translateY(-50%) rotate(-45deg); }
+.dim-labels { display: grid; grid-template-columns: 1fr 1fr 1fr; font: 600 0.95rem var(--font-display); color: var(--muted); }
+.dim-labels span:nth-child(2) { text-align: center; } .dim-labels span:nth-child(3) { text-align: right; }
+.dim-labels b { display: block; color: var(--ink); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+
+/* CTA band */
+.cta-band { padding-block: clamp(48px, 7vw, 80px); }
+.cta-band .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px 40px; flex-wrap: wrap; }
+.cta-band h2 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); max-width: 22ch; }
+.cta-band p { color: var(--muted); margin-top: 8px; }
+
+/* Audience sections */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 80px); align-items: start; }
+.split > * { min-width: 0; }
+@media (max-width: 860px) { .split { grid-template-columns: minmax(0, 1fr); } }
+.ticks { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
+.ticks li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding-block: 16px; border-bottom: 1px solid var(--line); font-weight: 600; }
+.ticks li::before { content: ''; width: 14px; height: 14px; margin-top: 6px; border: 2px solid var(--accent); border-radius: 3px; background: linear-gradient(135deg, transparent 45%, var(--accent) 45%, var(--accent) 55%, transparent 55%); }
+.ticks li span { display: block; font-weight: 400; color: var(--muted); }
+.note-box { margin-top: 28px; background: var(--tint); border-radius: var(--radius); padding: 24px 26px; display: grid; gap: 10px; }
+.note-box h3 { font-size: 1.15rem; }
+
+/* Samples */
+.samples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+@media (max-width: 760px) { .samples { grid-template-columns: minmax(0, 1fr); } }
+.sample { display: grid; gap: 12px; align-content: start; }
+.thumb { position: relative; aspect-ratio: 16 / 9; max-width: 100%; border-radius: var(--radius); overflow: hidden; background: var(--sheet); border: 1px solid var(--line); display: grid; place-items: center; }
+.thumb img { height: 94%; width: auto; max-width: 94%; object-fit: contain; }
+.thumb .play { position: absolute; left: 14px; bottom: 14px; }
+.thumb.placeholder { background: repeating-linear-gradient(135deg, var(--surface) 0 14px, var(--tint) 14px 15px); border: 2px dashed var(--line); color: var(--muted); text-align: center; padding: 16px; }
+.thumb.placeholder strong { display: block; font-family: var(--font-display); color: var(--ink); font-size: 1.05rem; }
+.badge { justify-self: start; font: 700 0.8rem var(--font-display); padding: 4px 10px; border-radius: 999px; background: var(--tint); color: var(--accent); }
+.badge.warn { background: rgba(194, 65, 12, 0.12); color: var(--cta-bg); }
+.sample p { color: var(--muted); font-size: 0.98rem; }
+
+/* Pricing */
+.pricing { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 860px) { .pricing { grid-template-columns: minmax(0, 1fr); } }
+.price-card { background: var(--d-bg); color: var(--d-ink); border-radius: calc(var(--radius) + 4px); padding: clamp(28px, 4vw, 44px); display: grid; gap: 22px; box-shadow: var(--shadow); }
+.price-card .amount { font: 800 clamp(3.6rem, 8vw, 5.5rem)/0.9 var(--font-display); letter-spacing: -0.05em; color: var(--d-cta-bg); }
+.price-card .per { color: var(--d-muted); font-weight: 600; }
+.price-card ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.price-card li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; }
+.price-card li::before { content: ''; width: 10px; height: 10px; margin-top: 8px; border-radius: 2px; background: var(--d-accent); }
+.price-card .btn { background: var(--d-cta-bg); color: var(--d-cta-ink); justify-self: start; }
+.policy { display: grid; gap: 16px; }
+.policy article { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; display: grid; gap: 8px; }
+.policy p { color: var(--muted); }
+
+/* Testimonials empty state */
+.empty { border: 2px dashed var(--line); border-radius: var(--radius); padding: clamp(28px, 5vw, 48px); display: grid; gap: 12px; max-width: 760px; }
+.empty p { color: var(--muted); }
+
+/* Regions */
+.regions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+@media (max-width: 760px) { .regions { grid-template-columns: minmax(0, 1fr); } }
+.regions article { border-top: 3px solid var(--accent); padding-top: 18px; display: grid; gap: 8px; }
+.regions p { color: var(--muted); }
+
+/* FAQ */
+.faq { display: grid; border-top: 1px solid var(--line); max-width: 860px; }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 16px; padding-block: 20px; font: 700 1.12rem var(--font-display); min-height: 44px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; font-size: 1.5rem; line-height: 1; color: var(--accent); transition: transform .2s ease; }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq .ans { padding-bottom: 20px; color: var(--muted); max-width: 70ch; display: grid; gap: 10px; }
+
+/* Order form */
+.order-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 64px); align-items: start; }
+@media (max-width: 900px) { .order-grid { grid-template-columns: minmax(0, 1fr); } }
+.order-aside { display: grid; gap: 20px; }
+.order-aside .price-big strong { color: var(--cta-bg); }
+.form-card { background: var(--surface); color: var(--ink); border-radius: calc(var(--radius) + 4px); padding: clamp(22px, 4vw, 40px); box-shadow: var(--shadow); }
+form { display: grid; gap: 28px; }
+fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 16px; min-width: 0; }
+legend { font: 800 1.2rem var(--font-display); padding: 0; margin-bottom: 12px; color: var(--ink); }
+.row2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 560px) { .row2 { grid-template-columns: minmax(0, 1fr); } }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label, .field .lbl { font-weight: 700; font-size: 0.98rem; }
+.opt { font-weight: 400; color: var(--muted); }
+.hint { color: var(--muted); font-size: 0.92rem; }
+input[type=text], input[type=email], input[type=tel], textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 12px 14px; min-height: 48px; width: 100%; }
+textarea { min-height: 110px; resize: vertical; }
+input:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+[aria-invalid="true"] { border-color: var(--error) !important; }
+.err { color: var(--error); font-weight: 600; font-size: 0.92rem; }
+.choice { display: grid; gap: 10px; }
+.choice label { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px; align-items: start; padding: 14px 16px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; font-weight: 700; }
+.choice label span { display: block; font-weight: 400; color: var(--muted); font-size: 0.95rem; }
+.choice input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--accent); }
+.choice label:has(input:checked) { border-color: var(--accent); background: var(--tint); }
+.drop { position: relative; border: 2px dashed var(--line); border-radius: 12px; padding: 22px; text-align: center; display: grid; gap: 6px; background: var(--bg); }
+.drop.over { border-color: var(--accent); background: var(--tint); }
+.drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.drop strong { font-family: var(--font-display); }
+.drop .file-ok { color: var(--accent); font-weight: 700; }
+.drop:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+.submit-row { display: grid; gap: 10px; }
+.submit-row .btn { width: 100%; }
+.setup-note { border: 1.5px dashed var(--cta-bg); border-radius: 10px; padding: 10px 12px; font-size: 0.9rem; color: var(--ink); }
+.pay-panel { display: grid; gap: 16px; }
+.ref { font: 800 1.4rem var(--font-display); letter-spacing: 0.02em; font-variant-numeric: tabular-nums; color: var(--accent); }
+.banner { background: var(--d-cta-bg); color: var(--d-cta-ink); }
+.banner .wrap { padding-block: 16px; font-weight: 700; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.banner button { font: inherit; background: transparent; border: 1.5px solid currentColor; color: inherit; border-radius: 999px; padding: 6px 14px; cursor: pointer; min-height: 40px; }
+
+/* Footer */
+footer { padding-block: 40px calc(40px + 72px); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 16px 40px; justify-content: space-between; color: var(--muted); font-size: 0.95rem; }
+@media (min-width: 761px) { footer { padding-block: 40px; } }
+
+/* Sticky mobile bar */
+.mbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: var(--d-bg); border-top: 1px solid var(--d-line); display: none; transform: translateY(110%); transition: transform .25s ease; }
+.mbar.show { transform: none; }
+.mbar .btn { width: 100%; background: var(--d-cta-bg); color: var(--d-cta-ink); }
+@media (max-width: 760px) { .mbar { display: block; } }
+
+/* Scroll reveal: content is visible at rest; the class only plays a short rise as it arrives. */
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.rv.in { animation: rise .7s cubic-bezier(.2, .7, .2, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rv.in { animation: none; }
+  .btn, .poster, .mbar, .faq summary::after { transition: none; }
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="banner" id="paid-banner" hidden role="status">
+  <div class="wrap">
+    <span>Payment received. Your order is in, and your confirmation email has your order reference and delivery date.</span>
+    <button type="button" id="banner-close">Close</button>
+  </div>
+</div>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="#top">Glide <span>Inside</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#builders">Builders</a>
+      <a href="#agents">Agents</a>
+      <a href="#samples">Samples</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn" href="#order" data-cta="header">Upload plan</a>
+  </div>
+</header>
+
+<main id="main">
+  <!-- 1. Hero -->
+  <section class="hero dark grid-bg" id="top" aria-labelledby="h1">
+    <div class="wrap">
+      <div class="hero-top">
+        <div class="hero-copy">
+          <h1 id="h1">3D Floor Plans for Real Estate That Buyers Can Walk Through</h1>
+          <p class="lede">Send us a 2D floor plan. Within 48 hours you get a 60-second 3D fly-through video, furnished room by room, for the listing, the portals and social media. For agents and builders in regional Australia.</p>
+        </div>
+        <div class="hero-offer">
+          <div class="price-big"><strong>$249</strong><span>per floor plan, paid by card when you upload</span></div>
+          <div class="hero-ctas">
+            <a class="btn btn-lg" href="#order" id="hero-cta" data-cta="hero">Upload your floor plan</a>
+          </div>
+          <ul class="facts">
+            <li>No site visit</li>
+            <li>Video in 48 hours</li>
+            <li>Regional areas only</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="player" id="sample">
+        <div class="frame">
+          <div id="stage" role="img" aria-label="3D floor plan fly-through: a sample two-bedroom apartment built from its 2D floor plan, moving through the kitchen, living room, balcony and bedrooms"></div>
+          <div class="poster" id="poster"><img id="poster-img" alt="2D floor plan of the sample two-bedroom apartment used to build the 3D fly-through"><p id="poster-msg">Loading the 3D sample</p></div>
+        </div>
+        <div class="controls">
+          <button class="ctl" id="play" type="button">Play</button>
+          <div class="scrub">
+            <input id="scrub" type="range" min="0" max="60" step="0.01" value="0" aria-label="Position in the fly-through">
+            <span class="time" id="time">0:00 / 1:00</span>
+          </div>
+          <div class="seg" role="group" aria-label="View mode">
+            <button type="button" id="mode-film" aria-pressed="true">Fly-through</button>
+            <button type="button" id="mode-explore" aria-pressed="false">Explore</button>
+          </div>
+        </div>
+        <p class="caption" id="hint">This sample runs live in your browser. It was built from an original demo plan (2 bed, 2 bath apartment, 96 m² inside), not a real property. Switch to Explore to turn the model around yourself.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. How it works -->
+  <section class="band" id="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="section-head rv">
+        <h2 id="how-h">How it works</h2>
+        <p class="lede">Three steps, and you don't need to leave the office.</p>
+      </div>
+      <ol class="steps">
+        <li class="rv"><h3>Upload your plan and pay</h3><p>Send the floor plan as a PDF, JPG or PNG and pay $249 by card through a secure checkout.</p></li>
+        <li class="rv"><h3>We build it in 3D</h3><p>We model the walls, doors and windows from your plan, furnish each room and set the camera path. If something on the plan is unclear, we email you before we start.</p></li>
+        <li class="rv"><h3>You get the video</h3><p>It arrives by email with a download link. Put it on the listing, the portals and your social posts.</p></li>
+      </ol>
+      <div class="dim rv" aria-label="Turnaround: 48 hours from upload to delivery">
+        <div class="dim-labels" aria-hidden="true"><span><b>0 h</b>Plan uploaded</span><span><b>&nbsp;</b>Modelled and furnished</span><span><b>48 h</b>Video in your inbox</span></div>
+        <div class="dim-line" aria-hidden="true"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA band 1 -->
+  <section class="cta-band dark grid-bg" aria-label="Order">
+    <div class="wrap rv">
+      <div>
+        <h2>Got a floor plan ready? Upload it now.</h2>
+        <p>$249 per plan. Your video arrives within 48 hours.</p>
+      </div>
+      <a class="btn btn-lg" href="#order" data-cta="band-1">Upload your floor plan</a>
+    </div>
+  </section>
+
+  <!-- 3. For builders and developers -->
+  <section class="band" id="builders" aria-labelledby="builders-h">
+    <div class="wrap split">
+      <div class="section-head rv" style="margin-bottom:0">
+        <p class="kicker">For builders and developers</p>
+        <h2 id="builders-h">Display home virtual tours and off-the-plan fly-throughs</h2>
+        <p class="lede">Buyers can't walk through a home that hasn't been built. A fly-through shows them the layout of an off-the-plan unit, a house-and-land package or a design from your range before the slab goes down.</p>
+      </div>
+      <div class="rv">
+        <ul class="ticks">
+          <li><div>House-and-land packages<span>One video per design, ready for your package listings.</span></div></li>
+          <li><div>Off-the-plan units and small subdivisions<span>Show the finished layout while the site is still dirt.</span></div></li>
+          <li><div>Display home ranges<span>Give buyers a walkthrough of every design without a trip to the display village.</span></div></li>
+        </ul>
+        <div class="note-box" id="volume">
+          <h3>Builders and volume orders</h3>
+          <p>Ordering several designs or a whole range? Choose "Several plans" in the <a href="#order" data-cta="volume">order form</a>, or email <span class="tbc">[TBC: email address]</span>. We reply with a price before you pay anything.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. For agents -->
+  <section class="band" id="agents" aria-labelledby="agents-h" style="background: var(--surface)">
+    <div class="wrap split">
+      <div class="section-head rv" style="margin-bottom:0">
+        <p class="kicker">For agents</p>
+        <h2 id="agents-h">3D floor plans for real estate listings</h2>
+        <p class="lede">A flat floor plan makes buyers work out how the rooms connect. A fly-through shows them, room by room, before they book an inspection.</p>
+      </div>
+      <div class="rv">
+        <ul class="ticks">
+          <li><div>Built from the floor plan already on the listing<span>No photographer booking and no site visit.</span></div></li>
+          <li><div>Ready for portals and social media<span>A landscape HD video you can upload with the listing photos.</span></div></li>
+          <li><div>Room captions<span>Each room is named as the camera enters it.</span></div></li>
+        </ul>
+        <p style="margin-top:28px"><a class="btn" href="#order" data-cta="agents">Upload a listing plan</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Samples -->
+  <section class="band" id="samples" aria-labelledby="samples-h">
+    <div class="wrap">
+      <div class="section-head rv">
+        <h2 id="samples-h">Samples</h2>
+        <p class="lede">Every sample starts as a 2D floor plan. More are being produced now.</p>
+      </div>
+      <div class="samples">
+        <article class="sample rv">
+          <div class="thumb"><img id="sample1-img" alt="2D floor plan of the sample apartment" loading="lazy"><button class="btn play" type="button" id="sample1-play">Watch the fly-through</button></div>
+          <span class="badge">Live sample</span>
+          <h3>Two-bedroom apartment</h3>
+          <p>2 bed, 2 bath, 96 m² inside plus a 12 m² balcony. Built from an original demo plan, not a real property. It plays in the player at the top of the page.</p>
+        </article>
+        <!-- PLACEHOLDER sample slots. To add a video, replace the .thumb.placeholder div with:
+             <div class="thumb"><video controls muted playsinline preload="none" poster="poster.jpg" data-src="sample-2.mp4" aria-label="..."></video></div>
+             Videos with data-src load only when scrolled near (see the lazy loader at the bottom). -->
+        <article class="sample rv">
+          <div class="thumb placeholder"><div><strong>Video coming soon</strong>Placeholder slot</div></div>
+          <span class="badge warn">Placeholder [TBC]</span>
+          <h3>Single-storey house-and-land design</h3>
+          <p>Sample to be added.</p>
+        </article>
+        <article class="sample rv">
+          <div class="thumb placeholder"><div><strong>Video coming soon</strong>Placeholder slot</div></div>
+          <span class="badge warn">Placeholder [TBC]</span>
+          <h3>Display home</h3>
+          <p>Sample to be added.</p>
+        </article>
+        <article class="sample rv">
+          <div class="thumb placeholder"><div><strong>Video coming soon</strong>Placeholder slot</div></div>
+          <span class="badge warn">Placeholder [TBC]</span>
+          <h3>Regional listing from a local floor plan</h3>
+          <p>Sample to be added.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA band 2 -->
+  <section class="cta-band dark grid-bg" aria-label="Order">
+    <div class="wrap rv">
+      <div>
+        <h2>Want one of these for your next listing or design?</h2>
+        <p>Upload the plan and pay $249. No site visit needed.</p>
+      </div>
+      <a class="btn btn-lg" href="#order" data-cta="band-2">Upload your floor plan</a>
+    </div>
+  </section>
+
+  <!-- 6. Pricing -->
+  <section class="band" id="pricing" aria-labelledby="pricing-h">
+    <div class="wrap">
+      <div class="section-head rv">
+        <h2 id="pricing-h">Pricing</h2>
+        <p class="lede">One price per floor plan, paid when you upload.</p>
+      </div>
+      <div class="pricing">
+        <div class="price-card rv">
+          <div>
+            <div class="amount">$249</div>
+            <p class="per">per floor plan. GST <span class="tbc">[TBC]</span></p>
+          </div>
+          <ul>
+            <li>A 60-second HD fly-through video (MP4, landscape)</li>
+            <li>A 3D floor plan image of the furnished layout <span class="tbc">[TBC]</span></li>
+            <li>Furnished rooms with room captions</li>
+            <li>Delivered within 48 hours of receiving your plan</li>
+            <li>Use it on the listing, the portals and social media</li>
+          </ul>
+          <a class="btn btn-lg" href="#order" data-cta="pricing">Upload and pay $249</a>
+        </div>
+        <div class="policy">
+          <article class="rv">
+            <h3>Revisions</h3>
+            <p>One round of changes is included <span class="tbc">[TBC]</span>, for example a different furniture style, finishes or room names. Changes to the floor plan itself after modelling has started are quoted separately.</p>
+          </article>
+          <article class="rv">
+            <h3>Refunds</h3>
+            <p>If we can't build from your plan, we tell you before any work starts and refund the full $249. If the video doesn't match the plan you sent, we fix it at no cost. <span class="tbc">[TBC: confirm policy]</span></p>
+          </article>
+          <article class="rv">
+            <h3>Builders and volume orders</h3>
+            <p>Several plans or a whole range of designs are priced on request. <a href="#volume">See volume orders</a>.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Testimonials (honest empty state; add real ones only with written permission) -->
+  <section class="band" id="testimonials" aria-labelledby="testimonials-h" style="background: var(--surface)">
+    <div class="wrap">
+      <div class="section-head rv">
+        <h2 id="testimonials-h">What clients say</h2>
+      </div>
+      <div class="empty rv">
+        <h3>No reviews yet</h3>
+        <p>Glide Inside is a new business. Reviews from our first clients will appear here, with their permission.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Regions served -->
+  <section class="band" id="regions" aria-labelledby="regions-h">
+    <div class="wrap">
+      <div class="section-head rv">
+        <h2 id="regions-h">Regions served</h2>
+        <p class="lede">We work from your floor plan, so there's no travel and no call-out fee.</p>
+      </div>
+      <div class="regions">
+        <article class="rv">
+          <h3>Regional New South Wales</h3>
+          <p>We take work from regional NSW now, with other states to follow. Areas: <span class="tbc">[TBC: list regions and towns]</span></p>
+        </article>
+        <article class="rv">
+          <h3>Regional areas only</h3>
+          <p>Glide Inside works only with agents and builders outside the capital cities.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. FAQ -->
+  <section class="band" id="faq" aria-labelledby="faq-h" style="background: var(--surface)">
+    <div class="wrap">
+      <div class="section-head rv">
+        <h2 id="faq-h">Questions</h2>
+      </div>
+      <div class="faq rv">
+        <details><summary>What plan formats do you accept?</summary><div class="ans"><p>PDF, JPG or PNG, up to 20 MB. A plan with room names and dimensions gives the best result. If anything is hard to read, we email you before we start.</p></div></details>
+        <details><summary>How long does it take?</summary><div class="ans"><p>Your video arrives within 48 hours of us receiving your plan and payment.</p></div></details>
+        <details><summary>Do you need to visit the property?</summary><div class="ans"><p>No. We build everything from the plan, which is why it works for homes that haven't been built yet.</p></div></details>
+        <details><summary>How does payment work?</summary><div class="ans"><p>You pay $249 by card through a secure Stripe checkout when you upload your plan. There are no invoices to chase. Volume orders are quoted first, and you pay once you've accepted the quote.</p></div></details>
+        <details><summary>Who owns the video?</summary><div class="ans"><p>You can use the video to market that property on any channel. <span class="tbc">[TBC: confirm ownership and licence terms]</span></p></div></details>
+        <details><summary>Can I track my order?</summary><div class="ans"><p>Yes. You get an order reference on screen when you submit the form, and it's in your confirmation email. Reply to that email with your reference at any time and we'll tell you where your video is up to.</p></div></details>
+        <details><summary>What if I need changes?</summary><div class="ans"><p>One round of changes is included <span class="tbc">[TBC]</span>, such as furniture style, finishes or room names. Changes to the floor plan itself after modelling has started are quoted separately.</p></div></details>
+        <details><summary>Do you work in my area?</summary><div class="ans"><p>We work with agents and builders in regional New South Wales, with other states to follow. We don't take work in capital cities.</p></div></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. Upload and pay -->
+  <section class="band dark grid-bg" id="order" aria-labelledby="order-h">
+    <div class="wrap order-grid">
+      <div class="order-aside rv">
+        <h2 id="order-h">Upload your floor plan and pay</h2>
+        <p class="lede">It takes about two minutes. You pay by card on the secure Stripe checkout page after this form.</p>
+        <div class="price-big"><strong>$249</strong><span>per floor plan, video within 48 hours</span></div>
+        <ul class="facts">
+          <li>PDF, JPG or PNG</li>
+          <li>No site visit</li>
+          <li>Order reference on screen and by email</li>
+        </ul>
+        <p class="hint">Several plans? Choose "Several plans" and we'll send you a price first. You can also email <span class="tbc">[TBC: email address]</span>.</p>
+      </div>
+
+      <div class="form-card">
+        <form id="order-form" novalidate>
+          <fieldset>
+            <legend>1. Your details</legend>
+            <div class="row2">
+              <div class="field"><label for="f-name">Name</label><input type="text" id="f-name" name="name" autocomplete="name" required aria-describedby="e-name"><span class="err" id="e-name" hidden></span></div>
+              <div class="field"><label for="f-business">Agency or business <span class="opt">(optional)</span></label><input type="text" id="f-business" name="business" autocomplete="organization"></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="f-email">Email</label><input type="email" id="f-email" name="email" autocomplete="email" required aria-describedby="e-email h-email"><span class="hint" id="h-email">We send your confirmation and video here.</span><span class="err" id="e-email" hidden></span></div>
+              <div class="field"><label for="f-phone">Phone <span class="opt">(optional)</span></label><input type="tel" id="f-phone" name="phone" autocomplete="tel"></div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>2. Your plan</legend>
+            <div class="choice" role="radiogroup" aria-label="Order type">
+              <label><input type="radio" name="type" id="t-single" value="single" checked><div>One floor plan, $249<span>Pay by card on the next screen.</span></div></label>
+              <label><input type="radio" name="type" id="t-volume" value="volume"><div>Several plans or a range of designs<span>Builders and volume orders. We email a price first, nothing to pay now.</span></div></label>
+            </div>
+            <div class="field"><label for="f-address">Property address or design name</label><input type="text" id="f-address" name="address" required aria-describedby="e-address"><span class="err" id="e-address" hidden></span></div>
+            <div class="field">
+              <span class="lbl" id="l-plan">Floor plan</span>
+              <div class="drop" id="drop">
+                <input type="file" id="f-plan" name="plan" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" aria-labelledby="l-plan" aria-describedby="plan-status e-plan" required>
+                <strong>Choose a file or drop it here</strong>
+                <span class="hint" id="plan-status">PDF, JPG or PNG, up to 20 MB</span>
+              </div>
+              <span class="err" id="e-plan" hidden></span>
+            </div>
+            <div class="field"><label for="f-notes">Notes <span class="opt">(optional)</span></label><textarea id="f-notes" name="notes" aria-describedby="h-notes"></textarea><span class="hint" id="h-notes">Finishes, furniture style, deadline, or anything else we should know.</span></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>3. Pay</legend>
+            <div class="submit-row" id="submit-row">
+              <button class="btn btn-lg" type="submit" id="submit">Continue to payment</button>
+              <p class="hint">We only use your details and plan to make and deliver your video.</p>
+              <p class="setup-note" id="setup-note" hidden>Setup note for the site owner: plan upload and payment are not connected yet. Add the upload endpoint and Stripe Payment Link in GI_CONFIG at the top of the page. [TBC]</p>
+              <p class="err" id="e-form" hidden role="alert"></p>
+            </div>
+            <div class="pay-panel" id="pay-panel" hidden tabindex="-1">
+              <p>Your order reference</p>
+              <p class="ref" id="ref"></p>
+              <p id="pay-copy">Your plan is attached to this order. Pay $249 by card to place it. The checkout opens on Stripe's secure page.</p>
+              <a class="btn btn-lg" id="pay-link" href="#" target="_blank" rel="noopener">Pay $249 by card</a>
+              <p class="hint">Keep the reference. It's also in your confirmation email, and you can reply to that email at any time to check on your order.</p>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><strong class="brand" style="color:var(--ink)">Glide <span style="color:var(--accent)">Inside</span></strong><br>3D fly-through videos and 3D floor plans for regional real estate.</div>
+    <div>Email: <span class="tbc">[TBC]</span><br>ABN: <span class="tbc">[TBC]</span></div>
+    <div>Regional New South Wales<br>&copy; 2026 Glide Inside</div>
+  </div>
+</footer>
+
+<div class="mbar" id="mbar"><a class="btn" href="#order" data-cta="mobile-bar">Upload plan, $249</a></div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<!-- Hero sample: poster first (small files), then the 3D engine. Only this sample autoplays. -->
+<script type="module">
+import { PLAN } from './plan.js';
+import { planSVG } from './planart.js';
+
+const svgURI = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(planSVG(PLAN, { background: '#ffffff', font: "'DM Sans', 'Helvetica Neue', Arial, sans-serif" }));
+document.getElementById('poster-img').src = svgURI;
+document.getElementById('sample1-img').src = svgURI;
+
+const stage = document.getElementById('stage');
+const poster = document.getElementById('poster');
+const posterMsg = document.getElementById('poster-msg');
+const playBtn = document.getElementById('play');
+const scrub = document.getElementById('scrub');
+const timeEl = document.getElementById('time');
+const hint = document.getElementById('hint');
+const filmBtn = document.getElementById('mode-film');
+const exploreBtn = document.getElementById('mode-explore');
+const hintFilm = hint.textContent;
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let demo, DURATION = 60, userTook = false, visible = true, loopTimer = 0;
+function fail() {
+  const d = document.createElement('div'); d.className = 'fallback';
+  d.textContent = 'This browser could not start the 3D sample. Try a recent version of Chrome, Safari or Edge.';
+  stage.parentElement.appendChild(d); posterMsg.hidden = true;
+  playBtn.disabled = true; scrub.disabled = true; exploreBtn.disabled = true;
+}
+try {
+  const mod = await import('./app.js');
+  DURATION = mod.DURATION;
+  const w = stage.clientWidth || 960;
+  demo = mod.createDemo(stage, { width: w, height: Math.round(w * 9 / 16) });
+} catch (err) { fail(); }
+
+if (demo) {
+  const fit = () => { const w = stage.clientWidth; if (w) demo.resize(w, Math.round(w * 9 / 16)); };
+  new ResizeObserver(fit).observe(stage);
+  let dragging = false;
+  demo.onTime((t, playing) => {
+    if (!dragging) scrub.value = t.toFixed(2);
+    timeEl.textContent = `${fmt(t)} / ${fmt(DURATION)}`;
+    playBtn.textContent = playing ? 'Pause' : (t >= DURATION ? 'Replay' : 'Play');
+    // Autoplay loops until the visitor takes control.
+    if (!userTook && !reduce && !playing && t >= DURATION && !loopTimer) {
+      loopTimer = setTimeout(() => { loopTimer = 0; if (!userTook && visible) demo.play(); }, 3000);
+    }
+  });
+  const take = () => { userTook = true; clearTimeout(loopTimer); loopTimer = 0; };
+  playBtn.addEventListener('click', () => { take(); if (demo.mode !== 'film') setMode('film'); demo.playing ? demo.pause() : demo.play(); });
+  scrub.addEventListener('input', () => { take(); dragging = true; if (demo.mode !== 'film') setMode('film'); demo.pause(); demo.seek(Number(scrub.value)); });
+  scrub.addEventListener('change', () => { dragging = false; });
+  function setMode(m) {
+    demo.setMode(m);
+    stage.classList.toggle('exploring', m === 'explore');
+    filmBtn.setAttribute('aria-pressed', String(m === 'film'));
+    exploreBtn.setAttribute('aria-pressed', String(m === 'explore'));
+    hint.textContent = m === 'explore' ? 'Drag to turn the model. Scroll or pinch to zoom. Right-drag to pan.' : hintFilm;
+    if (m === 'explore') playBtn.textContent = 'Play';
+  }
+  filmBtn.addEventListener('click', () => { take(); setMode('film'); });
+  exploreBtn.addEventListener('click', () => { take(); setMode('explore'); });
+  window.giPlaySample = () => { take(); setMode('film'); demo.seek(0); demo.play(); };
+
+  await demo.ready;
+  poster.classList.add('gone');
+  // Reduced motion: no autoplay; show a still of the kitchen and wait for Play.
+  if (reduce) demo.seek(22.0); else demo.play();
+  demo.start();
+  // Pause rendering while the hero is off screen, to save battery.
+  new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    if (visible) demo.start(); else demo.stop();
+  }, { threshold: 0.05 }).observe(stage);
+}
+</script>
+
+<script>
+(function () {
+  var C = window.GI_CONFIG, track = window.giTrack;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Sample 1 button plays the hero player.
+  document.getElementById('sample1-play').addEventListener('click', function () {
+    document.getElementById('sample').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    if (window.giPlaySample) window.giPlaySample();
+  });
+
+  // Scroll reveal for content below the first screen.
+  if (!reduce && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.rv').forEach(function (el) {
+      if (el.getBoundingClientRect().top > window.innerHeight) io.observe(el);
+    });
+  }
+
+  // Lazy-load any sample videos added later (video[data-src]).
+  var vids = document.querySelectorAll('video[data-src]');
+  if (vids.length && 'IntersectionObserver' in window) {
+    var vio = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.src = e.target.dataset.src; e.target.removeAttribute('data-src'); vio.unobserve(e.target); } });
+    }, { rootMargin: '300px' });
+    vids.forEach(function (v) { vio.observe(v); });
+  }
+
+  // Sticky mobile bar: shown once the hero button is off screen, hidden at the order form.
+  var mbar = document.getElementById('mbar'), heroOut = false, orderIn = false;
+  function syncBar() { mbar.classList.toggle('show', heroOut && !orderIn); }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) { heroOut = !es[0].isIntersecting && es[0].boundingClientRect.top < 0; syncBar(); }).observe(document.getElementById('hero-cta'));
+    new IntersectionObserver(function (es) { orderIn = es[0].isIntersecting; syncBar(); }, { threshold: 0.05 }).observe(document.getElementById('order'));
+  }
+
+  // Completed payment: Stripe redirects back to #order-complete.
+  function checkPaid() {
+    if (location.hash === '#order-complete') {
+      document.getElementById('paid-banner').hidden = false;
+      track('purchase', 'Purchase', true, { currency: C.CURRENCY, value: C.PRICE });
+    }
+  }
+  document.getElementById('banner-close').addEventListener('click', function () { document.getElementById('paid-banner').hidden = true; });
+  checkPaid(); window.addEventListener('hashchange', checkPaid);
+
+  // ---------- Order form ----------
+  var form = document.getElementById('order-form');
+  var placeholderLink = /PLACEHOLDER/.test(C.STRIPE_PAYMENT_LINK);
+  if (!C.UPLOAD_ENDPOINT || placeholderLink) document.getElementById('setup-note').hidden = false;
+
+  var started = false;
+  form.addEventListener('focusin', function () { if (!started) { started = true; track('form_start', 'FormStart', false, { form_id: 'order' }); } });
+
+  var fileInput = document.getElementById('f-plan'), drop = document.getElementById('drop'), status = document.getElementById('plan-status');
+  var OK_TYPES = ['application/pdf', 'image/jpeg', 'image/png'], MAX = 20 * 1024 * 1024;
+  function fileError(f) {
+    if (!f) return 'Choose your floor plan file.';
+    var okExt = /\.(pdf|jpe?g|png)$/i.test(f.name);
+    if (OK_TYPES.indexOf(f.type) < 0 && !okExt) return 'That file type isn\'t supported. Upload a PDF, JPG or PNG.';
+    if (f.size > MAX) return 'That file is over 20 MB. Export a smaller PDF or image and try again.';
+    return '';
+  }
+  function showErr(id, input, msg) {
+    var el = document.getElementById(id);
+    el.textContent = msg; el.hidden = !msg;
+    if (input) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  }
+  fileInput.addEventListener('change', function () {
+    var f = fileInput.files[0], msg = fileError(f);
+    showErr('e-plan', fileInput, f ? msg : '');
+    if (f && !msg) {
+      status.innerHTML = ''; var ok = document.createElement('span'); ok.className = 'file-ok';
+      ok.textContent = 'Attached: ' + f.name + ' (' + (f.size / 1048576).toFixed(1) + ' MB)'; status.appendChild(ok);
+      track('file_upload', 'PlanUploaded', false, { file_type: (f.name.split('.').pop() || '').toLowerCase() });
+    } else { status.textContent = 'PDF, JPG or PNG, up to 20 MB'; }
+  });
+  ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function () { drop.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function () { drop.classList.remove('over'); }); });
+
+  var submitBtn = document.getElementById('submit');
+  function isVolume() { return document.getElementById('t-volume').checked; }
+  form.addEventListener('change', function (e) {
+    if (e.target.name === 'type') submitBtn.textContent = isVolume() ? 'Send for a quote' : 'Continue to payment';
+  });
+
+  function makeRef() {
+    var d = new Date(), p = function (n) { return String(n).padStart(2, '0'); };
+    return 'GI-' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('f-name'), email = document.getElementById('f-email'), addr = document.getElementById('f-address');
+    var first = null;
+    function check(id, input, msg) { showErr(id, input, msg); if (msg && !first) first = input; }
+    check('e-name', name, name.value.trim() ? '' : 'Enter your name.');
+    check('e-email', email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()) ? '' : 'Enter an email address like name@agency.com.au.');
+    check('e-address', addr, addr.value.trim() ? '' : 'Enter the property address or the design name.');
+    check('e-plan', fileInput, fileError(fileInput.files[0]));
+    if (first) { first.focus(); return; }
+
+    var ref = makeRef(), volume = isVolume();
+    var data = new FormData(form); data.append('order_ref', ref);
+    submitBtn.disabled = true; submitBtn.textContent = 'Sending your plan';
+    var send = C.UPLOAD_ENDPOINT
+      ? fetch(C.UPLOAD_ENDPOINT, { method: 'POST', body: data, headers: { Accept: 'application/json' } }).then(function (r) { if (!r.ok) throw new Error(r.status); })
+      : Promise.resolve();
+    send.then(function () {
+      track('generate_lead', 'Lead', true, { currency: C.CURRENCY, value: volume ? 0 : C.PRICE, order_type: volume ? 'volume' : 'single' });
+      document.getElementById('submit-row').hidden = true;
+      var panel = document.getElementById('pay-panel'), link = document.getElementById('pay-link');
+      document.getElementById('ref').textContent = ref;
+      if (volume) {
+        document.getElementById('pay-copy').textContent = 'Thanks. We have your plans and will email a price to ' + email.value.trim() + '. Nothing to pay yet.';
+        link.hidden = true;
+      } else {
+        var u = C.STRIPE_PAYMENT_LINK + (C.STRIPE_PAYMENT_LINK.indexOf('?') < 0 ? '?' : '&') +
+          'client_reference_id=' + encodeURIComponent(ref) + '&prefilled_email=' + encodeURIComponent(email.value.trim());
+        link.href = u;
+        link.addEventListener('click', function () { track('begin_checkout', 'InitiateCheckout', true, { currency: C.CURRENCY, value: C.PRICE }); });
+      }
+      panel.hidden = false; panel.focus();
+    }).catch(function () {
+      submitBtn.disabled = false; submitBtn.textContent = volume ? 'Send for a quote' : 'Continue to payment';
+      showErr('e-form', null, 'Your plan didn\'t upload. Check your connection and try again. Nothing has been charged.');
+    });
+  });
+})();
+</script>

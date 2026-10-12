@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Subdivision 3D Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap">
+<style>
+/* Interactive subdivision model, loaded into the main page on request. Gold on black, single dark look. */
+:root{
+  --ink:#050505; --ink2:#0f0e0b; --line:#3a3324; --gold:#c9a24f; --gold2:#e2c27a;
+  --text:#f3efe6; --muted:#bdb6a6;
+  --font:"Jost","Century Gothic","Avenir Next",Avenir,"Trebuchet MS",sans-serif;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ink);color:var(--text);font-family:var(--font);font-size:1rem;line-height:1.5;overflow:hidden}
+h2,p,ul{margin:0}
+ul{padding:0;list-style:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold2);outline-offset:2px}
+.model-demo{display:grid;height:100%;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto auto minmax(0,150px)}
+@media (min-width:760px){
+  .model-demo{grid-template-columns:minmax(0,1fr) minmax(250px,320px);grid-template-rows:minmax(0,1fr) auto auto}
+  .steps{grid-column:2;grid-row:1 / span 3;border-left:1px solid var(--line)}
+}
+.stage{position:relative;min-height:0;background:radial-gradient(90% 80% at 55% 55%,#1d1a12 0%,#0b0a08 55%,var(--ink) 80%)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;outline:none}
+.stage canvas.dragging{cursor:grabbing}
+.tags{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.tag{position:absolute;left:0;top:0;white-space:nowrap;font-size:.8rem;font-weight:500;line-height:1;color:#050505;background:var(--gold);padding:5px 8px;opacity:0;transition:opacity .35s;will-change:transform}
+.tag::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:14px;background:var(--gold)}
+.tag.on{opacity:1}
+.hint{position:absolute;right:12px;bottom:12px;display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);background:rgba(5,5,5,.75);border:1px solid var(--line);padding:6px 10px;pointer-events:none;transition:opacity .4s}
+.hint svg{width:18px;height:18px;stroke:var(--gold);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hint.gone{opacity:0}
+.model-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--line)}
+.model-controls button{min-height:40px;padding:0 12px;border:1px solid var(--line);color:var(--gold2);font-size:.9rem}
+.model-controls button:hover{border-color:var(--gold)}
+.model-controls span{margin-left:auto;color:var(--muted);font-size:.82rem}
+.layers{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-top:1px solid var(--line)}
+.layer{min-height:40px;padding:0 12px;border:1px solid var(--line);color:var(--muted);font-size:.92rem}
+.layer:hover{border-color:var(--gold);color:var(--gold2)}
+.layer[aria-current="true"]{background:var(--gold);border-color:var(--gold);color:#050505;font-weight:600}
+.steps{padding:16px 18px;overflow-y:auto;overscroll-behavior:contain;border-top:1px solid var(--line)}
+@media (min-width:760px){.steps{border-top:0;padding:22px}}
+.step[hidden]{display:none}
+.step h2{font-size:1.1rem;font-weight:600;line-height:1.3;color:var(--gold2)}
+.step .sum{margin-top:8px;color:var(--text)}
+.deliver{margin-top:10px;font-size:.92rem;color:var(--muted)}
+.deliver li{position:relative;padding:3px 0 3px 18px}
+.deliver li::before{content:"";position:absolute;left:1px;top:.75em;width:6px;height:6px;background:var(--gold)}
+.cf-key{display:flex;gap:16px;margin-top:12px;color:var(--muted);font-size:.92rem}
+.cf-key span{display:inline-flex;align-items:center;gap:8px}
+.cf-key i{width:14px;height:14px;display:block}
+.k-cut{background:#e0673a}.k-fill{background:#57b88c}
+.flood{margin-top:12px;padding:12px;border:1px solid var(--line);background:var(--ink2)}
+.flood label{display:block;font-weight:500}
+.flood input{width:100%;height:40px;accent-color:var(--gold)}
+.flood-read{color:var(--muted);min-height:3em;font-size:.92rem}
+.mv-off .stage,.mv-off .layers,.mv-off .model-controls{display:none}
+.scope-note{padding:16px;color:var(--muted)}
+/* still frame used for the poster image */
+.still .hint,.still .model-controls,.still .layers,.still .steps{display:none}
+.still .model-demo{grid-template-columns:1fr;grid-template-rows:1fr}
+</style>
+</head>
+<body>
+<div class="model-demo" id="site-model">
+  <div class="stage" id="stage">
+    <canvas id="site3d" role="img" aria-label="Interactive 3D model of a regional subdivision showing lots, cut and fill earthworks, roads, pavement layers, swept paths, stormwater, flood levels, water and sewer, and erosion control"></canvas>
+    <div class="tags" id="tags" aria-hidden="true"></div>
+    <div class="hint" id="hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"></path></svg>Drag to rotate</div>
+  </div>
+  <div class="layers" id="layers" role="group" aria-label="Model layers">
+    <button class="layer" type="button" data-go="overview" aria-current="true">Whole site</button>
+    <button class="layer" type="button" data-go="cut">Cut and fill</button>
+    <button class="layer" type="button" data-go="pave">Pavement</button>
+    <button class="layer" type="button" data-go="roads">Roads</button>
+    <button class="layer" type="button" data-go="swept">Swept paths</button>
+    <button class="layer" type="button" data-go="storm">Stormwater</button>
+    <button class="layer" type="button" data-go="flood">Flood</button>
+    <button class="layer" type="button" data-go="sewer">Water and sewer</button>
+    <button class="layer" type="button" data-go="esc">Erosion control</button>
+    <button class="layer" type="button" data-go="land">Lots</button>
+  </div>
+  <div class="model-controls" role="group" aria-label="Model controls">
+    <button type="button" data-model-reset="subdivision">Reset view</button>
+    <button type="button" data-model-pause="subdivision" aria-pressed="false">Pause motion</button>
+    <span>Illustrative model</span>
+  </div>
+  <div class="steps" role="region" aria-label="Selected model layer" tabindex="0">
+    <article class="step" data-step="overview" id="s-overview">
+      <h2>A Subdivision, Layer by Layer</h2>
+      <p class="sum">Pick a layer to see the civil design behind a regional subdivision.</p>
+      <ul class="deliver"><li>Lots, levels and earthworks</li><li>Roads, pavements and vehicle access</li><li>Stormwater, flooding, water and sewer</li><li>Erosion control during construction</li></ul>
+    </article>
+    <article class="step" data-step="land" id="s-land">
+      <h2>Lots and Layout</h2>
+      <p class="sum">Lot layout and yield through to the subdivision works certificate.</p>
+      <ul class="deliver"><li>Lot layout and yield checks</li><li>Subdivision civil documentation and staging</li><li>Servicing strategies</li></ul>
+    </article>
+    <article class="step" data-step="cut" id="s-cut">
+      <h2>Cut and Fill</h2>
+      <p class="sum">Earthworks that balance cut and fill and set each building pad level.</p>
+      <ul class="deliver"><li>Bulk earthworks and cut and fill plans</li><li>Building pads, batters and retaining walls</li><li>Site grading for drainage and access</li><li>Earthworks specified to AS 3798</li></ul>
+      <p class="cf-key"><span><i class="k-cut"></i>Cut</span><span><i class="k-fill"></i>Fill</span></p>
+    </article>
+    <article class="step" data-step="roads" id="s-roads">
+      <h2>Roads</h2>
+      <p class="sum">Subdivision, council and rural roads designed to Austroads.</p>
+      <ul class="deliver"><li>Road geometry and alignment</li><li>Intersections and cul-de-sacs</li><li>Driveways and crossovers</li></ul>
+    </article>
+    <article class="step" data-step="pave" id="s-pave">
+      <h2>Pavement Design</h2>
+      <p class="sum">Pavement layers sized for the traffic and the subgrade.</p>
+      <ul class="deliver"><li>Flexible and rigid pavements to Austroads AGPT02</li><li>Car parks, hardstands and heavy vehicle areas</li><li>Subgrade and materials specification</li></ul>
+    </article>
+    <article class="step" data-step="swept" id="s-swept">
+      <h2>Swept Paths</h2>
+      <p class="sum">Checks that the design vehicle can enter, turn and leave.</p>
+      <ul class="deliver"><li>Waste, delivery and emergency vehicles</li><li>Cul-de-sac and driveway checks</li><li>Access design to AS 2890</li></ul>
+    </article>
+    <article class="step" data-step="storm" id="s-storm">
+      <h2>Stormwater</h2>
+      <p class="sum">Drainage designed and modelled to the council's requirements.</p>
+      <ul class="deliver"><li>Pit and pipe design modelled in DRAINS</li><li>Water quality modelled in MUSIC</li><li>Detention and overland flow paths</li></ul>
+    </article>
+    <article class="step" data-step="flood" id="s-flood">
+      <h2>Flood Levels</h2>
+      <p class="sum">Pad levels set above the 1% AEP flood, with freeboard.</p>
+      <div class="flood">
+        <label for="floodLevel">Drag the flood level</label>
+        <input id="floodLevel" type="range" min="0" max="100" step="1" value="61">
+        <p class="flood-read" id="floodRead" aria-live="polite">1% AEP flood. Every building pad stays dry, because the pad levels were set above it.</p>
+      </div>
+    </article>
+    <article class="step" data-step="sewer" id="s-sewer">
+      <h2>Water and Sewer</h2>
+      <p class="sum">Reticulation designed to the WSAA codes and the water authority's requirements.</p>
+      <ul class="deliver"><li>Water and sewer reticulation</li><li>Rising mains, pump stations and pressure sewer</li><li>WSAA codes with the authority's supplements</li></ul>
+    </article>
+    <article class="step" data-step="esc" id="s-esc">
+      <h2>Erosion and Sediment Control</h2>
+      <p class="sum">Controls in place before earthworks start.</p>
+      <ul class="deliver"><li>Sediment fences, basins and diversion drains</li><li>Stabilised site access and stockpiles</li><li>Staging to suit the earthworks</li></ul>
+    </article>
+  </div>
+</div>
+<script>
+if (/[?&]still=1/.test(location.search)) document.documentElement.classList.add('still');
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="assets/model-scene.js"></script>
+<script>
+(function () {
+  if (window.THREE && window.__jceModels) {
+    window.__jceModels();
+  } else {
+    document.getElementById('site-model').classList.add('mv-off');
+    var p = document.createElement('p'); p.className = 'scope-note';
+    p.textContent = 'The 3D model could not load in this browser. The services on the page cover the same work.';
+    document.body.prepend(p);
+  }
+  try { parent.postMessage({ jceModel: 'ready' }, '*'); } catch (e) {}
+})();
+</script>
+</body>
+</html>
