@@ -1,0 +1,1 @@
+No extra dependencies: three 0.160.1 + @types/three only (GLTFLoader/OrbitControls via three/examples/jsm).
