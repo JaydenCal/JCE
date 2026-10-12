@@ -54,7 +54,10 @@ class BuildContext:
 
 
 def _sa1(c: BuildContext) -> dict:
-    return {"project_id": str(c.project_id), "params": c.request.params}
+    row = c.conn.execute("SELECT jurisdiction::text AS j FROM core.projects WHERE project_id = %s",
+                         (c.project_id,)).fetchone()
+    return {"project_id": str(c.project_id), "project_jurisdiction": row["j"] if row else None,
+            "params": c.request.params}
 
 
 def _sa7(c: BuildContext) -> dict:
@@ -74,45 +77,33 @@ def _sa7(c: BuildContext) -> dict:
         "storage_path": uri[len("file://"):] if uri.startswith("file://") else uri,
         "file_sha256": bytes(row["file_sha256"]).hex(),
         "selected_page": row["selected_page"],
-        "lot": c.need("SA1"),
+        "sa1": c.need("SA1"),            # Sa1Result; adapters.nodes.Sa7Node -> PlanUpload
     }
 
 
+# Node payloads carry the upstream *outputs* verbatim; the typed models in
+# ``app.orchestrator.adapters.nodes`` validate them and convert to each agent's request.
 def _sa2(c: BuildContext) -> dict:
-    lot = c.need("SA1")
-    return {
-        "jurisdiction": lot.get("jurisdiction"),
-        "lga_name": lot.get("lga_name"),
-        "zone_code": lot.get("zone_code"),
-        "lot_flags": lot.get("flags", {}),
-    }
+    return {"sa1": c.need("SA1"), "params": c.request.params}
 
 
 def _env(c: BuildContext) -> dict:
-    return {"lot_context": c.need("SA1"), "ruleset": c.need("SA2")}
+    return {"node": "ENV", "env": {"sa1": c.need("SA1"), "sa2": c.need("SA2"), "params": c.request.params}}
 
 
 def _sa3(c: BuildContext) -> dict:
-    return {
-        "lot_context": c.need("SA1"),
-        "envelope": c.need("ENV"),
-        "footprint": c.upstream.get("SA7"),
-        "params": c.request.params.get("terrain", {}),
-    }
+    return {"node": "SA3", "terrain": {"sa1": c.need("SA1"), "env": c.need("ENV"),
+                                       "overlay": c.upstream.get("SA7"), "params": c.request.params}}
 
 
 def _sa4(c: BuildContext) -> dict:
-    return {
-        "lot_context": c.need("SA1"),
-        "footprint": c.upstream.get("SA7"),
-        "earthworks": c.need("SA3"),
-        "dbyd_upload_id": c.request.params.get("dbyd_upload_id"),
-    }
+    c.need("SA3")   # ordering/dependency: earthworks must have succeeded
+    return {"sa1": c.need("SA1"), "env": c.need("ENV"), "overlay": c.upstream.get("SA7"),
+            "params": c.request.params}
 
 
 def _sa5(c: BuildContext) -> dict:
-    lot = c.need("SA1")
-    earth, services = c.need("SA3"), c.need("SA4")
+    c.need("SA3")
     acks = [r["kind"] for r in c.conn.execute(
         "SELECT DISTINCT kind::text AS kind FROM legal.project_acknowledgements "
         "WHERE project_id = %s AND user_id = %s ORDER BY 1", (c.project_id, c.user_id)).fetchall()]
@@ -123,15 +114,12 @@ def _sa5(c: BuildContext) -> dict:
     u = c.conn.execute("SELECT display_name FROM core.users WHERE user_id = %s", (c.user_id,)).fetchone()
     return {
         "project_id": str(c.project_id),
-        "mga_srid": lot["mga_srid"],
         "drawing_scale_denominator": c.request.drawing_scale_denominator,
-        "lot": lot,
+        "sa1": c.need("SA1"),
+        "sa2": c.upstream.get("SA2"),
+        "env": c.need("ENV"),
+        "sa4": c.need("SA4"),
         "overlay": c.upstream.get("SA7"),
-        "driveway": earth.get("driveway"),
-        "services": services.get("services", []),
-        "rwt": services.get("rwt"),
-        "council_overlays": c.upstream.get("SA2", {}).get("council_overlays", []),
-        "council_name": lot.get("lga_name"),
         "export_formats": c.request.export_formats,
         "acknowledgements_present": acks,
         "project_title": title,

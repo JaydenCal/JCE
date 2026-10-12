@@ -173,6 +173,8 @@ class RequirementSet(M):
     def get_requirement(self, key: "str | RequirementKey", **sel: Any) -> Requirement:
         k = key.value if isinstance(key, RequirementKey) else key
         shown = {a: b for a, b in sel.items() if b is not None}
+        if "service" not in shown and k.split(".")[0] in ("sewer", "water"):
+            shown["service"] = k.split(".")[0]
         hits = [r for r in self.requirements if r.status != "unresolved" and self._match(r, k, shown)]
         confirmed = [r for r in hits if r.status == "user_confirmed"]
         pool = confirmed or hits
