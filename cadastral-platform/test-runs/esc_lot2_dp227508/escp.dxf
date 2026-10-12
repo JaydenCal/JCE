@@ -493,7 +493,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461326.7191666667
+2461326.722534722
   9
 $TDUCREATE
  40
@@ -501,7 +501,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461326.7191666667
+2461326.722534722
   9
 $TDUUPDATE
  40
@@ -553,7 +553,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-E5
+150
   9
 $SURFTAB1
  70
@@ -933,11 +933,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{35F3B016-0379-44C8-9768-C1E320B79DDA}
+{D7CBB9EB-836B-4557-BE61-31E5C8BD16EC}
   9
 $VERSIONGUID
   2
-{AC652AE4-D3E5-458E-A393-E0CDC96444F6}
+{70348EB7-3E8A-4028-80EB-473EAA3BC47D}
   9
 $EXTNAMES
 290
@@ -4543,7 +4543,7 @@ AcAecLayerStandard
   0
 APPID
   5
-E2
+14D
 330
 3
 100
@@ -4557,7 +4557,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-E3
+14E
 330
 3
 100
@@ -6259,7 +6259,7 @@ BLOCK_RECORD
 100
 AcDbSymbolTable
  70
-5
+15
   0
 BLOCK_RECORD
   5
@@ -6352,6 +6352,206 @@ AcDbSymbolTableRecord
 AcDbBlockTableRecord
   2
 _CLOSEDBLANK
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+EB
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+ESC_SF
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+F2
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+ESC_ACCESS
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+F9
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+ESC_SP
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+FE
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+ESC_TS
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+103
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+ESC_BOX
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+107
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+ESC_DIVR
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+10D
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+ESC_CHKD
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+113
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+ESC_LIMT
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+117
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+ESC_NOGO
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+11D
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+ESC_FLOW
 340
 0
  70
@@ -6661,6 +6861,1040 @@ AcDbEntity
 100
 AcDbBlockEnd
   0
+BLOCK
+  5
+EC
+330
+EB
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+ESC_SF
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ESC_SF
+  1
+
+  0
+LINE
+  5
+EE
+330
+EB
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbLine
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+ 11
+2.0
+ 21
+0.0
+ 31
+0.0
+  0
+LINE
+  5
+EF
+330
+EB
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbLine
+ 10
+0.38
+ 20
+-0.12
+ 30
+0.0
+ 11
+0.62
+ 21
+0.12
+ 31
+0.0
+  0
+LINE
+  5
+F0
+330
+EB
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbLine
+ 10
+0.88
+ 20
+-0.12
+ 30
+0.0
+ 11
+1.12
+ 21
+0.12
+ 31
+0.0
+  0
+LINE
+  5
+F1
+330
+EB
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbLine
+ 10
+1.38
+ 20
+-0.12
+ 30
+0.0
+ 11
+1.62
+ 21
+0.12
+ 31
+0.0
+  0
+ENDBLK
+  5
+ED
+330
+EB
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+F3
+330
+F2
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+ESC_ACCESS
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ESC_ACCESS
+  1
+
+  0
+LWPOLYLINE
+  5
+F5
+330
+F2
+100
+AcDbEntity
+  8
+C-ESC-ACCS
+100
+AcDbPolyline
+ 90
+4
+ 70
+1
+ 10
+0.0
+ 20
+-0.35
+ 10
+2.0
+ 20
+-0.35
+ 10
+2.0
+ 20
+0.35
+ 10
+0.0
+ 20
+0.35
+  0
+LINE
+  5
+F6
+330
+F2
+100
+AcDbEntity
+  8
+C-ESC-ACCS
+100
+AcDbLine
+ 10
+0.3
+ 20
+0.0
+ 30
+0.0
+ 11
+1.7
+ 21
+0.0
+ 31
+0.0
+  0
+LINE
+  5
+F7
+330
+F2
+100
+AcDbEntity
+  8
+C-ESC-ACCS
+100
+AcDbLine
+ 10
+1.45
+ 20
+0.15
+ 30
+0.0
+ 11
+1.7
+ 21
+0.0
+ 31
+0.0
+  0
+LINE
+  5
+F8
+330
+F2
+100
+AcDbEntity
+  8
+C-ESC-ACCS
+100
+AcDbLine
+ 10
+1.45
+ 20
+-0.15
+ 30
+0.0
+ 11
+1.7
+ 21
+0.0
+ 31
+0.0
+  0
+ENDBLK
+  5
+F4
+330
+F2
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+FA
+330
+F9
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+ESC_SP
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ESC_SP
+  1
+
+  0
+ELLIPSE
+  5
+FC
+330
+F9
+100
+AcDbEntity
+  8
+C-ESC-STOK
+  6
+DASHED
+100
+AcDbEllipse
+ 10
+1.0
+ 20
+0.0
+ 30
+0.0
+ 11
+1.0
+ 21
+0.0
+ 31
+0.0
+ 40
+0.35
+ 41
+0.0
+ 42
+6.283185307179586
+  0
+TEXT
+  5
+FD
+330
+F9
+100
+AcDbEntity
+  8
+C-ESC-STOK
+100
+AcDbText
+ 10
+0.8
+ 20
+-0.12
+ 30
+0.0
+ 40
+0.3
+  1
+SP
+ 11
+0.8
+ 21
+-0.12
+ 31
+0.0
+100
+AcDbText
+  0
+ENDBLK
+  5
+FB
+330
+F9
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+FF
+330
+FE
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+ESC_TS
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ESC_TS
+  1
+
+  0
+ELLIPSE
+  5
+101
+330
+FE
+100
+AcDbEntity
+  8
+C-ESC-STOK
+  6
+DASHED
+100
+AcDbEllipse
+ 10
+1.0
+ 20
+0.0
+ 30
+0.0
+ 11
+1.0
+ 21
+0.0
+ 31
+0.0
+ 40
+0.35
+ 41
+0.0
+ 42
+6.283185307179586
+  0
+TEXT
+  5
+102
+330
+FE
+100
+AcDbEntity
+  8
+C-ESC-STOK
+100
+AcDbText
+ 10
+0.8
+ 20
+-0.12
+ 30
+0.0
+ 40
+0.3
+  1
+TS
+ 11
+0.8
+ 21
+-0.12
+ 31
+0.0
+100
+AcDbText
+  0
+ENDBLK
+  5
+100
+330
+FE
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+104
+330
+103
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+ESC_BOX
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ESC_BOX
+  1
+
+  0
+LWPOLYLINE
+  5
+106
+330
+103
+100
+AcDbEntity
+  8
+C-ESC-STOK
+100
+AcDbPolyline
+ 90
+4
+ 70
+1
+ 10
+0.0
+ 20
+-0.35
+ 10
+2.0
+ 20
+-0.35
+ 10
+2.0
+ 20
+0.35
+ 10
+0.0
+ 20
+0.35
+  0
+ENDBLK
+  5
+105
+330
+103
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+108
+330
+107
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+ESC_DIVR
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ESC_DIVR
+  1
+
+  0
+LINE
+  5
+10A
+330
+107
+100
+AcDbEntity
+  8
+C-ESC-DIVR
+100
+AcDbLine
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+ 11
+2.0
+ 21
+0.0
+ 31
+0.0
+  0
+LWPOLYLINE
+  5
+10B
+330
+107
+100
+AcDbEntity
+  8
+C-ESC-DIVR
+100
+AcDbPolyline
+ 90
+3
+ 70
+0
+ 10
+0.6000000000000001
+ 20
+0.15
+ 10
+0.8
+ 20
+0.0
+ 10
+0.6000000000000001
+ 20
+-0.15
+  0
+LWPOLYLINE
+  5
+10C
+330
+107
+100
+AcDbEntity
+  8
+C-ESC-DIVR
+100
+AcDbPolyline
+ 90
+3
+ 70
+0
+ 10
+1.4000000000000001
+ 20
+0.15
+ 10
+1.6
+ 20
+0.0
+ 10
+1.4000000000000001
+ 20
+-0.15
+  0
+ENDBLK
+  5
+109
+330
+107
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+10E
+330
+10D
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+ESC_CHKD
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ESC_CHKD
+  1
+
+  0
+LINE
+  5
+110
+330
+10D
+100
+AcDbEntity
+  8
+C-ESC-CHKD
+100
+AcDbLine
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+ 11
+2.0
+ 21
+0.0
+ 31
+0.0
+  0
+LINE
+  5
+111
+330
+10D
+100
+AcDbEntity
+  8
+C-ESC-CHKD
+100
+AcDbLine
+ 10
+0.0
+ 20
+-0.3
+ 30
+0.0
+ 11
+0.0
+ 21
+0.3
+ 31
+0.0
+  0
+LINE
+  5
+112
+330
+10D
+100
+AcDbEntity
+  8
+C-ESC-CHKD
+100
+AcDbLine
+ 10
+2.0
+ 20
+-0.3
+ 30
+0.0
+ 11
+2.0
+ 21
+0.3
+ 31
+0.0
+  0
+ENDBLK
+  5
+10F
+330
+10D
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+114
+330
+113
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+ESC_LIMT
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ESC_LIMT
+  1
+
+  0
+LINE
+  5
+116
+330
+113
+100
+AcDbEntity
+  8
+C-ESC-LIMT
+  6
+DASHDOT
+100
+AcDbLine
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+ 11
+2.0
+ 21
+0.0
+ 31
+0.0
+  0
+ENDBLK
+  5
+115
+330
+113
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+118
+330
+117
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+ESC_NOGO
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ESC_NOGO
+  1
+
+  0
+CIRCLE
+  5
+11A
+330
+117
+100
+AcDbEntity
+  8
+C-ESC-NOGO
+100
+AcDbCircle
+ 10
+1.0
+ 20
+0.0
+ 30
+0.0
+ 40
+0.35
+  0
+LINE
+  5
+11B
+330
+117
+100
+AcDbEntity
+  8
+C-ESC-NOGO
+100
+AcDbLine
+ 10
+0.75
+ 20
+-0.25
+ 30
+0.0
+ 11
+1.25
+ 21
+0.25
+ 31
+0.0
+  0
+LINE
+  5
+11C
+330
+117
+100
+AcDbEntity
+  8
+C-ESC-NOGO
+100
+AcDbLine
+ 10
+0.75
+ 20
+0.25
+ 30
+0.0
+ 11
+1.25
+ 21
+-0.25
+ 31
+0.0
+  0
+ENDBLK
+  5
+119
+330
+117
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+11E
+330
+11D
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+ESC_FLOW
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+ESC_FLOW
+  1
+
+  0
+LINE
+  5
+120
+330
+11D
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbLine
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+ 11
+2.0
+ 21
+0.0
+ 31
+0.0
+  0
+LWPOLYLINE
+  5
+121
+330
+11D
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbPolyline
+ 90
+3
+ 70
+0
+ 10
+1.6
+ 20
+0.2
+ 10
+2.0
+ 20
+0.0
+ 10
+1.6
+ 20
+-0.2
+  0
+ENDBLK
+  5
+11F
+330
+11D
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
 ENDSEC
   0
 SECTION
@@ -6907,21 +8141,21 @@ AcDbPolyline
  70
 1
  10
-238468.341
+238460.341
  20
-6569543.649
+6569550.149
  10
-238466.177
+238458.177
  20
-6569541.571
+6569548.071
  10
-238468.948
+238460.948
  20
-6569538.686
+6569545.186
  10
-238471.111
+238463.111
  20
-6569540.764
+6569547.264
   0
 TEXT
   5
@@ -6935,9 +8169,9 @@ C-ESC-NOTE
 100
 AcDbText
  10
-238468.94406993059
+238460.94406993059
  20
-6569541.4675
+6569547.9675
  30
 0.0
  40
@@ -6947,9 +8181,9 @@ TS1 Topsoil stockpile 12 m2 (TBC)
   7
 JCE
  11
-238468.94406993059
+238460.94406993059
  21
-6569541.4675
+6569547.9675
  31
 0.0
 100
@@ -6971,21 +8205,21 @@ AcDbPolyline
  70
 1
  10
-238460.855
+238469.355
  20
-6569551.356
+6569549.856
  10
-238457.97
+238466.47
  20
-6569548.585
+6569547.085
  10
-238461.433
+238469.933
  20
-6569544.979
+6569543.479
  10
-238464.318
+238472.818
  20
-6569547.75
+6569546.25
   0
 TEXT
   5
@@ -6999,9 +8233,9 @@ C-ESC-NOTE
 100
 AcDbText
  10
-238461.44399999955
+238469.94399999955
  20
-6569548.4675
+6569546.9675
  30
 0.0
  40
@@ -7011,9 +8245,9 @@ LD1 Materials laydown / delivery area 20 m2 (TBC)
   7
 JCE
  11
-238461.44399999955
+238469.94399999955
  21
-6569548.4675
+6569546.9675
  31
 0.0
 100
@@ -7163,21 +8397,21 @@ AcDbPolyline
  70
 1
  10
-238449.661
+238448.661
  20
-6569534.516
+6569535.016
  10
-238448.796
+238447.796
  20
-6569533.685
+6569534.185
  10
-238449.627
+238448.627
  20
-6569532.819
+6569533.319
  10
-238450.493
+238449.493
  20
-6569533.65
+6569534.15
   0
 TEXT
   5
@@ -7191,9 +8425,9 @@ C-ESC-NOTE
 100
 AcDbText
  10
-238449.9444898956
+238448.9444898956
  20
-6569533.9675
+6569534.4675
  30
 0.0
  40
@@ -7203,9 +8437,9 @@ WC1 Portable toilet 1.44 m2 (TBC)
   7
 JCE
  11
-238449.9444898956
+238448.9444898956
  21
-6569533.9675
+6569534.4675
  31
 0.0
 100
@@ -7323,7 +8557,7 @@ AcDbText
  40
 0.5
   1
-FNC1 Sediment fence 19.23 m
+FNC1 Sediment fence - downslope limit of works 19.23 m
   7
 JCE
  11
@@ -7351,17 +8585,49 @@ AcDbPolyline
  70
 0
  10
-238487.857
+238476.74
  20
-6569558.389
+6569544.332
  10
-238487.892
+238463.293
  20
-6569557.708
+6569558.333
+  0
+TEXT
+  5
+D1
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238477.03999999998
+ 20
+6569544.632
+ 30
+0.0
+ 40
+0.5
+  1
+FNT1 Sediment fence - toe of works (along the contour) 19.41 m
+  7
+JCE
+ 11
+238477.03999999998
+ 21
+6569544.632
+ 31
+0.0
+100
+AcDbText
   0
 LWPOLYLINE
   5
-D1
+D2
 330
 17
 100
@@ -7375,17 +8641,17 @@ AcDbPolyline
  70
 0
  10
-238472.679
+238468.246
  20
-6569570.2
+6569543.68
  10
-238472.08
+238464.783
  20
-6569570.169
+6569547.287
   0
 TEXT
   5
-D2
+D3
 330
 17
 100
@@ -7395,21 +8661,21 @@ C-ESC-NOTE
 100
 AcDbText
  10
-238488.15699999998
+238465.08299999998
  20
-6569558.689
+6569547.586999999
  30
 0.0
  40
 0.5
   1
-FNR1 Fence returns 1.28 m (TBC)
+SF-SP1 Sediment fence - downslope of SP1 5 m (TBC)
   7
 JCE
  11
-238488.15699999998
+238465.08299999998
  21
-6569558.689
+6569547.586999999
  31
 0.0
 100
@@ -7417,7 +8683,175 @@ AcDbText
   0
 LWPOLYLINE
   5
-D3
+D4
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238463.746
+ 20
+6569547.18
+ 10
+238460.283
+ 20
+6569550.787
+  0
+TEXT
+  5
+D5
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238460.58299999998
+ 20
+6569551.086999999
+ 30
+0.0
+ 40
+0.5
+  1
+SF-TS1 Sediment fence - downslope of TS1 5 m (TBC)
+  7
+JCE
+ 11
+238460.58299999998
+ 21
+6569551.086999999
+ 31
+0.0
+100
+AcDbText
+  0
+LWPOLYLINE
+  5
+D6
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238473.453
+ 20
+6569546.166
+ 10
+238469.297
+ 20
+6569550.494
+  0
+TEXT
+  5
+D7
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238473.753
+ 20
+6569546.466
+ 30
+0.0
+ 40
+0.5
+  1
+SF-LD1 Sediment fence - downslope of LD1 6 m (TBC)
+  7
+JCE
+ 11
+238473.753
+ 21
+6569546.466
+ 31
+0.0
+100
+AcDbText
+  0
+LWPOLYLINE
+  5
+D8
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238460.054
+ 20
+6569527.902
+ 10
+238457.975
+ 20
+6569530.065
+  0
+TEXT
+  5
+D9
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238460.354
+ 20
+6569528.202
+ 30
+0.0
+ 40
+0.5
+  1
+SF-WS1 Sediment fence - downslope of WS1 3 m (TBC)
+  7
+JCE
+ 11
+238460.354
+ 21
+6569528.202
+ 31
+0.0
+100
+AcDbText
+  0
+LWPOLYLINE
+  5
+DA
 330
 17
 100
@@ -7441,7 +8875,7 @@ AcDbPolyline
   0
 TEXT
   5
-D4
+DB
 330
 17
 100
@@ -7473,7 +8907,7 @@ AcDbText
   0
 LWPOLYLINE
   5
-D5
+DC
 330
 17
 100
@@ -7505,7 +8939,7 @@ AcDbPolyline
   0
 TEXT
   5
-D6
+DD
 330
 17
 100
@@ -7537,7 +8971,911 @@ AcDbText
   0
 LWPOLYLINE
   5
-D7
+DE
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238487.857
+ 20
+6569558.389
+ 10
+238487.892
+ 20
+6569557.708
+  0
+LWPOLYLINE
+  5
+DF
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238472.679
+ 20
+6569570.2
+ 10
+238472.08
+ 20
+6569570.169
+  0
+LWPOLYLINE
+  5
+E0
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238476.74
+ 20
+6569544.332
+ 10
+238476.725
+ 20
+6569543.588
+  0
+LWPOLYLINE
+  5
+E1
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238463.293
+ 20
+6569558.333
+ 10
+238462.728
+ 20
+6569558.344
+  0
+LWPOLYLINE
+  5
+E2
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238468.246
+ 20
+6569543.68
+ 10
+238468.226
+ 20
+6569542.681
+  0
+LWPOLYLINE
+  5
+E3
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238464.783
+ 20
+6569547.287
+ 10
+238463.783
+ 20
+6569547.307
+  0
+LWPOLYLINE
+  5
+E4
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238463.746
+ 20
+6569547.18
+ 10
+238463.726
+ 20
+6569546.181
+  0
+LWPOLYLINE
+  5
+E5
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238460.283
+ 20
+6569550.787
+ 10
+238459.283
+ 20
+6569550.807
+  0
+LWPOLYLINE
+  5
+E6
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238473.453
+ 20
+6569546.166
+ 10
+238473.433
+ 20
+6569545.166
+  0
+LWPOLYLINE
+  5
+E7
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238469.297
+ 20
+6569550.494
+ 10
+238468.297
+ 20
+6569550.514
+  0
+LWPOLYLINE
+  5
+E8
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238460.054
+ 20
+6569527.902
+ 10
+238460.033
+ 20
+6569526.902
+  0
+LWPOLYLINE
+  5
+E9
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-FENC
+100
+AcDbPolyline
+ 90
+2
+ 70
+0
+ 10
+238457.975
+ 20
+6569530.065
+ 10
+238456.976
+ 20
+6569530.086
+  0
+TEXT
+  5
+EA
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238465.08299999998
+ 20
+6569547.586999999
+ 30
+0.0
+ 40
+0.5
+  1
+FNR1 Fence returns 10.59 m (TBC)
+  7
+JCE
+ 11
+238465.08299999998
+ 21
+6569547.586999999
+ 31
+0.0
+100
+AcDbText
+  0
+LWPOLYLINE
+  5
+122
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbPolyline
+ 90
+4
+ 70
+1
+ 10
+238490.56149647236
+ 20
+6569537.358609246
+ 10
+238513.56149647236
+ 20
+6569537.358609246
+ 10
+238513.56149647236
+ 20
+6569523.158609246
+ 10
+238490.56149647236
+ 20
+6569523.158609246
+  0
+TEXT
+  5
+123
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238491.56149647236
+ 20
+6569536.258609246
+ 30
+0.0
+ 40
+0.6
+  1
+LEGEND - ESC
+  7
+JCE
+ 11
+238491.56149647236
+ 21
+6569536.258609246
+ 31
+0.0
+100
+AcDbText
+  0
+INSERT
+  5
+124
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbBlockReference
+  2
+ESC_SF
+ 10
+238491.56149647236
+ 20
+6569534.7586092455
+ 30
+0.0
+  0
+TEXT
+  5
+126
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238494.16149647237
+ 20
+6569534.608609245
+ 30
+0.0
+ 40
+0.4
+  1
+Sediment fence (SF)
+  7
+JCE
+ 11
+238494.16149647237
+ 21
+6569534.608609245
+ 31
+0.0
+100
+AcDbText
+  0
+INSERT
+  5
+127
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbBlockReference
+  2
+ESC_ACCESS
+ 10
+238491.56149647236
+ 20
+6569533.558609245
+ 30
+0.0
+  0
+TEXT
+  5
+129
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238494.16149647237
+ 20
+6569533.408609245
+ 30
+0.0
+ 40
+0.4
+  1
+Stabilised site access (SA)
+  7
+JCE
+ 11
+238494.16149647237
+ 21
+6569533.408609245
+ 31
+0.0
+100
+AcDbText
+  0
+INSERT
+  5
+12A
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbBlockReference
+  2
+ESC_SP
+ 10
+238491.56149647236
+ 20
+6569532.358609246
+ 30
+0.0
+  0
+TEXT
+  5
+12C
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238494.16149647237
+ 20
+6569532.208609246
+ 30
+0.0
+ 40
+0.4
+  1
+Soil stockpile (SP)
+  7
+JCE
+ 11
+238494.16149647237
+ 21
+6569532.208609246
+ 31
+0.0
+100
+AcDbText
+  0
+INSERT
+  5
+12D
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbBlockReference
+  2
+ESC_TS
+ 10
+238491.56149647236
+ 20
+6569531.158609246
+ 30
+0.0
+  0
+TEXT
+  5
+12F
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238494.16149647237
+ 20
+6569531.0086092455
+ 30
+0.0
+ 40
+0.4
+  1
+Topsoil stockpile (TS)
+  7
+JCE
+ 11
+238494.16149647237
+ 21
+6569531.0086092455
+ 31
+0.0
+100
+AcDbText
+  0
+INSERT
+  5
+130
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbBlockReference
+  2
+ESC_BOX
+ 10
+238491.56149647236
+ 20
+6569529.958609246
+ 30
+0.0
+  0
+TEXT
+  5
+132
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238494.16149647237
+ 20
+6569529.808609245
+ 30
+0.0
+ 40
+0.4
+  1
+Laydown LD / washout CW / bin BIN / toilet WC / inlet trap IP
+  7
+JCE
+ 11
+238494.16149647237
+ 21
+6569529.808609245
+ 31
+0.0
+100
+AcDbText
+  0
+INSERT
+  5
+133
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbBlockReference
+  2
+ESC_DIVR
+ 10
+238491.56149647236
+ 20
+6569528.7586092455
+ 30
+0.0
+  0
+TEXT
+  5
+135
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238494.16149647237
+ 20
+6569528.608609245
+ 30
+0.0
+ 40
+0.4
+  1
+Clean-water diversion (DD)
+  7
+JCE
+ 11
+238494.16149647237
+ 21
+6569528.608609245
+ 31
+0.0
+100
+AcDbText
+  0
+INSERT
+  5
+136
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbBlockReference
+  2
+ESC_CHKD
+ 10
+238491.56149647236
+ 20
+6569527.558609245
+ 30
+0.0
+  0
+TEXT
+  5
+138
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238494.16149647237
+ 20
+6569527.408609245
+ 30
+0.0
+ 40
+0.4
+  1
+Check dam (CD)
+  7
+JCE
+ 11
+238494.16149647237
+ 21
+6569527.408609245
+ 31
+0.0
+100
+AcDbText
+  0
+INSERT
+  5
+139
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbBlockReference
+  2
+ESC_LIMT
+ 10
+238491.56149647236
+ 20
+6569526.358609246
+ 30
+0.0
+  0
+TEXT
+  5
+13B
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238494.16149647237
+ 20
+6569526.208609246
+ 30
+0.0
+ 40
+0.4
+  1
+Limit of works
+  7
+JCE
+ 11
+238494.16149647237
+ 21
+6569526.208609246
+ 31
+0.0
+100
+AcDbText
+  0
+INSERT
+  5
+13C
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbBlockReference
+  2
+ESC_NOGO
+ 10
+238491.56149647236
+ 20
+6569525.158609246
+ 30
+0.0
+  0
+TEXT
+  5
+13E
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238494.16149647237
+ 20
+6569525.0086092455
+ 30
+0.0
+ 40
+0.4
+  1
+No-go / tree protection (NG)
+  7
+JCE
+ 11
+238494.16149647237
+ 21
+6569525.0086092455
+ 31
+0.0
+100
+AcDbText
+  0
+INSERT
+  5
+13F
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbBlockReference
+  2
+ESC_FLOW
+ 10
+238491.56149647236
+ 20
+6569523.958609246
+ 30
+0.0
+  0
+TEXT
+  5
+141
+330
+17
+100
+AcDbEntity
+  8
+C-ESC-NOTE
+100
+AcDbText
+ 10
+238494.16149647237
+ 20
+6569523.808609245
+ 30
+0.0
+ 40
+0.4
+  1
+Direction of fall
+  7
+JCE
+ 11
+238494.16149647237
+ 21
+6569523.808609245
+ 31
+0.0
+100
+AcDbText
+  0
+LWPOLYLINE
+  5
+142
 330
 17
 100
@@ -7569,7 +9907,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-D8
+143
 330
 17
 100
@@ -7601,7 +9939,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-D9
+144
 330
 17
 100
@@ -7761,7 +10099,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-DA
+145
 330
 17
 100
@@ -7837,7 +10175,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-DB
+146
 330
 17
 100
@@ -7993,7 +10331,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-DC
+147
 330
 17
 100
@@ -8121,7 +10459,7 @@ AcDbPolyline
   0
 LWPOLYLINE
   5
-DD
+148
 330
 17
 100
@@ -8189,7 +10527,7 @@ AcDbPolyline
   0
 TEXT
   5
-DE
+149
 330
 17
 100
@@ -8221,7 +10559,7 @@ AcDbText
   0
 TEXT
   5
-DF
+14A
 330
 17
 100
@@ -8253,7 +10591,7 @@ AcDbText
   0
 TEXT
   5
-E0
+14B
 330
 17
 100
@@ -8285,7 +10623,7 @@ AcDbText
   0
 TEXT
   5
-E1
+14C
 330
 17
 100
@@ -8303,7 +10641,7 @@ AcDbText
  40
 0.6
   1
-Site 2//DP227508; est. disturbed area 401.0 m2
+Site 2//DP227508; est. disturbed area 439.3 m2
   7
 JCE
  11
@@ -9405,7 +11743,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-E4
+14F
   0
 DICTIONARYVAR
   5
@@ -9417,7 +11755,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-10-12T17:15:36.837519+00:00
+1.4.4 @ 2026-10-12T17:20:27.465833+00:00
   0
 VISUALSTYLE
   5
@@ -15971,7 +18309,7 @@ strokes_ogs.tif
   0
 DICTIONARYVAR
   5
-E4
+14F
 330
 2D
 100
@@ -15979,7 +18317,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-10-12T17:15:36.869912+00:00
+1.4.4 @ 2026-10-12T17:20:27.503095+00:00
   0
 ENDSEC
   0

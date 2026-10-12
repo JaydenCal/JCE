@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "generated": "2026-10-12T17:18:14+00:00",
+ "generated": "2026-10-12T17:20:15+00:00",
  "project": "lot2_dwelling (2//DP227508)",
  "pathway": "da",
  "council": "Gunnedah Shire Council",
@@ -10,7 +10,7 @@
    "file": "00_cover_sheet.pdf",
    "title": "Cover sheet",
    "kind": "cover",
-   "sha256": "6ee73564ce5dc351c0e9ecd31b38ee47be15d65c3497eb9be68ea0fe6586d3a3",
+   "sha256": "855d772e84dc93a7263f08b1e1990af6c8200c05ca051ba8f3445a7d10abb7da",
    "bytes": 2477
   },
   {
@@ -18,7 +18,7 @@
    "file": "01_index_and_checklist.pdf",
    "title": "Index and submission checklist",
    "kind": "index",
-   "sha256": "d6467a1f8aef3307d8ff5bff2222786c41d6a3c46019ac24808d4ad2b2978c51",
+   "sha256": "60f29971b49d6b4032d48aaf48918f28c5b4a662188bf9576389a787d4fa96cf",
    "bytes": 6621
   },
   {
@@ -26,7 +26,7 @@
    "file": "02_lodgement_guidance.pdf",
    "title": "Lodgement guidance (NSW Planning Portal and council)",
    "kind": "guidance",
-   "sha256": "f38805ddc5ef7adbc65c1062c7d7d0266b02316de5d2eb4ccdc58b5e6d2a8d0c",
+   "sha256": "0844307b0afe761f3942819f53eb4fb96d67d72aec23699a31948d557daad452",
    "bytes": 3698
   },
   {
@@ -34,7 +34,7 @@
    "file": "10_compliance_table.pdf",
    "title": "Compliance table (PDF)",
    "kind": "compliance",
-   "sha256": "42623cbd8500664c729f0aa53bcd5a0ad5bb904c355a0978f2ec44ba5415c6e9",
+   "sha256": "6e550fe199a6aa118b22e210a7ec30585b29b053efedebd3ec7bc13694ceaac6",
    "bytes": 6008
   },
   {
@@ -42,7 +42,7 @@
    "file": "11_compliance_table.json",
    "title": "Compliance table (JSON)",
    "kind": "compliance",
-   "sha256": "88d1c2bfcd46413cd913bcd9ce2848774ef65c5eed02258cf72c20e5de93f6b1",
+   "sha256": "4fd65823604082dc76659e2ed2014bd2cd0e35fcdfac48f8ca11bbed7a45eb9f",
    "bytes": 16289
   },
   {
@@ -58,8 +58,8 @@
    "file": "13_plan.dxf",
    "title": "Site plan CAD (SA5, DXF)",
    "kind": "plan_dxf",
-   "sha256": "ffc69bfa9bd9e80f402aa07a9513efb4645d407aa2cc8c4f1f307d3dcb2b7781",
-   "bytes": 123549
+   "sha256": "930e2936e1c75abb9294f719e577c44a373e40b6c3c99f6cf4a44e636542c6a8",
+   "bytes": 123971
   },
   {
    "number": "14",
@@ -74,7 +74,7 @@
    "file": "15_SoEE_draft.docx",
    "title": "Statement of Environmental Effects (DRAFT, DOCX)",
    "kind": "soee",
-   "sha256": "55b97a184875b6ac66bcb228b973e2d7bd227554f99700569b77e1856105837a",
+   "sha256": "4498a991e4cd812edad31a3d0d53f649852e3973d0ee01741a9fec3cbbe5da1b",
    "bytes": 41781
   },
   {
@@ -82,7 +82,7 @@
    "file": "16_SoEE_draft.pdf",
    "title": "Statement of Environmental Effects (DRAFT, PDF)",
    "kind": "soee",
-   "sha256": "6457e1328564a0cca6092a006d8763a929cd84ffb8f2ad0fbb752751204e47df",
+   "sha256": "3af0566483552607ecdd31b8c5e7cd6ca09e4c593875b491bfc1c4f8945e8993",
    "bytes": 12555
   }
  ],

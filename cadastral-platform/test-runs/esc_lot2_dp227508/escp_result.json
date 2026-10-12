@@ -82,7 +82,7 @@
    "kind": "topsoil",
    "layer": "C-ESC-STOK",
    "label": "Topsoil stockpile",
-   "geometry_wkt": "POLYGON ((238468.341 6569543.649, 238466.177 6569541.571, 238468.948 6569538.686, 238471.111 6569540.764, 238468.341 6569543.649))",
+   "geometry_wkt": "POLYGON ((238460.341 6569550.149, 238458.177 6569548.071, 238460.948 6569545.186, 238463.111 6569547.264, 238460.341 6569550.149))",
    "status": "unresolved",
    "req_keys": [
     "esc.stockpile.min_distance_from_hazard_m",
@@ -113,7 +113,7 @@
    "kind": "laydown",
    "layer": "C-ESC-STOK",
    "label": "Materials laydown / delivery area",
-   "geometry_wkt": "POLYGON ((238460.855 6569551.356, 238457.97 6569548.585, 238461.433 6569544.979, 238464.318 6569547.75, 238460.855 6569551.356))",
+   "geometry_wkt": "POLYGON ((238469.355 6569549.856, 238466.47 6569547.085, 238469.933 6569543.479, 238472.818 6569546.25, 238469.355 6569549.856))",
    "status": "unresolved",
    "req_keys": [
     "esc.stockpile.min_distance_from_hazard_m",
@@ -198,7 +198,7 @@
    "kind": "toilet",
    "layer": "C-ESC-BINS",
    "label": "Portable toilet",
-   "geometry_wkt": "POLYGON ((238449.661 6569534.516, 238448.796 6569533.685, 238449.627 6569532.819, 238450.493 6569533.65, 238449.661 6569534.516))",
+   "geometry_wkt": "POLYGON ((238448.661 6569535.016, 238447.796 6569534.185, 238448.627 6569533.319, 238449.493 6569534.15, 238448.661 6569535.016))",
    "status": "unresolved",
    "req_keys": [
     "esc.amenities.staff_facilities_contain_effluent"
@@ -239,7 +239,7 @@
    "id": "FNC1",
    "kind": "fence",
    "layer": "C-ESC-FENC",
-   "label": "Sediment fence",
+   "label": "Sediment fence - downslope limit of works",
    "geometry_wkt": "MULTILINESTRING ((238487.857 6569558.389, 238472.679 6569570.2))",
    "status": "resolved",
    "req_keys": [
@@ -276,33 +276,241 @@
     "esc.sediment_fence.design_life_months = 6.0 months [Building Sites 2024 p.26]"
    ],
    "notes": [
-    "Along the downslope limit of works; opens at the stabilised access (ends turned upslope)."
+    "Along the downslope limit of works, following the contour (cited); ends angled upslope; opens at the stabilised access.",
+    "Fall 2.7% towards bearing 46 deg (grid). Plane-fit residual 0.06 m over 1.74 m of fitted relief; source levels are a coarse 5 m DEM: confirm the fall direction on site."
    ],
    "quantity": 19.23,
    "quantity_unit": "m"
   },
   {
-   "id": "FNR1",
-   "kind": "return",
+   "id": "FNT1",
+   "kind": "fence",
    "layer": "C-ESC-FENC",
-   "label": "Fence returns",
-   "geometry_wkt": "MULTILINESTRING ((238487.857 6569558.389, 238487.892 6569557.708), (238472.679 6569570.2, 238472.08 6569570.169))",
-   "status": "unresolved",
+   "label": "Sediment fence - toe of works (along the contour)",
+   "geometry_wkt": "MULTILINESTRING ((238476.74 6569544.332, 238463.293 6569558.333))",
+   "status": "resolved",
    "req_keys": [
+    "esc.sediment_fence.place_downslope",
+    "esc.sediment_fence.along_contour",
+    "esc.sediment_fence.ends_turn_upslope",
     "esc.sediment_fence.return_interval_m",
-    "esc.sediment_fence.ends_turn_upslope"
+    "esc.sediment_fence.post_spacing_m",
+    "esc.sediment_fence.trench_depth_mm",
+    "esc.sediment_fence.joint_overlap_mm",
+    "esc.sediment_fence.not_across_drainage_line",
+    "esc.sediment_fence.no_material_against_fence",
+    "esc.sediment_fence.max_subcatchment_flow_l_s",
+    "esc.sediment_fence.near_source",
+    "esc.sediment_fence.design_life_months"
    ],
    "unresolved_keys": [
+    "esc.sediment_fence.offset_from_boundary_m",
+    "esc.sediment_fence.max_length_m",
     "esc.sediment_fence.return_length_m"
    ],
    "citations": [
+    "esc.sediment_fence.place_downslope = True [Building Sites 2024 p.46]",
+    "esc.sediment_fence.along_contour = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.ends_turn_upslope = True [Building Sites 2024 p.25]",
     "esc.sediment_fence.return_interval_m = 20.0 m [Building Sites 2024 p.25]",
-    "esc.sediment_fence.ends_turn_upslope = True [Building Sites 2024 p.25]"
+    "esc.sediment_fence.post_spacing_m = 2.5 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.trench_depth_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.joint_overlap_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.not_across_drainage_line = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.no_material_against_fence = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.max_subcatchment_flow_l_s = 50.0 L/s [Blue Book v1 p.154]",
+    "esc.sediment_fence.near_source = True [Blue Book v1 p.153]",
+    "esc.sediment_fence.design_life_months = 6.0 months [Building Sites 2024 p.26]"
    ],
    "notes": [
-    "Symbolic return length (layout assumption); spacing per cited 20 m."
+    "Contour-parallel line at the downslope edge of the disturbed area / building pad, spanning the lot; ends angled upslope.",
+    "Fall 2.7% towards bearing 46 deg (grid). Plane-fit residual 0.06 m over 1.74 m of fitted relief; source levels are a coarse 5 m DEM: confirm the fall direction on site."
    ],
-   "quantity": 1.28,
+   "quantity": 19.41,
+   "quantity_unit": "m"
+  },
+  {
+   "id": "SF-SP1",
+   "kind": "fence",
+   "layer": "C-ESC-FENC",
+   "label": "Sediment fence - downslope of SP1",
+   "geometry_wkt": "MULTILINESTRING ((238468.246 6569543.68, 238464.783 6569547.287))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.sediment_fence.place_downslope",
+    "esc.sediment_fence.along_contour",
+    "esc.sediment_fence.ends_turn_upslope",
+    "esc.sediment_fence.return_interval_m",
+    "esc.sediment_fence.post_spacing_m",
+    "esc.sediment_fence.trench_depth_mm",
+    "esc.sediment_fence.joint_overlap_mm",
+    "esc.sediment_fence.not_across_drainage_line",
+    "esc.sediment_fence.no_material_against_fence",
+    "esc.sediment_fence.max_subcatchment_flow_l_s",
+    "esc.sediment_fence.near_source",
+    "esc.sediment_fence.design_life_months"
+   ],
+   "unresolved_keys": [
+    "esc.sediment_fence.offset_from_stockpile_m"
+   ],
+   "citations": [
+    "esc.sediment_fence.place_downslope = True [Building Sites 2024 p.46]",
+    "esc.sediment_fence.along_contour = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.ends_turn_upslope = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.return_interval_m = 20.0 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.post_spacing_m = 2.5 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.trench_depth_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.joint_overlap_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.not_across_drainage_line = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.no_material_against_fence = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.max_subcatchment_flow_l_s = 50.0 L/s [Blue Book v1 p.154]",
+    "esc.sediment_fence.near_source = True [Blue Book v1 p.153]",
+    "esc.sediment_fence.design_life_months = 6.0 months [Building Sites 2024 p.26]"
+   ],
+   "notes": [
+    "On the downslope side of SP1, just outside the footprint; ends angled upslope (cited).",
+    "Offset from the stockpile (0.4 m drawn) is not stated in the standards: to be confirmed by the designer/certifier.",
+    "Fall 2.7% towards bearing 46 deg (grid). Plane-fit residual 0.06 m over 1.74 m of fitted relief; source levels are a coarse 5 m DEM: confirm the fall direction on site."
+   ],
+   "quantity": 5.0,
+   "quantity_unit": "m"
+  },
+  {
+   "id": "SF-TS1",
+   "kind": "fence",
+   "layer": "C-ESC-FENC",
+   "label": "Sediment fence - downslope of TS1",
+   "geometry_wkt": "MULTILINESTRING ((238463.746 6569547.18, 238460.283 6569550.787))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.sediment_fence.place_downslope",
+    "esc.sediment_fence.along_contour",
+    "esc.sediment_fence.ends_turn_upslope",
+    "esc.sediment_fence.return_interval_m",
+    "esc.sediment_fence.post_spacing_m",
+    "esc.sediment_fence.trench_depth_mm",
+    "esc.sediment_fence.joint_overlap_mm",
+    "esc.sediment_fence.not_across_drainage_line",
+    "esc.sediment_fence.no_material_against_fence",
+    "esc.sediment_fence.max_subcatchment_flow_l_s",
+    "esc.sediment_fence.near_source",
+    "esc.sediment_fence.design_life_months"
+   ],
+   "unresolved_keys": [
+    "esc.sediment_fence.offset_from_stockpile_m"
+   ],
+   "citations": [
+    "esc.sediment_fence.place_downslope = True [Building Sites 2024 p.46]",
+    "esc.sediment_fence.along_contour = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.ends_turn_upslope = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.return_interval_m = 20.0 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.post_spacing_m = 2.5 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.trench_depth_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.joint_overlap_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.not_across_drainage_line = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.no_material_against_fence = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.max_subcatchment_flow_l_s = 50.0 L/s [Blue Book v1 p.154]",
+    "esc.sediment_fence.near_source = True [Blue Book v1 p.153]",
+    "esc.sediment_fence.design_life_months = 6.0 months [Building Sites 2024 p.26]"
+   ],
+   "notes": [
+    "On the downslope side of TS1, just outside the footprint; ends angled upslope (cited).",
+    "Offset from the stockpile (0.4 m drawn) is not stated in the standards: to be confirmed by the designer/certifier.",
+    "Fall 2.7% towards bearing 46 deg (grid). Plane-fit residual 0.06 m over 1.74 m of fitted relief; source levels are a coarse 5 m DEM: confirm the fall direction on site."
+   ],
+   "quantity": 5.0,
+   "quantity_unit": "m"
+  },
+  {
+   "id": "SF-LD1",
+   "kind": "fence",
+   "layer": "C-ESC-FENC",
+   "label": "Sediment fence - downslope of LD1",
+   "geometry_wkt": "MULTILINESTRING ((238473.453 6569546.166, 238469.297 6569550.494))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.sediment_fence.place_downslope",
+    "esc.sediment_fence.along_contour",
+    "esc.sediment_fence.ends_turn_upslope",
+    "esc.sediment_fence.return_interval_m",
+    "esc.sediment_fence.post_spacing_m",
+    "esc.sediment_fence.trench_depth_mm",
+    "esc.sediment_fence.joint_overlap_mm",
+    "esc.sediment_fence.not_across_drainage_line",
+    "esc.sediment_fence.no_material_against_fence",
+    "esc.sediment_fence.max_subcatchment_flow_l_s",
+    "esc.sediment_fence.near_source",
+    "esc.sediment_fence.design_life_months"
+   ],
+   "unresolved_keys": [
+    "esc.sediment_fence.offset_from_stockpile_m"
+   ],
+   "citations": [
+    "esc.sediment_fence.place_downslope = True [Building Sites 2024 p.46]",
+    "esc.sediment_fence.along_contour = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.ends_turn_upslope = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.return_interval_m = 20.0 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.post_spacing_m = 2.5 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.trench_depth_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.joint_overlap_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.not_across_drainage_line = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.no_material_against_fence = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.max_subcatchment_flow_l_s = 50.0 L/s [Blue Book v1 p.154]",
+    "esc.sediment_fence.near_source = True [Blue Book v1 p.153]",
+    "esc.sediment_fence.design_life_months = 6.0 months [Building Sites 2024 p.26]"
+   ],
+   "notes": [
+    "On the downslope side of LD1, just outside the footprint; ends angled upslope (cited).",
+    "Offset from the stockpile (0.4 m drawn) is not stated in the standards: to be confirmed by the designer/certifier.",
+    "Fall 2.7% towards bearing 46 deg (grid). Plane-fit residual 0.06 m over 1.74 m of fitted relief; source levels are a coarse 5 m DEM: confirm the fall direction on site."
+   ],
+   "quantity": 6.0,
+   "quantity_unit": "m"
+  },
+  {
+   "id": "SF-WS1",
+   "kind": "fence",
+   "layer": "C-ESC-FENC",
+   "label": "Sediment fence - downslope of WS1",
+   "geometry_wkt": "MULTILINESTRING ((238460.054 6569527.902, 238457.975 6569530.065))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.sediment_fence.place_downslope",
+    "esc.sediment_fence.along_contour",
+    "esc.sediment_fence.ends_turn_upslope",
+    "esc.sediment_fence.return_interval_m",
+    "esc.sediment_fence.post_spacing_m",
+    "esc.sediment_fence.trench_depth_mm",
+    "esc.sediment_fence.joint_overlap_mm",
+    "esc.sediment_fence.not_across_drainage_line",
+    "esc.sediment_fence.no_material_against_fence",
+    "esc.sediment_fence.max_subcatchment_flow_l_s",
+    "esc.sediment_fence.near_source",
+    "esc.sediment_fence.design_life_months"
+   ],
+   "unresolved_keys": [
+    "esc.sediment_fence.offset_from_stockpile_m"
+   ],
+   "citations": [
+    "esc.sediment_fence.place_downslope = True [Building Sites 2024 p.46]",
+    "esc.sediment_fence.along_contour = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.ends_turn_upslope = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.return_interval_m = 20.0 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.post_spacing_m = 2.5 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.trench_depth_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.joint_overlap_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.not_across_drainage_line = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.no_material_against_fence = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.max_subcatchment_flow_l_s = 50.0 L/s [Blue Book v1 p.154]",
+    "esc.sediment_fence.near_source = True [Blue Book v1 p.153]",
+    "esc.sediment_fence.design_life_months = 6.0 months [Building Sites 2024 p.26]"
+   ],
+   "notes": [
+    "On the downslope side of WS1, just outside the footprint; ends angled upslope (cited).",
+    "Offset from the stockpile (0.4 m drawn) is not stated in the standards: to be confirmed by the designer/certifier.",
+    "Fall 2.7% towards bearing 46 deg (grid). Plane-fit residual 0.06 m over 1.74 m of fitted relief; source levels are a coarse 5 m DEM: confirm the fall direction on site."
+   ],
+   "quantity": 3.0,
    "quantity_unit": "m"
   },
   {
@@ -368,6 +576,30 @@
    ],
    "quantity": 1.0,
    "quantity_unit": "no."
+  },
+  {
+   "id": "FNR1",
+   "kind": "return",
+   "layer": "C-ESC-FENC",
+   "label": "Fence returns",
+   "geometry_wkt": "MULTILINESTRING ((238487.857 6569558.389, 238487.892 6569557.708), (238472.679 6569570.2, 238472.08 6569570.169), (238476.74 6569544.332, 238476.725 6569543.588), (238463.293 6569558.333, 238462.728 6569558.344), (238468.246 6569543.68, 238468.226 6569542.681), (238464.783 6569547.287, 238463.783 6569547.307), (238463.746 6569547.18, 238463.726 6569546.181), (238460.283 6569550.787, 238459.283 6569550.807), (238473.453 6569546.166, 238473.433 6569545.166), (238469.297 6569550.494, 238468.297 6569550.514), (238460.054 6569527.902, 238460.033 6569526.902), (238457.975 6569530.065, 238456.976 6569530.086))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.sediment_fence.return_interval_m",
+    "esc.sediment_fence.ends_turn_upslope"
+   ],
+   "unresolved_keys": [
+    "esc.sediment_fence.return_length_m"
+   ],
+   "citations": [
+    "esc.sediment_fence.return_interval_m = 20.0 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.ends_turn_upslope = True [Building Sites 2024 p.25]"
+   ],
+   "notes": [
+    "Symbolic return length (layout assumption); ends angled upslope and spacing per cited 20 m."
+   ],
+   "quantity": 10.59,
+   "quantity_unit": "m"
   }
  ],
  "flow": {
@@ -378,16 +610,19 @@
   "slope_pct": 2.6847570539051406,
   "source": "terrain plane fit (144 survey points), fall 2.7%",
   "assumed": false,
-  "bearing_deg": 46.15621924885261
+  "bearing_deg": 46.15621924885261,
+  "note": "Plane-fit residual 0.06 m over 1.74 m of fitted relief; source levels are a coarse 5 m DEM: confirm the fall direction on site.",
+  "uncertain": false,
+  "rms_m": 0.05882957619971386
  },
  "quantities": {
   "site_area_m2": 955.8,
   "limit_of_works_area_m2": 889.4,
-  "disturbed_area_estimate_m2": 401.0,
+  "disturbed_area_estimate_m2": 439.3,
   "disturbed_area_basis": "convex hull of building, driveway/access and activity areas + margin",
-  "fence_length_m": 19.2,
-  "fence_returns_m": 1.3,
-  "fence_posts": 9,
+  "fence_length_m": 57.6,
+  "fence_returns_m": 10.6,
+  "fence_posts": 31,
   "access_length_m": 5.8,
   "access_width_m": 3.0,
   "access_area_m2": 17.3,
@@ -397,8 +632,8 @@
   "check_dams": 0,
   "inlet_traps": 1,
   "topsoil_strip_m3": [
-   40.1,
-   60.1
+   43.9,
+   65.9
   ],
   "fall_pct": 2.68,
   "flow_bearing_deg": 46.2,
@@ -511,14 +746,26 @@
    "key": "esc.sediment_fence.max_length_m",
    "prompt": "No general maximum continuous fence length or maximum contributing catchment area per section is stated in the Building Sites Guidelines (2024) or the Blue Book text (only: returns usually every 20 m; sub-catchment flow limited to 50 L/s in the design storm; a model plan uses 1,030 m2 for its own site). To be confirmed by the designer/certifier.",
    "used_by": [
-    "FNC1"
+    "FNC1",
+    "FNT1"
    ]
   },
   {
    "key": "esc.sediment_fence.offset_from_boundary_m",
    "prompt": "No offset between the sediment fence and the lot boundary / limit of works is stated. The fence is drawn on the limit-of-works line; offset to be confirmed by the designer/certifier.",
    "used_by": [
-    "FNC1"
+    "FNC1",
+    "FNT1"
+   ]
+  },
+  {
+   "key": "esc.sediment_fence.offset_from_stockpile_m",
+   "prompt": "Distance of a sediment fence from the toe of a stockpile or activity area is not stated (only: sediment control immediately downslope; no build-up against the fence). 0.4 m is drawn; to be confirmed by the designer/certifier.",
+   "used_by": [
+    "SF-SP1",
+    "SF-TS1",
+    "SF-LD1",
+    "SF-WS1"
    ]
   },
   {
@@ -526,6 +773,7 @@
    "prompt": "Length of fence returns (ends and every 20 m) is not stated generally (a Blue Book model plan uses 1 m for its own site). The plan draws a symbolic return; length to be confirmed by the designer/certifier.",
    "used_by": [
     "FNC1",
+    "FNT1",
     "FNR1"
    ]
   },
