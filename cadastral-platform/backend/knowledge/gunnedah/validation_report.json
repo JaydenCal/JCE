@@ -1,0 +1,48 @@
+{
+ "candidates": 114,
+ "validated": 113,
+ "rejected": [
+  {
+   "id": "n_dcp_pbp",
+   "key": "bushfire.dcp_landscaping_considers_pbp",
+   "reason": "quote not found in any chunk of the cited document"
+  }
+ ],
+ "table_parser_rules": [
+  {
+   "zone": "R2",
+   "dwelling_type_requested": "dwelling_house",
+   "element": "height_max",
+   "value": 4.8,
+   "unit": "m",
+   "chunk": "gunnedah_dcp_2025-c0134",
+   "page": 43,
+   "quote": "| R2, R3 & RU5 | 72m2 |  |  | 4.8m |"
+  },
+  {
+   "zone": "R2",
+   "dwelling_type_requested": "dwelling_house",
+   "element": "height_max",
+   "value": 4.8,
+   "unit": "m",
+   "chunk": "gunnedah_dcp_2025-c0134",
+   "page": 43,
+   "quote": "| R2, R3 and RU5 with lot area > 900m2 | 100m2 |  |  | 4.8m |"
+  }
+ ],
+ "chunks": {
+  "gunnedah_dcp_2025": 246,
+  "gunnedah_eng_standards_2025": 591,
+  "nsw_page_secondary_dwellings": 2,
+  "nsw_page_outbuildings_rural": 2,
+  "nsw_page_inland_code": 3,
+  "nsw_page_granny_flats_rebuild": 1,
+  "nsw_exempt_sheds_factsheet": 4,
+  "nsw_exempt_rwt_hws": 7,
+  "nsw_exempt_carports": 10,
+  "nsw_pp_basix": 2,
+  "nsw_pp_basix_water": 1,
+  "nsw_page_bushfires": 2
+ },
+ "unresolved_items": 0
+}

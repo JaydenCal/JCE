@@ -982,7 +982,8 @@
    "page": null,
    "value_struct": {
     "note": "DCP C.1.4(d) says multiple access points are generally not permitted unless the lot has two road frontages"
-   }
+   },
+   "confirm": "Engineering Standards Table 2-H allows up to 2 crossings per street frontage but DCP C.1.4(d) says multiple access points and laybacks are not permitted (unless two road frontages): confirm with Council."
   },
   {
    "id": "e_culv",
@@ -1193,16 +1194,6 @@
    "value": 50,
    "unit": "m",
    "section_ref": "Bushfires: 10/50 vegetation clearing entitlement",
-   "page": null
-  },
-  {
-   "id": "n_dcp_pbp",
-   "key": "bushfire.dcp_landscaping_considers_pbp",
-   "doc": "gunnedah_dcp_2025",
-   "quote": "Ensure that landscaping in bushfire prone areas considers the Planning for Bushfire Protection Guidelines.",
-   "value": true,
-   "unit": null,
-   "section_ref": "B.4 Landscaping, objective 5",
    "page": null
   },
   {

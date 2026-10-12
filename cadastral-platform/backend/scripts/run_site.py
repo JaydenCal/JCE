@@ -187,6 +187,22 @@ class ArcGisLayerLoader:
 
 
 # --------------------------------------------------------------------------- the run
+def _user_rules_sa2(raw, zone: str | None, dwelling_type: str):
+    """--rules-json: [{"element": "front", "value_numeric": 6.0, "unit": "m", ["dwelling_type"], ["lot_condition"], ["is_performance_outcome"]}, ...]
+    (or {"rules": [...]}). Values are USER ENTERED (tagged in source_chunk_id/quote); nothing is defaulted."""
+    from app.agents.sa2_dcp_rag.models import Sa2Output, SetbackRule, SetbackRuleset
+    if not zone:
+        raise AgentError("ZONE_UNKNOWN", "zone unknown: pass --zone-code")
+    items = raw.get("rules", []) if isinstance(raw, dict) else raw
+    rules = [SetbackRule(zone_code=zone, dwelling_type=r.get("dwelling_type", dwelling_type), element=r["element"], lot_condition=r.get("lot_condition", {}),
+                         value_numeric=float(r["value_numeric"]), unit=r["unit"], is_performance_outcome=bool(r.get("is_performance_outcome", False)),
+                         extraction_confidence=1.0, source_chunk_id=f"user_entered:{r['element']}", source_page=0, quote="user_entered", method="table")
+             for r in items]
+    have = {r.element for r in rules}
+    return Sa2Output(setback_ruleset=SetbackRuleset(rules=rules, unresolved=[x for x in ("front", "side", "rear", "garage_front", "site_cover_max") if x not in have],
+                                                    warnings=["rules are user_entered via --rules-json; not extracted from a council DCP"]))
+
+
 def _json(m) -> dict:
     return m.model_dump(mode="json")
 
@@ -284,13 +300,37 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     rep.add("SA1 result", OK if lot.zone_code else UNRESOLVED,
             f"{lot.lotplan}, {lot.lga_name}, {lot.area_m2_calculated:.0f} m2, zone {lot.zone_code or 'UNRESOLVED (pass --zone-code)'}; flags {sa1.flags or 'none'}")
 
+    # ---- live levels (user asked for --levels nsw): sample NSW_5M_Elevation over the lot and use it as params.terrain.survey
+    if getattr(args, "levels", None) == "nsw":
+        try:
+            from app.agents.sa3_terrain.live_levels import fetch_levels
+            lv = fetch_levels(sa1.lot.boundary_wkt, sa1.lot.mga_srid, accuracy_m=getattr(args, "levels_accuracy_m", None))
+            for tgt in (params, rr.params):
+                tgt.setdefault("terrain", {})["survey"] = lv.survey
+            rep.facts.update(levels_provenance=lv.provenance, levels_warnings=lv.warnings)
+            rep.add("levels (NSW 5 m DEM)", UNRESOLVED if lv.warnings else OK,
+                    f"{lv.provenance['points']} points, {lv.provenance['source']}, {lv.provenance['copyright']}; " + "; ".join(lv.warnings))
+        except Exception as ex:  # noqa: BLE001
+            rep.add("levels (NSW 5 m DEM)", FAILED, _err(ex))
+
     # ---- SA2
     sa2 = None
-    try:
-        sa2 = call("SA2 DCP rules", AgentCode.SA2_DCP_RAG, build_input("SA2", ctx), "SA2")
-    except InputError as ex:
-        rep.add("SA2 DCP rules", FAILED, _err(ex))
-    if sa2 is not None:
+    if getattr(args, "rules_json", None):
+        try:
+            sa2 = _user_rules_sa2(json.loads(Path(args.rules_json).read_text()), params.get("zone_code") or lot.zone_code, dev.rule_dwelling_type)
+            R["SA2"] = sa2
+            ctx.upstream["SA2"] = _json(sa2)
+            rep.add("SA2 DCP rules", UNRESOLVED if sa2.setback_ruleset.unresolved else OK,
+                    f"{len(sa2.setback_ruleset.rules)} rule(s) USER ENTERED from {args.rules_json} (not extracted from a DCP; unverified); "
+                    f"not supplied: {', '.join(sa2.setback_ruleset.unresolved) or 'none'}")
+        except Exception as ex:  # noqa: BLE001
+            rep.add("SA2 DCP rules", FAILED, "--rules-json: " + _err(ex))
+    else:
+        try:
+            sa2 = call("SA2 DCP rules", AgentCode.SA2_DCP_RAG, build_input("SA2", ctx), "SA2")
+        except InputError as ex:
+            rep.add("SA2 DCP rules", FAILED, _err(ex))
+    if sa2 is not None and not getattr(args, "rules_json", None):
         rs = sa2.setback_ruleset
         rep.facts["sa2_unresolved"] = rs.unresolved
         rep.add("SA2 DCP rules", OK if not rs.unresolved else UNRESOLVED,
@@ -318,7 +358,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         if call("SA3 terrain/earthworks", AgentCode.SA3_GEOM_TIN, build_input("SA3", ctx), "SA3") is not None:
             rep.add("SA3 terrain/earthworks", OK, "TIN built from the supplied survey")
     else:
-        rep.add("SA3 terrain", SKIPPED, "no survey supplied (params.terrain.survey via --params-json); no levels invented")
+        rep.add("SA3 terrain", SKIPPED, "no survey supplied (--levels nsw or params.terrain.survey via --params-json); no levels invented")
 
     # ---- SA4 (the orchestrator's builder also demands SA3 output; without a survey it is built here without that dependency)
     sa4 = None
@@ -435,6 +475,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--buildings-url", help="ArcGIS building-footprint layer URL (or env RUN_SITE_BUILDINGS_URL)")
     p.add_argument("--development-type", choices=[d.value for d in DevelopmentType], default="dwelling_house")
     p.add_argument("--zone-code", help="override when SA1 cannot determine the zone")
+    p.add_argument("--levels", choices=["nsw"], help="'nsw': sample the live NSW 5 m DEM over the lot as params.terrain.survey (accuracy not stated by service)")
+    p.add_argument("--levels-accuracy-m", type=float, help="user-entered vertical accuracy for --levels (otherwise flagged UNKNOWN)")
+    p.add_argument("--rules-json", help="JSON list of USER-ENTERED setback rules [{element,value_numeric,unit,...}] used instead of SA2 DCP extraction")
     p.add_argument("--params-json", help="JSON file merged into run params (terrain.survey, dbyd.*, ...)")
     p.add_argument("--sa9-endpoints", help='JSON file {"nsw_flood": {"endpoint": "...", "verified": false}, ...}')
     p.add_argument("--acknowledge", action="store_true", help="operator confirms the nine export acknowledgements (needed for DXF/PDF)")

@@ -1,15 +1,37 @@
 @tailwind base; @tailwind components; @tailwind utilities;
-:root{--bg:250 251 252;--surface:255 255 255;--subtle:241 245 249;--ink:15 23 42;--muted:100 116 139;--line:226 232 240;--brand:13 148 136;--brand-fg:255 255 255;--brand-soft:204 251 241;--warn:217 119 6;--danger:220 38 38;--ok:22 163 74}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:8 12 22;--surface:15 23 42;--subtle:23 32 52;--ink:241 245 249;--muted:148 163 184;--line:38 50 74;--brand:45 212 191;--brand-fg:6 20 24;--brand-soft:19 78 74;--warn:251 191 36;--danger:248 113 113;--ok:74 222 128}}
-:root[data-theme="dark"]{--bg:8 12 22;--surface:15 23 42;--subtle:23 32 52;--ink:241 245 249;--muted:148 163 184;--line:38 50 74;--brand:45 212 191;--brand-fg:6 20 24;--brand-soft:19 78 74;--warn:251 191 36;--danger:248 113 113;--ok:74 222 128}
-body{@apply bg-bg text-ink font-sans antialiased;background-color:rgb(var(--bg))}
+/* Drawing-office palette (shared with the 3D viewer): paper, white panels, ink, hairlines, one gold accent. */
+:root{--bg:241 240 236;--surface:255 255 255;--subtle:233 231 224;--scene:227 230 232;--ink:30 32 36;--muted:103 107 114;--line:216 214 207;
+ --brand:168 132 47;--brand-strong:132 101 28;--brand-fg:255 255 255;--brand-soft:240 232 212;--gold:128 98 28;
+ --warn:154 90 10;--danger:179 50 42;--ok:36 120 66;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:26 27 29;--surface:35 37 40;--subtle:46 49 53;--scene:37 40 44;--ink:233 231 224;--muted:154 157 163;--line:53 56 61;
+ --brand:199 162 86;--brand-strong:214 178 102;--brand-fg:26 27 29;--brand-soft:58 50 32;--gold:214 178 102;--warn:230 170 70;--danger:229 100 90;--ok:110 200 130;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:26 27 29;--surface:35 37 40;--subtle:46 49 53;--scene:37 40 44;--ink:233 231 224;--muted:154 157 163;--line:53 56 61;
+ --brand:199 162 86;--brand-strong:214 178 102;--brand-fg:26 27 29;--brand-soft:58 50 32;--gold:214 178 102;--warn:230 170 70;--danger:229 100 90;--ok:110 200 130;color-scheme:dark}
+html{scroll-behavior:smooth;scroll-padding-top:5rem}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+body{@apply bg-bg font-sans text-ink antialiased;background-color:rgb(var(--bg))}
+:focus-visible{outline:2px solid rgb(var(--brand));outline-offset:2px}
 @layer components{
- .btn{@apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40}
- .btn-primary{@apply btn bg-brand text-brand-fg hover:opacity-90}
- .btn-ghost{@apply btn border border-line bg-surface text-ink hover:bg-subtle}
+ .btn{@apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-40}
+ .btn-primary{@apply btn bg-ink text-bg;} .btn-primary:not(:disabled):hover{background:rgb(var(--brand-strong));color:rgb(var(--brand-fg))}
+ .btn-gold{@apply btn;background:rgb(var(--brand-strong));color:rgb(var(--brand-fg))} .btn-gold:hover{background:rgb(var(--ink));color:rgb(var(--bg))}
+ .btn-ghost{@apply btn border border-ink/25 bg-transparent text-ink hover:border-ink hover:bg-surface}
  .card{@apply rounded-xl2 border border-line bg-surface p-6 shadow-card}
- .h-eyebrow{@apply text-xs font-semibold uppercase tracking-[.14em] text-brand}
- .prose-terms h1,.prose-terms h2{@apply mt-8 mb-3 text-lg font-bold} .prose-terms h3{@apply mt-5 mb-2 font-semibold}
- .prose-terms p{@apply my-3 text-sm leading-relaxed text-ink/90} .prose-terms ul{@apply my-3 list-disc pl-6 text-sm space-y-1}
+ .input{@apply rounded-md border border-line bg-bg px-3 py-2 text-sm text-ink}
+ .h-eyebrow{@apply font-mono text-[11px] font-medium uppercase tracking-[.2em] text-gold}
+ .h-display{@apply font-display font-medium leading-[1.02] tracking-tight}
+ .accent{color:rgb(var(--brand))}
+ .sheet{background:rgb(var(--surface));border:1px solid rgb(var(--line));box-shadow:0 1px 2px rgb(30 32 36/.08),0 30px 60px -30px rgb(30 32 36/.38)}
+ .sheet-img{background:#fff}
+ .grid-paper{background-image:linear-gradient(rgb(var(--ink)/.05) 1px,transparent 1px),linear-gradient(90deg,rgb(var(--ink)/.05) 1px,transparent 1px);background-size:32px 32px;background-position:-1px -1px}
+ .ticks{height:9px;background:repeating-linear-gradient(90deg,rgb(var(--ink)/.45) 0 1px,transparent 1px 12px) bottom/100% 5px no-repeat,repeating-linear-gradient(90deg,rgb(var(--ink)/.7) 0 1px,transparent 1px 60px) bottom/100% 9px no-repeat;border-bottom:1px solid rgb(var(--ink)/.5)}
+ .titleblock{@apply grid border border-ink/40 bg-surface;} .titleblock>div{@apply border-ink/25 p-4}
+ .pill{@apply inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-[10.5px] font-medium uppercase tracking-wider}
+ .prose-terms h1,.prose-terms h2{@apply mt-8 mb-3 font-display text-xl font-semibold} .prose-terms h3{@apply mt-5 mb-2 font-semibold}
+ .prose-terms p{@apply my-3 text-sm leading-relaxed text-ink} .prose-terms ul{@apply my-3 list-disc pl-6 text-sm space-y-1}
  .prose-terms blockquote{@apply my-4 border-l-4 border-brand pl-4 text-sm} .prose-terms table{@apply my-4 w-full text-xs} .prose-terms td,.prose-terms th{@apply border border-line p-2 align-top}
 }
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+@keyframes fillbar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.fillbar{transform-origin:left;animation:fillbar 6s linear both}
