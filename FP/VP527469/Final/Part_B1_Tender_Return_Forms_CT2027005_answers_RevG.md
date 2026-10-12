@@ -31,7 +31,7 @@ Addenda received: None as at 12/10/2026 [TBC - Jayden: check VendorPanel before 
 
 | Item | Detail |
 |---|---|
-| Lump sum (incl. GST) | $766,496.28: seven hundred and sixty-six thousand, four hundred and ninety-six dollars and twenty-eight cents (including GST of $69,681.48; $696,814.80 excl. GST). [TBC - Jayden: update if partner quotes change the provisional sums; must equal the B2 TOTAL (INCL GST).] |
+| Lump sum (incl. GST) | $772,216.28: seven hundred and seventy-two thousand, two hundred and sixteen dollars and twenty-eight cents (including GST of $70,201.48; $702,014.80 excl. GST). [TBC - Jayden: update if partner quotes change the provisional sums; must equal the B2 TOTAL (INCL GST).] |
 | Dated | ____ day of October 2026 [Jayden to date at signing] |
 | Company name | JCE Infrastructure Pty Ltd |
 | Entity type | Proprietary limited company |
@@ -46,7 +46,7 @@ Addenda received: None as at 12/10/2026 [TBC - Jayden: check VendorPanel before 
 
 ## Form 2: Pricing Schedule
 
-Returned as Excel: Part_B2-Returnable_Schedules-CQA_Engineer_JCE_FILLED.xlsx. Portion 1 $450,046.80; Portion 2 $246,768.00; total $696,814.80 excl. GST.
+Returned as Excel: Part_B2-Returnable_Schedules-CQA_Engineer_JCE_FILLED.xlsx. Portion 1 $453,246.80; Portion 2 $248,768.00; total $702,014.80 excl. GST.
 
 ## Form 3: Tenderer's Experience
 
@@ -104,6 +104,7 @@ Resources and equipment: JCE's related business, Glide Inside (glideinside.com.a
 | Resident CQA technicians during all working hours; NATA soils and gravel IQA testing and sample transport; senior landfill CQA engineer review and co-signing of CQA reports | [Riverina CQA partner, TBC - Jayden from RFQ] (shortlist: Aitken Rowe Testing Laboratories, 1/5 Dangar Place, East Wagga Wagga; Inland Geotechnical, 6 Jones Street, East Wagga Wagga; Civiltest Pty Ltd, Wodonga) |
 | NATA IQA testing of geosynthetics | [TBC from RFQ: TRI Australasia or ExcelPlas] |
 | Liner integrity (electrical leak location) surveys | [TBC from RFQ: GeoQ, or specialist nominated by the geosynthetics laboratory] |
+| Associate certifying engineer: independent review of the CQA Implementation Plan and CQA reports, certification support | Sunny Lotay, Lotay Civil (standing associate agreement with JCE) [address TBC - Jayden] |
 | Independent check survey | [TBC from RFQ: Rivland Surveyors, Wagga Surveyors or Amey, Wagga Wagga] |
 
 ## Form 7: Key Employee Details
@@ -111,6 +112,7 @@ Resources and equipment: JCE's related business, Glide Inside (glideinside.com.a
 | Employee name and position | Relevant qualifications, skills and experience |
 |---|---|
 | Jayden Callen, Director, CQA Engineer of record | BEng (Civil)(Hons), Deakin University; MIEAust (EA 11036201); NER application in progress (not CPEng). 8+ years in civil infrastructure. while at Langtree Consulting Engineers: Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility; Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network (referee Darren Quilliam, Tablelands Regional Council). RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor) (referee Maverick Partner, CPB Contractors). Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Other: site engineering and QA on Defence projects (about 10 km of water mains at RAAF Base Townsville; runway works surveillance at RAAF Base Tindal); engineering delivery for CPB Contractors (head contractor) at RAAF Base Townsville; hold point technical review of a D&C pump station package (WSIA). No previous CQA commission on a landfill cell liner. Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models. CV attached. |
+| Sunny Lotay, Associate Principal Engineer, Lotay Civil (associate, not a JCE employee) | Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. RPEQ, NER. Role here: independent review of the CQA Implementation Plan and CQA reports, certification support, backup project lead. |
 | [Name], Senior landfill CQA engineer, [Riverina CQA partner, TBC - Jayden from RFQ] | [Qualifications, registration, years of landfill CQA, NSW projects - from RFQ] |
 | [Names], Resident CQA technicians, [Riverina CQA partner, TBC - Jayden from RFQ] | [Landfill liner and earthworks CQA experience, NATA field testing - from RFQ] |
 

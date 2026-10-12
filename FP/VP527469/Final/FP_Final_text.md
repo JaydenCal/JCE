@@ -13,17 +13,17 @@ ABN 29 699 165 663 · 756 Quia Road, Gunnedah NSW 2380 · 0477 207 027 · jayden
 | Site | Gregadoo Waste Management Centre, 162 Ashfords Road, Gregadoo NSW 2650 (EPL 6671) |
 | Tender closes | Friday 30/10/2026, 2:00 pm AEDT |
 | Prepared by | Jayden Callen, Director, BEng (Civil)(Hons), MIEAust |
-| Offer | $696,814.80 excl. GST   ·   $766,496.28 incl. GST (Part B2 is the priced offer) |
+| Offer | $702,014.80 excl. GST   ·   $772,216.28 incl. GST (Part B2 is the priced offer) |
 
 Dear Ms Giltrap,
 
 JCE Infrastructure Pty Ltd (JCE) offers to act as CQA Engineer for General Waste Cell 3.1 (Separable Portion 1) and Monocell M1.1 (Separable Portion 2) under RFT CT2027005. This proposal is read with our Part B1 Tender Return Forms and the Part B2 Returnable Schedule, which is the priced offer.
 
-Our team is built around a Wagga Wagga based geotechnical partner, [Riverina CQA partner, TBC - Jayden from RFQ], which supplies experienced CQA technicians on site during all working hours of the works (Part D 1.13), a NATA-accredited soils laboratory in Wagga Wagga and a senior engineer with landfill liner and cap CQA experience. JCE is the contracting party and the CQA Engineer of record. Jayden Callen, Director, leads the commission personally: he reviews every daily record, hold point package and test result, attends site at the critical hold points, and signs the as-constructed CQA report for each cell, co-signed by the partner's senior landfill CQA engineer.
+Our team is built around a Wagga Wagga based geotechnical partner, [Riverina CQA partner, TBC - Jayden from RFQ], which supplies experienced CQA technicians on site during all working hours of the works (Part D 1.13), a NATA-accredited soils laboratory in Wagga Wagga and a senior engineer with landfill liner and cap CQA experience. JCE is the contracting party and the CQA Engineer of record. Jayden Callen, Director, leads the commission personally: he reviews every daily record, hold point package and test result, attends site at the critical hold points, and signs the as-constructed CQA report for each cell, co-signed by the partner's senior landfill CQA engineer. Sunny Lotay (RPEQ, NER), JCE's associate certifying engineer, independently reviews JCE's CQA Implementation Plan and reports.
 
 We state openly that JCE has not previously acted as CQA Engineer on a landfill cell liner. Jayden's landfill experience, gained while at Langtree Consulting Engineers, is engineering for a landfill leachate storage facility for Tablelands Regional Council (QLD), and the landfill CQA record in this team is the partner's, set out in Section 8 and Form 3. Jayden brings council client experience, site quality assurance and construction-phase delivery experience on Defence and civil projects, including engineering delivery for CPB Contractors (head contractor) at RAAF Base Townsville, the management of specialist sub-consultants to one program, and a single point of accountability to Council for hold point releases against the 30/09/2027 deadline for Cell 3.1.
 
-The price is $696,815 excluding GST ($766,496 including GST). It comprises JCE's lump sum of $218,865 and provisional sums of $477,950 for the partner's resident technicians, the NATA testing, the liner integrity surveys and the check survey. Travel, accommodation and all other costs are included, as Annexure Item 9 requires.
+The price is $702,015 excluding GST ($772,216 including GST). It comprises JCE's lump sum of $224,065 and provisional sums of $477,950 for the partner's resident technicians, the NATA testing, the liner integrity surveys and the check survey. Travel, accommodation and all other costs are included, as Annexure Item 9 requires.
 
 ## 1.0   Project understanding
 
@@ -44,6 +44,7 @@ JCE holds the contract with Council and is accountable for all CQA services. The
 | Role | Who | Responsibility |
 |---|---|---|
 | CQA Engineer of record | JCE: Jayden Callen, Director | Single point of contact for Council and the Superintendent. CQA Implementation Plan, review of submittals and MQA, review of every daily log and test result, written hold point releases, non-conformance register, monthly reports, periodic site attendance, certification of the as-constructed CQA reports. |
+| Associate certifying engineer | Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil (standing associate agreement with JCE) | Independent technical review of the CQA Implementation Plan and the as-constructed CQA reports; certification where a registration requirement applies (RFI 7); backup project lead. |
 | Senior landfill CQA engineer | [Riverina CQA partner, TBC - Jayden from RFQ]: [name, qualifications TBC] | Technical review of the CQA Implementation Plan and records, site attendance at liner start-up, advice on landfill-specific issues, co-signing of the CQA reports. |
 | Resident CQA technicians | [Riverina CQA partner, TBC - Jayden from RFQ]: [names TBC] | On site during all working hours of the works. Inspection against the CQA Plan checklists, daily logs and photographs, IQA sampling, witnessing of seam testing and repairs, hold point inspection packages for JCE. |
 | NATA soils and gravel testing | [Riverina CQA partner, TBC - Jayden from RFQ] Wagga Wagga laboratory [TBC] | IQA testing of gravels and soils, sample collection and transport. |
@@ -123,6 +124,7 @@ The program follows the Contractor's approved construction program, which Counci
 | Role | Person and firm | Relevant experience |
 |---|---|---|
 | CQA Engineer of record (Lead CQA Engineer) | Jayden Callen, BEng (Civil)(Hons), MIEAust (EA 11036201), JCE | 8+ years in civil infrastructure. Engineering for a council landfill leachate storage facility (Tablelands Regional Council, while at Langtree Consulting Engineers); engineering delivery for CPB Contractors (head contractor) at RAAF Base Townsville; site engineering and QA on Defence projects; hold point review of a contractor's pump station package; drone photogrammetry. No previous CQA commission on a landfill cell liner. |
+| Associate Principal Engineer (core team) | Sunny Lotay (RPEQ, NER), Lotay Civil | Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. On this commission: independent review of the CQA Implementation Plan and CQA reports, certification support and backup project lead. |
 | Senior landfill CQA engineer | [Name, qualifications], [Riverina CQA partner, TBC - Jayden from RFQ] | [At least two NSW landfill cell or cap CQA projects: site, EPL, liner system, role, year, referee. TBC from RFQ] |
 | Resident CQA technicians | [Names], [Riverina CQA partner, TBC - Jayden from RFQ] | [Landfill liner and earthworks CQA experience, Level 1 earthworks experience, NATA field testing. TBC from RFQ] |
 | Specialist testing and survey | [Geosynthetics laboratory; leak location specialist; Wagga Wagga surveyor] | [NATA scopes and project lists TBC from RFQ] |
@@ -159,7 +161,7 @@ JCE is based in Gunnedah, NSW (Form 8 Category C). The resident CQA technicians,
 
 - JCE has no role in the design (Tonkin Consulting) or the construction contract and has no conflict of interest. Each sub-consultant will confirm in writing that it is independent of the Head Contractor, its liner installer and laboratory, and the designer.
 - IQA testing is carried out by NATA-accredited laboratories independent of the Contractor's laboratory, as Council's answer of 09/10/2026 requires.
-- The as-constructed CQA reports are signed by Jayden Callen as CQA Engineer of record and co-signed by the partner's senior landfill CQA engineer. NSW does not require RPEQ for this work. Jayden is MIEAust; he does not hold CPEng and his NER application is in progress. If Council requires a particular registration for the signatory (RFI 7), the partner's senior engineer [registration TBC] will meet it.
+- The as-constructed CQA reports are signed by Jayden Callen as CQA Engineer of record and co-signed by the partner's senior landfill CQA engineer. NSW does not require RPEQ for this work. Jayden is MIEAust and his NER application is in progress. Certification where a registration is required is provided by Sunny Lotay (RPEQ, NER) as JCE's associate certifying engineer, who also independently reviews each CQA report before issue (RFI 7).
 - Design responsibility stays with Council's design consultant.
 
 ## 11.0   Key risks and how we manage them
@@ -196,11 +198,11 @@ The price is set out line by line in the Part B2 Returnable Schedule, with JCE's
 
 | Portion | JCE lump sum | Provisional sums | Total (excl. GST) |
 |---|---|---|---|
-| Portion 1, Cell 3.1 | $137,096.80 | $312,950.00 | $450,046.80 |
-| Portion 2, Monocell M1.1 | $81,768.00 | $165,000.00 | $246,768.00 |
-| Total (excl. GST) | $218,864.80 | $477,950.00 | $696,814.80 |
-| GST |  |  | $69,681.48 |
-| Total (incl. GST) |  |  | $766,496.28 |
+| Portion 1, Cell 3.1 | $140,296.80 | $312,950.00 | $453,246.80 |
+| Portion 2, Monocell M1.1 | $83,768.00 | $165,000.00 | $248,768.00 |
+| Total (excl. GST) | $224,064.80 | $477,950.00 | $702,014.80 |
+| GST |  |  | $70,201.48 |
+| Total (incl. GST) |  |  | $772,216.28 |
 
 Provisional sums (included in the price above, each including JCE's 10% coordination margin):
 
@@ -216,6 +218,8 @@ Provisional sums (included in the price above, each including JCE's 10% coordina
 |  | Total provisional sums | $312,950.00 | $165,000.00 |
 
 Provisional sums are claimed monthly to the extent used, at the rates in Attachment A, and amounts not used are not claimed. PS1 and PS2 assume 145 and 80 technician days at $1,300 per day; PS2 is the cost of full-time presence outside the lining works under Part D 1.13 and can be removed if Council confirms RFI 1 that it is not required. [Before lodgement, replace the PS allowances with the quoted prices due 23/10/2026 - Jayden.]
+
+JCE's lump sum includes 26 hours (16 for Portion 1, 10 for Portion 2) for Sunny Lotay's independent review and certification at $200 per hour.
 
 JCE's lump sum covers 13 return trips from Gunnedah, 22 site days by Jayden, all office review, reporting and certification, travel, accommodation and vehicle costs. Variations are charged at the rates in Attachment A.
 
@@ -253,6 +257,7 @@ Applies to variations, additional services and provisional sums. Rates exclude G
 | Role or item | Rate (excl. GST) |
 |---|---|
 | Director / CQA Engineer of record (review, certification) | $200 / hr |
+| Associate Principal Engineer, Sunny Lotay (RPEQ, NER), Lotay Civil (review, certification) | $200 / hr |
 | Lead CQA Engineer (site and office) | $190 / hr |
 | Project engineer / records / travel time | $180 / hr |
 | Site day, Lead CQA Engineer (10 hours on site) | $1,900 / day |

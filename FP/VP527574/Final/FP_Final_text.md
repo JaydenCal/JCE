@@ -23,7 +23,7 @@ JCE Infrastructure Pty Ltd (JCE) submits this quotation for the detailed design,
 
 **Alternative A** offers the fuller scope for $237,220.00 excluding GST: two concept alignment iterations, full corridor survey, structural design within the lump sum and a larger drawing set (Section 10.0 and Schedule K).
 
-**The team.** JCE delivers project management and the civil and hydraulic design. Venant Solutions (Melbourne) provides the floodplain modelling and hydraulic impact assessment, led by Registered Professional Engineers (Victoria) whose work includes the Harcourt Flood Study for Mount Alexander Shire. Lotay Civil (Ballarat) directly supervises and approves the civil design as a Registered Professional Engineer (Victoria), as Schedule F requires. A licensed surveyor from central Victoria carries out the supplementary survey.
+**The team.** JCE delivers project management and the civil and hydraulic design. Venant Solutions (Melbourne) provides the floodplain modelling and hydraulic impact assessment, led by Registered Professional Engineers (Victoria) whose work includes the Harcourt Flood Study for Mount Alexander Shire. Sunny Lotay (Lotay Civil; RPEQ, NER; Registered Professional Engineer, Victoria), JCE's associate certifying engineer under a standing agreement, supervises and approves the civil design as Schedule F requires. A licensed surveyor from central Victoria carries out the supplementary survey.
 
 Jayden has also worked for a regional council in Far North Queensland, where he shortlisted consultants for a council tender. He knows what a Council officer needs after award: clear hold points, no surprises on scope or fee, and records Council can audit.
 
@@ -224,10 +224,12 @@ Schedule F requires the designer or supervisor and the design approver to be reg
 
 | Discipline | Who performs | Registered supervisor and approver |
 |---|---|---|
-| Civil design (levee, drainage, crossings, specification) | JCE (Jayden Callen) | Sunny Lotay, Lotay Civil, Registered Professional Engineer (Vic), Civil, PE [TBC - Jayden] |
+| Civil design (levee, drainage, crossings, specification) | JCE (Jayden Callen) | Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil; Registered Professional Engineer (Vic), Civil, PE [TBC - Jayden] |
 | Hydraulic modelling and impact assessment | Venant Solutions | Michael South, RPE (Vic) PE [TBC - Jayden], or Atoosa Towzihian, RPE (Vic) PE [TBC - Jayden] |
 | Structural design (PS-F, or Alternative A) | Victorian-registered structural engineer, under its own registration and insurance | [TBC - Jayden] (named on direction) |
 | Survey | Licensed surveyor (central Victoria) | [TBC - Jayden] (on quotation) |
+
+**Core team.** Jayden Callen, Director (project manager and civil design lead), with Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. On this commission Sunny provides independent technical review of design outputs, supervises and approves the civil design under Schedule F, and is backup project lead.
 
 **Lead theme: principal-led design management.** Jayden has moved from civil design into design management, coordinating several disciplines into one package to one program. As Civil Design Manager at Langtree Consulting Engineers, Townsville (03/2025 to 05/2026) he managed four civil designers and coordinated flood modelling, electrical and hydraulic sub-consultants into joint-discipline packages, including bridge approaches, culverts and retaining walls, and prepared engineer's estimates and bills of quantities. At SCP Consulting (06/2023 to 03/2025) he was the primary point of contact for tier-one contractors on Defence projects and managed a multidisciplinary design team.
 
@@ -420,7 +422,7 @@ Date: [dd/10/2026]
 
 **Atoosa Towzihian**, MEng (Civil), CPEng, RPE (Vic), RPEQ: Senior Flood and Hydrology Engineer, Venant Solutions. Nine years in hydrology and flood modelling, including six at Melbourne Water (RORB, TUFLOW, HEC-RAS); hydrology and hydraulics lead for the Elwood flood mitigation concept design.
 
-**Sunny Lotay**, RPE (Vic): Lotay Civil, Ballarat (registered civil engineer, supervision and design approval). More than fourteen years in civil design and construction in regional Victoria and NSW, with Stantec (formerly TGM/Cardno) Ballarat, Beveridge Williams Ballarat, Hepburn Shire Council and Goulburn Mulwaree Council, including road and drainage reconstruction and flood mitigation design. Registration area and number [TBC - Jayden].
+**Sunny Lotay**, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. RPE (Vic); on this commission: independent technical review, supervision and approval of the civil design, and backup project lead. More than fourteen years in civil design and construction in regional Victoria and NSW, with Stantec (formerly TGM/Cardno) Ballarat, Beveridge Williams Ballarat, Hepburn Shire Council and Goulburn Mulwaree Council, including road and drainage reconstruction and flood mitigation design. Registration area and number [TBC - Jayden].
 
 **Surveyor and investigation specialists:** named on receipt of quotations [TBC - Jayden].
 

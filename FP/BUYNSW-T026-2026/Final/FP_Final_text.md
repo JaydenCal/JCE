@@ -19,7 +19,7 @@ Camden Council RFT T026/2026, Design Consultancy Services, Leppington Community 
 
 Dear [First name],
 
-JCE Infrastructure Pty Ltd (JCE) offers this fee proposal for the civil engineering services in your team for Camden Council's RFT T026/2026, Design Consultancy Services for the Leppington Community Centre Precinct. JCE's civil design will be led and signed off by Jayden Callen personally, who will be your single point of contact. Jayden's background is multidisciplinary design management: coordinating civil, services and specialist inputs into one package to one program, including clash checking of consultant models in Civil 3D and Navisworks on a $250 million Defence facility. He has also shortlisted consultants for a council RFT, so he knows what a council panel looks for.
+JCE Infrastructure Pty Ltd (JCE) offers this fee proposal for the civil engineering services in your team for Camden Council's RFT T026/2026, Design Consultancy Services for the Leppington Community Centre Precinct. JCE's civil design will be led by Jayden Callen personally, who will be your single point of contact, with technical review and certification by Sunny Lotay (RPEQ, NER), JCE's associate certifying engineer. Jayden's background is multidisciplinary design management: coordinating civil, services and specialist inputs into one package to one program, including clash checking of consultant models in Civil 3D and Navisworks on a $250 million Defence facility. He has also shortlisted consultants for a council RFT, so he knows what a council panel looks for.
 
 The fees drop straight into the Civil row of RFT Schedule 3. Hydraulic services are priced as a separate option for the Hydraulics row. Attachment C contains JCE's completed inputs to your Volume 5 returnable schedules (Schedules 2 to 6, 7 to 11, 13 and 15, and a conflicts of interest statement), ready to paste into your submission. A rebuilt Volume 5 file with JCE's entries is supplied with this proposal.
 
@@ -98,7 +98,7 @@ JCE's services follow the four phases of RFT Schedule 3. JCE will hold one Civil
 
 - One program: JCE's civil activities and hold points are set against your master program and the Vol 4 s8 milestones (Section 4.0).
 - Inputs register: JCE will keep a register of the information it needs from Council, the remediation consultant and your team, with dates, and report it in your monthly progress report so delays are visible early.
-- Review before issue: every civil issue is checked by Jayden, and the levels, earthworks and stormwater design are independently reviewed by Livio Chiarot FIEAust before each major milestone. JCE provides the written attestation of senior review and cross-checking required by Vol 4 s15 at each issue.
+- Review before issue: every civil issue is checked by Jayden and technically reviewed by Sunny Lotay (RPEQ, NER) before release, and the levels, earthworks and stormwater design are independently peer reviewed by Livio Chiarot FIEAust before each major milestone. JCE provides the written attestation of senior review and cross-checking required by Vol 4 s15 at each issue.
 - Coordination: JCE will federate the civil model with your architectural, landscape and services models in Navisworks before the 80% and 100% issues and close out clashes before the clash resolution day.
 - Comments: one civil comments and actions register across all Council and team comments, with a written close-out for each item.
 - Cost: civil quantities go to the QS at each cost plan, and JCE will offer civil value management options (for example earthworks balance, pavement types and drainage layout) where Stage 1 is over budget.
@@ -168,11 +168,13 @@ Jayden Callen, Director and Principal Civil Engineer (civil lead). BEng (Hons) C
 - Jayden Callen (while at Langtrees): Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility, relevant to the containment and liner interfaces on this site. Referee for both Tablelands projects: Darren Quilliam, Tablelands Regional Council.
 - Council experience: Jayden has worked for a regional council in Far North Queensland, where he shortlisted consultants for a council RFT.
 
+Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. On this commission Sunny will review the civil design outputs before each major issue, certify the civil design and construction-stage certification, and act as backup project lead.
+
 Livio Chiarot FIEAust, Director, SCP Consulting: independent technical peer review of the levels, earthworks and stormwater documentation before each major issue (reviewer, not certifier). Livio has more than 40 years in civil, hydraulic and fire services engineering.
 
-Additional design and drafting resources: [TBC - Jayden]. The fee is built from about 530 hours across the Director, Senior Engineer, Project Engineer, Design Engineer and CAD roles at JCE's Schedule of Rates. Name any second team member for Schedule 6 only once availability is confirmed.
+Additional design and drafting resources: [TBC - Jayden]. The fee is built from about 530 hours across the Director, Senior Engineer, Project Engineer, Design Engineer and CAD roles at JCE's Schedule of Rates, plus 16 hours of associate review and certification by Sunny Lotay. Name any second team member for Schedule 6 only once availability is confirmed.
 
-Sign-off. This is NSW work for a Class 9b community building. RPEQ does not apply, and the tender does not ask for a particular engineering registration. Civil design certification will be issued by Jayden Callen (MIEAust) with independent peer review. If Council asks for CPEng verification of any element, it is available as a provisional sum (Section 8.0).
+Sign-off. This is NSW work for a Class 9b community building. RPEQ does not apply, and the tender does not ask for a particular engineering registration. Civil design certification will be provided by Sunny Lotay (RPEQ, NER) as JCE's associate certifying engineer, with the design led by Jayden Callen (MIEAust, NER application in progress) and independent peer review by Livio Chiarot. If Council asks for CPEng verification of any element, it is available as a provisional sum (Section 8.0).
 
 JCE's capability statement and Jayden's detailed CV are supplied for your Schedules 5 and 6. Project details and referees in Schedule 5 and 13 format are in Attachment C. Projects delivered while Jayden was employed elsewhere are shown as key personnel experience, not as JCE company projects.
 
@@ -230,13 +232,15 @@ JCE offers the civil scope as lump sums for each Schedule 3 phase. Each phase fe
 
 | Phase | Description of works | Fee (excl. GST) |
 |---|---|---|
-| Phase 1 | Project initiation, concept design (whole precinct) and design development; levels and earthworks strategy; stormwater strategy and MUSIC-Link; Early Bulk Earthworks DA package | $39,110.00 |
-| Phase 2 | 50% detailed design documentation (Stage 1): DRAINS design, pavements and grading, outline specification | $19,100.00 |
-| Phase 3 | 80% and 100% detailed design and tender documentation (Stage 1), Early Bulk Earthworks tender package, NATSPEC civil specification, certification | $27,420.00 |
-| Phase 4 | Construction services: RFIs, shop drawing review, four site inspections (4 x $1,900), WAE review and certification | $15,020.00 |
-|  | Civil total (excl. GST) | $100,650.00 |
-|  | GST (10%) | $10,065.00 |
-|  | Civil total (incl. GST) | $110,715.00 |
+| Phase 1 | Project initiation, concept design (whole precinct) and design development; levels and earthworks strategy; stormwater strategy and MUSIC-Link; Early Bulk Earthworks DA package | $39,990.00 |
+| Phase 2 | 50% detailed design documentation (Stage 1): DRAINS design, pavements and grading, outline specification | $19,980.00 |
+| Phase 3 | 80% and 100% detailed design and tender documentation (Stage 1), Early Bulk Earthworks tender package, NATSPEC civil specification, certification | $28,740.00 |
+| Phase 4 | Construction services: RFIs, shop drawing review, four site inspections (4 x $1,900), WAE review and certification | $15,460.00 |
+|  | Civil total (excl. GST), including $3,520 associate review and certification allowance (Sunny Lotay) | $104,170.00 |
+|  | GST (10%) | $10,417.00 |
+|  | Civil total (incl. GST) | $114,587.00 |
+
+The phase fees include an associate review and certification allowance for Sunny Lotay (RPEQ, NER) of 16 hours at $200 per hour plus JCE's 10% sub-consultant margin: Phase 1 $880 (Early Bulk Earthworks DA review), Phase 2 $880 (50% review), Phase 3 $1,320 (100% review and design certification), Phase 4 $440 (construction certification); $3,520 in total.
 
 
 ### Option: Hydraulic services
@@ -256,9 +260,9 @@ JCE offers the civil scope as lump sums for each Schedule 3 phase. Each phase fe
 
 | Schedule 3 row | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Total |
 |---|---|---|---|---|---|
-| Civil | $39,110 | $19,100 | $27,420 | $15,020 | $100,650 |
+| Civil | $39,990 | $19,980 | $28,740 | $15,460 | $104,170 |
 | Hydraulics (option) | $4,480 | $7,580 | $9,120 | $6,320 | $27,500 |
-| Civil and hydraulics | $43,590 | $26,680 | $36,540 | $21,340 | $128,150 |
+| Civil and hydraulics | $44,470 | $27,560 | $37,860 | $21,780 | $131,670 |
 
 
 ### Schedule of rates for RFT Schedule 3 (excl. GST)
@@ -266,6 +270,7 @@ JCE offers the civil scope as lump sums for each Schedule 3 phase. Each phase fe
 | Key personnel | Hourly rate | Site inspection (fixed) |
 |---|---|---|
 | Jayden Callen, Director and Principal Civil Engineer | $200 | $1,900 |
+| Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil | $200 | $1,900 |
 | Independent peer review (Livio Chiarot FIEAust) | $200 | N/A |
 | Senior Engineer | $190 | $1,900 |
 | Project Engineer | $180 | $1,900 |
@@ -421,7 +426,7 @@ For the Lead Architect to paste into its Volume 5 response. Text is written in J
 
 ### C1  Schedule 3: Fee proposal, Civil row and schedule of rates
 
-Civil: Phase 1 $39,110; Phase 2 $19,100; Phase 3 $27,420; Phase 4 $15,020; total $100,650 excl. GST. Hydraulics (if JCE is engaged for it): Phase 1 $4,480; Phase 2 $7,580; Phase 3 $9,120; Phase 4 $6,320; total $27,500 excl. GST. Rates as in Section 8.0. Fixed site inspection fee $1,900 excl. GST including travel and report.
+Civil: Phase 1 $39,990; Phase 2 $19,980; Phase 3 $28,740; Phase 4 $15,460; total $104,170 excl. GST (includes the $3,520 associate review and certification allowance). Hydraulics (if JCE is engaged for it): Phase 1 $4,480; Phase 2 $7,580; Phase 3 $9,120; Phase 4 $6,320; total $27,500 excl. GST. Rates as in Section 8.0. Fixed site inspection fee $1,900 excl. GST including travel and report.
 
 
 ### C2  Schedule 2: Proposed departures for the civil sub-consultant (for decision)
@@ -523,12 +528,13 @@ Only the WSI project was delivered by JCE as a company. The other projects are J
 
 | No. | Name | Position | Qualification | Experience and accreditation | % time |
 |---|---|---|---|---|---|
-| 1 | Jayden Callen | Director and Principal Civil Engineer, JCE (civil lead and sign-off) | BEng (Hons) Civil; MIEAust (EA 11036201); NER application in progress | 8+ years civil design, design management and construction support: Defence, local government, land development, stormwater, roads and pavements | About one third of full time from January to September 2027 (about 490 hours), then as required in 2028 [TBC - Jayden] |
-| 2 | Livio Chiarot | Independent peer reviewer (SCP Consulting) | FIEAust | 40+ years civil, hydraulic and fire services engineering | Review before each major issue |
+| 1 | Jayden Callen | Director and Principal Civil Engineer, JCE (civil lead) | BEng (Hons) Civil; MIEAust (EA 11036201); NER application in progress | 8+ years civil design, design management and construction support: Defence, local government, land development, stormwater, roads and pavements | About one third of full time from January to September 2027 (about 490 hours), then as required in 2028 [TBC - Jayden] |
+| 2 | Sunny Lotay | Associate Principal Engineer, Lotay Civil: technical reviewer, certifying engineer and backup project lead under a standing associate agreement with JCE | RPEQ, NER | Technical review and certification on JCE commissions | Review and certification at each major issue (16 hours allowed) |
+| 3 | Livio Chiarot | Independent peer reviewer (SCP Consulting) | FIEAust | 40+ years civil, hydraulic and fire services engineering | Review before each major issue |
 
 Current commitments of key personnel: [TBC - Jayden] (list JCE's live commissions and expected hours).
 
-Organisation chart entry: Lead Architect > Civil Engineer: JCE Infrastructure (Jayden Callen, civil lead) > independent peer review: Livio Chiarot FIEAust; hydraulics (if engaged): JCE Infrastructure.
+Organisation chart entry: Lead Architect > Civil Engineer: JCE Infrastructure core team (Jayden Callen, civil lead; Sunny Lotay RPEQ NER, associate certifying engineer and backup lead) > independent peer review: Livio Chiarot FIEAust; hydraulics (if engaged): JCE Infrastructure.
 
 
 ### C6  Schedule 7: Project appreciation, civil input
