@@ -136,8 +136,8 @@ export function buildSampleBundle(): SceneBundle {
     ],
     parts,
     labels: [
-      { t: 'House FFL 100.90', p: [0, 1, 106.2], c: 'lab_gen', s: 1 }, { t: 'Driveway 4.0 m', p: [0, -14, design(0, -14) + 1.2], c: 'lab_gen', s: 1 },
-      { t: 'Pit P1\nIL 99.60', p: [8, 6, 102], c: 'lab_gen', s: 1 }, { t: 'DBYD buffer\n(telecom duct)', p: [11.5, -6, 102.3], c: 'lab_gen', s: 1 },
+      { t: 'House FFL 100.90', p: [0, 1, 106.2], c: 'lab_gen', s: 2 }, { t: 'Driveway 4.0 m', p: [0, -14, design(0, -14) + 1.2], c: 'lab_gen', s: 2 },
+      { t: 'Pit P1\nIL 99.60', p: [8, 6, 102], c: 'lab_gen', s: 2 }, { t: 'DBYD buffer\n(telecom duct)', p: [11.5, -6, 102.3], c: 'lab_gen', s: 2 },
     ],
     views: {
       'iso-sw': { dir: [-1, -1, 0.8] }, 'iso-ne': { dir: [1, 1, 0.8] }, plan: { dir: [0, 0, 1], ortho: true }, s: { dir: [0, -1, 0], ortho: true },
