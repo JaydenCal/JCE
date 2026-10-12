@@ -8,14 +8,14 @@ JCE Infrastructure Pty Ltd | ABN 29 699 165 663 | 0477 207 027 | jayden@jceinfra
 | **Date** | 12/10/2026 | **Attention** | Procurement, via VendorPanel |
 | **Revision** | G (final for lodgement) | **Council contact** | Derek Langman, Principal's Representative |
 | **Prepared by** | Jayden Callen, Director | **Project** | 2026-092 Port Douglas Marine Industry Precinct Scoping Study |
-| **RPEQ sign-off** | Ben Lancini, CPEng, NER, RPEQ (Lancini Consulting) [TBC - Jayden: confirm availability and RPEQ number] | **Site** | Greenfield site of about 3 ha on Dickson Inlet, Port Douglas QLD 4877 |
+| **RPEQ sign-off** | Sunny Lotay (RPEQ, Lotay Civil) | **Site** | Greenfield site of about 3 ha on Dickson Inlet, Port Douglas QLD 4877 |
 | **Closes** | Thu 22/10/2026, 2:00pm AEST | **Validity** | 90 calendar days from closing |
 
 Dear Procurement Team,
 
 JCE Infrastructure Pty Ltd (JCE) submits this proposal for the Port Douglas Marine Industry Precinct Scoping Study (RFQ 2026-092). JCE will lead the study as lead consultant and integrator. Jayden Callen, Director, will manage every specialist personally as Council's single point of contact, to one program with four hold points and one register of comments and actions. Until 05/2026 he was based in Townsville, managing engineering work across North Queensland and Cape York, and he has worked on the client side for a Far North Queensland council, where he shortlisted consultants for a council tender.
 
-Engineering opinions in the study (marine, geotechnical and civil) will be prepared by, or under the direct supervision of, and signed by, a Registered Professional Engineer of Queensland (RPEQ) under the Professional Engineers Act 2002 (Qld). JCE's civil and infrastructure inputs will be signed by Ben Lancini, CPEng, NER, RPEQ (Lancini Consulting) [TBC - Jayden: confirm availability and RPEQ number], and the marine and coastal engineering by the marine partner's RPEQ.
+Engineering opinions in the study (marine, geotechnical and civil) will be prepared by, or under the direct supervision of, and signed by, a Registered Professional Engineer of Queensland (RPEQ) under the Professional Engineers Act 2002 (Qld). Sunny Lotay (RPEQ, Lotay Civil) signs JCE's engineering outputs for this commission, and the marine and coastal engineering by the marine partner's RPEQ.
 
 The proposal responds to the Request for Quotations Parts 1 to 6, the Part 5 Scope, the draft Council Contract (Goods and Services) LGT2.4 and the addendum of 30/09/2026 [TBC - Jayden: confirm no later addenda on VendorPanel]. The completed Response Schedules (Part 6) are lodged with it. The lump sum is $277,700.00 excluding GST ($305,470.00 including GST).
 
@@ -56,7 +56,7 @@ JCE is lead consultant and integrator. Jayden Callen leads the study, manages th
 | Discipline | Who | Registration or sign-off |
 |---|---|---|
 | Study lead, master planning, infrastructure, delivery, risk | JCE: Jayden Callen | BEng (Hons), MIEAust (EA 11036201), NER application in progress; not RPEQ |
-| RPEQ (Civil) supervision and sign-off of JCE engineering | Ben Lancini, Lancini Consulting [TBC - Jayden] | CPEng, NER, RPEQ [TBC - Jayden: RPEQ number] |
+| RPEQ supervision and sign-off of JCE engineering | Sunny Lotay (RPEQ, Lotay Civil) | RPEQ; signs JCE engineering outputs for this commission |
 | Marine and coastal engineering | Marine partner [TBC - Jayden: from quotes] | RPEQ in the relevant area, signs marine content |
 | Desktop geotechnical assessment | Geotechnical partner [TBC - Jayden] | RPEQ (Geotechnical), signs memo |
 | Economics, market research, stakeholder engagement | Economics partner, FNQ preferred [TBC - Jayden] | Not an engineering service |

@@ -1,6 +1,6 @@
 # Submission checklist: VP527224 / DSC RFQ 2026-092 Port Douglas Marine Industry Precinct Scoping Study
 
-**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
+**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; RPEQ changed from Ben Lancini to Sunny Lotay (Lotay Civil); price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status unchanged (draft ready, no Pursue/Pass tick yet).
 
@@ -28,7 +28,7 @@ Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status 
 | 2 | Fee proposal (methodology, program, team, Price Schedule) `JCE_FP_VP527224_Final_RevG.pdf` | Repo `FP/VP527224/Final/` (Word copy beside it). Text for the branded template: `FP_Final_text.md` (repo and Dropbox) |
 | 3 | Certificate of currency (PI and PL) `Certificate_of_Currency_-_2026-07-14T105420.82.pdf` | Dropbox `02_Submission/Returnables` |
 | 4 | PL $20M confirmation from Webber, workers compensation certificate, motor vehicle certificate | Not on file: obtain |
-| 5 | CV: `Callen-Pell_NER-02_Detailed_CV.pdf`, plus RPEQ (Ben Lancini) and partner CVs | Dropbox `02_Submission/Returnables`; partner CVs to come with quotes |
+| 5 | CV: `Callen-Pell_NER-02_Detailed_CV.pdf`, plus RPEQ (Sunny Lotay) and partner CVs | Dropbox `02_Submission/Returnables`; partner CVs to come with quotes |
 | 6 | WHS: `JCE_WHS_Management_System_2026-06-22.pdf`, `JCE-WHS-POL-001`, `JCE-WHS-PLN-001`, `JCE-WHS-PRO-005`, `JCE-WHS-PRO-009` | Dropbox `02_Submission/Returnables` |
 | 7 | Environmental: `JCE-ENV-POL-001-Environmental_Policy.pdf` | Dropbox `02_Submission/Returnables` |
 | 8 | Quality: `JCE-QMS-POL-001-Quality_Policy.pdf` | Dropbox `02_Submission/Returnables` |
@@ -40,7 +40,7 @@ Binary files built in the repo (docx, pdf) could not be uploaded to Dropbox from
 
 Most important first:
 
-1. **RPEQ sign-off:** confirm Ben Lancini (Lancini Consulting, CPEng, NER, RPEQ) is available, and get his RPEQ number and CV. The proposal names him as the RPEQ (Civil) who signs JCE's engineering. If he cannot, name Sunny Lotay (RPEQ) or the marine partner's RPEQ and change Sections 2, F1 and F2.
+1. **RPEQ sign-off (Rev G):** Sunny Lotay (RPEQ, Lotay Civil) is named as the RPEQ who signs JCE's engineering outputs. [TBC - Jayden: his RPEQ number, CV and written consent to be named; Lotay Civil address for F2.] Only contact on file: info@lotaycivil.com.au.
 2. **Insurance:** written confirmation from Webber that PL rises to $20M on award (the proposal says JCE will lift it); workers compensation certificate (icare) and confirmation of cover for Queensland work; motor vehicle certificate.
 3. **Partners:** names, addresses, key people, backups, projects and referees for F1, F2 and E2 once quotes arrive (Section 5).
 4. **JCE backup project lead** (F1 and Section 2).
@@ -76,7 +76,7 @@ Send the reply owed to Richard Gale (27/07 Cameron Place proposal) before the Ve
 | PS1 Economics | $49,500 | Economics | 1.8 |
 | PS2 Engagement (Option B) | $22,000 | Economics | 1.4 |
 | PS3 Marine engineering (RPEQ) | $35,200 | Marine | 1.5 |
-| PS4 RPEQ (Civil) sign-off | $4,400 | Marine Option B or Lancini | 1.5 |
+| PS4 RPEQ (Civil) sign-off | $4,400 | Sunny Lotay (Lotay Civil) or marine Option B | 1.5 |
 | PS5 Geotechnical (RPEQ) | $6,600 | Geotechnical | 1.5 |
 | PS6 Planning and urban design | $17,600 | Planning (+ Informed Architects A3) | 1.5 |
 | PS7 Environment | $15,400 | Ecology | 1.9 |
@@ -108,7 +108,7 @@ RFIs.md (11/10) is still right, with one change: question 8 no longer asks wheth
 | Evaluation criteria addressed | Local knowledge: FP Section 1 and D1. Experience: Section 7 and E2. Capacity and personnel: Sections 2 and 7, F1, F2. Methodology and program: Sections 3 to 6, H1, Gantt with hold points. Price: Section 10 and I1 |
 | Dates | Close, cut-off, program and milestones all in the future and match the Scope (Activity Plan 1 month, Draft end Feb 2027, Final end Apr 2027, presentation May 2027) |
 | Insurance | PI exceeds requirement; PL to be lifted to $20M on award (per Win Themes); WC and MV certificates outstanding |
-| Sign-off | QLD engineering signed by RPEQs (Ben Lancini for civil, subject to confirmation; marine and geotechnical partners' RPEQs) |
+| Sign-off | QLD engineering signed by RPEQs (Sunny Lotay, Lotay Civil, for JCE's engineering outputs; marine and geotechnical partners' RPEQs) |
 | Departures | Four, no price effect (K1) |
 | AI use | Claude was used to prepare these drafts from the tender documents. Keep a record of AI use (Conditions cl 4) and confirm the tool and settings meet Council's rules (no Council confidential or personal information in public AI tools or tools that train on inputs) |
 
