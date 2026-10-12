@@ -35,8 +35,8 @@ CREATE TABLE planning.requirements (
     -- no value without a citation or an explicit user entry
     CHECK (status IN ('unresolved','conflict')
            OR (value_json IS NOT NULL AND ((quote IS NOT NULL AND quote <> '' AND file_sha256 IS NOT NULL)
-                                           OR extraction_method = 'user_entered'))),
-    CHECK (extraction_method <> 'user_entered' OR (entered_by IS NOT NULL AND entered_at IS NOT NULL))
+                                           OR COALESCE(extraction_method = 'user_entered', false)))),
+    CHECK (extraction_method IS DISTINCT FROM 'user_entered' OR (entered_by IS NOT NULL AND entered_at IS NOT NULL))
 );
 
 CREATE INDEX ix_requirements_key       ON planning.requirements (requirement_key, status);

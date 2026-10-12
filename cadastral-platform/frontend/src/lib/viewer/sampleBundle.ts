@@ -170,6 +170,6 @@ export function sampleComplianceCheck(item: PlacedItem, cat: Map<string, Catalog
   const c = cat.get(item.itemId); if (!c) return [];
   const fp = footprint(item.p, c.dims, item.yaw); const out: string[] = [];
   if (rectsOverlap(fp, [10, -12, 13, 0])) out.push('over DBYD buffer');
-  if (c.dims.h > 1 && (fp[0] < -15 + 0.9 || fp[2] > 15 - 0.9 || fp[3] > 20 - 0.9) && item.p[2] < 100.85 + 30) { if (Math.abs(fp[0]) < 16 && fp[1] < 20) out.push('inside 0.9 m boundary setback'); }
+  if (c.dims.h > 1 && (fp[0] < -14.1 || fp[2] > 14.1 || fp[3] > 19.1 || fp[1] < -19.1)) out.push('inside 0.9 m boundary setback');
   return out;
 }
