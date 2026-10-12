@@ -311,7 +311,7 @@ def exec_summary(ctx: Ctx) -> list:
         fg, bg = T.STATUS_COL[kind]
         tiles.append([Paragraph(f'<font name="Jost-Bold" size="20" color="{fg}">{n}</font>', S["body"]),
                       Paragraph(f'<font name="Mono-Medium" size="6" color="{fg}">{lab.upper()}</font>', S["body"])])
-    tt = Table([[x[0] for x in tiles], [x[1] for x in tiles]], colWidths=[CW / 5] * 5, rowHeights=[22, 12])
+    tt = Table([[x[0] for x in tiles], [x[1] for x in tiles]], colWidths=[CW / 5] * 5, rowHeights=[26, 14])
     sty = [("ALIGN", (0, 0), (-1, -1), "LEFT"), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("LEFTPADDING", (0, 0), (-1, -1), 9),
            ("TOPPADDING", (0, 0), (-1, -1), 1), ("BOTTOMPADDING", (0, 0), (-1, -1), 1)]
     for i, k in enumerate(("affected", "nearby", "clear", "unchecked", "unresolved")):
