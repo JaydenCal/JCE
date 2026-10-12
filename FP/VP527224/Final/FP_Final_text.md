@@ -82,7 +82,7 @@ The methodology has seven stages that deliver the four milestone deliverables in
 - Inception meeting with Council at Mossman, combined with site visit 1: objectives, stakeholders, adjacent projects, communication protocols and the information Council will provide (JCE, with the economics partner).
 - Inspection of the site, Dickson Inlet, the public boat ramp, the marinas and the fuel facility, and initial meetings with key operators where Council arranges them (JCE; ecology walkover by the ecology partner).
 - Review of previous studies, Council reports, the Douglas Shire Planning Scheme, the FNQ Regional Plan, State Planning Policy, Destination 2045 and the Mossman Transition Plan; GIS base mapping of tenure, overlays, ground elevation, storm tide and flood data (JCE).
-- Drone photogrammetry of the site, the Dickson Inlet frontage and the boat ramp during site visit 1 (orthophoto and 3D model), used as the current base for the constraints mapping and concept plans and for engagement visuals, within the airspace limits in Section 7 (JCE).
+- Drone photogrammetry of the site, the Dickson Inlet frontage and the boat ramp during site visit 1 (orthophoto, 3D model and high-resolution aerial stills and video), used as the existing-condition record and current base for the constraints mapping and concept plans, and for engagement and Council presentation imagery, within the airspace limits in Section 7 (JCE).
 - Activity Plan and Program within one month of award: comparable marine precincts to be researched, industry partners and community representatives to be engaged, the engagement plan and the detailed program. HP1: Council accepts the Activity Plan.
 
 #### Stage 2  Marine industry research, market and economic analysis
@@ -151,6 +151,7 @@ Jayden Callen is the single point of contact. JCE will hold fortnightly online p
 - Activity Plan and Program: one month from contract award (08/12/2026 on the assumed award date)
 - Draft Scoping Report (PDF and Word): end of February 2027 (26/02/2027)
 - Final Scoping Report (PDF and Word) with master plan drawings and figures (PDF, with CAD and GIS files): end of April 2027 (30/04/2027)
+- High-resolution aerial stills and video of the site, and the orthophoto, for the reports, engagement material and the Council presentation (with the Final Scoping Report files)
 - Presentation to a Council meeting: May 2027
 - Monthly progress reports, invoice records and accruals forecasts as required by the Contract
 
@@ -172,7 +173,7 @@ The program assumes contract award by 09/11/2026 (Council's expected decision da
 
 ## 7.  Team and experience
 
-Jayden Callen, Director, JCE Infrastructure. BEng (Hons) Civil, MIEAust (EA 11036201), National Engineering Register application in progress. Supplier's Representative, project lead and single point of contact. Civil engineer with more than eight years of experience across land development, stormwater and flooding, water and sewerage, roads, and Defence infrastructure delivery with tier-one contractors. CV attached (Schedule F1). Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing with RTK positioning, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
+Jayden Callen, Director, JCE Infrastructure. BEng (Hons) Civil, MIEAust (EA 11036201), National Engineering Register application in progress. Supplier's Representative, project lead and single point of contact. Civil engineer with more than eight years of experience across land development, stormwater and flooding, water and sewerage, roads, and Defence infrastructure delivery with tier-one contractors. CV attached (Schedule F1). Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
 
 - **Civil Design Manager, Langtree Consulting Engineers, Townsville (03/2025 to 05/2026).** Managed four civil designers and concurrent 50 to 100 lot subdivisions; coordinated flood modelling, electrical and hydraulic subconsultants into joint design packages; prepared engineer's estimates and bills of quantities; chaired client and stakeholder meetings. Included the DATSIP subdivisions at Aurukun, Pormpuraaw and Napranum.
 - **Senior Engineer and Design Manager, SCP Consulting (06/2023 to 03/2025).** Managed a multidisciplinary design team and external subconsultants; contractor point of contact for Lendlease and CPB Contractors on Defence projects at HMAS Watson, RAAF Base Tindal, RAAF Base Townsville and HMAS Cairns; 12-month site engineer secondment to CPB, including about 10 km of potable and fire water mains at RAAF Base Townsville.

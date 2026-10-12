@@ -1,6 +1,6 @@
 # Submission checklist: VP527224 / DSC RFQ 2026-092 Port Douglas Marine Industry Precinct Scoping Study
 
-**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience and the Craig Sullivan farm drainage example, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
+**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status unchanged (draft ready, no Pursue/Pass tick yet).
 

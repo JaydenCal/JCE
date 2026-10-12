@@ -78,7 +78,7 @@ The methodology follows Brief sections 3 to 6 in three stages that match Council
 
 ### Stage 1: Start-up, investigations and Concept Design Basis (to the 10% workshop, 12/02/2027)
 
-- Start-up meeting with Council and a two-day site appraisal of the whole corridor: drainage lines, culvert condition, verges, accesses, stobie poles, trees and interfaces, with a photo log (by 04/12/2026). JCE will also fly the corridor with its RTK drone and process the capture in Autodesk ReCap Pro into an orthophoto and a terrain surface of existing conditions (verges, accesses, culvert inlets and outlets, trees and stobie poles); the ReCap surface feeds the InfraWorks and Civil 3D concept design model as context for the options and workshops, and supplements the engineering survey without replacing it.
+- Start-up meeting with Council and a two-day site appraisal of the whole corridor: drainage lines, culvert condition, verges, accesses, stobie poles, trees and interfaces, with a photo log (by 04/12/2026). JCE will also fly the corridor with its RTK drone and process the capture in Autodesk ReCap Pro into an orthophoto and a terrain surface of existing conditions (verges, accesses, culvert inlets and outlets, trees and stobie poles); the ReCap surface feeds the InfraWorks and Civil 3D concept design model as context for the options and workshops, and supplements the engineering survey without replacing it. High-resolution aerial stills and video from the same flights form part of the existing-condition record and are used in Council's workshop presentations.
 - Project management plan, program, risk register and Safety in Design hazard register.
 - Collection and review of DIT's intersection design, Council's CWMS and stormwater layout plans, the approved #73 CHR design, the Bollen Road closure, the link road and roundabout options, development plans, AADT and crash data.
 - BYDA search and services conflict register; liaison with SA Power Networks, SA Water, NBN Co and the gas network operator.
@@ -123,6 +123,7 @@ JCE will not start any SP2 or SP3 work until Council issues a written Variation 
 - Project staging plan
 - Concept design cost estimate
 - Appendices: engineering survey, geotechnical and pavement design report, Tree Assessment Report and lighting concept
+- Drone orthophoto and high-resolution aerial stills and video of existing conditions along the corridor (digital files)
 
 Design status. Drawings and reports are issued for the purpose stated in the transmittal. Concept design documents are not suitable for construction.
 
@@ -160,7 +161,7 @@ The program assumes Council returns consolidated comments within ten business da
 - Costs: engineer's estimates, bills of quantities and variation pricing.
 - Software: Civil 3D (advanced, with AutoLISP automation), Navisworks and InfraWorks.
 - Drone photogrammetry workflow: automated flight planning in DroneDeploy (or DJI Pilot 2 / DJI FlightHub); capture with RTK corrections from the AUSCORS network or a local base; ground control and independent check points to verify accuracy; Autodesk ReCap Pro for point clouds, surfaces and orthophotos; Autodesk InfraWorks and Civil 3D for design integration; and QGIS for GIS and asset register delivery.
-- Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing with RTK positioning, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
+- Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
 
 **Resources and equipment.** JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE delivers drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery). JCE will deploy a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category, with CASA operator accreditation in place before services start. Hawthorn Road is more than 30 km from the nearest controlled aerodromes (Adelaide Airport and Parafield), well outside the 5.5 km limit for the excluded category; flights will be in daylight, within visual line of sight, below 120 m and clear of road users and the public as CASA's standard operating conditions require.
 
