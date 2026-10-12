@@ -67,14 +67,14 @@ Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the n
 8. Returnables: registered address, signatures and dates, R4 rows for clauses 12.7 and 11.3 (recommend deleting), insurance policy numbers, addenda re-check, site inspection, staff numbers, QA, WHS, IR, sustainability, modern slavery and ATSI answers (as listed in Rev F).
 9. FP number.
 
-Drone experience added from Jayden's 12/10 notes (FP Sections 2.1 and 5.0, Attachment B, R10): photogrammetry with DroneDeploy flight planning, RTK capture, high-resolution aerial stills and video, ReCap Pro processing into InfraWorks and Civil 3D, QGIS delivery; no projects, clients or dates printed except the Craig Sullivan example. Note on wording: the approved Glide Inside capability paragraph is in FP Section 5.0 and Returnable 10 as given, with one word fitted ("offers" instead of "delivers") because no drone work has been delivered yet and the earlier brief ruled out track record claims. Change it back only if JCE has delivered drone photogrammetry before. It states the capability is used only for the optional Item 10, consistent with the Sydney Airport limits in Section 2.1. No LiDAR is mentioned.
+Drone experience added from Jayden's 12/10 notes (FP Sections 2.1 and 5.0, Attachment B, R10): photogrammetry with DroneDeploy flight planning, RTK capture, high-resolution aerial stills and video, ReCap Pro processing into InfraWorks and Civil 3D, QGIS delivery; no projects, clients or dates printed except the Craig Sullivan example. The approved Glide Inside capability paragraph is in FP Section 5.0 and Returnable 10 as worded ("JCE delivers drone photogrammetry"), now supported by Jayden's statement that he has delivered drone photogrammetry before. It states the capability is used only for the optional Item 10, consistent with the Sydney Airport limits in Section 2.1. No LiDAR is mentioned.
 
 ## 6. Files (repo FP/VP527819/Final/)
 
 | File | Lodge? |
 |---|---|
 | JCE_FP_VP527819_Final_RevG.docx / .pdf (12 pages) | Yes, signed |
-| FP_Final_text_RevG.md (also in Dropbox 02_Submission as FINAL_RevG_2026-10-12_FP_Final_text.md) | Paste into branded template |
+| FP_Final_text_RevG.md (also in Dropbox 02_Submission as FINAL_RevG_2026-10-12_FP_Final_text_v2.md; the first RevG upload without "_v2" is superseded) | Paste into branded template |
 | IWC Transport Condition Audit_Reval RFT 47-26 Returnable Documents_JCE_FILLED_RevG.docx / .pdf, and _answers_RevG.md | Copy into Council's form, sign, PDF |
 | JCE_RFT47-26_Gantt_RevG.png | In FP and R7 |
 | RFIs_Final.md | Lodge questions by 21/10/2026 (unchanged; RFI 3 on capture method still relevant) |
