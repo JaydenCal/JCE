@@ -1,7 +1,7 @@
 {
  "facts": {
   "development_type": "dwelling_house",
-  "started": "2026-10-12T17:19:28+00:00",
+  "started": "2026-10-12T17:21:26+00:00",
   "args": {
    "check_network": false,
    "lga": null,
@@ -50,7 +50,7 @@
   "levels_provenance": {
    "source": "NSW_5M_Elevation ImageServer exportImage",
    "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_5M_Elevation/ImageServer",
-   "retrieved": "2026-10-12T17:19:39+00:00",
+   "retrieved": "2026-10-12T17:21:33+00:00",
    "copyright": "DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata)",
    "datum": "AHD (orthometric, per service heightModelInfo)",
    "native_cell_web_mercator_units": 5.0,

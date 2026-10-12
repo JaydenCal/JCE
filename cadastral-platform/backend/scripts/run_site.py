@@ -435,6 +435,46 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     else:
         rep.add("SA5 DXF + PDF plan", SKIPPED, "needs ENV and SA4 outputs")
 
+    # ---- multi-sheet civil plan set (PDF + DXF)
+    if getattr(args, "planset", False):
+        if env_out is not None and sa4 is not None and args.acknowledge:
+            try:
+                from app.agents.sa5_cad_dxf.planset import PlansetInput, build_planset
+                from app.imagery.provider import provider_from_env
+                dem = None
+                if getattr(args, "levels", None) == "nsw":
+                    from app.agents.sa3_terrain.live_levels import fetch_levels
+                    dem = lambda poly: fetch_levels(poly.wkt, lot.mga_srid, buffer_m=5.0, max_points=3000, accuracy_m=getattr(args, "levels_accuracy_m", None)).survey  # noqa: E731
+                lot_pl = lot_with_envelope(sa1, env_out)
+                council = getattr(args, "council", None) or args.lga or lot.lga_name or ""
+                if not council and getattr(args, "rules_json", None):
+                    council = "Gunnedah" if "Gunnedah" in Path(args.rules_json).read_text() else ""
+                pts = [tuple(p) for p in params.get("terrain", {}).get("survey", {}).get("points", [])]
+                esc_run = None
+                try:
+                    import importlib
+                    m = importlib.import_module("app.agents.sa10_esc")
+                    if hasattr(m, "Sa10Esc"):
+                        from app.agents.sa10_esc.models import Sa10EscInput
+                        def esc_run(site):  # noqa: E306
+                            return m.Sa10Esc().run(Sa10EscInput(lot=lot_pl, development_type=dev, footprint_wkt=site.footprint.wkt if site.footprint is not None else None,
+                                                                 driveway=env_out.driveway, services=sa4.to_cad_services(), output_dir=str(out)))
+                except Exception:  # noqa: BLE001
+                    esc_run = None
+                pin = PlansetInput(lot=lot_pl, development_type=dev, project_title=rr.project_title, drawn_by="JCE", council_name=council, driveway=env_out.driveway,
+                                   driveway_checks=list(env_out.checks), services=sa4.to_cad_services(), rwt=sa4.to_cad_rwt(), terrain=R.get("SA3"), survey_points=pts, dem_fetch=dem,
+                                   levels_accuracy_m=getattr(args, "levels_accuracy_m", None), ffl_value=ffl_value if ffl_lab else None, ffl_label=ffl_lab,
+                                   imagery=provider_from_env("NSW"), esc_runner=esc_run, unresolved=list(env_out.envelope.unresolved_elements),
+                                   address=args.address or "")
+                res = build_planset(pin, out, "planset")
+                rep.add("SA5 plan set", OK, f"{len(res['sheets'])} sheets; font {res['font']}; DXF audit errors {res['dxf_stats'].get('audit_errors')}", [res["pdf"], res["dxf"]])
+            except Exception as ex:  # noqa: BLE001
+                import traceback
+                traceback.print_exc()
+                rep.add("SA5 plan set", FAILED, _err(ex))
+        else:
+            rep.add("SA5 plan set", SKIPPED, "needs ENV and SA4 outputs and --acknowledge")
+
     # ---- SA6 (the registry's SA6 is a stub; the real generator is called directly)
     footprint_wkt = None
     if env_out is not None and sa4 is not None:
@@ -568,6 +608,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--profile", help="JurisdictionProfile JSON (custom municipality: units, CRS, locale, vehicles, cadastre source)")
     p.add_argument("--parcel", help="CustomParcelRequest JSON (GeoJSON/DXF/coordinates/traverse) used when the profile's cadastre_source is 'custom'")
     p.add_argument("--scale", type=int, default=200)
+    p.add_argument("--planset", action="store_true", help="also write the multi-sheet civil plan set planset.pdf / planset.dxf")
+    p.add_argument("--council", help="council name for cited-requirement lookup in the plan set (default --lga / SA1 / rules file)")
     p.add_argument("--base-rl", type=float, default=0.0, help="placeholder floor RL for the scene when no survey exists")
     p.add_argument("--flood-level-ahd", type=float, help="design flood level, RL m AHD (council certificate / flood study); FFL = level + freeboard")
     p.add_argument("--flood-event", default="1% AEP", help="flood planning event the level refers to (default 1%% AEP)")

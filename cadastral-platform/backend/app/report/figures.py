@@ -84,7 +84,11 @@ def fetch_aerial(imagery, window, srid, width, height, max_px=1700):
     try:
         s = max(width, height)
         px = (max(64, int(max_px * width / s)), max(64, int(max_px * height / s)))
-        r = imagery.fetch(window, srid, px)
+        try:
+            r = imagery.fetch(window, srid, px)
+        except Exception:  # noqa: BLE001  one retry for transient service errors
+            import time; time.sleep(1.5)
+            r = imagery.fetch(window, srid, px)
         im = Image.open(io.BytesIO(r.data)).convert("RGB")
         b = io.BytesIO()
         im.save(b, "JPEG", quality=82, optimize=True)

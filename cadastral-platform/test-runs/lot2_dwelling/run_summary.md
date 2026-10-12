@@ -1,6 +1,6 @@
 # Run summary: 2//DP227508
 
-- Generated: 2026-10-12T17:19:28+00:00 by `scripts/run_site.py`
+- Generated: 2026-10-12T17:21:26+00:00 by `scripts/run_site.py`
 - Development type: **dwelling_house**
 - Location input: `{'lotplan': '2//DP227508'}`
 - Lot: 2//DP227508, , zone R2, 956 m2 calculated (registered n/a); SA1 flags ['multi_zone']

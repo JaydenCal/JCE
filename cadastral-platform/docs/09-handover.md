@@ -78,5 +78,17 @@ Environment variables: `ANTHROPIC_API_KEY`, `ASSISTANT_MODEL` and cost caps, `EN
 9. Legal: solicitor review of all Terms documents; confirm referral arrangement and insurance statements; privacy policy page.
 10. Professional validation: registered surveyor, engineer and planner must check outputs on real jobs.
 
+## 9. Drawing data quality: LiDAR and roads (user requirement, decision 17)
+The user wants the **best-quality LiDAR** in all drawings from now on, and **roads and road details** shown properly. Today the plans use the NSW 5 m DEM (indicative only, accuracy unstated) and road centrelines only.
+What was checked on 2026-10-12:
+- NSW `NSW_Elevation_and_Depth_Theme` (portal.spatial.nsw.gov.au) offers only SpotHeight, RelativeHeight and Contour layers: topographic contours, not LiDAR.
+- NSW `maps.six.nsw.gov.au` has no 1 m LiDAR DEM service (NSW_Elevation is a footprint layer; NSW_5M_Elevation is a 5 m stereo-derived DEM).
+- The national source is **ELVIS (Geoscience Australia, elevation.fsdf.org.au)**: LiDAR point clouds (LAS/LAZ) and 1 m DEM tiles by project. The portal front page answers (200) from the sandbox; `elevation-direct-downloads` (S3) returned 403 and `api.elvis.ga.gov.au` was unreachable, so tile downloads were NOT tested. Allow those hosts (or download tiles manually and upload) and re-test.
+What to build next:
+1. ELVIS integration: find the newest, densest LiDAR project covering the lot (record project name, capture date, point density, stated vertical/horizontal accuracy and licence from its metadata: never assume), fetch tiles, classify ground, build a ground DEM/TIN and contours (0.1 to 0.5 m intervals by use), store provenance, and prefer it over the 5 m DEM automatically. Keep the 5 m fallback with its warning.
+2. Replace the "5 m DEM" caveat on plans with the real accuracy statement when LiDAR is used; cut/fill uncertainty must use the stated accuracy.
+3. Roads on the drawings: road centreline (NSW_Transport_Theme layer 5 verified), road reserve width from cadastre/council, kerb and road edge lines from LiDAR/imagery or supplied survey, pavement width, crossfall, levels along kerb and gutter at the frontage and across the crossover, adjoining driveways and street furniture where known, chainage, and cross-sections for driveway tie-in. Mark anything inferred from imagery as indicative.
+4. Allow customers to upload their own survey (DXF/LandXML/CSV/LAS) which overrides public data; the ingest code for DXF/CSV exists in `sa3_terrain/ingest.py`.
+
 ## 8. Start prompt for the next chat
-> Continue the JCE Site Planner build. Repo `jaydencal/jce`, branch `claude/peaceful-wright-d7itnp`, folder `cadastral-platform/`. Read `docs/09-handover.md` and `docs/03-decisions.md` first. Run the backend tests and fix failures, then review `test-runs/` outputs (plan set, report, ESCP, pack) against the user's feedback in section 7 and finish them. Be token-frugal: use subagents for independent work, grep instead of reading whole files, commit and push after each piece. Never invent requirement values: cite or mark UNRESOLVED.
+> Continue the JCE Site Planner build. NOTE the user wants best-quality LiDAR (ELVIS) and proper roads in all drawings (section 9). Repo `jaydencal/jce`, branch `claude/peaceful-wright-d7itnp`, folder `cadastral-platform/`. Read `docs/09-handover.md` and `docs/03-decisions.md` first. Run the backend tests and fix failures, then review `test-runs/` outputs (plan set, report, ESCP, pack) against the user's feedback in section 7 and finish them. Be token-frugal: use subagents for independent work, grep instead of reading whole files, commit and push after each piece. Never invent requirement values: cite or mark UNRESOLVED.
