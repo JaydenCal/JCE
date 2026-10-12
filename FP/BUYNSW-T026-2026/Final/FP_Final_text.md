@@ -168,7 +168,7 @@ Jayden Callen, Director and Principal Civil Engineer (civil lead). BEng (Hons) C
 - Jayden Callen (while at Langtrees): Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility, relevant to the containment and liner interfaces on this site. Referee for both Tablelands projects: Darren Quilliam, Tablelands Regional Council.
 - Council experience: Jayden has worked for a regional council in Far North Queensland, where he shortlisted consultants for a council RFT.
 
-Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. On this commission Sunny will review the civil design outputs before each major issue, certify the civil design and construction-stage certification, and act as backup project lead.
+Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. On this commission Sunny will review the civil design outputs before each major issue, certify the civil design, provide construction-stage certification and act as backup project lead.
 
 Livio Chiarot FIEAust, Director, SCP Consulting: independent technical peer review of the levels, earthworks and stormwater documentation before each major issue (reviewer, not certifier). Livio has more than 40 years in civil, hydraulic and fire services engineering.
 
