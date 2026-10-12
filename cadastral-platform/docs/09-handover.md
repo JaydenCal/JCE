@@ -25,14 +25,14 @@ An Australian (NSW first, QLD partial) platform that takes a lot and produces **
 | Requirements Resolver | Built; citation validator enforces quote-in-page and number-in-quote. Gunnedah knowledge base 113 requirements, 19 groups UNRESOLVED |
 | SA3 terrain / driveway / flood FFL | Built and tested on synthetic data and live 5 m DEM (too coarse for cut/fill on small lots; flagged) |
 | SA4 DBYD / RWT / connections | Built; vector DBYD PDFs only; no real BYDA data tested; clearances come from requirements (placeholders only behind an explicit flag) |
-| SA5 plans (single sheet) | Built. **Multi-sheet civil plan set being finished** (see `backend/app/agents/sa5_cad_dxf/planset/STATUS.md` if present) |
+| SA5 plans | Single sheet built. **12-sheet civil plan set built** (`sa5_cad_dxf/planset/`, samples in `test-runs/planset_*`): cover, existing site, proposed site, earthworks, stormwater, water+sewer, driveway plan, long section, crossover details, ESC, details, notes; JCE logo in every title block (also vectorised in DXF); aerial underlay; adjoining lot labels. **Not yet engineer-grade**: heavy aerial, dense DEM spot labels (C100), crowded labels (C400/C500), low chart on C410, tiny key plan, Quia sets had no aerial (NSW imagery HTTP 500) and Quia C410/C420/C600 pages were never reviewed. See `planset/STATUS.md` |
 | SA6 3D scene, viewer, first person, placement | Built. First-person was only partly confirmed in headless Chromium (screenshot showed the panel but camera did not move; mouse look and touch untested) |
 | SA7 PDF aligner | 40 synthetic tests; never run on a real architect plan; no OCR for raster pages |
 | SA8 layout model + 25 edit ops, Design Assistant | Built, tested with a fake LLM. **Never called the real Anthropic API.** Needs `ANTHROPIC_API_KEY`; not wired into real project pages (demo only); site-context hook not supplied |
 | SA9 constraints | 16 of 18 NSW layer types live-verified; contamination and transport corridors have no public layer; QLD none |
-| SA10 ESC | Built; ESC sheet with aerial and logo; fixes (fence at stockpile toe and low side, nicer legend) were requested late: check `test-runs/esc_lot2_dp227508/escp.pdf` |
-| SA11 pathway + pack + SoEE | In progress/partial: Codes SEPP and Housing SEPP are behind Cloudflare so most CDC/exempt rules are UNRESOLVED (see `backend/app/pack/STATUS.md`) |
-| Report rebuild | In progress (`backend/app/report/STATUS.md`); the old constraints report was judged poor (whole-polygon maps, raw dicts) |
+| SA10 ESC | **Built and revised** (fences at stockpile toes and along the low side of works, bordered symbol legend, DXF symbol blocks). 15 tests. Fall direction comes from the 5 m DEM: confirm on site |
+| SA11 pathway + pack + SoEE | **Built** (46 tests; sample packs in `test-runs/pack_*`): 65 cited rules resolved from Dept of Planning Inland/Housing Code summary tables and Gunnedah checklists, 16 UNRESOLVED; Codes SEPP, Housing SEPP, EP&A Regulation and Gunnedah LEP were blocked (Cloudflare). CDC is UNRESOLVED for all three test cases. See `backend/app/pack/STATUS.md` |
+| Site report | **Rebuilt** (`backend/app/report/`, 16 to 17 pages: cover with logo, executive summary, zoomed aerial figures, plain-English constraint pages, cited requirements, appendix). Pathway section not wired to SA11 yet; some pages spill; quotes cut at 150 chars |
 | Enquiry to JCE Infrastructure | Built (`/engineer`, `/enquiries`, DB 004, SMTP/webhook notifier). Needs `ENQUIRY_TO` + SMTP/webhook settings; privacy policy page is a placeholder |
 | Custom municipality | Built (profiles, units, custom parcels, document-driven requirements); db/006 untested on Postgres |
 | Branding | JCE logo (from jceinfrastructure.com.au) in `backend/app/branding/`; ABN/contact/registrations are blank by design |
@@ -59,7 +59,7 @@ NEXT_DIST=.next-dev npx next dev -p 3200     # then /, /projects, /legal/terms, 
 Environment variables: `ANTHROPIC_API_KEY`, `ASSISTANT_MODEL` and cost caps, `ENQUIRY_TO`, `ENQUIRY_SMTP_*`/`ENQUIRY_WEBHOOK_URL`, `ENQUIRY_PARTNER_TOKEN`, `IMAGERY_PROVIDER=nsw`, `IMAGERY_CACHE_DIR`, `SA1_*`, `SA2_*`, `SA9_ENDPOINT_*`, `BRAND_*`, `DESIGN_RETAILER_ALLOWLIST`, `TEST_DATABASE_URL`.
 
 ## 6. Known issues
-- Tests: last full run (non-DB) had failures in `test_sa10_esc` (agent mid-edit) and `test_sa1_cadastre::test_agent_nsw_full` (snapshot count 4 vs expected; probably the new neighbour/road queries) and `test_orch_rls.py::test_orchestrator_under_rls` (DB pool setup; passed earlier). Re-run and fix first.
+- Tests: final non-DB run on 2026-10-12: **466 passed, 44 skipped** (`--deselect tests/test_orch_rls.py`). `test_orch_rls.py::test_orchestrator_under_rls` errored at DB pool setup in one run (passed earlier): re-check with a scratch Postgres. DB tests (about 45) only run with `TEST_DATABASE_URL`; db/005 and db/006 were never loaded into Postgres.
 - Parallel agents sometimes `pkill` each other's `next dev` servers: use unique `NEXT_DIST` and ports, and never `pkill -f "next dev"` from a command containing that text.
 - Do not commit build output (`.next*/` is ignored now; an early commit added about 30 MB of `.next-dev`, so `.git` is large; consider `git filter-repo` if size matters).
 - The 51 ha Quia Road plan was nearly empty at plan scale: the plan set needs a key plan + site window for large lots (assigned; verify).
@@ -67,9 +67,9 @@ Environment variables: `ANTHROPIC_API_KEY`, `ASSISTANT_MODEL` and cost caps, `EN
 - Arial Narrow is proprietary: PDFs use Liberation Sans Narrow; DXF names Arial Narrow.
 
 ## 7. What the user asked for that is not done yet (priority order)
-1. Finish and review the multi-sheet plan set: cover, existing conditions (aerial, adjoining lot labels, existing contours), proposed site plan (proposed structure, FFL), earthworks (existing and proposed contours, cut/fill), stormwater, water and sewer, driveway plan + **longitudinal section**, **crossover details**, ESC, sections/details, notes; Arial Narrow; **company logo in every title block**.
-2. Finish the rebuilt report (aerial-based zoomed figures, plain-English findings, no raw dicts).
-3. ESCP legend and fence fixes (above).
+1. Polish the multi-sheet plan set (generator exists; see planset/STATUS.md for visual issues; review every page of the Quia sets). Original requirements: cover, existing conditions (aerial, adjoining lot labels, existing contours), proposed site plan (proposed structure, FFL), earthworks (existing and proposed contours, cut/fill), stormwater, water and sewer, driveway plan + **longitudinal section**, **crossover details**, ESC, sections/details, notes; Arial Narrow; **company logo in every title block**.
+2. Wire SA11 pathway/compliance into the report, fix page spills, add zone objectives once the LEP is obtained.
+3. (done) ESCP legend and fence fixes.
 4. Application engine: pathway (exempt/CDC/DA), compliance table, draft SoEE, application pack (needs the Codes SEPP etc.: ask the user to upload).
 5. Connect real data: SA9 loader for QLD, DBYD (BYDA API agreement, if lodgement for users is permitted), council flood certificate/levels, survey/LiDAR for cut/fill.
 6. Wire Design Assistant and viewer to real projects (`/site-model` loads scene bundles; first person needs a proper test in a real browser).

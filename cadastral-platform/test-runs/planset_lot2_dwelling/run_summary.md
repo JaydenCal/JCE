@@ -1,6 +1,6 @@
 # Run summary: 2//DP227508
 
-- Generated: 2026-10-12T17:27:22+00:00 by `scripts/run_site.py`
+- Generated: 2026-10-12T17:29:52+00:00 by `scripts/run_site.py`
 - Development type: **dwelling_house**
 - Location input: `{'lotplan': '2//DP227508'}`
 - Lot: 2//DP227508, , zone R2, 956 m2 calculated (registered n/a); SA1 flags ['multi_zone']
@@ -17,22 +17,15 @@
 | 8 | SA4 result | OK | 0 service assets, 0 connections; 0 unresolved requirement(s); no DBYD/RWT inputs supplied; No service assets supplied; results contain no existing-service constraints.; Depths are never inferred; unknown depths must be confirmed by potholing. All outputs unverified. |
 | 9 | SA5 result | OK | 12 annotations |
 | 10 | SA5 plan set | OK | 12 sheets; font Liberation Sans Narrow (metric-compatible substitute for the proprietary Arial Narrow; DXF text style 'ARIAL NARROW' -> arialn.ttf); DXF audit errors 0 |
-| 11 | SA6 scene bundle | UNRESOLVED | 5 parts; no terrain (no survey) |
-| 12 | SA9 constraints report | UNRESOLVED | 18 layers: 4 affected, 2 NOT CHECKED (no endpoint in endpoints_nsw.json, SA9_ENDPOINT_<KEY> or --sa9-endpoints); 4 trigger(s); rules with unresolved values: bushfire.habitable, generic, generic, generic |
 
 ## Files
 - `../test-runs/planset_lot2_dwelling/plan.dxf`
 - `../test-runs/planset_lot2_dwelling/plan.pdf`
 - `../test-runs/planset_lot2_dwelling/planset.pdf`
 - `../test-runs/planset_lot2_dwelling/planset.dxf`
-- `../test-runs/planset_lot2_dwelling/scene_bundle.json`
-- `../test-runs/planset_lot2_dwelling/constraints_report.pdf`
-- `../test-runs/planset_lot2_dwelling/constraints_report.json`
-- `../test-runs/planset_lot2_dwelling/constraints.geojson`
 - `run_summary.md`, `run_steps.json`
 
 ## Unresolved (nothing below was defaulted)
 - Envelope rules: site_cover_max, height_max
-- SA9 rules with unresolved values: bushfire.habitable, generic, generic, generic
 
 All outputs are indicative and unverified: the cadastre is not a survey and nothing here is a planning or building approval. Verify setbacks and requirements with the council / certifier.

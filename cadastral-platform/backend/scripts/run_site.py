@@ -474,6 +474,8 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                 rep.add("SA5 plan set", FAILED, _err(ex))
         else:
             rep.add("SA5 plan set", SKIPPED, "needs ENV and SA4 outputs and --acknowledge")
+        if getattr(args, "planset_only", False):
+            return _finish(rep, out)
 
     # ---- SA6 (the registry's SA6 is a stub; the real generator is called directly)
     footprint_wkt = None
@@ -609,6 +611,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--parcel", help="CustomParcelRequest JSON (GeoJSON/DXF/coordinates/traverse) used when the profile's cadastre_source is 'custom'")
     p.add_argument("--scale", type=int, default=200)
     p.add_argument("--planset", action="store_true", help="also write the multi-sheet civil plan set planset.pdf / planset.dxf")
+    p.add_argument("--planset-only", action="store_true", help="with --planset: stop after the plan set (skip SA6 scene and SA9 constraints)")
     p.add_argument("--council", help="council name for cited-requirement lookup in the plan set (default --lga / SA1 / rules file)")
     p.add_argument("--base-rl", type=float, default=0.0, help="placeholder floor RL for the scene when no survey exists")
     p.add_argument("--flood-level-ahd", type=float, help="design flood level, RL m AHD (council certificate / flood study); FFL = level + freeboard")

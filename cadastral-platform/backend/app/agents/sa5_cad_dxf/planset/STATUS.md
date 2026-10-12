@@ -18,3 +18,9 @@ Frame/title block (logo, stamp, revisions), C000, C100, C101, C200 (when levels 
 - Aerial site fetch can fail with HTTP 500 from the NSW service (retried at lower resolution; sheet notes absence).
 - DXF viewports use frozen layers; DXF not opened in a real CAD package (ezdxf audit only).
 - Text font: Liberation Sans Narrow in the PDF (bundled in ./fonts); DXF style ARIAL NARROW / arialn.ttf.
+
+## Run notes (sample sets in test-runs/planset_*)
+- Quia sets: site aerial returned HTTP 500 from the NSW imagery service for the window (sheets note "AERIAL UNDERLAY NOT AVAILABLE"); locality aerial missing for one set.
+- Visual issues seen: C100 DEM spot labels are dense/heavy; C410 chart sits low with a crowded chainage table; C400 SA3 dimension labels overlap; C500 SA10 labels crowded;
+  key plan for small lots is tiny; Quia preset building is placed on the envelope edge near the crossover.
+- `--planset-only` skips SA6/SA9 in run_site (used for the sample sets).

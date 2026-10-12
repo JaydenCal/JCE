@@ -138,13 +138,13 @@ def c410(ctx: Ctx) -> Sheet:
     zs = [e[1] for e in ex] + [x[1] for x in st]
     zmin, zmax = min(zs) - 0.3, max(zs) + 0.3
     from app.agents.sa5_cad_dxf.planset.core import STD_SCALES
-    hs = next((x for x in STD_SCALES if (L + 4) * 1000 / x <= 285), 1000)
+    hs = next((x for x in STD_SCALES if (L + 4) * 1000 / x <= 300), 1000)
     vs = hs
-    for k in (1, 2, 5, 10, 20):
+    for k in (10, 5, 2, 1):
         vs = hs / k
-        if (zmax - zmin) * 1000 / vs <= 105:
+        if (zmax - zmin) * 1000 / vs <= 100:
             break
-    X0, Y0 = 28.0, 100.0
+    X0, Y0 = 24.0, 150.0
     hx = lambda t: X0 + (t + 1) * 1000 / hs  # noqa: E731
     zy = lambda z: Y0 + (z - zmin) * 1000 / vs  # noqa: E731
     v.line([(X0 - 4, Y0 - 12), (hx(L) + 4, Y0 - 12)], "C-DRIV-LONG", False, 0.25)
@@ -219,14 +219,18 @@ def c420(ctx: Ctx) -> Sheet:
     sec = View("xsec", (10, 10, 332, 148), frame=True)
     sh.add(sec)
     sec.text(14, 143, "TYPICAL CROSSING SECTION (NOT TO SCALE): typical, to be confirmed by designer", 3.0, "TOP_LEFT", bold=True)
-    X, Y = 40.0, 70.0
-    sec.line([(X, Y), (X + 40, Y), (X + 40, Y + 4), (X + 44, Y + 4), (X + 44, Y), (X + 150, Y)], "C-DETL-LINE", False, 0.5)
-    sec.line([(X + 44, Y - 6), (X + 150, Y - 6)], "C-DETL-LINE", False, 0.25, "DASHED")
+    X, Y = 18.0, 85.0
+    sec.line([(X, Y), (X + 40, Y), (X + 40, Y + 4), (X + 44, Y + 4), (X + 44, Y), (X + 175, Y)], "C-DETL-LINE", False, 0.5)
+    sec.line([(X + 44, Y - 6), (X + 175, Y - 6)], "C-DETL-LINE", False, 0.25, "DASHED")
     sec.line([(X + 44, Y), (X + 44, Y - 6)], "C-DETL-LINE", False, 0.25)
-    for t, x, y in (("ROAD PAVEMENT", X + 15, Y - 4), ("KERB AND GUTTER / LAYBACK OR DISH CROSSING per council standard drawing", X + 40, Y + 12),
-                    ("DRIVEWAY PAVEMENT: thickness / concrete grade per Council standard drawing, to be confirmed", X + 100, Y + 6), ("SUBGRADE / BASE: per Council standard drawing, to be confirmed", X + 100, Y - 10)):
-        sec.text(x, y, t, 2.2, "BOTTOM_CENTER" if y > Y else "TOP_CENTER", layer="C-DETL-LINE")
-    sec.text(X + 100, Y - 24, "CROSSING WIDTH (excl. splays): see plan above", 2.2, "TOP_CENTER")
+    def lab(x, y, t, up):
+        for k, ln in enumerate(fonts.wrap(t, 2.2, 70)):
+            sec.text(x, y + (k * 3.0 if up else -k * 3.0), ln, 2.2, "BOTTOM_CENTER" if up else "TOP_CENTER", layer="C-DETL-LINE")
+    lab(X + 20, Y - 6, "ROAD PAVEMENT", False)
+    lab(X + 36, Y + 12, "KERB AND GUTTER / LAYBACK OR DISH CROSSING per council standard drawing, to be confirmed", True)
+    lab(X + 120, Y + 8, "DRIVEWAY PAVEMENT: thickness / concrete grade per Council standard drawing, to be confirmed", True)
+    lab(X + 120, Y - 9, "SUBGRADE / BASE: per Council standard drawing, to be confirmed", False)
+    sec.text(X + 120, Y - 30, "CROSSING WIDTH (excl. splays): see plan above", 2.2, "TOP_CENTER")
     c = s.cites
     for k in ("access.crossing_standard", "driveway.min_width_m", "driveway.max_width_m", "driveway.min_crossing_kerb_separation_m", "driveway.min_separation_from_common_boundary_m",
               "driveway.min_separation_m", "driveway.max_crossings_per_frontage", "driveway.min_culvert_diameter_mm.rural", "driveway.min_culvert_width_m"):
@@ -236,7 +240,7 @@ def c420(ctx: Ctx) -> Sheet:
     lines.append("PAVEMENT THICKNESS, REINFORCEMENT AND CONCRETE SPECIFICATION: no value cited in the council requirements supplied. Per Council standard drawing, to be confirmed.")
     lines.append("CROSSING TYPE (layback / dish / rural entrance with culvert): per Council standard access drawing (DCP C.1.4), to be confirmed with Council.")
     dv = View("n", (0, 0, 420, 297))
-    D.panel(dv, 130, 14, 328, 112, "NOTES (CITED STANDARDS)", lines, 2.1)
+    D.panel(dv, 205, 14, 328, 144, "NOTES (CITED STANDARDS)", lines, 2.0)
     sh.add(dv)
     sh.north = 0.0
     sh.legend = [LE("LOT BOUNDARY", "line", (0, 0.5, 0.1), 0.5, layer="C-PROP-BDY"), LE("DRIVEWAY / CROSSOVER", "fill", (0, 0, 0), 0.3, fill=(0.8, 0.8, 0.8), layer="C-DRIV-XOVR")]

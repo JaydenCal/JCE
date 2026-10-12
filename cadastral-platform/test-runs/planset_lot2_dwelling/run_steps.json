@@ -1,7 +1,7 @@
 {
  "facts": {
   "development_type": "dwelling_house",
-  "started": "2026-10-12T17:27:22+00:00",
+  "started": "2026-10-12T17:29:52+00:00",
   "args": {
    "check_network": false,
    "lga": null,
@@ -26,6 +26,7 @@
    "parcel": null,
    "scale": 200,
    "planset": true,
+   "planset_only": true,
    "council": null,
    "base_rl": 0.0,
    "flood_level_ahd": null,
@@ -51,7 +52,7 @@
   "levels_provenance": {
    "source": "NSW_5M_Elevation ImageServer exportImage",
    "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_5M_Elevation/ImageServer",
-   "retrieved": "2026-10-12T17:27:29+00:00",
+   "retrieved": "2026-10-12T17:29:58+00:00",
    "copyright": "DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata)",
    "datum": "AHD (orthometric, per service heightModelInfo)",
    "native_cell_web_mercator_units": 5.0,
@@ -69,14 +70,7 @@
    "site_cover_max",
    "height_max"
   ],
-  "sa4_unresolved": [],
-  "sa9_not_checked": 2,
-  "sa9_unresolved_rules": [
-   "bushfire.habitable",
-   "generic",
-   "generic",
-   "generic"
-  ]
+  "sa4_unresolved": []
  },
  "steps": [
   {
@@ -143,24 +137,6 @@
    "files": [
     "../test-runs/planset_lot2_dwelling/planset.pdf",
     "../test-runs/planset_lot2_dwelling/planset.dxf"
-   ]
-  },
-  {
-   "name": "SA6 scene bundle",
-   "status": "UNRESOLVED",
-   "detail": "5 parts; no terrain (no survey)",
-   "files": [
-    "../test-runs/planset_lot2_dwelling/scene_bundle.json"
-   ]
-  },
-  {
-   "name": "SA9 constraints report",
-   "status": "UNRESOLVED",
-   "detail": "18 layers: 4 affected, 2 NOT CHECKED (no endpoint in endpoints_nsw.json, SA9_ENDPOINT_<KEY> or --sa9-endpoints); 4 trigger(s); rules with unresolved values: bushfire.habitable, generic, generic, generic",
-   "files": [
-    "../test-runs/planset_lot2_dwelling/constraints_report.pdf",
-    "../test-runs/planset_lot2_dwelling/constraints_report.json",
-    "../test-runs/planset_lot2_dwelling/constraints.geojson"
    ]
   }
  ]

@@ -1,0 +1,143 @@
+{
+ "facts": {
+  "development_type": "shed",
+  "started": "2026-10-12T17:29:52+00:00",
+  "args": {
+   "check_network": false,
+   "lga": null,
+   "address": null,
+   "lotplan": "3//DP263990",
+   "random_vacant": false,
+   "centre": null,
+   "radius_m": 1500.0,
+   "min_area": 300.0,
+   "max_area": 2500.0,
+   "seed": null,
+   "buildings_url": null,
+   "development_type": "shed",
+   "zone_code": null,
+   "levels": "nsw",
+   "levels_accuracy_m": null,
+   "rules_json": "../test-runs/rules/RU1_outbuilding.json",
+   "params_json": null,
+   "sa9_endpoints": null,
+   "acknowledge": true,
+   "profile": null,
+   "parcel": null,
+   "scale": 200,
+   "planset": true,
+   "planset_only": true,
+   "council": null,
+   "base_rl": 0.0,
+   "flood_level_ahd": null,
+   "flood_event": "1% AEP",
+   "freeboard_m": null,
+   "report": false,
+   "title": null,
+   "out": "../test-runs/planset_quia_shed"
+  },
+  "lotplan": "3//DP263990",
+  "lga": "",
+  "zone": "RU1",
+  "area_m2": 509264.46,
+  "area_registered": null,
+  "flags": [
+   "road_tolerance_widened_to_25m"
+  ],
+  "snapshots": [
+   "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+   "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Transport_Theme/MapServer/5",
+   "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2"
+  ],
+  "levels_provenance": {
+   "source": "NSW_5M_Elevation ImageServer exportImage",
+   "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_5M_Elevation/ImageServer",
+   "retrieved": "2026-10-12T17:30:01+00:00",
+   "copyright": "DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata)",
+   "datum": "AHD (orthometric, per service heightModelInfo)",
+   "native_cell_web_mercator_units": 5.0,
+   "stride": 4,
+   "requests": 1,
+   "points": 1848,
+   "vertical_accuracy_m": 5.0,
+   "vertical_accuracy_source": "unknown (placeholder)"
+  },
+  "levels_warnings": [
+   "coarse sampling: every 4th cell used (cap 2000 points) - about 17.1 m mean spacing",
+   "vertical accuracy UNKNOWN: not stated in NSW_5M_Elevation metadata; 5.0 m placeholder used only so uncertainty is not understated (not a stated figure)"
+  ],
+  "env_unresolved": [
+   "site_cover_max",
+   "height_max"
+  ],
+  "sa4_unresolved": []
+ },
+ "steps": [
+  {
+   "name": "locate lot",
+   "status": "OK",
+   "detail": "lot identifier 3//DP263990",
+   "files": []
+  },
+  {
+   "name": "SA1 result",
+   "status": "OK",
+   "detail": "3//DP263990, , 509264 m2, zone RU1; flags ['road_tolerance_widened_to_25m']",
+   "files": []
+  },
+  {
+   "name": "levels (NSW 5 m DEM)",
+   "status": "UNRESOLVED",
+   "detail": "1848 points, NSW_5M_Elevation ImageServer exportImage, DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata); coarse sampling: every 4th cell used (cap 2000 points) - about 17.1 m mean spacing; vertical accuracy UNKNOWN: not stated in NSW_5M_Elevation metadata; 5.0 m placeholder used only so uncertainty is not understated (not a stated figure)",
+   "files": []
+  },
+  {
+   "name": "SA2 DCP rules",
+   "status": "UNRESOLVED",
+   "detail": "4 rule(s) USER ENTERED from ../test-runs/rules/RU1_outbuilding.json (not extracted from a DCP; unverified); not supplied: garage_front, site_cover_max",
+   "files": []
+  },
+  {
+   "name": "ENV result",
+   "status": "UNRESOLVED",
+   "detail": "envelope 470606 m2; unresolved rules: site_cover_max, height_max; 0 unresolved driveway requirement(s)",
+   "files": []
+  },
+  {
+   "name": "FFL (flood)",
+   "status": "UNRESOLVED",
+   "detail": "Obtain the flood level / flood planning level certificate from the council or enter it; dwelling FFL not set from flood. Freeboard: UNRESOLVED",
+   "files": []
+  },
+  {
+   "name": "SA3 terrain/earthworks",
+   "status": "OK",
+   "detail": "TIN built from the supplied survey",
+   "files": []
+  },
+  {
+   "name": "SA4 result",
+   "status": "OK",
+   "detail": "0 service assets, 0 connections; 0 unresolved requirement(s); no DBYD/RWT inputs supplied; No service assets supplied; results contain no existing-service constraints.; Depths are never inferred; unknown depths must be confirmed by potholing. All outputs unverified.",
+   "files": []
+  },
+  {
+   "name": "SA5 result",
+   "status": "OK",
+   "detail": "13 annotations",
+   "files": [
+    "../test-runs/planset_quia_shed/plan.dxf",
+    "../test-runs/planset_quia_shed/plan.pdf"
+   ]
+  },
+  {
+   "name": "SA5 plan set",
+   "status": "OK",
+   "detail": "12 sheets; font Liberation Sans Narrow (metric-compatible substitute for the proprietary Arial Narrow; DXF text style 'ARIAL NARROW' -> arialn.ttf); DXF audit errors 0",
+   "files": [
+    "../test-runs/planset_quia_shed/planset.pdf",
+    "../test-runs/planset_quia_shed/planset.dxf"
+   ]
+  }
+ ]
+}
