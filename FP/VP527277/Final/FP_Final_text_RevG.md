@@ -259,7 +259,7 @@ Jayden Callen is a civil engineer with more than eight years of experience acros
 - Council client work. Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility. Referee as above.
 - Regional and remote delivery. Civil design management, subconsultant coordination and site inspections for subdivisions in the remote Cape York communities of Aurukun, Pormpuraaw and Napranum (Langtree).
 - Drone photogrammetry project. Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Referee details available on request.
-- Condition inspection. Condition inspection and certification of an existing earthen flood levee about 647 m long at Gunnedah, with field dispersion and plasticity testing (JCE, 2026).
+- Defence head-contractor delivery. RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor). Referee: Maverick Partner, CPB Contractors, contact details available on request.
 - Roads and costs. Road geometry to the Austroads guides with Transport for NSW supplements, pavement design with CIRCLY, and engineer's estimates and bills of quantities, which are the basis of replacement cost unit rates.
 - Data, drone and GIS. Civil 3D, Navisworks and InfraWorks; CAD standards and automation in AutoLISP and Excel VBA; Autodesk ReCap Pro, DroneDeploy and QGIS (drone capability above).
 

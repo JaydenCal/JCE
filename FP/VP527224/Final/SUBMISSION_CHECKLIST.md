@@ -1,6 +1,6 @@
 # Submission checklist: VP527224 / DSC RFQ 2026-092 Port Douglas Marine Industry Precinct Scoping Study
 
-**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, two Tablelands Regional Council (QLD) projects with referee Darren Quilliam, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; RPEQ changed from Ben Lancini to Sunny Lotay (Lotay Civil); price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
+**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, two Tablelands Regional Council (QLD) projects with referee Darren Quilliam, a RAAF Base Townsville referee (Maverick Partner, CPB Contractors) in place of the Gunnedah levee project, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; RPEQ changed from Ben Lancini to Sunny Lotay (Lotay Civil); price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status unchanged (draft ready, no Pursue/Pass tick yet).
 
@@ -47,12 +47,13 @@ Most important first:
 5. **Far North Queensland council experience:** the proposal uses the cleared general statement only. Name the council and referee only if you want to and have permission.
 6. Schedule A2: bank details, postal address, director's full legal name as on the ASIC record.
 7. Schedules A3, A4, B1, G1 to G3: answer every Yes/No declaration (suggested answers are marked "Suggested" where JCE documents support them).
-8. Schedule E1 and E2: values and client contacts for the JCE projects listed (WSI Airport SRM-01, Gunnedah levee, Shoalhaven Water peer review), and any current engagement for E1.
+8. Schedule E1 and E2: values and client contacts for the JCE projects listed (WSI Airport SRM-01, Shoalhaven Water peer review), and any current engagement for E1.
 9. Last addendum number on VendorPanel (Quotation Form).
 10. Sign the Quotation Form and the offer block; date both.
 11. Drone (Rev G): get Craig Sullivan's consent to be named as a referee and his phone and email; [TBC - Jayden: location, year, approx. area] of the farm drainage survey (not printed in the FP).
 12. Drone (Rev G): CASA operator accreditation and drone registration in place before services start; [TBC - Jayden to confirm] DJI Terra licence if ReCap Pro is not used for the orthophoto.
 14. Tablelands Regional Council projects (Rev G): floodway rectification and leachate storage facility. [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement] for each. Confirm how RPEQ sign-off was handled on these QLD jobs before relying on them, whether each was delivered by JCE (for Schedule E2) or by Jayden at a previous employer (then F1 only), and that each falls within E2's last 5 years.
+16. RAAF Base Townsville referee (Rev G, replaces the Gunnedah levee project): confirm the referee's full name and title as written ("Maverick Partner, CPB Contractors"), consent to be named, phone and email; [TBC - Jayden: project year (E2 five-year window), package scope, JCE's role (as JCE or as SCP Consulting on secondment to CPB), value]; check any Defence confidentiality limits on what can be described.
 15. Referee: get Darren Quilliam's consent to be named, and his title, phone and email (printed FP says "contact details available on request").
 13. Drone airspace (Rev G): Port Douglas is about 60 km from Cairns Airport, far outside the 5.5 km controlled aerodrome limit. Nearby limits: helicopter landing sites on Dickson Inlet (Nautilus Aviation base at 35-39 Port Street, expected to open early 2027, with pads over the inlet; existing pad opposite the Sheraton), plus the 30 m from people and no-populous-area rules at the marinas and boat ramp. Check a CASA-verified drone app before each flight and coordinate with Nautilus Aviation. The FP states these limits in Section 7.
 
@@ -125,6 +126,6 @@ RFIs.md (11/10) is still right, with one change: question 8 no longer asks wheth
 | Price (40%) | 5 | 5 | 5 to 7 (depends on quotes) |
 | Weighted score | 4.4 | 5.6 (Rev F: 5.3) | 6.4 to 7.2 |
 
-Rev G re-score: the two Tablelands Regional Council projects (Far North Queensland council civil work, with a council referee) lift local knowledge from 5 to 6 and relevant experience from 4 to 5; weighted 5.3 to 5.6. The drone capability supports capacity but does not move it from 5. These gains depend on Jayden confirming the details in items 14 and 15.
+Rev G re-score: the two Tablelands Regional Council projects (Far North Queensland council civil work, with a council referee) lift local knowledge from 5 to 6 and relevant experience from 4 to 5; weighted 5.3 to 5.6. The drone capability supports capacity but does not move it from 5. The RAAF Base Townsville referee strengthens the evidence for relevant experience but does not change any score by a whole point. These gains depend on Jayden confirming the details in items 14 to 16.
 
 Changes made in RevF: North Queensland evidence (based in Townsville to 05/2026, Cape York DATSIP subdivisions, HMAS Cairns) and the client-side council statement; RPEQ sign-off named; study lead and integrator role with hold points and a management method; risks, non-conformance and coordination (H1 points); Gantt chart; Schedule I1 completed item by item; insurance position stated per the Win Themes; contractions and dashes removed. The remaining gap is partner evidence, which only the quotes can fill.

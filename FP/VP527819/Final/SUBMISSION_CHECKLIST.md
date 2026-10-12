@@ -56,7 +56,7 @@ Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the n
 
 ## 5. [TBC - Jayden] items (Rev G)
 
-1. Three similar council transport-asset projects with referees (R11). The Craig Sullivan farm survey is listed as a related capability project, not as one of the three.
+1. Three similar council transport-asset projects with referees (R11). Row 1 is the Tablelands floodway rectification (partial fit; year check). Two more are needed, ideally a condition audit or revaluation. The Craig Sullivan farm survey is listed as a related capability project, not as one of the three.
 2. Capture partner firm, field lead and equipment; valuer and signing valuer (FP 2.1, 5.0, R12, R13).
 3. Casual GIS technician: name, qualifications, QGIS experience, February start (FP 5.0 and 5.1, R12).
 4. Sunny Lotay and Livio Chiarot availability.
@@ -68,7 +68,7 @@ Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the n
 8. Returnables: registered address, signatures and dates, R4 rows for clauses 12.7 and 11.3 (recommend deleting), insurance policy numbers, addenda re-check, site inspection, staff numbers, QA, WHS, IR, sustainability, modern slavery and ATSI answers (as listed in Rev F).
 9. FP number.
 
-Drone experience added from Jayden's 12/10 notes (FP Sections 2.1 and 5.0, Attachment B, R10): photogrammetry with DroneDeploy flight planning, RTK capture, high-resolution aerial stills and video, ReCap Pro processing into InfraWorks and Civil 3D, QGIS delivery; no projects, clients or dates printed except the Craig Sullivan example. The approved Glide Inside capability paragraph is in FP Section 5.0 and Returnable 10 as worded ("JCE delivers drone photogrammetry"), now supported by Jayden's statement that he has delivered drone photogrammetry before. It states the capability is used only for the optional Item 10, consistent with the Sydney Airport limits in Section 2.1. No LiDAR is mentioned.
+Drone experience added from Jayden's 12/10 notes (FP Sections 2.1 and 5.0, Attachment B, R10): photogrammetry with DroneDeploy flight planning, RTK capture, high-resolution aerial stills and video, ReCap Pro processing into InfraWorks and Civil 3D, QGIS delivery; no projects, clients or dates printed except the Craig Sullivan example. The approved Glide Inside capability paragraph is in FP Section 5.0 and Returnable 10 as worded ("JCE delivers drone photogrammetry"), now supported by Jayden's statement that he has delivered drone photogrammetry before. It states the capability is used only for the optional Item 10, consistent with the Sydney Airport limits in Section 2.1. No LiDAR is mentioned. Tablelands projects are in the cover letter (floodway only), Section 5.0 (R11 list and bio), Attachment B, R10 history and R11 row 1.
 
 ## 6. Files (repo FP/VP527819/Final/)
 
@@ -78,7 +78,7 @@ Drone experience added from Jayden's 12/10 notes (FP Sections 2.1 and 5.0, Attac
 | FP_Final_text_RevG.md (also in Dropbox 02_Submission as FINAL_RevG_2026-10-12_FP_Final_text_v4.md; earlier RevG text uploads are superseded) | Paste into branded template |
 | IWC Transport Condition Audit_Reval RFT 47-26 Returnable Documents_JCE_FILLED_RevG.docx / .pdf, and _answers_RevG.md | Copy into Council's form, sign, PDF |
 | JCE_RFT47-26_Gantt_RevG.png | In FP and R7 |
-| RFIs_Final.md | Lodge questions by 21/10/2026 (unchanged; RFI 3 on capture method still relevant) |
+| RFIs_Final.md | Lodge questions by 21/10/2026 (unchanged; RFI 1 on partner experience is now even more important) |
 | Rev F files | Do not lodge |
 
 Plus the Dropbox 02_Submission/Returnables documents and certificates listed in the Rev F checklist (FINAL_2026-10-12_SUBMISSION_CHECKLIST.md). Lodgement steps are unchanged: re-check addenda, finish TBCs, update prices from quotes, sign, start lodging by 1:00 pm on 28/10/2026, keep the receipt.

@@ -132,6 +132,8 @@ Our organisation has the capacity to deliver the project condition audit data, s
 
 Related capability project (supports capability only; it is a private farm drainage job, not one of the three similar council transport-asset projects): Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Referee: Craig Sullivan, private client, phone and email [TBC - Jayden, with his consent].
 
+Additional referee for Defence and head-contractor delivery (not one of the three similar projects): RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor). Referee: Maverick Partner, CPB Contractors, phone and email [TBC - Jayden, with consent].
+
 | Previous project | Referee contact details |
 |---|---|
 | Contract Name: Floodway rectification<br>Description: Engineering for the rectification of a floodway on Council's road network (JCE)<br>Location: Tablelands Regional Council (QLD) [TBC - Jayden: site]<br>Value: [TBC - Jayden]<br>Date undertaken: [TBC - Jayden: year; must be within the last five years] | Name: Darren Quilliam<br>Organisation: Tablelands Regional Council (QLD)<br>Role: [TBC - Jayden]<br>Phone: [TBC - Jayden]<br>Email: [TBC - Jayden] |

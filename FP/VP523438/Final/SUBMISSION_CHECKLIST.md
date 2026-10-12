@@ -1,6 +1,6 @@
 # Submission checklist: VP523438, MBDC RFT 2026.013 Concept Design for Hawthorn Road
 
-**Rev G (12/10/2026, updated):** adds the Glide Inside / RTK drone capability paragraph and Jayden's drone photogrammetry experience and workflow (DroneDeploy flight planning, RTK via AUSCORS or local base, check points, ReCap Pro, InfraWorks / Civil 3D, QGIS) in FP 5.1, CASA sub-2 kg excluded category with accreditation in place before services start (site more than 30 km from Adelaide Airport and Parafield), a Stage 1 line where the ReCap surface feeds the concept model, and high-resolution aerial stills and video (experience sentence, Stage 1, and a deliverables line); lodge Rev G (13 pages), not Rev F. Adds the Craig Sullivan farm drainage drone survey and the Tablelands Regional Council floodway rectification (listed first, referee Darren Quilliam) to FP 5.4. Experience criterion re-scored 6 to 7 (council road floodway project with a council referee); weighted 6.9 to 7.1.
+**Rev G (12/10/2026, updated):** adds the Glide Inside / RTK drone capability paragraph and Jayden's drone photogrammetry experience and workflow (DroneDeploy flight planning, RTK via AUSCORS or local base, check points, ReCap Pro, InfraWorks / Civil 3D, QGIS) in FP 5.1, CASA sub-2 kg excluded category with accreditation in place before services start (site more than 30 km from Adelaide Airport and Parafield), a Stage 1 line where the ReCap surface feeds the concept model, and high-resolution aerial stills and video (experience sentence, Stage 1, and a deliverables line); lodge Rev G (13 pages), not Rev F. Adds the Craig Sullivan farm drainage drone survey and the Tablelands Regional Council floodway rectification (listed first, referee Darren Quilliam) to FP 5.4, and replaces the Gunnedah levee with RAAF Base Townsville delivery for CPB Contractors (referee Maverick Partner, CPB). Experience criterion re-scored 6 to 7 (council road floodway project with a council referee); weighted 6.9 to 7.1.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status: draft ready (no Pursue/Pass decision yet).
 
@@ -49,7 +49,8 @@ Stage split: Stage 1 $64,020; Stage 2 $135,940; Stage 3 $58,500. No budget figur
 ## 4. [TBC - Jayden] items
 
 1. **Sub-consultant quotes** (due 23/10/2026): select firms, replace allowances, adjust lump sum (FP 5.2, 8.1, 8.2).
-2. **Client contacts for experience** (FP 5.4, Brief 9 k): Katherine Aquatics and Gunnedah levee contacts. Brett Langtree and Livio Chiarot are listed as referees.
+2. **Client contacts for experience** (FP 5.4, Brief 9 k): Katherine Aquatics contact. Brett Langtree and Livio Chiarot are listed as referees. Gunnedah levee removed (Jayden, 12/10/2026).
+14. RAAF Base Townsville / CPB (FP 5.4): [TBC - Jayden: confirm referee full name and title as written ("Maverick Partner, CPB Contractors"), consent to be named, phone/email; project year (five-year windows), package scope, JCE's role (as JCE or a previous employer), value; any Defence confidentiality limits on what can be described].
 3. **Current commitments** (FP 5.3, Brief 9 c).
 4. **Workers compensation / accident cover**: confirm the cover held and attach a certificate (only a blank icare letter is on file); FP 11.0.
 5. **Livio Chiarot**: confirm availability as independent reviewer (FP 2.0).

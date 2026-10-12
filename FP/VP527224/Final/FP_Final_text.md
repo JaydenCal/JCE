@@ -181,6 +181,7 @@ Jayden Callen, Director, JCE Infrastructure. BEng (Hons) Civil, MIEAust (EA 1103
 - **Lead BIM services coordinator, AIR7000 Phase 1B MQ-4C Triton Facilities, RAAF Base Tindal (about $250 million).** Combined external consultant models to deconflict stormwater and fire mains.
 - **Katherine Aquatics, Katherine NT (about $10 million, design and construct for Sitzler and Katherine Town Council).** About 80 per cent of the civil design, including earthworks pads raised above the 1% AEP flood level, pavements, stormwater and water quality.
 - **JCE, Western Sydney International Airport Business Precinct Stage One (2026).** Managed the design program for the SRM-01 sewer rising main and the technical review of the contractor's sewage pumping station package.
+- **RAAF Base Townsville, Defence delivery project.** Engineering delivery for CPB Contractors (head contractor). Referee: Maverick Partner, CPB Contractors.
 - **Floodway rectification, Tablelands Regional Council (QLD).** Engineering for the rectification of a floodway on Council's road network.
 - **Leachate storage facility, Tablelands Regional Council (QLD).** Engineering for a landfill leachate storage facility.
 - **Drone photogrammetry.** Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Referee details available on request.
@@ -193,7 +194,7 @@ Airspace limits for this site. Port Douglas is about 60 km from Cairns Airport, 
 
 Relevant experience (criterion 2, 20%). Marine, maritime, environmental, planning and geotechnical experience for this study comes from the specialist partners, whose projects, staff and referees will be listed in Schedules E2, F1 and F2 once confirmed [TBC - Jayden: partner projects and referees after quotes]. Jayden's experience is in leading multidisciplinary infrastructure work, civil infrastructure and costing, including Queensland council civil works for Tablelands Regional Council, Defence works at HMAS Cairns and remote North Queensland communities.
 
-Referees: Brett Langtree, Director and Principal Civil Engineer, Langtree Consulting Engineers, 0400 699 979, brett@langtreeconsulting.com.au; Livio Chiarot FIEAust, Director, SCP Consulting, 0418 150 028, livio.chiarot@scpconsult.com.au. Darren Quilliam, Tablelands Regional Council: contact details available on request. Far North Queensland council referee (client-side role): available on request.
+Referees: Brett Langtree, Director and Principal Civil Engineer, Langtree Consulting Engineers, 0400 699 979, brett@langtreeconsulting.com.au; Livio Chiarot FIEAust, Director, SCP Consulting, 0418 150 028, livio.chiarot@scpconsult.com.au. Darren Quilliam, Tablelands Regional Council: contact details available on request. Maverick Partner, CPB Contractors (RAAF Base Townsville delivery): contact details available on request. Far North Queensland council referee (client-side role): available on request.
 
 ## 8.  Exclusions
 
