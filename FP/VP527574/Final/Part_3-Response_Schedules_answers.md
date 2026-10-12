@@ -26,8 +26,9 @@ Items marked **[TBC - Jayden]** need your input.
 | Quality Management Representative | Jayden Callen; JCE Quality Policy JCE-QMS-POL-001; PT, within the hours above |
 | Environmental Management Representative | Jayden Callen; JCE Environmental Policy JCE-ENV-POL-001; PT, within the hours above |
 | First Aid Officer | Not applicable: design-only engagement (site visits under JCE's WHS Management Plan JCE-WHS-PLN-001) |
-| Referee 1: name / company | Brett Langtree, Director and Principal Civil Engineer / Langtree Consulting Engineers (0400 699 979, brett@langtreeconsulting.com.au) [TBC - Jayden: confirm he agrees to be a referee for this tender] |
-| Referee 2: name / company | Livio Chiarot FIEAust, Director / SCP Consulting (0418 150 028, livio.chiarot@scpconsult.com.au) [TBC - Jayden: confirm] |
+| Referee 1: name / company | Darren Quilliam / Tablelands Regional Council (floodway rectification; contact details [TBC - Jayden: title, phone, email, consent]) |
+| Referee 2 (alternative to Langtree or Chiarot below; Schedule A has two lines) | Brett Langtree, Director and Principal Civil Engineer / Langtree Consulting Engineers (0400 699 979, brett@langtreeconsulting.com.au) [TBC - Jayden: confirm he agrees to be a referee for this tender] |
+| Alternative referee: name / company | Livio Chiarot FIEAust, Director / SCP Consulting (0418 150 028, livio.chiarot@scpconsult.com.au) [TBC - Jayden: confirm] |
 | Signed / for and on behalf of / dated | [signature] / JCE Infrastructure Pty Ltd / [dd] October 2026 |
 
 ## Schedule B: Response to Brief (methodology)
@@ -98,6 +99,7 @@ Items marked **[TBC - Jayden]** need your input.
 | Description | Organisation | Value | Completed on time |
 |---|---|---|---|
 | Flood levee inspection and certification (existing earthen levee about 647 m), 6887 Oxley Highway, Gunnedah NSW, report JCE-INS-001 (JCE, 2026) | [TBC - Jayden: client] | [TBC - Jayden] | [TBC - Jayden: Yes/No] |
+| Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network (JCE / Jayden Callen) | Tablelands Regional Council (referee: Darren Quilliam, contact details available on request) | [TBC - Jayden] | [TBC - Jayden] |
 | Harcourt Flood Study, Mount Alexander Shire (Venant Solutions, key personnel Michael South) | [TBC - Jayden: confirm client, value and date with Venant] | [TBC] | [TBC] |
 | Western Sydney International Airport Business Precinct Stage One: SRM-01 sewer rising main design program and SPS technical review (JCE, subconsultant to Underscore Projects) | Underscore Projects (client AT&L) [TBC - Jayden: confirm contact before listing] | [TBC - Jayden] | [TBC - Jayden] |
 

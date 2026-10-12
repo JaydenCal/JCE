@@ -1,6 +1,6 @@
 # Submission checklist: VP527224 / DSC RFQ 2026-092 Port Douglas Marine Industry Precinct Scoping Study
 
-**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; RPEQ changed from Ben Lancini to Sunny Lotay (Lotay Civil); price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
+**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, two Tablelands Regional Council (QLD) projects with referee Darren Quilliam, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; RPEQ changed from Ben Lancini to Sunny Lotay (Lotay Civil); price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status unchanged (draft ready, no Pursue/Pass tick yet).
 
@@ -52,6 +52,8 @@ Most important first:
 10. Sign the Quotation Form and the offer block; date both.
 11. Drone (Rev G): get Craig Sullivan's consent to be named as a referee and his phone and email; [TBC - Jayden: location, year, approx. area] of the farm drainage survey (not printed in the FP).
 12. Drone (Rev G): CASA operator accreditation and drone registration in place before services start; [TBC - Jayden to confirm] DJI Terra licence if ReCap Pro is not used for the orthophoto.
+14. Tablelands Regional Council projects (Rev G): floodway rectification and leachate storage facility. [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement] for each. Confirm how RPEQ sign-off was handled on these QLD jobs before relying on them, whether each was delivered by JCE (for Schedule E2) or by Jayden at a previous employer (then F1 only), and that each falls within E2's last 5 years.
+15. Referee: get Darren Quilliam's consent to be named, and his title, phone and email (printed FP says "contact details available on request").
 13. Drone airspace (Rev G): Port Douglas is about 60 km from Cairns Airport, far outside the 5.5 km controlled aerodrome limit. Nearby limits: helicopter landing sites on Dickson Inlet (Nautilus Aviation base at 35-39 Port Street, expected to open early 2027, with pads over the inlet; existing pad opposite the Sheraton), plus the 30 m from people and no-populous-area rules at the marinas and boat ramp. Check a CASA-verified drone app before each flight and coordinate with Nautilus Aviation. The FP states these limits in Section 7.
 
 ## 4. RFQs to send (final versions built today)
@@ -114,15 +116,15 @@ RFIs.md (11/10) is still right, with one change: question 8 no longer asks wheth
 
 ## 8. Evaluator scores (strict council panel, out of 10)
 
-| Criterion (weight) | 11/10 draft | Final RevF | With partners named and RPEQ confirmed |
+| Criterion (weight) | 11/10 draft | Final Rev G | With partners named and RPEQ confirmed |
 |---|---|---|---|
-| Local knowledge and experience (10%) | 3 | 5 | 7 |
-| Relevant experience (20%) | 3 | 4 | 7 |
+| Local knowledge and experience (10%) | 3 | 6 (Rev F: 5) | 7 |
+| Relevant experience (20%) | 3 | 5 (Rev F: 4) | 7 |
 | Capacity and key personnel (15%) | 4 | 5 | 7 |
 | Methodology and program (15%) | 6 | 8 | 8 |
 | Price (40%) | 5 | 5 | 5 to 7 (depends on quotes) |
-| Weighted score | 4.4 | 5.3 | 6.4 to 7.2 |
+| Weighted score | 4.4 | 5.6 (Rev F: 5.3) | 6.4 to 7.2 |
 
-Rev G re-score: no change. The drone capability and example support capacity (criterion 3) but do not lift any score by a whole point; capacity stays at 5.
+Rev G re-score: the two Tablelands Regional Council projects (Far North Queensland council civil work, with a council referee) lift local knowledge from 5 to 6 and relevant experience from 4 to 5; weighted 5.3 to 5.6. The drone capability supports capacity but does not move it from 5. These gains depend on Jayden confirming the details in items 14 and 15.
 
 Changes made in RevF: North Queensland evidence (based in Townsville to 05/2026, Cape York DATSIP subdivisions, HMAS Cairns) and the client-side council statement; RPEQ sign-off named; study lead and integrator role with hold points and a management method; risks, non-conformance and coordination (H1 points); Gantt chart; Schedule I1 completed item by item; insurance position stated per the Win Themes; contractions and dashes removed. The remaining gap is partner evidence, which only the quotes can fill.
