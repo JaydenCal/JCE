@@ -7,7 +7,7 @@ ABN 29 699 165 663 · 756 Quia Road, Gunnedah NSW 2380 · 0477 207 027 · jayden
 
 | Item | Detail |
 |---|---|
-| Proposal no | JCE-FP-VP527469 [FP number TBC - Jayden]   ·   Revision F (final for signature)   ·   Date 12/10/2026 |
+| Proposal no | JCE-FP-VP527469 [FP number TBC - Jayden]   ·   Revision G (final for signature)   ·   Date 12/10/2026 |
 | Client | Wagga Wagga City Council (the Principal), PO Box 20, Wagga Wagga NSW 2650 |
 | Attention | Isabel Giltrap, Tender Coordinator, via VendorPanel (VP527469) |
 | Site | Gregadoo Waste Management Centre, 162 Ashfords Road, Gregadoo NSW 2650 (EPL 6671) |
@@ -21,7 +21,7 @@ JCE Infrastructure Pty Ltd (JCE) offers to act as CQA Engineer for General Waste
 
 Our team is built around a Wagga Wagga based geotechnical partner, [Riverina CQA partner, TBC - Jayden from RFQ], which supplies experienced CQA technicians on site during all working hours of the works (Part D 1.13), a NATA-accredited soils laboratory in Wagga Wagga and a senior engineer with landfill liner and cap CQA experience. JCE is the contracting party and the CQA Engineer of record. Jayden Callen, Director, leads the commission personally: he reviews every daily record, hold point package and test result, attends site at the critical hold points, and signs the as-constructed CQA report for each cell, co-signed by the partner's senior landfill CQA engineer.
 
-We state openly that JCE has not previously acted as CQA Engineer on a landfill cell. The landfill CQA record in this team is the partner's, set out in Section 8 and Form 3. Jayden brings site quality assurance and earthworks inspection experience on Defence and civil projects, the management of specialist sub-consultants to one program, and a single point of accountability to Council for hold point releases against the 30/09/2027 deadline for Cell 3.1.
+We state openly that JCE has not previously acted as CQA Engineer on a landfill cell liner. JCE's landfill experience is engineering for a landfill leachate storage facility for Tablelands Regional Council (QLD), and the landfill CQA record in this team is the partner's, set out in Section 8 and Form 3. Jayden brings council client experience,  site quality assurance and earthworks inspection experience on Defence and civil projects, the management of specialist sub-consultants to one program, and a single point of accountability to Council for hold point releases against the 30/09/2027 deadline for Cell 3.1.
 
 The price is $696,815 excluding GST ($766,496 including GST). It comprises JCE's lump sum of $218,865 and provisional sums of $477,950 for the partner's resident technicians, the NATA testing, the liner integrity surveys and the check survey. Travel, accommodation and all other costs are included, as Annexure Item 9 requires.
 
@@ -68,6 +68,7 @@ How JCE runs the team:
 - Council's online WHS induction and the Contractor's site inductions for JCE and partner staff; attendance at the pre-start meeting and fortnightly site meetings (in person when on site, otherwise online).
 - Review of the Contractor's ITPs, program and material submittals (MQA certificates, roll and resin data, installer qualifications and welding procedures) before materials arrive.
 - Monthly progress reports and claims with the hold point, non-conformance and test registers.
+- Aerial records: at each JCE site visit, JCE will deploy a DJI Mavic 3 Enterprise with RTK to capture an orthophoto, a 3D surface of the exposed layer and high-resolution stills of progress and any defects, processed in Autodesk ReCap Pro and compared against the design surfaces in Civil 3D. The imagery supports the daily records, the monthly reports and the as-constructed CQA reports; it supplements and does not replace the Contractor's licensed survey or the check survey. Flights are coordinated with the Superintendent, the Contractor and Council's landfill operations, and kept clear of plant, staff and the public.
 
 ### Construction phase CQA by work element (B2 items 2.1 to 2.14 and 6.1 to 6.14)
 
@@ -100,6 +101,7 @@ A separate as-constructed CQA report for each cell collates the daily logs, phot
 | IQA laboratory and leak location survey reports | Within 5 business days of receipt | PDF |
 | As-constructed CQA report, Cell 3.1 | Within 10 business days of the final hold point | PDF + 2 printed copies |
 | As-constructed CQA report, Monocell M1.1 | Within 10 business days of the final hold point | PDF + 2 printed copies |
+| Aerial orthophotos, layer surfaces and high-resolution progress and defect imagery from JCE site visits | With the monthly report; compiled in each CQA report | GeoTIFF / PDF / JPG |
 
 ## 7.0   Program
 
@@ -120,19 +122,28 @@ The program follows the Contractor's approved construction program, which Counci
 
 | Role | Person and firm | Relevant experience |
 |---|---|---|
-| CQA Engineer of record (Lead CQA Engineer) | Jayden Callen, BEng (Civil)(Hons), MIEAust (EA 11036201), JCE | 8+ years in civil infrastructure. Site engineering and QA on Defence projects; earthen levee inspection and testing; hold point review of a contractor's pump station package. No previous landfill CQA commission. |
+| CQA Engineer of record (Lead CQA Engineer) | Jayden Callen, BEng (Civil)(Hons), MIEAust (EA 11036201), JCE | 8+ years in civil infrastructure. Engineering for a council landfill leachate storage facility (Tablelands Regional Council); site engineering and QA on Defence projects; earthen levee inspection and testing; hold point review of a contractor's pump station package; drone photogrammetry. No previous CQA commission on a landfill cell liner. |
 | Senior landfill CQA engineer | [Name, qualifications], [Riverina CQA partner, TBC - Jayden from RFQ] | [At least two NSW landfill cell or cap CQA projects: site, EPL, liner system, role, year, referee. TBC from RFQ] |
 | Resident CQA technicians | [Names], [Riverina CQA partner, TBC - Jayden from RFQ] | [Landfill liner and earthworks CQA experience, Level 1 earthworks experience, NATA field testing. TBC from RFQ] |
 | Specialist testing and survey | [Geosynthetics laboratory; leak location specialist; Wagga Wagga surveyor] | [NATA scopes and project lists TBC from RFQ] |
 
 **Jayden Callen.** Jayden Callen leads every JCE commission personally. Experience relevant to this role, as recorded in his CV:
 
+- Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility.
+- Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network.
 - Inspection and certification of an existing earthen flood levee about 647 m long at 6887 Oxley Highway, Gunnedah: condition inspection, field dispersion and plasticity testing, and certification report JCE-INS-001 (JCE, 2026).
 - Site engineering and quality assurance oversight for about 10 km of potable and fire water mains, carparks and water treatment facilities at RAAF Base Townsville on a 12-month secondment to CPB Contractors, including site supervision, safety audits, PFAS management and latent conditions tracking (SCP Consulting, 2023 to 2025).
 - Site support and construction surveillance for runway asphalt works at RAAF Base Tindal (KC-30A Airfield Works, about $1.1 billion), and site supervision of early civil investigation works for the Army Aviation Program of Works, Townsville.
 - Technical review of a design and construct contractor's sewage pumping station package at Western Sydney International Airport, recorded in review register SPS-REG-001 (59 items at Revision F, including four hold points).
 - Soil testing and site classification work early in his career (Northwest Projects, Gunnedah, 2018 to 2021), and construction phase civil design of bulk earthworks and grading for the HMAS Watson redevelopment (about $160 million).
 - Management of specialist sub-consultants to one program as Civil Design Manager at Langtree Consulting Engineers (2025 to 2026), including remote DATSIP subdivisions in Cape York.
+- Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Referee details available on request.
+
+**Council referee.** Darren Quilliam, Tablelands Regional Council (leachate storage facility and floodway rectification): contact details available on request.
+
+**Drone photogrammetry.** Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
+
+**Resources and equipment.** JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE delivers drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category, with operator accreditation in place before services start.
 
 **Landfill CQA record.** The partner's senior landfill CQA engineer and technicians provide the landfill liner CQA experience that Part D 1.3 and the CQA Plans call for. [Insert the partner's landfill CQA projects and two referees from the RFQ response - Jayden.]
 
@@ -155,7 +166,7 @@ JCE is based in Gunnedah, NSW (Form 8 Category C). The resident CQA technicians,
 |---|---|
 | Cell 3.1 not accepted by 30/09/2027 | Same-day hold point releases, next-day review of all records, IQA turnaround of 5 business days from a Wagga Wagga laboratory, Cell 3.1 report drafted progressively so it issues within 10 business days of the final hold point. |
 | JCE based about 630 km from site | Partner technicians on site during all working hours. Remote record review and written releases each day. JCE attends critical hold points and can be on site within 24 hours. |
-| JCE has no previous landfill CQA commission | Partner's senior landfill CQA engineer reviews the CQA Implementation Plan and records and co-signs each report; landfill-experienced technicians do the daily inspection. |
+| JCE has no previous CQA commission on a landfill cell liner | JCE has delivered engineering for a council landfill leachate storage facility. The partner's senior landfill CQA engineer reviews the CQA Implementation Plan and records and co-signs each report; landfill-experienced technicians do the daily inspection. |
 | Portions run concurrently | Partner can add a second technician on 24 hours' notice; PS1 and PS2 are priced by technician day. |
 | Asbestos and lead slag at M1.1 | Site-specific SWMS, asbestos awareness for all CQA staff, and compliance with the Contractor's asbestos management plan. |
 
@@ -165,7 +176,7 @@ JCE is based in Gunnedah, NSW (Form 8 Category C). The resident CQA technicians,
 - The GITA's Level 1 inspection and testing of the engineered fill layer, which the CQA Plans place with the Principal. A day rate is offered in Attachment A if Council wants this in the CQA contract (RFI 2).
 - Out-of-hours, weekend or public holiday attendance (a variation at the contract rates under Part D 1.8).
 - Retesting after failed tests or repairs, and extra site days caused by the Contractor's delays, non-conformances or a program longer than assumed in Section 7, which are charged at the rates in Attachment A.
-- Construction survey and as-constructed survey drawings (by the Contractor's licensed surveyor).
+- Construction survey and as-constructed survey drawings (by the Contractor's licensed surveyor). JCE's drone surfaces are CQA records, not a survey deliverable.
 - Design, design changes, approvals and EPA fees.
 
 ## 13.0   Assumptions
