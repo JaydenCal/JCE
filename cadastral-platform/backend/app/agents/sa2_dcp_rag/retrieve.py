@@ -105,5 +105,4 @@ def pg_search(conn, embedder: Embedder, query: str, zone_code: str | None = None
         rows = cur.fetchall()
     out = [Chunk(chunk_id=r[0], doc_id=r[1], page_from=r[2], page_to=r[3], section_ref=r[4], kind=r[5],
                  content=r[6], token_count=r[7]) for r in rows]
-    out.sort(key=lambda c: -rule_boost(c.content, zone_code) * 0.0)  # stable; fusion order preserved
     return out
