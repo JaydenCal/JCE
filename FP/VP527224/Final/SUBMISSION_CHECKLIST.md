@@ -1,6 +1,6 @@
 # Submission checklist: VP527224 / DSC RFQ 2026-092 Port Douglas Marine Industry Precinct Scoping Study
 
-**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, two Tablelands Regional Council (QLD) projects with referee Darren Quilliam, a RAAF Base Townsville referee (Maverick Partner, CPB Contractors) in place of the Gunnedah levee project, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; RPEQ changed from Ben Lancini to Sunny Lotay (Lotay Civil); price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
+**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, two Tablelands Regional Council (QLD) projects (Jayden at Langtree) with referee Darren Quilliam, a RAAF Base Townsville referee (Maverick Partner, CPB Contractors) in place of the Gunnedah levee project, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; RPEQ changed from Ben Lancini to Sunny Lotay (Lotay Civil); price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status unchanged (draft ready, no Pursue/Pass tick yet).
 
@@ -27,7 +27,7 @@ Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status 
 | 1 | Response Schedule (Part 6), completed and signed, with the checklist attached | Answers in repo `FP/VP527224/Final/03. 2026-092 Response Schedule (PART 6)_JCE_FILLED_RevG.docx` (+ .pdf); transfer into Council's Word file in Dropbox `00_Tender_Docs` |
 | 2 | Fee proposal (methodology, program, team, Price Schedule) `JCE_FP_VP527224_Final_RevG.pdf` | Repo `FP/VP527224/Final/` (Word copy beside it). Text for the branded template: `FP_Final_text.md` (repo and Dropbox) |
 | 3 | Certificate of currency (PI and PL) `Certificate_of_Currency_-_2026-07-14T105420.82.pdf` | Dropbox `02_Submission/Returnables` |
-| 4 | PL $20M confirmation from Webber, workers compensation certificate, motor vehicle certificate | Not on file: obtain |
+| 4 | PL $20M certificate (quote requested 12/10; bind before lodgement if possible), workers compensation certificate, motor vehicle certificate | Not on file: obtain |
 | 5 | CV: `Callen-Pell_NER-02_Detailed_CV.pdf`, plus RPEQ (Sunny Lotay) and partner CVs | Dropbox `02_Submission/Returnables`; partner CVs to come with quotes |
 | 6 | WHS: `JCE_WHS_Management_System_2026-06-22.pdf`, `JCE-WHS-POL-001`, `JCE-WHS-PLN-001`, `JCE-WHS-PRO-005`, `JCE-WHS-PRO-009` | Dropbox `02_Submission/Returnables` |
 | 7 | Environmental: `JCE-ENV-POL-001-Environmental_Policy.pdf` | Dropbox `02_Submission/Returnables` |
@@ -41,7 +41,7 @@ Binary files built in the repo (docx, pdf) could not be uploaded to Dropbox from
 Most important first:
 
 1. **RPEQ sign-off (Rev G):** Sunny Lotay (RPEQ, Lotay Civil) is named as the RPEQ who signs JCE's engineering outputs. [TBC - Jayden: his RPEQ number, CV and written consent to be named; Lotay Civil address for F2.] Only contact on file: info@lotaycivil.com.au.
-2. **Insurance:** written confirmation from Webber that PL rises to $20M on award (the proposal says JCE will lift it); workers compensation certificate (icare) and confirmation of cover for Queensland work; motor vehicle certificate.
+2. **Insurance:** PL $20M quote requested 12/10; bind before lodgement if possible and attach the certificate (the FP keeps "JCE will lift PL to $20M on award" until the policy is bound); workers compensation certificate (icare) and confirmation of cover for Queensland work; motor vehicle certificate.
 3. **Partners:** names, addresses, key people, backups, projects and referees for F1, F2 and E2 once quotes arrive (Section 5).
 4. **JCE backup project lead** (F1 and Section 2).
 5. **Far North Queensland council experience:** the proposal uses the cleared general statement only. Name the council and referee only if you want to and have permission.
@@ -52,7 +52,7 @@ Most important first:
 10. Sign the Quotation Form and the offer block; date both.
 11. Drone (Rev G): get Craig Sullivan's consent to be named as a referee and his phone and email; [TBC - Jayden: location, year, approx. area] of the farm drainage survey (not printed in the FP).
 12. Drone (Rev G): CASA operator accreditation and drone registration in place before services start; [TBC - Jayden to confirm] DJI Terra licence if ReCap Pro is not used for the orthophoto.
-14. Tablelands Regional Council projects (Rev G): floodway rectification and leachate storage facility. [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement] for each. Confirm how RPEQ sign-off was handled on these QLD jobs before relying on them, whether each was delivered by JCE (for Schedule E2) or by Jayden at a previous employer (then F1 only), and that each falls within E2's last 5 years.
+14. Tablelands Regional Council projects (Rev G): floodway rectification and leachate storage facility, delivered by Jayden while employed at Langtree Consulting Engineers, not by JCE. They are shown as key personnel experience (FP Section 7, Schedule F1) and were moved out of Schedule E2 (Respondent's projects). [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement] for each. Confirm how RPEQ sign-off was handled on these QLD jobs before relying on them, and that each is recent enough to support the experience criteria.
 16. RAAF Base Townsville referee (Rev G, replaces the Gunnedah levee project): confirm the referee's full name and title as written ("Maverick Partner, CPB Contractors"), consent to be named, phone and email; [TBC - Jayden: project year (E2 five-year window), package scope, JCE's role (as JCE or as SCP Consulting on secondment to CPB), value]; check any Defence confidentiality limits on what can be described.
 15. Referee: get Darren Quilliam's consent to be named, and his title, phone and email (printed FP says "contact details available on request").
 13. Drone airspace (Rev G): Port Douglas is about 60 km from Cairns Airport, far outside the 5.5 km controlled aerodrome limit. Nearby limits: helicopter landing sites on Dickson Inlet (Nautilus Aviation base at 35-39 Port Street, expected to open early 2027, with pads over the inlet; existing pad opposite the Sheraton), plus the 30 m from people and no-populous-area rules at the marinas and boat ramp. Check a CASA-verified drone app before each flight and coordinate with Nautilus Aviation. The FP states these limits in Section 7.
@@ -120,12 +120,12 @@ RFIs.md (11/10) is still right, with one change: question 8 no longer asks wheth
 | Criterion (weight) | 11/10 draft | Final Rev G | With partners named and RPEQ confirmed |
 |---|---|---|---|
 | Local knowledge and experience (10%) | 3 | 6 (Rev F: 5) | 7 |
-| Relevant experience (20%) | 3 | 5 (Rev F: 4) | 7 |
-| Capacity and key personnel (15%) | 4 | 5 | 7 |
+| Relevant experience (20%) | 3 | 4 (Rev F: 4) | 7 |
+| Capacity and key personnel (15%) | 4 | 6 (Rev F: 5) | 7 |
 | Methodology and program (15%) | 6 | 8 | 8 |
 | Price (40%) | 5 | 5 | 5 to 7 (depends on quotes) |
-| Weighted score | 4.4 | 5.6 (Rev F: 5.3) | 6.4 to 7.2 |
+| Weighted score | 4.4 | 5.5 (Rev F: 5.3) | 6.4 to 7.2 |
 
-Rev G re-score: the two Tablelands Regional Council projects (Far North Queensland council civil work, with a council referee) lift local knowledge from 5 to 6 and relevant experience from 4 to 5; weighted 5.3 to 5.6. The drone capability supports capacity but does not move it from 5. The RAAF Base Townsville referee strengthens the evidence for relevant experience but does not change any score by a whole point. These gains depend on Jayden confirming the details in items 14 to 16.
+Rev G re-score: the two Tablelands Regional Council projects (Far North Queensland council civil work, with a council referee) lift local knowledge from 5 to 6. Because they were delivered at Langtree, they count as key personnel experience (capacity and key personnel 5 to 6), not company experience (relevant experience stays at 4); weighted 5.3 to 5.5. The drone capability supports capacity but does not move it from 5. The RAAF Base Townsville referee strengthens the evidence for relevant experience but does not change any score by a whole point. These gains depend on Jayden confirming the details in items 14 to 16.
 
 Changes made in RevF: North Queensland evidence (based in Townsville to 05/2026, Cape York DATSIP subdivisions, HMAS Cairns) and the client-side council statement; RPEQ sign-off named; study lead and integrator role with hold points and a management method; risks, non-conformance and coordination (H1 points); Gantt chart; Schedule I1 completed item by item; insurance position stated per the Win Themes; contractions and dashes removed. The remaining gap is partner evidence, which only the quotes can fill.

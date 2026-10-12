@@ -21,7 +21,7 @@ Prepared 12/10/2026. Council's returnable schedules have NOT been seen (they are
 
 ## Insurance
 - Professional indemnity: $10 million any one claim, $20 million aggregate (certificate to 02/07/2027 in Returnables)
-- Public liability: $10 million. If Council requires $20 million, JCE will lift cover to $20 million on award (through Webber).
+- Public liability: $10 million. If Council requires $20 million, JCE will lift cover to $20 million on award (through Webber; quote requested 12/10/2026).
 - Workers compensation: icare letter of appointment in Returnables [TBC - Jayden: policy number]
 
 ## Price (if Council's form has a lump sum field)
@@ -34,8 +34,9 @@ Prepared 12/10/2026. Council's returnable schedules have NOT been seen (they are
 - If Council's form has no place for provisional sums, enter the total $136,465.88 and note "includes provisional sums of $58,300 for sub-consultants; see fee proposal Section 8".
 
 ## Experience / capability (free text)
-- Use FP Section 7 (Jayden) plus the planning partner's projects [TBC - Jayden].
+- Use FP Section 7 (Jayden, Rev G) plus the planning partner's projects [TBC - Jayden].
 - JCE has no previous contributions plan commission of its own. Do not claim one.
+- Key personnel experience only (NOT company projects): Jayden Callen (while at Langtrees): Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network. Jayden Callen (while at Langtrees): Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility. If Council's form asks for the tenderer's own projects, put these in the key personnel / CV field instead.
 
 ## Methodology / program (free text)
 - Use FP Sections 2, 3 and 6 (six stages, hold points HP1 to HP3, award early November 2026, adoption by about July 2027).
@@ -43,7 +44,9 @@ Prepared 12/10/2026. Council's returnable schedules have NOT been seen (they are
 ## Referees
 1. Brett Langtree, Director and Principal Civil Engineer, Langtree Consulting Engineers. 0400 699 979, brett@langtreeconsulting.com.au
 2. Livio Chiarot FIEAust, Director, SCP Consulting. 0418 150 028, livio.chiarot@scpconsult.com.au
-3. Planning partner's council referee [TBC - Jayden]
+3. Maverick Partner, CPB Contractors (RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor)). Contact details available on request.
+4. Darren Quilliam, Tablelands Regional Council (referee for Jayden's work while at Langtrees). Contact details available on request.
+5. Planning partner's council referee [TBC - Jayden]
 
 ## Declarations (Jayden to read and decide; do not tick without reading)
 - Conflict of interest: JCE none known. [TBC - Jayden: planning partner conflict, e.g. Navigate Planning acts for applicants in the Mid-Western LGA]

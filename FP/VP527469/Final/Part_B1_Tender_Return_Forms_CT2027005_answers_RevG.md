@@ -57,24 +57,21 @@ Current contracts:
 
 Contracts of a similar nature:
 
-- Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility. Referee: Darren Quilliam, Tablelands Regional Council.
-- Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network. Referee: Darren Quilliam, Tablelands Regional Council.
 - JCE has not previously been engaged as CQA Engineer on a landfill cell liner. The landfill CQA experience offered is that of JCE's proposed major sub-consultant, [Riverina CQA partner, TBC - Jayden from RFQ]: [insert at least two landfill cell or cap CQA projects: site, EPL, liner system, role, year, value, referee - from RFQ response].
-- Flood levee inspection and certification, 6887 Oxley Highway, Gunnedah (JCE, 2026): inspection of an existing earthen levee about 647 m long, field dispersion and plasticity testing, certification report JCE-INS-001.
-- Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works.
-- Site engineering and quality assurance, about 10 km of potable and fire water mains, carparks and water treatment facilities, RAAF Base Townsville (Jayden Callen on secondment to CPB Contractors through SCP Consulting, 2023 to 2025).
 
-Referees (non-WWCC):
+Key personnel experience (Jayden Callen's work with previous employers, listed in Form 7, not JCE contracts): leachate storage facility and floodway rectification for Tablelands Regional Council (QLD) while at Langtree Consulting Engineers; RAAF Base Townsville Defence delivery for CPB Contractors (head contractor).
 
-|  | Referee 1 | Referee 2 | Referee 3 | Referee 4 (partner) |
-|---|---|---|---|---|
-| Name | Darren Quilliam | Brett Langtree | Livio Chiarot FIEAust | [TBC from partner] |
-| Company | Tablelands Regional Council (QLD) | Langtree Consulting Engineers | SCP Consulting Pty Ltd | [TBC] |
-| Position | [TBC - Jayden] | Director and Principal Civil Engineer | Director | [TBC] |
-| Address | [TBC - Jayden] | Townsville QLD [street address TBC - Jayden] | [address TBC - Jayden] | [TBC] |
-| Phone | [TBC - Jayden] | 0400 699 979 | 0418 150 028 | [TBC] |
-| Email | [TBC - Jayden] | brett@langtreeconsulting.com.au | livio.chiarot@scpconsult.com.au | [TBC] |
-| Project / contract | Leachate storage facility; floodway rectification (Tablelands Regional Council) | Direct supervisor of Jayden Callen, 03/2025 to 05/2026 (subdivision design management, site inspections) | Supervisor 06/2023 to 03/2025 (Defence site engineering and QA, RAAF Base Townsville); technical reviewer, WSIA rising main 2026 | [Landfill CQA project] |
+Referees (non-WWCC; referees 1 and 2 are for Jayden Callen's work with previous employers):
+
+|  | Referee 1 | Referee 2 | Referee 3 | Referee 4 | Referee 5 (partner) |
+|---|---|---|---|---|---|
+| Name | Darren Quilliam | Maverick Partner | Brett Langtree | Livio Chiarot FIEAust | [TBC from partner] |
+| Company | Tablelands Regional Council (QLD) | CPB Contractors | Langtree Consulting Engineers | SCP Consulting Pty Ltd | [TBC] |
+| Position | [TBC - Jayden] | Contact details available on request | Director and Principal Civil Engineer | Director | [TBC] |
+| Address | [TBC - Jayden] | Contact details available on request | Townsville QLD [street address TBC - Jayden] | [address TBC - Jayden] | [TBC] |
+| Phone | [TBC - Jayden] | Contact details available on request | 0400 699 979 | 0418 150 028 | [TBC] |
+| Email | [TBC - Jayden] | Contact details available on request | brett@langtreeconsulting.com.au | livio.chiarot@scpconsult.com.au | [TBC] |
+| Project / contract | Leachate storage facility; floodway rectification (Tablelands Regional Council) | RAAF Base Townsville, Defence delivery project for CPB Contractors (head contractor) | Direct supervisor of Jayden Callen, 03/2025 to 05/2026 (subdivision design management, site inspections) | Supervisor 06/2023 to 03/2025 (Defence site engineering and QA, RAAF Base Townsville); technical reviewer, WSIA rising main 2026 | [Landfill CQA project] |
 
 ## Form 4: Technical Data
 
@@ -113,7 +110,7 @@ Resources and equipment: JCE's related business, Glide Inside (glideinside.com.a
 
 | Employee name and position | Relevant qualifications, skills and experience |
 |---|---|
-| Jayden Callen, Director, CQA Engineer of record | BEng (Civil)(Hons), Deakin University; MIEAust (EA 11036201); NER application in progress (not CPEng). 8+ years in civil infrastructure: engineering for a landfill leachate storage facility and a floodway rectification for Tablelands Regional Council (QLD); site engineering and QA on Defence projects (about 10 km of water mains at RAAF Base Townsville; runway works surveillance at RAAF Base Tindal); earthen levee inspection, field testing and certification (Gunnedah, 2026); hold point technical review of a D&C pump station package (WSIA). No previous CQA commission on a landfill cell liner. Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models. CV attached. |
+| Jayden Callen, Director, CQA Engineer of record | BEng (Civil)(Hons), Deakin University; MIEAust (EA 11036201); NER application in progress (not CPEng). 8+ years in civil infrastructure. while at Langtree Consulting Engineers: Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility; Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network (referee Darren Quilliam, Tablelands Regional Council). RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor) (referee Maverick Partner, CPB Contractors). Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Other: site engineering and QA on Defence projects (about 10 km of water mains at RAAF Base Townsville; runway works surveillance at RAAF Base Tindal); engineering delivery for CPB Contractors (head contractor) at RAAF Base Townsville; hold point technical review of a D&C pump station package (WSIA). No previous CQA commission on a landfill cell liner. Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models. CV attached. |
 | [Name], Senior landfill CQA engineer, [Riverina CQA partner, TBC - Jayden from RFQ] | [Qualifications, registration, years of landfill CQA, NSW projects - from RFQ] |
 | [Names], Resident CQA technicians, [Riverina CQA partner, TBC - Jayden from RFQ] | [Landfill liner and earthworks CQA experience, NATA field testing - from RFQ] |
 
@@ -167,9 +164,9 @@ Company references (three most recent contracts):
 
 |  | Contract 1 | Contract 2 | Contract 3 |
 |---|---|---|---|
-| Description | Leachate storage facility (engineering for a landfill leachate storage facility) [confirm it is among the 3 most recent - Jayden] | WSIA Business Precinct Stage One SRM-01 rising main design and SPS package review | Flood levee inspection and certification, 6887 Oxley Highway, Gunnedah |
-| Client | Tablelands Regional Council (QLD) | Underscore Projects (for AT&L) | [TBC - Jayden] |
-| Contact person / phone | Darren Quilliam / [TBC - Jayden] | [TBC - Jayden] | [TBC - Jayden] |
+| Description | WSIA Business Precinct Stage One SRM-01 rising main design and SPS package review | Clarence Village, 95 Armidale Street, South Grafton: civil design and certification | Relocatable dwelling footing design service |
+| Client | Underscore Projects (for AT&L) | Uniplan Group | Uniplan Group |
+| Contact person / phone | [TBC - Jayden] | [TBC - Jayden] | [TBC - Jayden] |
 | Lost time injuries | 0 [confirm] | 0 [confirm] | 0 [confirm] |
 | Person days on contract | [TBC] | [TBC] | [TBC] |
 | Days lost to injuries | 0 [confirm] | 0 [confirm] | 0 [confirm] |

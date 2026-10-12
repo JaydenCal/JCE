@@ -71,7 +71,7 @@ Lodgement steps (Jayden): sign in to VendorPanel, open VP527277, list any addend
 2. CASA: complete operator accreditation (ARN) and drone registration this week. The FP says "in place before services start". No RePL or ReOC is claimed.
 3. Buy the DJI Mavic 3 Enterprise with RTK. The FP says "JCE will deploy", not that JCE owns it.
 4. Drone public liability through Webber (target $10 million to $20 million). Check whether the Zurich broadform policy excludes aircraft.
-5. Lift general public liability to $20 million on award (Webber); confirm it can be bound within 7 days of award.
+5. PL $20M quote requested 12/10; bind before lodgement if possible and attach the certificate. Until bound, the FP keeps "JCE will lift public liability to $20 million on award".
 6. icare workers compensation policy number and certificate. This is now essential because of the casual staff.
 7. Craig Sullivan farm drainage drone project: location, year and approximate area; get his consent to be named as a referee, and his phone and email. The printed FP says "Referee details available on request". It is a private farm job, so it supports drone capability but will not count as one of the three similar council transport-asset projects.
 8. DJI Terra: confirm whether you will use it for orthophotos (the FP says ReCap Pro or DJI Terra). No accuracy figure is quoted, because the tender does not ask for one.
@@ -81,9 +81,10 @@ Lodgement steps (Jayden): sign in to VendorPanel, open VP527277, list any addend
 12. Business address (Gunnedah in the FP versus Macksville in the WHS plan), ACN, years in business, usual address.
 13. ISO 9001 certification plan, or delete the note in FP 6.0.
 14. Confirm the Schedule 2 and 8 "No" answers; attach a completed Take-5.
-15. Tablelands Regional Council floodway rectification (Schedule 5 Project 1): [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]. Confirm the year is recent enough to count as a current or recent similar project.
-16. Tablelands Regional Council leachate storage facility (Schedule 5 Project 2): [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement].
-17. Darren Quilliam: get his consent to be named as referee, plus his title, phone and email (Schedule 2 referee 3, Schedule 5). The printed FP says "contact details available on request".
+15. Tablelands Regional Council floodway rectification. Delivered by Jayden while at Langtree Consulting Engineers, not by JCE, so it is shown as key personnel experience (FP 5.0, Schedule 3) and moved out of Schedule 5, which asks for the tenderer's projects. [TBC - Jayden: site, year, value, Jayden's role and scope, RPEQ sign-off arrangement]. Confirm the year is recent enough.
+16. Tablelands Regional Council leachate storage facility. Also delivered at Langtree and shown the same way. [TBC - Jayden: site, year, value, Jayden's role and scope, RPEQ sign-off arrangement].
+17. Darren Quilliam (referee for Jayden's Langtree work): get his consent to be named, plus his title, phone and email (Schedule 2 referee 3). The printed FP says "contact details available on request".
+18. Maverick Partner, CPB Contractors (RAAF Base Townsville Defence delivery; replaces the Gunnedah levee example, which is removed from the FP and schedules): confirm the full name and title exactly as printed, his consent to be named, and his phone and email. [TBC - Jayden: project year (five-year window), package scope, Jayden's role (as JCE or with a previous employer, e.g. the SCP secondment to CPB), value, and any Defence confidentiality limits on what can be described.]
 
 ## 6. Compliance notes for Rev G
 
@@ -98,11 +99,11 @@ Lodgement steps (Jayden): sign in to VendorPanel, open VP527277, list any addend
 |---|---|---|---|---|
 | Financial benefit (40%) | 6 | 6 | 6 | Rev G is $10,426 cheaper; still depends on quotes and other bids |
 | Methodology and technical approach (35%) | 6 | 8 | 8 | Drone workflow, RTK with check points and an existing-condition baseline are added. Two-way data handling between the partner and JCE adds some risk, which the risk table covers |
-| Resources and relevant experience (20%) | 3 | 4 | 6 | JCE is hands-on for capture, GIS and register, with drone photogrammetry experience. It now has two council client projects with a council referee (Tablelands Regional Council): a floodway rectification on a council road network (floodways and causeways are transport assets here) and a leachate storage facility. Still no condition audit or valuation, and partners unnamed. Expect 7 once partner council projects are added |
+| Resources and relevant experience (20%) | 3 | 4 | 5.5 | JCE is hands-on for capture, GIS and register, with drone photogrammetry experience. Jayden's personal experience now includes two Tablelands Regional Council projects from his time at Langtree (a floodway on a council road network, and a leachate storage facility) with a council referee, plus Defence delivery for CPB at RAAF Base Townsville with a CPB referee. These count as key personnel experience, not company experience, so the tenderer-experience half stays weak. No condition audit or valuation yet, and partners unnamed. Expect 6.5 to 7 once partner council projects are added |
 | Local content (5%) | 1 | 2 | 2 | More local nights (44); no local staff |
-| **Weighted** | **5.2** | **6.1** | **6.5** | Rev G was 6.3 before the Tablelands projects were added |
+| **Weighted** | **5.2** | **6.1** | **6.4** | Rev G scored 6.3 before the Tablelands projects, 6.5 while they were counted as JCE projects, and 6.4 now they are shown as personnel experience |
 
-Partner experience still carries most of the 20% criterion (weighting unchanged). JCE's own experience is stronger with the two Tablelands Regional Council projects, but JCE has no council asset condition or valuation project of its own. Naming partner council projects remains the single biggest lift.
+Partner experience still carries most of the 20% criterion (weighting unchanged). Jayden's personal experience is stronger with the Tablelands and CPB referees, but JCE has no council asset condition or valuation project of its own. Naming partner council projects remains the single biggest lift.
 
 ## 8. Files (repo `FP/VP527277/Final`, Rev G)
 
@@ -114,4 +115,4 @@ Partner experience still carries most of the 20% criterion (weighting unchanged)
 - `SUBMISSION_CHECKLIST_RevG.md`
 - Road imaging RFQs Rev C in `FP/VP527277/Road_Imaging_Condition/` (`*_Final_RevC*.docx` and `.pdf`, `Emails_RevC.txt`)
 
-Dropbox copies (current, with the Tablelands projects): `02_Submission/FINAL_RevG_v2_2026-10-12_FP_Final_text.md` and `02_Submission/FINAL_RevG_v2_2026-10-12_SUBMISSION_CHECKLIST.md`. The earlier FINAL_RevG_2026-10-12_ copies predate the Tablelands addition; ignore them. Copy the Word, PDF, Excel and PNG files into Dropbox yourself; the connector cannot upload them.
+Dropbox copies (current): `02_Submission/FINAL_RevG_v3_2026-10-12_FP_Final_text.md` and `02_Submission/FINAL_RevG_v3_2026-10-12_SUBMISSION_CHECKLIST.md`. The earlier FINAL_RevG_ and FINAL_RevG_v2_ copies are out of date; ignore them. Copy the Word, PDF, Excel and PNG files into Dropbox yourself; the connector cannot upload them.

@@ -7,7 +7,7 @@ Camden Council RFT T026/2026, Design Consultancy Services, Leppington Community 
 
 | Item | Detail |
 |---|---|
-| Proposal no | FP-[TBC - Jayden] (Rev F, Final) |
+| Proposal no | FP-[TBC - Jayden] (Rev G, Final) |
 | Date | 12/10/2026 (for issue to the Lead Architect by 21/10/2026) |
 | Client | [Lead Architect], Lead Design Consultant for Camden Council RFT T026/2026 |
 | Attention | [Name], [Position] |
@@ -163,6 +163,9 @@ Jayden Callen, Director and Principal Civil Engineer (civil lead). BEng (Hons) C
 - SCP Consulting (06/2023 to 03/2025): managed a multidisciplinary design team; primary contact for Lendlease and CPB Contractors on Defence projects at HMAS Watson, RAAF Base Tindal, RAAF Base Townsville and HMAS Cairns; lead BIM services coordinator on AIR7000 Phase 1B Triton Facilities, RAAF Base Tindal (about $250 million), combining consultant models in Civil 3D and Navisworks to clear stormwater and fire main clashes.
 - Katherine Aquatics, Katherine NT (about $10 million, design and construct for Sitzler and Katherine Town Council): about 80 per cent of the civil design, including earthworks pads above the 1% AEP flood level, grading, pavements, stormwater and water quality.
 - Western Sydney International Airport Business Precinct Stage One (JCE, sub-consultant to Underscore Projects, client AT&L, 2026): managed the design and delivery program for the SRM-01 sewer rising main and the technical review of the contractor's sewage pumping station package (59-item register at Revision F, four hold points).
+- RAAF Base Townsville, Defence delivery project: engineering delivery for CPB Contractors (head contractor). Referee: Maverick Partner, CPB Contractors.
+- Jayden Callen (while at Langtrees): Floodway rectification, Tablelands Regional Council (QLD): engineering for the rectification of a floodway on Council's road network.
+- Jayden Callen (while at Langtrees): Leachate storage facility, Tablelands Regional Council (QLD): engineering for a landfill leachate storage facility, relevant to the containment and liner interfaces on this site. Referee for both Tablelands projects: Darren Quilliam, Tablelands Regional Council.
 - Council experience: Jayden has worked for a regional council in Far North Queensland, where he shortlisted consultants for a council RFT.
 
 Livio Chiarot FIEAust, Director, SCP Consulting: independent technical peer review of the levels, earthworks and stormwater documentation before each major issue (reviewer, not certifier). Livio has more than 40 years in civil, hydraulic and fire services engineering.
@@ -171,7 +174,7 @@ Additional design and drafting resources: [TBC - Jayden]. The fee is built from 
 
 Sign-off. This is NSW work for a Class 9b community building. RPEQ does not apply, and the tender does not ask for a particular engineering registration. Civil design certification will be issued by Jayden Callen (MIEAust) with independent peer review. If Council asks for CPEng verification of any element, it is available as a provisional sum (Section 8.0).
 
-JCE's capability statement and Jayden's detailed CV are supplied for your Schedules 5 and 6. Project details and referees in Schedule 5 and 13 format are in Attachment C.
+JCE's capability statement and Jayden's detailed CV are supplied for your Schedules 5 and 6. Project details and referees in Schedule 5 and 13 format are in Attachment C. Projects delivered while Jayden was employed elsewhere are shown as key personnel experience, not as JCE company projects.
 
 
 ## 6.0  Exclusions
@@ -446,6 +449,8 @@ Certificates attached: JCE_Certificate_of_Currency_PI-PL_to_02-07-2027.pdf. The 
 
 ### C4  Schedule 5: Relevant experience (civil engineer)
 
+Only the WSI project was delivered by JCE as a company. The other projects are Jayden Callen's experience as key personnel with previous employers; the architect should present them in the key personnel or CV field if Schedule 5 is read as company projects only.
+
 | Item | Detail |
 |---|---|
 | Project and location | Katherine Aquatics, Katherine NT |
@@ -455,6 +460,24 @@ Certificates attached: JCE_Certificate_of_Currency_PI-PL_to_02-07-2027.pdf. The 
 | Works | About 80 per cent of the civil design: earthworks pads raised above the 1% AEP flood level, grading, pavements, stormwater and water quality |
 | Team | Jayden Callen, civil designer (employer [TBC - Jayden]) |
 | Referee | [TBC - Jayden] |
+
+| Item | Detail |
+|---|---|
+| Project and location | Floodway rectification, Tablelands Regional Council (QLD) |
+| Client | Tablelands Regional Council |
+| Value, size and dates | Available on request |
+| Works | Engineering for the rectification of a floodway on Council's road network |
+| Team | Jayden Callen (while at Langtrees); key personnel experience, not a JCE company project |
+| Referee | Darren Quilliam, Tablelands Regional Council. Contact details available on request |
+
+| Item | Detail |
+|---|---|
+| Project and location | Leachate storage facility, Tablelands Regional Council (QLD) |
+| Client | Tablelands Regional Council |
+| Value, size and dates | Available on request |
+| Works | Engineering for a landfill leachate storage facility |
+| Team | Jayden Callen (while at Langtrees); key personnel experience, not a JCE company project |
+| Referee | Darren Quilliam, Tablelands Regional Council. Contact details available on request |
 
 | Item | Detail |
 |---|---|
@@ -475,6 +498,15 @@ Certificates attached: JCE_Certificate_of_Currency_PI-PL_to_02-07-2027.pdf. The 
 | Works | Managed the design and delivery program for the SRM-01 sewer rising main; technical review of the design and construct contractor's sewage pumping station package (review register SPS-REG-001, 59 items at Revision F, four hold points) |
 | Team | Jayden Callen (JCE); Livio Chiarot (technical reviewer) |
 | Referee | Underscore Projects contact [TBC - Jayden] |
+
+| Item | Detail |
+|---|---|
+| Project and location | RAAF Base Townsville, Defence delivery project |
+| Client | CPB Contractors (head contractor) |
+| Value, size and dates | Available on request |
+| Works | Engineering delivery for CPB Contractors (head contractor) |
+| Team | Jayden Callen |
+| Referee | Maverick Partner, CPB Contractors. Contact details available on request |
 
 | Item | Detail |
 |---|---|
@@ -551,8 +583,10 @@ JCE will register on Conserve if directed after award (Vol 2 cl 25).
 |---|---|
 | Referee 1 | Brett Langtree, Director and Principal Civil Engineer, Langtree Consulting Engineers. 0400 699 979, brett@langtreeconsulting.com.au. Connection: Jayden's director and direct supervisor, 03/2025 to 05/2026 |
 | Referee 2 | Livio Chiarot FIEAust, Director, SCP Consulting. 0418 150 028, livio.chiarot@scpconsult.com.au. Connection: Jayden's supervisor and mentor, 06/2023 to 03/2025; technical reviewer on the WSI rising main, 2026. Note: Livio is also JCE's proposed peer reviewer |
+| Referee 3 | Maverick Partner, CPB Contractors. Contact details available on request. Connection: RAAF Base Townsville Defence delivery project (CPB Contractors head contractor) |
+| Referee 4 | Darren Quilliam, Tablelands Regional Council. Contact details available on request. Connection: client for the floodway rectification and leachate storage facility projects Jayden delivered while at Langtrees |
 
-[TBC - Jayden]: confirm both referees know about this tender and are available for the four weeks after 04/11/2026. Neither has a connection to Camden Council.
+[TBC - Jayden]: confirm all referees know about this tender and are available for the four weeks after 04/11/2026. None has a connection to Camden Council.
 
 
 ### C12  Schedule 15 and conflicts of interest (JCE)
@@ -589,5 +623,6 @@ Jayden Callen (Jayden Caleb Callen-Pell), BEng (Hons) Civil, Deakin University (
 - Defence and tier-one delivery: HMAS Watson, RAAF Base Tindal, RAAF Base Townsville and HMAS Cairns with Lendlease and CPB Contractors; site engineer on secondment to CPB for about 10 km of potable and fire water mains and car parks at RAAF Base Townsville.
 - Stormwater and water quality: DRAINS, MUSIC X, flood impact assessment to ARR 2019; Katherine Aquatics civil design.
 - Roads and pavements: Austroads geometry with Transport for NSW supplements; pavement design with CIRCLY.
+- Council civil works (while at Langtrees): floodway rectification and a landfill leachate storage facility for Tablelands Regional Council (QLD).
 - 3D and coordination: Civil 3D (advanced, AutoLISP), Navisworks, InfraWorks.
 
