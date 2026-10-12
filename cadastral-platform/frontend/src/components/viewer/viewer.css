@@ -65,8 +65,8 @@
 /* first person */
 .v3d .cross{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;pointer-events:none}
 .v3d .cross:before,.v3d .cross:after{content:"";position:absolute;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
-.v3d .cross:before{left:8px;top:0;width:2px;height:18px;clip-path:polygon(0 0,100% 0,100% 40%,0 40%,0 60%,100% 60%,100% 100%,0 100%)}
-.v3d .cross:after{top:8px;left:0;height:2px;width:18px;clip-path:polygon(0 0,40% 0,40% 100%,0 100%,60% 100%,60% 0,100% 0,100% 100%)}
+.v3d .cross:before{left:8px;top:0;width:2px;height:18px}
+.v3d .cross:after{top:8px;left:0;height:2px;width:18px}
 .v3d canvas.minimap{position:absolute;left:12px;top:12px;width:140px;height:140px;border:1px solid var(--line);border-radius:8px;pointer-events:none}
 .v3d .fpmsg{position:absolute;left:50%;top:18%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:12.5px;text-align:center;pointer-events:none}
 .v3d .stick{position:absolute;left:18px;bottom:28px;width:120px;height:120px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(0,0,0,.18)}
