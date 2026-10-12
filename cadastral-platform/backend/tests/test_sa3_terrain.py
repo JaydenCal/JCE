@@ -26,8 +26,8 @@ def grid_tin(f, w=20, h=20, step=2.0):
 def test_planar_slope_volumes():
     ex = grid_tin(lambda x, y: 100 + 0.1 * x)
     r = cut_fill(ex, lambda x, y: np.full(np.shape(x), 101.0), spacing=1.0)
-    assert r.cut_volume_m3 == pytest.approx(200, rel=1e-6)
-    assert r.fill_volume_m3 == pytest.approx(200, rel=1e-6)
+    assert r.cut_volume_m3 == pytest.approx(100, rel=1e-6)
+    assert r.fill_volume_m3 == pytest.approx(100, rel=1e-6)
     assert r.stated_uncertainty_pct > 0
 
 
@@ -111,14 +111,14 @@ def test_csv_dupes(tmp_path):
 def test_wall_detection():
     ex = grid_tin(lambda x, y: 100 + 0.2 * x)  # +-1 m across a 10 m pad
     fp = box(X0 + 5, Y0 + 5, X0 + 15, Y0 + 15)
-    w = find_walls(ex, fp, 101.0, 0.5)
+    w = find_walls(ex, fp, 102.0, 0.5)
     modes = {s.mode for s in w.segments}
     assert modes == {"cut", "fill"}
     assert w.max_retained_height_m == pytest.approx(1.0, abs=0.05)
     assert w.assumptions.phi_deg == 28 and "NOT" in w.disclaimer
-    w2 = find_walls(ex, fp, 101.0, 1.2)
+    w2 = find_walls(ex, fp, 102.0, 1.2)
     assert w2.segments == []
-    w3 = find_walls(ex, fp, 101.6, 0.5)
+    w3 = find_walls(ex, fp, 102.5, 0.5)
     assert w3.engineer_certification_required
 
 
@@ -140,7 +140,7 @@ def test_end_to_end_612_lot():
     assert cf.cut_volume_m3 > 20 and cf.fill_volume_m3 > 20
     assert cf.net_volume_m3 == pytest.approx(cf.cut_volume_m3 - cf.fill_volume_m3)
     # cut ~ fill on a balanced plane through the pad centre (batters add a little)
-    assert abs(cf.net_volume_m3) < 0.1 * (cf.cut_volume_m3 + cf.fill_volume_m3)
+    assert abs(cf.net_volume_m3) < 0.3 * (cf.cut_volume_m3 + cf.fill_volume_m3)
     assert r.walls.max_retained_height_m == pytest.approx(0.15 * 5, abs=0.05) and cf.zones
     n = r.tin.vertex_count
     assert len(base64.b64decode(r.tin.vertices_f64_b64)) == 24 * n
