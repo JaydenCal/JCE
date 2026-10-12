@@ -1,0 +1,65 @@
+{
+ "zone": "R2",
+ "dwelling_type": "secondary_dwelling",
+ "rules": [
+  {
+   "element": "front",
+   "value_numeric": 6.5,
+   "unit": "m",
+   "dwelling_type": "secondary_dwelling",
+   "requirement_key": "setback.secondary_dwelling.front_m",
+   "zone": "R2",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 37,
+   "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
+   "quote": "Primary Frontage 6.5m or the average of the adjoining dwellings whichever is less",
+   "confidence": 0.85,
+   "rule_text": null
+  },
+  {
+   "element": "side",
+   "value_numeric": 0.9,
+   "unit": "m",
+   "dwelling_type": "secondary_dwelling",
+   "requirement_key": "setback.secondary_dwelling.side_m",
+   "zone": "R2",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 37,
+   "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
+   "quote": "Side and rear 0.9m or compliance with the BCA^",
+   "confidence": 0.85,
+   "rule_text": null
+  },
+  {
+   "element": "rear",
+   "value_numeric": 0.9,
+   "unit": "m",
+   "dwelling_type": "secondary_dwelling",
+   "requirement_key": "setback.secondary_dwelling.rear_m",
+   "zone": "R2",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 37,
+   "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
+   "quote": "Side and rear 0.9m or compliance with the BCA^",
+   "confidence": 0.85,
+   "rule_text": null
+  },
+  {
+   "element": "secondary_frontage",
+   "value_numeric": 3.0,
+   "unit": "m",
+   "dwelling_type": "secondary_dwelling",
+   "requirement_key": "setback.secondary_dwelling.secondary_frontage_m",
+   "zone": "R2",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 37,
+   "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
+   "quote": "3m for a building wall and 5.5m for a garage or carport that is attached to the building wall",
+   "confidence": 0.85,
+   "rule_text": null
+  }
+ ],
+ "skipped": [
+  "setback.secondary_dwelling.secondary_frontage_garage_m"
+ ]
+}

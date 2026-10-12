@@ -196,11 +196,12 @@ def _user_rules_sa2(raw, zone: str | None, dwelling_type: str):
     items = raw.get("rules", []) if isinstance(raw, dict) else raw
     rules = [SetbackRule(zone_code=zone, dwelling_type=r.get("dwelling_type", dwelling_type), element=r["element"], lot_condition=r.get("lot_condition", {}),
                          value_numeric=float(r["value_numeric"]), unit=r["unit"], is_performance_outcome=bool(r.get("is_performance_outcome", False)),
-                         extraction_confidence=1.0, source_chunk_id=f"user_entered:{r['element']}", source_page=0, quote="user_entered", method="table")
+                         extraction_confidence=float(r.get("confidence") or 1.0), source_chunk_id=r.get("requirement_key") or f"user_entered:{r['element']}",
+                         source_page=int(r.get("source_page") or 0), quote=r.get("quote") or "user_entered", method="table")
              for r in items]
     have = {r.element for r in rules}
     return Sa2Output(setback_ruleset=SetbackRuleset(rules=rules, unresolved=[x for x in ("front", "side", "rear", "garage_front", "site_cover_max") if x not in have],
-                                                    warnings=["rules are user_entered via --rules-json; not extracted from a council DCP"]))
+                                                    warnings=[("rules loaded via --rules-json from the cited knowledge base (source document, page and quote retained; not re-extracted this run)" if all(r.get("quote") for r in items) else "rules are user_entered via --rules-json; not extracted from a council DCP")]))
 
 
 def _json(m) -> dict:

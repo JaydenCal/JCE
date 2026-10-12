@@ -1,0 +1,35 @@
+{
+ "zone": "R2",
+ "dwelling_type": "outbuilding",
+ "rules": [
+  {
+   "element": "front",
+   "value_numeric": 5.5,
+   "unit": "m",
+   "dwelling_type": "outbuilding",
+   "requirement_key": "setback.outbuilding.front_m",
+   "zone": "R2",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 43,
+   "section_ref": "C.4 Additional controls for the R2, R3 and RU5 zones, a",
+   "quote": "Outbuildings and Garages must be setback a minimum of 5.5 metres from the primary and secondary building frontage.",
+   "confidence": 0.85,
+   "rule_text": null
+  },
+  {
+   "element": "secondary_frontage",
+   "value_numeric": 5.5,
+   "unit": "m",
+   "dwelling_type": "outbuilding",
+   "requirement_key": "setback.outbuilding.secondary_frontage_m",
+   "zone": "R2",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 43,
+   "section_ref": "C.4 Additional controls for the R2, R3 and RU5 zones, a",
+   "quote": "Outbuildings and Garages must be setback a minimum of 5.5 metres from the primary and secondary building frontage.",
+   "confidence": 0.85,
+   "rule_text": null
+  }
+ ],
+ "skipped": []
+}

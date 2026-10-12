@@ -42,7 +42,7 @@ export function Header() {
 }
 export const Footer = () => (
   <footer className="mt-24 border-t border-ink/15">
-    <div className="ticks mx-auto max-w-7xl" aria-hidden />
+    <div className="mx-auto max-w-7xl px-4 sm:px-8"><div className="ticks" aria-hidden /></div>
     <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 text-sm text-muted sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
       <div><Logo /><p className="mt-4 max-w-sm leading-relaxed">Site and civil planning for NSW and QLD builders, designers and civil consultants.</p></div>
       <nav aria-label="Product" className="flex flex-col gap-2"><span className="h-eyebrow">Product</span>{links.map(([t, h]) => <Link key={h} href={h} className="hover:text-ink">{t}</Link>)}</nav>

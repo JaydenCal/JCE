@@ -1,0 +1,144 @@
+{
+ "facts": {
+  "development_type": "dwelling_house",
+  "started": "2026-10-12T16:55:02+00:00",
+  "args": {
+   "check_network": false,
+   "lga": null,
+   "address": null,
+   "lotplan": "2//DP227508",
+   "random_vacant": false,
+   "centre": null,
+   "radius_m": 1500.0,
+   "min_area": 300.0,
+   "max_area": 2500.0,
+   "seed": null,
+   "buildings_url": null,
+   "development_type": "dwelling_house",
+   "zone_code": null,
+   "levels": "nsw",
+   "levels_accuracy_m": null,
+   "rules_json": "../test-runs/rules/R2_dwelling_house.json",
+   "params_json": null,
+   "sa9_endpoints": null,
+   "acknowledge": true,
+   "scale": 200,
+   "base_rl": 0.0,
+   "title": null,
+   "out": "../test-runs/lot2_dwelling"
+  },
+  "lotplan": "2//DP227508",
+  "lga": "",
+  "zone": "R2",
+  "area_m2": 955.827,
+  "area_registered": null,
+  "flags": [
+   "multi_zone"
+  ],
+  "snapshots": [
+   "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+   "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Transport_Theme/MapServer/5",
+   "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2"
+  ],
+  "levels_provenance": {
+   "source": "NSW_5M_Elevation ImageServer exportImage",
+   "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_5M_Elevation/ImageServer",
+   "retrieved": "2026-10-12T16:55:09+00:00",
+   "copyright": "DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata)",
+   "datum": "AHD (orthometric, per service heightModelInfo)",
+   "native_cell_web_mercator_units": 5.0,
+   "stride": 1,
+   "requests": 1,
+   "points": 144,
+   "vertical_accuracy_m": 5.0,
+   "vertical_accuracy_source": "unknown (placeholder)"
+  },
+  "levels_warnings": [
+   "5 m DEM (144 points, derived from stereo imagery) is too coarse for detailed cut/fill on a 956 m2 lot; commission a detail survey before relying on earthworks quantities",
+   "vertical accuracy UNKNOWN: not stated in NSW_5M_Elevation metadata; 5.0 m placeholder used only so uncertainty is not understated (not a stated figure)"
+  ],
+  "env_unresolved": [
+   "site_cover_max",
+   "height_max"
+  ],
+  "sa4_unresolved": [],
+  "sa9_not_checked": 2,
+  "sa9_unresolved_rules": [
+   "bushfire.habitable",
+   "generic",
+   "generic",
+   "generic"
+  ]
+ },
+ "steps": [
+  {
+   "name": "locate lot",
+   "status": "OK",
+   "detail": "lot identifier 2//DP227508",
+   "files": []
+  },
+  {
+   "name": "SA1 result",
+   "status": "OK",
+   "detail": "2//DP227508, , 956 m2, zone R2; flags ['multi_zone']",
+   "files": []
+  },
+  {
+   "name": "levels (NSW 5 m DEM)",
+   "status": "UNRESOLVED",
+   "detail": "144 points, NSW_5M_Elevation ImageServer exportImage, DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata); 5 m DEM (144 points, derived from stereo imagery) is too coarse for detailed cut/fill on a 956 m2 lot; commission a detail survey before relying on earthworks quantities; vertical accuracy UNKNOWN: not stated in NSW_5M_Elevation metadata; 5.0 m placeholder used only so uncertainty is not understated (not a stated figure)",
+   "files": []
+  },
+  {
+   "name": "SA2 DCP rules",
+   "status": "UNRESOLVED",
+   "detail": "4 rule(s) USER ENTERED from ../test-runs/rules/R2_dwelling_house.json (not extracted from a DCP; unverified); not supplied: garage_front, site_cover_max",
+   "files": []
+  },
+  {
+   "name": "ENV result",
+   "status": "UNRESOLVED",
+   "detail": "envelope 734 m2; unresolved rules: site_cover_max, height_max; 0 unresolved driveway requirement(s)",
+   "files": []
+  },
+  {
+   "name": "SA3 terrain/earthworks",
+   "status": "OK",
+   "detail": "TIN built from the supplied survey",
+   "files": []
+  },
+  {
+   "name": "SA4 result",
+   "status": "OK",
+   "detail": "0 service assets, 0 connections; 0 unresolved requirement(s); no DBYD/RWT inputs supplied; No service assets supplied; results contain no existing-service constraints.; Depths are never inferred; unknown depths must be confirmed by potholing. All outputs unverified.",
+   "files": []
+  },
+  {
+   "name": "SA5 result",
+   "status": "OK",
+   "detail": "12 annotations",
+   "files": [
+    "../test-runs/lot2_dwelling/plan.dxf",
+    "../test-runs/lot2_dwelling/plan.pdf"
+   ]
+  },
+  {
+   "name": "SA6 scene bundle",
+   "status": "UNRESOLVED",
+   "detail": "5 parts; no terrain (no survey)",
+   "files": [
+    "../test-runs/lot2_dwelling/scene_bundle.json"
+   ]
+  },
+  {
+   "name": "SA9 constraints report",
+   "status": "UNRESOLVED",
+   "detail": "18 layers: 4 affected, 2 NOT CHECKED (no endpoint in endpoints_nsw.json, SA9_ENDPOINT_<KEY> or --sa9-endpoints); 4 trigger(s); rules with unresolved values: bushfire.habitable, generic, generic, generic",
+   "files": [
+    "../test-runs/lot2_dwelling/constraints_report.pdf",
+    "../test-runs/lot2_dwelling/constraints_report.json",
+    "../test-runs/lot2_dwelling/constraints.geojson"
+   ]
+  }
+ ]
+}

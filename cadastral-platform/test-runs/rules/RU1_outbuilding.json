@@ -1,0 +1,66 @@
+{
+ "zone": "RU1",
+ "dwelling_type": "outbuilding",
+ "rules": [
+  {
+   "element": "front",
+   "value_numeric": 25.0,
+   "unit": "m",
+   "dwelling_type": "outbuilding",
+   "requirement_key": "setback.outbuilding.front_m",
+   "zone": "RU1",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 45,
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "confidence": 0.85,
+   "rule_text": null
+  },
+  {
+   "element": "secondary_frontage",
+   "value_numeric": 25.0,
+   "unit": "m",
+   "dwelling_type": "outbuilding",
+   "requirement_key": "setback.outbuilding.secondary_frontage_m",
+   "zone": "RU1",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 45,
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "confidence": 0.85,
+   "rule_text": null
+  },
+  {
+   "element": "side",
+   "value_numeric": 10.0,
+   "unit": "m",
+   "dwelling_type": "outbuilding",
+   "requirement_key": "setback.outbuilding.side_m",
+   "zone": "RU1",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 45,
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "confidence": 0.85,
+   "rule_text": null
+  },
+  {
+   "element": "rear",
+   "value_numeric": 10.0,
+   "unit": "m",
+   "dwelling_type": "outbuilding",
+   "requirement_key": "setback.outbuilding.rear_m",
+   "zone": "RU1",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 45,
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "confidence": 0.85,
+   "rule_text": null
+  }
+ ],
+ "skipped": [
+  "setback.outbuilding.front_m.unsealed_road",
+  "setback.outbuilding.front_m.farm_building_rule"
+ ]
+}

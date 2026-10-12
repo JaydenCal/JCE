@@ -1,0 +1,49 @@
+{
+ "zone": "RU1",
+ "dwelling_type": "secondary_dwelling",
+ "rules": [
+  {
+   "element": "front",
+   "value_numeric": 25.0,
+   "unit": "m",
+   "dwelling_type": "secondary_dwelling",
+   "requirement_key": "setback.secondary_dwelling.front_m",
+   "zone": "RU1",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 45,
+   "section_ref": "D.2 Table 6 (applied to secondary dwelling)",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "confidence": 0.6,
+   "rule_text": null
+  },
+  {
+   "element": "side",
+   "value_numeric": 10.0,
+   "unit": "m",
+   "dwelling_type": "secondary_dwelling",
+   "requirement_key": "setback.secondary_dwelling.side_m",
+   "zone": "RU1",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 45,
+   "section_ref": "D.2 Table 6 (applied to secondary dwelling)",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "confidence": 0.6,
+   "rule_text": null
+  },
+  {
+   "element": "rear",
+   "value_numeric": 10.0,
+   "unit": "m",
+   "dwelling_type": "secondary_dwelling",
+   "requirement_key": "setback.secondary_dwelling.rear_m",
+   "zone": "RU1",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 45,
+   "section_ref": "D.2 Table 6 (applied to secondary dwelling)",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "confidence": 0.6,
+   "rule_text": null
+  }
+ ],
+ "skipped": []
+}
