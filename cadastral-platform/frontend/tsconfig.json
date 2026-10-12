@@ -37,7 +37,9 @@
     ".next-build/types/**/*.ts",
     ".next-shots3/types/**/*.ts",
     ".next-shots/types/**/*.ts",
-    ".next-shots4/types/**/*.ts"
+    ".next-shots4/types/**/*.ts",
+    ".next-assist-build/types/**/*.ts",
+    ".next-assist/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

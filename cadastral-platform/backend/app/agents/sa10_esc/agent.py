@@ -50,6 +50,6 @@ class Sa10Esc:
         out = Sa10EscOutput(elements=L.elements, flow=L.flow, quantities={**L.quantities, "sheet_scale": info["scale"]},
                             resolved_keys=sorted(rq.used), unresolved=unresolved, assumptions=L.assumptions, warnings=warnings, files=files)
         rpt = out_dir / f"{stem}_report.md"
+        out.files["report"] = str(rpt)
         outputs.write_report(p, L, rq, out, rpt)
-        files["report"] = str(rpt)
         return out

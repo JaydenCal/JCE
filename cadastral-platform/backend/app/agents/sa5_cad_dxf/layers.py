@@ -65,6 +65,8 @@ LAYERS: tuple[LayerDef, ...] = (
     _L("C-ZONE-OVLY", 40, "CONTINUOUS", 0.25, "Council overlays and controls", extra=True),
     _L("C-ANNO-LEVL", 7, "CONTINUOUS", 0.18, "Level spots", extra=True),
     _L("C-ANNO-SERV", 7, "CONTINUOUS", 0.18, "Service labels", extra=True),
+    _L("C-TOPO-EXST", 8, "DASHED", 0.13, "Existing contours (indicative; dashed light)", extra=True),
+    _L("C-TOPO-PROP", 6, "CONTINUOUS", 0.18, "Proposed contours (pad and batters)", extra=True),
     _L("C-ANNO-VPRT", 7, "CONTINUOUS", 0.13, "Paper-space viewport frames (not plotted)", plot=False, extra=True),
 )
 

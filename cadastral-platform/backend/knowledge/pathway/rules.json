@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "built_at": "2026-10-12T17:11:03+00:00",
+ "built_at": "2026-10-12T17:12:56+00:00",
  "currency_warning": "Inland Code summary tables dated October 2018 (Codes SEPP not obtained; amendments since not reflected)",
  "inland_code_lgas": {
   "lgas": [
@@ -84,7 +84,7 @@
    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-05/inland-code-lga-map-2400x2263.jpg",
    "retrieved_at": "2026-10-12T17:06:30+00:00",
    "sha256": "ffc75078bda2fb19a1c1d6f0fa057d809a67fed77f1fd05029fc4ffc1e7f588f",
-   "doc_id": "inland_lga_map"
+   "chunk_id": "inland_lga_map"
   },
   "note": "Read visually from the map image (key 'Inland Code applies'): the list names the 69 LGAs shown; the map shows boundaries at 2023 date. Councils renamed/merged since are not reflected."
  },
@@ -125,7 +125,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -164,7 +164,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -203,7 +203,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -242,7 +242,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -281,7 +281,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -320,7 +320,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -359,7 +359,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -398,7 +398,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -437,7 +437,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -476,7 +476,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -515,7 +515,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -554,7 +554,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -593,7 +593,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -632,7 +632,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -671,7 +671,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -710,7 +710,7 @@
     "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
     "retrieved_at": "2026-10-12T16:46:09+00:00",
     "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
-    "doc_id": "overview"
+    "chunk_id": "overview"
    }
   },
   {
@@ -840,7 +840,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -883,7 +883,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -926,7 +926,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -971,7 +971,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1016,7 +1016,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1170,7 +1170,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1220,7 +1220,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1295,7 +1295,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1369,7 +1369,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1445,7 +1445,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1524,7 +1524,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1600,7 +1600,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1684,7 +1684,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1733,7 +1733,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
-    "doc_id": "inland_std_res"
+    "chunk_id": "inland_std_res"
    }
   },
   {
@@ -1844,7 +1844,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -1885,7 +1885,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -1928,7 +1928,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -1971,7 +1971,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -2014,7 +2014,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -2056,7 +2056,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -2101,7 +2101,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -2146,7 +2146,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -2195,7 +2195,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -2238,7 +2238,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -2281,7 +2281,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -2324,7 +2324,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
-    "doc_id": "inland_rural"
+    "chunk_id": "inland_rural"
    }
   },
   {
@@ -2433,7 +2433,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Development+Standards/Development+Standards+Summary+Table+-+Standard+Lot.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "47eb7ab90e6db0de134188038cebeebc6a03a4a9d9283d3a2569970032acdd38",
-    "doc_id": "housing_std"
+    "chunk_id": "housing_std"
    }
   },
   {
@@ -2476,7 +2476,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Development+Standards/Development+Standards+Summary+Table+-+Standard+Lot.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "47eb7ab90e6db0de134188038cebeebc6a03a4a9d9283d3a2569970032acdd38",
-    "doc_id": "housing_std"
+    "chunk_id": "housing_std"
    }
   },
   {
@@ -2586,7 +2586,7 @@
     "source_url": "https://www.planning.nsw.gov.au/the-planning-system/housing/housing-sepp/secondary-dwellings",
     "retrieved_at": "2026-10-12T16:45:57+00:00",
     "sha256": "120da1a1326f6b108f2ba05869e968bddaea193121bb57772c596944c5cb1f8f",
-    "doc_id": "sec_dw"
+    "chunk_id": "sec_dw"
    }
   },
   {
@@ -2629,7 +2629,7 @@
     "source_url": "https://www.planning.nsw.gov.au/the-planning-system/housing/housing-sepp/secondary-dwellings",
     "retrieved_at": "2026-10-12T16:45:57+00:00",
     "sha256": "120da1a1326f6b108f2ba05869e968bddaea193121bb57772c596944c5cb1f8f",
-    "doc_id": "sec_dw"
+    "chunk_id": "sec_dw"
    }
   },
   {
@@ -2666,7 +2666,7 @@
     "source_url": "https://www.planning.nsw.gov.au/the-planning-system/housing/housing-sepp/secondary-dwellings",
     "retrieved_at": "2026-10-12T16:45:57+00:00",
     "sha256": "120da1a1326f6b108f2ba05869e968bddaea193121bb57772c596944c5cb1f8f",
-    "doc_id": "sec_dw"
+    "chunk_id": "sec_dw"
    }
   },
   {
@@ -2703,7 +2703,7 @@
     "source_url": "https://www.planningportal.nsw.gov.au/development-and-assessment/planning-approval-pathways/complying-development/granny-flats",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "888471f7b043585e862ad3af2833c8a26c20e5baee08c0faa2ada38b37e8fb69",
-    "doc_id": "pp_granny_flats"
+    "chunk_id": "pp_granny_flats"
    }
   },
   {
@@ -2740,7 +2740,7 @@
     "source_url": "https://www.planningportal.nsw.gov.au/development-and-assessment/planning-approval-pathways/complying-development/granny-flats",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "888471f7b043585e862ad3af2833c8a26c20e5baee08c0faa2ada38b37e8fb69",
-    "doc_id": "pp_granny_flats"
+    "chunk_id": "pp_granny_flats"
    }
   },
   {
@@ -2779,7 +2779,7 @@
     "source_url": "https://www.planning.nsw.gov.au/the-planning-system/disaster-recovery/secondary-dwellings-granny-flats",
     "retrieved_at": "2026-10-12T16:46:00+00:00",
     "sha256": "84248fb8bdd1b01ab989a749deb53bf814567e97b837c0a3b3410cae046ac512",
-    "doc_id": "nsw_page_granny_flats_rebuild"
+    "chunk_id": "nsw_page_granny_flats_rebuild"
    }
   },
   {
@@ -2889,7 +2889,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
-    "doc_id": "exempt_farm"
+    "chunk_id": "exempt_farm"
    }
   },
   {
@@ -2963,7 +2963,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
-    "doc_id": "exempt_farm"
+    "chunk_id": "exempt_farm"
    }
   },
   {
@@ -3012,7 +3012,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
-    "doc_id": "exempt_farm"
+    "chunk_id": "exempt_farm"
    }
   },
   {
@@ -3061,7 +3061,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
-    "doc_id": "exempt_farm"
+    "chunk_id": "exempt_farm"
    }
   },
   {
@@ -3127,7 +3127,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
-    "doc_id": "exempt_farm"
+    "chunk_id": "exempt_farm"
    }
   },
   {
@@ -3176,7 +3176,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
-    "doc_id": "exempt_farm"
+    "chunk_id": "exempt_farm"
    }
   },
   {
@@ -3225,7 +3225,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
-    "doc_id": "exempt_farm"
+    "chunk_id": "exempt_farm"
    }
   },
   {
@@ -3268,7 +3268,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
-    "doc_id": "exempt_farm"
+    "chunk_id": "exempt_farm"
    }
   },
   {
@@ -3311,7 +3311,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
-    "doc_id": "exempt_farm"
+    "chunk_id": "exempt_farm"
    }
   },
   {
@@ -3466,7 +3466,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Complying+Inland+20181011.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "77ad6d8001bc0ebba6f62e7f1f95053c3e6534615b7c8a767da1e06f9e315a73",
-    "doc_id": "inland_farm_cdc"
+    "chunk_id": "inland_farm_cdc"
    }
   },
   {
@@ -3533,7 +3533,7 @@
     "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Complying+Inland+20181011.pdf",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "77ad6d8001bc0ebba6f62e7f1f95053c3e6534615b7c8a767da1e06f9e315a73",
-    "doc_id": "inland_farm_cdc"
+    "chunk_id": "inland_farm_cdc"
    }
   },
   {
@@ -3611,7 +3611,7 @@
     "source_url": "https://www.planningportal.nsw.gov.au/development-and-assessment/planning-approval-pathways/exempt-development",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "bca095b6ac65759a6167c3bc12a92dc5a51da30f63fe1a403d8b40ce9861629f",
-    "doc_id": "pp_exempt_development"
+    "chunk_id": "pp_exempt_development"
    }
   },
   {
@@ -3650,7 +3650,110 @@
     "source_url": "https://www.planningportal.nsw.gov.au/local-development",
     "retrieved_at": "2026-10-12T17:06:30+00:00",
     "sha256": "291d4fc03100ad817ffd80030f0672c8fab6f3c1be3bd1d5d1d8d11dc1e5b7f9",
-    "doc_id": "pp_local_development"
+    "chunk_id": "pp_local_development"
+   }
+  },
+  {
+   "id": "cdc.bushfire",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Bushfire-prone land requirements (BAL assessment, AS 3959, Planning for Bush Fire Protection)",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "bushfire_prone",
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "Bushfire-prone land: complying development is allowed only subject to the code's bushfire clauses (Housing Code cl 3.4 / Inland Code cl 3D.6), which were not obtained; BAL-FZ (flame zone) land is excluded for secondary dwellings (cited). Obtain a BAL assessment (AS 3959) from an accredited practitioner and the s10.7 certificate.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "exempt.general.state_heritage",
+   "code": "exempt_general",
+   "pathway": "exempt",
+   "label": "Land is not, and has no item that is, on the State Heritage Register or subject to an interim heritage order",
+   "category": "exclusion",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": null,
+   "field": "state_heritage_item",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Exempt Development (NSW Planning Portal)",
+    "authority": "NSW Planning Portal",
+    "version": "Last updated 07/02/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Exempt development exclusions (NSW Planning Portal)",
+    "quote": "Exempt development cannot occur on land that is, or on which there is, an item that is listed on the State Heritage Register or that is subject to an interim heritage order.",
+    "source_url": "https://www.planningportal.nsw.gov.au/development-and-assessment/planning-approval-pathways/exempt-development",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "bca095b6ac65759a6167c3bc12a92dc5a51da30f63fe1a403d8b40ce9861629f",
+    "chunk_id": "pp_exempt_development"
+   }
+  },
+  {
+   "id": "exempt.general.critical_habitat",
+   "code": "exempt_general",
+   "pathway": "exempt",
+   "label": "Land is not a wilderness area or critical habitat",
+   "category": "exclusion",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": null,
+   "field": "critical_habitat_or_wilderness",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Exempt Development (NSW Planning Portal)",
+    "authority": "NSW Planning Portal",
+    "version": "Last updated 07/02/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Exempt development exclusions (NSW Planning Portal)",
+    "quote": "Exempt development cannot take place within a wilderness area or critical habitat",
+    "source_url": "https://www.planningportal.nsw.gov.au/development-and-assessment/planning-approval-pathways/exempt-development",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "bca095b6ac65759a6167c3bc12a92dc5a51da30f63fe1a403d8b40ce9861629f",
+    "chunk_id": "pp_exempt_development"
    }
   }
  ]

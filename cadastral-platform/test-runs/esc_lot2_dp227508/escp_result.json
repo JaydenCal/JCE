@@ -1,0 +1,572 @@
+{
+ "schema_name": "sa10_esc_result.v1",
+ "agent_code": "SA10_ESC",
+ "status": "unverified",
+ "elements": [
+  {
+   "id": "ACC1",
+   "kind": "access",
+   "layer": "C-ESC-ACCS",
+   "label": "Stabilised site access",
+   "geometry_wkt": "POLYGON ((238456.025 6569531.202, 238452.46 6569526.691, 238450.106 6569528.551, 238453.671 6569533.063, 238456.025 6569531.202))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.access.min_width_m",
+    "esc.access.min_length_m",
+    "esc.access.min_length_building_sites_m",
+    "esc.access.max_aggregate_mm",
+    "esc.access.thickness_mm",
+    "esc.access.geotextile_underlay",
+    "esc.access.surface",
+    "esc.access.divert_surface_water",
+    "esc.access.build_on_level_area"
+   ],
+   "unresolved_keys": [],
+   "citations": [
+    "esc.access.min_width_m = 3.0 m [Blue Book v1 p.163]",
+    "esc.access.min_length_m = 15.0 m [Blue Book v1 p.163]",
+    "esc.access.min_length_building_sites_m = 3.0 m [Building Sites 2024 p.19]",
+    "esc.access.max_aggregate_mm = 75.0 mm [Blue Book v1 p.163]",
+    "esc.access.thickness_mm = 200.0 mm [Blue Book v1 p.163]",
+    "esc.access.geotextile_underlay = needle-punched geotextile [Blue Book v1 p.163]",
+    "esc.access.surface = gravel, aggregate or recycled concrete [Building Sites 2024 p.19]",
+    "esc.access.divert_surface_water = True [Blue Book v1 p.163]",
+    "esc.access.build_on_level_area = True [Blue Book v1 p.166]"
+   ],
+   "notes": [
+    "Width 3 m; aggregate to 'maximum 75 mm' and 'at least ... 200 mm thick' on needle-punched geotextile per cited Blue Book 6.3.9.",
+    "Blue Book length 15 m not achievable ahead of the building (available 5.8 m); length provided 5.8 m (2024 Building Sites minimum 3 m). To be confirmed by the designer/certifier."
+   ],
+   "quantity": 17.25,
+   "quantity_unit": "m2"
+  },
+  {
+   "id": "SP1",
+   "kind": "stockpile",
+   "layer": "C-ESC-STOK",
+   "label": "Soil stockpile",
+   "geometry_wkt": "POLYGON ((238464.841 6569546.649, 238462.677 6569544.571, 238465.448 6569541.686, 238467.611 6569543.764, 238464.841 6569546.649))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.stockpile.min_distance_from_hazard_m",
+    "esc.stockpile.preferred_distance_from_hazard_m",
+    "esc.stockpile.avoid_downslope_of_construction",
+    "esc.stockpile.within_site_behind_sediment_controls",
+    "esc.stockpile.max_height_m",
+    "esc.stockpile.upslope_diversion_and_downslope_filter",
+    "esc.stockpile.cover_when_unattended",
+    "esc.stockpile.hazard_areas"
+   ],
+   "unresolved_keys": [
+    "esc.stockpile.setback_from_lot_boundary_m"
+   ],
+   "citations": [
+    "esc.stockpile.min_distance_from_hazard_m = 2.0 m [Blue Book v1 p.70]",
+    "esc.stockpile.preferred_distance_from_hazard_m = 5.0 m [Blue Book v1 p.70]",
+    "esc.stockpile.avoid_downslope_of_construction = True [Building Sites 2024 p.23]",
+    "esc.stockpile.within_site_behind_sediment_controls = True [Building Sites 2024 p.23]",
+    "esc.stockpile.max_height_m = 2.0 m [Building Sites 2024 p.23]",
+    "esc.stockpile.upslope_diversion_and_downslope_filter = True [Building Sites 2024 p.23]",
+    "esc.stockpile.cover_when_unattended = True [Building Sites 2024 p.23]",
+    "esc.stockpile.hazard_areas = concentrated water flows, waterways, roads, slopes steeper than 10 percent [Blue Book v1 p.70]"
+   ],
+   "notes": [
+    "Footprint 4 x 3 m (layout assumption), long axis along the contour.",
+    "No position upslope of the building clears the preferred hazard distance; placed beside/downslope. Cover and fence it."
+   ],
+   "quantity": 12.0,
+   "quantity_unit": "m2"
+  },
+  {
+   "id": "TS1",
+   "kind": "topsoil",
+   "layer": "C-ESC-STOK",
+   "label": "Topsoil stockpile",
+   "geometry_wkt": "POLYGON ((238468.341 6569543.649, 238466.177 6569541.571, 238468.948 6569538.686, 238471.111 6569540.764, 238468.341 6569543.649))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.stockpile.min_distance_from_hazard_m",
+    "esc.stockpile.preferred_distance_from_hazard_m",
+    "esc.topsoil.strip_depth_min_mm",
+    "esc.topsoil.strip_depth_max_mm",
+    "esc.stockpile.stabilise_if_longer_than_days"
+   ],
+   "unresolved_keys": [
+    "esc.stockpile.setback_from_lot_boundary_m"
+   ],
+   "citations": [
+    "esc.stockpile.min_distance_from_hazard_m = 2.0 m [Blue Book v1 p.70]",
+    "esc.stockpile.preferred_distance_from_hazard_m = 5.0 m [Blue Book v1 p.70]",
+    "esc.topsoil.strip_depth_min_mm = 100.0 mm [Blue Book v1 p.70]",
+    "esc.topsoil.strip_depth_max_mm = 150.0 mm [Blue Book v1 p.70]",
+    "esc.stockpile.stabilise_if_longer_than_days = 10.0 days [Blue Book v1 p.70]"
+   ],
+   "notes": [
+    "Footprint 4 x 3 m (layout assumption), long axis along the contour.",
+    "No position upslope of the building clears the preferred hazard distance; placed beside/downslope. Cover and fence it."
+   ],
+   "quantity": 12.0,
+   "quantity_unit": "m2"
+  },
+  {
+   "id": "LD1",
+   "kind": "laydown",
+   "layer": "C-ESC-STOK",
+   "label": "Materials laydown / delivery area",
+   "geometry_wkt": "POLYGON ((238460.855 6569551.356, 238457.97 6569548.585, 238461.433 6569544.979, 238464.318 6569547.75, 238460.855 6569551.356))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.stockpile.min_distance_from_hazard_m",
+    "esc.stockpile.preferred_distance_from_hazard_m",
+    "esc.stockpile.not_on_footpath_or_road_reserve"
+   ],
+   "unresolved_keys": [
+    "esc.stockpile.setback_from_lot_boundary_m"
+   ],
+   "citations": [
+    "esc.stockpile.min_distance_from_hazard_m = 2.0 m [Blue Book v1 p.70]",
+    "esc.stockpile.preferred_distance_from_hazard_m = 5.0 m [Blue Book v1 p.70]",
+    "esc.stockpile.not_on_footpath_or_road_reserve = True [Building Sites 2024 p.24]"
+   ],
+   "notes": [
+    "Footprint 5 x 4 m (layout assumption), long axis along the contour.",
+    "No position upslope of the building clears the preferred hazard distance; placed beside/downslope. Cover and fence it."
+   ],
+   "quantity": 20.0,
+   "quantity_unit": "m2"
+  },
+  {
+   "id": "WS1",
+   "kind": "washout",
+   "layer": "C-ESC-WSHT",
+   "label": "Concrete washout / wash-down (bunded)",
+   "geometry_wkt": "POLYGON ((238455.87 6569527.35, 238457.255 6569525.907, 238459.419 6569527.985, 238458.033 6569529.428, 238455.87 6569527.35))",
+   "status": "resolved",
+   "req_keys": [
+    "esc.washout.buffer_around_largest_equipment_m",
+    "esc.washout.bunded",
+    "esc.washout.level_area",
+    "esc.washout.not_drain_to_stormwater_or_no_go",
+    "esc.washout.sediment_controls_downslope",
+    "esc.washout.collect_and_treat_wastewater",
+    "esc.washout.concrete_pump_plastic_sheet"
+   ],
+   "unresolved_keys": [
+    "esc.washout.setback_from_boundary_and_size"
+   ],
+   "citations": [
+    "esc.washout.buffer_around_largest_equipment_m = 2.0 m [Building Sites 2024 p.14]",
+    "esc.washout.bunded = True [Building Sites 2024 p.30]",
+    "esc.washout.level_area = True [Building Sites 2024 p.30]",
+    "esc.washout.not_drain_to_stormwater_or_no_go = True [Building Sites 2024 p.30]",
+    "esc.washout.sediment_controls_downslope = True [Building Sites 2024 p.29]",
+    "esc.washout.collect_and_treat_wastewater = True [Blue Book v1 p.166]",
+    "esc.washout.concrete_pump_plastic_sheet = True [Building Sites 2024 p.30]"
+   ],
+   "notes": [
+    "Footprint 3 x 2 m (layout assumption), long axis along the contour."
+   ],
+   "quantity": 6.0,
+   "quantity_unit": "m2"
+  },
+  {
+   "id": "BIN1",
+   "kind": "bin",
+   "layer": "C-ESC-BINS",
+   "label": "Waste bin",
+   "geometry_wkt": "POLYGON ((238449.507 6569531.907, 238450.339 6569531.042, 238451.781 6569532.427, 238450.95 6569533.293, 238449.507 6569531.907))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.waste.provide_approved_bins",
+    "esc.waste.bin_clearance_interval"
+   ],
+   "unresolved_keys": [
+    "esc.waste.bin_location_setback"
+   ],
+   "citations": [
+    "esc.waste.provide_approved_bins = True [Blue Book v1 p.200]",
+    "esc.waste.bin_clearance_interval = at least weekly [Blue Book v1 p.189]"
+   ],
+   "notes": [
+    "Footprint 2 x 1.2 m (layout assumption), long axis along the contour."
+   ],
+   "quantity": 2.4,
+   "quantity_unit": "m2"
+  },
+  {
+   "id": "WC1",
+   "kind": "toilet",
+   "layer": "C-ESC-BINS",
+   "label": "Portable toilet",
+   "geometry_wkt": "POLYGON ((238449.661 6569534.516, 238448.796 6569533.685, 238449.627 6569532.819, 238450.493 6569533.65, 238449.661 6569534.516))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.amenities.staff_facilities_contain_effluent"
+   ],
+   "unresolved_keys": [
+    "esc.amenities.toilet_location_setback"
+   ],
+   "citations": [
+    "esc.amenities.staff_facilities_contain_effluent = True [Blue Book v1 p.200]"
+   ],
+   "notes": [
+    "Footprint 1.2 x 1.2 m (layout assumption), long axis along the contour."
+   ],
+   "quantity": 1.44,
+   "quantity_unit": "m2"
+  },
+  {
+   "id": "LOW1",
+   "kind": "limit",
+   "layer": "C-ESC-LIMT",
+   "label": "Limit of works",
+   "geometry_wkt": "LINEARRING (238459.125 6569522.061, 238444.037 6569533.985, 238472.679 6569570.2, 238487.857 6569558.389, 238459.125 6569522.061)",
+   "status": "resolved",
+   "req_keys": [
+    "esc.nogo.mark_sensitive_areas_and_trees"
+   ],
+   "unresolved_keys": [],
+   "citations": [
+    "esc.nogo.mark_sensitive_areas_and_trees = True [Building Sites 2024 p.11]"
+   ],
+   "notes": [
+    "Install before work starts; all site personnel to be inducted."
+   ],
+   "quantity": 130.95,
+   "quantity_unit": "m"
+  },
+  {
+   "id": "FNC1",
+   "kind": "fence",
+   "layer": "C-ESC-FENC",
+   "label": "Sediment fence",
+   "geometry_wkt": "MULTILINESTRING ((238487.857 6569558.389, 238472.679 6569570.2))",
+   "status": "resolved",
+   "req_keys": [
+    "esc.sediment_fence.place_downslope",
+    "esc.sediment_fence.along_contour",
+    "esc.sediment_fence.ends_turn_upslope",
+    "esc.sediment_fence.return_interval_m",
+    "esc.sediment_fence.post_spacing_m",
+    "esc.sediment_fence.trench_depth_mm",
+    "esc.sediment_fence.joint_overlap_mm",
+    "esc.sediment_fence.not_across_drainage_line",
+    "esc.sediment_fence.no_material_against_fence",
+    "esc.sediment_fence.max_subcatchment_flow_l_s",
+    "esc.sediment_fence.near_source",
+    "esc.sediment_fence.design_life_months"
+   ],
+   "unresolved_keys": [
+    "esc.sediment_fence.offset_from_boundary_m",
+    "esc.sediment_fence.max_length_m",
+    "esc.sediment_fence.return_length_m"
+   ],
+   "citations": [
+    "esc.sediment_fence.place_downslope = True [Building Sites 2024 p.46]",
+    "esc.sediment_fence.along_contour = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.ends_turn_upslope = True [Building Sites 2024 p.25]",
+    "esc.sediment_fence.return_interval_m = 20.0 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.post_spacing_m = 2.5 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.trench_depth_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.joint_overlap_mm = 150.0 mm [Building Sites 2024 p.25]",
+    "esc.sediment_fence.not_across_drainage_line = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.no_material_against_fence = True [Building Sites 2024 p.26]",
+    "esc.sediment_fence.max_subcatchment_flow_l_s = 50.0 L/s [Blue Book v1 p.154]",
+    "esc.sediment_fence.near_source = True [Blue Book v1 p.153]",
+    "esc.sediment_fence.design_life_months = 6.0 months [Building Sites 2024 p.26]"
+   ],
+   "notes": [
+    "Along the downslope limit of works; opens at the stabilised access (ends turned upslope)."
+   ],
+   "quantity": 19.23,
+   "quantity_unit": "m"
+  },
+  {
+   "id": "FNR1",
+   "kind": "return",
+   "layer": "C-ESC-FENC",
+   "label": "Fence returns",
+   "geometry_wkt": "MULTILINESTRING ((238487.857 6569558.389, 238487.892 6569557.708), (238472.679 6569570.2, 238472.08 6569570.169))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.sediment_fence.return_interval_m",
+    "esc.sediment_fence.ends_turn_upslope"
+   ],
+   "unresolved_keys": [
+    "esc.sediment_fence.return_length_m"
+   ],
+   "citations": [
+    "esc.sediment_fence.return_interval_m = 20.0 m [Building Sites 2024 p.25]",
+    "esc.sediment_fence.ends_turn_upslope = True [Building Sites 2024 p.25]"
+   ],
+   "notes": [
+    "Symbolic return length (layout assumption); spacing per cited 20 m."
+   ],
+   "quantity": 1.28,
+   "quantity_unit": "m"
+  },
+  {
+   "id": "DIV1",
+   "kind": "diversion",
+   "layer": "C-ESC-DIVR",
+   "label": "Clean-water diversion (catch drain / bund)",
+   "geometry_wkt": "MULTILINESTRING ((238444.037 6569533.985, 238459.125 6569522.061))",
+   "status": "resolved",
+   "req_keys": [
+    "esc.diversion.upslope_catch_drain_or_bund",
+    "esc.diversion.graded_bund_option",
+    "esc.diversion.no_discharge_to_neighbour_without_consent",
+    "esc.diversion.no_discharge_toward_access",
+    "esc.diversion.no_straw_bales",
+    "esc.stockpile.upslope_diversion_and_downslope_filter"
+   ],
+   "unresolved_keys": [
+    "esc.diversion.bund_dimensions_and_grade"
+   ],
+   "citations": [
+    "esc.diversion.upslope_catch_drain_or_bund = True [Building Sites 2024 p.21]",
+    "esc.diversion.graded_bund_option = True [Building Sites 2024 p.21]",
+    "esc.diversion.no_discharge_to_neighbour_without_consent = True [Building Sites 2024 p.21]",
+    "esc.diversion.no_discharge_toward_access = True [Building Sites 2024 p.21]",
+    "esc.diversion.no_straw_bales = True [Building Sites 2024 p.21]",
+    "esc.stockpile.upslope_diversion_and_downslope_filter = True [Building Sites 2024 p.23]"
+   ],
+   "notes": [
+    "Direction of arrows = flow along the drain.",
+    "Outlet must not discharge onto a neighbouring property without the owner's written consent, nor towards the access (cited)."
+   ],
+   "quantity": 19.23,
+   "quantity_unit": "m"
+  },
+  {
+   "id": "INL1",
+   "kind": "inlet",
+   "layer": "C-ESC-INLT",
+   "label": "Kerb inlet / gutter sediment trap",
+   "geometry_wkt": "POLYGON ((238450.413 6569522.892, 238450.723 6569523.284, 238451.9 6569522.354, 238451.59 6569521.962, 238450.413 6569522.892))",
+   "status": "unresolved",
+   "req_keys": [
+    "esc.inlet.protect_downslope_drains_and_gutters",
+    "esc.inlet.downstream_pit_protection",
+    "esc.inlet.methods",
+    "esc.inlet.consult_council_on_method",
+    "esc.stockpile.not_on_footpath_or_road_reserve"
+   ],
+   "unresolved_keys": [
+    "esc.inlet.kerb_trap_dimensions"
+   ],
+   "citations": [
+    "esc.inlet.protect_downslope_drains_and_gutters = True [Building Sites 2024 p.26]",
+    "esc.inlet.downstream_pit_protection = True [Blue Book v1 p.162]",
+    "esc.inlet.methods = gravel filter roll; gravel surface barrier; sandbag kerb sediment trap [Building Sites 2024 p.27]",
+    "esc.inlet.consult_council_on_method = True [Building Sites 2024 p.27]",
+    "esc.stockpile.not_on_footpath_or_road_reserve = True [Building Sites 2024 p.24]"
+   ],
+   "notes": [
+    "Stormwater pit locations not supplied: trap shown in the gutter immediately downslope of the crossover as a placeholder; confirm against the actual pits.",
+    "Consult council on method (cited)."
+   ],
+   "quantity": 1.0,
+   "quantity_unit": "no."
+  }
+ ],
+ "flow": {
+  "direction": [
+   0.7212311382050666,
+   0.6926944819207268
+  ],
+  "slope_pct": 2.6847570539051406,
+  "source": "terrain plane fit (144 survey points), fall 2.7%",
+  "assumed": false,
+  "bearing_deg": 46.15621924885261
+ },
+ "quantities": {
+  "site_area_m2": 955.8,
+  "limit_of_works_area_m2": 889.4,
+  "disturbed_area_estimate_m2": 401.0,
+  "disturbed_area_basis": "convex hull of building, driveway/access and activity areas + margin",
+  "fence_length_m": 19.2,
+  "fence_returns_m": 1.3,
+  "fence_posts": 9,
+  "access_length_m": 5.8,
+  "access_width_m": 3.0,
+  "access_area_m2": 17.3,
+  "access_aggregate_m3": 3.5,
+  "stockpile_area_m2": 44.0,
+  "diversion_length_m": 19.2,
+  "check_dams": 0,
+  "inlet_traps": 1,
+  "topsoil_strip_m3": [
+   40.1,
+   60.1
+  ],
+  "fall_pct": 2.68,
+  "flow_bearing_deg": 46.2,
+  "sheet_scale": 200
+ },
+ "resolved_keys": [
+  "esc.access.build_on_level_area",
+  "esc.access.divert_surface_water",
+  "esc.access.geotextile_underlay",
+  "esc.access.max_aggregate_mm",
+  "esc.access.min_length_building_sites_m",
+  "esc.access.min_length_m",
+  "esc.access.min_width_m",
+  "esc.access.surface",
+  "esc.access.thickness_mm",
+  "esc.amenities.staff_facilities_contain_effluent",
+  "esc.diversion.graded_bund_option",
+  "esc.diversion.no_discharge_to_neighbour_without_consent",
+  "esc.diversion.no_discharge_toward_access",
+  "esc.diversion.no_straw_bales",
+  "esc.diversion.upslope_catch_drain_or_bund",
+  "esc.escp.max_site_area_m2",
+  "esc.escp.min_site_area_m2",
+  "esc.escp.prepared_by_suitably_qualified_person",
+  "esc.inlet.consult_council_on_method",
+  "esc.inlet.downstream_pit_protection",
+  "esc.inlet.methods",
+  "esc.inlet.protect_downslope_drains_and_gutters",
+  "esc.inspection.after_rainfall_event",
+  "esc.inspection.designated_person_daily",
+  "esc.inspection.keep_spare_materials_on_site",
+  "esc.inspection.min_frequency",
+  "esc.inspection.stockpiles_covered_end_of_day",
+  "esc.inspection.sweep_road_footpath_daily",
+  "esc.maintenance.access_top_up_when_worn",
+  "esc.maintenance.remove_collected_sediment",
+  "esc.maintenance.replace_damaged_sediment_fence",
+  "esc.maintenance.sediment_removal_capacity_loss_pct",
+  "esc.nogo.mark_sensitive_areas_and_trees",
+  "esc.removal.controls_remain_until_revegetation_pct",
+  "esc.sediment_fence.along_contour",
+  "esc.sediment_fence.design_life_months",
+  "esc.sediment_fence.ends_turn_upslope",
+  "esc.sediment_fence.joint_overlap_mm",
+  "esc.sediment_fence.max_subcatchment_flow_l_s",
+  "esc.sediment_fence.near_source",
+  "esc.sediment_fence.no_material_against_fence",
+  "esc.sediment_fence.not_across_drainage_line",
+  "esc.sediment_fence.place_downslope",
+  "esc.sediment_fence.post_spacing_m",
+  "esc.sediment_fence.return_interval_m",
+  "esc.sediment_fence.trench_depth_mm",
+  "esc.stabilisation.remove_temporary_controls_after_stabilised",
+  "esc.stockpile.avoid_downslope_of_construction",
+  "esc.stockpile.cover_when_unattended",
+  "esc.stockpile.hazard_areas",
+  "esc.stockpile.hazard_slope_pct",
+  "esc.stockpile.max_height_m",
+  "esc.stockpile.min_distance_from_hazard_m",
+  "esc.stockpile.not_on_footpath_or_road_reserve",
+  "esc.stockpile.preferred_distance_from_hazard_m",
+  "esc.stockpile.stabilise_if_longer_than_days",
+  "esc.stockpile.upslope_diversion_and_downslope_filter",
+  "esc.stockpile.within_site_behind_sediment_controls",
+  "esc.topsoil.strip_depth_max_mm",
+  "esc.topsoil.strip_depth_min_mm",
+  "esc.washout.buffer_around_largest_equipment_m",
+  "esc.washout.bunded",
+  "esc.washout.collect_and_treat_wastewater",
+  "esc.washout.concrete_pump_plastic_sheet",
+  "esc.washout.level_area",
+  "esc.washout.not_drain_to_stormwater_or_no_go",
+  "esc.washout.sediment_controls_downslope",
+  "esc.waste.bin_clearance_interval",
+  "esc.waste.provide_approved_bins"
+ ],
+ "unresolved": [
+  {
+   "key": "esc.amenities.toilet_location_setback",
+   "prompt": "No portable toilet siting distance from drains/boundaries is stated. Siting is indicative (away from the downslope boundary and drains); to be confirmed by the builder/certifier.",
+   "used_by": [
+    "WC1"
+   ]
+  },
+  {
+   "key": "esc.buffer.min_from_drainage_line_m",
+   "prompt": "No minimum buffer from drainage lines / waterways to disturbed ground is stated for single-lot building sites (only: no run-off may pass through sensitive areas; consult DPIRD Fisheries; stockpiles 2 m min / 5 m preferred from concentrated flow). Riparian/buffer distance to be confirmed by the designer/certifier and the relevant water agency.",
+   "used_by": []
+  },
+  {
+   "key": "esc.check_dam.spacing_and_height",
+   "prompt": "Check dam spacing and height are not stated in the ingested text. Shown only as 'where necessary' on sloping sites, location indicative; to be confirmed by the designer.",
+   "used_by": []
+  },
+  {
+   "key": "esc.diversion.bund_dimensions_and_grade",
+   "prompt": "Diversion bank/catch drain cross-section and grade are not stated in text (Blue Book standard drawings SD 5-5/5-6 are figures). To be confirmed by the designer/certifier.",
+   "used_by": [
+    "DIV1"
+   ]
+  },
+  {
+   "key": "esc.inlet.kerb_trap_dimensions",
+   "prompt": "No dimensions (length, height, spacing) for kerb inlet/gutter sediment traps are stated in text (standard drawings SD 6-11/6-12 are figures, not text). Council to be consulted on method and dimensions.",
+   "used_by": [
+    "INL1"
+   ]
+  },
+  {
+   "key": "esc.sediment_fence.max_length_m",
+   "prompt": "No general maximum continuous fence length or maximum contributing catchment area per section is stated in the Building Sites Guidelines (2024) or the Blue Book text (only: returns usually every 20 m; sub-catchment flow limited to 50 L/s in the design storm; a model plan uses 1,030 m2 for its own site). To be confirmed by the designer/certifier.",
+   "used_by": [
+    "FNC1"
+   ]
+  },
+  {
+   "key": "esc.sediment_fence.offset_from_boundary_m",
+   "prompt": "No offset between the sediment fence and the lot boundary / limit of works is stated. The fence is drawn on the limit-of-works line; offset to be confirmed by the designer/certifier.",
+   "used_by": [
+    "FNC1"
+   ]
+  },
+  {
+   "key": "esc.sediment_fence.return_length_m",
+   "prompt": "Length of fence returns (ends and every 20 m) is not stated generally (a Blue Book model plan uses 1 m for its own site). The plan draws a symbolic return; length to be confirmed by the designer/certifier.",
+   "used_by": [
+    "FNC1",
+    "FNR1"
+   ]
+  },
+  {
+   "key": "esc.stockpile.setback_from_lot_boundary_m",
+   "prompt": "No stockpile setback from the lot boundary is stated (only 2 m minimum / 5 m preferred from hazard areas such as drains, driveways, concentrated flow, waterways, roads). Boundary setback to be confirmed by the designer/certifier or council.",
+   "used_by": [
+    "SP1",
+    "TS1",
+    "LD1"
+   ]
+  },
+  {
+   "key": "esc.washout.setback_from_boundary_and_size",
+   "prompt": "No wash-out size or setback from boundaries is stated other than the 2 m buffer around the largest equipment washed. Size to be set by the builder; location to be confirmed.",
+   "used_by": [
+    "WS1"
+   ]
+  },
+  {
+   "key": "esc.waste.bin_location_setback",
+   "prompt": "No waste bin siting distance is stated. Bin shown within the limit of works clear of drains; to be confirmed.",
+   "used_by": [
+    "BIN1"
+   ]
+  }
+ ],
+ "assumptions": [
+  "Lot is within the 2500 m2 ESCP site-size range: the whole site is treated as the limit of works (fence set in 0.5 m from the boundary).",
+  "Fence line set in 0.5 m from the lot boundary; works clearance to the fence line 1.5 m (layout parameters, offset unresolved in the standards).",
+  "Activity-area footprints (stockpile 4x3 m, washout 3x2 m, bin, toilet) are layout sizes, not requirements; items are searched within 25 m of the building/driveway.",
+  "Edges within about 75 degrees of downslope get the fence; edges facing upslope get the diversion (cos threshold 0.25).",
+  "Fitted fall below 0.5% is treated as flat (flow assumed towards the road)."
+ ],
+ "warnings": [],
+ "files": {
+  "pdf": "../test-runs/esc_lot2_dp227508/escp.pdf",
+  "dxf": "../test-runs/esc_lot2_dp227508/escp.dxf",
+  "geojson": "../test-runs/esc_lot2_dp227508/escp.geojson",
+  "scene_parts": "../test-runs/esc_lot2_dp227508/escp_scene_parts.json",
+  "report": "../test-runs/esc_lot2_dp227508/escp_report.md"
+ },
+ "disclaimer": "Indicative proposed ESCP - to be reviewed and certified by a suitably qualified person"
+}

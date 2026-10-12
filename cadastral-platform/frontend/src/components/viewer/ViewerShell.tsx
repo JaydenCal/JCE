@@ -11,6 +11,8 @@ import { DEFAULT_SETTINGS, type CatalogueItem, type PickInfo, type PlacedItem, t
 import { ReviewPanel } from './ReviewPanel';
 import { PlacePanel } from './PlacePanel';
 import { FpOverlay, SettingsPanel } from './FpOverlay';
+import { AssistantPanel } from './AssistantPanel';
+import { replaceBuildingParts, type AssistantProvider, type AssistantTurn } from '@/lib/assistant';
 
 export interface ViewerShellProps {
   bundle?: SceneBundle; bundleUrl?: string; projectId?: string;
@@ -19,8 +21,10 @@ export interface ViewerShellProps {
   onItemsChange?: (items: PlacedItem[]) => void;
   /** optional compliance check; returned strings become badges on the item (server warnings can also arrive in PlacedItem.warnings) */
   complianceCheck?: (item: PlacedItem, cat: Map<string, CatalogueItem>) => Promise<string[]> | string[];
+  /** enables the 'Design assistant' dock tab (see lib/assistant.ts: httpAssistant / demoAssistant) */
+  assistant?: AssistantProvider;
 }
-type Tab = 'review' | 'place' | 'walk';
+type Tab = 'review' | 'place' | 'walk' | 'assistant';
 const VIEW_NAMES: Record<string, string> = { 'iso-sw': 'Iso SW', 'iso-ne': 'Iso NE', 'iso-se': 'Iso SE', plan: 'Plan', s: 'South', w: 'West', frontage: 'Frontage', dda: 'DDA bay', west: 'West driveway', lane: 'Lane', rear: 'Rear', street: 'Street', entry: 'Entry', service: 'Service area' };
 const defaultProvider = fetchProvider(API_BASE);
 const INIT_PLACE: PlaceState = { items: [], selectedId: null, ghostCatId: null, mode: 'idle', canUndo: false, canRedo: false, hint: '' };
@@ -40,7 +44,7 @@ function ViewerShell(props: ViewerShellProps) {
   return <ViewerInner {...props} provider={props.provider ?? (props.projectId ? defaultProvider : undefined)} bundle={bundle} />;
 }
 
-function ViewerInner({ bundle, projectId, catalogue, provider, onItemsChange, complianceCheck }: ViewerShellProps & { bundle: SceneBundle }) {
+function ViewerInner({ bundle, projectId, catalogue, provider, onItemsChange, complianceCheck, assistant }: ViewerShellProps & { bundle: SceneBundle }) {
   const root = useRef<HTMLDivElement>(null), stage = useRef<HTMLDivElement>(null), canvas = useRef<HTMLCanvasElement>(null), needle = useRef<SVGGElement>(null);
   const [eng, setEng] = useState<ViewerEngine | null>(null);
   const [theme, setTheme] = useState<'auto' | 'light' | 'dark'>('auto');
@@ -91,6 +95,13 @@ function ViewerInner({ bundle, projectId, catalogue, provider, onItemsChange, co
   const hasCF = bundle.parts.some((p) => p.c === 'cutfill');
   const views = Object.keys(bundle.views ?? {});
   const P = eng?.place;
+  const buildingParts = useMemo(() => new Set(bundle.parts.filter((p) => p.c === 'buildings').map((p) => p.n.replace(/_/g, ' '))), [bundle]);
+  const onAssistantTurn = useCallback((t: AssistantTurn) => {
+    if (!eng) return;
+    for (const p of t.parts) buildingParts.add(p.n.replace(/_/g, ' '));
+    const O = bundle.info.origin;
+    replaceBuildingParts(eng, t.parts, [t.parts_origin[0] - O[0], t.parts_origin[1] - O[1]], getComputedStyle(root.current!).getPropertyValue('--edge').trim() || '#14161a');
+  }, [eng, bundle, buildingParts]);
 
   return (
     <div className="v3d" ref={root} data-theme={theme === 'auto' ? undefined : theme}>
@@ -115,9 +126,10 @@ function ViewerInner({ bundle, projectId, catalogue, provider, onItemsChange, co
         </div>
         <aside className="dock">
           <div className="tabs" role="tablist">
-            {(['review', 'place', ...(fpOn ? ['walk'] : [])] as Tab[]).map((t) => <button key={t} role="tab" aria-selected={tab === t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t === 'review' ? 'Review' : t === 'place' ? 'Place items' : 'Walk'}</button>)}
+            {(['review', 'place', ...(assistant ? ['assistant'] : []), ...(fpOn ? ['walk'] : [])] as Tab[]).map((t) => <button key={t} role="tab" aria-selected={tab === t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t === 'review' ? 'Review' : t === 'place' ? 'Place items' : t === 'assistant' ? 'Design assistant' : 'Walk'}</button>)}
           </div>
           {tab === 'review' && <ReviewPanel bundle={bundle} layers={layers} on={on} opts={opts} pick={pick} hasCutFill={hasCF} setLayer={setLayer} setOpt={setOpt} />}
+          {tab === 'assistant' && assistant && <AssistantPanel provider={assistant} picked={pick?.part ?? null} buildingParts={buildingParts} onTurn={onAssistantTurn} />}
           {tab === 'walk' && <SettingsPanel s={settings} set={(p) => setSettings((s) => ({ ...s, ...p }))} />}
           {tab === 'place' && (
             <PlacePanel catalogue={cat} state={pl} loading={loading}

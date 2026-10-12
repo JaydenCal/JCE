@@ -28,7 +28,7 @@ ADVISORY = "Advisory drawing check only. It is not an NCC/BCA, planning or counc
 OP_NAMES = {c.model_fields["op"].default for c in OP_CLASSES}
 _INJECT = re.compile(r"(ignore|disregard|forget|override).{0,40}(instruction|prompt|rule|above|previous)|system prompt|you are now|"
                      r"</?[a-z_]+>|\b(assistant|system|developer)\s*:|tool_use|tool_result|\bdelete (all|every)", re.I)
-_SAFE = re.compile(r"[^A-Za-z0-9 .,'&()/#:+\-]")
+_SAFE = re.compile(r"[^A-Za-z0-9 .,'&()/#:+?!\-]")
 
 
 def _env_int(k: str, d: int) -> int:

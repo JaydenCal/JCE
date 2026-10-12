@@ -89,6 +89,12 @@
    "label": "Farm building CDC footprint, aggregate footprint and road/side/rear setbacks (cl 3D.57-3D.59)",
    "prompt": "The summary table was obtained but its landholding/footprint columns were not encoded; footprints of 500 m2 or more need 200 m from every boundary (table footnote 4). Resolve against the table/SEPP.",
    "code": "inland_farm_cdc"
+  },
+  {
+   "id": "cdc.bushfire",
+   "label": "Bushfire-prone land requirements (BAL assessment, AS 3959, Planning for Bush Fire Protection)",
+   "prompt": "Bushfire-prone land: complying development is allowed only subject to the code's bushfire clauses (Housing Code cl 3.4 / Inland Code cl 3D.6), which were not obtained; BAL-FZ (flame zone) land is excluded for secondary dwellings (cited). Obtain a BAL assessment (AS 3959) from an accredited practitioner and the s10.7 certificate.",
+   "code": "cdc_general"
   }
  ],
  "failed_validation": [],

@@ -1,0 +1,4 @@
+Fonts embedded in generated reports (SIL Open Font License 1.1, https://openfontlicense.org):
+  Jost (c) The Jost Project Authors (Owen Earl, indestructible type*)
+  IBM Plex Sans, IBM Plex Mono (c) IBM Corp. with Reserved Font Name "Plex"
+Obtained as the @fontsource npm packages (latin subset) and converted from WOFF to TTF unchanged.

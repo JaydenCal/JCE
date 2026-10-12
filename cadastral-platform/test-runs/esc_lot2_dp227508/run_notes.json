@@ -1,0 +1,7 @@
+{
+ "levels": "144 points, NSW_5M_Elevation ImageServer exportImage, DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata); 5 m DEM (144 points, derived from stereo imagery) is too coarse for detailed cut/fill on a 956 m2 lot; commission a detail survey before relying on earthworks quantities; vertical accuracy UNKNOWN: not stated in NSW_5M_Elevation metadata; 5.0 m placeholder used only so uncertainty is not understated (not a stated figure)",
+ "notes": [
+  "Building footprint is the SA6 PRESET placed in the cited-rule envelope (placeholder size, not a design).",
+  "SA6 has no dwelling preset: a PLACEHOLDER 12 x 12 m (144 m2) footprint, aligned to the frontage and centred in the envelope, stands in for the architect's slab. Not a design."
+ ]
+}

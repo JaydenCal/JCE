@@ -287,6 +287,17 @@ rule("exempt.dwelling.na", "exempt_general", "exempt", "Exempt development cover
 rule("da.local_dev", "da", "da", "Development needing consent is lodged as a development application with the consent authority via the NSW Planning Portal", cite("pp_local_development", 1, "If your development needs consent, a development application must be lodged with the local council.", "Local development (NSW Planning Portal)", "raw"),
      category="applicability", field="__info__", op="info")
 
+
+unresolved("cdc.bushfire", "cdc_general", "cdc", "Bushfire-prone land requirements (BAL assessment, AS 3959, Planning for Bush Fire Protection)",
+           "Bushfire-prone land: complying development is allowed only subject to the code's bushfire clauses (Housing Code cl 3.4 / Inland Code cl 3D.6), which were not obtained; BAL-FZ (flame zone) land is excluded for secondary dwellings (cited). Obtain a BAL assessment (AS 3959) from an accredited practitioner and the s10.7 certificate.",
+           category="exclusion", field="bushfire_prone")
+rule("exempt.general.state_heritage", "exempt_general", "exempt", "Land is not, and has no item that is, on the State Heritage Register or subject to an interim heritage order",
+     cite("pp_exempt_development", 1, "Exempt development cannot occur on land that is, or on which there is, an item that is listed on the State Heritage Register or that is subject to an interim heritage order.", "Exempt development exclusions (NSW Planning Portal)", "raw"),
+     dev=["shed"], category="exclusion", field="state_heritage_item", op="is_false")
+rule("exempt.general.critical_habitat", "exempt_general", "exempt", "Land is not a wilderness area or critical habitat",
+     cite("pp_exempt_development", 1, "Exempt development cannot take place within a wilderness area or critical habitat", "Exempt development exclusions (NSW Planning Portal)", "raw"),
+     dev=["shed"], category="exclusion", field="critical_habitat_or_wilderness", op="is_false")
+
 UNKNOWN_DOCS = {"inland_page_sd": ("nsw_page_granny_flats_rebuild",)}
 
 def resolve(r):
@@ -303,7 +314,7 @@ def resolve(r):
     eff = None
     r["citation"] = dict(document_title=meta["title"], authority=meta.get("authority", ""), version=meta.get("version"), effective_date=eff,
                          page=c["page"] if path.suffix == ".pdf" else 1, section_ref=c.get("section_ref"), quote=c["quote"],
-                         source_url=meta.get("url"), retrieved_at=meta.get("retrieved_at"), sha256=meta.get("sha256", ""), doc_id=docid)
+                         source_url=meta.get("url"), retrieved_at=meta.get("retrieved_at"), sha256=meta.get("sha256", ""), chunk_id=docid)
     r.pop("cite"); return r, None
 
 
@@ -330,7 +341,7 @@ def main():
     assert len(lgas) == 69, len(lgas)
     m = PSRC["inland_lga_map"]
     inland = dict(lgas=lgas, citation=dict(document_title=m["title"], authority=m["authority"], version=m["version"], page=1, section_ref="legend: 30 Gunnedah (Inland Code applies)",
-                  quote="30 Gunnedah", source_url=m["url"], retrieved_at=m["retrieved_at"], sha256=m["sha256"], doc_id="inland_lga_map"),
+                  quote="30 Gunnedah", source_url=m["url"], retrieved_at=m["retrieved_at"], sha256=m["sha256"], chunk_id="inland_lga_map"),
                   note="Read visually from the map image (key 'Inland Code applies'): the list names the 69 LGAs shown; the map shows boundaries at 2023 date. Councils renamed/merged since are not reflected.")
     (HERE / "rules.json").write_text(json.dumps(dict(schema=1, built_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
         currency_warning=INL_V, inland_code_lgas=inland, rules=out), indent=1, ensure_ascii=False))

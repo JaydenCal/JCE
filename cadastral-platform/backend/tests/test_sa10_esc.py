@@ -175,7 +175,8 @@ def test_pdf_contents(tmp_path):
     out = run(tmp_path)
     doc = pymupdf.open(out.files["pdf"])
     assert doc.page_count == 1 and abs(doc[0].rect.width - 420 / 25.4 * 72) < 2
-    txt = doc[0].get_text()
+    txt = " ".join(doc[0].get_text().split())
+    assert "JCE Infrastructure" in txt and doc[0].get_images()      # company name + logo image on the title block
     for needle in ("LEGEND", "GENERAL NOTES", "MAINTENANCE", DISCLAIMER.upper(), "Sediment fence", "Stabilised site access", "Kerb inlet", "to be confirmed by the designer/certifier".split()[0]):
         assert needle in txt, needle
     assert "Blue Book" in txt and "Building Sites 2024" in txt          # sheet notes carry their source
@@ -190,6 +191,7 @@ def test_dxf_audit_and_layers(tmp_path):
     names = {l.dxf.name for l in d.layers}
     assert set(ESC_LAYER_NAMES) <= names
     used = {e.dxf.layer for e in d.modelspace()}
+    assert "C-ANNO-LOGO" in used and "C-ANNO-LOGO" in {l.dxf.name for l in d.layers}
     for ly in ("C-ESC-FENC", "C-ESC-ACCS", "C-ESC-STOK", "C-ESC-DIVR", "C-ESC-INLT", "C-ESC-WSHT", "C-ESC-NOTE"):
         assert ly in used, ly
     sql = (Path(__file__).parents[2] / "db" / "005_esc_layers.sql").read_text()
