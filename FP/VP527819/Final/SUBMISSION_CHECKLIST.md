@@ -56,17 +56,18 @@ Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the n
 
 ## 5. [TBC - Jayden] items (Rev G)
 
-1. Three similar projects with referees (R11), including any JCE GIS or drone projects that qualify.
+1. Three similar council transport-asset projects with referees (R11). The Craig Sullivan farm survey is listed as a related capability project, not as one of the three.
 2. Capture partner firm, field lead and equipment; valuer and signing valuer (FP 2.1, 5.0, R12, R13).
 3. Casual GIS technician: name, qualifications, QGIS experience, February start (FP 5.0 and 5.1, R12).
 4. Sunny Lotay and Livio Chiarot availability.
 5. Charge-out rates: casual GIS technician $120/h; drone rate $1,450 per site; GIS software and storage $3,000.
-6. Drone: CASA operator accreditation (ARN) and drone registration in place before services start (being obtained this week); confirm insurance cover for drone operations. Agisoft Metashape Professional only if the optional drone line is used [TBC - Jayden to confirm purchase].
+6. Drone: CASA operator accreditation (ARN) and drone registration in place before services start (being obtained this week); confirm insurance cover for drone operations. Orthophotos for the optional drone line come from ReCap Pro or DJI Terra [TBC - Jayden to confirm DJI Terra]. No accuracy figure is quoted (the tender does not need one for drone work); accuracy is shown by RTK plus independent check points.
+6a. Craig Sullivan farm drainage drone survey (FP Section 5.0, R10, R11): location, year, approx. area [TBC - Jayden]. Get Craig Sullivan's consent to be named as a referee and his phone/email. The printed FP says "Referee details available on request"; R11 has a [TBC] for his contact details. It is a private farm drainage job: it supports drone and processing capability but is unlikely to count as one of the three similar council transport-asset projects for Returnable 11.
 7. Provisional sums replaced from quotes; partner rates in Attachment A.
 8. Returnables: registered address, signatures and dates, R4 rows for clauses 12.7 and 11.3 (recommend deleting), insurance policy numbers, addenda re-check, site inspection, staff numbers, QA, WHS, IR, sustainability, modern slavery and ATSI answers (as listed in Rev F).
 9. FP number.
 
-Note on wording: the approved Glide Inside capability paragraph is in FP Section 5.0 and Returnable 10 as given, with one word fitted ("offers" instead of "delivers") because no drone work has been delivered yet and the earlier brief ruled out track record claims. Change it back only if JCE has delivered drone photogrammetry before. It states the capability is used only for the optional Item 10, consistent with the Sydney Airport limits in Section 2.1. No LiDAR is mentioned.
+Drone experience added from Jayden's 12/10 notes (FP Sections 2.1 and 5.0, Attachment B, R10): photogrammetry with DroneDeploy flight planning, RTK capture, high-resolution aerial stills and video, ReCap Pro processing into InfraWorks and Civil 3D, QGIS delivery; no projects, clients or dates printed except the Craig Sullivan example. Note on wording: the approved Glide Inside capability paragraph is in FP Section 5.0 and Returnable 10 as given, with one word fitted ("offers" instead of "delivers") because no drone work has been delivered yet and the earlier brief ruled out track record claims. Change it back only if JCE has delivered drone photogrammetry before. It states the capability is used only for the optional Item 10, consistent with the Sydney Airport limits in Section 2.1. No LiDAR is mentioned.
 
 ## 6. Files (repo FP/VP527819/Final/)
 
@@ -89,10 +90,10 @@ Plus the Dropbox 02_Submission/Returnables documents and certificates listed in 
 | Methodology and schedule | 6 | 8 | 8.5 |
 | Contract compliance | 6 | 7 | 7 |
 | WHS | 6 | 6.5 | 6.5 |
-| Key personnel | 5 | 6 | 6 |
+| Key personnel | 5 | 6 | 6.5 |
 | Key subcontractors | 2 | 3 | 3 |
 | Modern slavery | 6 | 7 | 7 |
 | Environmental, local, ATSI | 3 | 3.5 | 3.5 |
 | Value | 5 | 5.5 | 6 |
 
-Rev G gains: in-house GIS and audit sampling with a resourcing table (capacity, methodology), clear drone limits, lower price (value). Capacity and subcontractor scores stay low until a capture partner is named and Returnable 11 has three qualifying projects.
+Rev G gains: in-house GIS and audit sampling with a resourcing table (capacity, methodology), clear drone limits, Jayden's drone photogrammetry experience and one private project (key personnel, small), lower price (value). The farm project does not lift capacity because it is not a similar council transport-asset project. Capacity and subcontractor scores stay low until a capture partner is named and Returnable 11 has three qualifying projects.

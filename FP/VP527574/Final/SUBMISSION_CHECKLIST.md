@@ -1,6 +1,6 @@
 # Submission checklist: VP527574 Newstead Levee Design 26/27 (RFQ M2025-125)
 
-Mount Alexander Shire Council (VIC), VendorPanel. Prepared 12/10/2026. **Rev G (12/10/2026):** adds the Jayden-approved Glide Inside / drone photogrammetry capability paragraph (Section 7.0, Schedule G) and one methodology use (inception condition capture and community visuals); price unchanged; use JCE_FP_VP527574_Final_RevG.docx/.pdf in place of Rev F. Nothing has been lodged, sent or signed.
+Mount Alexander Shire Council (VIC), VendorPanel. Prepared 12/10/2026. **Rev G (12/10/2026):** adds the Jayden-approved Glide Inside / drone photogrammetry capability paragraph (Section 7.0, Schedule G) drone experience (DroneDeploy, RTK, check points, ReCap Pro to InfraWorks/Civil 3D, high-resolution aerial stills and video, Craig Sullivan farm drainage example) and methodology use (inception condition capture, ReCap surface into the design model, community imagery); price unchanged; use JCE_FP_VP527574_Final_RevG.docx/.pdf in place of Rev F. Nothing has been lodged, sent or signed.
 
 - **Closes: 2:00 pm (AEDT) Friday 23/10/2026**, VendorPanel only. Late, email, fax or hard copy = rejected.
 - **Questions cut-off: 2:00 pm (AEDT) Wednesday 21/10/2026**, VendorPanel question function only. Lodge by **Monday 19/10/2026**.

@@ -119,7 +119,7 @@ Where Schedule 6 is answered:
 - Airspace. JCE's desk check found no controlled aerodrome within 5.5 km of the LGA; the nearby aerodromes (including Echuca, Swan Hill, Kerang and Deniliquin) are non-controlled. Near a non-controlled aerodrome JCE keeps clear of approach and departure paths and gives way to manned aircraft. JCE confirms airspace with a CASA-verified drone safety app before each flight. [TBC - Jayden: confirm the desk check, including hospital helicopter landing sites near Moama and Echuca]
 - Site controls. A site risk assessment, pre-flight checklist and flight log for every flight; a casual visual observer on road sites; take-off and landing off the carriageway; traffic and public managed by stopping flights when people or vehicles come within 30 m. No traffic control is used.
 - Existing condition record. At bridges and approaches captured in campaign 1, JCE will produce RTK-referenced orthophotos and 3D models within the same flight limits, giving Council a baseline of existing condition that the rolling inspections in 2028 to 2031 are compared against.
-- Capability. Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing with RTK positioning, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
+- Capability. Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
 
 ### Stage 4: Data, remaining life, defects, safety and programs (JCE)
 
@@ -156,6 +156,7 @@ Where Schedule 6 is answered:
 - Structure: Council's Excel data template (tabs Roads, Kerb, Footpath, Bridges, Roundabouts, Culverts, Guardrail, Bus Shelter, Carparks), one row per asset or segment, linked to Council Asset IDs; new assets flagged for Council to assign IDs.
 - Spatial: GIS layers of segments and point assets built by JCE in QGIS and exported to MapInfo .tab (or Council's preferred format) with Asset ID and inspection metadata; drone orthophotos where captured; coordinates in GDA94 and GDA2020 (MGA zones 54 and 55), heights to AHD.
 - Images: .jpg with native GPS, named Asset ID, component or chainage, and lane direction or facing, with an image index file.
+- Drone imagery: JCE's high-resolution aerial stills and short video of the bridges, culverts and hotspots it flies, named by Asset ID and listed in the image index, as existing-condition and defect records Council can also use in reports and presentations.
 - Reports: preliminary registers and reports in Word and Excel for review; final reports in Word and PDF.
 - Ownership and handover: all data and images are Council's property, stored in Australia during the work, handed over in full at each milestone, and returned or deleted at completion unless Council consents in writing.
 
@@ -183,6 +184,7 @@ Sign-off. Reports are prepared and signed by Jayden Callen, BEng (Hons), MIEAust
 | Inception agenda and minutes; rating guide and data template confirmed after pilot | PDF, XLSX | 12/01/2027; 05/02/2027 |
 | Condition 5 and safety defect notices; weekly progress data | Email with images; XLSX | Same day; weekly |
 | Level 2 bridge inspection reports (127 structures) with Level 3/4 recommendations | PDF | 25/03/2027 (inspections) |
+| Drone aerial stills, video, orthophotos and 3D models of flown sites (existing-condition and defect records) | JPG, MP4, GeoTIFF, model files | 07/05/2027 (draft data) |
 | Preliminary asset register, images and image index, GIS layers (draft data) | XLSX, JPG, GIS | 07/05/2027 |
 | Draft defect report, guardrail and handrail safety assessment, condition report and 10-year programs | DOCX, XLSX | 21/05/2027 |
 | Draft valuation report and methodology, with working papers | DOCX, XLSX | 28/05/2027 |
@@ -246,7 +248,7 @@ Weekly average by month: December 35, January 36, February 36, March 36, April 3
 
 ### Drone photogrammetry capability
 
-JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE will deliver drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category (operator accreditation and drone registration in place before services start). Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing with RTK positioning, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
+JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE will deliver drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category (operator accreditation and drone registration in place before services start). Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
 
 ### Experience
 
@@ -257,7 +259,7 @@ Jayden Callen is a civil engineer with more than eight years of experience acros
 - Drone photogrammetry project. Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Referee details available on request.
 - Condition inspection. Condition inspection and certification of an existing earthen flood levee about 647 m long at Gunnedah, with field dispersion and plasticity testing (JCE, 2026).
 - Roads and costs. Road geometry to the Austroads guides with Transport for NSW supplements, pavement design with CIRCLY, and engineer's estimates and bills of quantities, which are the basis of replacement cost unit rates.
-- Data, drone and GIS. Civil 3D, Navisworks and InfraWorks; CAD standards and automation in AutoLISP and Excel VBA; drone photogrammetry and GIS. Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing with RTK positioning, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
+- Data, drone and GIS. Civil 3D, Navisworks and InfraWorks; CAD standards and automation in AutoLISP and Excel VBA; drone photogrammetry and GIS. Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
 
 JCE has not yet delivered a network condition audit or valuation as lead consultant. The road imaging partner's, bridge partner's and valuer's staff, comparable council projects and referees are set out in Schedules 3 to 5 and Attachment B: [TBC - Jayden: insert from partner quotes due 28/10/2026].
 
@@ -406,6 +408,6 @@ Partner rates for directed additional work, including JCE's 10% mark-up: imaging
 
 ## Attachment B: Key personnel
 
-Jayden Callen, BEng (Hons), MIEAust. Director and Principal Engineer, JCE Infrastructure. Project manager, drone pilot and GIS lead, and single point of contact. Bachelor of Engineering (Honours) Civil, Deakin University; Engineers Australia member 11036201; application for the National Engineering Register (civil) in progress. Drone operations under CASA's sub-2 kg excluded category (operator accreditation and drone registration in place before services start). Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing with RTK positioning, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models. Detailed CV attached.
+Jayden Callen, BEng (Hons), MIEAust. Director and Principal Engineer, JCE Infrastructure. Project manager, drone pilot and GIS lead, and single point of contact. Bachelor of Engineering (Honours) Civil, Deakin University; Engineers Australia member 11036201; application for the National Engineering Register (civil) in progress. Drone operations under CASA's sub-2 kg excluded category (operator accreditation and drone registration in place before services start). Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing RTK-positioned photogrammetry and high-resolution aerial stills and video, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models. Detailed CV attached.
 
 Partner key personnel: names, qualifications, years of experience and comparable council projects for the road imaging partner, the bridge inspection partner (at least five years of bridge condition assessment of concrete, steel and timber bridges; TfNSW experience desirable) and the valuer. [TBC - Jayden: from partner quotes due 28/10/2026]
