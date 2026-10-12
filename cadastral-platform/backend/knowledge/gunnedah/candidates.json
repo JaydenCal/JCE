@@ -1,0 +1,1399 @@
+{
+ "candidates": [
+  {
+   "id": "r2_dh_front",
+   "key": "setback.dwelling_house.front_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Primary Frontage 6.5m or the average of the adjoining dwellings whichever is less",
+   "value": 6.5,
+   "unit": "m",
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "page": null,
+   "zone": "R2",
+   "value_struct": {
+    "rule": "6.5 m or the average of the adjoining dwellings, whichever is less"
+   }
+  },
+  {
+   "id": "r2_dh_side",
+   "key": "setback.dwelling_house.side_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Side and rear 0.9m or compliance with the BCA^",
+   "value": 0.9,
+   "unit": "m",
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "page": null,
+   "zone": "R2",
+   "value_struct": {
+    "rule": "0.9 m or compliance with the BCA (less than 900 mm considered where BCA fire rating satisfied)"
+   }
+  },
+  {
+   "id": "r2_dh_rear",
+   "key": "setback.dwelling_house.rear_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Side and rear 0.9m or compliance with the BCA^",
+   "value": 0.9,
+   "unit": "m",
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "page": null,
+   "zone": "R2",
+   "value_struct": {
+    "rule": "0.9 m or compliance with the BCA"
+   }
+  },
+  {
+   "id": "r2_dh_secfront",
+   "key": "setback.dwelling_house.secondary_frontage_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "3m for a building wall and 5.5m for a garage or carport that is attached to the building wall",
+   "value": 3,
+   "unit": "m",
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "page": null,
+   "zone": "R2",
+   "value_struct": {
+    "applies": "building wall, corner or parallel lots"
+   }
+  },
+  {
+   "id": "r2_dh_secfront_garage",
+   "key": "setback.dwelling_house.secondary_frontage_garage_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "3m for a building wall and 5.5m for a garage or carport that is attached to the building wall",
+   "value": 5.5,
+   "unit": "m",
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "page": null,
+   "zone": "R2",
+   "value_struct": {
+    "applies": "garage or carport attached to the building wall, corner or parallel lots"
+   }
+  },
+  {
+   "id": "r2_dh_garage",
+   "key": "setback.dwelling_house.garage_behind_front_building_line_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Garage Min. 1m behind the front building line",
+   "value": 1,
+   "unit": "m",
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "r2_dh_artic",
+   "key": "setback.dwelling_house.articulation_encroachment_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Articulation 0.5m for up to 10% of the building frontage",
+   "value": 0.5,
+   "unit": "m",
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "page": null,
+   "zone": "R2",
+   "value_struct": {
+    "max_frontage_pct": 10
+   }
+  },
+  {
+   "id": "r2_sd_front_m",
+   "key": "setback.secondary_dwelling.front_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Primary Frontage 6.5m or the average of the adjoining dwellings whichever is less",
+   "value": 6.5,
+   "unit": "m",
+   "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
+   "page": null,
+   "zone": "R2",
+   "also_quotes": [
+    "Refer to section C.1.1 above."
+   ],
+   "value_struct": {
+    "via": "C.2.1 refers secondary dwelling setbacks to C.1.1"
+   }
+  },
+  {
+   "id": "r2_sd_side_m",
+   "key": "setback.secondary_dwelling.side_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Side and rear 0.9m or compliance with the BCA^",
+   "value": 0.9,
+   "unit": "m",
+   "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
+   "page": null,
+   "zone": "R2",
+   "also_quotes": [
+    "Refer to section C.1.1 above."
+   ],
+   "value_struct": {
+    "via": "C.2.1 refers secondary dwelling setbacks to C.1.1"
+   }
+  },
+  {
+   "id": "r2_sd_rear_m",
+   "key": "setback.secondary_dwelling.rear_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Side and rear 0.9m or compliance with the BCA^",
+   "value": 0.9,
+   "unit": "m",
+   "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
+   "page": null,
+   "zone": "R2",
+   "also_quotes": [
+    "Refer to section C.1.1 above."
+   ],
+   "value_struct": {
+    "via": "C.2.1 refers secondary dwelling setbacks to C.1.1"
+   }
+  },
+  {
+   "id": "r2_sd_secondary_frontage_m",
+   "key": "setback.secondary_dwelling.secondary_frontage_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "3m for a building wall and 5.5m for a garage or carport that is attached to the building wall",
+   "value": 3,
+   "unit": "m",
+   "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
+   "page": null,
+   "zone": "R2",
+   "also_quotes": [
+    "Refer to section C.1.1 above."
+   ],
+   "value_struct": {
+    "via": "C.2.1 refers secondary dwelling setbacks to C.1.1"
+   }
+  },
+  {
+   "id": "r2_sd_secondary_frontage_garage_m",
+   "key": "setback.secondary_dwelling.secondary_frontage_garage_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "3m for a building wall and 5.5m for a garage or carport that is attached to the building wall",
+   "value": 5.5,
+   "unit": "m",
+   "section_ref": "C.2.1 Setbacks ('Refer to section C.1.1 above') -> Table 2",
+   "page": null,
+   "zone": "R2",
+   "also_quotes": [
+    "Refer to section C.1.1 above."
+   ],
+   "value_struct": {
+    "via": "C.2.1 refers secondary dwelling setbacks to C.1.1"
+   }
+  },
+  {
+   "id": "sd_pos",
+   "key": "secondary_dwelling.private_open_space_min_m2",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "must provide a minimum of 15sqm of private open space directly accessible from the living area and with a minimum depth of 3m",
+   "value": 15,
+   "unit": "m2",
+   "section_ref": "C.2.2 Private open space",
+   "page": null,
+   "value_struct": {
+    "min_depth_m": 3,
+    "applies": "secondary dwellings visually screened from the principal dwelling"
+   }
+  },
+  {
+   "id": "sd_pos_depth",
+   "key": "secondary_dwelling.private_open_space_min_depth_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "must provide a minimum of 15sqm of private open space directly accessible from the living area and with a minimum depth of 3m",
+   "value": 3,
+   "unit": "m",
+   "section_ref": "C.2.2 Private open space",
+   "page": null
+  },
+  {
+   "id": "sd_area_m2",
+   "key": "secondary_dwelling.max_floor_area_m2",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "where the total floor area of the secondary dwelling does not exceed 60m2 or 25% of the total floor area of the principal dwelling, whichever is greater",
+   "value": 60,
+   "unit": "m2",
+   "section_ref": "C.2 Secondary dwellings (summarising GLEP cl 5.4)",
+   "page": null,
+   "value_struct": {
+    "rule": "60 m2 or 25% of principal dwelling floor area, whichever is greater",
+    "source_is_secondary_citation_of": "Gunnedah LEP 2012 cl 5.4 (LEP text not obtained)"
+   },
+   "confidence": 0.8
+  },
+  {
+   "id": "sd_area_pct",
+   "key": "secondary_dwelling.max_floor_area_pct_of_principal",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "where the total floor area of the secondary dwelling does not exceed 60m2 or 25% of the total floor area of the principal dwelling, whichever is greater",
+   "value": 25,
+   "unit": "percent",
+   "section_ref": "C.2 Secondary dwellings (summarising GLEP cl 5.4)",
+   "page": null,
+   "value_struct": {
+    "rule": "60 m2 or 25% of principal dwelling floor area, whichever is greater"
+   },
+   "confidence": 0.8
+  },
+  {
+   "id": "park_dh",
+   "key": "parking.dwelling_house.spaces",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Dwelling House 2 spaces per dwelling",
+   "value": 2,
+   "unit": "count",
+   "section_ref": "B.1.2 Parking provision requirements, Table 1",
+   "page": null
+  },
+  {
+   "id": "park_sd",
+   "key": "parking.secondary_dwelling.no_loss_of_principal_parking",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Secondary dwellings must not result in the principal dwelling on the site having less than the required car parking spaces.",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.1.2 Parking provision requirements, Table 1",
+   "page": null
+  },
+  {
+   "id": "park_r2_behind",
+   "key": "parking.dwelling_house.r2_one_space_behind_front_building_line",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Development in R2 and R3 zones must locate at least one car parking space behind the front building line.",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.1.2 Parking provision requirements, Table 1",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "acc_std",
+   "key": "access.crossing_standard",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Access from the public road to the property boundary to comply with Council’s standard access drawings (relevant to the type of development) and the dimensions are to meet Australian Standard AS2890 Series.",
+   "value": "Council standard access drawings + AS2890 series",
+   "unit": null,
+   "section_ref": "C.1.4 Internal driveway, access and parking",
+   "page": null
+  },
+  {
+   "id": "acc_surf_urban",
+   "key": "access.internal_surface",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "All internal vehicle access, and manoeuvring areas to the designated parking area (including the designated parking area), are to be concrete, bitumen, interlocking pavers or asphalt.",
+   "value": "concrete, bitumen, interlocking pavers or asphalt",
+   "unit": null,
+   "section_ref": "C.1.4 Internal driveway, access and parking",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "acc_surf_rural",
+   "key": "access.internal_surface_alternative_allowed",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1, RU4, RU5, RU6 and E3 an alternative access material may be utilised. The alternative material shall enable all weather 2WD access and dust suppression.",
+   "value": "alternative material permitted; must enable all weather 2WD access and dust suppression",
+   "unit": null,
+   "section_ref": "C.1.4 Internal driveway, access and parking",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "acc_multi",
+   "key": "access.multiple_access_points",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Multiple vehicle access points and laybacks are not permitted, will generally only be considered in circumstances where the lot has two road frontages.",
+   "value": "not permitted unless lot has two road frontages",
+   "unit": null,
+   "section_ref": "C.1.4 Internal driveway, access and parking",
+   "page": null
+  },
+  {
+   "id": "acc_rural_sight",
+   "key": "access.rural.sight_distance",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Vehicular entrances are located with safe intersection sight distance in both directions.",
+   "value": "safe intersection sight distance in both directions (safe stopping distance where not practical)",
+   "unit": null,
+   "section_ref": "D.1 Rural access",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "acc_rural_dv",
+   "key": "access.rural.design_vehicle_length_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Unless stated otherwise, the design vehicle shall be a 12.5m heavy rigid vehicle.",
+   "value": 12.5,
+   "unit": "m",
+   "section_ref": "D.1 Rural access",
+   "page": null,
+   "zone": "RU1",
+   "value_struct": {
+    "use": "gate setback so design vehicle can wait clear of through traffic"
+   }
+  },
+  {
+   "id": "acc_rural_dwg",
+   "key": "access.rural.designed_per_eng_standards",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Accesses to be designed as per the GSC Engineering Design Minimum Standards.",
+   "value": "GSC Engineering Design Minimum Standards",
+   "unit": null,
+   "section_ref": "D.1 Rural access",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "r2_ob_area",
+   "key": "outbuilding.max_cumulative_area_m2",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "R2, R3 & RU5 72m2 4.8m",
+   "value": 72,
+   "unit": "m2",
+   "section_ref": "C.4 Outbuildings, carports and detached garages, Table 5",
+   "page": null,
+   "zone": "R2",
+   "value_struct": {
+    "applies": "total floor area of all outbuildings (exempt-development structures excluded); lots <= 900 m2"
+   }
+  },
+  {
+   "id": "r2_ob_height",
+   "key": "outbuilding.max_height_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "R2, R3 & RU5 72m2 4.8m",
+   "value": 4.8,
+   "unit": "m",
+   "section_ref": "C.4 Outbuildings, carports and detached garages, Table 5",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "r2_ob_area900",
+   "key": "outbuilding.max_cumulative_area_m2.lot_gt_900m2",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "R2, R3 and RU5 with lot area > 900m2 100m2 4.8m",
+   "value": 100,
+   "unit": "m2",
+   "section_ref": "C.4 Outbuildings, carports and detached garages, Table 5",
+   "page": null,
+   "zone": "R2",
+   "value_struct": {
+    "applies": "R2 lots with area > 900 m2"
+   }
+  },
+  {
+   "id": "r2_ob_height900",
+   "key": "outbuilding.max_height_m.lot_gt_900m2",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "R2, R3 and RU5 with lot area > 900m2 100m2 4.8m",
+   "value": 4.8,
+   "unit": "m",
+   "section_ref": "C.4 Outbuildings, carports and detached garages, Table 5",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "ob_extra_garage",
+   "key": "outbuilding.detached_garage_carport_additional_area_m2",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "An additional 50m2 of cumulative building area is permitted for detached garages or detached carports where no garage or carport is attached to the dwelling.",
+   "value": 50,
+   "unit": "m2",
+   "section_ref": "C.4 Outbuildings, carports and detached garages, control e",
+   "page": null
+  },
+  {
+   "id": "r2_ob_front",
+   "key": "setback.outbuilding.front_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Outbuildings and Garages must be setback a minimum of 5.5 metres from the primary and secondary building frontage.",
+   "value": 5.5,
+   "unit": "m",
+   "section_ref": "C.4 Additional controls for the R2, R3 and RU5 zones, a",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "r2_ob_secfront",
+   "key": "setback.outbuilding.secondary_frontage_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Outbuildings and Garages must be setback a minimum of 5.5 metres from the primary and secondary building frontage.",
+   "value": 5.5,
+   "unit": "m",
+   "section_ref": "C.4 Additional controls for the R2, R3 and RU5 zones, a",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "r2_carport_front",
+   "key": "setback.carport.front_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Carports must be setback a minimum of 1.5 m from the primary and secondary building frontage.",
+   "value": 1.5,
+   "unit": "m",
+   "section_ref": "C.4 Additional controls for the R2, R3 and RU5 zones, b",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "r2_ob_length",
+   "key": "outbuilding.max_side_length_vs_boundary",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "the longest side of outbuildings, carports and detached garages in the R2, R3 and RU5 zones and on lots with an area equal to or less than 1,000m2 may be no more than two-thirds of the length of the property boundary",
+   "value": "two-thirds of the length of the adjacent property boundary (lots <= 1,000 m2)",
+   "unit": null,
+   "section_ref": "C.4 Additional controls for the R2, R3 and RU5 zones, d",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "ob_vacant",
+   "key": "outbuilding.not_permitted_on_vacant_land",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "An outbuilding is not permitted on vacant land unless development consent has been granted and activated for a dwelling.",
+   "value": true,
+   "unit": null,
+   "section_ref": "C.4 Outbuildings, carports and detached garages, control a",
+   "page": null
+  },
+  {
+   "id": "ob_materials",
+   "key": "outbuilding.matching_materials_front_of_dwelling_lot_lt_4000m2",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "on a lot with an area less than 4,000m2, it must be:",
+   "value": true,
+   "unit": null,
+   "section_ref": "C.4 control b (same external materials and matching roof profile if in front of the dwelling)",
+   "page": null,
+   "value_struct": {
+    "lot_area_lt_m2": 4000
+   }
+  },
+  {
+   "id": "ru1_dwelling_house_front",
+   "key": "setback.dwelling_house.front_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 25,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "page": null,
+   "zone": "RU1",
+   "value_struct": {
+    "road": "sealed",
+    "min_unsealed_road_m": 200,
+    "applies": "primary and secondary frontage"
+   },
+   "notes": "Table 6 as published gives 200 m for an unsealed road; recorded verbatim (see setback.dwelling_house.front_m.unsealed_road)"
+  },
+  {
+   "id": "ru1_dwelling_house_front_unsealed",
+   "key": "setback.dwelling_house.front_m.unsealed_road",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 200,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "page": null,
+   "zone": "RU1",
+   "value_struct": {
+    "road": "unsealed"
+   },
+   "notes": "Value as published in DCP 2025 Table 6; looks unusually large - confirm with Council",
+   "confidence": 0.7,
+   "confirm": "DCP Table 6 lists 200 m for unsealed roads; confirm with Gunnedah Shire Council that this is intended."
+  },
+  {
+   "id": "ru1_dwelling_house_secfront",
+   "key": "setback.dwelling_house.secondary_frontage_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 25,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "page": null,
+   "zone": "RU1",
+   "value_struct": {
+    "road": "sealed",
+    "min_unsealed_road_m": 200
+   }
+  },
+  {
+   "id": "ru1_dwelling_house_side",
+   "key": "setback.dwelling_house.side_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 10,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "ru1_dwelling_house_rear",
+   "key": "setback.dwelling_house.rear_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 10,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "ru1_outbuilding_front",
+   "key": "setback.outbuilding.front_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 25,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "page": null,
+   "zone": "RU1",
+   "value_struct": {
+    "road": "sealed",
+    "min_unsealed_road_m": 200,
+    "applies": "primary and secondary frontage"
+   },
+   "notes": "Table 6 as published gives 200 m for an unsealed road; recorded verbatim (see setback.outbuilding.front_m.unsealed_road)"
+  },
+  {
+   "id": "ru1_outbuilding_front_unsealed",
+   "key": "setback.outbuilding.front_m.unsealed_road",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 200,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "page": null,
+   "zone": "RU1",
+   "value_struct": {
+    "road": "unsealed"
+   },
+   "notes": "Value as published in DCP 2025 Table 6; looks unusually large - confirm with Council",
+   "confidence": 0.7,
+   "confirm": "DCP Table 6 lists 200 m for unsealed roads; confirm with Gunnedah Shire Council that this is intended."
+  },
+  {
+   "id": "ru1_outbuilding_secfront",
+   "key": "setback.outbuilding.secondary_frontage_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 25,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "page": null,
+   "zone": "RU1",
+   "value_struct": {
+    "road": "sealed",
+    "min_unsealed_road_m": 200
+   }
+  },
+  {
+   "id": "ru1_outbuilding_side",
+   "key": "setback.outbuilding.side_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 10,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "ru1_outbuilding_rear",
+   "key": "setback.outbuilding.rear_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 10,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, Table 6 - Setbacks",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "ru1_sd_front_m",
+   "key": "setback.secondary_dwelling.front_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 25,
+   "unit": "m",
+   "section_ref": "D.2 Table 6 (applied to secondary dwelling)",
+   "page": null,
+   "zone": "RU1",
+   "confidence": 0.6,
+   "confirm": "DCP D.2 Table 6 applies to 'Dwelling houses and ancillary structures'; whether it is intended to govern a secondary dwelling in RU1 should be confirmed with Council.",
+   "value_struct": {
+    "interpretation": "Table 6 heading says 'Dwelling houses and ancillary structures'; no separate secondary-dwelling rural setback exists in the DCP"
+   }
+  },
+  {
+   "id": "ru1_sd_side_m",
+   "key": "setback.secondary_dwelling.side_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 10,
+   "unit": "m",
+   "section_ref": "D.2 Table 6 (applied to secondary dwelling)",
+   "page": null,
+   "zone": "RU1",
+   "confidence": 0.6,
+   "confirm": "DCP D.2 Table 6 applies to 'Dwelling houses and ancillary structures'; whether it is intended to govern a secondary dwelling in RU1 should be confirmed with Council.",
+   "value_struct": {
+    "interpretation": "Table 6 heading says 'Dwelling houses and ancillary structures'; no separate secondary-dwelling rural setback exists in the DCP"
+   }
+  },
+  {
+   "id": "ru1_sd_rear_m",
+   "key": "setback.secondary_dwelling.rear_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "RU1/RU4/RU6/C3 25m (sealed road) 200m (unsealed road) 10m",
+   "value": 10,
+   "unit": "m",
+   "section_ref": "D.2 Table 6 (applied to secondary dwelling)",
+   "page": null,
+   "zone": "RU1",
+   "confidence": 0.6,
+   "confirm": "DCP D.2 Table 6 applies to 'Dwelling houses and ancillary structures'; whether it is intended to govern a secondary dwelling in RU1 should be confirmed with Council.",
+   "value_struct": {
+    "interpretation": "Table 6 heading says 'Dwelling houses and ancillary structures'; no separate secondary-dwelling rural setback exists in the DCP"
+   }
+  },
+  {
+   "id": "ru1_ridge",
+   "key": "setback.dwelling_house.min_from_hilltop_ridgeline_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "The building must not be positioned within 10m from on the top of a hill or a ridgeline.",
+   "value": 10,
+   "unit": "m",
+   "section_ref": "D.2 Dwellings & dual occupancy, control b",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "ru1_fb_front",
+   "key": "setback.farm_building.front_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "All buildings should be set back a minimum of 25m from the front allotment boundary or behind the building line set by the dwelling whichever is greater.",
+   "value": 25,
+   "unit": "m",
+   "section_ref": "D.3 Farm buildings and outbuildings, control f",
+   "page": null,
+   "zone": "RU1",
+   "value_struct": {
+    "rule": "25 m from front boundary or behind the dwelling building line, whichever is greater"
+   }
+  },
+  {
+   "id": "ru1_fb_front_ob",
+   "key": "setback.outbuilding.front_m.farm_building_rule",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "All buildings should be set back a minimum of 25m from the front allotment boundary or behind the building line set by the dwelling whichever is greater.",
+   "value": 25,
+   "unit": "m",
+   "section_ref": "D.3 Farm buildings and outbuildings, control f",
+   "page": null,
+   "zone": "RU1",
+   "value_struct": {
+    "rule": "25 m from front boundary or behind the dwelling building line, whichever is greater"
+   }
+  },
+  {
+   "id": "ru1_fb_side",
+   "key": "setback.farm_building.side_rear_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Buildings should be set back a minimum of 10m from a side and rear allotment boundary.",
+   "value": 10,
+   "unit": "m",
+   "section_ref": "D.3 Farm buildings and outbuildings, control g",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "ru1_fb_height",
+   "key": "farm_building.max_height_m.site_lt_10ha",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Farm buildings and sheds shall not exceed 7m in height where the site has an area of less than 10ha.",
+   "value": 7,
+   "unit": "m",
+   "section_ref": "D.3 Farm buildings and outbuildings, control a",
+   "page": null,
+   "zone": "RU1",
+   "value_struct": {
+    "applies_when": "site area < 10 ha",
+    "note": "Quia Road lot is 50.9 ha: this DCP height cap does not apply; no DCP height cap for >= 10 ha found"
+   }
+  },
+  {
+   "id": "ru1_fb_storm",
+   "key": "stormwater.farm_building_disposal_clear_of_buildings_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Stormwater from farm buildings must be disposed of in a manner that does not cause erosion or nuisance, 3m clear of any buildings and away from adjoining properties.",
+   "value": 3,
+   "unit": "m",
+   "section_ref": "D.3 Farm buildings and outbuildings, control d",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "ru1_fb_access",
+   "key": "access.farm_building_via_existing_legal_access",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Access to farm buildings from the public road network should be via an existing legal access.",
+   "value": "via an existing legal access",
+   "unit": null,
+   "section_ref": "D.3 Farm buildings and outbuildings, control c",
+   "page": null,
+   "zone": "RU1"
+  },
+  {
+   "id": "fl_fpl_fb",
+   "key": "flood.freeboard_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Council has adopted the 1% Annual Exceedance Probability (AEP) plus 0.5m freeboard, as its Flood Planning Level (FPL).",
+   "value": 0.5,
+   "unit": "m",
+   "section_ref": "B.5 Flooding (introduction)",
+   "page": null
+  },
+  {
+   "id": "fl_fpl_aep",
+   "key": "flood.planning_level_aep_pct",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Council has adopted the 1% Annual Exceedance Probability (AEP) plus 0.5m freeboard, as its Flood Planning Level (FPL).",
+   "value": 1,
+   "unit": "percent",
+   "section_ref": "B.5 Flooding (introduction)",
+   "page": null
+  },
+  {
+   "id": "fl_floor",
+   "key": "flood.habitable_floor_at_or_above_fpl",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Floor levels of habitable rooms are to be at or above the Flood Planning Level.",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.5.2 Residential - new development, control b",
+   "page": null
+  },
+  {
+   "id": "fl_access",
+   "key": "flood.safe_access_freeboard_m",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Flood safe access and emergency egress for all flood events up to the 1% AEP event plus 500mm freeboard is to be provided.",
+   "value": 0.5,
+   "unit": "m",
+   "section_ref": "B.5.2 Residential - new development, control c",
+   "page": null
+  },
+  {
+   "id": "fl_garage",
+   "key": "flood.residential_garage_at_or_above_1pct_aep",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Residential garages are to be at or above the 1% AEP level.",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.5.2 Residential - new development, control d",
+   "page": null
+  },
+  {
+   "id": "fl_outb",
+   "key": "flood.outbuilding_flood_compatible_materials",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Any portion of a building that may be subject to inundation is to be built from flood compatible materials.",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.5.4 Non habitable extensions or alterations, outbuildings and swimming pools, control a",
+   "page": null
+  },
+  {
+   "id": "fl_outb_eq",
+   "key": "flood.outbuilding_sensitive_equipment_above_1pct_aep",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "All flood sensitive equipment shall be located above the 1% AEP flood level.",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.5.4 Non habitable extensions or alterations, outbuildings and swimming pools, control c",
+   "page": null
+  },
+  {
+   "id": "fl_ossm",
+   "key": "flood.onsite_sewage_no_discharge_to_floodwater",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "On-site sewage management systems located within a flood planning area shall be designed to ensure that effluent cannot be discharged into flood waters.",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.5.1 General, control d",
+   "page": null
+  },
+  {
+   "id": "slope",
+   "key": "site.slope_geotech_threshold_pct",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Development on slopes greater than 15% require a detailed geotechnical investigation",
+   "value": 15,
+   "unit": "percent",
+   "section_ref": "B.3 Slope and land stability",
+   "page": null
+  },
+  {
+   "id": "w_tank",
+   "key": "water.unserviced_min_tank_storage_l",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Where no potable water supply is available, minimum tank storage of 60,000 litres is required, excluding any water required for firefighting purposes.",
+   "value": 60000,
+   "unit": "L",
+   "section_ref": "B.7 Utilities and services, control d",
+   "page": null,
+   "value_struct": {
+    "applies": "where no potable water supply is available (e.g. unserviced rural lot)"
+   }
+  },
+  {
+   "id": "w_connect",
+   "key": "water.potable_connection_required_if_available",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "If available, connection to potable water supply is required.",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.7 Utilities and services, control d",
+   "page": null
+  },
+  {
+   "id": "w_strategy",
+   "key": "utilities.servicing_strategy_required",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "A servicing strategy is required with all development applications to demonstrate that availability and feasibility of providing water, sewer and stormwater services appropriate for the scale of the development.",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.7 Utilities and services, control a",
+   "page": null
+  },
+  {
+   "id": "w_tankht",
+   "key": "rwt.max_height_m.urban_zones",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "The maximum height of a water tank is 3.2 metres in urban zones.",
+   "value": 3.2,
+   "unit": "m",
+   "section_ref": "B.7 Utilities and services, control e",
+   "page": null
+  },
+  {
+   "id": "w_tankloc",
+   "key": "rwt.location_behind_street_setback",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Water tanks are to be located behind the street setback of the existing or proposed dwelling (unless placed below the ground).",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.7 Utilities and services, control e",
+   "page": null
+  },
+  {
+   "id": "sew_over",
+   "key": "util.build_over_sewer_policy",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Where a structure is proposed in proximity to a Council sewer main or other infrastructure, all design and construction shall be in accordance with Council’s Building over Sewer Policy.",
+   "value": "Council Building over Sewer Policy (policy document not obtained)",
+   "unit": null,
+   "section_ref": "B.7 Utilities and services, control c",
+   "page": null
+  },
+  {
+   "id": "storm",
+   "key": "stormwater.designed_per_eng_standards",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "All stormwater systems shall be designed and constructed in accordance with Council’s Engineering Design Minimum Standards.",
+   "value": "GSC Engineering Design Minimum Standards",
+   "unit": null,
+   "section_ref": "C.5 Stormwater, control a",
+   "page": null
+  },
+  {
+   "id": "e_wmin",
+   "key": "driveway.min_width_m",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "Width of access (excluding layback splays) 3.0 - 4.5m",
+   "value": 3.0,
+   "unit": "m",
+   "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "page": null,
+   "value_struct": {
+    "allotment_type": "residential",
+    "excludes": "layback splays"
+   }
+  },
+  {
+   "id": "e_wmax",
+   "key": "driveway.max_width_m",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "Width of access (excluding layback splays) 3.0 - 4.5m",
+   "value": 4.5,
+   "unit": "m",
+   "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "page": null,
+   "value_struct": {
+    "allotment_type": "residential",
+    "excludes": "layback splays"
+   }
+  },
+  {
+   "id": "e_corner",
+   "key": "driveway.min_separation_m",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "Minimum distance from crossing to corner allotment boundary 6m",
+   "value": 6,
+   "unit": "m",
+   "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "page": null,
+   "value_struct": {
+    "allotment_type": "residential",
+    "measured": "crossing to corner allotment boundary"
+   }
+  },
+  {
+   "id": "e_sep",
+   "key": "driveway.min_crossing_kerb_separation_m",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "Minimum kerb separation distance between crossings 2m",
+   "value": 2,
+   "unit": "m",
+   "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "page": null
+  },
+  {
+   "id": "e_bnd",
+   "key": "driveway.min_separation_from_common_boundary_m",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "between crossings and common property boundary 0.5m",
+   "value": 0.5,
+   "unit": "m",
+   "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "page": null
+  },
+  {
+   "id": "e_max",
+   "key": "driveway.max_crossings_per_frontage",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "Maximum number of crossings per street frontage 2",
+   "value": 2,
+   "unit": "count",
+   "section_ref": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "page": null,
+   "value_struct": {
+    "note": "DCP C.1.4(d) says multiple access points are generally not permitted unless the lot has two road frontages"
+   }
+  },
+  {
+   "id": "e_culv",
+   "key": "driveway.min_culvert_diameter_mm.rural",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "The minimum size for piped culverts is to be 450mm diameter in rural areas and 375mm diameter in rural residential areas.",
+   "value": 450,
+   "unit": "mm",
+   "section_ref": "2.8.7 Vehicular crossings and accesses",
+   "page": null,
+   "value_struct": {
+    "rural_residential_mm": 375
+   }
+  },
+  {
+   "id": "e_culvw",
+   "key": "driveway.min_culvert_width_m",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "The minimum width of culverts shall be 4.5 metres.",
+   "value": 4.5,
+   "unit": "m",
+   "section_ref": "2.8.7 Vehicular crossings and accesses",
+   "page": null
+  },
+  {
+   "id": "e_gate",
+   "key": "driveway.rural_gate_recessed",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "Gated accesses in rural areas or areas where the posted speed limit for the road is greater than 80km/h shall have the gate recessed into the property such that no part of the design vehicle (including provision for trailers, floats or caravans) protrudes into the road formation whilst stationary.",
+   "value": true,
+   "unit": null,
+   "section_ref": "2.8.7 Vehicular crossings and accesses",
+   "page": null
+  },
+  {
+   "id": "e_wcov",
+   "key": "water.min_cover_m",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "The services are to have a minimum cover of 500mm under carriageways and 300mm in footway reserves.",
+   "value": 0.5,
+   "unit": "m",
+   "section_ref": "4.7.7.4 Service connections - locations (water)",
+   "page": null,
+   "service": "water",
+   "value_struct": {
+    "location": "under carriageways",
+    "footway_reserve_m": 0.3
+   }
+  },
+  {
+   "id": "e_wcov_fw",
+   "key": "water.min_cover_m.footway_reserve",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "The services are to have a minimum cover of 500mm under carriageways and 300mm in footway reserves.",
+   "value": 0.3,
+   "unit": "m",
+   "section_ref": "4.7.7.4 Service connections - locations (water)",
+   "page": null,
+   "service": "water"
+  },
+  {
+   "id": "e_sjun",
+   "key": "sewer.junction_min_diameter_mm",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "A 150 millimetre diameter sewer junction is to be provided within each lot.",
+   "value": 150,
+   "unit": "mm",
+   "section_ref": "5.5.10 Design criteria (sewer)",
+   "page": null,
+   "service": "sewer"
+  },
+  {
+   "id": "e_scov",
+   "key": "sewer.house_connection_min_cover_m",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "minimum 300 millimetres of cover laid at a minimum grade of 1 in 60.",
+   "value": 0.3,
+   "unit": "m",
+   "section_ref": "5.5.10 Design criteria (sewer)",
+   "page": null,
+   "service": "sewer"
+  },
+  {
+   "id": "e_sgr",
+   "key": "sewer.house_connection_min_grade_1_in",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "minimum 300 millimetres of cover laid at a minimum grade of 1 in 60.",
+   "value": 60,
+   "unit": "ratio (1 in N)",
+   "section_ref": "5.5.10 Design criteria (sewer)",
+   "page": null,
+   "service": "sewer",
+   "value_struct": {
+    "equivalent_pct": "approx 1.67 (derived, not stated)"
+   }
+  },
+  {
+   "id": "e_osd",
+   "key": "stormwater.osd_roof_plumbing_design_aep_pct",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "All roof water plumbing including tank connections shall cater for the 5% AEP year, to AS 3500.",
+   "value": 5,
+   "unit": "percent",
+   "section_ref": "3.10.4.2-3.10.4.3 On-site detention systems in small developments",
+   "page": null
+  },
+  {
+   "id": "e_rwt_osd",
+   "key": "stormwater.rainwater_tank_excluded_from_detention_volume",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "Rainwater tanks shall not be included in detention volume calculations.",
+   "value": true,
+   "unit": null,
+   "section_ref": "3.10.4.2 On-site detention systems in small developments",
+   "page": null
+  },
+  {
+   "id": "e_rwt_basix",
+   "key": "stormwater.osd_roof_water_to_basix_tank",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "All roof water shall be directed to the proposed (BASIX) water storage tank.",
+   "value": true,
+   "unit": null,
+   "section_ref": "3.10.4.2 On-site detention systems in small developments",
+   "page": null
+  },
+  {
+   "id": "e_rwt_ug",
+   "key": "rwt.underground_tank_min_clearance_m",
+   "doc": "gunnedah_eng_standards_2025",
+   "quote": "Underground storage tanks must not be installed over or within 1.0m of a water main, sewer main, on-site wastewater system or on-site wastewater disposal field.",
+   "value": 1.0,
+   "unit": "m",
+   "section_ref": "3.11 Underground storage tanks",
+   "page": null
+  },
+  {
+   "id": "n_sd_lot",
+   "key": "secondary_dwelling.cdc_min_lot_area_m2",
+   "doc": "nsw_page_secondary_dwellings",
+   "quote": "One of the requirements for secondary dwelling development to be carried out as complying development is that it is on a lot that has an area of at least 450 m2.",
+   "value": 450,
+   "unit": "m2",
+   "section_ref": "Secondary dwellings FAQ (SEPP (Housing) 2021 Sch 1)",
+   "page": null,
+   "value_struct": {
+    "pathway": "complying development"
+   }
+  },
+  {
+   "id": "n_sd_zones",
+   "key": "secondary_dwelling.permitted_zones_housing_sepp",
+   "doc": "nsw_page_secondary_dwellings",
+   "quote": "Secondary dwellings are permitted in residential zones (R1, R2, R3, R4, and R5). They may also be permitted in other zones under a council’s local environmental plan.",
+   "value": "R1, R2, R3, R4, R5 (other zones only if the LEP permits)",
+   "unit": null,
+   "section_ref": "Secondary dwellings (SEPP (Housing) 2021)",
+   "page": null
+  },
+  {
+   "id": "n_sd_sub",
+   "key": "secondary_dwelling.lot_cannot_be_subdivided",
+   "doc": "nsw_page_secondary_dwellings",
+   "quote": "A lot on which a secondary dwelling is constructed cannot be subdivided.",
+   "value": true,
+   "unit": null,
+   "section_ref": "Secondary dwellings (SEPP (Housing) 2021)",
+   "page": null
+  },
+  {
+   "id": "n_sd_park",
+   "key": "secondary_dwelling.housing_sepp_additional_parking_required",
+   "doc": "nsw_page_secondary_dwellings",
+   "quote": "The Housing SEPP does not require any additional parking for a secondary dwelling.",
+   "value": false,
+   "unit": null,
+   "section_ref": "Secondary dwellings FAQ (SEPP (Housing) 2021)",
+   "page": null
+  },
+  {
+   "id": "n_sd_one",
+   "key": "secondary_dwelling.max_dwellings_on_site",
+   "doc": "nsw_page_secondary_dwellings",
+   "quote": "The development of a secondary dwelling can only result in there being one principal dwelling and one secondary dwelling on the site.",
+   "value": "one principal dwelling and one secondary dwelling",
+   "unit": null,
+   "section_ref": "Secondary dwellings (SEPP (Housing) 2021)",
+   "page": null
+  },
+  {
+   "id": "n_bf10",
+   "key": "bushfire.exempt_clearing_trees_within_m",
+   "doc": "nsw_page_bushfires",
+   "quote": "trees and vegetation within 10 m of specified bushfire-prone buildings",
+   "value": 10,
+   "unit": "m",
+   "section_ref": "Bushfires: 10/50 vegetation clearing entitlement",
+   "page": null,
+   "value_struct": {
+    "pointer": "Planning for Bush Fire Protection 2019 (not obtained) governs BAL/APZ"
+   }
+  },
+  {
+   "id": "n_bf50",
+   "key": "bushfire.exempt_clearing_undergrowth_within_m",
+   "doc": "nsw_page_bushfires",
+   "quote": "undergrowth within 50 m of specified bushfire-prone buildings.",
+   "value": 50,
+   "unit": "m",
+   "section_ref": "Bushfires: 10/50 vegetation clearing entitlement",
+   "page": null
+  },
+  {
+   "id": "n_dcp_pbp",
+   "key": "bushfire.dcp_landscaping_considers_pbp",
+   "doc": "gunnedah_dcp_2025",
+   "quote": "Ensure that landscaping in bushfire prone areas considers the Planning for Bushfire Protection Guidelines.",
+   "value": true,
+   "unit": null,
+   "section_ref": "B.4 Landscaping, objective 5",
+   "page": null
+  },
+  {
+   "id": "x_rwt_cap",
+   "key": "rwt.exempt.max_capacity_l",
+   "doc": "nsw_exempt_rwt_hws",
+   "quote": "10,000 L, when the development is on land zoned rather than RU1, RU2, RU3, RU4, RU6,",
+   "value": 10000,
+   "unit": "L",
+   "section_ref": "Rainwater tanks (above ground): exempt development, Codes SEPP cl 2.63 (via fact sheet)",
+   "page": null,
+   "zone": "R2",
+   "also_quotes": [
+    "R5, E2, E3 or E4."
+   ],
+   "value_struct": {
+    "applies": "land NOT zoned RU1, RU2, RU3, RU4, RU6, R5, E2, E3 or E4 (fact sheet wording 'rather than')"
+   },
+   "confidence": 0.7,
+   "notes": "Fact sheet wording is garbled ('zoned rather than'); read as 'other than'. Fact sheet dated 2022."
+  },
+  {
+   "id": "x_rwt_10m",
+   "key": "rwt.exempt.min_boundary_setback_m",
+   "doc": "nsw_exempt_rwt_hws",
+   "quote": "least 10 m from any lot boundary.",
+   "value": 10,
+   "unit": "m",
+   "section_ref": "Rainwater tanks (above ground): exempt development, Codes SEPP cl 2.63 (via fact sheet)",
+   "page": null,
+   "zone": "RU1",
+   "also_quotes": [
+    "If the development is on land zoned RU1, RU2, RU3, RU4, RU6, R5, E2, E3 or E4, it must be at"
+   ]
+  },
+  {
+   "id": "x_rwt_450",
+   "key": "rwt.exempt.min_boundary_setback_m.tank_over_1_8m_high",
+   "doc": "nsw_exempt_rwt_hws",
+   "quote": "450 mm from any lot boundary",
+   "value": 0.45,
+   "unit": "m",
+   "section_ref": "Rainwater tanks (above ground): exempt development (via fact sheet)",
+   "page": null,
+   "also_quotes": [
+    "if the tank is more than 1.8"
+   ],
+   "value_struct": {
+    "applies": "any zone, tank more than 1.8 m above existing ground level"
+   }
+  },
+  {
+   "id": "x_cp_area_rural",
+   "key": "carport.exempt.max_area_m2.rural_zones_lot_gt_300m2",
+   "doc": "nsw_exempt_carports",
+   "quote": "o 50 m² for lots larger than 300 m² in rural",
+   "value": 50,
+   "unit": "m2",
+   "section_ref": "Carports as exempt development: maximum size (via fact sheet; Codes SEPP)",
+   "page": null,
+   "zone": "RU1",
+   "also_quotes": [
+    "zones and residential Zone R5"
+   ]
+  },
+  {
+   "id": "x_cp_area_other",
+   "key": "carport.exempt.max_area_m2.other_zones_lot_gt_300m2",
+   "doc": "nsw_exempt_carports",
+   "quote": "o 25 m² for lots larger than 300 m² in other",
+   "value": 25,
+   "unit": "m2",
+   "section_ref": "Carports as exempt development: maximum size (via fact sheet; Codes SEPP)",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "x_cp_height",
+   "key": "carport.exempt.max_height_m",
+   "doc": "nsw_exempt_carports",
+   "quote": "The carport must not be higher than 3 m",
+   "value": 3,
+   "unit": "m",
+   "section_ref": "Carports as exempt development (via fact sheet; Codes SEPP)",
+   "page": null
+  },
+  {
+   "id": "x_cp_set_rural",
+   "key": "carport.exempt.min_boundary_setback_m.rural_zones",
+   "doc": "nsw_exempt_carports",
+   "quote": "o at least 5 m from any lot boundary in zones",
+   "value": 5,
+   "unit": "m",
+   "section_ref": "Carports as exempt development: location (via fact sheet; Codes SEPP)",
+   "page": null,
+   "zone": "RU1",
+   "also_quotes": [
+    "RU1, RU2, RU3, RU4, RU6, R5"
+   ]
+  },
+  {
+   "id": "x_cp_set_other",
+   "key": "carport.exempt.min_boundary_setback_m.other_zones",
+   "doc": "nsw_exempt_carports",
+   "quote": "o at least 900 mm in any other zone.",
+   "value": 0.9,
+   "unit": "m",
+   "section_ref": "Carports as exempt development: location (via fact sheet; Codes SEPP)",
+   "page": null,
+   "zone": "R2"
+  },
+  {
+   "id": "x_cp_line",
+   "key": "carport.exempt.min_behind_building_line_m",
+   "doc": "nsw_exempt_carports",
+   "quote": "Carports must be at least 1 m behind the building",
+   "value": 1,
+   "unit": "m",
+   "section_ref": "Carports as exempt development: location (via fact sheet; Codes SEPP)",
+   "page": null
+  },
+  {
+   "id": "x_cp_bf",
+   "key": "carport.exempt.bushfire_noncombustible_within_dwelling_m",
+   "doc": "nsw_exempt_carports",
+   "quote": "is within 5 m of a dwelling.",
+   "value": 5,
+   "unit": "m",
+   "section_ref": "Carports as exempt development: other standards (via fact sheet)",
+   "page": null,
+   "also_quotes": [
+    "On bushfire-prone land, carports must be"
+   ]
+  },
+  {
+   "id": "b_req",
+   "key": "basix.certificate_required_new_dwelling",
+   "doc": "nsw_pp_basix",
+   "quote": "you will need a BASIX certificate.",
+   "value": true,
+   "unit": null,
+   "section_ref": "BASIX overview",
+   "page": null,
+   "also_quotes": [
+    "If you're building a new home"
+   ]
+  },
+  {
+   "id": "b_reno",
+   "key": "basix.renovation_threshold_aud",
+   "doc": "nsw_pp_basix",
+   "quote": "undertaking renovations of $50,000 or more",
+   "value": 50000,
+   "unit": "AUD",
+   "section_ref": "BASIX overview",
+   "page": null
+  },
+  {
+   "id": "b_pool",
+   "key": "basix.pool_spa_threshold_l",
+   "doc": "nsw_pp_basix",
+   "quote": "installing a pool or spa of more than 40,000 litres",
+   "value": 40000,
+   "unit": "L",
+   "section_ref": "BASIX overview",
+   "page": null
+  },
+  {
+   "id": "b_w40",
+   "key": "basix.water.max_reduction_target_pct",
+   "doc": "nsw_pp_basix_water",
+   "quote": "The 40% reduction standard applies to 90% of new residential development and 98% of high-growth areas.",
+   "value": 40,
+   "unit": "percent",
+   "section_ref": "BASIX Water section",
+   "page": null,
+   "value_struct": {
+    "note": "percentages range 0%-40% by climate zone (Water Use Maps in SEPP (Sustainable Buildings) 2022 not obtained); Gunnedah-specific % unresolved"
+   },
+   "confidence": 0.6,
+   "confirm": "Gunnedah's climate-zone water target is set by the BASIX tool / Water Use Maps; run the BASIX tool to obtain it."
+  },
+  {
+   "id": "b_bench",
+   "key": "basix.water.benchmark_l_per_person_per_year",
+   "doc": "nsw_pp_basix_water",
+   "quote": "The benchmark is 90,340 litres of water per person per year",
+   "value": 90340,
+   "unit": "L",
+   "section_ref": "BASIX Water section",
+   "page": null
+  }
+ ]
+}
