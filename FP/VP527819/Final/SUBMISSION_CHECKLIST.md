@@ -35,7 +35,7 @@ Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the n
 
 ## 3. Blocking items
 
-1. **Returnable 11 experience is still the main risk.** Council wants three similar projects in the last five years with referees. JCE has none of its own. In-house GIS, QA and drone capability do not fix this unless Jayden has qualifying projects with referees [TBC - Jayden]. Otherwise it rests on the capture partner's projects.
+1. **Returnable 11 experience is still the main risk.** Council wants three similar projects in the last five years with referees. JCE has none of its own. In-house GIS, QA and drone capability, and the Craig Sullivan farm drainage drone survey, support capability but do not replace the three similar council transport-asset projects with referees. Unless Jayden has qualifying projects, this rests on the capture partner's projects.
 2. **Pursue or pass:** if no capture partner agrees to be named by about 21/10/2026, do not lodge as Prime Contractor.
 3. **Public liability $20m** (JCE holds $10m; FP says it will be lifted on award). Also confirm PL covers drone operations or arrange aviation liability before any drone flight.
 4. **Workers compensation certificate**; **site inspection** before signing Returnable 9; **capacity statement** in Returnable 10 only once the partner commits crews.
@@ -74,7 +74,7 @@ Drone experience added from Jayden's 12/10 notes (FP Sections 2.1 and 5.0, Attac
 | File | Lodge? |
 |---|---|
 | JCE_FP_VP527819_Final_RevG.docx / .pdf (12 pages) | Yes, signed |
-| FP_Final_text_RevG.md (also in Dropbox 02_Submission as FINAL_RevG_2026-10-12_FP_Final_text_v2.md; the first RevG upload without "_v2" is superseded) | Paste into branded template |
+| FP_Final_text_RevG.md (also in Dropbox 02_Submission as FINAL_RevG_2026-10-12_FP_Final_text_v3.md; the earlier RevG uploads without "_v3" are superseded) | Paste into branded template |
 | IWC Transport Condition Audit_Reval RFT 47-26 Returnable Documents_JCE_FILLED_RevG.docx / .pdf, and _answers_RevG.md | Copy into Council's form, sign, PDF |
 | JCE_RFT47-26_Gantt_RevG.png | In FP and R7 |
 | RFIs_Final.md | Lodge questions by 21/10/2026 (unchanged; RFI 3 on capture method still relevant) |

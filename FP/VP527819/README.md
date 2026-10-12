@@ -37,3 +37,9 @@ Sources checked: register "consultants" collection (27 contacts, no asset condit
 1. Fill the five [email TBC] addresses from each firm's website or by phone, and confirm Moloney's address.
 2. Attach the firm's per_firm PDF plus Council's Scope_Spec, Scope table and draft Consultancy Agreement (Dropbox 00_Tender_Docs). Do not attach the Rev B RFQs or the cost sheet.
 3. One email per firm.
+
+## Rev G update (12/10/2026)
+
+- Lodge Rev G: Final/JCE_FP_VP527819_Final_RevG.docx/.pdf, FP_Final_text_RevG.md, Returnable Documents_JCE_FILLED_RevG, Gantt_RevG, SUBMISSION_CHECKLIST.md (now Rev G). Rev F files kept, not for lodgement.
+- Data capture partner still needed: send Condition_Data_Collection Rev D (..._Final_RevD.*, per_firm/..._RevD_<Firm>.*, Emails_RevD.txt). JCE now does all GIS processing, register updates, data QA and audit sampling in-house. Rev C files kept, do not send.
+- Valuer RFQ unchanged (Rev C).
