@@ -23,7 +23,7 @@ Plain text of JCE_FP_VP527819_Final_RevG.docx (repo FP/VP527819/Final/), for pas
 
 Dear Mr Tambosis,
 
-JCE Infrastructure Pty Ltd (JCE) offers to deliver Council's Transport Assets Condition Audit and Revaluations 2026/27 (RFT 47-26) as Prime Contractor and Council's single point of contact, for a mandatory lump sum of $435,570.00 excluding GST ($479,127.00 including GST), with each optional asset class and Optional Service A priced separately.
+JCE Infrastructure Pty Ltd (JCE) offers to deliver Council's Transport Assets Condition Audit and Revaluations 2026/27 (RFT 47-26) as Prime Contractor and Council's single point of contact, for a mandatory lump sum of $437,090.00 excluding GST ($480,799.00 including GST), with each optional asset class and Optional Service A priced separately.
 
 The engagement is led personally by JCE's Director, Jayden Callen. Jayden's career has moved from civil design into design management, coordinating several disciplines and subconsultants into one package to one program. On this contract JCE carries out all GIS processing, asset register updates, data QA and audit sampling in-house, and Jayden manages a specialist field data capture partner and a qualified valuer to one program, one QA process and one register of comments and actions, with Council's approval of the capture forms and of the pilot as hold points before any network capture proceeds. Jayden has also worked for a regional council in Far North Queensland, where he shortlisted consultants for a council RFT, so he knows what a Council officer needs after award: clear hold points, no surprises on scope or fee, and records Council can audit. While at Langtree Consulting Engineers, Jayden also delivered engineering for Tablelands Regional Council (QLD), including the rectification of a floodway on Council's road network.
 
@@ -219,7 +219,7 @@ The program assumes award by 30/11/2026 and finishes the audit and revaluation b
 | Role | Person | Responsibility |
 |---|---|---|
 | Project manager and Prime Contractor representative | Jayden Callen, BEng (Hons), MIEAust (JCE Director) | Single point of contact; methodology, QA, defect escalation, reports, maintenance and renewal programs, revaluation, workshop and PCG; signs all documents |
-| Senior civil engineer | Sunny Lotay, NER, RPEng (Vic) (Lotay Civil) [TBC - Jayden: confirm availability] | Data QA, GIS outputs and condition analysis under JCE's direction |
+| Associate Principal Engineer and certifying engineer (core team) | Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions. | Independent technical review of outputs; certification and sign-off where a registered engineer is required; audit sampling and programs support; backup project lead |
 | Independent technical reviewer | Livio Chiarot, FIEAust (SCP Consulting) [TBC - Jayden: confirm availability] | Review of the methodology, pavement ratings and unit rates |
 | GIS technician (casual) | [TBC - Jayden: name] | GIS build, register update files, automated QA and maps under Jayden's review (February and March 2027) |
 | Field data capture partner | [TBC - Jayden: firm and field lead, from quotes due 21/10/2026] | Field crews, vehicles, DGPS and photography, condition rating, data packaging to JCE's schema |
@@ -241,7 +241,7 @@ JCE's hours by month, with weekly loads for Jayden (working weeks to 31/03/2027,
 | Person | Dec 2026 | Jan 2027 | Feb 2027 | Mar 2027 | Total |
 |---|---|---|---|---|---|
 | Jayden Callen | 75 h (22/wk) | 95 h (25/wk) | 128 h (32/wk) | 158 h (36/wk) | 456 h |
-| Sunny Lotay (associate) [TBC - Jayden] | - | - | 5 h | 46 h | 51 h |
+| Sunny Lotay (associate) | - | - | 5 h | 54 h | 59 h |
 | GIS technician (casual) [TBC - Jayden] | - | - | 53 h | 160 h | 213 h |
 
 To keep Jayden at about 35 hours a week in March, the unit rates, useful lives and revaluation model are built in January and February on Council's register data, report and program frameworks are drafted in February, and a casual GIS technician and Sunny Lotay carry the March GIS and audit load.
@@ -317,13 +317,13 @@ Prices are lump sums in Australian dollars in the format of Council's Pricing Sc
 
 | Item | Pricing Schedule item | Total (excl. GST) |
 |---|---|---|
-| 1 | Lump sum for mandatory asset classes condition audit and comprehensive revaluation | $432,330.00 |
+| 1 | Lump sum for mandatory asset classes condition audit and comprehensive revaluation | $433,850.00 |
 | 2 | Lump sum for PCG meetings (fortnightly to 31 March 2027) | $3,240.00 |
 | 3 | Reports (where not included in Item 1) | Included in Item 1 |
 | 10 | Other not included above | Nil (optional drone rate below is not in the total) |
-|  | Mandatory scope (excl. GST) | $435,570.00 |
-|  | GST (10%) | $43,557.00 |
-|  | Mandatory scope (incl. GST) | $479,127.00 |
+|  | Mandatory scope (excl. GST) | $437,090.00 |
+|  | GST (10%) | $43,709.00 |
+|  | Mandatory scope (incl. GST) | $480,799.00 |
 
 | Item | Optional items (Council may select any combination) | Total (excl. GST) |
 |---|---|---|
@@ -343,10 +343,10 @@ Prices are lump sums in Australian dollars in the format of Council's Pricing Sc
 | Stage 3 | Field verification, weekly desktop audit sampling of partner imagery, defect escalation, including all JCE travel | $26,400.00 |
 | Stage 4 | In-house GIS processing, asset register update files, data QA, reports, maintenance and renewal programs, workshop and final report | $51,340.00 |
 | Stage 5 | Comprehensive revaluation: methodology, unit rates, useful lives, calculations and reports | $21,320.00 |
-| Stage 6 | Project management, quality review and close-out | $9,600.00 |
+| Stage 6 | Project management, quality review, associate technical review and certification (Sunny Lotay), close-out | $11,120.00 |
 | PS1 | Provisional sum: field data capture partner, inventory capture and condition rating of the mandatory classes (allowance $254,500 plus 10%) | $279,950.00 |
 | PS2 | Provisional sum: valuation partner, review and signing of the revaluation (allowance plus 10%) | $27,500.00 |
-|  | Item 1 (excl. GST) | $432,330.00 |
+|  | Item 1 (excl. GST) | $433,850.00 |
 
 Compared with Rev F, the GIS processing, data packaging and QA share of the capture partner's allowance ($38,500 before mark-up, and 8% of the partner part of Items 4 to 8) has moved to JCE hours in Stages 3 and 4. PS1 and PS2, and the partner components of Items 4 to 8, are JCE allowances priced from Council's quantities. They will be confirmed from partner quotes due 21/10/2026 before lodgement. [TBC - Jayden: replace with quoted amounts and update Items 1 and 4 to 8.]
 

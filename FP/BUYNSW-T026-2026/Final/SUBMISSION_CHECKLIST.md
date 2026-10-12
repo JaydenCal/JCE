@@ -1,6 +1,6 @@
 # Submission checklist: BUYNSW-T026-2026, T026/2026 Leppington Community Centre Precinct (Camden Council, buy.nsw)
 
-Prepared 12/10/2026. JCE is the civil sub-consultant (optional hydraulics). The Lead Architect lodges the tender; JCE does not lodge on buy.nsw. Nothing has been sent, emailed or lodged.
+Prepared 12/10/2026, updated to **Rev G** the same day (referee, Tablelands experience and core team changes from Jayden). Rev F files are kept beside Rev G for reference; send Rev G only. JCE is the civil sub-consultant (optional hydraulics). The Lead Architect lodges the tender; JCE does not lodge on buy.nsw. Nothing has been sent, emailed or lodged.
 
 ## Key dates
 | Date | Action | Who |
@@ -14,7 +14,7 @@ Prepared 12/10/2026. JCE is the civil sub-consultant (optional hydraulics). The 
 | 04/03/2027 | JCE offer validity ends (120 days from close) | |
 
 ## How the package reaches the tender (Jayden's steps)
-1. Fill every [TBC - Jayden] item (list below) in `JCE_FP_BUYNSW-T026-2026_to_Architect_Final_RevF.docx` (or in your branded template using `FP_Final_text.md`), then re-export the PDF. Insert the proposal number (next is likely FP-013; check the register), the architect's name, contact and date.
+1. Fill every [TBC - Jayden] item (list below) in `JCE_FP_BUYNSW-T026-2026_to_Architect_Final_RevG.docx` (or in your branded template using `FP_Final_text.md`), then re-export the PDF. Insert the proposal number (next is likely FP-013; check the register), the architect's name, contact and date.
 2. Sign the Offered By block and the conflicts of interest declaration.
 3. Email the chosen architect (Jayden sends it himself) by Wed 21/10/2026 with the files below.
 4. Ask the architect to copy JCE's entries into Council's original Volume 5 Word template (the rebuilt file is a guide only), list JCE in Schedule 10, and lodge the civil questions before 28/10/2026 3:00pm.
@@ -23,9 +23,9 @@ Prepared 12/10/2026. JCE is the civil sub-consultant (optional hydraulics). The 
 ## Files to send to the architect
 | File | Where it is |
 |---|---|
-| JCE_FP_BUYNSW-T026-2026_to_Architect_Final_RevF.pdf (17 pages, includes Attachment C returnable inputs) | Repo `FP/BUYNSW-T026-2026/Final/` (local only; copy to Dropbox 02_Submission manually) |
-| JCE_FP_BUYNSW-T026-2026_to_Architect_Final_RevF.docx (editable) | Repo, as above |
-| RFT-T026-2026_-Volume-5-Returnable-Schedules_JCE_FILLED.docx (and .pdf) | Repo, as above |
+| JCE_FP_BUYNSW-T026-2026_to_Architect_Final_RevG.pdf (17 pages, includes Attachment C returnable inputs) | Repo `FP/BUYNSW-T026-2026/Final/` (local only; copy to Dropbox 02_Submission manually) |
+| JCE_FP_BUYNSW-T026-2026_to_Architect_Final_RevG.docx (editable) | Repo, as above |
+| RFT-T026-2026_-Volume-5-Returnable-Schedules_JCE_FILLED_RevG.docx (and .pdf) | Repo, as above |
 | Jayden_Callen_Detailed_CV_2026-09.pdf | Dropbox `02_Submission/Returnables/` |
 | JCE Capability Statement - Councils.pdf | Dropbox `02_Submission/Returnables/` |
 | JCE_Certificate_of_Currency_PI-PL_to_02-07-2027.pdf | Dropbox `02_Submission/Returnables/` |
@@ -34,19 +34,29 @@ Prepared 12/10/2026. JCE is the civil sub-consultant (optional hydraulics). The 
 
 Attachment E (Data Gap Investigation, 54.8 MB) is still not in the bid folder. It is not needed for the package; the architect can download it from buy.nsw.
 
-## [TBC - Jayden] items (37 in the FP, 25 in the Volume 5 file)
+## [TBC - Jayden] items (37 in the Rev G FP, 25 in the Rev G Volume 5 file, plus the checklist-only items 12 to 14 below)
 Most important first:
 1. **Motor vehicle insurance**: tender needs $20 million comprehensive and CTP. Only a personal NRMA third party fire and theft policy is on file. Arrange compliant company cover, or keep the Schedule 2 departure (Attachment C2 row 1) and RFI 1 below.
 2. **Workers compensation**: supply an icare certificate of currency, or a statement that JCE has no workers and is not required to hold a policy.
-3. **PL $20 million uplift via Webber**: the FP commits JCE to lift PL to $20 million on award (per Win Themes). Get a quote and written confirmation. Also confirm with Webber that the PI policy meets "each and every claim" wording (JCE holds $10 million any one claim, $20 million aggregate), PI can be held 7 years after the Term, and the underwriter is rated S&P A- or better.
+3. **PL $20M quote requested 12/10; bind before lodgement if possible and attach the certificate.** The FP keeps "JCE will lift PL to $20 million on award" until the policy is bound. Also confirm with Webber that the PI policy meets "each and every claim" wording (JCE holds $10 million any one claim, $20 million aggregate), PI can be held 7 years after the Term, and the underwriter is rated S&P A- or better.
 4. **Schedule 5 project details and referees**: Katherine Aquatics (dates, m2, employer, referee); Triton and HMAS Watson (client, dates, value; confirm Livio as project referee); WSI (value, Underscore Projects referee contact). Confirm Brett Langtree and Livio Chiarot know about this tender and are available for 4 weeks after 04/11/2026.
-5. **Fee hours and resourcing**: the cost sheet hours (about 530 hours plus 4 inspections) were never reviewed. Confirm $100,650 / $27,500, and who does the Senior, Project, Design Engineer and CAD hours. Confirm the Schedule 6 time allocation (about one third of full time, 01/2027 to 09/2027) and list current commitments.
+5. **Fee hours and resourcing**: the cost sheet hours (about 530 hours plus 4 inspections, plus Sunny's 16 hours) were never reviewed. Confirm $104,170 / $27,500, and who does the Senior, Project, Design Engineer and CAD hours. Confirm the Schedule 6 time allocation (about one third of full time, 01/2027 to 09/2027) and list current commitments.
 6. Liability departures (Attachment C2 rows 2 and 3, cl 19.1 indemnity outside the cap and cl 19.4 proportionate liability exclusion): decide whether to ask the architect to list them.
 7. Program commitment to issue the Early Bulk Earthworks DA civil package ahead of April 2027 (if RAP and geotech arrive by end January 2027).
 8. Camden LGA commitment: invite Camden or south-west Sydney firms first for any JCE-procured service (provisional survey).
 9. Rates: hold for the term of the head contract, or annual review.
 10. Fitness for Work Policy (JCE-WHS-POL-007): confirm it covers drugs and alcohol; enforcement notices "none"; modern slavery activities answers; JCE address for Schedule 15; read Council's Statement of Business Ethics.
 11. Proposal number and architect details.
+12. **Sunny Lotay (new core team member, Rev G)**: signed standing associate agreement with Lotay Civil (scope, fee basis, availability, and insurance: does JCE's PI cover his work, or does Lotay Civil hold its own PI and PL? attach certificates); Sunny's written consent to be named on this bid; RPEQ and NER numbers; CV; confirm the associate rate of $200 per hour used for the $3,520 allowance (16 hours plus 10% margin).
+13. **Maverick Partner, CPB Contractors (new referee, RAAF Base Townsville)**: confirm full name and title as printed, consent to be named, phone and email; project year (within the last five years?), package scope, Jayden's role (as JCE or with a previous employer) and value; any Defence confidentiality limits on what can be described. The FP prints only "engineering delivery for CPB Contractors (head contractor)" and "contact details available on request".
+14. **Tablelands Regional Council projects (delivered by Jayden while at Langtrees, not JCE)**: for the floodway rectification and the leachate storage facility: [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]. Note the "JCE's role" field means Jayden's role at Langtrees. Darren Quilliam: consent to be named, title, phone and email. If the architect reads Schedule 5 as company projects only, these two (and the Katherine, Triton, HMAS Watson and RAAF Townsville projects) belong in the key personnel / CV field; the FP says so in Attachment C4.
+15. Gunnedah levee: not used anywhere in this bid (checked, nothing to remove).
+
+## Changes from Rev F to Rev G (12/10/2026)
+- **Price change**: civil lump sum $100,650 to **$104,170** ex GST (+$3,520 associate review and certification allowance for Sunny Lotay: Phase 1 +$880, Phase 2 +$880, Phase 3 +$1,320, Phase 4 +$440). Inc GST $110,715 to $114,587. Hydraulics option unchanged at $27,500. The teaming brief quoted $100,650 as indicative, so tell the architect.
+- Sunny Lotay added to the core team as "Associate Principal Engineer (RPEQ, NER), Lotay Civil: engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions"; civil certification now by Sunny, design led by Jayden, Livio Chiarot kept as independent peer reviewer. Added to Schedule 6, the org chart entry and the Schedule 3 rates.
+- Added RAAF Base Townsville (CPB Contractors) project and referee Maverick Partner; added Tablelands Regional Council floodway rectification and leachate storage facility as Jayden's experience while at Langtrees, referee Darren Quilliam. Schedule 13 now lists 4 referees.
+- Page breaks rechecked (17 pages; offer and signature block whole on page 10).
 
 ## Changes from the 11/10 draft (Rev A) to Rev F
 - Schedule of rates corrected to JCE's rate card that built the lump sums (Senior $190, Project $180, Design $170, CAD $160, Admin $140). The draft and teaming brief said "Senior Civil Engineer / Designer $180", which did not match the cost sheet. Tell the architect the rates table changed.
@@ -57,18 +67,18 @@ Most important first:
 - All fees unchanged and checked against the cost sheet build-up (every phase reconciles exactly).
 
 ## Evaluator scores (strict Camden panel view of JCE's civil contribution; Council has not published weightings)
-| Criterion | Draft Rev A | Final Rev F | Notes |
-|---|---|---|---|
-| Compliance with specification | 5 | 7 | All civil scope and formats covered; motor and WC still open |
-| Price | 7 | 7 | Civil $100,650 is about 1% of the $10.0 million budget; fair for the scope |
-| Relevant experience | 3 | 6 | Four projects in Schedule 5 format; dates, values and referees still [TBC] |
-| Referees | 2 | 6 | Two referees named from the Win Themes; availability to confirm |
-| Subconsultants and specialist advisors | 5 | 6 | Peer reviewer named; no CPEng named |
-| Capacity and capabilities | 4 | 5 | Sole principal; resourcing of 530 hours unconfirmed |
-| Program and delivery | 6 | 8 | Gantt, milestone table, review periods, hold points |
-| Methodology and approach | 6 | 8 | Management approach and civil risk table added; no ISO certification |
-| Insurances | 3 | 6 | PL uplift committed; motor and WC open (rises to 8 when fixed) |
-| Contribution to Camden LGA | 1 | 2 | Northern NSW; local-first commitment pending |
+| Criterion | Draft Rev A | Rev F | Rev G | Notes |
+|---|---|---|---|---|
+| Compliance with specification | 5 | 7 | 7 | All civil scope and formats covered; motor and WC still open |
+| Price | 7 | 7 | 7 | Civil $104,170 is about 1% of the $10.0 million budget; fair for the scope |
+| Relevant experience | 3 | 6 | 7 | Seven projects incl. two council civil projects (Tablelands floodway, leachate storage) and Defence delivery; only WSI is a JCE company project, so held at 7; details still [TBC] |
+| Referees | 2 | 6 | 7 | Four referees incl. a council client and a tier-one contractor; contacts and consent to confirm |
+| Subconsultants and specialist advisors | 5 | 6 | 7 | Named RPEQ/NER certifying engineer plus independent peer reviewer |
+| Capacity and capabilities | 4 | 5 | 6 | Backup project lead added; 530 hours resourcing still unconfirmed |
+| Program and delivery | 6 | 8 | 8 | Gantt, milestone table, review periods, hold points |
+| Methodology and approach | 6 | 8 | 8 | Management approach and civil risk table added; no ISO certification |
+| Insurances | 3 | 6 | 6 | PL uplift committed; motor and WC open (rises to 8 when fixed) |
+| Contribution to Camden LGA | 1 | 2 | 2 | Northern NSW; local-first commitment pending |
 
 Top 5 changes made: (1) Schedule 5 project entries with values and roles; (2) named referees; (3) insurance position stated against each tender level with the PL uplift; (4) Gantt and milestone program; (5) civil methodology with hold points, attestation and risk table. Further gains only Jayden can make: confirm insurances, project referees and resourcing.
 
@@ -88,9 +98,9 @@ No JCE sub-consultant RFQs are needed: survey ($3,500) and CPEng verification ($
 ## Final price summary (excl. GST)
 | Item | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Total |
 |---|---|---|---|---|---|
-| Civil (lump sum) | $39,110 | $19,100 | $27,420 | $15,020 | **$100,650** ($110,715 incl. GST) |
+| Civil (lump sum, Rev G) | $39,990 | $19,980 | $28,740 | $15,460 | **$104,170** ($114,587 incl. GST); Rev F was $100,650 |
 | Hydraulics option | $4,480 | $7,580 | $9,120 | $6,320 | **$27,500** ($30,250 incl. GST) |
-| Civil and hydraulics | $43,590 | $26,680 | $36,540 | $21,340 | $128,150 |
+| Civil and hydraulics | $44,470 | $27,560 | $37,860 | $21,780 | $131,670 |
 | Provisional sums (not in lump sums) | | | | | $6,000 (survey $3,500, CPEng $2,500) |
 
 Site inspection fixed fee $1,900 each including travel and report.

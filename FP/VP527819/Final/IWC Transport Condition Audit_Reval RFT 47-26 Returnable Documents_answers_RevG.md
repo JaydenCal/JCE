@@ -26,7 +26,7 @@ The Respondent named below confirms that having examined and reviewed the entire
 
 | Item No | Item Particulars | Unit | Quantity | Total ($) |
 |---|---|---|---|---|
-| 1 | Lump Sum for Mandatory asset classes Condition Audit & Comprehensive Revaluation | Lump sum | 1 | $432,330.00 |
+| 1 | Lump Sum for Mandatory asset classes Condition Audit & Comprehensive Revaluation | Lump sum | 1 | $433,850.00 |
 | 2 | Lump Sum for PCG Meetings (fortnightly to 31 March 2027) | Lump sum | 1 | $3,240.00 |
 | 3 | Reports (where not included in Item 1) | - | - | Included in Item 1 |
 | 4 | Optional asset class: Lump Sum Kerb/Pram Ramps | Lump sum | 1 | $51,220.00 |
@@ -36,9 +36,9 @@ The Respondent named below confirms that having examined and reviewed the entire
 | 8 | Optional asset class: Lump Sum Retaining Walls & Comprehensive Revaluation | Lump sum | 1 | $20,380.00 |
 | 9 | Optional Services A: Lump Sum Transport Asset Prioritisation Analysis | Lump sum | 1 | $13,680.00 |
 | 10 | Other not included above (Please specify): optional drone capture of a specific asset outside 5.5 km of Sydney and Bankstown airports and clear of people, $1,450.00 per site, not included in the Total Contract Price | per site | - | Nil |
-|  | Total Contract Price (GST Exclusive): mandatory scope, Items 1 to 3 and 10 |  |  | $435,570.00 |
-|  | GST Amount |  |  | $43,557.00 |
-|  | Total Contract Price (GST Inclusive) |  |  | $479,127.00 |
+|  | Total Contract Price (GST Exclusive): mandatory scope, Items 1 to 3 and 10 |  |  | $437,090.00 |
+|  | GST Amount |  |  | $43,709.00 |
+|  | Total Contract Price (GST Inclusive) |  |  | $480,799.00 |
 
 Optional Items 4 to 9 are priced separately for Council to select in any combination: $199,220.00 excluding GST for all six ($219,142.00 including GST). The breakdown of Item 1 by stage is in JCE's fee proposal, Section 9.0. [TBC - Jayden: update Items 1 and 4 to 8 if partner quotes (due 21/10/2026) change the provisional sums.]
 
@@ -146,7 +146,7 @@ Additional referee for Defence and head-contractor delivery (not one of the thre
 | Employee name and position | Years employed | Qualification / experience | Proposed role |
 |---|---|---|---|
 | Jayden Callen, Director | Since 2024 (practice); 2026 (company) | BEng (Hons) Civil; MIEAust (11036201); 8+ years civil engineering and design management. While at Langtrees: floodway rectification on Council's road network and a landfill leachate storage facility for Tablelands Regional Council (QLD), referee Darren Quilliam | Project manager; Prime Contractor representative; signs all documents |
-| Sunny Lotay, Associate (Lotay Civil) [TBC - Jayden: confirm] | Associate | NER, RPEng (Vic) [TBC - Jayden: confirm years of experience] | Data QA and GIS outputs |
+| Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil | Standing associate agreement with JCE (not an employee) | RPEQ, NER | Core team: technical reviewer and certifying engineer on JCE commissions; audit sampling; backup project lead |
 | Livio Chiarot, Associate (SCP Consulting) [TBC - Jayden: confirm] | Associate | FIEAust [TBC - Jayden: confirm years of experience] | Independent technical reviewer |
 | [TBC - Jayden: casual GIS technician] | Casual (Feb to Mar 2027) | [TBC - Jayden: GIS qualifications, QGIS experience] | GIS build, register update files, automated QA, maps |
 | [TBC - Jayden: data capture partner field lead] | Partner | [From partner quote] | Field data capture lead |

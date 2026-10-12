@@ -1,6 +1,6 @@
 # Submission checklist: TN-1640786, RFQ MWRCCMS001497 Mid-Western Regional Contributions Plan
 
-Prepared 12/10/2026. Nothing has been lodged, sent or signed.
+Prepared 12/10/2026. Current revision: Rev G (supersedes FINAL_2026-10-12_SUBMISSION_CHECKLIST.md, Rev F). Nothing has been lodged, sent or signed.
 
 - Buyer: Mid-Western Regional Council (NSW), BCI eProcure, https://app.eprocure.com.au/midwestern
 - **Closes: 2:00pm Monday 19/10/2026 (AEDT).** Aim to lodge by Friday 16/10/2026.
@@ -48,6 +48,7 @@ Prepared 12/10/2026. Nothing has been lodged, sent or signed.
 | WHS, Quality, Environmental, Modern Slavery policies (4 PDFs) | Dropbox `02_Submission/Returnables` | |
 | Planning partner capability statement and CV | From the planner's quote | Required to support Section 7 |
 | QS capability / CV | From the QS quote | |
+| Sunny Lotay CV | From Sunny | Attachment C |
 
 ## 3. [TBC - Jayden] items in the final FP
 
