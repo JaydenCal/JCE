@@ -120,6 +120,7 @@ def ensure_layers(doc: Drawing) -> None:
         if l.name in doc.layers:
             continue
         layer = doc.layers.add(
-            l.name, color=l.aci, linetype=l.linetype, lineweight=l.lineweight_dxf, description=l.description
+            l.name, color=l.aci, linetype=l.linetype, lineweight=l.lineweight_dxf
         )
+        layer.description = l.description
         layer.dxf.plot = 1 if l.plot else 0

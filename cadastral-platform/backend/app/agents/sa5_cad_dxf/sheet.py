@@ -12,7 +12,7 @@ from typing import Union
 
 from app.agents.sa5_cad_dxf.annotate import wrap_lines
 from app.agents.sa5_cad_dxf.gate import ACK_TEXT
-from app.agents.sa5_cad_dxf.model import DISCLAIMER, PlanModel
+from app.agents.sa5_cad_dxf.model import DISCLAIMER_PARTS, PlanModel
 from app.common.contracts import AckKind
 
 SHEET_W, SHEET_H = 420.0, 297.0
@@ -166,7 +166,7 @@ def build_panel(model: PlanModel, scale: int, acks: list[AckKind], fit: FitResul
 
     out.append(Text(tx, y - 2.0, 1.8, "PROJECT", grey=True))
     y -= 4.0
-    for ln in wrap_lines(req.project_title, tw, 4.2 * 0.72):
+    for ln in wrap_lines(req.project_title, tw, 4.2):
         out.append(Text(tx, y - 4.2, 4.2, ln, bold=True))
         y -= 6.0
     y -= 1.0
@@ -222,21 +222,23 @@ def build_panel(model: PlanModel, scale: int, acks: list[AckKind], fit: FitResul
     y -= 6.0
     for k in AckKind:
         if k in acks:
-            for i, ln in enumerate(wrap_lines(ACK_TEXT[k], tw - 3.5, h * 0.72 * 0.9)):
+            for i, ln in enumerate(wrap_lines(ACK_TEXT[k], tw - 3.5, h)):
                 out.append(Text(tx + (3.5 if i else 0.0), y - h, h, ("- " if i == 0 else "") + ln))
                 y -= h + 0.9
             y -= 0.5
     y -= 1.5
     out.append(Text(tx, y - 4.0, 2.2, "NOTES", bold=True))
     y -= 6.0
-    notes = [DISCLAIMER, "Coordinates are MGA grid metres; plan is oriented to grid north.",
+    notes = list(DISCLAIMER_PARTS) + ["Coordinates are MGA grid metres; plan is oriented to grid north.",
              "Dimensions in metres. Service exclusion buffers are indicative planning offsets."]
     if model.rwt_text and req.rwt and req.rwt.note:
         notes.append(f"RWT: {req.rwt.note}")
+    if req.driveway is not None and req.driveway.council_standard_label:
+        notes.append(f"Driveway design reference: {req.driveway.council_standard_label} (design vehicle {req.driveway.design_vehicle}).")
     if not fit.fits:
         notes.append("WARNING: " + fit.message)
     for n in notes:
-        for ln in wrap_lines(n, tw, h * 0.72 * 0.9):
+        for ln in wrap_lines(n, tw, h):
             out.append(Text(tx, y - h, h, ln))
             y -= h + 0.9
         y -= 0.8
@@ -256,3 +258,34 @@ def nice_scale_bar_total(scale: int) -> float:
 
 def finite(v: float) -> bool:
     return math.isfinite(v)
+
+
+def content_bounds(model: PlanModel, items, include_notes: bool) -> tuple[float, float, float, float]:
+    """Bounds (model metres) of everything drawn, including labels and dimension lines."""
+    from shapely.geometry import Point as _P
+    from shapely.ops import unary_union
+    k = model.scale / 1000.0
+    geoms = [model.lot]
+    for g in (model.envelope, model.footprint, model.drive_poly, model.crossover, model.turn_path):
+        if g is not None:
+            geoms.append(g)
+    geoms += [s.geom for s in model.services]
+    geoms += [s.exclusion for s in model.services if s.exclusion is not None]
+    geoms += [o.geom for o in model.overlays]
+    if model.rwt:
+        geoms.append(_P(model.rwt[0], model.rwt[1]).buffer(model.rwt[2] / 2))
+    if model.turn_centre:
+        geoms.append(_P(model.turn_centre).buffer(model.turn_radius or 0))
+    for d in model.dims:
+        o = d.offset_mm * k + 4 * k
+        for p in (d.p1, d.p2):
+            geoms.append(_P(p[0] + d.side[0] * o, p[1] + d.side[1] * o))
+    for sp in model.level_spots:
+        geoms.append(_P(sp[0], sp[1]))
+    minx, miny, maxx, maxy = unary_union(geoms).bounds
+    for a in items:
+        if not a.render or (a.kind == "disclaimer" and not include_notes):
+            continue
+        for x, y in a.box().exterior.coords:
+            minx, miny, maxx, maxy = min(minx, x), min(miny, y), max(maxx, x), max(maxy, y)
+    return (minx, miny, maxx, maxy)

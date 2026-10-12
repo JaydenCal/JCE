@@ -311,8 +311,8 @@ class Orchestrator:
                                               detail={"node": nid, "skipped": True, "blocked_by": bad})
                                 changed = True
                                 continue
-                            upstream = {p: results[p].output for p in parents
-                                        if results[p].status == "succeeded" and results[p].output is not None}
+                            upstream = {k: r.output for k, r in results.items()
+                                        if r.status == "succeeded" and r.output is not None}
                             fut = ex.submit(self._run_node, info, request, node, upstream,
                                             [results[p].invocation_id for p in parents
                                              if results[p].invocation_id], run_id)

@@ -338,9 +338,26 @@ def find_slab(content: PageContent, metres_per_point: float | None = None, *,
                 c.contained_score = 1.0
                 break
 
+    # fragments: a region whose outline lies on a larger plausible region's outline is a
+    # room inside that region, not the slab itself
+    fragment: set[int] = set()
+    for c in cands:
+        zone = c.polygon.exterior.buffer(0.5)
+        perim = max(c.polygon.exterior.length, 1e-9)
+        for o in cands:
+            if o is c or o.area_pt2 < 1.25 * c.area_pt2 or o.size_score < 0.5 or o.boundary_hits:
+                continue
+            if not o.polygon.buffer(0.05).contains(c.polygon):
+                continue
+            if zone.intersection(o.polygon.exterior).length >= 0.15 * perim:
+                fragment.add(c.id)
+                break
+
     for c in cands:
         c.score = round(0.28 * c.heavy_score + 0.28 * c.keyword_score + 0.20 * c.size_score
                         + 0.14 * c.contained_score + 0.10 * c.compact_score, 4)
+        if c.id in fragment:
+            c.score = round(c.score * 0.5, 4)
 
     ranked = sorted(cands, key=lambda c: (c.score, c.heavy_score, c.area_pt2), reverse=True)
     top = ranked[0]

@@ -20,10 +20,12 @@ from shapely.ops import unary_union
 from app.agents.base import AgentError
 from app.common.contracts import CadRequest, ServiceLine
 
-DISCLAIMER = (
-    "Indicative only. Not a survey. Verify BYDA plans and physically locate services "
-    "before excavation. Verify setbacks with council."
+DISCLAIMER_PARTS = (
+    "Indicative only. Not a survey.",
+    "Verify BYDA plans and physically locate services before excavation.",
+    "Verify setbacks with council.",
 )
+DISCLAIMER = " ".join(DISCLAIMER_PARTS)
 
 # Default horizontal exclusion distance (m) either side of a service line when the
 # upstream agent supplied no exclusion polygon.  Indicative planning values only.

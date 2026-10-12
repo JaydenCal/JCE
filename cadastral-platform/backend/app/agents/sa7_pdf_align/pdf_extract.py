@@ -521,14 +521,17 @@ def extract_raster(pdf_bytes: bytes, content: PageContent, *, dpi: int = RASTER_
                               borderMode=cv2.BORDER_CONSTANT, borderValue=255)
         deskew = skew
 
-    k = dpi_used / PT_PER_INCH              # pixels per point
-    height_pt = h_px / k
+    # pixels per point per axis (the pixmap size is rounded to whole pixels)
+    kx = w_px / content.width_pt
+    ky = h_px / content.height_pt
+    k = (kx + ky) / 2.0
+    height_pt = content.height_pt
 
     def px_to_pt(x: float, y: float) -> Pt:
-        return (x / k, height_pt - y / k)
+        return (x / kx, height_pt - y / ky)
 
     content.raster = RasterInfo(dpi=dpi_used, width_px=w_px, height_px=h_px, deskew_deg=deskew,
-                                paper_to_pixel=(k, 0.0, 0.0, -k, 0.0, height_pt * k))
+                                paper_to_pixel=(kx, 0.0, 0.0, -ky, 0.0, float(h_px)))
 
     # binary ink mask
     _, ink = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)

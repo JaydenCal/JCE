@@ -16,7 +16,7 @@ from shapely.geometry import LineString, Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
 from app.agents.sa5_cad_dxf.layers import SERVICE_LAYER
-from app.agents.sa5_cad_dxf.model import DISCLAIMER, PlanModel, left_normal, lines_of
+from app.agents.sa5_cad_dxf.model import DISCLAIMER_PARTS, PlanModel, left_normal, lines_of
 
 CAP_HEIGHT_RATIO = 0.718          # Helvetica cap height / font size
 H_BRNG, H_LOT, H_AREA, H_ROAD, H_DIM, H_LEVEL, H_SERV, H_NOTE, H_OVLY = 2.0, 3.5, 2.5, 3.5, 2.0, 1.8, 1.8, 1.8, 2.2
@@ -154,18 +154,27 @@ def boundary_annotations(model: PlanModel, scale: int, side: str = "inside") -> 
 def lot_annotations(model: PlanModel, scale: int) -> list[Annotation]:
     req = model.request
     pt = model.rep_point
-    if model.footprint is not None:
-        free = model.lot.difference(model.footprint.buffer(1.5 * _mm(scale) * 2))
-        polys = [p for p in getattr(free, "geoms", [free]) if isinstance(p, Polygon) and p.area > 0]
+    k = _mm(scale)
+    hl = H_LOT * k
+    text_w = text_width_m(format_lotplan(req.lot.lotplan), hl)
+    # Prefer the largest free part of the lot (clear of slab, driveway and the
+    # inside bearing labels) wide enough for the label.
+    free = model.lot.buffer(-(H_BRNG * 3.2) * k, join_style="mitre")
+    for g in (model.footprint, model.drive_poly):
+        if g is not None:
+            free = free.difference(g.buffer(1.0 * k * 2))
+    for frac in (0.55, 0.35, 0.15):
+        try:
+            cand = free.buffer(-text_w * frac)
+        except Exception:
+            break
+        polys = [p for p in getattr(cand, "geoms", [cand]) if isinstance(p, Polygon) and not p.is_empty]
         if polys:
-            big = max(polys, key=lambda p: p.area)
-            cand = big.representative_point()
-            box_w = text_width_m(format_lotplan(req.lot.lotplan), H_LOT * _mm(scale))
-            if big.area > box_w * H_LOT * _mm(scale) * 6:
-                pt = cand
+            pt = max(polys, key=lambda p: p.area).representative_point()
+            break
     area = req.lot.area_m2_registered
     area_txt = f"{area:.1f} m²" if area is not None else f"{req.lot.area_m2_calculated:.1f} m² (calc.)"
-    hl, ha = H_LOT * _mm(scale), H_AREA * _mm(scale)
+    ha = H_AREA * _mm(scale)
     return [
         Annotation("lot_label", format_lotplan(req.lot.lotplan), pt.x, pt.y + 0.9 * hl, 0.0, hl, "C-ANNO-LOTN",
                    params={"lotplan": req.lot.lotplan}, fixed=True),
@@ -214,6 +223,13 @@ def dimension_annotations(model: PlanModel, scale: int) -> list[Annotation]:
             kind_map[d.kind], d.text, mx + d.side[0] * off, my + d.side[1] * off,
             line_rotation(d.p2[0] - d.p1[0], d.p2[1] - d.p1[1]), h, "C-ANNO-DIMS",
             params={"p1": d.p1, "p2": d.p2, "length_m": d.length}, fixed=True, render=False))
+    rd = model.radius_dim
+    if rd is not None:
+        a = math.radians(rd.angle_deg)
+        d = rd.radius + 5.8 * _mm(scale)
+        out.append(Annotation("crossover_label", rd.text, rd.centre[0] + math.cos(a) * d, rd.centre[1] + math.sin(a) * d,
+                              0.0, h, "C-ANNO-DIMS", attachment="MIDDLE_LEFT",
+                              params={"radius_m": rd.radius}, fixed=True, render=False))
     return out
 
 
@@ -221,18 +237,20 @@ def crossover_annotation(model: PlanModel, scale: int) -> list[Annotation]:
     dw = model.request.driveway
     if dw is None or model.crossover is None:
         return []
-    parts = [f"CROSSOVER - {dw.design_vehicle} design vehicle"]
+    text = f"CROSSOVER - {dw.design_vehicle} design vehicle"
     if dw.max_grade_pct is not None:
-        parts.append(f"max grade {dw.max_grade_pct:.1f}%")
-    if dw.council_standard_label:
-        parts.append(dw.council_standard_label)
-    h = H_NOTE * _mm(scale)
+        text += f", max grade {dw.max_grade_pct:.1f}%"
     pt = model.crossover.representative_point()
-    out = []
-    for i, line in enumerate(parts):
-        out.append(Annotation("crossover_label", line, pt.x, pt.y - i * 1.5 * h, 0.0, h, "C-ANNO-NOTE",
-                              params={"design_vehicle": dw.design_vehicle}, collision_group="crossover"))
-    return out
+    push = (0.0, 1.0)
+    fronts = [s for s in model.request.lot.segments if s.is_front]
+    if fronts:
+        s = fronts[0]
+        nx, ny = _inside_normal(model, s.start_xy, s.end_xy)
+        push = (-nx, -ny)
+    return [Annotation("crossover_label", text, pt.x, pt.y, 0.0, H_NOTE * _mm(scale), "C-ANNO-NOTE",
+                       params={"design_vehicle": dw.design_vehicle, "max_grade_pct": dw.max_grade_pct,
+                               "standard": dw.council_standard_label},
+                       push_dir=push, collision_group="crossover")]
 
 
 def level_spot_annotations(spots: Sequence[tuple[float, float, float]], scale: int) -> list[Annotation]:
@@ -319,7 +337,7 @@ def wrap_lines(text: str, width_m: float, height_m: float) -> list[str]:
 
 def disclaimer_annotations(x: float, y_top: float, width_m: float, scale: int) -> list[Annotation]:
     h = H_NOTE * _mm(scale)
-    lines = ["NOTES:"] + wrap_lines(DISCLAIMER, width_m, h)
+    lines = ["NOTES:"] + [ln for part in DISCLAIMER_PARTS for ln in wrap_lines(part, width_m, h)]
     return [Annotation("disclaimer", ln, x, y_top - i * 1.6 * h, 0.0, h, "C-ANNO-NOTE",
                        attachment="TOP_LEFT", fixed=True, params={"line": i}) for i, ln in enumerate(lines)]
 
@@ -327,12 +345,14 @@ def disclaimer_annotations(x: float, y_top: float, width_m: float, scale: int) -
 # ---- collision resolver -----------------------------------------------------
 
 def resolve_collisions(items: list[Annotation], obstacles: Sequence[BaseGeometry] = (),
-                       max_tries: int = 10, step_factor: float = 0.9) -> int:
+                       max_tries: int = 10, step_factor: float = 0.9, slides: int = 4) -> int:
     """Push colliding labels along their perpendicular until clear (max ``max_tries``).
 
     Fixed annotations are placed first and never move.  Movable ones are tried at
     offsets +1..+k steps along ``push_dir`` (or the text's own perpendicular), then
-    -1..-k.  Returns the number of labels still colliding after the last try.
+    -1..-k (``max_tries`` perpendicular tries in total).  If every try collides the
+    label is slid along its own baseline (up to ``slides`` times each way, in
+    steps of four text heights) and the perpendicular tries repeat.  Returns the number of labels still colliding after the last try.
     """
     placed: list[Polygon] = [a.box() for a in items if a.fixed]
     obst = list(obstacles)
@@ -346,14 +366,20 @@ def resolve_collisions(items: list[Annotation], obstacles: Sequence[BaseGeometry
             ux, uy = left_normal(math.cos(math.radians(a.rotation_deg)), math.sin(math.radians(a.rotation_deg)))
         step = step_factor * a.height_m
         ox, oy = a.x, a.y
+        tx, ty = math.cos(math.radians(a.rotation_deg)), math.sin(math.radians(a.rotation_deg))
         half = max(1, (max_tries + 1) // 2)
-        offsets = [0] + [i for i in range(1, half + 1)] + [-i for i in range(1, max_tries - half + 1)]
+        perp = [0] + list(range(1, half + 1)) + [-i for i in range(1, max_tries - half + 1)]
+        along = [0.0] + [sgn * 4.0 * i * a.height_m for i in range(1, slides + 1) for sgn in (1, -1)]
         chosen = None
-        for k in offsets[: max_tries + 1]:
-            a.x, a.y = ox + ux * step * k, oy + uy * step * k
-            b = a.box()
-            if not any(b.intersects(p) for p in placed) and not any(b.intersects(o) for o in obst):
-                chosen = b
+        for sl in along:
+            for k in perp:
+                a.x = ox + ux * step * k + tx * sl
+                a.y = oy + uy * step * k + ty * sl
+                b = a.box()
+                if not any(b.intersects(p) for p in placed) and not any(b.intersects(o) for o in obst):
+                    chosen = b
+                    break
+            if chosen is not None:
                 break
         if chosen is None:
             a.x, a.y = ox, oy
@@ -387,8 +413,7 @@ def generate_annotations(model: PlanModel, scale: int | None = None, include_dis
     # Priority: bearings keep their place against lower-priority labels.
     order = {"boundary": 0, "road": 1, "service": 2, "crossover": 3, "level": 4, "overlay": 5}
     items.sort(key=lambda a: (not a.fixed, order.get(a.collision_group or "", 9)))
-    obstacles = [model.footprint.exterior] if model.footprint is not None else []
-    unresolved = resolve_collisions(items, obstacles=[] if not obstacles else [], max_tries=max_tries)
+    unresolved = resolve_collisions(items, max_tries=max_tries)
     aset = AnnotationSet(items, unresolved)
     if include_disclaimer:
         b = annotation_bounds(items)
