@@ -141,7 +141,7 @@ The program follows the Contractor's approved construction program, which Counci
 - Management of specialist sub-consultants to one program as Civil Design Manager at Langtree Consulting (2025 to 2026), including remote DATSIP subdivisions in Cape York.
 - Farm drainage works, private rural client (Craig Sullivan): drone photogrammetry survey of the property using RTK-positioned automated flights, processed in Autodesk ReCap Pro to a terrain surface used to design the drainage works. Referee details available on request.
 
-**Council referee.** Darren Quilliam, Tablelands Regional Council (Jayden's Ravenshoe leachate storage facility design modification (2025) and floodway rectification work at Langtree Consulting): contact details available on request.
+**Council referee.** Darren Quilliam, Tablelands Regional Council (Jayden's Ravenshoe leachate storage facility design modification, 2025, and floodway rectification work at Langtree Consulting): contact details available on request.
 
 **Head contractor referee.** Maverick Parker, CPB Contractors (RAAF Base Townsville delivery): contact details available on request.
 

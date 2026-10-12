@@ -46,7 +46,7 @@ Existing work. JCE will build on the Port Douglas Waterfront South Tourism and M
 - Jayden Callen was based in Townsville as Senior Engineer and Design Manager with SCP Consulting and then as Civil Design Manager with Langtree Consulting (to 05/2026).
 - He managed civil design for Department of Aboriginal and Torres Strait Islander Partnerships (DATSIP) subdivisions in the remote Cape York communities of Aurukun, Pormpuraaw and Napranum, including site inspections and engineering services reports.
 - He was the contractor's point of contact for Defence works at HMAS Cairns and RAAF Base Townsville under the North Queensland Mid-Term Refresh (about $104 million combined).
-- While at Langtree Consulting, he delivered engineering for Tablelands Regional Council in Far North Queensland: the rectification of a floodway on Council's road network and the Ravenshoe leachate storage facility design modification (2025) (Section 7).
+- While at Langtree Consulting, he delivered engineering for Tablelands Regional Council in Far North Queensland: the rectification of a floodway on Council's road network and the Ravenshoe leachate storage facility design modification, 2025 (Section 7).
 - He has worked on the client side for a Far North Queensland regional council, where he shortlisted consultants for a council tender [TBC - Jayden: name the council and referee once cleared].
 - JCE has invited Cairns and North Queensland firms to quote for each specialist discipline, so that local knowledge sits in the team that does the research, engagement, planning and ecology work. The firms will be named in Schedule F2 once confirmed [TBC - Jayden: names after quotes due 15/10/2026].
 
