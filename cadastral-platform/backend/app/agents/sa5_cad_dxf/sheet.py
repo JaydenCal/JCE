@@ -184,10 +184,15 @@ def build_panel(model: PlanModel, scale: int, acks: list[AckKind], fit: FitResul
         ("AREA", f"{(req.lot.area_m2_registered or req.lot.area_m2_calculated):.1f} sq m"
                  + (" (registered)" if req.lot.area_m2_registered else " (calculated)")),
     ]
+    ffl_lab = getattr(req, "ffl_label", None)
+    if ffl_lab:
+        rows.append(("FLOOR LEVEL", ffl_lab))
     for lab, val in rows:
         out.append(Text(tx, y - 3.0, 1.5, lab, grey=True))
-        out.append(Text(tx, y - 6.6, 2.6, val))
-        y -= 8.0
+        lines = wrap_lines(val, tw, 2.6) if lab == "FLOOR LEVEL" else [val]
+        for i, ln in enumerate(lines):
+            out.append(Text(tx, y - 6.6 - 3.6 * i, 2.6, ln))
+        y -= 8.0 + 3.6 * (len(lines) - 1)
         out.append(Line(x0, y, x1, y, lw=0.13))
     y -= 2.0
 

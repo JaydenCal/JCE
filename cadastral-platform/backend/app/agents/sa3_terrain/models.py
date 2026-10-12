@@ -35,6 +35,13 @@ class PadDesign(M):
     bulking_factor: float = 1.25
     shrinkage_factor: float = 0.90
     wall_height_threshold_m: float = 0.5
+    # flood-driven floor level: effective pad = max(pad_level_m, flood level + freeboard). Both must be supplied.
+    flood_level_ahd: float | None = None
+    flood_event: str = "1% AEP"
+    flood_source: str = "user_entered"
+    flood_source_ref: str | None = None
+    flood_freeboard_m: float | None = None
+    flood_freeboard_source: str = "user_entered"
 
 
 class TinOptions(M):
@@ -136,6 +143,9 @@ class MeshOut(M):
 
 
 class Sa3TerrainResult(M):
+    flood: dict | None = None            # app.flood.FloodCheck as dict (min_ffl, fill depth, PASS/FAIL/UNRESOLVED)
+    min_ffl: float | None = None
+    effective_pad_level_m: float | None = None
     schema_name: str = "sa3_terrain_result.v1"
     status: Literal["unverified"] = "unverified"
     tin: TinOut

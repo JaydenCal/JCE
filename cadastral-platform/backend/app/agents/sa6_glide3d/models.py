@@ -121,6 +121,7 @@ class SceneRequest(M):
     lot: LotContext
     origin: tuple[float, float] | None = None     # MGA E0,N0; default = lot centroid floored to 10 m
     ffl: float | None = None
+    ffl_label: str | None = None   # e.g. "FFL RL 100.50 (flood level RL 100.00 + 0.50 freeboard)"
     existing_tin: TinArrays | None = None
     design_tin: TinArrays | None = None
     cut_fill: CutFillIn | None = None

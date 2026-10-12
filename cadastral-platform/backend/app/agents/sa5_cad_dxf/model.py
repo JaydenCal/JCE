@@ -43,6 +43,7 @@ class CadRequestSa5(CadRequest):
     basemap_image_path: str | None = None
     basemap_extent: tuple[float, float, float, float] | None = None
     basemap_note: str = ""   # source / imagery date line for the legend
+    ffl_label: str | None = None   # e.g. "FFL RL 100.50 (flood level RL 100.00 + 0.50 freeboard)" (app.flood.ffl_label)
 
 
 @dataclass

@@ -40,17 +40,40 @@ class Sa3Terrain:
             warns.append(f"TIN covers only {coverage:.0f}% of lot; extrapolation not performed")
         if sv.accuracy_m > 0.25:
             warns.append(f"vertical accuracy {sv.accuracy_m} m is coarse for earthworks")
-        cf = walls = None
+        cf = walls = flood_out = min_ffl_out = None
+        pad = None
         if p.design:
             d = p.design
             fp = swkt.loads(d.footprint_wkt)
             if not lot.buffer(1e-6).contains(fp):
                 warns.append("pad footprint extends outside lot boundary")
+            pad = d.pad_level_m
+            if d.flood_level_ahd is not None or d.flood_freeboard_m is not None:
+                from app.flood import Freeboard, FloodLevelInput, compute_min_ffl
+                fchk = compute_min_ffl(FloodLevelInput(level_ahd=d.flood_level_ahd, event=d.flood_event, source=d.flood_source,
+                                                       source_ref=d.flood_source_ref),
+                                       Freeboard(value_m=d.flood_freeboard_m, source=d.flood_freeboard_source),
+                                       tin, footprint=fp, proposed_ffl=d.pad_level_m)
+                if fchk.min_ffl is not None:
+                    pad = max(d.pad_level_m, fchk.min_ffl)
+                    fchk.proposed_ffl = pad
+                    fchk.floor_above_flood_m = round(pad - d.flood_level_ahd, 3)
+                    fchk.floor_above_flood_ok = True
+                    fchk.result = "PASS"
+                    if pad > d.pad_level_m:
+                        warns.append(f"FFL raised from requested RL {d.pad_level_m:.2f} to RL {pad:.2f} (flood level + freeboard)")
+                else:
+                    warns.append(fchk.prompt or "flood level unresolved")
+                warns.extend(fchk.warnings)
+                flood_out = fchk.model_dump()
+                min_ffl_out = fchk.min_ffl
+            d = d.model_copy(update={"pad_level_m": pad})
             surf = pad_surface(tin, fp, d.pad_level_m, d.cut_batter_h_per_v, d.fill_batter_h_per_v)
             cf = cut_fill(tin, surf, region=lot, footprint=fp, accuracy_m=sv.accuracy_m,
                           topsoil_depth=d.topsoil_strip_depth_m, bulking=d.bulking_factor,
                           shrinkage=d.shrinkage_factor, pad_level=d.pad_level_m)
             walls = find_walls(tin, fp, d.pad_level_m, d.wall_height_threshold_m)
+            pad = d.pad_level_m
             if walls.engineer_certification_required:
                 warns.append("retaining wall > 1.0 m: engineer certification required (screening is NOT design)")
         vb, tb = tin.to_bytes()
@@ -62,4 +85,5 @@ class Sa3Terrain:
         mesh = MeshOut(origin=tuple(float(v) for v in org), vertices=(V - org).ravel().round(4).tolist(),
                        indices=np.asarray(T).ravel().tolist())
         return Sa3TerrainResult(tin=t, cut_fill=cf, walls=walls, mesh=mesh, vertical_accuracy_m=sv.accuracy_m,
-                                source=sv.source, lot_coverage_pct=coverage, warnings=warns)
+                                source=sv.source, lot_coverage_pct=coverage, warnings=warns,
+                                flood=flood_out, min_ffl=min_ffl_out, effective_pad_level_m=pad)

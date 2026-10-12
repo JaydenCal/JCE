@@ -1,0 +1,48 @@
+{
+ "schema": 1,
+ "region": "NSW erosion and sediment control",
+ "sources": [
+  {
+   "id": "bs2024",
+   "filename": "bs2024_final.pdf",
+   "kind": "state_guideline",
+   "title": "Guidelines for erosion and sediment control on building sites",
+   "authority": "NSW Department of Planning, Housing and Infrastructure",
+   "jurisdiction": "NSW",
+   "lga": null,
+   "version": "October 2024",
+   "effective_date": "2024-10-01",
+   "url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW%2BPlanning%2BPortal%2BDocuments/guidelines-for-erosion-and-sediment-control-on-building-sites.pdf",
+   "landing": "https://www.planningportal.nsw.gov.au/draftplans/made-and-finalised/guidelines-erosion-and-sediment-control-building-sites",
+   "notes": "Final (not the Sept 2023 draft). Applies to sites 250-2,500 m2. Cited page = PDF page = printed page.",
+   "status": "obtained",
+   "reason": "",
+   "format": "pdf",
+   "ingest": true,
+   "sha256": "5baf27decc0793e8397d32ca147130aaf0e020a64075a26af97cd37b62a31b59",
+   "bytes": 2400101,
+   "retrieved_at": "2026-10-12T16:55:52+00:00"
+  },
+  {
+   "id": "bluebook_v1",
+   "filename": "bluebook_v1.pdf",
+   "kind": "state_guideline",
+   "title": "Managing Urban Stormwater: Soils and Construction, Volume 1 (the Blue Book), 4th edition",
+   "authority": "Landcom",
+   "jurisdiction": "NSW",
+   "lga": null,
+   "version": "4th edition, March 2004 (reprinted 2006)",
+   "effective_date": "2004-03-01",
+   "url": "https://www.environment.nsw.gov.au/sites/default/files/managing-urban-stormwater-soils-construction-volume-1-fourth-edition.pdf",
+   "landing": "https://www.environment.nsw.gov.au/publications/managing-urban-stormwater-soils-and-construction-volume-1",
+   "notes": "Cited page = PDF page index (printed chapter page numbers differ, e.g. 6-43 is PDF p.163). Volume 2 (land-use specific: A urban, C unsealed roads, D main roads, E mines) was reviewed for scope only; Vol 2A (urban land development) is for subdivision, not a single-lot build, and is NOT ingested.",
+   "status": "obtained",
+   "reason": "",
+   "format": "pdf",
+   "ingest": true,
+   "sha256": "1a84eb7fc90d04193c39e625357eb0188cab23723b34e2b2aefe3619e20ef524",
+   "bytes": 22095076,
+   "retrieved_at": "2026-10-12T16:55:42+00:00"
+  }
+ ]
+}

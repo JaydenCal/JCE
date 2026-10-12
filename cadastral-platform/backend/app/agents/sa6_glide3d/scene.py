@@ -61,6 +61,8 @@ def build_scene(req: SceneRequest) -> SceneBundle:
     S.append(("Lot", f"{r.lot.lotplan}, {lot.area:.0f} m2, {r.lot.lga_name}"))
     if b.ffl is not None:
         S.append(("FFL (AHD)", f"{b.ffl:.2f}"))
+        if r.ffl_label:
+            S.append(("FFL basis", r.ffl_label))
     if r.cut_fill:
         cf = r.cut_fill
         S.append(("Cut / fill (indicative)", f"cut {cf.cut_volume_m3:.0f} m3, fill {cf.fill_volume_m3:.0f} m3, net {cf.cut_volume_m3 - cf.fill_volume_m3:+.0f} m3"))

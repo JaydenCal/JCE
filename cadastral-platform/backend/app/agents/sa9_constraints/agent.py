@@ -24,6 +24,7 @@ class Sa9Input(Model):
     report_date: str | None = None
     development_type: DevelopmentType = DevelopmentType.dwelling_house
     acknowledgements: list[str] = [k.value for k in AckKind]
+    flood_ffl_text: str | None = None   # computed FFL statement (app.flood.ffl_label), referenced by the flood trigger
 
 
 class Sa9Result(Model):
@@ -50,6 +51,10 @@ class Sa9Constraints:
         fp = wkt.loads(p.footprint_wkt) if p.footprint_wkt else (wkt.loads(p.lot.envelope_wkt) if p.lot.envelope_wkt else None)
         res = [check_layer(l, lot, fp, self.loader) for l in layers_for(p.lot.jurisdiction)]
         trig = evaluate(res, p.lot.jurisdiction, self.resolver, development_type=p.development_type.value)
+        if p.flood_ffl_text:
+            for t in trig:
+                if t.rule_id == "flood.fpl":
+                    t.next_steps = [f"Computed minimum floor level: {p.flood_ffl_text}"] + t.next_steps
         cur = sorted({r.data_currency for r in res if r.data_currency})
         meta = {"lotplan": p.lot.lotplan, "lga_name": p.lot.lga_name, "jurisdiction": p.lot.jurisdiction, "development_type": p.development_type.label,
                 "date": p.report_date or date.today().isoformat(), "data_currency": "; ".join(cur) or "unknown"}

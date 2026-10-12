@@ -269,7 +269,7 @@ class Builder:
         if slab is not None and not slab.is_empty and not self.r.buildings:
             lvl = self.ffl if self.ffl is not None else float(self.dg(slab.centroid.x, slab.centroid.y))
             self.add("PW_Slab", "buildings", "#cfcfc9", G.prism(slab, lvl - 0.2, lvl), tex="conc", cs=1)
-            self.label(f"Slab footprint (plan overlay), FFL {lvl:.2f}", (slab.centroid.x, slab.centroid.y, lvl + 3))
+            self.label((f"Slab footprint (plan overlay), {self.r.ffl_label}" if self.r.ffl_label and self.ffl is not None else f"Slab footprint (plan overlay), FFL {lvl:.2f}"), (slab.centroid.x, slab.centroid.y, lvl + 3))
             self.walk["floors"].append(Floor(id="slab", kind="floor", level=lvl,
                                              ring=[(round(x, 3), round(y, 3)) for x, y in G.polys(slab)[0].exterior.coords][:-1]))
         if self.ffl is None and self.r.buildings:
