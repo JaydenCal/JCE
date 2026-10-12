@@ -176,7 +176,7 @@ Where Schedule 6 is answered:
 | Council does not accept the image standard | The Moama pilot confirms image quality, naming, GPS offsets and ratings with Council before full capture, and Council signs off the rating guide |
 | Capture rig failure | A spare 360 camera and GNSS receiver (about $5,000 budget) carried on the vehicle, or short-term hire of a second rig, at JCE's cost; the April contingency days absorb lost days |
 | JCE has no previous network road imaging survey | Pilot sign-off by Council, the QA plan with blind re-rating, independent review by Sunny Lotay (RPEQ, NER), and Jayden's drone, RTK and ReCap Pro capture experience |
-| Field data does not match Council's register | Data review in Stage 1 and the pilot in Stage 2 settle Asset IDs, segments and codes before full capture; JCE builds the register itself, so partner data is checked as it arrives |
+| Field data does not match Council's register | Data review in Stage 1 and the pilot in Stage 2 settle Asset IDs, segments and codes before full capture; JCE builds the register itself, so data is checked as it arrives |
 | Drone flights limited by wind, rain or people near the site | Two campaigns with spare days in April; flights stop when people come within 30 m; assets that cannot be flown are rated from JCE's vehicle imagery or photographed from the ground |
 | Airspace or regulatory limits on drone use | Excluded category limits applied to every flight; desk check of aerodromes and airspace confirmed before each flight; no flight over people or within 5.5 km of a controlled aerodrome |
 | Inconsistent ratings between raters | Rating guide, calibration, 2% re-rate sample and batch re-rating rule |
@@ -216,7 +216,7 @@ The brief sets the valuation date of 30/06/2027 and no start date. The program a
 | Pilot and calibration, Moama | 27/01/2027 to 29/01/2027 |
 | Pilot approval to proceed | Friday 05/02/2027 |
 | JCE vehicle capture, all four zones (one rig, about 22 days) | 08/02 to 12/02, 01/03 to 05/03 and 22/03 to 08/04/2027 |
-| Capture contingency (if needed) | 19/04/2027 to 30/04/2027 |
+| Capture contingency (if needed) | 12/04/2027 to 30/04/2027 |
 | Level 2 bridge inspections | 15/02/2027 to 25/03/2027 |
 | JCE drone campaign 1 (bridges, with the bridge partner) | 15/02/2027 to 25/02/2027 |
 | JCE drone campaign 2 (culverts, outlets, hotspots) | 08/03/2027 to 18/03/2027 |
@@ -233,7 +233,7 @@ The brief sets the valuation date of 30/06/2027 and no start date. The program a
 
 | Role | Person | Responsibility |
 |---|---|---|
-| Project manager, drone pilot and GIS lead | Jayden Callen, BEng (Hons), MIEAust (JCE) | Single point of contact; methodology, drone capture, GIS and register, QA, remaining life, defect and safety assessment, programs, valuation inputs and reports |
+| Project manager, drone pilot and GIS lead | Jayden Callen, BEng (Hons), MIEAust (JCE) | Single point of contact; methodology, vehicle capture supervision, drone capture, GIS and register, QA, remaining life, defect and safety assessment, programs, valuation inputs and reports |
 | Associate Principal Engineer, technical reviewer and certifying engineer | Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil | Engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions: independent technical review of the condition, remaining life, defect and safety reports and 10-year programs; certification where a registered engineer is required; backup project lead |
 | Casual driver, field assistant and visual observer | [TBC - Jayden: name] | Drives the capture vehicle (about 22 capture days and the pilot), drone visual observer on road sites, data offload and site safety |
 | Casual GIS and rating technician | [TBC - Jayden: name] | First-pass rating of road and non-road assets from about 300,000 images, GIS layers, register population, image index and maps, checked by Jayden |
@@ -288,7 +288,7 @@ Environment, heritage and privacy. Inspections are made from formed roads and ro
 
 ## 7.0 Local content
 
-JCE is based outside the Murray River Council area and has no staff or depot in the region. Its economic contribution under this contract is local spend during field work: accommodation, meals and fuel in Moama, Barham, Mathoura and Moulamein for JCE's drone campaigns (about 64 room-nights in Year 1, covering vehicle capture and drone campaigns) and for the bridge partner's crews during the February to April 2027 field program, and the same each year from 2028 to 2031 in the zone being inspected. [TBC - Jayden: add any partner staff, office or suppliers in the region or in Echuca, and a local casual field assistant if one is engaged.]
+JCE is based outside the Murray River Council area and has no staff or depot in the region. Its economic contribution under this contract is local spend during field work: accommodation, meals and fuel in Moama, Barham, Mathoura and Moulamein for JCE's field work (about 64 room-nights in Year 1, vehicle capture and drone campaigns) and for the bridge partner's crews during the February to April 2027 field program, and the same each year from 2028 to 2031 in the zone being inspected. [TBC - Jayden: add any partner staff, office or suppliers in the region or in Echuca, and a local casual field assistant if one is engaged.]
 
 ## 8.0 Assumptions and information required from Council
 
