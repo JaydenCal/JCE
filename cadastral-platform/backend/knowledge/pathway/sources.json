@@ -208,6 +208,32 @@
    "sha256": "25c0a8307126784347ca6b66d7ea5805d6bd41b6d062c0bc0634c08179cb2787",
    "bytes": 721047,
    "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "g_lodging",
+   "file": "g_lodging.html",
+   "title": "Lodging an Application - Gunnedah Shire Council",
+   "authority": "Gunnedah Shire Council",
+   "version": "page text, retrieved",
+   "url": "https://www.gunnedah.nsw.gov.au/index.php/development/do-i-need-approval/lodging-an-application",
+   "kind": "council_page",
+   "status": "obtained",
+   "sha256": "96ce274f0f02cae9ff5579b68b07419c687a6c40e39670965266b10af77809ca",
+   "bytes": 159500,
+   "retrieved_at": "2026-10-12T17:16:24+00:00"
+  },
+  {
+   "id": "g_portal",
+   "file": "g_portal.html",
+   "title": "NSW Planning Portal - Gunnedah Shire Council",
+   "authority": "Gunnedah Shire Council",
+   "version": "page text, retrieved",
+   "url": "https://www.gunnedah.nsw.gov.au/index.php/development/development-applications/nsw-planning-portal",
+   "kind": "council_page",
+   "status": "obtained",
+   "sha256": "091968b6a6f349112774c1a197f6c822618d5e54ae8ca15c53349c2cdd9f2531",
+   "bytes": 140572,
+   "retrieved_at": "2026-10-12T17:16:24+00:00"
   }
  ],
  "blocked": [
