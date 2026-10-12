@@ -21,7 +21,7 @@ Rev G basis (from Jayden, 12/10/2026): the field data capture partner keeps vehi
 | All options | $208,720.00 | **$199,220.00** ($219,142.00 incl. GST) |
 | Optional drone rate (Item 10, not in totals) | - | $1,450 per site [TBC - Jayden] |
 
-How it moved: the GIS, data packaging and QA share of the capture allowance ($38,500 before mark-up: RFQ item C10 plus about 8% of the class allowances, and 8% of the partner part of Items 4 to 8) moved to JCE hours at market rates: JCE Stage 3 up from $19,780 to $26,400 (weekly audit sampling) and Stage 4 up from $29,160 to $51,340 (in-house GIS build, register update files, data QA), including a casual GIS technician at $120/h [TBC - Jayden] and $3,000 for GIS software share and imagery storage [TBC - Jayden]. Partner amounts remain allowances until quotes arrive.
+How it moved: the GIS, data packaging and QA share of the capture allowance ($38,500 before mark-up: RFQ item C10 plus about 8% of the class allowances, and 8% of the partner part of Items 4 to 8) moved to JCE hours at market rates: JCE Stage 3 up from $19,780 to $26,400 (weekly audit sampling) and Stage 4 up from $29,160 to $51,340 (in-house GIS build, register update files, data QA), including a casual GIS technician at $120/h [TBC - Jayden] and $3,000 for GIS software share and imagery storage [TBC - Jayden]. Stage 6 up from $9,600 to $11,120 for Sunny Lotay's 8 h technical review and certification. Partner amounts remain allowances until quotes arrive.
 
 ## 2. Hours check (sole practitioner, about 35 h/week)
 
@@ -31,7 +31,7 @@ How it moved: the GIS, data packaging and QA share of the capture allowance ($38
 | Sunny Lotay (associate) | - | - | 5 h | 54 h | 59 h |
 | Casual GIS technician [TBC] | - | - | 53 h | 160 h (36/wk) | 213 h |
 
-Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the new GIS and QA work). The fix, now in FP Section 5.1: unit rates and useful lives moved to January; revaluation model and report and program frameworks built in February; one field verification visit instead of two (desktop audit sampling replaces the March visit); a casual GIS technician takes the GIS build, register files, automated QA and maps; Sunny Lotay takes most March audit sampling and supports the programs. March is still at the limit (36 h/week), so a slip in the partner's data drops will push Jayden over. **Hire the casual GIS technician (start early February) and confirm Sunny before lodging.**
+Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the new GIS and QA work). The fix, now in FP Section 5.1: unit rates and useful lives moved to January; revaluation model and report and program frameworks built in February; one field verification visit instead of two (desktop audit sampling replaces the March visit); a casual GIS technician takes the GIS build, register files, automated QA and maps; Sunny Lotay takes most March audit sampling and supports the programs. March is still at the limit (36 h/week), so a slip in the partner's data drops will push Jayden over. **Hire the casual GIS technician (start early February) and sign Sunny's associate agreement before lodging.**
 
 ## 3. Blocking items
 
