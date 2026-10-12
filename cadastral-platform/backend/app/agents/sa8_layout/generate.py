@@ -392,6 +392,9 @@ def from_dxf(path: str | Path, floor_rl: float = 0.0, style: str = "contemporary
         code = int(doc.header.get("$INSUNITS", 0) or 0)
         if code in ins:
             uname, k = ins[code]
+            if span * k > 1000:
+                uname, k, conf_k = "mm", 0.001, 0.85
+                rep.notes.append(f"declared units '{ins[code][0]}' give a {span * ins[code][1]:g} m drawing; treated as mm")
         else:
             uname, k = ("mm", 0.001) if span > 500 else ("cm", 0.01) if span > 120 else ("m", 1.0)
             conf_k = 0.85

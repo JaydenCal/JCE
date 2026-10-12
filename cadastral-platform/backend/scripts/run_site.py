@@ -234,7 +234,19 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                      args=dict(vars(args)))
     if dev is DevelopmentType.dual_occupancy:
         rep.add("development type", UNRESOLVED, "dual_occupancy is a STUB: no preset or rules; downstream results are unresolved")
-    params: dict[str, Any] = {"jurisdiction": "NSW"}
+    profile = None
+    custom_req = None
+    if getattr(args, "profile", None):
+        from app.jurisdiction.profile import JurisdictionProfile
+        profile = JurisdictionProfile.model_validate_json(Path(args.profile).read_text())
+        if profile.cadastre_source.kind == "custom":
+            from app.jurisdiction.parcel import CustomParcelRequest
+            if not getattr(args, "parcel", None):
+                rep.add("locate lot", FAILED, "custom profile: give --parcel (CustomParcelRequest JSON); no NSW/QLD service is used")
+                return _finish(rep, out)
+            custom_req = CustomParcelRequest.model_validate_json(Path(args.parcel).read_text())
+        rep.facts["profile"] = profile.name
+    params: dict[str, Any] = {} if custom_req is not None else {"jurisdiction": "NSW"}
     if args.params_json:
         params.update(json.loads(Path(args.params_json).read_text()))
     if args.zone_code:
@@ -242,7 +254,9 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
 
     # ---- locate the lot
     try:
-        if args.lotplan:
+        if custom_req is not None:
+            rep.add("locate lot", OK, f"user-supplied parcel ({custom_req.format}) for profile '{profile.name}'")
+        elif args.lotplan:
             params["lot_identifier"] = args.lotplan
             rep.add("locate lot", OK, f"lot identifier {args.lotplan}")
         elif args.random_vacant:
@@ -289,8 +303,17 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         return R[key]
 
     # ---- SA1
-    sa1 = call("SA1 cadastre/zoning", AgentCode.SA1_CADASTRE,
-               {"project_id": str(rr.project_id), "project_jurisdiction": "NSW", "params": params}, "SA1")
+    if custom_req is not None:
+        from app.jurisdiction.parcel import Sa1CustomParcel
+        try:
+            R["SA1"] = sa1 = Sa1CustomParcel(profile).run(custom_req)
+            ctx.upstream["SA1"] = _json(sa1)
+        except Exception as ex:  # noqa: BLE001
+            rep.add("SA1 cadastre/zoning", FAILED, _err(ex))
+            sa1 = None
+    else:
+        sa1 = call("SA1 cadastre/zoning", AgentCode.SA1_CADASTRE,
+                   {"project_id": str(rr.project_id), "project_jurisdiction": "NSW", "params": params}, "SA1")
     if sa1 is None:
         for n in ("SA2 DCP rules", "ENV setbacks/driveway", "SA3 terrain", "SA4 services/RWT", "SA5 DXF + PDF plan", "SA6 scene bundle", "SA9 constraints"):
             rep.add(n, SKIPPED, "upstream SA1 did not produce a lot")
@@ -400,7 +423,9 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                    "export_formats": ["dxf", "pdf"], "acknowledgements_present": [k.value for k in AckKind] if args.acknowledge else [],
                    "project_title": rr.project_title, "drawn_by": "run_site.py", "output_path": str(out / "plan"),
                    "development_type": dev.value, "ffl_label": ffl_lab}
-        cad = call("SA5 DXF + PDF plan", AgentCode.SA5_CAD_DXF, payload, "SA5")
+        from app.jurisdiction.display import DisplaySpec, use_display
+        with use_display(DisplaySpec.from_profile(profile) if profile is not None else None):
+            cad = call("SA5 DXF + PDF plan", AgentCode.SA5_CAD_DXF, payload, "SA5")
         if cad is not None:
             rep.add("SA5 result", OK, f"{cad.annotation_count} annotations", [p for p in (cad.dxf_path, cad.pdf_path) if p])
     else:
@@ -433,6 +458,9 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         rep.add("SA6 scene bundle", SKIPPED, "needs ENV and SA4 outputs")
 
     # ---- SA9
+    if profile is not None and profile.cadastre_source.kind == "custom":
+        rep.add("SA9 constraints report", SKIPPED, "custom municipality: no built-in constraint layers (NSW/QLD only); check overlays with the local authority")
+        return _finish(rep, out)
     try:
         L9.set_endpoints(json.loads(Path(args.sa9_endpoints).read_text()) if args.sa9_endpoints else {})
         configured = [lt.key for lt in L9.layers_for("NSW") if lt.endpoint]
@@ -500,6 +528,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--params-json", help="JSON file merged into run params (terrain.survey, dbyd.*, ...)")
     p.add_argument("--sa9-endpoints", help='JSON file {"nsw_flood": {"endpoint": "...", "verified": false}, ...}')
     p.add_argument("--acknowledge", action="store_true", help="operator confirms the nine export acknowledgements (needed for DXF/PDF)")
+    p.add_argument("--profile", help="JurisdictionProfile JSON (custom municipality: units, CRS, locale, vehicles, cadastre source)")
+    p.add_argument("--parcel", help="CustomParcelRequest JSON (GeoJSON/DXF/coordinates/traverse) used when the profile's cadastre_source is 'custom'")
     p.add_argument("--scale", type=int, default=200)
     p.add_argument("--base-rl", type=float, default=0.0, help="placeholder floor RL for the scene when no survey exists")
     p.add_argument("--flood-level-ahd", type=float, help="design flood level, RL m AHD (council certificate / flood study); FFL = level + freeboard")

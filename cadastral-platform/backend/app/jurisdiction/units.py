@@ -166,8 +166,6 @@ def parse_unit(token: str, ctx: UnitContext | None = None) -> Unit:
     if t in U:
         return U[t]
     low = t.lower()
-    if t in AMBIGUOUS and not (ctx.case_insensitive and low in U):
-        raise AmbiguousUnit(t, AMBIGUOUS[t], "Ask the user or set it in the jurisdiction profile.")
     if low in ("gal", "gallon", "gallons"):
         if ctx.gallon is None:
             raise AmbiguousUnit(t, AMBIGUOUS["gal"], "Set units.gallon in the profile ('us' or 'imperial') or confirm with the user.")
@@ -176,6 +174,8 @@ def parse_unit(token: str, ctx: UnitContext | None = None) -> Unit:
         if ctx.gallon is None:
             raise AmbiguousUnit(t, AMBIGUOUS["gpm"], "Set units.gallon in the profile or confirm with the user.")
         return U["gpm_us" if ctx.gallon == "us" else "gpm_uk"]
+    if t in AMBIGUOUS and not (ctx.case_insensitive and low in U):
+        raise AmbiguousUnit(t, AMBIGUOUS[t], "Ask the user or set it in the jurisdiction profile.")
     if ctx.case_insensitive:
         for k, u in U.items():
             if k.lower() == low:
@@ -243,7 +243,7 @@ def format_slope(frac: float, style: str = "%", precision: int = 1) -> str:
     raise UnitError(f"unknown slope style {style!r}")
 
 
-_FTIN = re.compile(r"""^\s*(?:(?P<ft>-?\d+(?:\.\d+)?)\s*(?:'|ft|feet|foot|-))?\s*(?:(?P<in>\d+(?:\.\d+)?)(?:\s+(?P<num>\d+)\s*/\s*(?P<den>\d+))?\s*(?:"|in|inch|inches)?)?\s*$""")
+_FTIN = re.compile(r"""^\s*(?:(?P<ft>-?\d+(?:\.\d+)?)\s*(?:'|ft|feet|foot)\s*-?\s*)?(?:(?P<in>\d+(?:\.\d+)?)(?:\s+(?P<num>\d+)\s*/\s*(?P<den>\d+))?\s*(?:"|in|inch|inches)?)?\s*$""")
 
 
 def parse_feet_inches(text: str) -> float:

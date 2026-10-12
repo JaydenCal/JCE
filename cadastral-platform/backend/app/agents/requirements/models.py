@@ -149,7 +149,9 @@ class Requirement(M):
                 "effective_date": s.effective_date, "page": s.page, "section_ref": s.section_ref, "quote": s.quote,
                 "source_url": s.source_url, "retrieved_at": s.retrieved_at, "file_sha256": s.sha256,
                 "entered_by": s.entered_by, "entered_at": s.entered_at, "verified_by": self.verified_by,
-                "prompt": self.prompt}
+                "prompt": self.prompt,
+                "entered_value": self.entered_value, "entered_unit": self.entered_unit, "quote_language": s.language,
+                "quote_en": s.quote_en, "quote_en_machine_translated": s.quote_en_machine_translated}
 
 
 class UnresolvedRequirement(Exception):

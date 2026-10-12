@@ -122,7 +122,10 @@ def current_display() -> DisplaySpec:
 
 @contextmanager
 def use_display(spec: DisplaySpec | None) -> Iterator[DisplaySpec]:
-    tok = _CURRENT.set(spec or DisplaySpec())
+    if spec is None:                       # no override: keep whatever the caller scoped (or the legacy default)
+        yield _CURRENT.get()
+        return
+    tok = _CURRENT.set(spec)
     try:
         yield _CURRENT.get()
     finally:

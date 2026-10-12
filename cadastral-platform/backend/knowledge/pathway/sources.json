@@ -1,0 +1,257 @@
+{
+ "schema": 1,
+ "sources": [
+  {
+   "id": "inland_std_res",
+   "file": "inland_standard_res.pdf",
+   "title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+   "authority": "NSW Department of Planning and Environment",
+   "version": "October 2018",
+   "url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+   "kind": "code_summary",
+   "status": "obtained",
+   "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+   "bytes": 133179,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "inland_rural",
+   "file": "inland_rural.pdf",
+   "title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+   "authority": "NSW Department of Planning and Environment",
+   "version": "October 2018",
+   "url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+   "kind": "code_summary",
+   "status": "obtained",
+   "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+   "bytes": 69413,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "inland_farm_cdc",
+   "file": "inland_farm_cdc.pdf",
+   "title": "Inland Code - Farm Building Standards - Summary of Development Standards",
+   "authority": "NSW Department of Planning and Environment",
+   "version": "October 2018",
+   "url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Complying+Inland+20181011.pdf",
+   "kind": "code_summary",
+   "status": "obtained",
+   "sha256": "77ad6d8001bc0ebba6f62e7f1f95053c3e6534615b7c8a767da1e06f9e315a73",
+   "bytes": 75991,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "exempt_farm",
+   "file": "inland_farm_exempt.pdf",
+   "title": "Farm Buildings as Exempt Development - Summary of Development Standards",
+   "authority": "NSW Department of Planning and Environment",
+   "version": "October 2018",
+   "url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
+   "kind": "code_summary",
+   "status": "obtained",
+   "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
+   "bytes": 193928,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "housing_std",
+   "file": "housing_standard.pdf",
+   "title": "Housing Code - Summary of Development Standards, Standard Lot",
+   "authority": "NSW Department of Planning and Environment",
+   "version": "June 2018",
+   "url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Development+Standards/Development+Standards+Summary+Table+-+Standard+Lot.pdf",
+   "kind": "code_summary",
+   "status": "obtained",
+   "sha256": "47eb7ab90e6db0de134188038cebeebc6a03a4a9d9283d3a2569970032acdd38",
+   "bytes": 235190,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "inland_faq",
+   "file": "inland_faq.pdf",
+   "title": "Inland Code - Frequently asked questions",
+   "authority": "NSW Department of Planning and Environment",
+   "version": "2023",
+   "url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/inland-code-faq.pdf",
+   "kind": "faq",
+   "status": "obtained",
+   "sha256": "dbc67f6b4aec5b0c2054f8582de190048eb2563f941b4487a44e8602e2a777e1",
+   "bytes": 960168,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "inland_lga_map",
+   "file": "inland_map.jpg",
+   "title": "Inland Code LGA map (69 LGAs; image, read visually: Gunnedah = no. 30, Inland Code applies)",
+   "authority": "NSW Department of Planning and Environment",
+   "version": "2023-05",
+   "url": "https://www.planning.nsw.gov.au/sites/default/files/2023-05/inland-code-lga-map-2400x2263.jpg",
+   "kind": "map",
+   "status": "obtained",
+   "sha256": "ffc75078bda2fb19a1c1d6f0fa057d809a67fed77f1fd05029fc4ffc1e7f588f",
+   "bytes": 836703,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "pp_housing_code",
+   "file": "pp_housing_code.html",
+   "title": "Housing Code (NSW Planning Portal)",
+   "authority": "NSW Planning Portal",
+   "version": "page text, retrieved",
+   "url": "https://www.planningportal.nsw.gov.au/development-assessment/codes-sepp/housing-code",
+   "kind": "portal_page",
+   "status": "obtained",
+   "sha256": "fff3d3e163ca0acd0faa407eed6138d0e8a008afc2c0e7f31d5e837e2601d8f4",
+   "bytes": 72475,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "pp_inland_code",
+   "file": "pp_inland_code.html",
+   "title": "Inland Code for NSW (NSW Planning Portal)",
+   "authority": "NSW Planning Portal",
+   "version": "Last updated 14/09/2022",
+   "url": "https://www.planningportal.nsw.gov.au/development-assessment/codes-sepp/inland-code-nsw",
+   "kind": "portal_page",
+   "status": "obtained",
+   "sha256": "68652fe20eaff76e63db5f59335fd5423005856eb2851e7eae9c0e78d73f07fe",
+   "bytes": 72239,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "pp_local_development",
+   "file": "pp_local_development.html",
+   "title": "Local Development (NSW Planning Portal)",
+   "authority": "NSW Planning Portal",
+   "version": "page text, retrieved",
+   "url": "https://www.planningportal.nsw.gov.au/local-development",
+   "kind": "portal_page",
+   "status": "obtained",
+   "sha256": "291d4fc03100ad817ffd80030f0672c8fab6f3c1be3bd1d5d1d8d11dc1e5b7f9",
+   "bytes": 66430,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "pp_exempt_development",
+   "file": "pp_exempt_development.html",
+   "title": "Exempt Development (NSW Planning Portal)",
+   "authority": "NSW Planning Portal",
+   "version": "Last updated 07/02/2025",
+   "url": "https://www.planningportal.nsw.gov.au/development-and-assessment/planning-approval-pathways/exempt-development",
+   "kind": "portal_page",
+   "status": "obtained",
+   "sha256": "bca095b6ac65759a6167c3bc12a92dc5a51da30f63fe1a403d8b40ce9861629f",
+   "bytes": 57037,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "pp_granny_flats",
+   "file": "pp_granny_flats.html",
+   "title": "Granny Flats (NSW Planning Portal)",
+   "authority": "NSW Planning Portal",
+   "version": "Last updated 30/04/2025",
+   "url": "https://www.planningportal.nsw.gov.au/development-and-assessment/planning-approval-pathways/complying-development/granny-flats",
+   "kind": "portal_page",
+   "status": "obtained",
+   "sha256": "888471f7b043585e862ad3af2833c8a26c20e5baee08c0faa2ada38b37e8fb69",
+   "bytes": 56669,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "g_fact1",
+   "file": "g_fact1.pdf",
+   "title": "Gunnedah Shire Council Fact Sheet No. 1 - Development Application Documentation Checklist",
+   "authority": "Gunnedah Shire Council",
+   "version": "undated",
+   "url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FDO-I-NEED-APPROVAL%252FLodging-an-Application%252FFact%2BSheet%2B1%2B-%2BDA%2BDocumentation%2BChecklist.pdf",
+   "kind": "council_checklist",
+   "status": "obtained",
+   "sha256": "2bef08e7a7ab162ca0595d61d606c64d56e460b209268c4cb1c4ad79a9f22f17",
+   "bytes": 150656,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "g_da_checklist",
+   "file": "g_da_checklist.pdf",
+   "title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+   "authority": "Gunnedah Shire Council",
+   "version": "Last updated 06/03/2025",
+   "url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+   "kind": "council_checklist",
+   "status": "obtained",
+   "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+   "bytes": 267878,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "g_cdc_checklist",
+   "file": "g_cdc_checklist.pdf",
+   "title": "Gunnedah Shire Council Complying Development Certificate Lodgement Checklist",
+   "authority": "Gunnedah Shire Council",
+   "version": "Last updated January 2021",
+   "url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BComplying%2BDevelopment%2BCertificate%2BLodgement%2BChecklist.pdf",
+   "kind": "council_checklist",
+   "status": "obtained",
+   "sha256": "57ae93eb16487a302ced905678e7dc9861cd6a27ab3175c7f3a5d27042f1b657",
+   "bytes": 156851,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  },
+  {
+   "id": "g_soee_form",
+   "file": "g_soee_form.pdf",
+   "title": "Gunnedah Shire Council Statement of Environmental Effects (single dwelling houses, residential ancillary and outbuilding developments)",
+   "authority": "Gunnedah Shire Council",
+   "version": "Last updated 15 August 2023",
+   "url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BStatement%2Bof%2BEnvironmental%2BEffects.pdf",
+   "kind": "council_form",
+   "status": "obtained",
+   "sha256": "25c0a8307126784347ca6b66d7ea5805d6bd41b6d062c0bc0634c08179cb2787",
+   "bytes": 721047,
+   "retrieved_at": "2026-10-12T17:06:30+00:00"
+  }
+ ],
+ "blocked": [
+  {
+   "id": "codes_sepp_2008",
+   "title": "SEPP (Exempt and Complying Development Codes) 2008",
+   "url": "https://legislation.nsw.gov.au/view/html/inforce/current/epi-2008-0572",
+   "reason": "Cloudflare 'Just a moment' 403 for curl and headless Chromium (browser UA, 8 s wait); /EPIs/2018-569.pdf also 403"
+  },
+  {
+   "id": "housing_sepp_2021",
+   "title": "SEPP (Housing) 2021 incl. Schedule 1 secondary dwelling CDC standards",
+   "url": "https://legislation.nsw.gov.au/view/html/inforce/current/epi-2021-0714",
+   "reason": "same Cloudflare block"
+  },
+  {
+   "id": "epa_reg_2021",
+   "title": "Environmental Planning and Assessment Regulation 2021 (Schedule 1 / cl 24 DA content, Schedule 3)",
+   "url": "https://legislation.nsw.gov.au/view/html/inforce/current/sl-2021-0759",
+   "reason": "same Cloudflare block"
+  },
+  {
+   "id": "gunnedah_lep_2012",
+   "title": "Gunnedah Local Environmental Plan 2012 (land use tables, cl 4.1, 4.3, 5.4)",
+   "url": "https://legislation.nsw.gov.au/view/html/inforce/current/epi-2012-0304",
+   "reason": "same Cloudflare block"
+  },
+  {
+   "id": "rural_housing_code_summary",
+   "title": "Rural Housing Code summary tables / Part 3C",
+   "url": "",
+   "reason": "no obtainable URL found on planning.nsw.gov.au / planningportal.nsw.gov.au; Gunnedah is an Inland Code LGA so the Inland Code rural table is used instead"
+  },
+  {
+   "id": "portal_soee_guide",
+   "title": "NSW Planning Portal SoEE guide / EP&A Regulation Schedule 1 content list",
+   "url": "",
+   "reason": "no official SoEE guide located; Gunnedah Council SoEE form used as the structure source"
+  },
+  {
+   "id": "pbp_2019",
+   "title": "Planning for Bush Fire Protection 2019 (BAL/APZ)",
+   "url": "https://www.rfs.nsw.gov.au/plan-and-prepare/building-in-a-bush-fire-area/planning-for-bush-fire-protection",
+   "reason": "see ../manifest.json nsw_pbp_2019"
+  }
+ ]
+}
