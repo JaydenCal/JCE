@@ -21,7 +21,7 @@ class Model(BaseModel):
 
 
 class LotIdentifier(Model):
-    jurisdiction: Literal["NSW", "QLD"]
+    jurisdiction: Literal["NSW", "QLD", "CUSTOM"]
     lot: str
     section: str | None = None
     plan_type: str
@@ -67,7 +67,7 @@ class Sa1Request(Model):
 
 
 class Snapshot(Model):
-    jurisdiction: Literal["NSW", "QLD"]
+    jurisdiction: Literal["NSW", "QLD", "CUSTOM"]
     provider: str
     service_url: str
     layer_name: str

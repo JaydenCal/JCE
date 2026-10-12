@@ -354,6 +354,24 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                 f"envelope {ev.area_m2:.0f} m2; unresolved rules: {', '.join(ev.unresolved_elements) or 'none'}; "
                 f"{len(env_out.unresolved)} unresolved driveway requirement(s)")
 
+    # ---- FFL (flood): min FFL = flood level + freeboard (freeboard from the cited requirement for the LGA unless overridden)
+    from app.flood import FloodLevelInput, compute_min_ffl, ffl_label, freeboard_from_knowledge
+    fb = freeboard_from_knowledge(lot.lga_name)
+    ffl_lab = flood_text = None
+    ffl_value = args.base_rl
+    fchk = compute_min_ffl(FloodLevelInput(level_ahd=getattr(args, "flood_level_ahd", None), event=getattr(args, "flood_event", None) or "1% AEP",
+                                           source="user_entered", source_ref="run_site --flood-level-ahd"),
+                           fb, proposed_ffl=None, freeboard_override_m=getattr(args, "freeboard_m", None))
+    if fchk.min_ffl is not None:
+        ffl_value = max(args.base_rl, fchk.min_ffl)
+        ffl_lab = flood_text = ffl_label(ffl_value, fchk)
+        rep.facts["min_ffl"] = fchk.min_ffl
+        rep.add("FFL (flood)", OK, f"min FFL RL {fchk.min_ffl:.2f} = {fchk.event} flood level RL {fchk.flood_level_ahd:.2f} + {fchk.freeboard_m:.2f} m freeboard "
+                f"({fchk.freeboard_source}{': ' + fchk.freeboard_citation if fchk.freeboard_citation else ''}); {ffl_lab}; " + "; ".join(fchk.warnings))
+    else:
+        rep.add("FFL (flood)", UNRESOLVED, f"{fchk.prompt}; dwelling FFL not set from flood. Freeboard: "
+                + (f"{fchk.freeboard_m:g} m ({fchk.freeboard_source})" if fchk.freeboard_m is not None else "UNRESOLVED"))
+
     # ---- SA3 terrain
     if params.get("terrain", {}).get("survey") and env_out is not None:
         if call("SA3 terrain/earthworks", AgentCode.SA3_GEOM_TIN, build_input("SA3", ctx), "SA3") is not None:
@@ -381,7 +399,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                    "sa2": ctx.upstream.get("SA2"), "env": ctx.upstream["ENV"], "sa4": ctx.upstream["SA4"], "overlay": None,
                    "export_formats": ["dxf", "pdf"], "acknowledgements_present": [k.value for k in AckKind] if args.acknowledge else [],
                    "project_title": rr.project_title, "drawn_by": "run_site.py", "output_path": str(out / "plan"),
-                   "development_type": dev.value}
+                   "development_type": dev.value, "ffl_label": ffl_lab}
         cad = call("SA5 DXF + PDF plan", AgentCode.SA5_CAD_DXF, payload, "SA5")
         if cad is not None:
             rep.add("SA5 result", OK, f"{cad.annotation_count} annotations", [p for p in (cad.dxf_path, cad.pdf_path) if p])
@@ -404,7 +422,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
             scene = Sa6Glide3d().run(SceneRequest(
                 project_title=rr.project_title, subtitle=f"{dev.label} (unverified)", lot=lot_with_envelope(sa1, env_out),
                 driveway=env_out.driveway, services=sa4.to_cad_services(), rwt=sa4.to_cad_rwt(), buildings=blds,
-                development_type=dev, ffl=args.base_rl if blds else None))
+                development_type=dev, ffl=ffl_value if (blds or ffl_lab) else None, ffl_label=ffl_lab))
             p = out / "scene_bundle.json"
             p.write_text(dumps(scene))
             rep.add("SA6 scene bundle", OK if not env_out.envelope.unresolved_elements else UNRESOLVED,
@@ -420,7 +438,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         configured = [lt.key for lt in L9.layers_for("NSW") if lt.endpoint]
         r9 = Sa9Constraints(Sa9ArcGisLoader(lot.mga_srid, getter=(lambda u, p: json.loads(fetcher(u, p)[0])) if fetcher else None, sleep=(lambda s: None) if fetcher else time.sleep) if configured else None).run(Sa9Input(
             lot=lot_with_envelope(sa1, env_out) if env_out is not None else lot, footprint_wkt=footprint_wkt,
-            output_dir=str(out), development_type=dev))
+            output_dir=str(out), development_type=dev, flood_ffl_text=flood_text))
         n_aff = sum(1 for x in r9.layers if x.status == "affected")
         n_nc = sum(1 for x in r9.layers if x.status == "not_checked")
         unres = [t.rule_id for t in r9.triggers if t.unresolved]
@@ -484,6 +502,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--acknowledge", action="store_true", help="operator confirms the nine export acknowledgements (needed for DXF/PDF)")
     p.add_argument("--scale", type=int, default=200)
     p.add_argument("--base-rl", type=float, default=0.0, help="placeholder floor RL for the scene when no survey exists")
+    p.add_argument("--flood-level-ahd", type=float, help="design flood level, RL m AHD (council certificate / flood study); FFL = level + freeboard")
+    p.add_argument("--flood-event", default="1% AEP", help="flood planning event the level refers to (default 1%% AEP)")
+    p.add_argument("--freeboard-m", type=float, help="freeboard override (user_entered); default = cited flood.freeboard_m for the LGA else UNRESOLVED")
     p.add_argument("--title")
     p.add_argument("--out", default="out/run_site")
     return p

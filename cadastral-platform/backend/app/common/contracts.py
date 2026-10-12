@@ -129,10 +129,10 @@ class BoundarySegment(Model):
 class LotContext(Model):
     """lot_context.v1 (SA1 output). Geometry as WKT in MGA metres for portability."""
     lot_id: UUID
-    jurisdiction: Literal["NSW", "QLD"]
+    jurisdiction: str          # 'NSW' | 'QLD' | 'CUSTOM' (user-supplied parcel, see app.jurisdiction)
     lotplan: str
     lga_name: str
-    mga_srid: Literal[7854, 7855, 7856]
+    mga_srid: int              # metric working CRS EPSG (MGA 7854-7856 for built-in; any projected metric CRS for custom)
     area_m2_calculated: float
     area_m2_registered: float | None = None
     boundary_wkt: str
@@ -220,7 +220,7 @@ class OverlayPolygon(Model):
 class CadRequest(Model):
     """cad_request.v1 (ORCH -> SA5)."""
     project_id: UUID
-    mga_srid: Literal[7854, 7855, 7856]
+    mga_srid: int
     drawing_scale_denominator: int = Field(gt=0)
     lot: LotContext
     overlay: PlanOverlay | None = None
