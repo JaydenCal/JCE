@@ -8,7 +8,7 @@ Plain text of JCE_FP_VP527819_Final_RevG.docx (repo FP/VP527819/Final/), for pas
 
 | Item | Detail |
 |---|---|
-| Proposal no. | FP-TBC (VP527819)  [TBC - Jayden: FP number] |
+| Proposal no. | FP-017 (VP527819) |
 | Client | Inner West Council, 7-15 Wetherill Street, Leichhardt NSW 2040 |
 | Contact person | Frank Tambosis (enquiries through the VendorPanel forum) |
 | Tender | RFT 47-26 Transport Assets Condition Audit & Revaluations 2026/27 (VendorPanel VP527819) |

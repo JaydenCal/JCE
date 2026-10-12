@@ -1,5 +1,7 @@
 # Submission checklist: BUYNSW-T026-2026, T026/2026 Leppington Community Centre Precinct (Camden Council, buy.nsw)
 
+FP number: FP-021
+
 Prepared 12/10/2026, updated to **Rev G** the same day (referee, Tablelands experience and core team changes from Jayden). Rev F files are kept beside Rev G for reference; send Rev G only. JCE is the civil sub-consultant (optional hydraulics). The Lead Architect lodges the tender; JCE does not lodge on buy.nsw. Nothing has been sent, emailed or lodged.
 
 ## Key dates
@@ -46,7 +48,7 @@ Most important first:
 8. Camden LGA commitment: invite Camden or south-west Sydney firms first for any JCE-procured service (provisional survey).
 9. Rates: hold for the term of the head contract, or annual review.
 10. Fitness for Work Policy (JCE-WHS-POL-007): confirm it covers drugs and alcohol; enforcement notices "none"; modern slavery activities answers; JCE address for Schedule 15; read Council's Statement of Business Ethics.
-11. Proposal number and architect details.
+11. ~~Proposal number~~ [x] Done: FP-021 applied (FP, Architect-Teaming briefs). Architect details still to fill.
 12. **Sunny Lotay (new core team member, Rev G)**: signed standing associate agreement with Lotay Civil (scope, fee basis, availability, and insurance: does JCE's PI cover his work, or does Lotay Civil hold its own PI and PL? attach certificates); Sunny's written consent to be named on this bid; RPEQ and NER numbers; CV; confirm the associate rate of $200 per hour used for the $3,520 allowance (16 hours plus 10% margin).
 13. **Maverick Parker, CPB Contractors (new referee, RAAF Base Townsville)**: name corrected; email Maverick.Parker@cpbcon.com.au (Jayden's Outlook, 3 Oct 2026), now printed in the Schedule 13 referee table because that field asks for an email; [TBC - Jayden: title, phone, consent to be named]; project year (within the last five years?), package scope, Jayden's role (as JCE or with a previous employer) and value; any Defence confidentiality limits on what can be described. The FP prints only "engineering delivery for CPB Contractors (head contractor)" and "contact details available on request".
 14. **Tablelands Regional Council projects (delivered by Jayden while at Langtree Consulting, not JCE)**: floodway rectification: [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]; Ravenshoe leachate storage facility design modification (site and year now known from Jayden's Gmail: Ravenshoe, work from about March 2025; 2025 is within any five-year window): [TBC - Jayden: value, Jayden's scope]. Note the "JCE's role" field means Jayden's role at Langtree Consulting. Darren Quilliam: consent to be named, title, phone and email. If the architect reads Schedule 5 as company projects only, these two (and the Katherine, Triton, HMAS Watson and RAAF Townsville projects) belong in the key personnel / CV field; the FP says so in Attachment C4.

@@ -4,7 +4,7 @@ JCE Infrastructure Pty Ltd | ABN 29 699 165 663 | 0477 207 027 | jayden@jceinfra
 
 | | | | |
 |---|---|---|---|
-| **Proposal No** | JCE-VP527224 (RFQ 2026-092) | **Client** | Douglas Shire Council |
+| **Proposal No** | Our ref: FP-015 (JCE-VP527224, RFQ 2026-092) | **Client** | Douglas Shire Council |
 | **Date** | 12/10/2026 | **Attention** | Procurement, via VendorPanel |
 | **Revision** | G (final for lodgement) | **Council contact** | Derek Langman, Principal's Representative |
 | **Prepared by** | Jayden Callen, Director | **Project** | 2026-092 Port Douglas Marine Industry Precinct Scoping Study |

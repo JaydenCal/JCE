@@ -6,11 +6,11 @@ Murray River Council · Tender MRC-2645 (VendorPanel VP527277) · Schedule 6 met
 
 | | | | |
 |---|---|---|---|
-| Proposal No | JCE-FP-VP527277 | Client | Murray River Council |
+| Our ref (FP No) | FP-022 (VP527277) | Client | Murray River Council |
 | Date | 12/10/2026 | Contact | Peter Beaumont, Procurement Lead (via VendorPanel) |
 | Revision | H (final for review and signature; JCE vehicle and drone capture, GIS) | Project | MRC-2645 Transport Infrastructure Assessment and Valuation 2026 |
 | Prepared and reviewed by | Jayden Callen, Director | Site | Murray River LGA: Barham, Mathoura, Moama and Moulamein zones |
-| Tender closes | 2:00 pm Friday 13/11/2026 (VendorPanel) | Lump sum (incl. GST) | $ 1,270,973.00 |
+| Tender closes | 2:00 pm Friday 13/11/2026 (VendorPanel) | Lump sum (incl. GST) | $ 1,390,147.00 |
 
 ## Cover letter
 
@@ -20,6 +20,8 @@ By VendorPanel (VP527277)
 
 Dear Mr Beaumont,
 
+Our ref: FP-022
+
 Tender MRC-2645: Infrastructure Asset Condition Assessments
 
 JCE Infrastructure Pty Ltd (JCE) tenders to inspect, condition rate and value all of Council's transport and bridge infrastructure as at 30/06/2027, and then to deliver the four rolling zone inspections and valuations from 2028 to 2031. JCE offers one supplier, one lump sum and one point of contact, as the Conditions of Tender require.
@@ -28,7 +30,7 @@ I lead every JCE commission personally. My recent roles have been in design mana
 
 JCE captures about 3,000 km of road itself with a vehicle-mounted geo-referenced camera rig, and drone imagery of bridges and approaches, culverts, stormwater outlets, kerb and footpath hotspots and assets with poor vehicle access. JCE rates every asset class except the bridges, builds the GIS and asset register, and carries the methodology, Council liaison, data quality, remaining life, defect and safety assessment, the 10-year programs and the reporting. The bridge partner carries out Level 2 inspections of 127 bridges, major culverts and footbridges, and a qualified valuer signs the valuation.
 
-The lump sum is $ 1,270,973.00 including GST for all five valuation years, with Level 3/4 bridge inspections priced separately as Council's option. Our offer stays open for 60 days after the closing time.
+The lump sum is $ 1,390,147.00 including GST for all five valuation years, with Level 3/4 bridge inspections priced separately as Council's option. Our offer stays open for 60 days after the closing time.
 
 Yours faithfully,
 
@@ -104,7 +106,7 @@ Where Schedule 6 is answered:
 
 ### Stage 3: Network inspections (partners and JCE)
 
-- Roads, kerb and roadside (JCE): vehicle-mounted geo-referenced high-resolution stills every 10 m, GPS embedded natively in each image (DRFA compliant), wide enough to capture kerb to kerb or table drain to table drain and roadside hazards on both sides, with offset GPS pick-up of on-road and roadside features. One rig captures the network in three blocks (08/02 to 12/02, 01/03 to 05/03 and 22/03 to 08/04/2027), about 22 capture days at 150 to 200 km a day inside the February to April window.
+- Roads, kerb and roadside (JCE): vehicle-mounted geo-referenced high-resolution stills every 10 m, GPS embedded natively in each image (DRFA compliant), wide enough to capture kerb to kerb or table drain to table drain and roadside hazards on both sides, with offset GPS pick-up of on-road and roadside features. One rig captures the network in three blocks (08/02 to 12/02, 01/03 to 05/03 and 22/03 to 16/04/2027), about 27 capture days at 100 to 200 km a day inside the February to April window.
 - Kerb and gutter, footpaths, carparks, roundabouts, islands, medians, bus shelters and rural culverts (JCE): inventory verification, dimensions, condition and defects rated from JCE's vehicle and drone imagery, with at least two images per defect (segment overview and close-up).
 - Guardrail and handrail (JCE): inventory, condition and safety data from JCE's vehicle and drone imagery, with unprotected edge drops recorded as defects.
 - Bridges, major culverts and footbridges: Level 2 visual inspection within 3 m of every component in good natural light (no underwater inspection), component ratings, defects, photographs and an access methodology for each structure.
@@ -113,8 +115,8 @@ Where Schedule 6 is answered:
 
 ### Vehicle-mounted road imaging (JCE)
 
-- Equipment. JCE will deploy a vehicle-mounted 360 or multi-camera system with integrated GNSS and IMU and RTK correction (Mosaic-class or equivalent), recording geotagged stills at 10 m intervals with GPS embedded in each image.
-- Crew. One rig is enough: about 3,000 km at 150 to 200 km a day is 18 to 22 capture days inside about 60 working days. A casual driver and field assistant drives the capture vehicle; the rig runs automatically. Jayden rides along on the first capture days, checks each day's upload remotely and sets the route plan. Lone and remote work check-ins apply on rural roads.
+- Equipment. JCE will deploy a Mosaic 51 or Mosaic X-class 360 camera with an Emlid RS3 RTK GNSS receiver on a roof-rack mount with a steel tether, triggering stills at 10 m intervals and writing the GPS position and time natively into each image at capture (DRFA compliant). A budget 360 camera with an RTK logger is carried as a backup.
+- Crew. One rig is enough: about 3,000 km at 100 to 200 km a day, with dead running and re-runs, is 26 to 36 field days including the pilot, against about 44 to 49 usable days between 08/02 and 30/04/2027 after allowing for wet weather and heat. A casual driver and field assistant drives the capture vehicle; the rig runs automatically. Jayden rides along on the first capture days, checks each day's upload remotely and sets the route plan. Lone and remote work check-ins apply on rural roads.
 - Coverage. One pass per road, with both sides captured kerb to kerb or table drain to table drain. On single-lane unsealed roads the vehicle drives the centre of the formation so that both table drains are in frame; divided roads are driven in both directions. Routes are planned to limit repositioning to about 4,800 km over the network.
 - Pilot. The three-day pilot in Moama (27/01 to 29/01/2027) captures sealed, unsealed and urban samples so that Council confirms image quality, naming, GPS offsets, ratings and the data template before full capture.
 - Rating. Desktop condition rating of sealed roads (surface, pavement, formation), unsealed roads (wearing course, formation), kerb, footpaths and roadside assets against Council's rating guide and 1 to 5 scale, from about 300,000 images. AI-assisted pre-rating may be used to flag likely defects for review; every rating is made or confirmed by a person. The casual technician rates first, and Jayden checks a blind 2% sample in each zone and asset class.
@@ -215,8 +217,8 @@ The brief sets the valuation date of 30/06/2027 and no start date. The program a
 | Hold points released (assumed) | Friday 22/01/2027 |
 | Pilot and calibration, Moama | 27/01/2027 to 29/01/2027 |
 | Pilot approval to proceed | Friday 05/02/2027 |
-| JCE vehicle capture, all four zones (one rig, about 22 days) | 08/02 to 12/02, 01/03 to 05/03 and 22/03 to 08/04/2027 |
-| Capture contingency (if needed) | 12/04/2027 to 30/04/2027 |
+| JCE vehicle capture, all four zones (one rig, about 27 days) | 08/02 to 12/02, 01/03 to 05/03 and 22/03 to 16/04/2027 |
+| Capture contingency (if needed) | 19/04/2027 to 30/04/2027 |
 | Level 2 bridge inspections | 15/02/2027 to 25/03/2027 |
 | JCE drone campaign 1 (bridges, with the bridge partner) | 15/02/2027 to 25/02/2027 |
 | JCE drone campaign 2 (culverts, outlets, hotspots) | 08/03/2027 to 18/03/2027 |
@@ -235,27 +237,27 @@ The brief sets the valuation date of 30/06/2027 and no start date. The program a
 |---|---|---|
 | Project manager, drone pilot and GIS lead | Jayden Callen, BEng (Hons), MIEAust (JCE) | Single point of contact; methodology, vehicle capture supervision, drone capture, GIS and register, QA, remaining life, defect and safety assessment, programs, valuation inputs and reports |
 | Associate Principal Engineer, technical reviewer and certifying engineer | Sunny Lotay, Associate Principal Engineer (RPEQ, NER), Lotay Civil | Engaged by JCE under a standing associate agreement as technical reviewer and certifying engineer on JCE commissions: independent technical review of the condition, remaining life, defect and safety reports and 10-year programs; certification where a registered engineer is required; backup project lead |
-| Casual driver, field assistant and visual observer | [TBC - Jayden: name] | Drives the capture vehicle (about 22 capture days and the pilot), drone visual observer on road sites, data offload and site safety |
+| Casual driver, field assistant and visual observer | [TBC - Jayden: name] | Drives the capture vehicle (about 27 capture days and the pilot), drone visual observer on road sites, data offload and site safety |
 | Casual GIS and rating technician | [TBC - Jayden: name] | First-pass rating of road and non-road assets from about 300,000 images, GIS layers, register population, image index and maps, checked by Jayden |
 | Bridge inspection partner | [TBC - Jayden: firm selected after quotes due 28/10/2026] | Level 2 bridge, major culvert and footbridge inspections and reports; Level 3/4 if Council takes up the option |
 | Valuer | [TBC - Jayden: firm selected after quotes due 28/10/2026] | Valuation methodology, unit rate benchmarks, calculations and signed valuation report |
 
 ### How JCE's own hours are delivered
 
-JCE is a principal-led practice. Jayden Callen delivers JCE's own work: about 923 hours between December 2026 and June 2027, an average of about 36.4 hours a week over about 25 working weeks. Two casual staff carry the volume work under his direction: a driver and field assistant for about 22 capture days, the pilot and the drone days, and a GIS and rating technician for first-pass ratings of about 300,000 images, GIS layers, the register and report tables (about 720 hours). The bridge partner inspects the structures and the valuer runs the valuation calculations.
+JCE is a principal-led practice. Jayden Callen delivers JCE's own work: about 925 hours between December 2026 and June 2027, an average of about 36.4 hours a week over about 25 working weeks. Two casual staff carry the volume work under his direction: a driver and field assistant for about 27 capture days, the pilot and the drone days, and a GIS and rating technician for first-pass ratings of about 300,000 images, GIS layers, the register and report tables (about 720 hours). The bridge partner inspects the structures and the valuer runs the valuation calculations.
 
 | Period | Main JCE activities | JCE hours (approx.) |
 |---|---|---|
 | Dec 2026 | Hold point submissions, capture rig set-up and test runs, drone operations plan, GIS set-up | 74 |
 | Jan 2027 | Inception, data review, segmentation, pilot with rig and drone | 112 |
-| Feb 2027 | Capture block 1 with ride-along, drone campaign 1 with the bridge partner, daily upload QC | 149 |
-| Mar 2027 | Capture block 2, drone campaign 2, bridge report reviews, unit rates with valuer | 160 |
+| Feb 2027 | Capture block 1 with ride-along, drone campaign 1 with the bridge partner, daily upload QC | 150 |
+| Mar 2027 | Capture block 2, drone campaign 2, bridge report reviews, unit rates with valuer | 161 |
 | Apr 2027 | Capture block 3, road rating QA, remaining life model, register and GIS | 146 |
 | May 2027 | Draft defect, safety and condition reports, 10-year programs, valuation inputs | 160 |
 | Jun 2027 | Council comments, final reports and data, close-out | 122 |
-| Total |  | 923 |
+| Total |  | 925 |
 
-Weekly average by month: December 37, January 37.3, February 37.3, March 36.4, April 36.5, May 36.4 and June 34 hours. December to April run above 36 hours; the technician takes the completeness checks and report tables, and Jayden takes on no other major commission from December to May.
+Weekly average by month: December 37, January 37.3, February 37.5, March 36.6, April 36.5, May 36.4 and June 34 hours. December to April run above 36 hours; the technician takes the completeness checks and report tables, and Jayden takes on no other major commission from December to May.
 
 ### Drone photogrammetry capability
 
@@ -313,50 +315,50 @@ Council's Schedule 1 asks for one lump sum inclusive of GST, broken down by valu
 
 | Item | Schedule 1 breakdown by valuation year | Total (excl. GST) |
 |---|---|---|
-| 1 | Year 1 (2027): comprehensive inspection, defects, safety assessment, 10-year programs and comprehensive valuation as at 30/06/2027 | $ 499,300.00 |
-| 2 | 2028: Zone 1 Barham inspection and desktop revaluation | $ 152,180.00 |
-| 3 | 2029: Zone 2 Mathoura inspection and desktop revaluation | $ 160,420.00 |
-| 4 | 2030: Zone 3 Moama inspection and desktop revaluation | $ 138,200.00 |
-| 5 | 2031: Zone 4 Moulamein inspection and comprehensive valuation | $ 205,330.00 |
-|  | Lump sum (excl. GST) | $ 1,155,430.00 |
-|  | GST (10%) | $ 115,543.00 |
-|  | Lump sum for Schedule 1 (incl. GST) | $ 1,270,973.00 |
+| 1 | Year 1 (2027): comprehensive inspection, defects, safety assessment, 10-year programs and comprehensive valuation as at 30/06/2027 | $ 590,310.00 |
+| 2 | 2028: Zone 1 Barham inspection and desktop revaluation | $ 156,670.00 |
+| 3 | 2029: Zone 2 Mathoura inspection and desktop revaluation | $ 165,360.00 |
+| 4 | 2030: Zone 3 Moama inspection and desktop revaluation | $ 140,990.00 |
+| 5 | 2031: Zone 4 Moulamein inspection and comprehensive valuation | $ 210,440.00 |
+|  | Lump sum (excl. GST) | $ 1,263,770.00 |
+|  | GST (10%) | $ 126,377.00 |
+|  | Lump sum for Schedule 1 (incl. GST) | $ 1,390,147.00 |
 
 | Part | Breakdown of Item 1 (Year 1) | Amount (excl. GST) |
 |---|---|---|
 | Stage 1 | Mobilisation: inception, Council data review, hold point submissions, capture rig set-up and drone operations plan | $ 22,280.00 |
 | Stage 2 | Pilot, calibration and rig and drone trial | $ 6,600.00 |
-| Stage 3 | Capture supervision and daily upload QC, drone capture (16 field days), field travel and bridge report review | $ 47,930.00 |
+| Stage 3 | Capture supervision and daily upload QC, drone capture (16 field days), field travel and bridge report review | $ 48,290.00 |
 | Stage 4 | Road and non-road rating QA, GIS and register, remaining life, defect report, safety assessment, 10-year programs and condition report | $ 59,090.00 |
 | Stage 5 | Valuation inputs, reconciliation and valuer coordination | $ 13,720.00 |
 | Stage 6 | Project management, quality review and close-out | $ 21,600.00 |
 | AS | Associate certifying engineer (Sunny Lotay, Lotay Civil): independent technical review and certification of JCE reports, 24 h at $220/h allowance (cost plus 10%) [TBC - Jayden to confirm rate] | $ 5,808.00 |
-| K1 | Casual driver and field assistant: about 22 capture days, 3-day pilot, drone visual observer days, data offload and travel (fixed allowance) [TBC - Jayden] | $ 10,000.00 |
-| K2 | Casual GIS and desktop rating technician: first-pass rating of about 300,000 road and roadside images and drone imagery, road defect coding, image processing, GIS layers, register population, image index, maps and report tables (718 h at $110/h charge rate; cost about $65/h) | $ 78,980.00 |
+| K1 | Casual driver and field assistant: about 30 capture days including the pilot, contingency days, drone visual observer days, data offload and travel (fixed allowance, paid at or above award) | $ 18,000.00 |
+| K2 | Casual GIS and desktop rating technician: first-pass rating of about 300,000 road and roadside images and drone imagery, road defect coding, image processing, GIS layers, register population, image index, maps and report tables (718 h at the JCE CAD / GIS Technician rate of $160/h) | $ 114,880.00 |
 | EQ1 | Drone equipment day rate (DJI Mavic 3 Enterprise with RTK, batteries, RTK corrections, processing software and storage): 17 field days at $250 per day [TBC - Jayden to confirm rate] | $ 4,250.00 |
-| EQ2 | Vehicle capture rig equipment rate (one 360/multi-camera system with GNSS/IMU and RTK, mounts, storage; covers lease or amortised purchase): 25 capture and pilot days at $350 per day [TBC - Jayden to confirm rate] | $ 8,750.00 |
+| EQ2 | Vehicle capture day rate (Mosaic 51/X-class 360 rig with Emlid RS3 RTK GNSS, vehicle fit-out, data storage and image processing): 30 capture and pilot days at $1,850 per day | $ 55,500.00 |
 | EQ3 | Rating and image review software allowance, including AI-assisted pre-rating if used [TBC - Jayden] | $ 3,000.00 |
-| RK | Rig backup: spare 360 camera and GNSS receiver, or short-term hire of a second rig if the first fails | $ 5,000.00 |
+| RK | Rig backup: budget 360 camera with RTK logger carried as a spare, or short-term hire of a second rig if capture falls more than a week behind | $ 5,000.00 |
 | TR | Vehicle, accommodation and meals for capture, drone campaigns and pilot [TBC - Jayden to confirm rates] | $ 30,352.00 |
 | PS2 | Bridge inspection partner: Level 2 inspections of 127 structures (provisional sum, cost plus 10%) | $ 129,140.00 |
 | PS3 | Valuer: methodology and unit rate review, signed valuation report (provisional sum, cost plus 10%) | $ 33,000.00 |
 | PS3b | Valuer: valuation calculations and benchmark unit rates (provisional sum, cost plus 10%) | $ 19,800.00 |
-|  | Item 1 (excl. GST) | $ 499,300.00 |
+|  | Item 1 (excl. GST) | $ 590,310.00 |
 
 | No | Year 1 by asset category | Total (excl. GST) |
 |---|---|---|
-| 1 | Sealed roads (urban, regional, local) | $ 131,030.60 |
-| 2 | Unsealed roads | $ 136,342.64 |
-| 3 | Kerb and gutter | $ 6,925.34 |
-| 4 | Footpaths and cycleways | $ 17,457.63 |
-| 5 | Roundabouts, traffic islands and medians | $ 4,898.89 |
-| 6 | Carparks | $ 9,915.83 |
-| 7 | Rural culverts | $ 36,712.17 |
-| 8 | Guardrail | $ 16,395.22 |
-| 9 | Bus shelters | $ 1,377.20 |
-| 10 | Bridges and major culverts | $ 129,063.16 |
-| 11 | Footbridges | $ 9,181.32 |
-|  | Year 1 (excl. GST) | $ 499,300.00 |
+| 1 | Sealed roads (urban, regional, local) | $ 154,914.21 |
+| 2 | Unsealed roads | $ 161,194.52 |
+| 3 | Kerb and gutter | $ 8,187.66 |
+| 4 | Footpaths and cycleways | $ 20,639.72 |
+| 5 | Roundabouts, traffic islands and medians | $ 5,791.84 |
+| 6 | Carparks | $ 11,723.24 |
+| 7 | Rural culverts | $ 43,403.89 |
+| 8 | Guardrail | $ 19,383.66 |
+| 9 | Bus shelters | $ 1,628.23 |
+| 10 | Bridges and major culverts | $ 152,588.18 |
+| 11 | Footbridges | $ 10,854.85 |
+|  | Year 1 (excl. GST) | $ 590,310.00 |
 
 Option (not in the lump sum). Level 3/4 bridge inspection, including component visual rating, structural safety inspection, load capacity assessment, component inventory and photographic record of condition 4 and 5 defects: $ 7,400.00 excl. GST ($ 8,140.00 incl. GST) per bridge.
 
@@ -422,7 +424,7 @@ Applies to variations directed by Council. Rates are exclusive of GST; Schedule 
 | Drone equipment (with JCE hourly rates for flying and processing) | $250/field day | $275.00/field day |
 | Partner services | At cost + 10% | At cost + 10% |
 
-Additional JCE resources for directed work: vehicle capture rig $350 per capture day plus a driver at cost plus 10%; GIS and rating technician $110 per hour. Partner rates for directed additional work, including JCE's 10% mark-up: bridge inspector per hour and valuer per hour [TBC - Jayden: from partner quotes, parts B and C]. A day comprises eight (8) hours. Disbursements other than vehicle travel are charged at cost.
+Additional JCE resources for directed work: vehicle capture day rate $1,850 per capture day plus a driver at cost plus 10%; GIS and rating technician at the CAD / GIS Technician rate. Partner rates for directed additional work, including JCE's 10% mark-up: bridge inspector per hour and valuer per hour [TBC - Jayden: from partner quotes, parts B and C]. A day comprises eight (8) hours. Disbursements other than vehicle travel are charged at cost.
 
 ## Attachment B: Key personnel
 

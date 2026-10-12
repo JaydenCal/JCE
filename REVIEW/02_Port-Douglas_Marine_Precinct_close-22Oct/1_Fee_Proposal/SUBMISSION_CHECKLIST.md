@@ -1,5 +1,7 @@
 # Submission checklist: VP527224 / DSC RFQ 2026-092 Port Douglas Marine Industry Precinct Scoping Study
 
+FP number: FP-015
+
 **Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, two Tablelands Regional Council (QLD) projects (Jayden at Langtree Consulting) with referee Darren Quilliam, a RAAF Base Townsville referee (Maverick Parker, CPB Contractors) in place of the Gunnedah levee project, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; RPEQ changed from Ben Lancini to Sunny Lotay (Lotay Civil), now shown in the core team as associate reviewer, certifier and backup lead (his role is priced in the existing PS4, $4,400); price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status unchanged (draft ready, no Pursue/Pass tick yet).

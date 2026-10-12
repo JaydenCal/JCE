@@ -157,8 +157,12 @@ class Doc:
                     para.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                 if is_total:
                     shade(cells[i], LIGHT_GOLD)
-        for row in t.rows:
+        for ri, row in enumerate(t.rows):
             no_split_row(row)
+            if ri < len(t.rows) - 1 and len(t.rows) <= 16:
+                for c in row.cells:
+                    for para in c.paragraphs:
+                        para.paragraph_format.keep_with_next = True
         set_widths(t, widths)
         sp = self.d.add_paragraph()
         sp.paragraph_format.space_after = Pt(2)

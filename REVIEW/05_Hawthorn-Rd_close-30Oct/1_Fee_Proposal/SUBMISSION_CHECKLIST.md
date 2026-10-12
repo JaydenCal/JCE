@@ -1,5 +1,7 @@
 # Submission checklist: VP523438, MBDC RFT 2026.013 Concept Design for Hawthorn Road
 
+FP number: FP-019
+
 **Rev G (12/10/2026, updated):** adds Sunny Lotay (RPEQ, NER), Lotay Civil, to the core team as associate reviewer and certifying engineer (FP 2.0, 5.1, 8.2, 8.3, 12.0), with a 24-hour allowance: lump sum $258,460 to $263,500 ex GST. Also adds the Glide Inside / RTK drone capability paragraph and Jayden's drone photogrammetry experience and workflow (DroneDeploy flight planning, RTK via AUSCORS or local base, check points, ReCap Pro, InfraWorks / Civil 3D, QGIS) in FP 5.1, CASA sub-2 kg excluded category with accreditation in place before services start (site more than 30 km from Adelaide Airport and Parafield), a Stage 1 line where the ReCap surface feeds the concept model, and high-resolution aerial stills and video (experience sentence, Stage 1, and a deliverables line); lodge Rev G (13 pages), not Rev F. Adds the Craig Sullivan farm drainage drone survey and the Tablelands Regional Council floodway rectification (Jayden's work while at Langtree Consulting, not a JCE project; listed first, referee Darren Quilliam) to FP 5.4, and replaces the Gunnedah levee with RAAF Base Townsville delivery for CPB Contractors (referee Maverick Parker, CPB). Experience criterion re-scored 6 to 7 (council road floodway project with a council referee, counted as Jayden's personal experience; the Brief scores consultant and key staff experience together, so no change for the Langtree Consulting correction); weighted 6.9 to 7.1.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status: draft ready (no Pursue/Pass decision yet).
@@ -26,7 +28,7 @@ Stage split: Stage 1 $64,020; Stage 2 $138,460; Stage 3 $61,020. PC Sums unchang
 
 1. Decide Pursue or Pass in the register.
 2. Fold in sub-consultant quotes (due 23/10/2026), pick one firm per discipline, update FP Section 5.2 and the fee, and fill the [TBC - Jayden] items below.
-3. Paste `FP_Final_text.md` into the JCE branded template (or use `JCE_FP_VP523438_Final_RevG.docx`), insert the Gantt chart (Figure 1), add the FP number, sign the offer block, and export to PDF.
+3. Paste `FP_Final_text.md` into the JCE branded template (or use `JCE_FP_VP523438_Final_RevG.docx`), insert the Gantt chart (Figure 1), add the FP number (done: FP-019), sign the offer block, and export to PDF.
 4. Build **one** PDF named **`2026.013 JCE Infrastructure SUBMISSION.pdf`** (Brief 10, cl 8.2), in this order:
    - Signed fee proposal Rev G (includes Attachment A, Schedule of Rates)
    - Attachment B: `Callen-Pell_NER-02_Detailed_CV.pdf`
@@ -56,7 +58,7 @@ Stage split: Stage 1 $64,020; Stage 2 $138,460; Stage 3 $61,020. PC Sums unchang
 4. **Workers compensation / accident cover**: confirm the cover held and attach a certificate (only a blank icare letter is on file); FP 11.0.
 5. **Livio Chiarot**: confirm availability as independent reviewer (FP 2.0).
 6. Conflict of interest declaration confirmation (FP 10.0).
-7. FP number (FP-0xx), date of issue, and signature.
+7. ~~FP number (FP-0xx)~~ [x] Done: FP-019 applied. Date of issue and signature still to do.
 8. Agreement Schedule: business, registered and postal addresses; ACN 699 165 663 (check); company execution (sole director and secretary?).
 9. SA registration: confirm on legislation.sa.gov.au (FP 5.1).
 11. Drone project example (FP 5.4, Craig Sullivan farm drainage): [TBC - Jayden: location, year, approx. area]. Get Craig Sullivan's consent to be named as a referee and his phone/email (FP prints "Referee details available on request").
