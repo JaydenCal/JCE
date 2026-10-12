@@ -7,7 +7,7 @@ Text of JCE_FP_VP523438_Final_RevG.docx, for pasting into the JCE branded templa
 
 | Item | Detail |
 |---|---|
-| Proposal No | FP-[TBC - Jayden] (VendorPanel VP523438) |
+| Proposal No | FP-019 (VendorPanel VP523438) |
 | Client | Mount Barker District Council, 6 Dutton Road, Mount Barker SA 5251 |
 | Attention | Procurement, via VendorPanel |
 | Project | RFT 2026.013 Concept Design for Hawthorn Road: Separable Portion 1 (30% concept design), with PC Sums for Separable Portions 2 and 3 |

@@ -1,5 +1,7 @@
 # Submission checklist Rev I: TN-1640786, RFQ2026_93 Mid-Western Development Contributions Plan 2027 (eProcure MWRCCMS001497)
 
+FP number: FP-014
+
 Prepared 12/10/2026 from the real tender documents. Rev I: JCE leads the road and transport side; the planner has a defined role (Jayden's decision 12/10). Supersedes the Rev F/G/H checklists. Nothing has been lodged, sent or signed.
 
 - **Closes: 2:00pm Monday 19/10/2026**, via eProcure (app.eprocure.com.au/midwestern). Aim to lodge Friday 16/10/2026.
@@ -28,7 +30,7 @@ If JCE is already registered on Council's Supplier Hub with current compliance, 
 **Fee proposal Rev I**
 1. Planning partner: firm, **named planner** (key personnel under clause 5.4, signs off the final plans), NSW contributions plan projects with referees. **This is a minimum requirement of the RFQ. Without it the response is weak or non-compliant.** Planner RFQ is now Rev C (defined role): send `Town_Planning/Emails_RevC.txt` with the Rev C per-firm PDFs and the Rev C quote form.
 2. Cost planner firm (or drop the $8,800 allowance if Council confirms it holds community facility costs). QS RFQ unchanged (Rev B).
-3. Proposal number.
+3. [x] ~~Proposal number~~ Done: FP-014 applied.
 4. Contract departures: confirm "no departures" or list them (see section 5).
 5. Conflict of interest, including the planning partner's (Navigate Planning acts for applicants in the Mid-Western LGA).
 6. PL row in Section 8: change to "$20 million held" once bound.

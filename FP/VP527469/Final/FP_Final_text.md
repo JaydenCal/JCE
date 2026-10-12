@@ -7,7 +7,7 @@ ABN 29 699 165 663 · 756 Quia Road, Gunnedah NSW 2380 · 0477 207 027 · jayden
 
 | Item | Detail |
 |---|---|
-| Proposal no | JCE-FP-VP527469 [FP number TBC - Jayden]   ·   Revision G (final for signature)   ·   Date 12/10/2026 |
+| Proposal no | FP-020 (JCE-FP-VP527469)   ·   Revision G (final for signature)   ·   Date 12/10/2026 |
 | Client | Wagga Wagga City Council (the Principal), PO Box 20, Wagga Wagga NSW 2650 |
 | Attention | Isabel Giltrap, Tender Coordinator, via VendorPanel (VP527469) |
 | Site | Gregadoo Waste Management Centre, 162 Ashfords Road, Gregadoo NSW 2650 (EPL 6671) |

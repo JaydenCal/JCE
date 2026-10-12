@@ -1,5 +1,7 @@
 # Submission checklist: VP527819 Inner West Council RFT 47-26 (Rev G)
 
+FP number: FP-017
+
 Transport Assets Condition Audit & Revaluations 2026/27. Updated 12/10/2026 for Rev G. Nothing has been sent, lodged or signed. **Lodge Rev G**; Rev F files are kept for the record only.
 
 Rev G basis (from Jayden, 12/10/2026): the field data capture partner keeps vehicle and walk-through capture and condition rating; JCE does all GIS processing, asset register updates, data QA and weekly desktop audit sampling of the partner's imagery in-house; drone capture is not used for the network (most of the LGA is within 5.5 km of Sydney Airport and inside its controlled airspace, and the streets are busy with people) and appears only as an optional per-site rate for a specific asset outside 5.5 km of Sydney and Bankstown airports and clear of people; the valuer is unchanged.
@@ -67,7 +69,7 @@ Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the n
 6a. Craig Sullivan farm drainage drone survey (FP Section 5.0, R10, R11): location, year, approx. area [TBC - Jayden]. Get Craig Sullivan's consent to be named as a referee and his phone/email. The printed FP says "Referee details available on request"; R11 has a [TBC] for his contact details. It is a private farm drainage job: it supports drone and processing capability but is unlikely to count as one of the three similar council transport-asset projects for Returnable 11.
 7. Provisional sums replaced from quotes; partner rates in Attachment A.
 8. Returnables: registered address, signatures and dates, R4 rows for clauses 12.7 and 11.3 (recommend deleting), insurance policy numbers, addenda re-check, site inspection, staff numbers, QA, WHS, IR, sustainability, modern slavery and ATSI answers (as listed in Rev F).
-9. FP number.
+9. [x] ~~FP number~~ Done: FP-017 applied.
 
 Drone experience added from Jayden's 12/10 notes (FP Sections 2.1 and 5.0, Attachment B, R10): photogrammetry with DroneDeploy flight planning, RTK capture, high-resolution aerial stills and video, ReCap Pro processing into InfraWorks and Civil 3D, QGIS delivery; no projects, clients or dates printed except the Craig Sullivan example. The approved Glide Inside capability paragraph is in FP Section 5.0 and Returnable 10 as worded ("JCE delivers drone photogrammetry"), now supported by Jayden's statement that he has delivered drone photogrammetry before. It states the capability is used only for the optional Item 10, consistent with the Sydney Airport limits in Section 2.1. No LiDAR is mentioned. Tablelands projects (Langtree Consulting) are in the cover letter (floodway, as Jayden's Langtree Consulting work), Section 5.0 (key personnel council experience and bio), Attachment B and R12. The Gunnedah levee is removed from all Rev G documents (it remains only in the superseded Rev F files, which are not for lodgement).
 

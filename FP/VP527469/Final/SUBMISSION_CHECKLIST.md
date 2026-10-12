@@ -1,5 +1,7 @@
 # Submission checklist: VP527469 / WWCC RFT CT2027005 Gregadoo WMC CQA Engineer
 
+FP number: FP-020
+
 Prepared 12/10/2026 (FINAL Rev F, updated to **Rev G** the same day). Lodge the Rev G files; Rev F is kept for reference. Nothing has been lodged, sent or uploaded. Lodging is Jayden's action.
 
 **Closes: Friday 30/10/2026, 2:00 pm AEDT** on VendorPanel. Late tenders are excluded (Part A 5.4). Aim to lodge by Thursday 29/10/2026.
@@ -81,7 +83,7 @@ The FP, B1 and B2 files are in the repo only (binary upload to Dropbox is not po
 3. **Workers compensation / insurance of employees**: JCE has no employees; confirm icare position or personal accident cover.
 4. **Public liability**: PL $20M quote requested 12/10; bind before lodgement if possible and attach the certificate. Confirm the PI policy covers landfill CQA.
 5. **Form 1**: date, witness, final lump sum in figures and words after quotes.
-6. FP number (JCE-FP-VP527469 placeholder).
+6. [x] ~~FP number (JCE-FP-VP527469 placeholder)~~ Done: FP-020 applied.
 7. Form 3: values/durations of current contracts; Form 10: contacts and person days for the three reference contracts, incident statistics for the last 6 months, confirm no notices; CoR policy position.
 8. Form 5: attach an example quality plan or CQA plan extract.
 9. Form 8: partner staff addresses within the listed LGAs (Wagga Wagga LGA is not in the Form 8 list).
