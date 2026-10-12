@@ -1,6 +1,6 @@
 # Submission checklist: VP523438, MBDC RFT 2026.013 Concept Design for Hawthorn Road
 
-**Rev G (12/10/2026, updated):** adds the Glide Inside / RTK drone capability paragraph and Jayden's drone photogrammetry experience and workflow (DroneDeploy flight planning, RTK via AUSCORS or local base, check points, ReCap Pro, InfraWorks / Civil 3D, QGIS) in FP 5.1, CASA sub-2 kg excluded category with accreditation in place before services start (site more than 30 km from Adelaide Airport and Parafield), a Stage 1 line where the ReCap surface feeds the concept model, and high-resolution aerial stills and video (experience sentence, Stage 1, and a deliverables line); lodge Rev G (13 pages), not Rev F. Adds the Craig Sullivan farm drainage drone survey to FP 5.4. Experience criterion re-scored: unchanged at 6 (a private farm job supports capability but is not similar council road work).
+**Rev G (12/10/2026, updated):** adds the Glide Inside / RTK drone capability paragraph and Jayden's drone photogrammetry experience and workflow (DroneDeploy flight planning, RTK via AUSCORS or local base, check points, ReCap Pro, InfraWorks / Civil 3D, QGIS) in FP 5.1, CASA sub-2 kg excluded category with accreditation in place before services start (site more than 30 km from Adelaide Airport and Parafield), a Stage 1 line where the ReCap surface feeds the concept model, and high-resolution aerial stills and video (experience sentence, Stage 1, and a deliverables line); lodge Rev G (13 pages), not Rev F. Adds the Craig Sullivan farm drainage drone survey and the Tablelands Regional Council floodway rectification (listed first, referee Darren Quilliam) to FP 5.4. Experience criterion re-scored 6 to 7 (council road floodway project with a council referee); weighted 6.9 to 7.1.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status: draft ready (no Pursue/Pass decision yet).
 
@@ -58,6 +58,7 @@ Stage split: Stage 1 $64,020; Stage 2 $135,940; Stage 3 $58,500. No budget figur
 8. Agreement Schedule: business, registered and postal addresses; ACN 699 165 663 (check); company execution (sole director and secretary?).
 9. SA registration: confirm on legislation.sa.gov.au (FP 5.1).
 11. Drone project example (FP 5.4, Craig Sullivan farm drainage): [TBC - Jayden: location, year, approx. area]. Get Craig Sullivan's consent to be named as a referee and his phone/email (FP prints "Referee details available on request").
+13. Tablelands floodway rectification (FP 5.4): [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]. Get Darren Quilliam's consent to be named, his title, phone and email (FP prints "contact details available on request"). Leachate storage facility job not used here (not relevant to road design); same TBCs if used elsewhere.
 12. [TBC - Jayden to confirm] DJI Terra licence, if orthophotos are produced in DJI Terra rather than ReCap Pro.
 10. Keep or drop the four requested amendments (FP 12.0). Compliance may be scored; the liability cap is the one most likely to be marked as a departure.
 
@@ -99,10 +100,10 @@ No criteria or weightings are published. Scored as a strict council panel agains
 | Criterion (assumed weight) | Draft Rev A | Final Rev F | With TBCs filled |
 |---|---|---|---|
 | Understanding and methodology (30%) | 7 | 8 | 8 |
-| Team, experience and sub-consultants (25%) | 4 | 6 | 7 |
+| Team, experience and sub-consultants (25%) | 4 | 7 | 7.5 |
 | Price and value (30%) | 6 | 6 | 6 to 7 (quotes) |
 | Program and availability (10%) | 6 | 8 | 8 |
 | Compliance, insurance and terms (5%) | 4 | 7 | 8 |
-| **Weighted** | **5.7** | **6.9** | **7.2** |
+| **Weighted** | **5.7** | **7.1** | **7.3** |
 
 Changes made: (1) experience section filled with Jayden's real projects and two referees; (2) PL departure replaced by a commitment to $20M on award; (3) Gantt program and SP2/SP3 activation statement (cl 2.5.7); (4) sub-consultant shortlist named, with Adelaide Hills firms, and cl 19 consent requested; (5) "how JCE manages the team" section with review before issue and one comments register. Also fixed: Schedule of Rates cross-references (Attachment A), disbursements $3,610 vs $3,790 reconciliation, payment terms to cl 3.2, lighting categories (V5 to the link road, PR5 beyond), RTWSA amendment wording (cl 20.15 vs 10.4), council-side experience statement. Remaining weakness: no named lead from each sub-consultant until quotes arrive, and price is not benchmarked against a budget.

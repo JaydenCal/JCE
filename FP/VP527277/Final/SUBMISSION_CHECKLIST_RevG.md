@@ -81,6 +81,9 @@ Lodgement steps (Jayden): sign in to VendorPanel, open VP527277, list any addend
 12. Business address (Gunnedah in the FP versus Macksville in the WHS plan), ACN, years in business, usual address.
 13. ISO 9001 certification plan, or delete the note in FP 6.0.
 14. Confirm the Schedule 2 and 8 "No" answers; attach a completed Take-5.
+15. Tablelands Regional Council floodway rectification (Schedule 5 Project 1): [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]. Confirm the year is recent enough to count as a current or recent similar project.
+16. Tablelands Regional Council leachate storage facility (Schedule 5 Project 2): [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement].
+17. Darren Quilliam: get his consent to be named as referee, plus his title, phone and email (Schedule 2 referee 3, Schedule 5). The printed FP says "contact details available on request".
 
 ## 6. Compliance notes for Rev G
 
@@ -95,15 +98,15 @@ Lodgement steps (Jayden): sign in to VendorPanel, open VP527277, list any addend
 |---|---|---|---|---|
 | Financial benefit (40%) | 6 | 6 | 6 | Rev G is $10,426 cheaper; still depends on quotes and other bids |
 | Methodology and technical approach (35%) | 6 | 8 | 8 | Drone workflow, RTK with check points and an existing-condition baseline are added. Two-way data handling between the partner and JCE adds some risk, which the risk table covers |
-| Resources and relevant experience (20%) | 3 | 4 | 5 | JCE is now hands-on for capture, GIS and register, with stated drone photogrammetry experience and one example project. There are still no council transport-asset projects, and partners are unnamed. Expect 6 to 7 once the road imaging and bridge partners' council projects are added |
+| Resources and relevant experience (20%) | 3 | 4 | 6 | JCE is hands-on for capture, GIS and register, with drone photogrammetry experience. It now has two council client projects with a council referee (Tablelands Regional Council): a floodway rectification on a council road network (floodways and causeways are transport assets here) and a leachate storage facility. Still no condition audit or valuation, and partners unnamed. Expect 7 once partner council projects are added |
 | Local content (5%) | 1 | 2 | 2 | More local nights (44); no local staff |
-| **Weighted** | **5.2** | **6.1** | **6.3** | |
+| **Weighted** | **5.2** | **6.1** | **6.5** | Rev G was 6.3 before the Tablelands projects were added |
 
-Partner experience still carries most of the 20% criterion. With JCE as the imaging and GIS lead, the panel will look for JCE's own council asset data projects, which JCE does not yet have. Naming partner council projects remains the single biggest lift.
+Partner experience still carries most of the 20% criterion (weighting unchanged). JCE's own experience is stronger with the two Tablelands Regional Council projects, but JCE has no council asset condition or valuation project of its own. Naming partner council projects remains the single biggest lift.
 
 ## 8. Files (repo `FP/VP527277/Final`, Rev G)
 
-- `JCE_FP_VP527277_Final_RevG.docx` and `.pdf` (15 pages; offer and signature block kept together on one page)
+- `JCE_FP_VP527277_Final_RevG.docx` and `.pdf` (16 pages; offer and signature block kept together on one page)
 - `FP_Final_text_RevG.md`
 - `MRC-2645_Tender_Response_Schedules_JCE_FILLED_RevG.docx` and `.pdf`
 - `JCE_CostSheet_VP527277_RevG.xlsx` (Jayden's lines against Rev F hours, casual labour, equipment and travel, provisional sums, pricing schedule, category split, monthly hours)
@@ -111,4 +114,4 @@ Partner experience still carries most of the 20% criterion. With JCE as the imag
 - `SUBMISSION_CHECKLIST_RevG.md`
 - Road imaging RFQs Rev C in `FP/VP527277/Road_Imaging_Condition/` (`*_Final_RevC*.docx` and `.pdf`, `Emails_RevC.txt`)
 
-Dropbox copies: `02_Submission/FINAL_RevG_2026-10-12_FP_Final_text.md` and `02_Submission/FINAL_RevG_2026-10-12_SUBMISSION_CHECKLIST.md`. Copy the Word, PDF, Excel and PNG files into Dropbox yourself; the connector cannot upload them.
+Dropbox copies (current, with the Tablelands projects): `02_Submission/FINAL_RevG_v2_2026-10-12_FP_Final_text.md` and `02_Submission/FINAL_RevG_v2_2026-10-12_SUBMISSION_CHECKLIST.md`. The earlier FINAL_RevG_2026-10-12_ copies predate the Tablelands addition; ignore them. Copy the Word, PDF, Excel and PNG files into Dropbox yourself; the connector cannot upload them.

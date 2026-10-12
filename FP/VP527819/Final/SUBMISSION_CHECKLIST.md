@@ -35,7 +35,7 @@ Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the n
 
 ## 3. Blocking items
 
-1. **Returnable 11 experience is still the main risk.** Council wants three similar projects in the last five years with referees. JCE has none of its own. In-house GIS, QA and drone capability, and the Craig Sullivan farm drainage drone survey, support capability but do not replace the three similar council transport-asset projects with referees. Unless Jayden has qualifying projects, this rests on the capture partner's projects.
+1. **Returnable 11 experience is still the main risk.** Council wants three similar projects in the last five years with referees. R11 row 1 is now JCE's floodway rectification for Tablelands Regional Council (QLD), referee Darren Quilliam. Honest assessment: a floodway on Council's road network is a transport asset and it is a council client with a referee, so it can be offered as one similar project, but it is design rectification, not a network condition audit or revaluation, so a panel will give it partial credit at best, and only if its year falls within the last five years [TBC - Jayden]. A condition audit or revaluation project is still missing, as are two more qualifying projects. The leachate storage facility (also Tablelands) shows council client work but is not a transport asset, so it is not listed in R11. In-house GIS, QA and drone capability, and the Craig Sullivan farm drainage drone survey, support capability but do not replace the three similar council transport-asset projects with referees. Unless Jayden has qualifying projects, this rests on the capture partner's projects.
 2. **Pursue or pass:** if no capture partner agrees to be named by about 21/10/2026, do not lodge as Prime Contractor.
 3. **Public liability $20m** (JCE holds $10m; FP says it will be lifted on award). Also confirm PL covers drone operations or arrange aviation liability before any drone flight.
 4. **Workers compensation certificate**; **site inspection** before signing Returnable 9; **capacity statement** in Returnable 10 only once the partner commits crews.
@@ -62,6 +62,7 @@ Without changes, Jayden's March load was about 65 h/week (Rev F hours plus the n
 4. Sunny Lotay and Livio Chiarot availability.
 5. Charge-out rates: casual GIS technician $120/h; drone rate $1,450 per site; GIS software and storage $3,000.
 6. Drone: CASA operator accreditation (ARN) and drone registration in place before services start (being obtained this week); confirm insurance cover for drone operations. Orthophotos for the optional drone line come from ReCap Pro or DJI Terra [TBC - Jayden to confirm DJI Terra]. No accuracy figure is quoted (the tender does not need one for drone work); accuracy is shown by RTK plus independent check points.
+6b. Tablelands Regional Council (QLD), referee Darren Quilliam. A. Leachate storage facility; B. Floodway rectification. For each: site, year, value, JCE's role and scope, RPEQ sign-off arrangement [TBC - Jayden]. Confirm B's year is within the last five years (before 28/10/2021 does not qualify for R11). Get Darren Quilliam's consent to be named, his title, phone and email (the printed FP says "contact details available on request"; R11 row 1 has [TBC] fields).
 6a. Craig Sullivan farm drainage drone survey (FP Section 5.0, R10, R11): location, year, approx. area [TBC - Jayden]. Get Craig Sullivan's consent to be named as a referee and his phone/email. The printed FP says "Referee details available on request"; R11 has a [TBC] for his contact details. It is a private farm drainage job: it supports drone and processing capability but is unlikely to count as one of the three similar council transport-asset projects for Returnable 11.
 7. Provisional sums replaced from quotes; partner rates in Attachment A.
 8. Returnables: registered address, signatures and dates, R4 rows for clauses 12.7 and 11.3 (recommend deleting), insurance policy numbers, addenda re-check, site inspection, staff numbers, QA, WHS, IR, sustainability, modern slavery and ATSI answers (as listed in Rev F).
@@ -74,7 +75,7 @@ Drone experience added from Jayden's 12/10 notes (FP Sections 2.1 and 5.0, Attac
 | File | Lodge? |
 |---|---|
 | JCE_FP_VP527819_Final_RevG.docx / .pdf (12 pages) | Yes, signed |
-| FP_Final_text_RevG.md (also in Dropbox 02_Submission as FINAL_RevG_2026-10-12_FP_Final_text_v3.md; the earlier RevG uploads without "_v3" are superseded) | Paste into branded template |
+| FP_Final_text_RevG.md (also in Dropbox 02_Submission as FINAL_RevG_2026-10-12_FP_Final_text_v4.md; earlier RevG text uploads are superseded) | Paste into branded template |
 | IWC Transport Condition Audit_Reval RFT 47-26 Returnable Documents_JCE_FILLED_RevG.docx / .pdf, and _answers_RevG.md | Copy into Council's form, sign, PDF |
 | JCE_RFT47-26_Gantt_RevG.png | In FP and R7 |
 | RFIs_Final.md | Lodge questions by 21/10/2026 (unchanged; RFI 3 on capture method still relevant) |
@@ -86,14 +87,14 @@ Plus the Dropbox 02_Submission/Returnables documents and certificates listed in 
 
 | Criterion | Rev B | Rev F | Rev G |
 |---|---|---|---|
-| Capacity and past performance | 3 | 4 | 4.5 |
+| Capacity and past performance | 3 | 4 | 5 (was 4.5 before the Tablelands projects) |
 | Methodology and schedule | 6 | 8 | 8.5 |
 | Contract compliance | 6 | 7 | 7 |
 | WHS | 6 | 6.5 | 6.5 |
-| Key personnel | 5 | 6 | 6.5 |
+| Key personnel | 5 | 6 | 7 (was 6.5) |
 | Key subcontractors | 2 | 3 | 3 |
 | Modern slavery | 6 | 7 | 7 |
 | Environmental, local, ATSI | 3 | 3.5 | 3.5 |
 | Value | 5 | 5.5 | 6 |
 
-Rev G gains: in-house GIS and audit sampling with a resourcing table (capacity, methodology), clear drone limits, Jayden's drone photogrammetry experience and one private project (key personnel, small), lower price (value). The farm project does not lift capacity because it is not a similar council transport-asset project. Capacity and subcontractor scores stay low until a capture partner is named and Returnable 11 has three qualifying projects.
+Rev G gains: in-house GIS and audit sampling with a resourcing table (capacity, methodology), clear drone limits, Jayden's drone photogrammetry experience and one private project (key personnel, small), lower price (value). The farm project does not lift capacity because it is not a similar council transport-asset project. The Tablelands floodway project (council client, road network, named referee) lifts capacity from 4.5 to 5 and key personnel from 6.5 to 7, subject to the year check; with no condition audit or revaluation project, capacity cannot go higher without the partner's projects. Capacity and subcontractor scores stay low until a capture partner is named and Returnable 11 has three qualifying projects.
