@@ -18,6 +18,7 @@ class RoadConfig:
     layer: C.LayerConfig | None = None
     geojson_path: str | None = None
     name_field: str = "roadname"
+    name_fields: tuple = ()  # if set, non-empty values are joined with spaces (overrides name_field)
     tolerance_m: float = 15.0
 
 
@@ -26,7 +27,8 @@ class Sa1Config:
     lot_layers: dict = field(default_factory=lambda: {"NSW": C.nsw_lot_layer(), "QLD": C.qld_parcel_layer()})
     zoning: dict = field(default_factory=lambda: {"NSW": ZoningConfig(layer=C.nsw_zoning_layer()), "QLD": ZoningConfig()})
     geocoders: dict = field(default_factory=lambda: {"NSW": C.NSW_GEOCODER, "QLD": None})
-    roads: dict = field(default_factory=dict)  # jurisdiction -> RoadConfig
+    # jurisdiction -> RoadConfig. NSW default: RoadSegment centrelines (verified live 2026-10-12, see clients.NSW_ROADS_LAYER)
+    roads: dict = field(default_factory=lambda: {"NSW": RoadConfig(layer=C.nsw_roads_layer(), name_fields=C.NSW_ROAD_NAME_FIELDS)})
 
 
 class Sa1Cadastre:
@@ -56,7 +58,9 @@ class Sa1Cadastre:
         out = []
         for f in feats:
             if f.get("geometry"):
-                out.append((str((f.get("properties") or {}).get(rc.name_field) or ""), shape(f["geometry"])))
+                pr = f.get("properties") or {}
+                nm = " ".join(str(pr[k]) for k in rc.name_fields if pr.get(k)) if rc.name_fields else str(pr.get(rc.name_field) or "")
+                out.append((nm.title(), shape(f["geometry"])))
         return out, rc.tolerance_m
 
     def run(self, payload: Sa1Request) -> Sa1Result:

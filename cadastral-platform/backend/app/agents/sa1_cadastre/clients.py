@@ -19,6 +19,10 @@ Fetcher = Callable[[str, dict], "tuple[bytes, str | None]"]
 NSW_LOT_LAYER = "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9"  # unverified
 QLD_PARCEL_LAYER = "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4"  # unverified
 NSW_ZONING_LAYER = "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2"  # unverified
+# verified live 2026-10-12: NSW_Transport_Theme layer 5 RoadSegment (polyline centrelines, anonymous, maxRecordCount 2000);
+# name fields roadnamebase + roadnametype + roadnamesuffix (e.g. "OSRIC","STREET",null); also classsubtype, functionhierarchy
+NSW_ROADS_LAYER = "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Transport_Theme/MapServer/5"
+NSW_ROAD_NAME_FIELDS = ("roadnamebase", "roadnametype", "roadnamesuffix")
 NSW_GEOCODER = "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Property/MapServer"  # verified live 2026-10-12: layers 1-4 carry an `address` field
 
 
@@ -61,6 +65,11 @@ def nsw_zoning_layer() -> LayerConfig:
     return LayerConfig(NSW_ZONING_LAYER, "NSW Planning Portal", "EPI Land Zoning",
                        "NSW Dept of Planning and Environment", "NSW",
                        {"code": "SYM_CODE", "name": "LAY_CLASS", "instrument": "EPI_NAME"})
+
+
+def nsw_roads_layer() -> LayerConfig:
+    return LayerConfig(NSW_ROADS_LAYER, "NSW Spatial Services", "NSW_Transport_Theme/RoadSegment",
+                       "Spatial Services, NSW Dept of Customer Service", "NSW", {"name": "roadnamebase"})
 
 
 @dataclass
