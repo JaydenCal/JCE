@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-# PLACEHOLDER [TBC]: replace YOUR-DOMAIN with the live domain
-Sitemap: https://YOUR-DOMAIN/sitemap.xml
+Sitemap: https://glideinside.com.au/sitemap.xml

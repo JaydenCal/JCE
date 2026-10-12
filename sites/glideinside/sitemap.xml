@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- PLACEHOLDER [TBC]: replace YOUR-DOMAIN with the live domain, then submit this file in Google Search Console. -->
+<!-- Submit in Google Search Console. Add or remove service pages to match what is live. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://YOUR-DOMAIN/</loc><lastmod>2026-10-12</lastmod></url>
+  <url><loc>https://glideinside.com.au/</loc><lastmod>2026-10-12</lastmod></url>
+  <url><loc>https://glideinside.com.au/services/residential-fly-throughs.html</loc></url>
+  <url><loc>https://glideinside.com.au/services/display-home-virtual-tours.html</loc></url>
+  <url><loc>https://glideinside.com.au/services/commercial-rural-models.html</loc></url>
+  <url><loc>https://glideinside.com.au/services/drone-photogrammetry.html</loc></url>
+  <url><loc>https://glideinside.com.au/services/subdivision-feasibility.html</loc></url>
+  <url><loc>https://glideinside.com.au/commercial/index.html</loc></url>
 </urlset>

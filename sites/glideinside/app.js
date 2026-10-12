@@ -658,7 +658,7 @@ export function createDemo(container, opts = {}) {
   // overlay
   const ov = document.createElement('div'); ov.className = 'gi-ov';
   ov.innerHTML = `<div class="gi-tag">Sample · original demo plan</div><div class="gi-cap"><i></i><span></span></div><div class="gi-mark">Glide Inside</div>` +
-    `<div class="gi-end"><div class="gi-card"><div class="gi-word">Glide <b>Inside</b></div><div class="gi-line">3D fly-throughs from your floor plan</div><div class="gi-offer">$249 per fly-through, delivered in 48 hours</div></div></div>`;
+    `<div class="gi-end"><div class="gi-card"><div class="gi-word">Glide <b>Inside</b></div><div class="gi-line">3D fly-throughs from your floor plan</div><div class="gi-offer">$249 per home, delivered in 5 business days</div></div></div>`;
   container.appendChild(ov);
   const capEl = ov.querySelector('.gi-cap'), capText = ov.querySelector('.gi-cap span'), endEl = ov.querySelector('.gi-end'), markEl = ov.querySelector('.gi-mark');
 
