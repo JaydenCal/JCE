@@ -1,7 +1,26 @@
 import type { SceneBundle } from './types';
 
+/** Accept the backend scene builder's walkable format (SA6) as well as the viewer's native one. */
+function normalizeWalkable(o: any): void {
+  const w = o?.walkable; if (!w) return;
+  if (!Array.isArray(w.terrain)) {
+    const named: string[] = Array.isArray(w.terrain_parts) ? w.terrain_parts.map((t: any) => (typeof t === 'string' ? t : t?.n)).filter(Boolean) : [];
+    w.terrain = named.length ? named : (o.parts || []).filter((p: any) => p.c === 'surface').map((p: any) => p.n);
+  }
+  w.colliders = (w.colliders || []).map((c: any) => ({ ...c, s: c.s ?? c.size, yaw: c.yaw ?? c.yaw_deg, c: c.c }));
+  w.floors = (w.floors || []).map((f: any) => {
+    if (f.min && f.max) return f;
+    const ring: number[][] = f.ring || []; if (!ring.length) return null;
+    const xs = ring.map((r) => r[0]), ys = ring.map((r) => r[1]);
+    return { n: f.id ?? f.n, min: [Math.min(...xs), Math.min(...ys)], max: [Math.max(...xs), Math.max(...ys)], z: f.z ?? f.level ?? 0 };
+  }).filter(Boolean);
+  const sp = w.spawn;
+  if (sp && !sp.p && sp.pos) { w.spawn = { p: sp.pos, yaw: sp.yaw ?? sp.yaw_deg, eye_height_m: sp.eye_height_m }; }
+}
+
 /** Validate a MODEL-compatible bundle; throws Error with the first problem found. */
 export function validateBundle(j: unknown): SceneBundle {
+  normalizeWalkable(j);
   const b = j as Partial<SceneBundle> | null;
   const bad = (m: string): never => { throw new Error(`Invalid scene bundle: ${m}`); };
   if (!b || typeof b !== 'object') bad('not an object');

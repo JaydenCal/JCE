@@ -15,11 +15,20 @@ from app.agents.sa5_cad_dxf.annotate import AnnotationSet, H_DIM
 from app.agents.sa5_cad_dxf.gate import ACK_TEXT  # noqa: F401  (re-exported for callers)
 from app.agents.sa5_cad_dxf.layers import (LAYER_BY_NAME, LTSCALE_DIVISOR, SERVICE_LAYER, ensure_layers)
 from app.agents.sa5_cad_dxf.model import PlanModel, left_normal, lines_of, polygons_of
-from app.agents.sa5_cad_dxf.sheet import (FRAME, VIEWPORT, Circle, FitResult, Line, Poly, Prim, Text, SHEET_H,
-                                          SHEET_W, build_panel, viewport_size)
+from app.agents.sa5_cad_dxf.sheet import Circle, FitResult, Line, Poly, Prim, Text, build_panel, current_sheet, viewport_size
+from app.jurisdiction.display import DXF_INSUNITS, current_display
 from app.common.contracts import AckKind
 
-LAYOUT_NAME = "A3 Plan"
+LAYOUT_NAME = "A3 Plan"      # default; see layout_name()
+
+
+def layout_name() -> str:
+    return f"{current_sheet().name} Plan"
+
+
+def _uf() -> float:
+    """Drawing-unit factor: model metres -> DXF drawing units (1 for metric, 1/0.3048 for feet)."""
+    return 1.0 / current_display().length_m_per_unit if current_display().dxf_units != "m" else 1.0
 OVERLAY_STYLE = {  # kind -> (ACI, pattern, angle)
     "flood": (5, "ANSI31", 45), "bushfire": (1, "ANSI31", 135), "heritage": (6, "ANSI37", 0),
     "dcp_envelope": (3, "ANSI32", 45), "biodiversity": (3, "ANSI37", 45),
@@ -43,16 +52,16 @@ def _poly(layout, geom: BaseGeometry, layer: str, **attrs) -> None:
         layout.add_lwpolyline(pts, close=closed, dxfattribs={"layer": layer, **attrs})
 
 
-def _setup_styles(doc: Drawing, scale: int) -> None:
+def _setup_styles(doc: Drawing, scale: int, uf: float = 1.0) -> None:
     doc.styles.add("JCE", font="arial.ttf")
     doc.styles.add("JCE_BOLD", font="arialbd.ttf")
-    doc.header["$INSUNITS"] = 6
+    doc.header["$INSUNITS"] = DXF_INSUNITS[current_display().dxf_units]
     doc.header["$MEASUREMENT"] = 1
     doc.header["$LUNITS"] = 2
     doc.header["$LUPREC"] = 3
-    doc.header["$LTSCALE"] = scale / LTSCALE_DIVISOR
+    doc.header["$LTSCALE"] = scale / LTSCALE_DIVISOR * uf
     doc.header["$PSLTSCALE"] = 1
-    k = scale / 1000.0
+    k = scale / 1000.0 * uf
     h = H_DIM * k
     doc.dimstyles.new("JCE", dxfattribs={
         "dimtxt": h, "dimasz": 1.4 * k, "dimexe": 1.0 * k, "dimexo": 0.6 * k, "dimgap": 0.7 * k,
@@ -169,19 +178,35 @@ def _render_prims(layout, prims: list[Prim]) -> None:
 
 
 def _draw_paper(doc: Drawing, model: PlanModel, fit: FitResult, acks: list[AckKind]) -> None:
-    doc.layouts.rename("Layout1", LAYOUT_NAME)
-    layout = doc.layout(LAYOUT_NAME)
-    layout.page_setup(size=(SHEET_W, SHEET_H), margins=(0, 0, 0, 0), units="mm", scale=16,
-                      name="ISO_A3_(420.00_x_297.00_MM)")
+    doc.layouts.rename("Layout1", layout_name())
+    layout = doc.layout(layout_name())
+    layout.page_setup(size=(current_sheet().w, current_sheet().h), margins=(0, 0, 0, 0), units="mm", scale=16,
+                      name=("ISO_A3_(420.00_x_297.00_MM)" if current_sheet().name == "A3"
+                           else f"{current_sheet().name.replace(' ', '_')}_({current_sheet().w:.2f}_x_{current_sheet().h:.2f}_MM)"))
     vw, vh = viewport_size()
-    cx, cy = (VIEWPORT[0] + VIEWPORT[2]) / 2, (VIEWPORT[1] + VIEWPORT[3]) / 2
-    layout.add_lwpolyline([(FRAME[0], FRAME[1]), (FRAME[2], FRAME[1]), (FRAME[2], FRAME[3]), (FRAME[0], FRAME[3])],
+    cx, cy = (current_sheet().viewport[0] + current_sheet().viewport[2]) / 2, (current_sheet().viewport[1] + current_sheet().viewport[3]) / 2
+    layout.add_lwpolyline([(current_sheet().frame[0], current_sheet().frame[1]), (current_sheet().frame[2], current_sheet().frame[1]), (current_sheet().frame[2], current_sheet().frame[3]), (current_sheet().frame[0], current_sheet().frame[3])],
                           close=True, dxfattribs={"layer": "C-ANNO-TTLB", "lineweight": 50})
-    vp = layout.add_viewport(center=(cx, cy), size=(vw, vh), view_center_point=fit.centre,
-                             view_height=vh * model.scale / 1000.0, status=1,
+    vp = layout.add_viewport(center=(cx, cy), size=(vw, vh), view_center_point=(fit.centre[0] * _uf(), fit.centre[1] * _uf()),
+                             view_height=vh * model.scale / 1000.0 * _uf(), status=1,
                              dxfattribs={"layer": "C-ANNO-VPRT"})
     _render_prims(layout, build_panel(model, model.scale, acks, fit, model.issue_date))
-    doc.layouts.set_active_layout(LAYOUT_NAME)
+    doc.layouts.set_active_layout(layout_name())
+
+
+def _scale_modelspace(doc: Drawing, uf: float) -> None:
+    """Geometry is built in metres; for an imperial export scale model space to feet (INSUNITS then tells the truth)."""
+    from ezdxf.math import Matrix44
+    from ezdxf.entities import DimStyleOverride
+    m = Matrix44.scale(uf, uf, uf)
+    msp = doc.modelspace()
+    dims = []
+    for e in list(msp):
+        if e.dxftype() == "DIMENSION":
+            dims.append(e)
+        e.transform(m)
+    for d in dims:
+        DimStyleOverride(d).render()
 
 
 def _attach_basemap(doc: Drawing, model: PlanModel, dxf_path) -> None:
@@ -201,19 +226,22 @@ def _attach_basemap(doc: Drawing, model: PlanModel, dxf_path) -> None:
 
 def build_dxf(model: PlanModel, aset: AnnotationSet, fit: FitResult, acks: list[AckKind],
               path: str | Path | None = None) -> DxfBuild:
-    doc = ezdxf.new("R2018", setup=True, units=6)
-    _setup_styles(doc, model.scale)
+    uf = _uf()
+    doc = ezdxf.new("R2018", setup=True, units=DXF_INSUNITS[current_display().dxf_units])
+    _setup_styles(doc, model.scale, uf)
     ensure_layers(doc)
     _attach_basemap(doc, model, path)
     _draw_model(doc, model, aset)
+    if uf != 1.0:
+        _scale_modelspace(doc, uf)
     _draw_paper(doc, model, fit, acks)
-    ext = (fit.centre[0], fit.centre[1])
+    ext = (fit.centre[0] * uf, fit.centre[1] * uf)
     doc.set_modelspace_vport(height=vh_model(fit, model), center=ext)
 
     msp = doc.modelspace()
     counts = Counter(e.dxftype() for e in msp)
     layers = {e.dxf.layer for e in msp}
-    layers |= {e.dxf.layer for e in doc.layout(LAYOUT_NAME)}
+    layers |= {e.dxf.layer for e in doc.layout(layout_name())}
     layers.discard("0")
     ordered = [l for l in LAYER_BY_NAME if l in layers]
     if path is not None:
@@ -222,4 +250,4 @@ def build_dxf(model: PlanModel, aset: AnnotationSet, fit: FitResult, acks: list[
 
 
 def vh_model(fit: FitResult, model: PlanModel) -> float:
-    return fit.available_mm[1] * model.scale / 1000.0
+    return fit.available_mm[1] * model.scale / 1000.0 * _uf()

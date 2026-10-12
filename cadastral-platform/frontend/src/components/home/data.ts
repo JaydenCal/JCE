@@ -1,10 +1,13 @@
 export type Dash = "dash" | "hatch";
-export const STEPS = [
-  { n: "01", t: "Assess the site", d: "Cadastre, zoning, constraints and aerial in one pass. Every mapped layer is queried and marked affected, not affected or not checked.", w: "Site assessment" },
-  { n: "02", t: "Design", d: "Start from a dwelling, granny flat or shed. Setbacks, site cover and height come only from rules for that development type.", w: "Development type" },
-  { n: "03", t: "Civil plan", d: "Cut and fill, retaining, driveway crossover with swept path, services and rainwater tank, drawn on a titled plan sheet.", w: "Civil plan" },
-  { n: "04", t: "Constraints and pathway report", d: "A report with figures for each affected layer, the likely approval pathway and the next steps. Unresolved items stay visible.", w: "Constraints report" },
-  { n: "05", t: "Walk it in 3D", d: "Orbit the lot, then step inside in first person. Furnish rooms from real store products and check clearances as you go.", w: "3D viewer" },
-  { n: "06", t: "Export DXF and PDF", d: "CAD-ready DXF and a printable PDF, released only after all nine acknowledgements are given.", w: "Export" },
+export type Status = "Available" | "In development" | "Coming soon";
+export const STEPS: { n: string; t: string; d: string; w: string; s: Status }[] = [
+  { n: "01", t: "Site assessment and constraints", d: "Cadastre, zoning and mapped constraints (flood, bushfire, heritage and more) queried for the lot and marked affected, not affected or not checked, with figures. Aerial imagery is shown when available.", w: "Site assessment", s: "Available" },
+  { n: "02", t: "Approval pathway", d: "Exempt, CDC or DA, shown as pathway cards with a Required, Possible or Not applicable pill for each. Reports list the triggers and next steps today. The cards are being built.", w: "Approval pathway", s: "In development" },
+  { n: "03", t: "Civil plan set", d: "Site plan, driveway and swept path, services and setbacks are drawn today. Levels with floor level above flood level, a proposed erosion and sediment control plan (ESCP) and stormwater and rainwater tank sheets are in development.", w: "Civil plan set", s: "Available" },
+  { n: "04", t: "Design it and walk it in 3D", d: "Orbit the lot, step inside in first person and furnish rooms from real products. Changing the design by asking the Design Assistant is in development.", w: "3D viewer", s: "Available" },
+  { n: "05", t: "Compliance table and SEE", d: "Every control carries its cited source, and anything that cannot be resolved stays visible. A draft Statement of Environmental Effects is in development.", w: "Compliance", s: "Available" },
+  { n: "06", t: "Application pack and export", d: "DXF and PDF export today, after nine acknowledgements. The full lodgement pack (plans, reports, checklist and index for the NSW Planning Portal) is in development.", w: "Application pack", s: "Available" },
+  { n: "07", t: "Talk to an engineer", d: "JCE Infrastructure, our industry partner, for certification and engineering design of the works.", w: "Engineer", s: "Available" },
 ];
-export const LEGEND: [string, string, string?][] = [["Lot boundary", "#1a8a2e"], ["Building envelope", "#e8222a"], ["Setback measurement", "#e8222a", "dash"], ["Proposed slab (unverified)", "#1c2cf0"], ["Driveway / crossover", "#111"], ["Driveway centreline", "#e63be6"], ["Turning path", "#e8872a"], ["Water service", "#2a2af0"], ["Sewer service", "#1a8a2e"], ["Stormwater service", "#18d6e8"], ["Service exclusion buffer", "#e8222a", "dash"], ["Council overlay", "#a8842f", "hatch"]];
+export const LEGEND: [string, string, string?][] = [["Lot boundary", "#1a8a2e"], ["Building envelope", "#e8222a"], ["Setback measurement", "#e8222a", "dash"], ["Driveway / crossover", "#111"], ["Driveway centreline", "#e63be6"], ["Turning path", "#e8872a"]];
+export const CAPTION = "Example output for Lot 2 DP227508, Gunnedah NSW (public cadastre, illustrative only)";

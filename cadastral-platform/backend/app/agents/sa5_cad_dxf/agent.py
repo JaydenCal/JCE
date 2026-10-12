@@ -13,6 +13,7 @@ from app.agents.sa5_cad_dxf.model import CadRequestSa5, build_plan_model
 from app.agents.sa5_cad_dxf.pdf_builder import build_pdf
 from app.agents.sa5_cad_dxf.sheet import compute_fit, content_bounds
 from app.common.contracts import AgentCode, CadRequest, CadResult
+from app.jurisdiction.display import use_display
 
 log = logging.getLogger(__name__)
 
@@ -40,6 +41,10 @@ class Sa5CadDxf:
         # Gate first: nothing is generated unless all nine acknowledgements exist.
         check_export_gate(payload.acknowledgements_present)
         req = payload if isinstance(payload, CadRequestSa5) else CadRequestSa5(**payload.model_dump())
+        with use_display(req.display):          # custom-municipality labels/units/paper; None = legacy AU metric A3
+            return self._run(req)
+
+    def _run(self, req: CadRequestSa5) -> CadResult:
         model = build_plan_model(req)
         aset = generate_annotations(model, model.scale, include_disclaimer=True)
         acks = list(req.acknowledgements_present)

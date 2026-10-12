@@ -19,6 +19,7 @@ from shapely.ops import unary_union
 
 from app.agents.base import AgentError
 from app.common.contracts import CadRequest, ServiceLine
+from app.jurisdiction.display import DisplaySpec, current_display
 
 DISCLAIMER_PARTS = (
     "Indicative only. Not a survey.",
@@ -43,6 +44,8 @@ class CadRequestSa5(CadRequest):
     basemap_image_path: str | None = None
     basemap_extent: tuple[float, float, float, float] | None = None
     basemap_note: str = ""   # source / imagery date line for the legend
+    # custom-municipality display (labels, units, paper); None = legacy AU metric. Geometry stays metric either way.
+    display: DisplaySpec | None = None
     ffl_label: str | None = None   # e.g. "FFL RL 100.50 (flood level RL 100.00 + 0.50 freeboard)" (app.flood.ffl_label)
 
 
@@ -182,7 +185,8 @@ def left_normal(dx: float, dy: float) -> tuple[float, float]:
 def dim_text(label: str, length: float) -> str:
     if any(ch.isdigit() for ch in label):
         return label
-    return f"{label} {length:.2f} m" if label else f"{length:.2f} m"
+    d = current_display().length(length)
+    return f"{label} {d}" if label else d
 
 
 def hatch_lines(poly: Polygon, spacing: float, angle_deg: float) -> list[LineString]:
@@ -258,7 +262,7 @@ def derive_setbacks(lot: Polygon, envelope: Polygon, segments, rep: Point, limit
             continue
         name = _setback_name(s, front_dirs)
         p2 = (p.x, p.y)
-        spec = DimSpec("setback", f"{name} setback", o, p2, f"{name} {d:.2f} m",
+        spec = DimSpec("setback", f"{name} setback", o, p2, f"{name} {current_display().length(d)}",
                        _away_side(o, p2, rep), 3.0)
         cands.append((length, spec))
     cands.sort(key=lambda t: -t[0])
@@ -278,7 +282,7 @@ def build_plan_model(req: CadRequestSa5) -> PlanModel:
         if s.is_front:
             length = math.dist(s.start_xy, s.end_xy)
             dims.append(DimSpec("frontage", "Frontage", s.start_xy, s.end_xy,
-                                f"Frontage {length:.2f} m", _away_side(s.start_xy, s.end_xy, rep), 8.0))
+                                f"Frontage {current_display().length(length)}", _away_side(s.start_xy, s.end_xy, rep), 8.0))
     if envelope is not None:
         dims.extend(derive_setbacks(lot, envelope, req.lot.segments, rep))
 
@@ -298,7 +302,7 @@ def build_plan_model(req: CadRequestSa5) -> PlanModel:
         if dw.turning_circle_centre_xy and dw.turning_circle_radius_m:
             tcentre = tuple(dw.turning_circle_centre_xy)
             tradius = float(dw.turning_circle_radius_m)
-            rdim = RadiusDim(tcentre, tradius, 45.0, f"R{tradius:.2f} m")
+            rdim = RadiusDim(tcentre, tradius, 45.0, current_display().radius(tradius))
         for label, p1, p2 in dw.dimensions:
             d = math.dist(p1, p2)
             if d <= 0:
@@ -312,7 +316,7 @@ def build_plan_model(req: CadRequestSa5) -> PlanModel:
             hw = dw.width_m / 2.0
             p1 = (a.x - ux * hw, a.y - uy * hw)
             p2 = (a.x + ux * hw, a.y + uy * hw)
-            dims.append(DimSpec("driveway", "Driveway width", p1, p2, f"Driveway width {dw.width_m:.2f} m",
+            dims.append(DimSpec("driveway", "Driveway width", p1, p2, f"Driveway width {current_display().length(dw.width_m)}",
                                 _away_side(p1, p2, rep), 4.0))
 
     services: list[ServiceDraw] = []
@@ -323,7 +327,7 @@ def build_plan_model(req: CadRequestSa5) -> PlanModel:
     rwt_text = ""
     if req.rwt is not None:
         rwt = (req.rwt.location_xy[0], req.rwt.location_xy[1], req.rwt.diameter_m)
-        rwt_text = f"RWT {req.rwt.tank_volume_l} L"
+        rwt_text = f"RWT {current_display().volume_litres(req.rwt.tank_volume_l)}"
         if req.rwt.regime:
             rwt_text += f" ({req.rwt.regime})"
 

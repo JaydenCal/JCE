@@ -12,6 +12,7 @@ from pathlib import Path
 
 import numpy as np
 import shapely
+import shapely.prepared
 from shapely.geometry import LineString, Polygon, box as sbox
 from shapely.ops import unary_union
 
@@ -129,33 +130,31 @@ def _rot(p, a):
     return (c * p[0] - s * p[1], s * p[0] + c * p[1])
 
 
-def _slabs(poly: Polygon, axis: int) -> list[tuple[float, float, float, float]]:
-    """Rectilinear slab decomposition (axis 0: horizontal strips). Returns (x0,y0,x1,y1) rectangles."""
-    P = poly if axis == 0 else shapely.transform(poly, lambda c: c[:, ::-1])
-    ys = sorted({round(y, 6) for _, y in P.exterior.coords})
-    rects = []
-    minx, _, maxx, _ = P.bounds
-    for y0, y1 in zip(ys, ys[1:]):
-        if y1 - y0 < 1e-4:
-            continue
-        inter = P.intersection(LineString([(minx - 1, (y0 + y1) / 2), (maxx + 1, (y0 + y1) / 2)]))
-        segs = list(inter.geoms) if hasattr(inter, "geoms") else [inter]
-        for sg in segs:
-            if sg.is_empty or sg.length < 1e-4:
+def _greedy_rects(poly: Polygon, max_n: int = 8) -> list[tuple[float, float, float, float]]:
+    """Cover a rectilinear polygon with large axis-aligned rectangles (greedy largest-first)."""
+    rem, out = poly.buffer(0), []
+    for _ in range(max_n):
+        if rem.is_empty or rem.area < 0.5:
+            break
+        best, ba = None, 0.0
+        for g in (rem.geoms if hasattr(rem, "geoms") else [rem]):
+            if not isinstance(g, Polygon) or g.area < 0.5:
                 continue
-            x0, x1 = sorted((sg.coords[0][0], sg.coords[-1][0]))
-            rects.append([x0, y0, x1, y1])
-    merged = []
-    for r in rects:
-        for q in merged:
-            if abs(q[0] - r[0]) < 1e-4 and abs(q[2] - r[2]) < 1e-4 and abs(q[3] - r[1]) < 1e-4:
-                q[3] = r[3]
-                break
-        else:
-            merged.append(list(r))
-    if axis == 1:
-        merged = [[r[1], r[0], r[3], r[2]] for r in merged]
-    return [tuple(r) for r in merged]
+            xs = sorted({round(x, 6) for x, _ in g.exterior.coords})
+            ys = sorted({round(y, 6) for _, y in g.exterior.coords})
+            pg = shapely.prepared.prep(g.buffer(1e-6))
+            for i, x0 in enumerate(xs):
+                for x1 in xs[i + 1:]:
+                    for j, y0 in enumerate(ys):
+                        for y1 in ys[j + 1:]:
+                            ar = (x1 - x0) * (y1 - y0)
+                            if ar > ba + 1e-9 and pg.contains(sbox(x0, y0, x1, y1)):
+                                best, ba = (x0, y0, x1, y1), ar
+        if best is None:
+            break
+        out.append(best)
+        rem = rem.difference(sbox(*best).buffer(1e-6)).buffer(0)
+    return out
 
 
 def roof_wings(roof: Roof) -> list[dict]:
@@ -167,16 +166,9 @@ def roof_wings(roof: Roof) -> list[dict]:
         longest = max(zip(ring, ring[1:]), key=lambda e: math.dist(*e))
         th = math.atan2(longest[1][1] - longest[0][1], longest[1][0] - longest[0][0])
         rp = Polygon([_rot(p, -th) for p in coords]).buffer(0)
-        best = None
-        for axis in (0, 1):
-            rects = _slabs(rp, axis)
-            cover = unary_union([sbox(*r) for r in rects]).intersection(rp).area / rp.area if rects else 0
-            if cover > 0.97 and (best is None or len(rects) < len(best)):
-                best = rects
-        if best is None:
-            mr = rp.minimum_rotated_rectangle
-            best = [mr.bounds]
-            mr_pts = list(mr.exterior.coords)
+        rects = _greedy_rects(rp)
+        cover = unary_union([sbox(*r) for r in rects]).intersection(rp).area / rp.area if rects else 0
+        best = rects if cover > 0.97 else [rp.minimum_rotated_rectangle.bounds]
         for (x0, y0, x1, y1) in best:
             if (x1 - x0) < 0.3 or (y1 - y0) < 0.3:
                 continue

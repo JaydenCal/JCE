@@ -82,6 +82,11 @@ class Source(M):
     retrieved_at: datetime = Field(default_factory=_now)
     sha256: str = ""
     chunk_id: str | None = None
+    # custom municipalities: the quote above is ALWAYS the original-language text (what the validator checks);
+    # the English gloss is a machine translation for the reader only
+    language: str | None = None
+    quote_en: str | None = None
+    quote_en_machine_translated: bool = False
     entered_by: str | None = None      # user_entered only
     entered_at: datetime | None = None
 
@@ -104,6 +109,19 @@ class Requirement(M):
     prompt: str | None = None                      # what to ask the user when unresolved/conflict
     alternatives: list["Requirement"] = Field(default_factory=list)   # conflict: the competing citations
     verified_by: str | None = None
+    entered_value: float | None = None             # user entry exactly as typed, in entered_unit (value/unit hold the canonical form)
+    entered_unit: str | None = None
+
+    def quantity(self, ctx=None):
+        """(value, unit) as a Quantity; raises UnitMismatch/UnitError when unit is missing or unknown."""
+        from app.jurisdiction.units import Quantity, UnitError
+        if self.value is None or isinstance(self.value, (bool, str)) or self.unit is None:
+            raise UnitError(f"{self.key}: no numeric (value, unit) to convert")
+        return Quantity(float(self.value), self.unit, ctx)
+
+    def value_in(self, unit: str, ctx=None) -> float:
+        """Dimensional-analysis conversion, e.g. value_in('ft'). UnitMismatch if the dimensions differ."""
+        return self.quantity(ctx).to(unit).value
 
     @property
     def usable(self) -> bool:

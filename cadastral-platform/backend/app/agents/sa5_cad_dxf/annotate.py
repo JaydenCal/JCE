@@ -17,6 +17,8 @@ from shapely.geometry.base import BaseGeometry
 
 from app.agents.sa5_cad_dxf.layers import SERVICE_LAYER
 from app.agents.sa5_cad_dxf.model import DISCLAIMER_PARTS, PlanModel, left_normal, lines_of
+from app.jurisdiction.display import current_display
+from app.jurisdiction.units import convert
 
 CAP_HEIGHT_RATIO = 0.718          # Helvetica cap height / font size
 H_BRNG, H_LOT, H_AREA, H_ROAD, H_DIM, H_LEVEL, H_SERV, H_NOTE, H_OVLY = 2.0, 3.5, 2.5, 3.5, 2.0, 1.8, 1.8, 1.8, 2.2
@@ -86,7 +88,8 @@ def format_dms(deg: float) -> str:
 
 
 def format_distance(m: float) -> str:
-    return f"{m:.2f} m"
+    from app.jurisdiction.display import current_display
+    return current_display().length(m)
 
 
 def upright_rotation(deg: float) -> float:
@@ -173,7 +176,9 @@ def lot_annotations(model: PlanModel, scale: int) -> list[Annotation]:
             pt = max(polys, key=lambda p: p.area).representative_point()
             break
     area = req.lot.area_m2_registered
-    area_txt = f"{area:.1f} m²" if area is not None else f"{req.lot.area_m2_calculated:.1f} m² (calc.)"
+    from app.jurisdiction.display import current_display
+    _d = current_display()
+    area_txt = _d.area(area) if area is not None else f"{_d.area(req.lot.area_m2_calculated)} (calc.)"
     ha = H_AREA * _mm(scale)
     return [
         Annotation("lot_label", format_lotplan(req.lot.lotplan), pt.x, pt.y + 0.9 * hl, 0.0, hl, "C-ANNO-LOTN",
@@ -239,7 +244,7 @@ def crossover_annotation(model: PlanModel, scale: int) -> list[Annotation]:
         return []
     text = f"CROSSOVER - {dw.design_vehicle} design vehicle"
     if dw.max_grade_pct is not None:
-        text += f", max grade {dw.max_grade_pct:.1f}%"
+        text += f", max grade {current_display().slope(dw.max_grade_pct)}"
     pt = model.crossover.representative_point()
     push = (0.0, 1.0)
     fronts = [s for s in model.request.lot.segments if s.is_front]
@@ -256,7 +261,7 @@ def crossover_annotation(model: PlanModel, scale: int) -> list[Annotation]:
 def level_spot_annotations(spots: Sequence[tuple[float, float, float]], scale: int) -> list[Annotation]:
     h = H_LEVEL * _mm(scale)
     off = 0.9 * _mm(scale)
-    return [Annotation("level_spot", f"{z:.2f}", x + off, y + off, 0.0, h, "C-ANNO-LEVL",
+    return [Annotation("level_spot", current_display().num(convert(z, "m", current_display().length_unit)), x + off, y + off, 0.0, h, "C-ANNO-LEVL",
                        attachment="BOTTOM_LEFT", params={"z": z}, push_dir=(1.0, 1.0), collision_group="level")
             for x, y, z in spots]
 
@@ -266,7 +271,7 @@ def service_label_text(label: str, service: str, dia: int | None, depth: float |
     if dia:
         bits.append(f"DN{dia}")
     head = " ".join(bits)
-    tail = f", {depth:.2f} m deep" if depth is not None else ""
+    tail = f", {current_display().length(depth)} deep" if depth is not None else ""
     base = f"{label} - {head}{tail}" if label and label.upper() != service.upper() else f"{head}{tail}"
     return base + (" (PROPOSED)" if proposed else "")
 

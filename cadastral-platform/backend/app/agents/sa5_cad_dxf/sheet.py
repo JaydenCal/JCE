@@ -14,11 +14,42 @@ from app.agents.sa5_cad_dxf.annotate import wrap_lines
 from app.agents.sa5_cad_dxf.gate import ACK_TEXT
 from app.agents.sa5_cad_dxf.model import DISCLAIMER_PARTS, PlanModel
 from app.common.contracts import AckKind
+from app.jurisdiction.display import current_display
 
 SHEET_W, SHEET_H = 420.0, 297.0
 FRAME = (10.0, 10.0, 410.0, 287.0)
 VIEWPORT = (12.0, 12.0, 308.0, 285.0)           # x0, y0, x1, y1
 PANEL_X0, PANEL_X1 = 310.0, 410.0
+PAPER_MM = {"A3": ("A3", 420.0, 297.0), "ARCH_D": ("ARCH D", 914.4, 609.6), "ANSI_B": ("ANSI B", 431.8, 279.4)}
+
+
+@dataclass(frozen=True)
+class SheetSpec:
+    """Landscape sheet geometry in paper mm.  The A3 values equal the module constants above."""
+    name: str
+    w: float
+    h: float
+
+    @property
+    def frame(self) -> tuple[float, float, float, float]:
+        return (10.0, 10.0, self.w - 10.0, self.h - 10.0)
+
+    @property
+    def viewport(self) -> tuple[float, float, float, float]:
+        return (12.0, 12.0, self.w - 112.0, self.h - 12.0)
+
+    @property
+    def panel_x0(self) -> float:
+        return self.w - 110.0
+
+    @property
+    def panel_x1(self) -> float:
+        return self.w - 10.0
+
+
+def current_sheet() -> SheetSpec:
+    n, w, h = PAPER_MM[current_display().paper]
+    return SheetSpec(n, w, h)
 FIT_PAD_MM = 4.0
 STANDARD_SCALES = (50, 100, 125, 150, 200, 250, 300, 400, 500, 750, 1000, 1250, 1500, 2000, 2500, 5000)
 
@@ -36,13 +67,14 @@ class FitResult:
     def message(self) -> str:
         if self.fits:
             return ""
-        return (f"Plan does not fit A3 at 1:{self.scale} (needs {self.needed_mm[0]:.0f} x {self.needed_mm[1]:.0f} mm, "
+        return (f"Plan does not fit {current_sheet().name} at 1:{self.scale} (needs {self.needed_mm[0]:.0f} x {self.needed_mm[1]:.0f} mm, "
                 f"viewport {self.available_mm[0]:.0f} x {self.available_mm[1]:.0f} mm); "
                 f"suggested scale 1:{self.suggested_scale}")
 
 
 def viewport_size() -> tuple[float, float]:
-    return VIEWPORT[2] - VIEWPORT[0], VIEWPORT[3] - VIEWPORT[1]
+    vp = current_sheet().viewport
+    return vp[2] - vp[0], vp[3] - vp[1]
 
 
 def compute_fit(bounds: tuple[float, float, float, float], scale: int) -> FitResult:
@@ -112,21 +144,24 @@ def north_arrow(cx: float, cy: float, size: float) -> list[Prim]:
 
 
 def scale_bar(x: float, y: float, scale: int) -> tuple[list[Prim], float]:
+    disp = current_display()
+    unit_m, ulab = disp.length_m_per_unit, disp.scale_unit_label
     mm_per_m = 1000.0 / scale
-    total_m = next((m for m in (200, 100, 50, 25, 20, 10, 5, 2, 1) if m * mm_per_m <= 60.0), 1)
+    mm_per_u = mm_per_m * unit_m
+    total_m = next((m for m in ((1000, 500) if unit_m != 1.0 else ()) + (200, 100, 50, 25, 20, 10, 5, 2, 1) if m * mm_per_u <= 60.0), 1)
     n = 4 if total_m % 4 == 0 or total_m in (10, 20, 50, 100, 200, 25) else 2
     seg_m = total_m / n
     out: list[Prim] = []
     hbar = 1.8
     for i in range(n):
-        x0 = x + i * seg_m * mm_per_m
-        out.append(Poly([(x0, y), (x0 + seg_m * mm_per_m, y), (x0 + seg_m * mm_per_m, y + hbar), (x0, y + hbar)],
+        x0 = x + i * seg_m * mm_per_u
+        out.append(Poly([(x0, y), (x0 + seg_m * mm_per_u, y), (x0 + seg_m * mm_per_u, y + hbar), (x0, y + hbar)],
                         fill=(i % 2 == 0)))
         lab = f"{i * seg_m:g}"
         out.append(Text(x0, y + hbar + 0.8, 1.8, lab, "BOTTOM_CENTER"))
-    out.append(Text(x + total_m * mm_per_m, y + hbar + 0.8, 1.8, f"{total_m:g} m", "BOTTOM_CENTER"))
-    out.append(Text(x, y - 3.6, 2.0, f"SCALE 1:{scale} (A3)", "BOTTOM_LEFT"))
-    return out, total_m * mm_per_m
+    out.append(Text(x + total_m * mm_per_u, y + hbar + 0.8, 1.8, f"{total_m:g} {ulab}", "BOTTOM_CENTER"))
+    out.append(Text(x, y - 3.6, 2.0, f"SCALE {disp.scale_label(scale)} ({current_sheet().name})", "BOTTOM_LEFT"))
+    return out, total_m * mm_per_u
 
 
 def legend_entries(model: PlanModel) -> list[tuple[str, str, str]]:
@@ -157,7 +192,10 @@ def legend_entries(model: PlanModel) -> list[tuple[str, str, str]]:
 
 def build_panel(model: PlanModel, scale: int, acks: list[AckKind], fit: FitResult, issue_date: str) -> list[Prim]:
     req = model.request
-    x0, x1 = PANEL_X0, PANEL_X1
+    sh = current_sheet()
+    disp = current_display()
+    FRAME = sh.frame  # noqa: N806 (shadows the A3 default for this sheet)
+    x0, x1 = sh.panel_x0, sh.panel_x1
     tx = x0 + 3.0
     tw = (x1 - x0) - 6.0
     out: list[Prim] = []
@@ -172,16 +210,21 @@ def build_panel(model: PlanModel, scale: int, acks: list[AckKind], fit: FitResul
     y -= 1.0
     out.append(Line(x0, y, x1, y))
 
-    zone = {7854: "54", 7855: "55", 7856: "56"}[req.mga_srid]
+    if disp.datum_text is not None:
+        datum = disp.datum_text
+    else:
+        zone = {7854: "54", 7855: "55", 7856: "56"}[req.mga_srid]
+        datum = f"GDA2020 MGA zone {zone} (EPSG:{req.mga_srid})"
+    area_m2 = req.lot.area_m2_registered or req.lot.area_m2_calculated
     rows = [
         ("LOT / PLAN", _lotplan(req.lot.lotplan)),
         ("DEVELOPMENT", req.development_type.label),
         ("COUNCIL", req.council_name or req.lot.lga_name),
-        ("SCALE", f"1:{scale} @ A3"),
-        ("DATE", issue_date),
+        ("SCALE", disp.scale_title(scale, sh.name)),
+        ("DATE", disp.date(issue_date)),
         ("DRAWN BY", req.drawn_by),
-        ("DATUM / GRID", f"GDA2020 MGA zone {zone} (EPSG:{req.mga_srid})"),
-        ("AREA", f"{(req.lot.area_m2_registered or req.lot.area_m2_calculated):.1f} sq m"
+        ("DATUM / GRID", datum),
+        ("AREA", disp.area_title(area_m2)
                  + (" (registered)" if req.lot.area_m2_registered else " (calculated)")),
     ]
     ffl_lab = getattr(req, "ffl_label", None)
@@ -235,7 +278,17 @@ def build_panel(model: PlanModel, scale: int, acks: list[AckKind], fit: FitResul
     y -= 1.5
     out.append(Text(tx, y - 4.0, 2.2, "NOTES", bold=True))
     y -= 6.0
-    notes = list(DISCLAIMER_PARTS) + ["Coordinates are MGA grid metres; plan is oriented to grid north.",
+    if disp.custom:
+        unit_word = {"m": "metres", "ft": "feet", "in": "inches"}[disp.length_unit]
+        notes = list(DISCLAIMER_PARTS[:2]) + [
+            "Verify setbacks with the local authority.",
+            f"Coordinates are in the working CRS (metric, EPSG:{req.mga_srid}); plan is oriented to grid north.",
+            f"Dimensions in {unit_word}. Service exclusion buffers are indicative planning offsets.",
+            "Requirements are taken from user-supplied documents or user entry; not independently verified."]
+        if disp.standards_note:
+            notes.append(disp.standards_note)
+    else:
+        notes = list(DISCLAIMER_PARTS) + ["Coordinates are MGA grid metres; plan is oriented to grid north.",
              "Dimensions in metres. Service exclusion buffers are indicative planning offsets."]
     if model.rwt_text and req.rwt and req.rwt.note:
         notes.append(f"RWT: {req.rwt.note}")

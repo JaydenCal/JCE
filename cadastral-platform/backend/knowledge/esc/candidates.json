@@ -8,7 +8,8 @@
    "doc": "bs2024",
    "section_ref": "4.5 Install sediment fencing, step 2",
    "quote": "Place star pickets into the ground, usually 2.5 m apart",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 25
   },
   {
    "id": "sf_trench",
@@ -28,7 +29,8 @@
    "doc": "bs2024",
    "section_ref": "4.5 Install sediment fencing, step 5",
    "quote": "You must have small returns usually every 20 m to limit the amount of water that might flow to any one section.",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 25
   },
   {
    "id": "sf_overlap",
@@ -38,7 +40,8 @@
    "doc": "bs2024",
    "section_ref": "4.5 Install sediment fencing, step 6",
    "quote": "When joining separate sections of fabric at a post, ensure there is usually 150 mm of overlap.",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 25
   },
   {
    "id": "sf_contour",
@@ -48,7 +51,8 @@
    "doc": "bs2024",
    "section_ref": "4.5 Install sediment fencing, step 1",
    "quote": "Place the sediment fence along (parallel to) the contours of the site wherever possible",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 25
   },
   {
    "id": "sf_ends",
@@ -58,7 +62,8 @@
    "doc": "bs2024",
    "section_ref": "4.5 Install sediment fencing, step 5",
    "quote": "The ends of the fence must angle upslope to prevent run-off around it.",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 25
   },
   {
    "id": "sf_nobuild",
@@ -68,7 +73,8 @@
    "doc": "bs2024",
    "section_ref": "4.5 Install sediment fencing, step 8",
    "quote": "Ensure there is no build-up of material (including stockpiles) against the sediment fence",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 26
   },
   {
    "id": "sf_noconc",
@@ -139,7 +145,8 @@
    "doc": "bs2024",
    "section_ref": "4.1 Stabilised site entry/exit point, step 1",
    "quote": "Be a minimum of 3 m long to ensure that there is enough time for sediment to be shaken off",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 19
   },
   {
    "id": "ac_surf",
@@ -149,7 +156,8 @@
    "doc": "bs2024",
    "section_ref": "4.1 step 3",
    "quote": "You can use gravel, aggregate or recycled concrete on the surface. Avoid using sandstone",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 19
   },
   {
    "id": "ac_berm",
@@ -159,7 +167,8 @@
    "doc": "bs2024",
    "section_ref": "4.1 step 4",
    "quote": "Include a diversion berm across the stabilised site entry/exit point if the access slopes towards the road.",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 19
   },
   {
    "id": "ac_width",
@@ -280,7 +289,8 @@
    "doc": "bs2024",
    "section_ref": "4.4 Manage stockpiles, step 3",
    "quote": "Aim to ensure your stockpile is no more than 2 m high (if possible)",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 23
   },
   {
    "id": "sp_in",
@@ -320,7 +330,8 @@
    "doc": "bs2024",
    "section_ref": "4.4 step 5",
    "quote": "Cover your stockpiles securely when no one is on site, or when you expect rainy or windy conditions",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 23
   },
   {
    "id": "sp_road",
@@ -330,7 +341,8 @@
    "doc": "bs2024",
    "section_ref": "4.4 Take note",
    "quote": "Do not store stockpiles and building materials on the footpath or within the road reserve.",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 24
   },
   {
    "id": "sp_stab",
@@ -423,7 +435,8 @@
    "doc": "bs2024",
    "section_ref": "6 Clean up and stabilise the site, step 3",
    "quote": "Avoid leaving any bare soils on site as these will continue to act as a source of sediment",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 35
   },
   {
    "id": "ts_rem",
@@ -433,7 +446,8 @@
    "doc": "bs2024",
    "section_ref": "6 Clean up and stabilise the site, step 5",
    "quote": "It is vital to remove any temporary erosion and sediment control methods after construction ends",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 35
   },
   {
    "id": "ts_matt",
@@ -443,7 +457,8 @@
    "doc": "bs2024",
    "section_ref": "6 step 2",
    "quote": "Use erosion control matting as an extra measure until vegetation cover has been fully established if the soil is unstable",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 35
   },
   {
    "id": "dv_catch",
@@ -463,7 +478,8 @@
    "doc": "bs2024",
    "section_ref": "4.2 option 3",
    "quote": "Installing a graded bund (a ridge of compacted earth) or diversion bank upslope of the site or disturbed area to slow and divert water",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 21
   },
   {
    "id": "dv_nbr",
@@ -615,7 +631,8 @@
    "doc": "bs2024",
    "section_ref": "4.8 Manage construction activity areas, step 2",
    "quote": "Surround your designated construction activity area with bunds that will contain the dirty water",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 30
   },
   {
    "id": "wa_lvl",
@@ -625,7 +642,8 @@
    "doc": "bs2024",
    "section_ref": "4.8 step 3",
    "quote": "your construction activity area should be in a level area with no steep slopes",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 30
   },
   {
    "id": "wa_dr",
@@ -635,7 +653,8 @@
    "doc": "bs2024",
    "section_ref": "4.8 Take note",
    "quote": "Do not locate construction activity areas where dirty water and waste materials can drain directly into the stormwater system or any no-go areas.",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 30
   },
   {
    "id": "wa_sed",
@@ -655,7 +674,8 @@
    "doc": "bs2024",
    "section_ref": "4.8 step 5",
    "quote": "you should place a plastic sheet under the concrete pump to capture any spillage.",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 30
   },
   {
    "id": "wa_wst",
@@ -705,7 +725,8 @@
    "doc": "bs2024",
    "section_ref": "4.9 Manage service trenches, step 1",
    "quote": "Try to limit the time trenches are open to less than 3 days",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 31
   },
   {
    "id": "sf_trench3",
@@ -775,7 +796,8 @@
    "doc": "bs2024",
    "section_ref": "5 Take note",
    "quote": "It is vital to carefully check controls after rainy or windy weather and remove any built-up sediment.",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 34
   },
   {
    "id": "in_stk",
@@ -805,7 +827,8 @@
    "doc": "bs2024",
    "section_ref": "Attachment C, Table C1",
    "quote": "You have extra materials on site for erosion and sediment controls in case any of your controls are damaged or new controls are needed",
-   "confidence": 0.85
+   "confidence": 0.85,
+   "page": 44
   },
   {
    "id": "in_5mm",
@@ -871,7 +894,8 @@
    "section_ref": "Table 6.3a (Gunnedah row, 5-day columns)",
    "quote": "Gunnedah 14.2 17.3 21.3 27.7 39.2 20.0 24.1 30.2 38.4 53.0",
    "confidence": 0.8,
-   "confirm": "Blue Book Table 6.3a: 5-day columns are 75th, 80th, 85th, 90th, 95th percentile (20.0 / 24.1 / 30.2 / 38.4 / 53.0 mm). Informational; only needed if a sediment basin is proposed."
+   "confirm": "Blue Book Table 6.3a: 5-day columns are 75th, 80th, 85th, 90th, 95th percentile (20.0 / 24.1 / 30.2 / 38.4 / 53.0 mm). Informational; only needed if a sediment basin is proposed.",
+   "page": 144
   },
   {
    "id": "rf_g80",
@@ -882,7 +906,8 @@
    "section_ref": "Table 6.3a (Gunnedah row, 5-day columns)",
    "quote": "Gunnedah 14.2 17.3 21.3 27.7 39.2 20.0 24.1 30.2 38.4 53.0",
    "confidence": 0.8,
-   "confirm": "Blue Book Table 6.3a: 5-day columns are 75th, 80th, 85th, 90th, 95th percentile (20.0 / 24.1 / 30.2 / 38.4 / 53.0 mm). Informational; only needed if a sediment basin is proposed."
+   "confirm": "Blue Book Table 6.3a: 5-day columns are 75th, 80th, 85th, 90th, 95th percentile (20.0 / 24.1 / 30.2 / 38.4 / 53.0 mm). Informational; only needed if a sediment basin is proposed.",
+   "page": 144
   },
   {
    "id": "rf_g85",
@@ -893,7 +918,8 @@
    "section_ref": "Table 6.3a (Gunnedah row, 5-day columns)",
    "quote": "Gunnedah 14.2 17.3 21.3 27.7 39.2 20.0 24.1 30.2 38.4 53.0",
    "confidence": 0.8,
-   "confirm": "Blue Book Table 6.3a: 5-day columns are 75th, 80th, 85th, 90th, 95th percentile (20.0 / 24.1 / 30.2 / 38.4 / 53.0 mm). Informational; only needed if a sediment basin is proposed."
+   "confirm": "Blue Book Table 6.3a: 5-day columns are 75th, 80th, 85th, 90th, 95th percentile (20.0 / 24.1 / 30.2 / 38.4 / 53.0 mm). Informational; only needed if a sediment basin is proposed.",
+   "page": 144
   },
   {
    "id": "ap_min",

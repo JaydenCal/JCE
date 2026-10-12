@@ -1,4 +1,4 @@
-"""Vector A3 landscape plan PDF drawn directly from the PlanModel (reportlab).
+"""Vector landscape (A3 default; ARCH D / ANSI B via the display spec) plan PDF drawn directly from the PlanModel (reportlab).
 
 Not converted from the DXF: both outputs share the model, annotation set and
 sheet layout so they agree, but the PDF is rendered natively.  Fonts are the
@@ -19,8 +19,7 @@ from app.agents.sa5_cad_dxf.annotate import CAP_HEIGHT_RATIO, AnnotationSet, upr
 from app.agents.sa5_cad_dxf.dxf_builder import DEFAULT_OVERLAY_STYLE, OVERLAY_STYLE
 from app.agents.sa5_cad_dxf.layers import LAYER_BY_NAME, PATTERN_UNIT_MM, LINETYPE_PATTERNS, SERVICE_LAYER, pdf_rgb
 from app.agents.sa5_cad_dxf.model import PlanModel, hatch_lines, left_normal, lines_of, polygons_of
-from app.agents.sa5_cad_dxf.sheet import (FRAME, SHEET_H, SHEET_W, VIEWPORT, Circle, FitResult, Line, Poly, Prim,
-                                          Text, build_panel)
+from app.agents.sa5_cad_dxf.sheet import Circle, FitResult, Line, Poly, Prim, Text, build_panel, current_sheet
 from app.common.contracts import AckKind
 
 
@@ -35,8 +34,8 @@ class _Page:
     def __init__(self, c: canvas.Canvas, model: PlanModel, fit: FitResult):
         self.c, self.model, self.fit = c, model, fit
         self.s = 1000.0 / model.scale            # paper mm per model metre
-        self.vcx = (VIEWPORT[0] + VIEWPORT[2]) / 2
-        self.vcy = (VIEWPORT[1] + VIEWPORT[3]) / 2
+        self.vcx = (current_sheet().viewport[0] + current_sheet().viewport[2]) / 2
+        self.vcy = (current_sheet().viewport[1] + current_sheet().viewport[3]) / 2
 
     # model metres -> paper mm
     def mx(self, x: float) -> float:
@@ -172,10 +171,10 @@ def _draw_basemap(pg: _Page) -> None:
     note = "Aerial underlay at 50% fade" + (f": {req.basemap_note}" if getattr(req, "basemap_note", "") else "")
     c.saveState()
     c.setFillColorRGB(1, 1, 1)
-    c.rect(VIEWPORT[0] * mm, VIEWPORT[1] * mm, (stringWidth(note, "Helvetica", 5.5) / mm) * mm + 4 * mm, 4 * mm, stroke=0, fill=1)
+    c.rect(current_sheet().viewport[0] * mm, current_sheet().viewport[1] * mm, (stringWidth(note, "Helvetica", 5.5) / mm) * mm + 4 * mm, 4 * mm, stroke=0, fill=1)
     c.setFillColorRGB(0.2, 0.2, 0.2)
     c.setFont("Helvetica", 5.5)
-    c.drawString((VIEWPORT[0] + 2) * mm, (VIEWPORT[1] + 1.3) * mm, note)
+    c.drawString((current_sheet().viewport[0] + 2) * mm, (current_sheet().viewport[1] + 1.3) * mm, note)
     c.restoreState()
 
 
@@ -185,7 +184,7 @@ def _draw_plan(pg: _Page, aset: AnnotationSet) -> None:
     k = m.scale / 1000.0
     c.saveState()
     clip = c.beginPath()
-    clip.rect(VIEWPORT[0] * mm, VIEWPORT[1] * mm, (VIEWPORT[2] - VIEWPORT[0]) * mm, (VIEWPORT[3] - VIEWPORT[1]) * mm)
+    clip.rect(current_sheet().viewport[0] * mm, current_sheet().viewport[1] * mm, (current_sheet().viewport[2] - current_sheet().viewport[0]) * mm, (current_sheet().viewport[3] - current_sheet().viewport[1]) * mm)
     c.clipPath(clip, stroke=0, fill=0)
     _draw_basemap(pg)
 
@@ -292,7 +291,7 @@ def _draw_prims(pg: _Page, prims: list[Prim]) -> None:
 
 def build_pdf(model: PlanModel, aset: AnnotationSet, fit: FitResult, acks: list[AckKind],
               path: str | Path) -> PdfBuild:
-    c = canvas.Canvas(str(path), pagesize=(SHEET_W * mm, SHEET_H * mm), invariant=1)
+    c = canvas.Canvas(str(path), pagesize=(current_sheet().w * mm, current_sheet().h * mm), invariant=1)
     c.setTitle(f"{model.request.project_title} - Site plan")
     c.setAuthor(model.request.drawn_by)
     c.setSubject("Indicative site plan. Not a survey.")
@@ -306,11 +305,11 @@ def build_pdf(model: PlanModel, aset: AnnotationSet, fit: FitResult, acks: list[
     # sheet frame + title block panel on top of the clipped plan
     pg.style("C-ANNO-TTLB", 0.5)
     c.setDash([], 0)
-    pg.path([(FRAME[0], FRAME[1]), (FRAME[2], FRAME[1]), (FRAME[2], FRAME[3]), (FRAME[0], FRAME[3])], True)
+    pg.path([(current_sheet().frame[0], current_sheet().frame[1]), (current_sheet().frame[2], current_sheet().frame[1]), (current_sheet().frame[2], current_sheet().frame[3]), (current_sheet().frame[0], current_sheet().frame[3])], True)
     pg.style("C-ANNO-TTLB", 0.25)
     c.setDash([], 0)
-    pg.path([(VIEWPORT[0], VIEWPORT[1]), (VIEWPORT[2], VIEWPORT[1]), (VIEWPORT[2], VIEWPORT[3]),
-             (VIEWPORT[0], VIEWPORT[3])], True)
+    pg.path([(current_sheet().viewport[0], current_sheet().viewport[1]), (current_sheet().viewport[2], current_sheet().viewport[1]), (current_sheet().viewport[2], current_sheet().viewport[3]),
+             (current_sheet().viewport[0], current_sheet().viewport[3])], True)
     _draw_prims(pg, build_panel(model, model.scale, acks, fit, model.issue_date))
     c.showPage()
     c.save()

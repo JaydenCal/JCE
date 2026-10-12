@@ -141,7 +141,7 @@ def resync(m: BuildingModel) -> list[Issue]:
                     th, fin = (EXT_T, m.external_finish) if ext else (INT_T, INT_FINISH)
             else:
                 th, fin = (EXT_T, m.external_finish) if ext else (INT_T, INT_FINISH)
-            new_walls.append(Wall(id=wid, level_id=lv.id, a=(float(a[0]), float(a[1])), b=(float(b[0]), float(b[1])),
+            new_walls.append(Wall(id=wid, level_id=lv.id, a=(round(float(a[0]), 6), round(float(a[1]), 6)), b=(round(float(b[0]), 6), round(float(b[1]), 6)),
                                   thickness=th, height=lv.ceiling_height, external=ext, finish=fin, room_ids=rids))
     m.walls = new_walls
     nw = {w.id: w for w in new_walls}
@@ -175,7 +175,7 @@ def resync(m: BuildingModel) -> list[Issue]:
         if pos is None:
             issues.append(Issue(code="OPENING_DROPPED", message=f"opening {o.id} no longer fits on any wall and was removed", ids=[o.id]))
             continue
-        o.wall_id, o.position = target.id, float(pos)
+        o.wall_id, o.position = target.id, round(float(pos), 6)
         kept.append(o)
     m.openings = kept
     _sync_roofs(m)
@@ -197,7 +197,7 @@ def _sync_roofs(m: BuildingModel):
         polys = [p for p in (list(poly.geoms) if hasattr(poly, "geoms") else [poly]) if isinstance(p, Polygon) and p.area > 0.5]
         if not polys:
             continue
-        coords = [[(float(x), float(y)) for x, y in p.exterior.coords][:-1] for p in polys]
+        coords = [[(round(float(x), 6), round(float(y), 6)) for x, y in p.exterior.coords][:-1] for p in polys]
         r = old.get(lv.id)
         if r is None:
             r = Roof(id=m.new_id("rf"), level_id=lv.id, **({} if template is None else

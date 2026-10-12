@@ -58,7 +58,7 @@ class UnitSettings(JModel):
             v = getattr(self, k) or d[k]
             if v not in ALLOWED[k]:
                 raise ValueError(f"{k} display unit {v!r} not allowed; choose from {sorted(ALLOWED[k])}")
-            if dimension_of(v if v != "ratio" else "1:n") != dimension_of({"length": "m", "area": "m2", "volume": "m3", "slope": "%", "flow": "L/s", "pressure": "kPa"}[k]):
+            if k != "slope" and dimension_of(v) != k:
                 raise ValueError(f"{k}: wrong dimension")
             setattr(self, k, v)
         if self.gallon is None and self.system == "imperial_us":

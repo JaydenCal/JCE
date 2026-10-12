@@ -117,16 +117,16 @@ _add("slope", F(1, 1000), "permille", "‰")
 U["deg"] = Unit("deg", "slope", F(0), to_si=lambda v: math.tan(math.radians(v)),
                 from_si=lambda s: math.degrees(math.atan(s)))
 # ratio "1 in n" (value n); and "n:1" horizontal:vertical (value n) - both store n, meaning rise/run = 1/n
-for _nm in ("1:n", "1_in_n", "ratio"):
+for _nm in ("1:n", "1_in_n"):
     U[_nm] = Unit("1:n", "slope", F(0), to_si=lambda n: 1.0 / n, from_si=lambda s: 1.0 / s)
 # dimensionless / counts
 _add("count", F(1), "count", "no", "nr", "each")
-_add("fraction", F(1), "ratio_frac")
+_add("fraction", F(1), "ratio", "ratio_frac")
 # fix kL: 1 kL = 1 m3
 U["kL"] = U["kl"] = U["kilolitre"] = U["kilolitres"] = Unit("kL", "volume", F(1))
 
 SI_UNIT = {"length": "m", "area": "m2", "volume": "m3", "flow": "m3/s", "pressure": "Pa", "slope": "m/m",
-           "count": "count", "fraction": "ratio_frac"}
+           "count": "count", "fraction": "ratio"}
 
 # Tokens that need the profile / the user.  token -> options
 AMBIGUOUS: dict[str, list[str]] = {
