@@ -5,14 +5,7 @@ import { AppWindow } from "./AppWindow";
 import { ACK_KINDS } from "@/lib/acks";
 import { DEVELOPMENT_TYPES } from "@/lib/api";
 
-export const STEPS = [
-  { n: "01", t: "Assess the site", d: "Cadastre, zoning, constraints and aerial in one pass. Every mapped layer is queried and marked affected, not affected or not checked.", w: "Site assessment" },
-  { n: "02", t: "Design", d: "Start from a dwelling, granny flat or shed. Setbacks, site cover and height come only from rules for that development type.", w: "Development type" },
-  { n: "03", t: "Civil plan", d: "Cut and fill, retaining, driveway crossover with swept path, services and rainwater tank, drawn on a titled plan sheet.", w: "Civil plan" },
-  { n: "04", t: "Constraints and pathway report", d: "A report with figures for each affected layer, the likely approval pathway and the next steps. Unresolved items stay visible.", w: "Constraints report" },
-  { n: "05", t: "Walk it in 3D", d: "Orbit the lot, then step inside in first person. Furnish rooms from real store products and check clearances as you go.", w: "3D viewer" },
-  { n: "06", t: "Export DXF and PDF", d: "CAD-ready DXF and a printable PDF, released only after all nine acknowledgements are given.", w: "Export" },
-];
+import { STEPS } from "./data";
 const Fig = ({ src, alt, w, h, cap }: { src: string; alt: string; w: number; h: number; cap?: string }) => (
   <figure className="m-0"><div className="sheet-img overflow-hidden rounded border border-line"><img src={src} alt={alt} width={w} height={h} loading="lazy" className="block h-auto w-full" /></div>{cap && <figcaption className="mt-2 font-mono text-[10.5px] leading-snug text-muted">{cap}</figcaption>}</figure>
 );

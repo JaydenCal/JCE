@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { AppWindow, NorthArrow, ScaleBar } from "@/components/home/AppWindow";
-import { Pipeline, STEPS } from "@/components/home/Pipeline";
+import { STEPS } from "@/components/home/data";
+import { Pipeline } from "@/components/home/Pipeline";
 import { PlanShowcase } from "@/components/home/PlanShowcase";
 import { EngineerEnquiryButton } from "@/components/enquiry/EngineerEnquiryButton";
-import { ENGINEER_BTN } from "@/components/Shell";
+import { ENGINEER_BTN } from "@/components/styles";
 
 const W = "mx-auto max-w-7xl px-4 sm:px-8";
 const Eyebrow = ({ children }: { children: ReactNode }) => <p className="h-eyebrow">{children}</p>;

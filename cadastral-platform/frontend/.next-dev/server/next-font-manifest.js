@@ -1,1 +1,0 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/home/user/JCE/cadastral-platform/frontend/src/app/layout\":[\"static/media/d3ebbfd689654d3a-s.p.woff2\",\"static/media/98e207f02528a563-s.p.woff2\",\"static/media/26d4368bf94c0ec4-s.p.woff2\",\"static/media/9dd75fadc5b3df29-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

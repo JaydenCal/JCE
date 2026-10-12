@@ -23,7 +23,7 @@ function TermsGate() {
   if (!t) return <div className="py-16">{err ? <p className="text-danger">{err}</p> : "Loading Terms..."}</div>;
   const { intro, items, rest } = extractKeyRisks(t.body_markdown);
   return (<div className="mx-auto max-w-3xl py-12">
-    <p className="h-eyebrow">Legal</p><h1 className="mt-2 text-3xl font-extrabold">Terms of Use <span className="text-lg font-medium text-muted">v{t.version_label}</span></h1>
+    <p className="h-eyebrow">Legal</p><h1 className="mt-2 text-3xl font-display font-medium">Terms of Use <span className="text-lg font-medium text-muted">v{t.version_label}</span></h1>
     {t.accepted ? <p className="mt-4 rounded-xl bg-brand-soft p-4 text-sm">You have accepted this version. <a className="underline" href={next}>Continue</a></p>
       : <p className="mt-4 text-sm text-muted">Please read the Key Risks Summary and scroll through the full Terms to the end. If we publish a new version you will be asked to accept it again.</p>}
     {items.length > 0 && <section aria-label="Key Risks Summary" className="mt-6 rounded-xl2 border-2 border-warn/60 bg-warn/5 p-6">

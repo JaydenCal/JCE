@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { ACK_KINDS, missingAcks, type AckKind } from "@/lib/acks";
 import { api } from "@/lib/api";
+import { EngineerEnquiryButton } from "@/components/enquiry/EngineerEnquiryButton";
 const key = (p: string) => "acks:" + p;
 export function useAcks(projectId: string) {
   const [present, setPresent] = useState<string[]>([]);
@@ -19,7 +20,7 @@ export function Acknowledgements({ projectId, present, onChange }: { projectId: 
   return (<div className="space-y-3">{ACK_KINDS.map((a) => { const done = present.includes(a.kind);
     return (<label key={a.kind} className={`flex gap-3 rounded-xl border p-4 text-sm ${done ? "border-brand/50 bg-brand-soft/40" : "border-line"}`}>
       <input type="checkbox" className="mt-1 h-4 w-4 shrink-0 accent-[rgb(var(--brand))]" checked={done} disabled={done} onChange={() => tick(a.kind)} />
-      <span><span className="mr-2 font-bold text-brand">{a.id}</span>{a.text}</span></label>); })}
+      <span><span className="mr-2 font-bold text-gold">{a.id}</span>{a.text}</span></label>); })}
     {err && <p role="alert" className="text-sm text-danger">{err}</p>}</div>);
 }
 export function ExportPanel({ projectId, present }: { projectId: string; present: string[] }) {
@@ -34,5 +35,6 @@ export function ExportPanel({ projectId, present }: { projectId: string; present
     {missing.length === 0 ? <p className="mt-2 text-sm text-ok">All 9 acknowledgements given.</p>
       : <div className="mt-2 text-sm"><p className="text-warn">{missing.length} of 9 acknowledgements missing:</p><ul className="mt-2 list-disc pl-5 text-muted" data-testid="missing">{ACK_KINDS.filter((a) => missing.includes(a.kind)).map((a) => <li key={a.kind}>{a.id} <code>{a.kind}</code></li>)}</ul></div>}
     <div className="mt-4 flex flex-wrap gap-3"><button className="btn-primary" disabled={missing.length > 0 || busy} onClick={go}>{busy ? "Preparing..." : "Export DXF + PDF"}</button></div>
+    <div className="mt-5 border-t border-line pt-4 text-sm"><p className="font-medium">Need an engineer to certify or design it?</p><p className="mt-1 text-xs text-muted">JCE Infrastructure is our industry partner. Outputs stay indicative until an engineer is engaged.</p><EngineerEnquiryButton projectId={projectId} context="export" className="mt-3 inline-flex rounded-md border border-brand-strong px-4 py-2 text-sm font-semibold text-gold transition-colors hover:bg-brand-strong hover:text-brand-fg">Talk to an engineer</EngineerEnquiryButton></div>
     {err && <p role="alert" className="mt-2 text-sm text-danger">{err}</p>}</div>);
 }

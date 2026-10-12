@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { AppWindow } from "./AppWindow";
+import { LEGEND } from "./data";
 /** Callout targets are positions on the real SA5 sheet (percent of image width/height). */
 const CALLOUTS = [
   { k: "Driveway 4.0 m", x: 47.2, y: 20.8, lx: 59, ly: 12 },
@@ -10,7 +11,6 @@ const CALLOUTS = [
   { k: "RWT 5000 L", x: 51, y: 46.8, lx: 60, ly: 48 },
   { k: "Sewer DN150", x: 44.3, y: 58, lx: 17, ly: 54 },
 ];
-export const LEGEND: [string, string, string?][] = [["Lot boundary", "#1a8a2e"], ["Building envelope", "#e8222a"], ["Setback measurement", "#e8222a", "dash"], ["Proposed slab (unverified)", "#1c2cf0"], ["Driveway / crossover", "#111"], ["Driveway centreline", "#e63be6"], ["Turning path", "#e8872a"], ["Water service", "#2a2af0"], ["Sewer service", "#1a8a2e"], ["Stormwater service", "#18d6e8"], ["Service exclusion buffer", "#e8222a", "dash"], ["Council overlay", "#a8842f", "hatch"]];
 export function PlanShowcase() {
   const [t, setT] = useState({ s: 1, x: 0, y: 0 }); const drag = useRef<{ px: number; py: number; x: number; y: number } | null>(null); const box = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(true);
