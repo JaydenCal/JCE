@@ -19,7 +19,10 @@ from app.agents.sa10_esc.models import DISCLAIMER, TreePoint
 from app.common.contracts import BoundarySegment, DevelopmentType, DrivewayDesign, LotContext
 
 E0, N0 = 334000.0, 6263000.0
-W, D = 20.0, 40.0                     # frontage 20 m (south), depth 40 m (north)
+W, D = 20.0, 50.0                     # frontage 20 m (south), depth 50 m (north)
+
+
+FPB = box(E0 + 4, N0 + 20, E0 + 16, N0 + 32)
 
 
 def lot_ctx() -> LotContext:
@@ -32,7 +35,7 @@ def lot_ctx() -> LotContext:
 
 def terrain(fall_north_pct=0.0, fall_east_pct=0.0, z0=100.0):
     """Grid of survey points. Positive fall_north => ground LOWER to the north."""
-    return [(E0 + x, N0 + y, z0 - fall_north_pct / 100 * y - fall_east_pct / 100 * x) for x in range(-5, 26, 5) for y in range(-5, 46, 5)]
+    return [(E0 + x, N0 + y, z0 - fall_north_pct / 100 * y - fall_east_pct / 100 * x) for x in range(-5, 26, 5) for y in range(-5, 56, 5)]
 
 
 def drive() -> DrivewayDesign:
@@ -42,7 +45,7 @@ def drive() -> DrivewayDesign:
 
 def run(tmp_path, **kw):
     base = dict(lot=lot_ctx(), development_type=DevelopmentType.dwelling_house, project_title="Test lot ESCP", output_dir=str(tmp_path),
-                footprint_wkt=box(E0 + 4, N0 + 8, E0 + 16, N0 + 20).wkt, driveway=drive(), terrain_points=terrain(8.0))
+                footprint_wkt=FPB.wkt, driveway=drive(), terrain_points=terrain(8.0))
     base.update(kw)
     return Sa10Esc().run(Sa10EscInput(**base))
 
@@ -62,7 +65,7 @@ def test_fence_on_downslope_boundary(tmp_path):
     assert not out.flow.assumed and 7.0 < out.flow.slope_pct < 9.0
     assert out.flow.direction[1] > 0.99                  # flows north
     fence = swkt.loads(el(out, "fence")[0].geometry_wkt)
-    fp = box(E0 + 4, N0 + 8, E0 + 16, N0 + 20)
+    fp = FPB
     ys = [c[1] for ln in fence.geoms for c in ln.coords] if hasattr(fence, "geoms") else [c[1] for c in fence.coords]
     assert min(ys) > fp.bounds[3]                        # entirely downslope (north) of the building
     assert abs(max(ys) - (N0 + D)) < 1.5                 # lies along the rear (downslope) boundary
@@ -104,7 +107,7 @@ def test_stockpile_clear_of_hazards_and_boundary(tmp_path):
     assert e.status == "resolved"
     assert sp.distance(front) >= 5.0 - 1e-6 and sp.distance(xo) >= 5.0 - 1e-6 and sp.distance(acc) >= 5.0 - 1e-6   # preferred distance, cited
     assert sp.distance(lot.exterior) >= 1.5                                  # behind the fence line
-    fp = box(E0 + 4, N0 + 8, E0 + 16, N0 + 20)
+    fp = FPB
     assert sp.centroid.y <= fp.centroid.y + 1e-6                             # not downslope of the building (slope is north)
     fence = swkt.loads(el(out, "fence")[0].geometry_wkt)
     assert sp.distance(fence) > 0.5                                          # no build-up against the fence
@@ -118,8 +121,8 @@ def test_stockpile_avoids_drainage_line_and_service_buffers(tmp_path):
     sp = swkt.loads(el(out, "stockpile")[0].geometry_wkt)
     assert sp.distance(swkt.loads(drain)) >= 2.0 - 1e-6
     from app.common.contracts import ServiceLine
-    ex = box(E0 + 1, N0 + 22, E0 + 19, N0 + 30)
-    out2 = run(tmp_path / "svc", services=[ServiceLine(service="sewer", label="S", geometry_wkt=LineString([(E0 + 1, N0 + 26), (E0 + 19, N0 + 26)]).wkt, exclusion_wkt=ex.wkt)])
+    ex = box(E0 + 1, N0 + 34, E0 + 19, N0 + 42)
+    out2 = run(tmp_path / "svc", services=[ServiceLine(service="sewer", label="S", geometry_wkt=LineString([(E0 + 1, N0 + 38), (E0 + 19, N0 + 38)]).wkt, exclusion_wkt=ex.wkt)])
     for k in ("stockpile", "topsoil", "washout", "laydown"):
         for e in el(out2, k):
             assert not swkt.loads(e.geometry_wkt).intersects(ex)
@@ -142,7 +145,7 @@ def test_check_dams_on_steep_site(tmp_path):
 
 
 def test_unresolved_requirements_surfaced(tmp_path):
-    out = run(tmp_path, tree_points=[TreePoint(xy=(E0 + 18, N0 + 25), label="T1")])
+    out = run(tmp_path, tree_points=[TreePoint(xy=(E0 + 18, N0 + 35), label="T1")])
     keys = {u["key"] for u in out.unresolved}
     for k in ("esc.sediment_fence.max_length_m", "esc.buffer.min_from_drainage_line_m", "esc.inlet.kerb_trap_dimensions",
               "esc.check_dam.spacing_and_height", "esc.tree.protection_zone_radius_m"):
