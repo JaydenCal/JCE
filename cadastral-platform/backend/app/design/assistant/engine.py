@@ -205,6 +205,18 @@ def compliance(m: BuildingModel, ctx: AssistantContext) -> list[dict]:
     return out
 
 
+def snapshot(state: ModelState, res: TurnResult | None = None) -> TurnResult:
+    """Fill model, viewer parts (layer 'buildings') and undo state into a TurnResult."""
+    res = res or TurnResult()
+    m = state.model
+    res.model = json.loads(m.to_json())
+    res.parts = to_parts(m)
+    res.parts_origin = tuple(m.origin_mga)
+    res.undo_token = len(state.turns)
+    res.can_undo, res.can_redo = state.can_undo, state.can_redo
+    return res
+
+
 class DesignAssistant:
     def __init__(self, llm: LlmClient, state: ModelState, context: AssistantContext | None = None, *, max_ops: int | None = None,
                  max_rounds: int | None = None, max_tokens: int | None = None, max_turn_tokens: int | None = None):
@@ -229,12 +241,7 @@ class DesignAssistant:
             log.debug("token reporting unavailable: %s", e)
 
     def _result(self, res: TurnResult, usage: Usage) -> TurnResult:
-        m = self.state.model
-        res.model = json.loads(m.to_json())
-        res.parts = to_parts(m)
-        res.parts_origin = tuple(m.origin_mga)
-        res.undo_token = len(self.state.turns)
-        res.can_undo, res.can_redo = self.state.can_undo, self.state.can_redo
+        snapshot(self.state, res)
         res.usage = {"input": usage.input_tokens, "output": usage.output_tokens, "cache_read": usage.cache_read_tokens, "cache_write": usage.cache_write_tokens}
         return res
 

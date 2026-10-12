@@ -16,6 +16,8 @@ from app.agents.sa5_cad_dxf.annotate import format_lotplan
 
 from .layout import Layout, lines_of, polys_of
 from .models import DISCLAIMER, EscElement, Sa10EscInput
+from app.branding.brand import Brand
+from .logo import logo_png
 from .notes import general_notes, maintenance_rows
 from .reqs import ReqView
 
@@ -337,6 +339,23 @@ def render_pdf(inp: Sa10EscInput, L: Layout, rq: ReqView, out: dict, path: str |
     tw1 = COL2 - COL1 - 5
     x = COL1 + 2.5
     y = FRAME[3] - 5
+    brand = Brand.from_env()
+    try:
+        from reportlab.lib.utils import ImageReader
+        import io as _io
+        png, asp = logo_png(brand)
+        lw_mm = min(tw1 * 0.55, 34.0)
+        c.drawImage(ImageReader(_io.BytesIO(png)), x * mm, (y - lw_mm / asp + 3) * mm, lw_mm * mm, lw_mm / asp * mm, mask="auto")
+        sh.text(x + lw_mm + 2, y - 1.0, brand.company_name, 5.6, True)
+        for i, ln in enumerate(_wrap(brand.trading_line, "Helvetica", 4.0, tw1 - lw_mm - 2)):
+            sh.text(x + lw_mm + 2, y - 4.6 - i * 2.0, ln, 4.0, rgb=(0.35, 0.35, 0.35))
+        y -= lw_mm / asp + 3
+    except Exception:  # noqa: BLE001 - logo is decorative; the company name still prints
+        sh.text(x, y, brand.company_name, 6.0, True)
+        y -= 5
+    sh.stroke((0, 0, 0), 0.13)
+    sh.line([(COL1, y + 1.5), (COL2, y + 1.5)])
+    y -= 3
     sh.text(x, y, "EROSION AND SEDIMENT CONTROL PLAN", 6.4, True)
     y -= 4.2
     sh.text(x, y, "(PROPOSED - INDICATIVE)", 5.0, True, rgb=(0.7, 0.1, 0.1))

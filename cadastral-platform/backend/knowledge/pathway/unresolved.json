@@ -1,0 +1,139 @@
+{
+ "unresolved": [
+  {
+   "id": "cdc.flood_control_lot",
+   "label": "Flood control lot requirements",
+   "prompt": "Confirm with the council (s10.7 planning certificate) whether the lot is a flood control lot; the definition (Codes SEPP cl 1.5) and the flood control lot standards (Housing Code cl 3.5 / Inland Code cl 3D.7) were not obtained (legislation.nsw.gov.au is Cloudflare-blocked).",
+   "code": "cdc_general"
+  },
+  {
+   "id": "cdc.easements",
+   "label": "Easements / restrictions affecting the building footprint",
+   "prompt": "No cited complying-development exclusion for easements was obtainable. Supply the title/DP easement information and confirm with the certifier and utility owners (see also build-over-sewer requirements).",
+   "code": "cdc_general"
+  },
+  {
+   "id": "cdc.lep_permissibility",
+   "label": "Development is permissible with consent in the zone under the LEP",
+   "prompt": "Gunnedah LEP 2012 land use table not obtained (Cloudflare). Supply the LEP land use table result for this zone and development.",
+   "code": "cdc_general"
+  },
+  {
+   "id": "inland.res.lot_type_tables",
+   "label": "Corner, battle-axe and parallel-road lot tables",
+   "prompt": "The Department publishes separate Inland Code summary tables for corner, battle-axe and parallel road lots (see Inland Code page); they were not encoded. Standard-lot values are NOT valid for these lots: confirm lot type and apply the matching table.",
+   "code": "inland_code"
+  },
+  {
+   "id": "inland.r5.tables",
+   "label": "Large lot residential (R5) tables",
+   "prompt": "R5 summary tables exist (Inland Code page) but were not encoded in this release.",
+   "code": "inland_code"
+  },
+  {
+   "id": "inland.rural.adjoining_land_use",
+   "label": "New dwelling house 250 m from adjoining forestry, intensive livestock/plant agriculture, mines, railway lines, rural industries",
+   "prompt": "Confirm whether any listed adjoining land use is within 250 m (Inland Code cl 3D.13: 'New dwelling house setback from the following adjoining land 250m'); no data layer.",
+   "code": "inland_code"
+  },
+  {
+   "id": "inland.rural.sloping_siting",
+   "label": "Siting controls on sloping land (lots > 4 ha)",
+   "prompt": "Inland Code cl 3D.11(2) siting controls for lots over 4 ha on sloped land: clause text not obtained; confirm with the certifier.",
+   "code": "inland_code"
+  },
+  {
+   "id": "housing.other_standards",
+   "label": "Housing Code development standards (height, GFA, setbacks, landscaping, privacy)",
+   "prompt": "The Housing Code summary table for the lot type was obtained (June 2018) but not encoded in this release, and the Codes SEPP text is blocked. Resolve from the Housing Code summary tables / Codes SEPP Part 3.",
+   "code": "housing_code"
+  },
+  {
+   "id": "rural_housing.standards",
+   "label": "Rural Housing Code development standards",
+   "prompt": "Rural Housing Code summary tables could not be obtained (no URL located; Codes SEPP blocked).",
+   "code": "rural_housing_code"
+  },
+  {
+   "id": "sd.standards",
+   "label": "Housing SEPP Schedule 1 site and design standards (floor area, setbacks, height, landscaping, parking)",
+   "prompt": "Housing SEPP 2021 Schedule 1 not obtained (Cloudflare). The NSW page says the floor area calculation includes the principal dwelling, the secondary dwelling and attached carports/garages/decks etc., but gives no limit. Resolve from Schedule 1 before relying on CDC.",
+   "code": "housing_sepp_secondary"
+  },
+  {
+   "id": "sd.rural_cl_5_5",
+   "label": "LEP optional clause 5.5 (rural secondary dwelling floor area and distance)",
+   "prompt": "Whether Gunnedah LEP 2012 includes optional cl 5.5 (and its limits) is unknown: LEP not obtained.",
+   "code": "housing_sepp_secondary"
+  },
+  {
+   "id": "farm_ex.aggregate_and_siting",
+   "label": "Aggregate footprint of all farm buildings; sloping-land siting (landholding >4 ha); shipping containers",
+   "prompt": "Aggregate footprint limit and siting controls (cl 2.32(1)(e), (c)) are in the Farm Buildings exempt summary but the column split is not encoded; confirm against the Codes SEPP.",
+   "code": "exempt_farm"
+  },
+  {
+   "id": "shed.exempt_standards",
+   "label": "Exempt cabana/cubby house/garden shed/gazebo/greenhouse standards (Codes SEPP cl 2.17-2.18)",
+   "prompt": "Numeric exempt-development standards for garden sheds (area, height, setbacks, materials) are only in Codes SEPP Part 2 Subdivision 12: not obtained. The NSW fact sheet for sheds has no numbers. Supply them from the SEPP or confirm with the council/certifier.",
+   "code": "exempt_shed"
+  },
+  {
+   "id": "shed.cdc_standards",
+   "label": "CDC standards for sheds/outbuildings (Inland Code Part 3D / Rural Housing Code / Housing Code Division 4)",
+   "prompt": "The Inland Code complying standards for non-farm outbuildings (e.g. detached sheds in R2) were not obtained: only the farm building summary was. Confirm with the certifier.",
+   "code": "cdc_outbuilding"
+  },
+  {
+   "id": "farm_cdc.footprint_setbacks",
+   "label": "Farm building CDC footprint, aggregate footprint and road/side/rear setbacks (cl 3D.57-3D.59)",
+   "prompt": "The summary table was obtained but its landholding/footprint columns were not encoded; footprints of 500 m2 or more need 200 m from every boundary (table footnote 4). Resolve against the table/SEPP.",
+   "code": "inland_farm_cdc"
+  }
+ ],
+ "failed_validation": [],
+ "blocked_documents": [
+  {
+   "id": "codes_sepp_2008",
+   "title": "SEPP (Exempt and Complying Development Codes) 2008",
+   "url": "https://legislation.nsw.gov.au/view/html/inforce/current/epi-2008-0572",
+   "reason": "Cloudflare 'Just a moment' 403 for curl and headless Chromium (browser UA, 8 s wait); /EPIs/2018-569.pdf also 403"
+  },
+  {
+   "id": "housing_sepp_2021",
+   "title": "SEPP (Housing) 2021 incl. Schedule 1 secondary dwelling CDC standards",
+   "url": "https://legislation.nsw.gov.au/view/html/inforce/current/epi-2021-0714",
+   "reason": "same Cloudflare block"
+  },
+  {
+   "id": "epa_reg_2021",
+   "title": "Environmental Planning and Assessment Regulation 2021 (Schedule 1 / cl 24 DA content, Schedule 3)",
+   "url": "https://legislation.nsw.gov.au/view/html/inforce/current/sl-2021-0759",
+   "reason": "same Cloudflare block"
+  },
+  {
+   "id": "gunnedah_lep_2012",
+   "title": "Gunnedah Local Environmental Plan 2012 (land use tables, cl 4.1, 4.3, 5.4)",
+   "url": "https://legislation.nsw.gov.au/view/html/inforce/current/epi-2012-0304",
+   "reason": "same Cloudflare block"
+  },
+  {
+   "id": "rural_housing_code_summary",
+   "title": "Rural Housing Code summary tables / Part 3C",
+   "url": "",
+   "reason": "no obtainable URL found on planning.nsw.gov.au / planningportal.nsw.gov.au; Gunnedah is an Inland Code LGA so the Inland Code rural table is used instead"
+  },
+  {
+   "id": "portal_soee_guide",
+   "title": "NSW Planning Portal SoEE guide / EP&A Regulation Schedule 1 content list",
+   "url": "",
+   "reason": "no official SoEE guide located; Gunnedah Council SoEE form used as the structure source"
+  },
+  {
+   "id": "pbp_2019",
+   "title": "Planning for Bush Fire Protection 2019 (BAL/APZ)",
+   "url": "https://www.rfs.nsw.gov.au/plan-and-prepare/building-in-a-bush-fire-area/planning-for-bush-fire-protection",
+   "reason": "see ../manifest.json nsw_pbp_2019"
+  }
+ ]
+}

@@ -14,6 +14,7 @@ ESC_LAYERS: tuple[LayerDef, ...] = (
     LayerDef("C-ESC-CHKD", 150, "CONTINUOUS", 0.35, "ESC: check dams", extra=True),
     LayerDef("C-ESC-LIMT", 3, "DASHDOT", 0.25, "ESC: limit of works", extra=True),
     LayerDef("C-ESC-NOGO", 3, "DASHED", 0.25, "ESC: no-go areas and tree protection", extra=True),
+    LayerDef("C-ANNO-LOGO", 2, "CONTINUOUS", 0.18, "Company logo (vectorised title-block logo)", extra=True),
     LayerDef("C-ESC-NOTE", 7, "CONTINUOUS", 0.18, "ESC: labels and notes", extra=True),
 )
 ESC_LAYER_NAMES = [l.name for l in ESC_LAYERS]

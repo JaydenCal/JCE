@@ -225,6 +225,8 @@ def create_app(settings: Settings | None = None, pool=None, orchestrator: Orches
         return {"recorded": recorded, "export_gate_missing": list(missing)}
 
     app.include_router(design_router)
+    from app.api.assistant import router as assistant_router
+    app.include_router(assistant_router)
     from app.api.enquiries import router as enquiries_router
     app.include_router(enquiries_router)
     return app

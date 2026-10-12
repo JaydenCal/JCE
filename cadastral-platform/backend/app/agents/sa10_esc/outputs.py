@@ -13,7 +13,9 @@ from app.agents.sa5_cad_dxf.layers import ensure_layers
 from app.agents.sa6_glide3d import geom as G
 from app.agents.sa6_glide3d.models import Part
 
+from app.branding.brand import Brand
 from .layers import ESC_LAYERS
+from .logo import logo_polylines
 from .layout import Layout, lines_of, polys_of
 from .models import DISCLAIMER, Sa10EscInput, Sa10EscOutput
 from .reqs import ReqView
@@ -67,6 +69,18 @@ def write_dxf(inp: Sa10EscInput, L: Layout, path: str | Path) -> dict:
         t = msp.add_text(txt, height=h, dxfattribs={"layer": "C-ESC-NOTE", "style": "JCE"})
         t.set_placement((c.x + 0.3, c.y + 0.3))
         counts["C-ESC-NOTE"] = counts.get("C-ESC-NOTE", 0) + 1
+    # company logo (vectorised) beside the lot, layer C-ANNO-LOGO
+    if "C-ANNO-LOGO" not in doc.layers:
+        doc.layers.add("C-ANNO-LOGO", color=2)
+    bx0, by0, bx1, by1 = L.lot.bounds
+    try:
+        brand = Brand.from_env()
+        for pts, closed in logo_polylines(brand, 12.0):
+            msp.add_lwpolyline([(bx1 + 3 + px, by1 - 6 + py) for px, py in pts], close=closed, dxfattribs={"layer": "C-ANNO-LOGO"})
+        t = msp.add_text(brand.company_name, height=0.7, dxfattribs={"layer": "C-ANNO-LOGO", "style": "JCE"})
+        t.set_placement((bx1 + 3, by1 - 8))
+    except Exception:  # noqa: BLE001
+        pass
     # note block beside the lot
     x0, y0, x1, y1 = L.lot.bounds
     lines = [DISCLAIMER, f"Flow: {L.flow.source}", f"Site {inp.lot.lotplan}; est. disturbed area {L.quantities['disturbed_area_estimate_m2']} m2"]

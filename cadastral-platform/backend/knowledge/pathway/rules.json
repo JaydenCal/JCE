@@ -1,0 +1,3657 @@
+{
+ "schema": 1,
+ "built_at": "2026-10-12T17:11:03+00:00",
+ "currency_warning": "Inland Code summary tables dated October 2018 (Codes SEPP not obtained; amendments since not reflected)",
+ "inland_code_lgas": {
+  "lgas": [
+   "Albury City",
+   "Armidale Regional",
+   "Balranald",
+   "Bathurst Regional",
+   "Berrigan",
+   "Bland",
+   "Blayney",
+   "Bogan",
+   "Bourke",
+   "Brewarrina",
+   "Broken Hill",
+   "Cabonne",
+   "Carrathool",
+   "Central Darling",
+   "Cobar",
+   "Coolamon",
+   "Coonamble",
+   "Cootamundra-Gundagai",
+   "Cowra",
+   "Dubbo Regional",
+   "Dungog",
+   "Edward River",
+   "Federation",
+   "Forbes",
+   "Gilgandra",
+   "Glen Innes Severn Shire",
+   "Goulburn Mulwaree",
+   "Greater Hume Shire",
+   "Griffith",
+   "Gunnedah",
+   "Gwydir",
+   "Hay",
+   "Hilltops",
+   "Inverell",
+   "Junee",
+   "Lachlan",
+   "Leeton",
+   "Lithgow",
+   "Liverpool Plains",
+   "Lockhart",
+   "Mid-western Regional",
+   "Moree Plains",
+   "Murray River",
+   "Murrumbidgee",
+   "Muswellbrook",
+   "Narrabri",
+   "Narrandera",
+   "Narromine",
+   "Oberon",
+   "Orange",
+   "Parkes",
+   "Queanbeyan-Palerang Regional",
+   "Singleton",
+   "Snowy Monaro Regional",
+   "Snowy Valleys",
+   "Tamworth Regional",
+   "Temora",
+   "Tenterfield",
+   "Upper Hunter Shire",
+   "Upper Lachlan Shire",
+   "Uralla",
+   "Wagga Wagga",
+   "Walcha",
+   "Walgett",
+   "Warren",
+   "Warrumbungle Shire",
+   "Weddin",
+   "Wentworth",
+   "Yass Valley"
+  ],
+  "citation": {
+   "document_title": "Inland Code LGA map (69 LGAs; image, read visually: Gunnedah = no. 30, Inland Code applies)",
+   "authority": "NSW Department of Planning and Environment",
+   "version": "2023-05",
+   "page": 1,
+   "section_ref": "legend: 30 Gunnedah (Inland Code applies)",
+   "quote": "30 Gunnedah",
+   "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-05/inland-code-lga-map-2400x2263.jpg",
+   "retrieved_at": "2026-10-12T17:06:30+00:00",
+   "sha256": "ffc75078bda2fb19a1c1d6f0fa057d809a67fed77f1fd05029fc4ffc1e7f588f",
+   "doc_id": "inland_lga_map"
+  },
+  "note": "Read visually from the map image (key 'Inland Code applies'): the list names the 69 LGAs shown; the map shows boundaries at 2023 date. Councils renamed/merged since are not reflected."
+ },
+ "rules": [
+  {
+   "id": "cdc.general.excl.heritage_conservation_area",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not within a heritage conservation area or draft heritage conservation area",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "heritage_conservation_area",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.17A/1.18 (as summarised)",
+    "quote": "Land within a heritage conservation area or a draft heritage conservation area (there are some exceptions; please check the relevant development standards for more information)",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.land_reserved_public_purpose",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not reserved for a public purpose",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "land_reserved_public_purpose",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Land reserved for a public purpose",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.acid_sulfate_class_1_or_2",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not Class 1 or Class 2 on the council acid sulfate soils map",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "acid_sulfate_class_1_or_2",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Class 1 or Class 2 land on council’s acid sulfate soils map",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.buffer_area",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not in a buffer area",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "buffer_area",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Land in a bufer area",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.riverfront_area",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not in a riverfront area",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "riverfront_area",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Land in a riverfront area",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.ecologically_sensitive_area",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not in an ecologically sensitive area",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "ecologically_sensitive_area",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Land in an ecologically sensitive area",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.protected_area",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not in a protected area",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "protected_area",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Land in a protected area",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.coastal_hazard",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not affected by a coastline hazard, coastal hazard or coastal erosion hazard",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "coastal_hazard",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Land afected by a coastline hazard, coastal hazard or coastal erosion hazard",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.foreshore_area",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not in a foreshore area",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "foreshore_area",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Land in a foreshore area",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.anef_25_or_higher",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not within the 25 ANEF contour or higher (in some instances)",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "anef_25_or_higher",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Land in the 25 Australian Noise Exposure Forecast (ANEF) system contour or a higher ANEF contour (in some instances)",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.unsewered_drinking_water_catchment",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not unsewered land in a drinking water catchment",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "unsewered_drinking_water_catchment",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Unsewered land in a drinking water catchment identifed in an environmental planning instrument",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.special_area",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not a declared special area",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "special_area",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Land declared as a special area",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.environmentally_sensitive_area",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not in an environmentally sensitive area",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "environmentally_sensitive_area",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Land in an environmentally sensitive area",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.state_heritage_item",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land does not contain an item listed on the State Heritage Register or subject to an interim heritage order",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "state_heritage_item",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 3,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Contains an item listed in the State Heritage Register",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.heritage_item",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not, and does not contain, a heritage item in an environmental planning instrument",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "heritage_item",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 3,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "environmental heritage or a heritage item in an environmental planning instrument",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.general.excl.critical_habitat_or_wilderness",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Land is not critical habitat or a wilderness area",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "critical_habitat_or_wilderness",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Fact-sheet summary of the general requirements for complying development; the Codes SEPP text itself was not obtained.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW fact sheet: Exempt and complying development overview",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": null,
+    "effective_date": null,
+    "page": 3,
+    "section_ref": "Codes SEPP cl 1.19 (as summarised)",
+    "quote": "Is a wilderness area under the Wilderness Act",
+    "source_url": "https://www.planning.nsw.gov.au/sites/default/files/2023-03/exempt-and-complying-development.pdf",
+    "retrieved_at": "2026-10-12T16:46:09+00:00",
+    "sha256": "1661eae7ab1126a59898a2b1237d6c0afb0cac83fb20780adf257b319557ae32",
+    "doc_id": "overview"
+   }
+  },
+  {
+   "id": "cdc.flood_control_lot",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Flood control lot requirements",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "flood_control_lot",
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "Confirm with the council (s10.7 planning certificate) whether the lot is a flood control lot; the definition (Codes SEPP cl 1.5) and the flood control lot standards (Housing Code cl 3.5 / Inland Code cl 3D.7) were not obtained (legislation.nsw.gov.au is Cloudflare-blocked).",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "cdc.easements",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Easements / restrictions affecting the building footprint",
+   "category": "exclusion",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "easements_present",
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "No cited complying-development exclusion for easements was obtainable. Supply the title/DP easement information and confirm with the certifier and utility owners (see also build-over-sewer requirements).",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "cdc.lep_permissibility",
+   "code": "cdc_general",
+   "pathway": "cdc",
+   "label": "Development is permissible with consent in the zone under the LEP",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "lep_permissibility",
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "Gunnedah LEP 2012 land use table not obtained (Cloudflare). Supply the LEP land use table result for this zone and development.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "inland.res.lot_area_min",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Lot area at least 200 m2",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "lot_area_m2",
+   "op": ">=",
+   "value": 200,
+   "unit": "m2",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "cl 3D.18(1)",
+    "quote": "The area of the lot must not be less than 200m2 and the width of the lot must not be less than 6m measured at the primary road building line (clause 3D.18 (1))",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.lot_width_min",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Lot width at least 6 m at the primary road building line",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "lot_width_m",
+   "op": ">=",
+   "value": 6,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "cl 3D.18(1)",
+    "quote": "The area of the lot must not be less than 200m2 and the width of the lot must not be less than 6m measured at the primary road building line (clause 3D.18 (1))",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.one_dwelling",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Only one dwelling house on the lot (excluding a secondary dwelling)",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "existing_dwelling_houses_on_lot",
+   "op": "<=",
+   "value": 0,
+   "unit": "count",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Compares existing dwelling houses on the lot (before the new one) with 0.",
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "cl 3D.18(1)(c)",
+    "quote": "Only 1 dwelling house is permitted on the lot (excluding a secondary dwelling) (clause 3D.18 (1)(c))",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.storeys",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Maximum 2 storeys",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "storeys",
+   "op": "<=",
+   "value": 2,
+   "unit": "storeys",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {
+    "lot_type": "standard"
+   },
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.3(1)",
+    "quote": "3D.3 (1) Maximum number of 2",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.height",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Maximum building height 8.5 m",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "building_height_m",
+   "op": "<=",
+   "value": 8.5,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {
+    "lot_type": "standard"
+   },
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.19",
+    "quote": "3D.19 Maximum building height 8.5m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.gfa",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Maximum gross floor area (by lot area)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "gfa_m2",
+   "op": "<=",
+   "value": null,
+   "unit": "m2",
+   "bands": [
+    {
+     "lo": 200,
+     "hi": 250,
+     "value": {
+      "pct": 78
+     },
+     "lo_incl": true
+    },
+    {
+     "lo": 250,
+     "hi": 300,
+     "value": {
+      "pct": 75
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 300,
+     "hi": 350,
+     "value": {
+      "abs": 235
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 350,
+     "hi": 450,
+     "value": {
+      "pct_plus": [
+       25,
+       150
+      ]
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 450,
+     "hi": 560,
+     "value": {
+      "abs": 290
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 560,
+     "hi": 600,
+     "value": {
+      "pct_plus": [
+       25,
+       150
+      ]
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 600,
+     "hi": 740,
+     "value": {
+      "abs": 335
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 740,
+     "hi": 900,
+     "value": {
+      "pct_plus": [
+       25,
+       150
+      ]
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 900,
+     "hi": 920,
+     "value": {
+      "abs": 380
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 920,
+     "hi": 1400,
+     "value": {
+      "pct_plus": [
+       25,
+       150
+      ]
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 1400,
+     "hi": 1500,
+     "value": {
+      "abs": 500
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 1500,
+     "hi": null,
+     "value": {
+      "abs": 500
+     },
+     "lo_incl": false
+    }
+   ],
+   "band_field": "lot_area_m2",
+   "applies_if": [],
+   "assumes": {
+    "lot_type": "standard"
+   },
+   "note": "Band columns read from the rendered table: the 500 m2 cell spans the >1400-1500 and >1500 columns. One car parking space is excluded from GFA (table footnote 1).",
+   "confidence": 0.75,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.20",
+    "quote": "3D.20 Maximum gross floor area 78% 75% 235m2 25% + 290m2 25% + 335m2 25% + 380m2 25% + 500m2",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.primary_setback_avg",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Primary road setback: not less than the average of the 2 nearest dwelling houses (if 2 within 40 m on the same side)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "setback_primary_m",
+   "op": ">=",
+   "value": null,
+   "unit": "m",
+   "bands": null,
+   "band_field": "@neighbour_avg_primary_setback_m",
+   "applies_if": [
+    {
+     "field": "neighbour_avg_primary_setback_m",
+     "op": "not_null"
+    }
+   ],
+   "assumes": {
+    "lot_type": "standard"
+   },
+   "note": "Uses neighbour_avg_primary_setback_m.",
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.21(1)-(3)",
+    "quote": "Setback must not be less than the average primary road setback of the 2 nearest dwelling houses on the same side of the road",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.primary_setback_abs",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Primary road setback where there are not 2 dwelling houses within 40 m (by lot area)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "setback_primary_m",
+   "op": ">=",
+   "value": null,
+   "unit": "m",
+   "bands": [
+    {
+     "lo": 200,
+     "hi": 300,
+     "value": {
+      "num": 3
+     },
+     "lo_incl": true
+    },
+    {
+     "lo": 300,
+     "hi": 1500,
+     "value": {
+      "num": 4.5
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 1500,
+     "hi": null,
+     "value": {
+      "num": 10
+     },
+     "lo_incl": false
+    }
+   ],
+   "band_field": "lot_area_m2",
+   "applies_if": [
+    {
+     "field": "neighbour_avg_primary_setback_m",
+     "op": "is_null"
+    }
+   ],
+   "assumes": {
+    "lot_type": "standard"
+   },
+   "note": "Bands read from the rendered table (3 m for 200-300 m2, 4.5 m for >300-1500 m2, 10 m for >1500 m2). Applies only in the absence of 2 dwelling houses within 40 m on the same side.",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.21(1)-(3)",
+    "quote": "In the 3m 4.5m 10m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.secondary_setback",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Secondary road setback (by lot area)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "setback_secondary_m",
+   "op": ">=",
+   "value": null,
+   "unit": "m",
+   "bands": [
+    {
+     "lo": 200,
+     "hi": 600,
+     "value": {
+      "num": 2
+     },
+     "lo_incl": true
+    },
+    {
+     "lo": 600,
+     "hi": 1500,
+     "value": {
+      "num": 3
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 1500,
+     "hi": null,
+     "value": {
+      "num": 5
+     },
+     "lo_incl": false
+    }
+   ],
+   "band_field": "lot_area_m2",
+   "applies_if": [
+    {
+     "field": "lot_type",
+     "op": "eq",
+     "value": "corner"
+    }
+   ],
+   "assumes": {},
+   "note": "Band boundaries inferred from the rendered table (2 m / 3 m / 5 m columns); only relevant to corner lots.",
+   "confidence": 0.65,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 3,
+    "section_ref": "cl 3D.21(4)",
+    "quote": "3D.21 (4) Minimum secondary road 2m 3m 5m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.side_setback_low",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Side setback for building up to 4.5 m high (by lot width)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "setback_side_m",
+   "op": ">=",
+   "value": null,
+   "unit": "m",
+   "bands": [
+    {
+     "lo": 6,
+     "hi": 18,
+     "value": {
+      "num": 0.9
+     },
+     "lo_incl": true
+    },
+    {
+     "lo": 18,
+     "hi": 24,
+     "value": {
+      "num": 1.5
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 24,
+     "hi": null,
+     "value": {
+      "num": 2.5
+     },
+     "lo_incl": false
+    }
+   ],
+   "band_field": "lot_width_m",
+   "applies_if": [
+    {
+     "field": "wall_height_side_m",
+     "op": "le",
+     "value": 4.5
+    }
+   ],
+   "assumes": {
+    "lot_type": "standard"
+   },
+   "note": "18-24 m: 1.5 m and >24 m: 2.5 m per the same table (rows 'Lot width >18-24m 0m - 4.5m 1.5m', '>24m 0m - 4.5m 2.5m'). Built-to-boundary options (cl 3D.21(9)-(10)) are not evaluated.",
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 4,
+    "section_ref": "cl 3D.21(7)-(8)",
+    "quote": "3D.21 (7) Side setback 6m - 18m 0m – 4.5m 900mm",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.side_setback_high",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Side setback for building above 4.5 m high, lot width 6-18 m: building height minus 3 m",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "setback_side_m",
+   "op": ">=",
+   "value": null,
+   "unit": "m",
+   "bands": [
+    {
+     "lo": 6,
+     "hi": 18,
+     "value": {
+      "formula": "wall_height_side_m - 3"
+     },
+     "lo_incl": true
+    },
+    {
+     "lo": 18,
+     "hi": 24,
+     "value": {
+      "formula": "wall_height_side_m - 3"
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 24,
+     "hi": null,
+     "value": {
+      "formula_max": [
+       "wall_height_side_m - 3",
+       2.5
+      ]
+     },
+     "lo_incl": false
+    }
+   ],
+   "band_field": "lot_width_m",
+   "applies_if": [
+    {
+     "field": "wall_height_side_m",
+     "op": "gt",
+     "value": 4.5
+    }
+   ],
+   "assumes": {
+    "lot_type": "standard"
+   },
+   "note": "Greater of (building height - 3 m) and 2.5 m for lots wider than 24 m (quote: '(Building height – 3m) or 2.5m, whichever is greater').",
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 4,
+    "section_ref": "cl 3D.21(7)-(8)",
+    "quote": ">4.5m – 8.5m Building height – 3m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.rear_setback_low",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Rear setback for parts of building 0-4.5 m high (by lot area)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "setback_rear_m",
+   "op": ">=",
+   "value": null,
+   "unit": "m",
+   "bands": [
+    {
+     "lo": 200,
+     "hi": 900,
+     "value": {
+      "num": 3
+     },
+     "lo_incl": true
+    },
+    {
+     "lo": 900,
+     "hi": 1500,
+     "value": {
+      "num": 5
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 1500,
+     "hi": null,
+     "value": {
+      "num": 10
+     },
+     "lo_incl": false
+    }
+   ],
+   "band_field": "lot_area_m2",
+   "applies_if": [
+    {
+     "field": "wall_height_rear_m",
+     "op": "le",
+     "value": 4.5
+    }
+   ],
+   "assumes": {
+    "lot_type": "standard"
+   },
+   "note": "3 m for 200-900 m2, 5 m for >900-1500 m2, 10 m for >1500 m2 (rendered table).",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 3,
+    "section_ref": "cl 3D.21(14)",
+    "quote": "0 - 4.5m 3m 5m 10m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.rear_setback_high",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Rear setback for parts of building above 4.5 m and up to 8.5 m high (by lot area)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "setback_rear_m",
+   "op": ">=",
+   "value": null,
+   "unit": "m",
+   "bands": [
+    {
+     "lo": 200,
+     "hi": 300,
+     "value": {
+      "unresolved": "lesser of 10 m or the average of the 2 adjoining dwellings measured at 4.5 m above existing ground level"
+     },
+     "lo_incl": true
+    },
+    {
+     "lo": 300,
+     "hi": 900,
+     "value": {
+      "num": 8
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 900,
+     "hi": 1500,
+     "value": {
+      "num": 12
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 1500,
+     "hi": null,
+     "value": {
+      "num": 15
+     },
+     "lo_incl": false
+    }
+   ],
+   "band_field": "lot_area_m2",
+   "applies_if": [
+    {
+     "field": "wall_height_rear_m",
+     "op": "gt",
+     "value": 4.5
+    }
+   ],
+   "assumes": {
+    "lot_type": "standard"
+   },
+   "note": "Quote is an approximation of the layout text; validated against the normalised page text.",
+   "confidence": 0.65,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 3,
+    "section_ref": "cl 3D.21(14)",
+    "quote": ">4.5 - Lesser of 10m or 8m 12m 15m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.parking",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Car parking space on the lot (1 space where lot width is 8-10 m or more)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "parking_spaces",
+   "op": ">=",
+   "value": 1,
+   "unit": "spaces",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "lot_width_m",
+     "op": "gt",
+     "value": 8
+    }
+   ],
+   "assumes": {},
+   "note": "Table: 'Not required' for lot width 6-<8 m, '1 space required' from 8 m (column boundary read from rendered table).",
+   "confidence": 0.65,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Residential zones R1-R4 and RU5, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 5,
+    "section_ref": "cl 3D.27(1)",
+    "quote": "3D.27 (1) Car parking space required on the lot Not required 1 space required",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Standard+lot+Residential+zones+Inland+Code+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "694913d8c95b7339367f2e54d5b3fb7ddc15a70ee7e01fb613ea5b4783ad58ef",
+    "doc_id": "inland_std_res"
+   }
+  },
+  {
+   "id": "inland.res.lot_type_tables",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Corner, battle-axe and parallel-road lot tables",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "lot_type",
+     "op": "ne_notnull",
+     "value": "standard"
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "The Department publishes separate Inland Code summary tables for corner, battle-axe and parallel road lots (see Inland Code page); they were not encoded. Standard-lot values are NOT valid for these lots: confirm lot type and apply the matching table.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "inland.r5.tables",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Large lot residential (R5) tables",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R5"
+   ],
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "R5 summary tables exist (Inland Code page) but were not encoded in this release.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "inland.rural.lot_area_min",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Lot area not less than the LEP minimum lot size (4,000 m2 if none specified)",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "lot_area_m2",
+   "op": ">=",
+   "value": "@lep_min_lot_size_m2|4000",
+   "unit": "m2",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Compared with lep_min_lot_size_m2 when supplied (LEP Lot Size Map), otherwise 4,000 m2 only if the LEP specifies none; if unknown, UNRESOLVED.",
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "cl 3D.10(1)",
+    "quote": "The area of the lot must not be less than that specified in an EPI, or 4,000m2 if not specified (see clause 3D.10 (1))",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.not_ru3",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "New dwelling houses are excluded in zone RU3",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU3"
+   ],
+   "field": "zone",
+   "op": "not_in",
+   "value": [
+    "RU3"
+   ],
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Inland Code rural summary",
+    "quote": "the construction of a new 1 or 2 storey dwelling house (excluding new dwelling houses on zone RU3)",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.one_dwelling",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Only one dwelling house on the lot (excluding secondary dwellings)",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "existing_dwelling_houses_on_lot",
+   "op": "<=",
+   "value": 0,
+   "unit": "count",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Inland Code rural summary",
+    "quote": "Only 1 dwelling house is permitted on the lot (excluding secondary dwellings)",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.height",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Maximum building height 10 m",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "building_height_m",
+   "op": "<=",
+   "value": 10,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.11",
+    "quote": "3D.11 Maximum building height 10m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.storeys",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Maximum 2 storeys",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "storeys",
+   "op": "<=",
+   "value": 2,
+   "unit": "storeys",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.3",
+    "quote": "3D.3 Maximum no. storeys 2",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.primary_setback",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Primary road setback 50 m (RU1, RU2, RU3, RU6; sealed primary road)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU6"
+   ],
+   "field": "setback_primary_m",
+   "op": ">=",
+   "value": 50,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Unsealed primary or secondary road: 50 m also (same table).",
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.12(1)",
+    "quote": "3D.12 (1) Minimum primary Primary road (sealed) 50m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.primary_setback_ru4",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Primary road setback 30 m (RU4, sealed road); 50 m if unsealed",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU4"
+   ],
+   "field": "setback_primary_m",
+   "op": ">=",
+   "value": 30,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "primary_road_sealed",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.12(1)",
+    "quote": "Primary road (sealed) 30m in zone RU4",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.primary_setback_unsealed",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Unsealed primary or secondary road setback 50 m",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU4"
+   ],
+   "field": "setback_primary_m",
+   "op": ">=",
+   "value": 50,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "primary_road_sealed",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.12(1)",
+    "quote": "Unsealed primary or 50m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.secondary_setback",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Secondary road setback 10 m (sealed)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "setback_secondary_m",
+   "op": ">=",
+   "value": 10,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "lot_type",
+     "op": "eq",
+     "value": "corner"
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.12(1)",
+    "quote": "Secondary road 10m (sealed)",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.side_setback",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Side setback 10 m",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "setback_side_m",
+   "op": ">=",
+   "value": 10,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.12(4)",
+    "quote": "3D.12 (4) Minimum side setbacks 2 10m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.rear_setback",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Rear setback 15 m",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "setback_rear_m",
+   "op": ">=",
+   "value": 15,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.12(5)",
+    "quote": "3D.12 (5) Minimum rear setback 15m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.watercourse",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Setback from a watercourse 40 m",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "watercourse_distance_m",
+   "op": ">=",
+   "value": 40,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Summary of Development Standards, Rural zones RU1, RU2, RU3, RU4 and RU6, All Lot Types",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 3,
+    "section_ref": "cl 3D.12(7)",
+    "quote": "3D.12 (7) Minimum setback from a watercourse 3 40m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/All+lot+types+rural+zones+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "6cb951a7a5ca012da00e397dcc42e27d323c15207131e5ffe8ba3fd0619a3eb3",
+    "doc_id": "inland_rural"
+   }
+  },
+  {
+   "id": "inland.rural.adjoining_land_use",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "New dwelling house 250 m from adjoining forestry, intensive livestock/plant agriculture, mines, railway lines, rural industries",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "near_incompatible_land_use_250m",
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "Confirm whether any listed adjoining land use is within 250 m (Inland Code cl 3D.13: 'New dwelling house setback from the following adjoining land 250m'); no data layer.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "inland.rural.sloping_siting",
+   "code": "inland_code",
+   "pathway": "cdc",
+   "label": "Siting controls on sloping land (lots > 4 ha)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "Inland Code cl 3D.11(2) siting controls for lots over 4 ha on sloped land: clause text not obtained; confirm with the certifier.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "housing.res.lot_area_min",
+   "code": "housing_code",
+   "pathway": "cdc",
+   "label": "Lot area at least 200 m2 (standard lot)",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "lot_area_m2",
+   "op": ">=",
+   "value": 200,
+   "unit": "m2",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Housing Code - Summary of Development Standards, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "June 2018",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Housing Code cl 3.1/3.18",
+    "quote": "The area of a standard lot must not be less than 200m2 and the width of a lot must not be less than 6m measured at the primary road building line",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Development+Standards/Development+Standards+Summary+Table+-+Standard+Lot.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "47eb7ab90e6db0de134188038cebeebc6a03a4a9d9283d3a2569970032acdd38",
+    "doc_id": "housing_std"
+   }
+  },
+  {
+   "id": "housing.res.lot_width_min",
+   "code": "housing_code",
+   "pathway": "cdc",
+   "label": "Lot width at least 6 m at the primary road building line",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": "lot_width_m",
+   "op": ">=",
+   "value": 6,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Housing Code - Summary of Development Standards, Standard Lot",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "June 2018",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Housing Code",
+    "quote": "The area of a standard lot must not be less than 200m2 and the width of a lot must not be less than 6m measured at the primary road building line",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Development+Standards/Development+Standards+Summary+Table+-+Standard+Lot.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "47eb7ab90e6db0de134188038cebeebc6a03a4a9d9283d3a2569970032acdd38",
+    "doc_id": "housing_std"
+   }
+  },
+  {
+   "id": "housing.other_standards",
+   "code": "housing_code",
+   "pathway": "cdc",
+   "label": "Housing Code development standards (height, GFA, setbacks, landscaping, privacy)",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "RU5"
+   ],
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "The Housing Code summary table for the lot type was obtained (June 2018) but not encoded in this release, and the Codes SEPP text is blocked. Resolve from the Housing Code summary tables / Codes SEPP Part 3.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "rural_housing.standards",
+   "code": "rural_housing_code",
+   "pathway": "cdc",
+   "label": "Rural Housing Code development standards",
+   "category": "standard",
+   "dev_types": [
+    "dwelling_house"
+   ],
+   "zones": [
+    "R5",
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "Rural Housing Code summary tables could not be obtained (no URL located; Codes SEPP blocked).",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "sd.zone",
+   "code": "housing_sepp_secondary",
+   "pathway": "cdc",
+   "label": "Zone R1-R5 (secondary dwellings permitted); other zones only if the LEP permits",
+   "category": "applicability",
+   "dev_types": [
+    "secondary_dwelling"
+   ],
+   "zones": null,
+   "field": "zone",
+   "op": "in",
+   "value": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "Outside R1-R5 the result is UNRESOLVED (depends on the LEP), not a fail.",
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": true,
+   "citation": {
+    "document_title": "NSW Planning: Secondary dwellings (Housing SEPP) FAQ page",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "Page updated 17 July 2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Housing SEPP 2021 (NSW Planning summary)",
+    "quote": "Secondary dwellings are permitted in residential zones (R1, R2, R3, R4, and R5). They may also be permitted in other zones under a council’s local environmental plan.",
+    "source_url": "https://www.planning.nsw.gov.au/the-planning-system/housing/housing-sepp/secondary-dwellings",
+    "retrieved_at": "2026-10-12T16:45:57+00:00",
+    "sha256": "120da1a1326f6b108f2ba05869e968bddaea193121bb57772c596944c5cb1f8f",
+    "doc_id": "sec_dw"
+   }
+  },
+  {
+   "id": "sd.lot_area",
+   "code": "housing_sepp_secondary",
+   "pathway": "cdc",
+   "label": "Lot area at least 450 m2 (unless the secondary dwelling is entirely within an existing dwelling)",
+   "category": "applicability",
+   "dev_types": [
+    "secondary_dwelling"
+   ],
+   "zones": null,
+   "field": "lot_area_m2",
+   "op": ">=",
+   "value": 450,
+   "unit": "m2",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "within_existing_dwelling",
+     "op": "ne",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW Planning: Secondary dwellings (Housing SEPP) FAQ page",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "Page updated 17 July 2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Housing SEPP Sched 1 (NSW Planning summary)",
+    "quote": "One of the requirements for secondary dwelling development to be carried out as complying development is that it is on a lot that has an area of at least 450 m",
+    "source_url": "https://www.planning.nsw.gov.au/the-planning-system/housing/housing-sepp/secondary-dwellings",
+    "retrieved_at": "2026-10-12T16:45:57+00:00",
+    "sha256": "120da1a1326f6b108f2ba05869e968bddaea193121bb57772c596944c5cb1f8f",
+    "doc_id": "sec_dw"
+   }
+  },
+  {
+   "id": "sd.no_subdivision",
+   "code": "housing_sepp_secondary",
+   "pathway": "cdc",
+   "label": "The lot is not subdivided",
+   "category": "applicability",
+   "dev_types": [
+    "secondary_dwelling"
+   ],
+   "zones": null,
+   "field": "involves_subdivision",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW Planning: Secondary dwellings (Housing SEPP) FAQ page",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "Page updated 17 July 2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Housing SEPP 2021 (NSW Planning summary)",
+    "quote": "A lot on which a secondary dwelling is constructed cannot be subdivided.",
+    "source_url": "https://www.planning.nsw.gov.au/the-planning-system/housing/housing-sepp/secondary-dwellings",
+    "retrieved_at": "2026-10-12T16:45:57+00:00",
+    "sha256": "120da1a1326f6b108f2ba05869e968bddaea193121bb57772c596944c5cb1f8f",
+    "doc_id": "sec_dw"
+   }
+  },
+  {
+   "id": "sd.principal",
+   "code": "housing_sepp_secondary",
+   "pathway": "cdc",
+   "label": "Established in conjunction with a principal dwelling on the same lot",
+   "category": "applicability",
+   "dev_types": [
+    "secondary_dwelling"
+   ],
+   "zones": null,
+   "field": "principal_dwelling_present",
+   "op": "is_true",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Granny Flats (NSW Planning Portal)",
+    "authority": "NSW Planning Portal",
+    "version": "Last updated 30/04/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Housing SEPP (NSW Planning Portal)",
+    "quote": "established in conjunction with another dwelling (the principal dwelling)",
+    "source_url": "https://www.planningportal.nsw.gov.au/development-and-assessment/planning-approval-pathways/complying-development/granny-flats",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "888471f7b043585e862ad3af2833c8a26c20e5baee08c0faa2ada38b37e8fb69",
+    "doc_id": "pp_granny_flats"
+   }
+  },
+  {
+   "id": "sd.not_strata",
+   "code": "housing_sepp_secondary",
+   "pathway": "cdc",
+   "label": "Not an individual lot in a strata plan or community title scheme",
+   "category": "applicability",
+   "dev_types": [
+    "secondary_dwelling"
+   ],
+   "zones": null,
+   "field": "lot_is_strata_or_community",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Granny Flats (NSW Planning Portal)",
+    "authority": "NSW Planning Portal",
+    "version": "Last updated 30/04/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Housing SEPP (NSW Planning Portal)",
+    "quote": "on the same lot of land as the principal dwelling (and not an individual lot in a strata plan or community title scheme)",
+    "source_url": "https://www.planningportal.nsw.gov.au/development-and-assessment/planning-approval-pathways/complying-development/granny-flats",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "888471f7b043585e862ad3af2833c8a26c20e5baee08c0faa2ada38b37e8fb69",
+    "doc_id": "pp_granny_flats"
+   }
+  },
+  {
+   "id": "sd.bushfire_flame_zone",
+   "code": "housing_sepp_secondary",
+   "pathway": "cdc",
+   "label": "Not land at risk of exposure to flames (flame zone, BAL-FZ)",
+   "category": "exclusion",
+   "dev_types": [
+    "secondary_dwelling"
+   ],
+   "zones": null,
+   "field": "bal",
+   "op": "not_in",
+   "value": [
+    "BAL-FZ"
+   ],
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "The page wording ('ember attack or ... exposure to flames') is ambiguous: only BAL-FZ is treated as a fail; other BAL ratings are UNRESOLVED pending the Housing SEPP text.",
+   "confidence": 0.6,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "NSW Planning: Secondary dwellings (granny flats) after disasters",
+    "authority": "NSW Department of Planning, Housing and Infrastructure",
+    "version": "Page updated 7 March 2024",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Housing SEPP (NSW Planning: Secondary dwellings (granny flats))",
+    "quote": "If your land is zoned as at risk of ember attack or of exposure to flames from a fire front, you cannot do a complying development.",
+    "source_url": "https://www.planning.nsw.gov.au/the-planning-system/disaster-recovery/secondary-dwellings-granny-flats",
+    "retrieved_at": "2026-10-12T16:46:00+00:00",
+    "sha256": "84248fb8bdd1b01ab989a749deb53bf814567e97b837c0a3b3410cae046ac512",
+    "doc_id": "nsw_page_granny_flats_rebuild"
+   }
+  },
+  {
+   "id": "sd.standards",
+   "code": "housing_sepp_secondary",
+   "pathway": "cdc",
+   "label": "Housing SEPP Schedule 1 site and design standards (floor area, setbacks, height, landscaping, parking)",
+   "category": "standard",
+   "dev_types": [
+    "secondary_dwelling"
+   ],
+   "zones": null,
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "Housing SEPP 2021 Schedule 1 not obtained (Cloudflare). The NSW page says the floor area calculation includes the principal dwelling, the secondary dwelling and attached carports/garages/decks etc., but gives no limit. Resolve from Schedule 1 before relying on CDC.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "sd.rural_cl_5_5",
+   "code": "housing_sepp_secondary",
+   "pathway": "da",
+   "label": "LEP optional clause 5.5 (rural secondary dwelling floor area and distance)",
+   "category": "standard",
+   "dev_types": [
+    "secondary_dwelling"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6",
+    "R5"
+   ],
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "Whether Gunnedah LEP 2012 includes optional cl 5.5 (and its limits) is unknown: LEP not obtained.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "farm_ex.zone",
+   "code": "exempt_farm",
+   "pathway": "exempt",
+   "label": "Permitted zones RU1, RU2, RU3, RU4, RU6",
+   "category": "applicability",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": null,
+   "field": "zone",
+   "op": "in",
+   "value": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Farm Buildings as Exempt Development - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 4,
+    "section_ref": "cl 2.31(a)",
+    "quote": "2.31(a) Permitted zones RU1, RU2, RU3, RU4, and RU6",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
+    "doc_id": "exempt_farm"
+   }
+  },
+  {
+   "id": "farm_ex.height_lt10",
+   "code": "exempt_farm",
+   "pathway": "exempt",
+   "label": "Farm building height 7 m (landholding under 10 ha); 10 m for 10-400 ha",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "building_height_m",
+   "op": "<=",
+   "value": null,
+   "unit": "m",
+   "bands": [
+    {
+     "lo": 0,
+     "hi": 100000,
+     "value": {
+      "num": 7
+     },
+     "lo_incl": true
+    },
+    {
+     "lo": 100000,
+     "hi": 4000000,
+     "value": {
+      "num": 10
+     },
+     "lo_incl": false
+    },
+    {
+     "lo": 4000000,
+     "hi": null,
+     "value": {
+      "unresolved": "table column for >400 ha not separately legible"
+     },
+     "lo_incl": false
+    }
+   ],
+   "band_field": "landholding_area_m2",
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": "Landholding bands in m2 (10 ha = 100,000 m2; 400 ha = 4,000,000 m2). 7 m also applies on scenic land (footnote 3).",
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Farm Buildings as Exempt Development - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 4,
+    "section_ref": "cl 2.32(1)(a)",
+    "quote": "2.32(1) (a) Maximum height 3 7m 10m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
+    "doc_id": "exempt_farm"
+   }
+  },
+  {
+   "id": "farm_ex.footprint",
+   "code": "exempt_farm",
+   "pathway": "exempt",
+   "label": "Maximum footprint 200 m2 per farm building",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "footprint_m2",
+   "op": "<=",
+   "value": 200,
+   "unit": "m2",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Farm Buildings as Exempt Development - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 4,
+    "section_ref": "cl 2.32(1)(d)",
+    "quote": "2.32(1) (d) Maximum footprint (per 200m2",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
+    "doc_id": "exempt_farm"
+   }
+  },
+  {
+   "id": "farm_ex.road_setback",
+   "code": "exempt_farm",
+   "pathway": "exempt",
+   "label": "Setback from any road 20 m",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "setback_primary_m",
+   "op": ">=",
+   "value": 20,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": "Applies to primary, secondary, parallel and classified roads.",
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Farm Buildings as Exempt Development - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 4,
+    "section_ref": "cl 2.32(1)(f)",
+    "quote": "2.32(1) (f) Setback from any road 20m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
+    "doc_id": "exempt_farm"
+   }
+  },
+  {
+   "id": "farm_ex.side_setback_small",
+   "code": "exempt_farm",
+   "pathway": "exempt",
+   "label": "Side/rear setback 10 m for footprint up to 100 m2; 50 m for >100-200 m2",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "setback_side_m",
+   "op": ">=",
+   "value": null,
+   "unit": "m",
+   "bands": [
+    {
+     "lo": 0,
+     "hi": 100,
+     "value": {
+      "num": 10
+     },
+     "lo_incl": true
+    },
+    {
+     "lo": 100,
+     "hi": 200,
+     "value": {
+      "num": 50
+     },
+     "lo_incl": false
+    }
+   ],
+   "band_field": "footprint_m2",
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Farm Buildings as Exempt Development - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 4,
+    "section_ref": "cl 2.32(1)(f)",
+    "quote": "0 – 100m2 10m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
+    "doc_id": "exempt_farm"
+   }
+  },
+  {
+   "id": "farm_ex.other_building",
+   "code": "exempt_farm",
+   "pathway": "exempt",
+   "label": "Minimum setback 6 m from any other building",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "distance_to_other_building_m",
+   "op": ">=",
+   "value": 6,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Farm Buildings as Exempt Development - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 4,
+    "section_ref": "cl 2.32(1)(g)",
+    "quote": "2.32(1) (g) Minimum setback from 6m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
+    "doc_id": "exempt_farm"
+   }
+  },
+  {
+   "id": "farm_ex.waterbody",
+   "code": "exempt_farm",
+   "pathway": "exempt",
+   "label": "Minimum waterbody setback 50 m",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": "watercourse_distance_m",
+   "op": ">=",
+   "value": 50,
+   "unit": "m",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Farm Buildings as Exempt Development - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 4,
+    "section_ref": "cl 2.32(1)(h)",
+    "quote": "2.32(1) (h) Minimum waterbody 50m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
+    "doc_id": "exempt_farm"
+   }
+  },
+  {
+   "id": "farm_ex.heritage",
+   "code": "exempt_farm",
+   "pathway": "exempt",
+   "label": "Not on or in a heritage item, draft heritage item or environmentally sensitive area",
+   "category": "exclusion",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": null,
+   "field": "heritage_item",
+   "op": "is_false",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Farm Buildings as Exempt Development - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 3,
+    "section_ref": "cl 2.31(b)",
+    "quote": "must not be constructed or installed on or in a heritage item or draft heritage item or an environmentally sensitive area (clause 2.31(b))",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
+    "doc_id": "exempt_farm"
+   }
+  },
+  {
+   "id": "farm_ex.engineer",
+   "code": "exempt_farm",
+   "pathway": "exempt",
+   "label": "Designed to the specifications of a professional engineer",
+   "category": "applicability",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": null,
+   "field": "engineer_design_provided",
+   "op": "is_true",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Farm Buildings as Exempt Development - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 3,
+    "section_ref": "cl 2.32(1)(i)",
+    "quote": "The development must be designed and constructed in accordance with the specifications of a professional engineer (clause 2.32 (1)(i))",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Exempt+Inland+amendments+20181016.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "511a40114c5e9eb9b9c5147728429633b0f6670b2d9876e0f92ffebcc47b3fa3",
+    "doc_id": "exempt_farm"
+   }
+  },
+  {
+   "id": "farm_ex.aggregate_and_siting",
+   "code": "exempt_farm",
+   "pathway": "exempt",
+   "label": "Aggregate footprint of all farm buildings; sloping-land siting (landholding >4 ha); shipping containers",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6"
+   ],
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "Aggregate footprint limit and siting controls (cl 2.32(1)(e), (c)) are in the Farm Buildings exempt summary but the column split is not encoded; confirm against the Codes SEPP.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "shed.exempt_standards",
+   "code": "exempt_shed",
+   "pathway": "exempt",
+   "label": "Exempt cabana/cubby house/garden shed/gazebo/greenhouse standards (Codes SEPP cl 2.17-2.18)",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": null,
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "ne",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "Numeric exempt-development standards for garden sheds (area, height, setbacks, materials) are only in Codes SEPP Part 2 Subdivision 12: not obtained. The NSW fact sheet for sheds has no numbers. Supply them from the SEPP or confirm with the council/certifier.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "shed.cdc_standards",
+   "code": "cdc_outbuilding",
+   "pathway": "cdc",
+   "label": "CDC standards for sheds/outbuildings (Inland Code Part 3D / Rural Housing Code / Housing Code Division 4)",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": null,
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "ne",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "The Inland Code complying standards for non-farm outbuildings (e.g. detached sheds in R2) were not obtained: only the farm building summary was. Confirm with the certifier.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "farm_cdc.landholding",
+   "code": "inland_farm_cdc",
+   "pathway": "cdc",
+   "label": "Landholding at least 4,000 m2",
+   "category": "applicability",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6",
+    "R5"
+   ],
+   "field": "landholding_area_m2",
+   "op": ">=",
+   "value": 4000,
+   "unit": "m2",
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Farm Building Standards - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Inland Code Division (farm buildings)",
+    "quote": "The area of the landholding must not be less than 4,000m2",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Complying+Inland+20181011.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "77ad6d8001bc0ebba6f62e7f1f95053c3e6534615b7c8a767da1e06f9e315a73",
+    "doc_id": "inland_farm_cdc"
+   }
+  },
+  {
+   "id": "farm_cdc.height",
+   "code": "inland_farm_cdc",
+   "pathway": "cdc",
+   "label": "Farm building maximum height 7 m (landholding 0.4-10 ha) / 10 m (>10 ha)",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6",
+    "R5"
+   ],
+   "field": "building_height_m",
+   "op": "<=",
+   "value": null,
+   "unit": "m",
+   "bands": [
+    {
+     "lo": 4000,
+     "hi": 100000,
+     "value": {
+      "num": 7
+     },
+     "lo_incl": true
+    },
+    {
+     "lo": 100000,
+     "hi": null,
+     "value": {
+      "num": 10
+     },
+     "lo_incl": false
+    }
+   ],
+   "band_field": "landholding_area_m2",
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.7,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Inland Code - Farm Building Standards - Summary of Development Standards",
+    "authority": "NSW Department of Planning and Environment",
+    "version": "October 2018",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "cl 3D.56(1)",
+    "quote": "3D.56(1) Maximum height 7m 10m",
+    "source_url": "https://s3-ap-southeast-2.amazonaws.com/shared-drupal-s3fs/master-test/fapub_pdf/Inland/Farm+buildings+Complying+Inland+20181011.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "77ad6d8001bc0ebba6f62e7f1f95053c3e6534615b7c8a767da1e06f9e315a73",
+    "doc_id": "inland_farm_cdc"
+   }
+  },
+  {
+   "id": "farm_cdc.footprint_setbacks",
+   "code": "inland_farm_cdc",
+   "pathway": "cdc",
+   "label": "Farm building CDC footprint, aggregate footprint and road/side/rear setbacks (cl 3D.57-3D.59)",
+   "category": "standard",
+   "dev_types": [
+    "shed"
+   ],
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU3",
+    "RU4",
+    "RU6",
+    "R5"
+   ],
+   "field": null,
+   "op": null,
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [
+    {
+     "field": "farm_building",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.0,
+   "verify_current": true,
+   "status": "unresolved",
+   "prompt": "The summary table was obtained but its landholding/footprint columns were not encoded; footprints of 500 m2 or more need 200 m from every boundary (table footnote 4). Resolve against the table/SEPP.",
+   "else_unresolved": false,
+   "looked": [],
+   "citation": null
+  },
+  {
+   "id": "exempt.dwelling.na",
+   "code": "exempt_general",
+   "pathway": "exempt",
+   "label": "Exempt development covers minor, low-impact works; a new dwelling is not in the exempt development list",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling"
+   ],
+   "zones": null,
+   "field": "__always_not_applicable__",
+   "op": "na",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": "INFERRED: the portal list of exempt works does not include a dwelling; the Codes SEPP Part 2 list was not obtained. Verify with the council.",
+   "confidence": 0.5,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Exempt Development (NSW Planning Portal)",
+    "authority": "NSW Planning Portal",
+    "version": "Last updated 07/02/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Exempt development (NSW Planning Portal)",
+    "quote": "Exempt development can be done for certain residential, commercial and industrial properties including decks, gardens sheds, carports, fences, window repairs and house painting.",
+    "source_url": "https://www.planningportal.nsw.gov.au/development-and-assessment/planning-approval-pathways/exempt-development",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "bca095b6ac65759a6167c3bc12a92dc5a51da30f63fe1a403d8b40ce9861629f",
+    "doc_id": "pp_exempt_development"
+   }
+  },
+  {
+   "id": "da.local_dev",
+   "code": "da",
+   "pathway": "da",
+   "label": "Development needing consent is lodged as a development application with the consent authority via the NSW Planning Portal",
+   "category": "applicability",
+   "dev_types": [
+    "dwelling_house",
+    "secondary_dwelling",
+    "shed"
+   ],
+   "zones": null,
+   "field": "__info__",
+   "op": "info",
+   "value": null,
+   "unit": null,
+   "bands": null,
+   "band_field": null,
+   "applies_if": [],
+   "assumes": {},
+   "note": null,
+   "confidence": 0.8,
+   "verify_current": true,
+   "status": "resolved",
+   "else_unresolved": false,
+   "citation": {
+    "document_title": "Local Development (NSW Planning Portal)",
+    "authority": "NSW Planning Portal",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Local development (NSW Planning Portal)",
+    "quote": "If your development needs consent, a development application must be lodged with the local council.",
+    "source_url": "https://www.planningportal.nsw.gov.au/local-development",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "291d4fc03100ad817ffd80030f0672c8fab6f3c1be3bd1d5d1d8d11dc1e5b7f9",
+    "doc_id": "pp_local_development"
+   }
+  }
+ ]
+}
