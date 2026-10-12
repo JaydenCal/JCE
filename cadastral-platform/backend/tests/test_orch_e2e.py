@@ -109,7 +109,8 @@ def _run(pool, world, tmp_path, monkeypatch, *, acks=True, with_plan=True, **reg
     params = {"jurisdiction": "NSW", "lotplan": "12//DP345678",
               "terrain": {"survey": _survey(), "pad_level_m": 100.8},
               "dbyd": _dbyd(tmp_path, monkeypatch)}
-    req = RunRequest(project_id=project, params=params, upload_id=_upload(pool, uid, project, plan) if with_plan else None)
+    req = RunRequest(project_id=project, params=params, upload_id=_upload(pool, uid, project, plan) if with_plan else None,
+                     drawing_scale_denominator=250)
     orch = Orchestrator(pool, _registry(tmp_path, **reg_kw), fast_config(export_dir=str(tmp_path / "exports")))
     run = orch.create_run(uid, req)
     return orch, run, orch.execute_run(run.run_id, uid), uid
@@ -163,9 +164,11 @@ def test_full_chain_real_agents(pool, world, tmp_path, monkeypatch):
     ev = [e["event"] for e in events(pool, uid, run.run_id)]
     assert ev.count("handoff") == 8 and "gate_blocked" not in ev
 
-    # resume = pure idempotency-cache hits, same outputs
-    again = orch.execute_run(run.run_id, uid)
+    # an identical second run is served entirely from the idempotency cache, with identical outputs
+    run2 = orch.create_run(uid, RunRequest.model_validate(run.plan["request"]))
+    again = orch.execute_run(run2.run_id, uid)
     assert again.status is RunStatus.succeeded and all(r.cache_hit for r in again.nodes.values())
+    assert again.nodes["SA5"].output == cad
 
 
 def test_export_gate_blocks_sa5_and_writes_nothing(pool, world, tmp_path, monkeypatch):
