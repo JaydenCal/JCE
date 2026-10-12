@@ -77,7 +77,10 @@ def test_retries_exhausted(pool, world):
 
 def test_stub_agents_fail_not_implemented(pool, world):
     uid, project = world
-    orch = Orchestrator(pool, default_registry(), fast_config())
+    reg = default_registry()
+    from app.orchestrator.registry import StubAgent
+    reg.register(AgentCode.SA1_CADASTRE, lambda: StubAgent(AgentCode.SA1_CADASTRE))   # SA1 is real by default now
+    orch = Orchestrator(pool, reg, fast_config())
     run, out = go(orch, uid, project, targets=["SA1"])
     assert out.status is RunStatus.failed and out.nodes["SA1"].error_code == "NOT_IMPLEMENTED"
     assert len(invocations(pool, uid, run.run_id)) == 1

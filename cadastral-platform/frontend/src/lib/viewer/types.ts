@@ -5,7 +5,7 @@ export interface PartDef {
   n: string; c: string; col: string; a?: number; ro?: number; me?: number;
   /** triangle indices; when absent, `v` is a triangle soup (9 numbers per triangle) */
   f?: number[] | null; v?: number[]; lines?: number[]; vc?: number[]; uv?: number[];
-  cs?: boolean | number; tex?: string; eml?: number;
+  cs?: boolean | number; tex?: string; eml?: number; ds?: boolean;
 }
 export interface LabelDef { t: string; p: Vec3; c: string; s?: number }
 export interface ViewDef { dir: Vec3; ortho?: boolean; target?: Vec3; dist?: number }

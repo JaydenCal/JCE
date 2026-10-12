@@ -105,10 +105,12 @@ def strip_extrude(path, z0s, z1s, thick: float) -> np.ndarray:
     for i in range(n - 1):
         # left face (normal +n), right face (normal -n), top, bottom
         a, b = i, i + 1
-        out.append([[V(L[a], z0s[a]), V(L[b], z0s[b]), V(L[b], z1s[b])], [V(L[a], z0s[a]), V(L[b], z1s[b]), V(L[a], z1s[a])]])
-        out.append([[V(R[b], z0s[b]), V(R[a], z0s[a]), V(R[a], z1s[a])], [V(R[b], z0s[b]), V(R[a], z1s[a]), V(R[b], z1s[b])]])
-        out.append([[V(L[a], z1s[a]), V(L[b], z1s[b]), V(R[b], z1s[b])], [V(L[a], z1s[a]), V(R[b], z1s[b]), V(R[a], z1s[a])]])
-        out.append([[V(L[a], z0s[a]), V(R[b], z0s[b]), V(L[b], z0s[b])], [V(L[a], z0s[a]), V(R[a], z0s[a]), V(R[b], z0s[b])]])
+        La0, Lb0, La1, Lb1 = V(L[a], z0s[a]), V(L[b], z0s[b]), V(L[a], z1s[a]), V(L[b], z1s[b])
+        Ra0, Rb0, Ra1, Rb1 = V(R[a], z0s[a]), V(R[b], z0s[b]), V(R[a], z1s[a]), V(R[b], z1s[b])
+        out.append([[La0, Lb1, Lb0], [La0, La1, Lb1]])      # left face (outward)
+        out.append([[Rb0, Rb1, Ra1], [Rb0, Ra1, Ra0]])      # right face
+        out.append([[La1, Ra1, Rb1], [La1, Rb1, Lb1]])      # top
+        out.append([[La0, Rb0, Ra0], [La0, Lb0, Rb0]])      # bottom
     for i, s in ((0, -1), (n - 1, 1)):
         q = [V(L[i], z0s[i]), V(R[i], z0s[i]), V(R[i], z1s[i]), V(L[i], z1s[i])]
         t = [[q[0], q[1], q[2]], [q[0], q[2], q[3]]] if s < 0 else [[q[1], q[0], q[3]], [q[1], q[3], q[2]]]
