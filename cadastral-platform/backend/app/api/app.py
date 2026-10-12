@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 
 from app.api.deps import (ApiError, current_user_id, get_conn, optional_user_id, require_project,
                           require_terms)
+from app.api.design import router as design_router
 from app.api.settings import Settings
 from app.api.uploads import safe_filename, store_pdf
 from app.common.contracts import AckKind
@@ -221,4 +222,5 @@ def create_app(settings: Settings | None = None, pool=None, orchestrator: Orches
                                (project_id, user_id)).fetchone()["m"]
         return {"recorded": recorded, "export_gate_missing": list(missing)}
 
+    app.include_router(design_router)
     return app

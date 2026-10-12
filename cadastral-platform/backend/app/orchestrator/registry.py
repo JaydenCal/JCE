@@ -1,8 +1,11 @@
 """Agent registry: AgentCode -> SubAgent instance.
 
-* SA1, SA2, SA3, SA4, SA6 are not implemented yet: they get ``StubAgent`` which raises
-  ``AgentError('NOT_IMPLEMENTED')`` so DAG ordering and failure paths are exercisable.
-* SA7 and SA5 are loaded lazily from their import paths. If the import (or construction)
+* SA1, SA2, SA3 (``Sa3Dispatch``: ENV + terrain), SA4, SA5, SA7 are real agents wrapped by the
+  typed adapters in ``app.orchestrator.adapters``; SA1/SA2 are configured from the environment.
+* SA6 is not implemented: its ``StubAgent`` either returns a recorded ``skipped`` result
+  (``ORCH_STUB_POLICY=skip``, the default, so the run stays green) or raises
+  ``AgentError('NOT_IMPLEMENTED')`` (``ORCH_STUB_POLICY=fail``).
+* Real agents are loaded lazily from their import paths. If the import (or construction)
   fails, the registry records why and installs an ``UnavailableAgent`` that raises
   ``AgentError('AGENT_UNAVAILABLE')``, so a broken optional dependency cannot take the
   orchestrator down.
@@ -11,8 +14,9 @@ from __future__ import annotations
 
 import importlib
 import logging
+import os
 import threading
-from typing import Any, Callable
+from typing import Any, Callable, Mapping
 
 from pydantic import BaseModel, ConfigDict
 
@@ -22,10 +26,13 @@ from app.common.contracts import AgentCode
 log = logging.getLogger(__name__)
 
 REAL_AGENT_PATHS: dict[AgentCode, str] = {
-    AgentCode.SA7_PDF_ALIGN: "app.agents.sa7_pdf_align.agent:Sa7PdfAligner",
-    AgentCode.SA5_CAD_DXF: "app.agents.sa5_cad_dxf.agent:Sa5CadDxf",
-    AgentCode.SA4_HYDRO: "app.agents.sa4_hydro.agent:Sa4Hydro",
+    AgentCode.SA7_PDF_ALIGN: "app.orchestrator.adapters.nodes:Sa7Adapter",
+    AgentCode.SA5_CAD_DXF: "app.orchestrator.adapters.nodes:Sa5Adapter",
+    AgentCode.SA4_HYDRO: "app.orchestrator.adapters.nodes:Sa4Adapter",
+    AgentCode.SA3_GEOM_TIN: "app.orchestrator.adapters.nodes:Sa3Dispatch",
 }
+
+STUB_POLICY_ENV = "ORCH_STUB_POLICY"
 
 _STUB_SCHEMAS: dict[AgentCode, tuple[str, str]] = {
     AgentCode.SA1_CADASTRE: ("run_request.v1", "lot_context.v1"),
@@ -43,6 +50,14 @@ class AnyPayload(BaseModel):
     model_config = ConfigDict(extra="allow")
 
 
+class SkippedResult(BaseModel):
+    """Recorded non-fatal skip of an unimplemented agent (the node succeeds with this output)."""
+    skipped: bool = True
+    agent: str
+    error_code: str
+    reason: str
+
+
 class StubAgent:
     """Placeholder for an agent that does not exist yet. Always fails permanently."""
 
@@ -51,12 +66,16 @@ class StubAgent:
     input_model = AnyPayload
     error_code = "NOT_IMPLEMENTED"
 
-    def __init__(self, code: AgentCode, reason: str | None = None) -> None:
+    def __init__(self, code: AgentCode, reason: str | None = None, *, skip: bool = False) -> None:
         self.code = code
+        self.skip = skip
         self.input_schema, self.output_schema = _STUB_SCHEMAS.get(code, ("unknown.v1", "unknown.v1"))
         self._reason = reason
 
     def run(self, payload: Any) -> Any:
+        if self.skip:
+            return SkippedResult(agent=self.code.value, error_code=self.error_code,
+                                 reason=self._reason or f"{self.code.value} is not implemented yet")
         raise AgentError(self.error_code, self._reason or f"{self.code.value} is not implemented yet")
 
 
@@ -116,9 +135,19 @@ class AgentRegistry:
         return isinstance(self.get(code), StubAgent)
 
 
-def default_registry() -> AgentRegistry:
-    """Real SA7/SA5 by import path (lazy); stubs for everything not implemented yet."""
+def default_registry(*, env: Mapping[str, str] | None = None, sa1_client: Any = None,
+                     sa2_documents: list | None = None, stub_policy: str | None = None) -> AgentRegistry:
+    """Real agents (lazy, env-configured); SA6 as a stub per ``ORCH_STUB_POLICY`` (skip|fail)."""
+    from app.orchestrator.adapters import build_sa1, build_sa2
+
+    e = os.environ if env is None else env
+    policy = (stub_policy or e.get(STUB_POLICY_ENV) or "skip").lower()
+    if policy not in ("skip", "fail"):
+        raise ValueError(f"{STUB_POLICY_ENV} must be 'skip' or 'fail', got {policy!r}")
     reg = AgentRegistry()
     for code, path in REAL_AGENT_PATHS.items():
         reg.register_import_path(code, path)
+    reg.register(AgentCode.SA1_CADASTRE, lambda: build_sa1(e, sa1_client))
+    reg.register(AgentCode.SA2_DCP_RAG, lambda: build_sa2(e, sa2_documents))
+    reg.register(AgentCode.SA6_GLIDE3D, lambda: StubAgent(AgentCode.SA6_GLIDE3D, skip=policy == "skip"))
     return reg

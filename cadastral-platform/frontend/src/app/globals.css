@@ -1,0 +1,15 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+:root{--bg:250 251 252;--surface:255 255 255;--subtle:241 245 249;--ink:15 23 42;--muted:100 116 139;--line:226 232 240;--brand:13 148 136;--brand-fg:255 255 255;--brand-soft:204 251 241;--warn:217 119 6;--danger:220 38 38;--ok:22 163 74}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:8 12 22;--surface:15 23 42;--subtle:23 32 52;--ink:241 245 249;--muted:148 163 184;--line:38 50 74;--brand:45 212 191;--brand-fg:6 20 24;--brand-soft:19 78 74;--warn:251 191 36;--danger:248 113 113;--ok:74 222 128}}
+:root[data-theme="dark"]{--bg:8 12 22;--surface:15 23 42;--subtle:23 32 52;--ink:241 245 249;--muted:148 163 184;--line:38 50 74;--brand:45 212 191;--brand-fg:6 20 24;--brand-soft:19 78 74;--warn:251 191 36;--danger:248 113 113;--ok:74 222 128}
+body{@apply bg-bg text-ink font-sans antialiased;background-color:rgb(var(--bg))}
+@layer components{
+ .btn{@apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40}
+ .btn-primary{@apply btn bg-brand text-brand-fg hover:opacity-90}
+ .btn-ghost{@apply btn border border-line bg-surface text-ink hover:bg-subtle}
+ .card{@apply rounded-xl2 border border-line bg-surface p-6 shadow-card}
+ .h-eyebrow{@apply text-xs font-semibold uppercase tracking-[.14em] text-brand}
+ .prose-terms h1,.prose-terms h2{@apply mt-8 mb-3 text-lg font-bold} .prose-terms h3{@apply mt-5 mb-2 font-semibold}
+ .prose-terms p{@apply my-3 text-sm leading-relaxed text-ink/90} .prose-terms ul{@apply my-3 list-disc pl-6 text-sm space-y-1}
+ .prose-terms blockquote{@apply my-4 border-l-4 border-brand pl-4 text-sm} .prose-terms table{@apply my-4 w-full text-xs} .prose-terms td,.prose-terms th{@apply border border-line p-2 align-top}
+}
