@@ -347,7 +347,7 @@ JCE will submit monthly payment claims against the stage lump sums with a tax in
 | Workers compensation | As required by law | Held with icare NSW. [TBC - Jayden: policy number and certificate of currency] |
 | Motor vehicle | No level set | NRMA Insurance certificate of 18/09/2026. |
 
-Each partner will hold public liability and professional indemnity insurance at Council's levels, or JCE's policies will respond for their work, and certificates will be supplied in Returnable 13.
+Each partner will hold public liability and professional indemnity insurance at Council's levels, and their certificates will be supplied in Returnable 13.
 
 
 ## 13.0   Contract, conflict of interest and validity
@@ -374,13 +374,13 @@ Applies to variations directed by Council. Rates exclude GST. A day is eight hou
 
 | JCE role | Rate (excl. GST) |
 |---|---|
-| Director / Principal Engineer | $200/hr  |  $1,600/day |
-| Specialist advice / independent peer review | $200/hr  |  $1,600/day |
-| Senior Engineer | $190/hr  |  $1,520/day |
-| Project Engineer | $180/hr  |  $1,440/day |
-| Design Engineer | $170/hr  |  $1,360/day |
-| CAD / GIS Technician | $160/hr  |  $1,280/day |
-| Administration / Document Control | $140/hr  |  $1,120/day |
+| Director / Principal Engineer | $200/hr; $1,600/day |
+| Specialist advice / independent peer review | $200/hr; $1,600/day |
+| Senior Engineer | $190/hr; $1,520/day |
+| Project Engineer | $180/hr; $1,440/day |
+| Design Engineer | $170/hr; $1,360/day |
+| CAD / GIS Technician | $160/hr; $1,280/day |
+| Administration / Document Control | $140/hr; $1,120/day |
 | Vehicle travel | $0.96/km |
 | Partner services | At partner's quoted rates plus 10% |
 

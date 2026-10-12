@@ -105,7 +105,7 @@ RFIs.md (11/10) is still right, with one change: question 8 no longer asks wheth
 | Insurance | PI exceeds requirement; PL to be lifted to $20M on award (per Win Themes); WC and MV certificates outstanding |
 | Sign-off | QLD engineering signed by RPEQs (Ben Lancini for civil, subject to confirmation; marine and geotechnical partners' RPEQs) |
 | Departures | Four, no price effect (K1) |
-| AI use | Keep a record of AI tools used in preparing the response (Conditions cl 4); no Council confidential or personal information was entered into public AI tools |
+| AI use | Claude was used to prepare these drafts from the tender documents. Keep a record of AI use (Conditions cl 4) and confirm the tool and settings meet Council's rules (no Council confidential or personal information in public AI tools or tools that train on inputs) |
 
 ## 8. Evaluator scores (strict council panel, out of 10)
 
