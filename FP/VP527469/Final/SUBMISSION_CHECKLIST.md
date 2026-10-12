@@ -52,7 +52,7 @@ Draft Rev A was $610,823 ex GST but excluded full-time presence outside the lini
 
 | # | File | Where it is |
 |---|---|---|
-| 1 | JCE_FP_VP527469_Final_RevG.pdf (sign first; or paste FP_Final_text.md into the branded template and export) | Repo FP/VP527469/Final/ (Rev G text also in Dropbox 02_Submission/FINAL_2026-10-12_RevG_FP_Final_text.md) |
+| 1 | JCE_FP_VP527469_Final_RevG.pdf (sign first; or paste FP_Final_text.md into the branded template and export) | Repo FP/VP527469/Final/ (Rev G text also in Dropbox 02_Submission/FINAL_2026-10-12_RevG_FP_Final_text_v2.md) |
 | 2 | Part_B1_Tender_Return_Forms_CT2027005_JCE_FILLED_RevG.docx (or Council's original filled from Part_B1_..._answers_RevG.md), signed and witnessed, as PDF and Word | Repo FP/VP527469/Final/ (original form: Dropbox 00_Tender_Docs; part-filled copy: 02_Submission) |
 | 3 | Part_B2-Returnable_Schedules-CQA_Engineer_JCE_FILLED_RevG.xlsx (Excel format is mandatory) | Repo FP/VP527469/Final/ |
 | 4 | Jayden_Callen_Detailed_CV_2026-09.pdf | Dropbox 02_Submission/Returnables |
