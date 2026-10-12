@@ -1,0 +1,90 @@
+{
+ "schema": 1,
+ "generated": "2026-10-12T17:18:14+00:00",
+ "project": "quia_granny (3//DP263990)",
+ "pathway": "da",
+ "council": "Gunnedah Shire Council",
+ "files": [
+  {
+   "number": "00",
+   "file": "00_cover_sheet.pdf",
+   "title": "Cover sheet",
+   "kind": "cover",
+   "sha256": "5643a98993e18a84312719631586900f3d193da94a3b8c156e11ed36efc4f595",
+   "bytes": 2487
+  },
+  {
+   "number": "01",
+   "file": "01_index_and_checklist.pdf",
+   "title": "Index and submission checklist",
+   "kind": "index",
+   "sha256": "692cd4817ae21a485d9e907689a517db540aaa81175162f64be1fa81cf915e05",
+   "bytes": 6621
+  },
+  {
+   "number": "02",
+   "file": "02_lodgement_guidance.pdf",
+   "title": "Lodgement guidance (NSW Planning Portal and council)",
+   "kind": "guidance",
+   "sha256": "a7d08580013752c761ec55864532c5cd66f0274a691e7560ae187a436bbd8f37",
+   "bytes": 3698
+  },
+  {
+   "number": "10",
+   "file": "10_compliance_table.pdf",
+   "title": "Compliance table (PDF)",
+   "kind": "compliance",
+   "sha256": "8d1bd6edad0ef5fc738c86a3680ad74adf43e8d60d3f81969d4039aff3661e43",
+   "bytes": 6478
+  },
+  {
+   "number": "11",
+   "file": "11_compliance_table.json",
+   "title": "Compliance table (JSON)",
+   "kind": "compliance",
+   "sha256": "696788a0b488d498255be69948ed8e59b4a1bd9ead07e005a4cb85548124b4ec",
+   "bytes": 20336
+  },
+  {
+   "number": "12",
+   "file": "12_plan.pdf",
+   "title": "Site plan (SA5)",
+   "kind": "site_plan",
+   "sha256": "f4c6135c61393836a9287559244f20d53df5936f19c5c393071710a3d80e16db",
+   "bytes": 17496
+  },
+  {
+   "number": "13",
+   "file": "13_plan.dxf",
+   "title": "Site plan CAD (SA5, DXF)",
+   "kind": "plan_dxf",
+   "sha256": "006caa262442ca8ce1106fb0e574133dface560be0af357c20f08ed0e6ef6ad4",
+   "bytes": 172014
+  },
+  {
+   "number": "14",
+   "file": "14_constraints_report.pdf",
+   "title": "Constraints report (SA9)",
+   "kind": "constraints_report",
+   "sha256": "c55602b4fb986e020acd6653e075e64479be232e2daf745e96bbe9fab7d719ac",
+   "bytes": 1013285
+  },
+  {
+   "number": "15",
+   "file": "15_SoEE_draft.docx",
+   "title": "Statement of Environmental Effects (DRAFT, DOCX)",
+   "kind": "soee",
+   "sha256": "715e68013573c555e2f5fc5965ee9ce8c8a02160f493831c1d9c137ae4af5d5a",
+   "bytes": 41983
+  },
+  {
+   "number": "16",
+   "file": "16_SoEE_draft.pdf",
+   "title": "Statement of Environmental Effects (DRAFT, PDF)",
+   "kind": "soee",
+   "sha256": "f637c0d3c3c3112f49311ba47b9ca2299881e9648c147d514c5e971cdf0e55d5",
+   "bytes": 13119
+  }
+ ],
+ "note": "sha256 of each file as stored in this ZIP; manifest.json and pack.json are not self-hashed."
+}

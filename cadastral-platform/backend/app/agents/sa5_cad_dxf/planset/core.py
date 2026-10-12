@@ -147,6 +147,8 @@ class View:
              bold: bool = False, italic: bool = False, color=None, layer: str = "C-ANNO-NOTE", halo: bool = False) -> None:
         if not s:
             return
+        if not self.paper and self.clip and not self.inside(x, y):
+            return
         h = max(h, MIN_TEXT_MM)
         self.items.append(Item("text", layer, [(x, y)], False, None, None, color, 1.0, None, s, h, anchor, upright(rot) if not self.paper else rot,
                                bold, italic, halo, anno=True))
@@ -211,6 +213,8 @@ class View:
     # ---- common symbols ----------------------------------------------------------------------------
     def dim(self, p1, p2, text: str, side=(0.0, 1.0), off_mm: float = 4.0, h: float = 2.2, layer: str = "C-ANNO-DIMS") -> bool:
         """Aligned dimension between model points; dimension line offset ``off_mm`` on paper toward ``side``."""
+        if not (self.inside(*p1, 3.0) and self.inside(*p2, 3.0)):
+            return False
         a, b = self.tp(*p1), self.tp(*p2)
         dx, dy = b[0] - a[0], b[1] - a[1]
         L = math.hypot(dx, dy)
@@ -236,6 +240,45 @@ class View:
         ra = math.radians(rot + 90)
         tx, ty = mx + math.cos(ra) * (h * 0.75), my + math.sin(ra) * (h * 0.75)
         self.text_p(tx, ty, text, h, "MIDDLE_CENTER", rot, layer=layer)
+        return True
+
+    def callout(self, pt, lines: list[str], h: float = 2.4, prefer=None, bold_first: bool = True, color=None, layer: str = "C-ANNO-NOTE",
+                maxw: float = 60.0) -> bool:
+        """Leader + boxed text block placed at the first free of several offsets from model point ``pt`` (paper-mm offsets)."""
+        if not self.inside(*pt, 2.0):
+            return False
+        wrapped: list[tuple[str, bool]] = []
+        for i, ln in enumerate(lines):
+            for w in fonts.wrap(ln, h, maxw, bold_first and i == 0):
+                wrapped.append((w, bold_first and i == 0))
+        tw = max(fonts.text_width(t, h, b) for t, b in wrapped) + 3.0
+        th = len(wrapped) * (h + 1.1) + 1.6
+        px, py = self.tp(*pt)
+        cands = list(prefer or []) + [(12, 10), (12, -10), (-12 - tw, 10), (-12 - tw, -10), (6, 24), (6, -24 - th), (-tw / 2, 28), (-tw / 2, -28 - th),
+                                      (30, 30), (-30 - tw, -30), (30, -30 - th), (-30 - tw, 30)]
+        for dx, dy in cands:
+            x0, y0 = px + dx, py + dy
+            box = (x0, y0, x0 + tw, y0 + th)
+            if self.free(box):
+                break
+        else:
+            self.dropped += 1
+            return False
+        self.occ.append(box)
+        # white backing box
+        from shapely.geometry import Polygon
+        poly = Polygon([self.tm(box[0], box[1]), self.tm(box[2], box[1]), self.tm(box[2], box[3]), self.tm(box[0], box[3])])
+        self.items.append(Item("fill", "C-ANNO-NOTE", [list(poly.exterior.coords)[:-1]], True, None, None, (1, 1, 1), 0.88, None, anno=True))
+        self.items.append(Item("line", layer, [self.tm(box[0], box[1]), self.tm(box[2], box[1]), self.tm(box[2], box[3]), self.tm(box[0], box[3])], True, 0.13, anno=True))
+        ex = min(max(px, box[0]), box[2])
+        ey = min(max(py, box[1]), box[3])
+        self._pl([(px, py), (ex, ey)], layer, 0.15)
+        # dot at the anchor
+        self._pl([(px - 0.5, py), (px + 0.5, py)], layer, 0.5)
+        yy = box[3] - 0.8
+        for t, b in wrapped:
+            self.text_p(box[0] + 1.5, yy, t, h, "TOP_LEFT", 0.0, b, color=color, layer=layer)
+            yy -= h + 1.1
         return True
 
     def _pl(self, pts_paper, layer, lw) -> None:

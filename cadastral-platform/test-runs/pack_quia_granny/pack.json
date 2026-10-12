@@ -1,0 +1,983 @@
+{
+ "project": "quia_granny (3//DP263990)",
+ "lotplan": "3//DP263990",
+ "address": null,
+ "council": "Gunnedah Shire Council",
+ "pathway": "da",
+ "dev_type": "secondary_dwelling",
+ "index": [
+  {
+   "number": "00",
+   "file": "00_cover_sheet.pdf",
+   "title": "Cover sheet"
+  },
+  {
+   "number": "01",
+   "file": "01_index_and_checklist.pdf",
+   "title": "Index and submission checklist"
+  },
+  {
+   "number": "02",
+   "file": "02_lodgement_guidance.pdf",
+   "title": "Lodgement guidance (NSW Planning Portal and council)"
+  },
+  {
+   "number": "10",
+   "file": "10_compliance_table.pdf",
+   "title": "Compliance table (PDF)"
+  },
+  {
+   "number": "11",
+   "file": "11_compliance_table.json",
+   "title": "Compliance table (JSON)"
+  },
+  {
+   "number": "12",
+   "file": "12_plan.pdf",
+   "title": "Site plan (SA5)"
+  },
+  {
+   "number": "13",
+   "file": "13_plan.dxf",
+   "title": "Site plan CAD (SA5, DXF)"
+  },
+  {
+   "number": "14",
+   "file": "14_constraints_report.pdf",
+   "title": "Constraints report (SA9)"
+  },
+  {
+   "number": "15",
+   "file": "15_SoEE_draft.docx",
+   "title": "Statement of Environmental Effects (DRAFT, DOCX)"
+  },
+  {
+   "number": "16",
+   "file": "16_SoEE_draft.pdf",
+   "title": "Statement of Environmental Effects (DRAFT, PDF)"
+  }
+ ],
+ "checklist": [
+  {
+   "id": "da.form",
+   "label": "Development application form lodged via the NSW Planning Portal",
+   "requirement": "required",
+   "status": "missing",
+   "evidence": [
+    "portal_form"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "All applications are to be lodged via the NSW Planning Portal",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.owner_consent",
+   "label": "Landowner's consent",
+   "requirement": "required",
+   "status": "missing",
+   "evidence": [
+    "owner_consent"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "Landowner\u2019s Consent",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.site_plan",
+   "label": "Site plan (scaled, distances from all boundaries, existing buildings, north arrow)",
+   "requirement": "required",
+   "status": "present",
+   "evidence": [
+    "site_plan"
+   ],
+   "files": [
+    "plan.pdf"
+   ],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "Must include distances from lot all boundaries, location and use of existing buildings,",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.floor_plan",
+   "label": "Floor plan (building dimensions)",
+   "requirement": "required",
+   "status": "missing",
+   "evidence": [
+    "floor_plan"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "Must include building dimensions",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.elevations",
+   "label": "Elevations (height, external finishes, finished ground level)",
+   "requirement": "required",
+   "status": "missing",
+   "evidence": [
+    "elevations"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "Must include height of the building, all external finishes and finished ground level",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.sections",
+   "label": "Section plans (footings to top of proposed works)",
+   "requirement": "required",
+   "status": "missing",
+   "evidence": [
+    "section_plans"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "Showing a through image of the development from the footings to the top of the proposed works",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.soee",
+   "label": "Statement of Environmental Effects (generic residential form for single dwellings)",
+   "requirement": "required",
+   "status": "present",
+   "evidence": [
+    "soee"
+   ],
+   "files": [
+    "SoEE_draft.pdf"
+   ],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "Generic \u2013 Residential (Not including dual occupancies or multi-unit developments)",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.eis",
+   "label": "Environmental Impact Statement (designated development only)",
+   "requirement": "not_applicable",
+   "status": "not_applicable",
+   "evidence": [
+    "eis"
+   ],
+   "files": [],
+   "note": "Not applicable unless the development is designated development.",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "Environmental Impact Statement (Designated development only)",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.fire_cat1",
+   "label": "Category 1 fire safety provisions (change of use only)",
+   "requirement": "not_applicable",
+   "status": "not_applicable",
+   "evidence": [
+    "fire_cat1"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "Category 1 Fire Safety Provisions (Change of use only",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.basix",
+   "label": "BASIX certificate (dwellings/additions over $50,000, pools over 40,000 L)",
+   "requirement": "required",
+   "status": "missing",
+   "evidence": [
+    "basix"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "(For dwellings/additions over $50,000 and swimming pools over 40,000L and assessors\u2019",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.shadow",
+   "label": "Shadow diagram (two storey buildings: 9 am and 3 pm, 21 June)",
+   "requirement": "may_be_required",
+   "status": "missing",
+   "evidence": [
+    "shadow_diagram"
+   ],
+   "files": [],
+   "note": "Storeys not supplied.",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Fact Sheet No. 1 - Development Application Documentation Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "undated",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Fact Sheet 1",
+    "quote": "Required for buildings that are two storeys or greater.",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FDO-I-NEED-APPROVAL%252FLodging-an-Application%252FFact%2BSheet%2B1%2B-%2BDA%2BDocumentation%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "2bef08e7a7ab162ca0595d61d606c64d56e460b209268c4cb1c4ad79a9f22f17",
+    "chunk_id": "g_fact1",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.notification",
+   "label": "Notification plans (A4 site and elevation plans)",
+   "requirement": "may_be_required",
+   "status": "missing",
+   "evidence": [
+    "notification_plans"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Fact Sheet No. 1 - Development Application Documentation Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "undated",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Fact Sheet 1",
+    "quote": "A4 site and elevation plans are required to allow Council to",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FDO-I-NEED-APPROVAL%252FLodging-an-Application%252FFact%2BSheet%2B1%2B-%2BDA%2BDocumentation%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "2bef08e7a7ab162ca0595d61d606c64d56e460b209268c4cb1c4ad79a9f22f17",
+    "chunk_id": "g_fact1",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.landscape",
+   "label": "Landscaping plan",
+   "requirement": "may_be_required",
+   "status": "missing",
+   "evidence": [
+    "landscape_plan"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Fact Sheet No. 1 - Development Application Documentation Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "undated",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Fact Sheet 1",
+    "quote": "Should identify the quantities, botanical names and mature",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FDO-I-NEED-APPROVAL%252FLodging-an-Application%252FFact%2BSheet%2B1%2B-%2BDA%2BDocumentation%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "2bef08e7a7ab162ca0595d61d606c64d56e460b209268c4cb1c4ad79a9f22f17",
+    "chunk_id": "g_fact1",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.escp",
+   "label": "Erosion and sediment control plan",
+   "requirement": "may_be_required",
+   "status": "missing",
+   "evidence": [
+    "escp"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Fact Sheet No. 1 - Development Application Documentation Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "undated",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Fact Sheet 1",
+    "quote": "Required for construction works in order to minimise",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FDO-I-NEED-APPROVAL%252FLodging-an-Application%252FFact%2BSheet%2B1%2B-%2BDA%2BDocumentation%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "2bef08e7a7ab162ca0595d61d606c64d56e460b209268c4cb1c4ad79a9f22f17",
+    "chunk_id": "g_fact1",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.finishes",
+   "label": "External finishes and materials (samples of colours and materials)",
+   "requirement": "may_be_required",
+   "status": "missing",
+   "evidence": [
+    "finishes"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Fact Sheet No. 1 - Development Application Documentation Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "undated",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Fact Sheet 1",
+    "quote": "Samples of all external colours and materials are required.",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FDO-I-NEED-APPROVAL%252FLodging-an-Application%252FFact%2BSheet%2B1%2B-%2BDA%2BDocumentation%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "2bef08e7a7ab162ca0595d61d606c64d56e460b209268c4cb1c4ad79a9f22f17",
+    "chunk_id": "g_fact1",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.contamination",
+   "label": "Preliminary contamination assessment (if the site has a history of contaminating uses)",
+   "requirement": "may_be_required",
+   "status": "missing",
+   "evidence": [
+    "contamination"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Fact Sheet No. 1 - Development Application Documentation Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "undated",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Fact Sheet 1",
+    "quote": "If the site has a history of potentially contaminating land",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FDO-I-NEED-APPROVAL%252FLodging-an-Application%252FFact%2BSheet%2B1%2B-%2BDA%2BDocumentation%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "2bef08e7a7ab162ca0595d61d606c64d56e460b209268c4cb1c4ad79a9f22f17",
+    "chunk_id": "g_fact1",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.servicing",
+   "label": "Servicing strategy",
+   "requirement": "may_be_required",
+   "status": "missing",
+   "evidence": [
+    "servicing"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Fact Sheet No. 1 - Development Application Documentation Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "undated",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Fact Sheet 1",
+    "quote": "For all resident development proposals and subdivision.",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FDO-I-NEED-APPROVAL%252FLodging-an-Application%252FFact%2BSheet%2B1%2B-%2BDA%2BDocumentation%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "2bef08e7a7ab162ca0595d61d606c64d56e460b209268c4cb1c4ad79a9f22f17",
+    "chunk_id": "g_fact1",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.donations",
+   "label": "Political donation and gift disclosure statement (where a donation or gift has been made)",
+   "requirement": "may_be_required",
+   "status": "missing",
+   "evidence": [
+    "donation_statement"
+   ],
+   "files": [],
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Fact Sheet No. 1 - Development Application Documentation Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "undated",
+    "effective_date": null,
+    "page": 2,
+    "section_ref": "Fact Sheet 1",
+    "quote": "To be completed for all development applications, where",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FDO-I-NEED-APPROVAL%252FLodging-an-Application%252FFact%2BSheet%2B1%2B-%2BDA%2BDocumentation%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "2bef08e7a7ab162ca0595d61d606c64d56e460b209268c4cb1c4ad79a9f22f17",
+    "chunk_id": "g_fact1",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.flood",
+   "label": "Flood information / floor level evidence (if flood affected)",
+   "requirement": "may_be_required",
+   "status": "not_applicable",
+   "evidence": [
+    "flood_evidence"
+   ],
+   "files": [],
+   "note": "Triggered by the SA9 flood layer; the council's flood requirement is in the DCP (see compliance table). Not listed on the checklist itself. SA9 flood layer: not affected / not checked.",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "All applications are to be lodged via the NSW Planning Portal",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  },
+  {
+   "id": "da.bushfire",
+   "label": "Bushfire assessment (BAL) if bushfire prone land",
+   "requirement": "may_be_required",
+   "status": "missing",
+   "evidence": [
+    "bushfire_evidence"
+   ],
+   "files": [],
+   "note": "Triggered by the SA9 bushfire layer; not listed on the council checklist itself (Council has a BAL Certificate Application form).",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Development Application Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated 06/03/2025",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "DA Lodgement Checklist",
+    "quote": "All applications are to be lodged via the NSW Planning Portal",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BDevelopment%2BApplication%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30Z",
+    "sha256": "98fe71ef7da96fcb9120610c61521b3c5ca79c7004702f048c27c39c343a61a8",
+    "chunk_id": "g_da_checklist",
+    "language": null,
+    "quote_en": null,
+    "quote_en_machine_translated": false,
+    "entered_by": null,
+    "entered_at": null
+   }
+  }
+ ],
+ "checklist_counts": {
+  "present": 2,
+  "missing": 15,
+  "not_applicable": 3
+ },
+ "lodgement_guidance": [
+  {
+   "text": "From 1 July 2021, development applications and certificates must be lodged through the NSW Planning Portal.",
+   "note": "",
+   "citation": {
+    "document_title": "NSW Planning Portal - Gunnedah Shire Council",
+    "authority": "Gunnedah Shire Council",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "NSW Planning Portal (Gunnedah Shire Council)",
+    "quote": "From 1 July 2021, development applications and certificates must be lodged through the",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/development/development-applications/nsw-planning-portal",
+    "retrieved_at": "2026-10-12T17:16:24+00:00",
+    "sha256": "091968b6a6f349112774c1a197f6c822618d5e54ae8ca15c53349c2cdd9f2531",
+    "chunk_id": "g_portal"
+   }
+  },
+  {
+   "text": "Council can no longer accept hardcopy or emailed documents and cannot place applications on the portal on behalf of applicants.",
+   "note": "",
+   "citation": {
+    "document_title": "NSW Planning Portal - Gunnedah Shire Council",
+    "authority": "Gunnedah Shire Council",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "NSW Planning Portal (Gunnedah Shire Council)",
+    "quote": "These changes mean Council can no longer accept hardcopy or emailed documents",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/development/development-applications/nsw-planning-portal",
+    "retrieved_at": "2026-10-12T17:16:24+00:00",
+    "sha256": "091968b6a6f349112774c1a197f6c822618d5e54ae8ca15c53349c2cdd9f2531",
+    "chunk_id": "g_portal"
+   }
+  },
+  {
+   "text": "Before using the portal, get advice from the council's planning team; a free Duty Planner service is offered (02 6740 2100).",
+   "note": "",
+   "citation": {
+    "document_title": "NSW Planning Portal - Gunnedah Shire Council",
+    "authority": "Gunnedah Shire Council",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "NSW Planning Portal (Gunnedah Shire Council)",
+    "quote": "Council provides a free Duty Planner Service to assist with enquiries",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/development/development-applications/nsw-planning-portal",
+    "retrieved_at": "2026-10-12T17:16:24+00:00",
+    "sha256": "091968b6a6f349112774c1a197f6c822618d5e54ae8ca15c53349c2cdd9f2531",
+    "chunk_id": "g_portal"
+   }
+  },
+  {
+   "text": "Log in with an existing Service NSW account or register for a NSW Planning Portal account.",
+   "note": "",
+   "citation": {
+    "document_title": "NSW Planning Portal - Gunnedah Shire Council",
+    "authority": "Gunnedah Shire Council",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "NSW Planning Portal (Gunnedah Shire Council)",
+    "quote": "Use your existing Service NSW account or register for a NSW Planning Portal account.",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/development/development-applications/nsw-planning-portal",
+    "retrieved_at": "2026-10-12T17:16:24+00:00",
+    "sha256": "091968b6a6f349112774c1a197f6c822618d5e54ae8ca15c53349c2cdd9f2531",
+    "chunk_id": "g_portal"
+   }
+  },
+  {
+   "text": "Click 'New' to start the application, fill in the online form, and upload the required documents; the application can be saved and resumed.",
+   "note": "",
+   "citation": {
+    "document_title": "NSW Planning Portal - Gunnedah Shire Council",
+    "authority": "Gunnedah Shire Council",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "NSW Planning Portal (Gunnedah Shire Council)",
+    "quote": "Upload required documents to the portal. You can save your application and come back to it later.",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/development/development-applications/nsw-planning-portal",
+    "retrieved_at": "2026-10-12T17:16:24+00:00",
+    "sha256": "091968b6a6f349112774c1a197f6c822618d5e54ae8ca15c53349c2cdd9f2531",
+    "chunk_id": "g_portal"
+   }
+  },
+  {
+   "text": "A council officer reviews the application in the portal for completeness and emails if more information is needed.",
+   "note": "",
+   "citation": {
+    "document_title": "NSW Planning Portal - Gunnedah Shire Council",
+    "authority": "Gunnedah Shire Council",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "NSW Planning Portal (Gunnedah Shire Council)",
+    "quote": "A Council officer will review your application in the portal to make sure all documentation is correct.",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/development/development-applications/nsw-planning-portal",
+    "retrieved_at": "2026-10-12T17:16:24+00:00",
+    "sha256": "091968b6a6f349112774c1a197f6c822618d5e54ae8ca15c53349c2cdd9f2531",
+    "chunk_id": "g_portal"
+   }
+  },
+  {
+   "text": "Once accepted for lodgement an 'Additional Information Request' with the tax invoice is issued; fees must be paid and confirmed by responding in the portal before the DA is formally lodged.",
+   "note": "",
+   "citation": {
+    "document_title": "NSW Planning Portal - Gunnedah Shire Council",
+    "authority": "Gunnedah Shire Council",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "NSW Planning Portal (Gunnedah Shire Council)",
+    "quote": "Fees must be paid before your DA is formally lodged in Council\u2019s system.",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/development/development-applications/nsw-planning-portal",
+    "retrieved_at": "2026-10-12T17:16:24+00:00",
+    "sha256": "091968b6a6f349112774c1a197f6c822618d5e54ae8ca15c53349c2cdd9f2531",
+    "chunk_id": "g_portal"
+   }
+  },
+  {
+   "text": "A development consent application must include a description of the development, the estimated cost, a plan of the land, a sketch of the development and an environmental assessment (e.g. a statement of environmental effects).",
+   "note": "",
+   "citation": {
+    "document_title": "Local Development (NSW Planning Portal)",
+    "authority": "NSW Planning Portal",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Local development (NSW Planning Portal)",
+    "quote": "environmental assessment, for example, environmental impact statement or statement of environment effects.",
+    "source_url": "https://www.planningportal.nsw.gov.au/local-development",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "291d4fc03100ad817ffd80030f0672c8fab6f3c1be3bd1d5d1d8d11dc1e5b7f9",
+    "chunk_id": "pp_local_development"
+   }
+  },
+  {
+   "text": "The fee is calculated on the value of the work proposed and/or the type of development.",
+   "note": "",
+   "citation": {
+    "document_title": "Lodging an Application - Gunnedah Shire Council",
+    "authority": "Gunnedah Shire Council",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Lodging an Application (Gunnedah Shire Council)",
+    "quote": "The fee payable for the development application is calculated on the value of the work proposed",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/development/do-i-need-approval/lodging-an-application",
+    "retrieved_at": "2026-10-12T17:16:24+00:00",
+    "sha256": "96ce274f0f02cae9ff5579b68b07419c687a6c40e39670965266b10af77809ca",
+    "chunk_id": "g_lodging"
+   }
+  },
+  {
+   "text": "CONFLICT TO CONFIRM WITH COUNCIL: the council's Lodging an Application page asks for a minimum of three paper copies, which conflicts with its own NSW Planning Portal page (no hardcopy accepted).",
+   "note": "",
+   "citation": {
+    "document_title": "Lodging an Application - Gunnedah Shire Council",
+    "authority": "Gunnedah Shire Council",
+    "version": "page text, retrieved",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "Lodging an Application (Gunnedah Shire Council)",
+    "quote": "A minimum of three (3) paper copies of all the required documentation must be prepared",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/development/do-i-need-approval/lodging-an-application",
+    "retrieved_at": "2026-10-12T17:16:24+00:00",
+    "sha256": "96ce274f0f02cae9ff5579b68b07419c687a6c40e39670965266b10af77809ca",
+    "chunk_id": "g_lodging"
+   }
+  },
+  {
+   "text": "For complying development, the applicant provides the council with an electronic copy of all documentation and at least 1 copy of the development plans.",
+   "note": "",
+   "citation": {
+    "document_title": "Gunnedah Shire Council Complying Development Certificate Lodgement Checklist",
+    "authority": "Gunnedah Shire Council",
+    "version": "Last updated January 2021",
+    "effective_date": null,
+    "page": 1,
+    "section_ref": "CDC Lodgement Checklist",
+    "quote": "Applicant is to provide Council with an electronic copy of all documentation",
+    "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FCOUNCIL%252FCOUNCIL-INFORMATION%252FAll-Council-Application-Forms%252FPlanning-Application-Forms%252FForm%2B-%2BComplying%2BDevelopment%2BCertificate%2BLodgement%2BChecklist.pdf",
+    "retrieved_at": "2026-10-12T17:06:30+00:00",
+    "sha256": "57ae93eb16487a302ced905678e7dc9861cd6a27ab3175c7f3a5d27042f1b657",
+    "chunk_id": "g_cdc_checklist"
+   }
+  }
+ ],
+ "compliance_counts": {
+  "PASS": 0,
+  "FAIL": 0,
+  "UNRESOLVED": 17,
+  "NOT_APPLICABLE": 1
+ },
+ "pathway_check": {
+  "summary": "Development application (DA): Possible; Complying development (CDC): Unresolved; Exempt development: Not applicable. May apply: verify with council or a certifier.",
+  "recommendation": "May apply: verify with council or a certifier.",
+  "suggested": null,
+  "cards": [
+   {
+    "pathway": "da",
+    "title": "Development application (DA)",
+    "pill": "Possible",
+    "status": "UNRESOLVED",
+    "headline": "Fallback: required if exempt and complying development turn out not to apply.",
+    "failing": null,
+    "failing_citation": null,
+    "unresolved": [
+     {
+      "label": "Development is permissible with consent in the zone under the LEP",
+      "prompt": "Gunnedah LEP 2012 land use table not obtained (Cloudflare). Supply the LEP land use table result for this zone and development."
+     },
+     {
+      "label": "LEP optional clause 5.5 (rural secondary dwelling floor area and distance)",
+      "prompt": "Whether Gunnedah LEP 2012 includes optional cl 5.5 (and its limits) is unknown: LEP not obtained."
+     }
+    ]
+   },
+   {
+    "pathway": "cdc",
+    "title": "Complying development (CDC)",
+    "pill": "Unresolved",
+    "status": "UNRESOLVED",
+    "headline": "Cannot be determined: 22 criteria are unresolved (missing data or documents not obtained).",
+    "failing": null,
+    "failing_citation": null,
+    "unresolved": [
+     {
+      "label": "Land is not in a buffer area",
+      "prompt": "Supply buffer_area (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land is not in a riverfront area",
+      "prompt": "Supply riverfront_area (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land is not in an ecologically sensitive area",
+      "prompt": "Supply ecologically_sensitive_area (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land is not in a protected area",
+      "prompt": "Supply protected_area (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land is not affected by a coastline hazard, coastal hazard or coastal erosion hazard",
+      "prompt": "Supply coastal_hazard (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land is not in a foreshore area",
+      "prompt": "Supply foreshore_area (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land is not within the 25 ANEF contour or higher (in some instances)",
+      "prompt": "Supply anef_25_or_higher (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land is not unsewered land in a drinking water catchment",
+      "prompt": "Supply unsewered_drinking_water_catchment (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land is not a declared special area",
+      "prompt": "Supply special_area (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land is not in an environmentally sensitive area",
+      "prompt": "Supply environmentally_sensitive_area (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land does not contain an item listed on the State Heritage Register or subject to an interim heritage order",
+      "prompt": "Supply state_heritage_item (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Land is not critical habitat or a wilderness area",
+      "prompt": "Supply critical_habitat_or_wilderness (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Flood control lot requirements",
+      "prompt": "Confirm with the council (s10.7 planning certificate) whether the lot is a flood control lot; the definition (Codes SEPP cl 1.5) and the flood control lot standards (Housing Code cl 3.5 / Inland Code cl 3D.7) were not obtained (legislation.nsw.gov.au is Cloudflare-blocked)."
+     },
+     {
+      "label": "Easements / restrictions affecting the building footprint",
+      "prompt": "No cited complying-development exclusion for easements was obtainable. Supply the title/DP easement information and confirm with the certifier and utility owners (see also build-over-sewer requirements)."
+     },
+     {
+      "label": "Development is permissible with consent in the zone under the LEP",
+      "prompt": "Gunnedah LEP 2012 land use table not obtained (Cloudflare). Supply the LEP land use table result for this zone and development."
+     },
+     {
+      "label": "Zone R1-R5 (secondary dwellings permitted); other zones only if the LEP permits",
+      "prompt": "Outside the listed zones the development may still be permitted by the LEP: supply the LEP land use table result."
+     },
+     {
+      "label": "The lot is not subdivided",
+      "prompt": "Supply involves_subdivision (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Established in conjunction with a principal dwelling on the same lot",
+      "prompt": "Supply principal_dwelling_present (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Not an individual lot in a strata plan or community title scheme",
+      "prompt": "Supply lot_is_strata_or_community (data from SA9/s10.7/council or user)."
+     },
+     {
+      "label": "Not land at risk of exposure to flames (flame zone, BAL-FZ)",
+      "prompt": "Obtain the s10.7 certificate and a BAL assessment (AS 3959): flame zone (BAL-FZ) excludes complying development for a secondary dwelling."
+     },
+     {
+      "label": "Housing SEPP Schedule 1 site and design standards (floor area, setbacks, height, landscaping, parking)",
+      "prompt": "Housing SEPP 2021 Schedule 1 not obtained (Cloudflare). The NSW page says the floor area calculation includes the principal dwelling, the secondary dwelling and attached carports/garages/decks etc., but gives no limit. Resolve from Schedule 1 before relying on CDC."
+     },
+     {
+      "label": "Bushfire-prone land requirements (BAL assessment, AS 3959, Planning for Bush Fire Protection)",
+      "prompt": "Bushfire-prone land: complying development is allowed only subject to the code's bushfire clauses (Housing Code cl 3.4 / Inland Code cl 3D.6), which were not obtained; BAL-FZ (flame zone) land is excluded for secondary dwellings (cited). Obtain a BAL assessment (AS 3959) from an accredited practitioner and the s10.7 certificate."
+     }
+    ]
+   },
+   {
+    "pathway": "exempt",
+    "title": "Exempt development",
+    "pill": "Not applicable",
+    "status": "NOT_APPLICABLE",
+    "headline": "Exempt development does not cover a new dwelling (inferred from the Portal's exempt list; verify).",
+    "failing": null,
+    "failing_citation": null,
+    "unresolved": []
+   }
+  ],
+  "disclaimer": "Decision-support only. This is not a planning, complying development or building approval, and it is not a certificate. Results depend on the data supplied and on the cited summaries (several dated 2018); the Codes SEPP, Housing SEPP and the LEP could not be obtained. Verify with the council or an accredited certifier."
+ },
+ "disclaimer": "This application pack was assembled as a drafting and lodgement aid. Nothing in it is a planning, complying development or building approval. Documents must be reviewed and adopted by suitably qualified persons, and the council or a certifier determines the application."
+}
