@@ -64,6 +64,7 @@ Top priority first:
 10. Conflict of interest confirmation (yours, Venant, Lotay).
 11. Statutory declaration (Schedule L): full legal name; the form says "declared in the State of Victoria". Use a witness authorised under the Oaths and Affirmations Act 2018 (Vic) (remote witnessing by audio-visual link is permitted, confirm before relying on it) or ask Council (RFI 7).
 12. Date the cover letter and the offer block; sign every schedule.
+13. Rev G drone items: [TBC - Jayden: drone photogrammetry project and referee] (kept out of the printed FP); [TBC - Jayden to confirm] DJI Terra for orthophoto production (ReCap Pro is the alternative); CASA operator accreditation in place before services start.
 
 ## 5. Insurance and certificates
 
@@ -105,7 +106,7 @@ RFIs.md (11/10) is still right in substance; updated wording for the final offer
 |---|---|---|---|
 | 1.1 Risk management (pass/fail) | At risk of FAIL (PL $10M, no WC, no position stated) | Conditional PASS (PL lift stated per Win Themes; WC still open) | Needs the WC and ideally $20M PL certificates |
 | 1.2 Response to specification | 6/10 | 8/10 | Statement of compliance added; Gantt with critical path, review periods and weather allowance; Inception Report date corrected to within 14 days; offer structure table |
-| 1.3 Experience and qualifications | 5/10 | 6/10 | Named referees; principal-led design management proof points; council-side experience; Venant's Harcourt study. Still no JCE levee design project and registration numbers TBC |
+| 1.3 Experience and qualifications | 5/10 | 6/10 (Rev G: unchanged; drone photogrammetry and ReCap experience added but no named project or referee yet, so 6.5 at most once one is supplied) | Named referees; principal-led design management proof points; council-side experience; Venant's Harcourt study. Still no JCE levee design project and registration numbers TBC |
 | 1.4 Business and financial capacity incl. QM | 4/10 | 5/10 | Brief 1.8 hours and team breakdown (Attachment D); capacity shown at about 25 h/week; not ISO certified; financials TBC |
 | 1.5 Sustainability | 3/10 | 4/10 | Environmental justification drafted; Bendigo survey and geotech firms targeted for local content. JCE scores 0 on location questions |
 | Stage Two price | $237,220 (1.9x budget) | $113,600 (within budget) | VFM = price / score roughly halves |

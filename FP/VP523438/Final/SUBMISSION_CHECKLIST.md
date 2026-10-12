@@ -1,6 +1,6 @@
 # Submission checklist: VP523438, MBDC RFT 2026.013 Concept Design for Hawthorn Road
 
-**Rev G (12/10/2026):** adds the Glide Inside / RTK drone photogrammetry capability paragraph (FP 5.1, CASA sub-2 kg excluded category, accreditation in place before services start; site more than 30 km from Adelaide Airport and Parafield, outside the 5.5 km limit) and a drone orthophoto line in the Stage 1 site appraisal; lodge Rev G, not Rev F.
+**Rev G (12/10/2026, updated):** adds the Glide Inside / RTK drone capability paragraph and Jayden's drone photogrammetry experience and workflow (DroneDeploy flight planning, RTK via AUSCORS or local base, check points, ReCap Pro, InfraWorks / Civil 3D, QGIS) in FP 5.1, CASA sub-2 kg excluded category with accreditation in place before services start (site more than 30 km from Adelaide Airport and Parafield), and a Stage 1 line where the ReCap surface feeds the concept model; lodge Rev G (13 pages), not Rev F. Experience criterion re-scored: unchanged at 6 until a drone project and referee can be named.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status: draft ready (no Pursue/Pass decision yet).
 
@@ -37,7 +37,7 @@ Stage split: Stage 1 $64,020; Stage 2 $135,940; Stage 3 $58,500. No budget figur
 
 | File | Where |
 |---|---|
-| JCE_FP_VP523438_Final_RevG.docx / .pdf (12 pages; Rev F kept for reference) | Repo `FP/VP523438/Final/` (binary; copy to Dropbox `02_Submission` yourself) |
+| JCE_FP_VP523438_Final_RevG.docx / .pdf (13 pages; Rev F kept for reference) | Repo `FP/VP523438/Final/` (binary; copy to Dropbox `02_Submission` yourself) |
 | FP_Final_text.md | Repo `Final/` and Dropbox `02_Submission/FINAL_2026-10-12_FP_Final_text.md` |
 | SUBMISSION_CHECKLIST.md | Repo `Final/` and Dropbox `02_Submission/FINAL_2026-10-12_SUBMISSION_CHECKLIST.md` |
 | RFIs_FINAL.md | Repo `Final/` and Dropbox `02_Submission/FINAL_2026-10-12_RFIs_FINAL.md` |
@@ -57,6 +57,8 @@ Stage split: Stage 1 $64,020; Stage 2 $135,940; Stage 3 $58,500. No budget figur
 7. FP number (FP-0xx), date of issue, and signature.
 8. Agreement Schedule: business, registered and postal addresses; ACN 699 165 663 (check); company execution (sole director and secretary?).
 9. SA registration: confirm on legislation.sa.gov.au (FP 5.1).
+11. [TBC - Jayden: drone photogrammetry project and referee] (not printed in the FP).
+12. [TBC - Jayden to confirm] DJI Terra licence, if orthophotos are produced in DJI Terra rather than ReCap Pro.
 10. Keep or drop the four requested amendments (FP 12.0). Compliance may be scored; the liability cap is the one most likely to be marked as a departure.
 
 ## 5. Insurance and certificate actions

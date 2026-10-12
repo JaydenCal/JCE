@@ -114,12 +114,12 @@ Where Schedule 6 is answered:
 
 ### Drone (RPAS) capture and compliance
 
-- Equipment. JCE will deploy a DJI Mavic 3 Enterprise with RTK module (under 2 kg), using RTK corrections from AUSCORS and CORSnet-NSW, with a mapping-grade camera for orthophotos, 3D models and geotagged inspection imagery. Photogrammetry in Agisoft Metashape Professional [TBC - Jayden to confirm purchase]; GIS and register delivery in QGIS.
+- Equipment. JCE will deploy a DJI Mavic 3 Enterprise with RTK module (under 2 kg), with a mapping-grade camera for orthophotos, 3D models and geotagged inspection imagery. Workflow: automated flight paths planned in DroneDeploy (or DJI Pilot 2 or DJI FlightHub); RTK corrections from AUSCORS and CORSnet-NSW, or a local base station; ground control and independent check points at each mapped site to verify accuracy; processing in Autodesk ReCap Pro for point clouds and surfaces, with orthophotos from ReCap Pro or DJI Terra; Autodesk InfraWorks and Civil 3D for design integration; QGIS for GIS and asset register delivery.
 - Regulation. JCE operates under CASA's sub-2 kg excluded category, with operator accreditation and drone registration in place before services start. Every flight is within visual line of sight, below 120 m above ground level, in daylight, at least 30 m from people and never over people.
 - Airspace. JCE's desk check found no controlled aerodrome within 5.5 km of the LGA; the nearby aerodromes (including Echuca, Swan Hill, Kerang and Deniliquin) are non-controlled. Near a non-controlled aerodrome JCE keeps clear of approach and departure paths and gives way to manned aircraft. JCE confirms airspace with a CASA-verified drone safety app before each flight. [TBC - Jayden: confirm the desk check, including hospital helicopter landing sites near Moama and Echuca]
 - Site controls. A site risk assessment, pre-flight checklist and flight log for every flight; a casual visual observer on road sites; take-off and landing off the carriageway; traffic and public managed by stopping flights when people or vehicles come within 30 m. No traffic control is used.
 - Existing condition record. At bridges and approaches captured in campaign 1, JCE will produce RTK-referenced orthophotos and 3D models within the same flight limits, giving Council a baseline of existing condition that the rolling inspections in 2028 to 2031 are compared against.
-- Capability. Jayden Callen has drone and GIS experience. [TBC - Jayden: past drone and GIS projects and referees]
+- Capability. Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing with RTK positioning, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
 
 ### Stage 4: Data, remaining life, defects, safety and programs (JCE)
 
@@ -229,7 +229,7 @@ The brief sets the valuation date of 30/06/2027 and no start date. The program a
 
 ### How JCE's own hours are delivered
 
-JCE is a principal-led practice. Jayden Callen delivers JCE's own work: about 902 hours between December 2026 and June 2027, an average of about 35 hours a week over 26 working weeks. Two casual staff carry the volume work under his direction: a field assistant and visual observer for the 16 drone field days (about 190 hours), and a GIS and rating technician for first-pass ratings, GIS layers and the register (about 300 hours). The road imaging partner captures and rates the roads, the bridge partner inspects the structures and the valuer runs the valuation calculations.
+JCE is a principal-led practice. Jayden Callen delivers JCE's own work: about 902 hours between December 2026 and June 2027, an average of about 35.5 hours a week over about 25 working weeks. Two casual staff carry the volume work under his direction: a field assistant and visual observer for the 16 drone field days (about 190 hours), and a GIS and rating technician for first-pass ratings, GIS layers and the register (about 300 hours). The road imaging partner captures and rates the roads, the bridge partner inspects the structures and the valuer runs the valuation calculations.
 
 | Period | Main JCE activities | JCE hours (approx.) |
 |---|---|---|
@@ -246,7 +246,7 @@ Weekly average by month: December 35, January 36, February 36, March 36, April 3
 
 ### Drone photogrammetry capability
 
-JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE will deliver drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category (operator accreditation and drone registration in place before services start).
+JCE's related business, Glide Inside (glideinside.com.au), produces 3D digital models and visualisation for the property and construction sector. JCE will deliver drone photogrammetry (orthophotos, 3D models and geotagged inspection imagery) using a DJI Mavic 3 Enterprise with RTK, operated under CASA's sub-2 kg excluded category (operator accreditation and drone registration in place before services start). Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing with RTK positioning, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
 
 ### Experience
 
@@ -256,7 +256,7 @@ Jayden Callen is a civil engineer with more than eight years of experience acros
 - Regional and remote delivery. Civil design management, subconsultant coordination and site inspections for subdivisions in the remote Cape York communities of Aurukun, Pormpuraaw and Napranum (Langtree).
 - Condition inspection. Condition inspection and certification of an existing earthen flood levee about 647 m long at Gunnedah, with field dispersion and plasticity testing (JCE, 2026).
 - Roads and costs. Road geometry to the Austroads guides with Transport for NSW supplements, pavement design with CIRCLY, and engineer's estimates and bills of quantities, which are the basis of replacement cost unit rates.
-- Data, drone and GIS. Civil 3D, Navisworks and InfraWorks; CAD standards and automation in AutoLISP and Excel VBA; drone and GIS experience [TBC - Jayden: past drone and GIS projects and referees].
+- Data, drone and GIS. Civil 3D, Navisworks and InfraWorks; CAD standards and automation in AutoLISP and Excel VBA; drone photogrammetry and GIS. Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing with RTK positioning, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models.
 
 JCE has not yet delivered a network condition audit or valuation as lead consultant. The road imaging partner's, bridge partner's and valuer's staff, comparable council projects and referees are set out in Schedules 3 to 5 and Attachment B: [TBC - Jayden: insert from partner quotes due 28/10/2026].
 
@@ -405,6 +405,6 @@ Partner rates for directed additional work, including JCE's 10% mark-up: imaging
 
 ## Attachment B: Key personnel
 
-Jayden Callen, BEng (Hons), MIEAust. Director and Principal Engineer, JCE Infrastructure. Project manager, drone pilot and GIS lead, and single point of contact. Bachelor of Engineering (Honours) Civil, Deakin University; Engineers Australia member 11036201; application for the National Engineering Register (civil) in progress. Drone operations under CASA's sub-2 kg excluded category (operator accreditation and drone registration in place before services start). Detailed CV attached.
+Jayden Callen, BEng (Hons), MIEAust. Director and Principal Engineer, JCE Infrastructure. Project manager, drone pilot and GIS lead, and single point of contact. Bachelor of Engineering (Honours) Civil, Deakin University; Engineers Australia member 11036201; application for the National Engineering Register (civil) in progress. Drone operations under CASA's sub-2 kg excluded category (operator accreditation and drone registration in place before services start). Jayden has delivered drone photogrammetry on previous projects, planning automated flight paths in DroneDeploy, capturing with RTK positioning, and processing in Autodesk ReCap Pro to build point clouds and terrain surfaces for use in Autodesk InfraWorks and civil design models. Detailed CV attached.
 
 Partner key personnel: names, qualifications, years of experience and comparable council projects for the road imaging partner, the bridge inspection partner (at least five years of bridge condition assessment of concrete, steel and timber bridges; TfNSW experience desirable) and the valuer. [TBC - Jayden: from partner quotes due 28/10/2026]
