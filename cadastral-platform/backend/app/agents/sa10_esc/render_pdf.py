@@ -31,9 +31,9 @@ CODE = {"access": "SA", "stockpile": "SP", "topsoil": "TS", "laydown": "LD", "wa
         "inlet": "IP", "diversion": "DD", "check_dam": "CD", "nogo": "NG", "fence": "SF", "berm": "DB"}
 LEGEND = [("fence", "Sediment fence (SF) with returns"), ("access", "Stabilised site access (SA)"), ("stockpile", "Soil stockpile (SP)"),
           ("topsoil", "Topsoil stockpile (TS)"), ("laydown", "Materials laydown (LD)"), ("washout", "Concrete washout / wash-down, bunded (CW)"),
-          ("bin", "Waste bin (BIN) / portable toilet (WC)"), ("inlet", "Kerb inlet / gutter sediment trap (IP)"),
+          ("bin", "Waste bin (BIN)"), ("toilet", "Portable toilet (WC)"), ("inlet", "Kerb inlet / gutter sediment trap (IP)"),
           ("diversion", "Clean-water diversion drain / bund (DD), arrow = flow"), ("berm", "Diversion berm across access (DB)"),
-          ("check_dam", "Check dam (CD)"), ("limit", "Limit of works"), ("nogo", "No-go / tree protection (NG)")]
+          ("check_dam", "Check dam (CD)"), ("limit", "Limit of works"), ("nogo", "No-go / tree protection (NG)"), ("flow", "Direction of fall (flow)")]
 FS = 5.0          # panel font size (pt)
 
 
@@ -204,20 +204,40 @@ def draw_symbol(sh: Sheet, kind: str, geom, tx, label: str | None = None, big: f
 
 
 def legend_swatch(sh: Sheet, kind: str, x: float, y: float):
-    """Small vector swatch (paper mm, 12 x 3.4) using the same drawing code on a local frame."""
+    """Vector swatch ~10 mm long centred on y; same drawing code and colours as the plan."""
     from shapely.geometry import box
     tx = lambda px, py: (x + px, y + py)           # noqa: E731
-    h = 1.6
-    if kind in ("fence", "return", "diversion", "berm", "limit"):
-        draw_symbol(sh, kind, LineString([(0.5, 0), (11.5, 0)]), tx)
+    col = COLOUR.get(kind, (0, 0, 0))
+    if kind in ("fence", "return"):
+        draw_symbol(sh, "fence", LineString([(0.3, 0), (10.0, 0)]), tx)
+        sh.text(x + 5.1, y + 1.7, "SF", 3.6, True, "c", col)
+    elif kind in ("diversion", "berm", "limit"):
+        draw_symbol(sh, kind, LineString([(0.3, 0), (10.0, 0)]), tx)
     elif kind == "check_dam":
-        draw_symbol(sh, kind, LineString([(6, -1.4), (6, 1.4)]), tx)
-        draw_symbol(sh, "diversion", LineString([(0.5, 0), (11.5, 0)]), tx)
+        sh.stroke(col, 0.9)
+        sh.line([tx(1, 0), tx(9.5, 0)])
+        sh.line([tx(1, -1.4), tx(1, 1.4)])
+        sh.line([tx(9.5, -1.4), tx(9.5, 1.4)])
     elif kind == "nogo":
-        r = 1.5
-        draw_symbol(sh, kind, Point(6, 0).buffer(r, 16), tx)
+        draw_symbol(sh, kind, Point(5.2, 0).buffer(1.5, 16), tx)
+    elif kind in ("stockpile", "topsoil"):
+        sh.stroke(col, 0.45, dash=[1.2, 0.7])
+        sh.c.ellipse((x + 0.5) * mm, (y - 1.7) * mm, (x + 9.8) * mm, (y + 1.7) * mm, stroke=1, fill=0)
+        sh.text(x + 5.1, y, CODE[kind], 4.0, True, "c", col)
+    elif kind == "access":
+        draw_symbol(sh, kind, box(0.5, -1.7, 9.8, 1.7), tx)
+        sh.stroke(col, 0.5)
+        sh.line([tx(2, 0), tx(8.3, 0)])
+        sh.line([tx(7.2, 0.8), tx(8.4, 0), tx(7.2, -0.8)])
+    elif kind == "flow":
+        sh.stroke((0.1, 0.3, 0.85), 0.9)
+        sh.line([tx(0.5, 0), tx(9.8, 0)])
+        sh.line([tx(8.0, 1.0), tx(9.8, 0), tx(8.0, -1.0)])
     else:
-        draw_symbol(sh, kind, box(1.5, -h, 10.5, h), tx)
+        draw_symbol(sh, "bin" if kind in ("bin", "toilet") else kind, box(0.5 if kind != "inlet" else 2.5, -1.7 if kind != "inlet" else -1.0, 9.8 if kind != "inlet" else 7.8, 1.7 if kind != "inlet" else 1.0), tx)
+        code = {"inlet": "IP", "washout": "CW", "laydown": "LD", "bin": "BIN", "toilet": "WC"}.get(kind)
+        if code:
+            sh.text(x + 5.1, y, code, 3.6, True, "c", col if kind != "bin" and kind != "toilet" else (0.2, 0.2, 0.2))
 
 
 def _pick_scale(w_m: float, h_m: float, requested: int | None) -> int:
@@ -400,15 +420,20 @@ def render_pdf(inp: Sa10EscInput, L: Layout, rq: ReqView, out: dict, path: str |
     sh.stroke((0, 0, 0), 0.13)
     sh.line([(COL1, y), (COL2, y)])
     y -= 4
+    leg_top = y + 2
     sh.text(x, y, "LEGEND", 6.0, True)
     y -= 3.4
     sh.text(x, y, "Base: lot boundary (green), proposed building (blue)", 4.2, rgb=(0.3, 0.3, 0.3))
-    y -= 3.8
+    y -= 5.0
     for kind, lab in LEGEND:
-        legend_swatch(sh, kind, x, y)
-        for i, ln in enumerate(_wrap(lab, "Helvetica", 4.6, tw1 - 14)):
-            sh.text(x + 13.5, y - i * 2.3, ln, 4.6)
-        y -= 4.2 + (2.3 if len(lab) > 40 else 0)
+        legend_swatch(sh, kind, x + 1, y)
+        lines_ = _wrap(lab, "Helvetica", 4.6, tw1 - 15)
+        for i, ln in enumerate(lines_):
+            sh.text(x + 13.5, y - 0.6 - i * 2.2 + (1.1 if len(lines_) > 1 else 0), ln, 4.6)
+        y -= 4.6 + (2.0 if len(lines_) > 1 else 0)
+    sh.stroke((0, 0, 0), 0.3)
+    sh.line([(COL1 + 1.2, leg_top), (COL2 - 1.2, leg_top), (COL2 - 1.2, y + 1.5), (COL1 + 1.2, y + 1.5)], close=True)
+    y -= 1.5
     sh.stroke((0, 0, 0), 0.13)
     sh.line([(COL1, y), (COL2, y)])
     y -= 4
@@ -435,6 +460,8 @@ def render_pdf(inp: Sa10EscInput, L: Layout, rq: ReqView, out: dict, path: str |
     unres_msgs = []
     if L.flow.assumed:
         unres_msgs.append("Flow direction assumed from boundary/road, no levels.")
+    elif L.flow.note:
+        unres_msgs.append(f"Fall {L.flow.slope_pct:.1f}% towards bearing {L.flow.bearing_deg:.0f} deg: {L.flow.note}")
     for k_, msg in rq.missing.items():
         unres_msgs.append(f"{k_.replace('esc.', '')}: to be confirmed by the designer/certifier.")
     seen = set()

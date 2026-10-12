@@ -117,5 +117,13 @@
    "bs2024 s4.5 step 5",
    "bluebook_v1 Ch.9 model plan, 6.3.7(e)"
   ]
+ },
+ {
+  "key": "esc.sediment_fence.offset_from_stockpile_m",
+  "prompt": "Distance of a sediment fence from the toe of a stockpile or activity area is not stated (only: sediment control immediately downslope; no build-up against the fence). 0.4 m is drawn; to be confirmed by the designer/certifier.",
+  "looked_in": [
+   "bs2024 s4.4, s4.5, s4.8",
+   "bluebook_v1 4.3.2(h)(iv), 6.3.7"
+  ]
  }
 ]

@@ -60,7 +60,10 @@ def fit_plane(pts: list[tuple[float, float, float]], lot: Polygon, buf: float = 
     if np.linalg.matrix_rank(M) < 3 or np.ptp(A[:, 0]) < 1 or np.ptp(A[:, 1]) < 1:
         return None
     coef, *_ = np.linalg.lstsq(M, A[:, 2], rcond=None)
-    return float(coef[0]), float(coef[1]), len(sel)
+    res = A[:, 2] - M @ coef
+    rms = float(np.sqrt(np.mean(res ** 2)))
+    relief = float(math.hypot(coef[0], coef[1]) * max(np.ptp(A[:, 0]), np.ptp(A[:, 1])))
+    return float(coef[0]), float(coef[1]), len(sel), rms, relief
 
 
 @dataclass
@@ -134,7 +137,7 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
     plane = fit_plane(inp.terrain_points, lot) if inp.terrain_points else None
     flow_assumed, slope_pct = True, None
     if plane is not None:
-        a, b, npts = plane
+        a, b, npts, rms, relief = plane
         slope_pct = math.hypot(a, b) * 100.0
         if slope_pct >= P.flat_slope_pct:
             d = unit((-a, -b))
@@ -151,8 +154,17 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
         d = n
         src = "flow direction assumed from boundary/road (towards the road frontage), no levels"
         L.warnings.append("No levels supplied: flow direction assumed from boundary/road, no levels. Sediment fence, diversion and check-dam positions are provisional.")
+    unc, note, rms_v = False, "", None
+    if plane is not None:
+        rms_v = rms
+        unc = relief < 3 * rms or npts < 12
+        note = (f"Plane-fit residual {rms:.2f} m over {relief:.2f} m of fitted relief" +
+                ("; direction is UNCERTAIN (coarse 5 m DEM, small relief): fence is placed on the computed downslope side - confirm with a detail survey." if unc
+                 else "; source levels are a coarse 5 m DEM: confirm the fall direction on site."))
+        if unc:
+            L.warnings.append("Fall direction uncertain: " + note)
     L.flow = FlowInfo(direction=d, slope_pct=slope_pct, source=src, assumed=flow_assumed,
-                      bearing_deg=(math.degrees(math.atan2(d[0], d[1])) + 360.0) % 360.0)
+                      bearing_deg=(math.degrees(math.atan2(d[0], d[1])) + 360.0) % 360.0, note=note, uncertain=unc, rms_m=rms_v)
     contour = (-d[1], d[0])
     theta = math.degrees(math.atan2(contour[1], contour[0]))
 
@@ -327,7 +339,7 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
                         continue
                     if r.distance(H) < hd:
                         continue
-                    if occ is not None and r.distance(occ) < 0.5:
+                    if occ is not None and r.distance(occ) < 1.4:
                         continue
                     occupied.append(r)
                     return r, tier
@@ -454,35 +466,95 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
     fence_len = sum(l.length for l in fence_lines)
     returns: list[LineString] = []
     inside = lot.buffer(-0.05)
-    for l in fence_lines:
-        c0, c1 = l.coords[0], l.coords[-1]
-        for end, other in ((c0, l.coords[1] if len(l.coords) > 1 else c1), (c1, l.coords[-2] if len(l.coords) > 1 else c0)):
-            tang = unit((end[0] - other[0], end[1] - other[1]))
-            dirv = unit((tang[0] - d[0], tang[1] - d[1]))
-            r = LineString([end, (end[0] + dirv[0] * P.return_length_m, end[1] + dirv[1] * P.return_length_m)]).intersection(inside)
-            returns += [x for x in lines_of(r) if x.length > 0.1]
-        if interval:
-            s = interval.value
-            while s < l.length - 1.0:
-                p = l.interpolate(s)
-                r = LineString([(p.x, p.y), (p.x - d[0] * P.return_length_m, p.y - d[1] * P.return_length_m)]).intersection(inside)
-                returns += [x for x in lines_of(r) if x.length > 0.1]
-                s += interval.value
+    all_fence_lines: list[LineString] = []
+
+    def make_returns(lines, interior=True):
+        """Ends angled upslope (cited) and small returns every cited interval along long runs."""
+        out_r: list[LineString] = []
+        for l in lines:
+            cs_ = list(l.coords)
+            ends = ((cs_[0], cs_[1]), (cs_[-1], cs_[-2]))
+            for end, other in ends:
+                tang = unit((end[0] - other[0], end[1] - other[1]))
+                dirv = unit((tang[0] - d[0], tang[1] - d[1]))
+                r = LineString([end, (end[0] + dirv[0] * P.return_length_m, end[1] + dirv[1] * P.return_length_m)]).intersection(inside)
+                out_r += [x for x in lines_of(r) if x.length > 0.1]
+            if interior and interval:
+                s_ = interval.value
+                while s_ < l.length - 1.0:
+                    p = l.interpolate(s_)
+                    r = LineString([(p.x, p.y), (p.x - d[0] * P.return_length_m, p.y - d[1] * P.return_length_m)]).intersection(inside)
+                    out_r += [x for x in lines_of(r) if x.length > 0.1]
+                    s_ += interval.value
+        return out_r
+
     fence_keys = ["esc.sediment_fence.place_downslope", "esc.sediment_fence.along_contour", "esc.sediment_fence.ends_turn_upslope",
                   "esc.sediment_fence.return_interval_m", "esc.sediment_fence.post_spacing_m", "esc.sediment_fence.trench_depth_mm",
                   "esc.sediment_fence.joint_overlap_mm", "esc.sediment_fence.not_across_drainage_line", "esc.sediment_fence.no_material_against_fence",
                   "esc.sediment_fence.max_subcatchment_flow_l_s", "esc.sediment_fence.near_source", "esc.sediment_fence.design_life_months"]
-    fnotes = ["Along the downslope limit of works; opens at the stabilised access (ends turned upslope)."]
-    if flow_assumed:
-        fnotes.append("Flow direction assumed from boundary/road, no levels: position provisional.")
+    fall_note = (f"Fall {slope_pct:.1f}% towards bearing {L.flow.bearing_deg:.0f} deg (grid). " + L.flow.note) if slope_pct is not None else "Flow direction assumed from boundary/road, no levels."
+    fnotes = ["Along the downslope limit of works, following the contour (cited); ends angled upslope; opens at the stabilised access.", fall_note]
+    fence_unres = ["esc.sediment_fence.offset_from_boundary_m", "esc.sediment_fence.max_length_m", "esc.sediment_fence.return_length_m"]
+    fstatus = "unresolved" if (flow_assumed or L.flow.uncertain) else "resolved"
+    n_fence = 0
+
+    def add_fence(id_, label, lines, notes, status, unres):
+        lines = [l for l in lines if l.length > 0.2]
+        if not lines:
+            return
+        all_fence_lines.extend(lines)
+        returns.extend(make_returns(lines))
+        add(id_, "fence", MultiLineString(lines), label, status, fence_keys, unres, notes, sum(l.length for l in lines), "m")
+
     if fence_lines:
-        add("FNC1", "fence", MultiLineString(fence_lines), "Sediment fence", "unresolved" if flow_assumed else "resolved", fence_keys,
-            ["esc.sediment_fence.offset_from_boundary_m", "esc.sediment_fence.max_length_m", "esc.sediment_fence.return_length_m"], fnotes, fence_len, "m")
-        if returns:
-            add("FNR1", "return", MultiLineString(returns), "Fence returns", "unresolved", ["esc.sediment_fence.return_interval_m", "esc.sediment_fence.ends_turn_upslope"],
-                ["esc.sediment_fence.return_length_m"], ["Symbolic return length (layout assumption); spacing per cited 20 m."], sum(r.length for r in returns), "m")
+        add_fence("FNC1", "Sediment fence - downslope limit of works", fence_lines, fnotes, fstatus, fence_unres)
     else:
         L.warnings.append("No downslope limit-of-works edge found for the sediment fence.")
+    existing = unary_union(fence_lines) if fence_lines else None
+
+    # toe of the works: contour-parallel fence across the full width at the downslope extreme of the disturbed area
+    try:
+        pmax = max(proj(c_) for c_ in est_poly.exterior.coords)
+        cen = est_poly.centroid
+        cp = (cen.x + d[0] * (pmax - proj((cen.x, cen.y))), cen.y + d[1] * (pmax - proj((cen.x, cen.y))))
+        cl_ = LineString([(cp[0] - contour[0] * 400, cp[1] - contour[1] * 400), (cp[0] + contour[0] * 400, cp[1] + contour[1] * 400)])
+        toe = cl_.intersection(inset_lot).difference(gap)
+        if existing is not None:
+            toe = toe.difference(existing.buffer(2.0))
+        toe_lines = [l for l in lines_of(toe) if l.length > 2.0]
+        if toe_lines:
+            add_fence("FNT1", "Sediment fence - toe of works (along the contour)", toe_lines,
+                      ["Contour-parallel line at the downslope edge of the disturbed area / building pad, spanning the lot; ends angled upslope.", fall_note],
+                      fstatus, fence_unres)
+    except ValueError:
+        pass
+
+    for id_, kind in (("SP1", "stockpile"), ("TS1", "topsoil"), ("LD1", "laydown"), ("WS1", "washout")):
+        r = placed.get(id_, (None, ""))[0]
+        if r is None:
+            continue
+        rc = r.centroid
+        best = None
+        cs_ = list(r.exterior.coords)
+        for p0, p1 in zip(cs_[:-1], cs_[1:]):
+            e = unit((p1[0] - p0[0], p1[1] - p0[1]))
+            nn = (e[1], -e[0])
+            mid_ = ((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2)
+            if (mid_[0] - rc.x) * nn[0] + (mid_[1] - rc.y) * nn[1] < 0:
+                nn = (-nn[0], -nn[1])
+            cv = nn[0] * d[0] + nn[1] * d[1]
+            if best is None or cv > best[0]:
+                best = (cv, p0, p1, nn)
+        cv, p0, p1, nn = best
+        off = 0.4
+        ext = unit((p1[0] - p0[0], p1[1] - p0[1]))
+        a0 = (p0[0] + nn[0] * off - ext[0] * 0.5, p0[1] + nn[1] * off - ext[1] * 0.5)
+        a1 = (p1[0] + nn[0] * off + ext[0] * 0.5, p1[1] + nn[1] * off + ext[1] * 0.5)
+        add_fence(f"SF-{id_}", f"Sediment fence - downslope of {id_}", [LineString([a0, a1]).intersection(lot.buffer(-0.1))] if True else [],
+                  [f"On the downslope side of {id_}, just outside the footprint; ends angled upslope (cited).",
+                   "Offset from the stockpile (0.4 m drawn) is not stated in the standards: to be confirmed by the designer/certifier.", fall_note],
+                  "unresolved", ["esc.sediment_fence.offset_from_stockpile_m"])
+        rq.miss("esc.sediment_fence.offset_from_stockpile_m")
 
     # ---- upslope clean-water diversion
     up_geom = unary_union(up_lines) if up_lines else None
@@ -545,6 +617,30 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
          "esc.stockpile.not_on_footpath_or_road_reserve"], ["esc.inlet.kerb_trap_dimensions"],
         (["Stormwater pit locations not supplied: trap shown in the gutter immediately downslope of the crossover as a placeholder; confirm against the actual pits."]
          if assumed_inlet else ["Trap at each supplied kerb inlet."]) + ["Consult council on method (cited)."], len(traps), "no.")
+
+    # fence along the frontage from the access towards the kerb inlet (low point towards the street)
+    try:
+        sgn_k = 1.0 if (t[0] * d[0] + t[1] * d[1]) >= 0 else -1.0
+        s_a = front.project(Point(bp))
+        s_i = front.project(Point(inlet_pts[0]))
+        s_start = min(max(s_a + sgn_k * (width / 2 + 0.3), 0.0), front.length)
+        s_end = min(max(s_i, 0.0), front.length)
+        from shapely.ops import substring
+        if abs(s_end - s_start) > 1.5 and (s_end - s_start) * sgn_k > 0:
+            ln_ = substring(front, s_start, s_end)
+            ln_ = shapely.affinity.translate(ln_, -n[0] * P.boundary_inset_m, -n[1] * P.boundary_inset_m)
+            cover = unary_union(all_fence_lines).buffer(1.0) if all_fence_lines else None
+            kl = [l for l in lines_of(ln_ if cover is None else ln_.difference(cover)) if l.length > 1.5]
+            add_fence("FNK1", "Sediment fence - frontage, access to kerb inlet", kl,
+                      ["Along the frontage on the downslope side of the access, towards the kerb inlet trap, so flow leaving the works is captured.", fall_note],
+                      "unresolved", fence_unres)
+    except Exception:  # noqa: BLE001
+        pass
+    if returns:
+        add("FNR1", "return", MultiLineString(returns), "Fence returns", "unresolved", ["esc.sediment_fence.return_interval_m", "esc.sediment_fence.ends_turn_upslope"],
+            ["esc.sediment_fence.return_length_m"], ["Symbolic return length (layout assumption); ends angled upslope and spacing per cited 20 m."], sum(r.length for r in returns), "m")
+    fence_len = sum(l.length for l in all_fence_lines)
+    fence_lines = all_fence_lines
 
     # ---- tree protection / no-go
     for i, tp, r in tree_elems:

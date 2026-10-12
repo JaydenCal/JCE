@@ -468,9 +468,20 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     try:
         L9.set_endpoints(json.loads(Path(args.sa9_endpoints).read_text()) if args.sa9_endpoints else {})
         configured = [lt.key for lt in L9.layers_for("NSW") if lt.endpoint]
-        r9 = Sa9Constraints(Sa9ArcGisLoader(lot.mga_srid, getter=(lambda u, p: json.loads(fetcher(u, p)[0])) if fetcher else None, sleep=(lambda s: None) if fetcher else time.sleep) if configured else None).run(Sa9Input(
+        if getattr(args, "report", False):
+            os.environ.setdefault("IMAGERY_PROVIDER", "nsw")
+        in9 = Sa9Input(
             lot=lot_with_envelope(sa1, env_out) if env_out is not None else lot, footprint_wkt=footprint_wkt,
-            output_dir=str(out), development_type=dev, flood_ffl_text=flood_text))
+            output_dir=str(out), development_type=dev, flood_ffl_text=flood_text,
+            project_title=rr.project_title, flags=list(sa1.flags or []), civil=_civil_summary(R, rep.facts, fchk, env_out, sa4))
+        if getattr(args, "report", False):       # reproducible re-render input: re-run SA9 on this file to rebuild the report
+            (out / "sa9_input.json").write_text(in9.model_dump_json(indent=1))
+        r9 = Sa9Constraints(Sa9ArcGisLoader(lot.mga_srid, getter=(lambda u, p: json.loads(fetcher(u, p)[0])) if fetcher else None, sleep=(lambda s: None) if fetcher else time.sleep) if configured else None).run(in9)
+        if getattr(args, "report", False):
+            import shutil
+            shutil.copyfile(r9.pdf_path, out / "site_report.pdf")
+            shutil.copyfile(r9.json_path, out / "site_report.json")
+            rep.add("Site report", OK, "Site Assessment and Planning Constraints Report", [str(out / "site_report.pdf"), str(out / "site_report.json")])
         n_aff = sum(1 for x in r9.layers if x.status == "affected")
         n_nc = sum(1 for x in r9.layers if x.status == "not_checked")
         unres = [t.rule_id for t in r9.triggers if t.unresolved]
@@ -482,6 +493,28 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     except Exception as ex:  # noqa: BLE001
         rep.add("SA9 constraints report", FAILED, _err(ex))
     return _finish(rep, out)
+
+
+def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4) -> dict | None:
+    """Plain dict for the report's civil page. Only what exists; nothing is invented."""
+    cv: dict[str, Any] = {}
+    t3 = R.get("SA3")
+    prov = facts.get("levels_provenance") or {}
+    if t3 is not None:
+        tin = t3.tin
+        cv["terrain"] = {"source": prov.get("source") or t3.source, "points": prov.get("points"), "min_z": tin.min_z, "max_z": tin.max_z,
+                         "copyright": prov.get("copyright", ""), "dem_5m": "5M" in str(prov.get("source", "")).upper(),
+                         "accuracy_text": (f"{t3.vertical_accuracy_m:g} m ({prov.get('vertical_accuracy_source', 'stated')})" if t3.vertical_accuracy_m is not None else "Unknown")}
+        if t3.cut_fill is not None:
+            cv["earthworks"] = t3.cut_fill.model_dump()
+    if fchk is not None:
+        cv["ffl"] = fchk.model_dump()
+    if env_out is not None and getattr(env_out, "driveway", None) is not None:
+        cv["driveway"] = env_out.driveway.model_dump()
+    if sa4 is not None:
+        cv["services"] = {"assets": len(sa4.assets), "connections": len(sa4.connections),
+                          "rwt_text": (f"{sa4.rwt.tank_volume_l} L tank (unverified)" if getattr(sa4, "rwt", None) is not None and hasattr(sa4.rwt, "tank_volume_l") else None)}
+    return cv or None
 
 
 def _finish(rep: Report, out: Path) -> Report:
@@ -539,6 +572,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--flood-level-ahd", type=float, help="design flood level, RL m AHD (council certificate / flood study); FFL = level + freeboard")
     p.add_argument("--flood-event", default="1% AEP", help="flood planning event the level refers to (default 1%% AEP)")
     p.add_argument("--freeboard-m", type=float, help="freeboard override (user_entered); default = cited flood.freeboard_m for the LGA else UNRESOLVED")
+    p.add_argument("--report", action="store_true", help="also write site_report.pdf/.json (Site Assessment and Planning Constraints Report; live NSW aerials unless IMAGERY_PROVIDER is set)")
     p.add_argument("--title")
     p.add_argument("--out", default="out/run_site")
     return p

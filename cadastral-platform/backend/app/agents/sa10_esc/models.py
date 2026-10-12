@@ -88,6 +88,9 @@ class FlowInfo(M):
     source: str                       # "terrain plane fit (n points)" | "assumed from road, no levels" ...
     assumed: bool
     bearing_deg: float
+    note: str = ""
+    uncertain: bool = False
+    rms_m: float | None = None
 
 
 class Sa10EscOutput(M):

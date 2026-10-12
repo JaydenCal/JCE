@@ -25,6 +25,13 @@ class Sa9Input(Model):
     development_type: DevelopmentType = DevelopmentType.dwelling_house
     acknowledgements: list[str] = [k.value for k in AckKind]
     flood_ffl_text: str | None = None   # computed FFL statement (app.flood.ffl_label), referenced by the flood trigger
+    # richer report inputs (all optional; the report says plainly what is missing)
+    project_title: str | None = None
+    flags: list[str] = []
+    requirements: list[dict] | None = None              # cited Requirement rows; None = load backend/knowledge/<lga>/ if present
+    unresolved_requirements: list[dict] | None = None
+    civil: dict | None = None                            # terrain / ffl / earthworks / driveway / services summary
+    pathway: dict | None = None                          # sa11 pathway result when available
 
 
 class Sa9Result(Model):
@@ -56,11 +63,22 @@ class Sa9Constraints:
                 if t.rule_id == "flood.fpl":
                     t.next_steps = [f"Computed minimum floor level: {p.flood_ffl_text}"] + t.next_steps
         cur = sorted({r.data_currency for r in res if r.data_currency})
-        meta = {"lotplan": p.lot.lotplan, "lga_name": p.lot.lga_name, "jurisdiction": p.lot.jurisdiction, "development_type": p.development_type.label,
-                "date": p.report_date or date.today().isoformat(), "data_currency": "; ".join(cur) or "unknown"}
+        from app.report.knowledge import derive_lga, load_requirements
+        lga = derive_lga(p.lot.lga_name, res)
+        meta = {"lotplan": p.lot.lotplan, "lga_name": lga, "jurisdiction": p.lot.jurisdiction, "development_type": p.development_type.label,
+                "development_type_key": p.development_type.value, "date": p.report_date or date.today().isoformat(),
+                "data_currency": "; ".join(cur) or "unknown", "zone_code": p.lot.zone_code, "area_m2": p.lot.area_m2_calculated,
+                "area_registered": p.lot.area_m2_registered, "mga_srid": p.lot.mga_srid, "flags": p.flags,
+                "flood_ffl_text": p.flood_ffl_text, "project_title": p.project_title}
+        reqs, unres = p.requirements, p.unresolved_requirements
+        if reqs is None:
+            reqs, kunres = load_requirements(lga)
+            unres = kunres if unres is None else unres
         out = Path(p.output_dir); out.mkdir(parents=True, exist_ok=True)
         pdf, js, gj = out / "constraints_report.pdf", out / "constraints_report.json", out / "constraints.geojson"
-        build_report(pdf, js, meta, res, trig, p.lot.boundary_wkt, p.footprint_wkt, p.acknowledgements)
+        build_report(pdf, js, meta, res, trig, p.lot.boundary_wkt, p.footprint_wkt, p.acknowledgements,
+                     neighbours=p.lot.neighbours, segments=p.lot.segments, road_names=p.lot.road_names, requirements=reqs or [],
+                     unresolved_requirements=unres or [], civil=p.civil, pathway=p.pathway)
         import json
         gj.write_text(json.dumps(geojson(res, p.lot.boundary_wkt, p.footprint_wkt, p.lot.mga_srid)))
         return Sa9Result(pdf_path=str(pdf), json_path=str(js), geojson_path=str(gj), layers=res, triggers=trig,

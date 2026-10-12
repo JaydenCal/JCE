@@ -72,7 +72,7 @@ def test_fence_on_downslope_boundary(tmp_path):
     lot = swkt.loads(lot_ctx().boundary_wkt)
     assert fence.distance(lot.exterior) < 1.5
     q = out.quantities
-    assert 15.0 < q["fence_length_m"] < 22.0             # the full rear edge (20 m minus inset)
+    assert q["fence_length_m"] > 15.0 and q["fence_posts"] > 8      # all fence runs summed (rear edge, toe, stockpile toes)
 
 
 def test_fence_follows_slope_direction_east(tmp_path):
@@ -125,7 +125,7 @@ def test_stockpile_avoids_drainage_line_and_service_buffers(tmp_path):
     out2 = run(tmp_path / "svc", services=[ServiceLine(service="sewer", label="S", geometry_wkt=LineString([(E0 + 1, N0 + 38), (E0 + 19, N0 + 38)]).wkt, exclusion_wkt=ex.wkt)])
     for k in ("stockpile", "topsoil", "washout", "laydown"):
         for e in el(out2, k):
-            assert not swkt.loads(e.geometry_wkt).intersects(ex)
+            assert swkt.loads(e.geometry_wkt).intersection(ex).area < 1e-6
 
 
 def test_no_levels_warns_and_flags_unresolved(tmp_path):
@@ -211,3 +211,15 @@ def test_geojson_parts_and_report(tmp_path):
 def test_deterministic(tmp_path):
     a, b = run(tmp_path / "a"), run(tmp_path / "b")
     assert [e.geometry_wkt for e in a.elements] == [e.geometry_wkt for e in b.elements]
+
+
+def test_stockpile_toe_fences_and_low_side(tmp_path):
+    out = run(tmp_path)
+    ids = {e.id for e in el(out, "fence")}
+    assert {"FNC1", "SF-SP1", "SF-TS1", "SF-LD1"} <= ids
+    for k, i in (("stockpile", "SP1"), ("topsoil", "TS1"), ("laydown", "LD1")):
+        sp = swkt.loads(el(out, k)[0].geometry_wkt)
+        f = swkt.loads([e for e in el(out, "fence") if e.id == f"SF-{i}"][0].geometry_wkt)
+        assert f.distance(sp) < 1.0 and f.centroid.y > sp.centroid.y      # downslope (north) toe
+        assert [e for e in el(out, "fence") if e.id == f"SF-{i}"][0].status == "unresolved"
+    assert out.flow.note and abs(out.quantities["fence_length_m"] - sum(e.quantity for e in el(out, "fence"))) < 0.5

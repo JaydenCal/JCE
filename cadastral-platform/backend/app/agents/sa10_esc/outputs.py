@@ -69,6 +69,30 @@ def write_dxf(inp: Sa10EscInput, L: Layout, path: str | Path) -> dict:
         t = msp.add_text(txt, height=h, dxfattribs={"layer": "C-ESC-NOTE", "style": "JCE"})
         t.set_placement((c.x + 0.3, c.y + 0.3))
         counts["C-ESC-NOTE"] = counts.get("C-ESC-NOTE", 0) + 1
+    # symbol blocks + legend (1 unit = 1 m; swatch 2 m)
+    def blk(name, fn):
+        b = doc.blocks.new(name=name)
+        fn(b)
+    blk("ESC_SF", lambda b: ([b.add_line((0, 0), (2, 0), dxfattribs={"layer": "C-ESC-FENC"})] + [b.add_line((x - .12, -.12), (x + .12, .12), dxfattribs={"layer": "C-ESC-FENC"}) for x in (.5, 1, 1.5)]))
+    blk("ESC_ACCESS", lambda b: (b.add_lwpolyline([(0, -.35), (2, -.35), (2, .35), (0, .35)], close=True, dxfattribs={"layer": "C-ESC-ACCS"}), b.add_line((.3, 0), (1.7, 0), dxfattribs={"layer": "C-ESC-ACCS"}), b.add_line((1.45, .15), (1.7, 0), dxfattribs={"layer": "C-ESC-ACCS"}), b.add_line((1.45, -.15), (1.7, 0), dxfattribs={"layer": "C-ESC-ACCS"})))
+    blk("ESC_SP", lambda b: (b.add_ellipse((1, 0), major_axis=(1, 0), ratio=0.35, dxfattribs={"layer": "C-ESC-STOK", "linetype": "DASHED"}), b.add_text("SP", height=.3, dxfattribs={"layer": "C-ESC-STOK"}).set_placement((.8, -.12))))
+    blk("ESC_TS", lambda b: (b.add_ellipse((1, 0), major_axis=(1, 0), ratio=0.35, dxfattribs={"layer": "C-ESC-STOK", "linetype": "DASHED"}), b.add_text("TS", height=.3, dxfattribs={"layer": "C-ESC-STOK"}).set_placement((.8, -.12))))
+    blk("ESC_BOX", lambda b: b.add_lwpolyline([(0, -.35), (2, -.35), (2, .35), (0, .35)], close=True, dxfattribs={"layer": "C-ESC-STOK"}))
+    blk("ESC_DIVR", lambda b: ([b.add_line((0, 0), (2, 0), dxfattribs={"layer": "C-ESC-DIVR"})] + [b.add_lwpolyline([(x - .2, .15), (x, 0), (x - .2, -.15)], dxfattribs={"layer": "C-ESC-DIVR"}) for x in (.8, 1.6)]))
+    blk("ESC_CHKD", lambda b: (b.add_line((0, 0), (2, 0), dxfattribs={"layer": "C-ESC-CHKD"}), b.add_line((0, -.3), (0, .3), dxfattribs={"layer": "C-ESC-CHKD"}), b.add_line((2, -.3), (2, .3), dxfattribs={"layer": "C-ESC-CHKD"})))
+    blk("ESC_LIMT", lambda b: b.add_line((0, 0), (2, 0), dxfattribs={"layer": "C-ESC-LIMT", "linetype": "DASHDOT"}))
+    blk("ESC_NOGO", lambda b: (b.add_circle((1, 0), .35, dxfattribs={"layer": "C-ESC-NOGO"}), b.add_line((.75, -.25), (1.25, .25), dxfattribs={"layer": "C-ESC-NOGO"}), b.add_line((.75, .25), (1.25, -.25), dxfattribs={"layer": "C-ESC-NOGO"})))
+    blk("ESC_FLOW", lambda b: (b.add_line((0, 0), (2, 0), dxfattribs={"layer": "C-ESC-NOTE"}), b.add_lwpolyline([(1.6, .2), (2, 0), (1.6, -.2)], dxfattribs={"layer": "C-ESC-NOTE"})))
+    leg = [("ESC_SF", "Sediment fence (SF)"), ("ESC_ACCESS", "Stabilised site access (SA)"), ("ESC_SP", "Soil stockpile (SP)"), ("ESC_TS", "Topsoil stockpile (TS)"),
+           ("ESC_BOX", "Laydown LD / washout CW / bin BIN / toilet WC / inlet trap IP"), ("ESC_DIVR", "Clean-water diversion (DD)"), ("ESC_CHKD", "Check dam (CD)"),
+           ("ESC_LIMT", "Limit of works"), ("ESC_NOGO", "No-go / tree protection (NG)"), ("ESC_FLOW", "Direction of fall")]
+    lx, ly = L.lot.bounds[2] + 3, L.lot.bounds[1] + 2 + 1.2 * len(leg)
+    msp.add_lwpolyline([(lx - 1, ly + 2), (lx + 22, ly + 2), (lx + 22, ly - 1.2 * len(leg) - .2), (lx - 1, ly - 1.2 * len(leg) - .2)], close=True, dxfattribs={"layer": "C-ESC-NOTE"})
+    msp.add_text("LEGEND - ESC", height=.6, dxfattribs={"layer": "C-ESC-NOTE", "style": "JCE"}).set_placement((lx, ly + .9))
+    for i, (bn, lab) in enumerate(leg):
+        yy = ly - 1.2 * (i + 1) + .6
+        msp.add_blockref(bn, (lx, yy), dxfattribs={"layer": "C-ESC-NOTE"})
+        msp.add_text(lab, height=.4, dxfattribs={"layer": "C-ESC-NOTE", "style": "JCE"}).set_placement((lx + 2.6, yy - .15))
     # company logo (vectorised) beside the lot, layer C-ANNO-LOGO
     if "C-ANNO-LOGO" not in doc.layers:
         doc.layers.add("C-ANNO-LOGO", color=2)
