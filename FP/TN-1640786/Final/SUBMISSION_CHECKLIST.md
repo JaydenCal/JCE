@@ -59,7 +59,7 @@ Prepared 12/10/2026. Nothing has been lodged, sent or signed.
 6. Conflict of interest, including the planning partner's (Section 12). Navigate Planning acts for applicants in the Mid-Western LGA, including Matt McPherson's DA: decide whether to use Navigate.
 7. Attachment A: paste JCE standard T&Cs from the branded template (only applies if Council has no conditions).
 8. Signature and date in the Offered by block and cover letter.
-9. Referee Maverick Partner, CPB Contractors (added Rev G, replacing the Gunnedah levee example): confirm full name and title as written, consent to be named, phone and email; project year (five-year window), package scope, JCE's role (as JCE or as a previous employer), value; any Defence confidentiality limits on what can be described.
+9. Referee Maverick Partner, CPB Contractors (added Rev G): confirm full name and title as written, consent to be named, phone and email; project year (five-year window), package scope, JCE's role (as JCE or as a previous employer), value; any Defence confidentiality limits on what can be described.
 10. Tablelands Regional Council projects (Rev G, Jayden's experience while at Langtrees, NOT JCE projects): floodway rectification [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]; leachate storage facility [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]. Darren Quilliam: get consent to be named, title, phone and email. If Council's forms ask for the tenderer's own projects, keep these in the key personnel / CV field only. If Council sets a recency window (e.g. last 5 years), confirm the years qualify.
 11. Sunny Lotay (Rev G core team): signed standing associate agreement with Lotay Civil (scope, fee basis, availability); insurance: does JCE's PI cover his work or does Lotay Civil hold its own PI/PL (attach certificates; FP Section 10 has a [TBC]); Sunny's written consent to be named on this bid; RPEQ and NER numbers; CV for Attachment C. Associate rate assumed $200/hr x 12 hours = $2,400 [TBC - Jayden].
 12. Returnables answers file: ACN, GST status, address check, workers comp policy number, local content.
@@ -98,10 +98,10 @@ When quotes arrive: replace PS 1 ($49,500) and PS 2 ($8,800) with quote plus 10%
 
 Assumed typical council RFQ criteria, to be replaced with Council's real ones.
 
-| Criterion (assumed weight) | Draft Rev A | Final Rev F | Reason |
+| Criterion (assumed weight) | Draft Rev A | Final Rev G | Reason |
 |---|---|---|---|
 | Price (40%) | 6 | 6 | Rev G adds $2,400 (1.8%); no score change; provisional sums are 43% of price, so firm figures will matter |
-| Relevant experience and team (25%) | 3 | 5.5 | Added Jayden's evidence and referees. Rev G: CPB referee for RAAF Base Townsville replaces Gunnedah levee; two Tablelands Regional Council projects (Jayden's work at Langtrees, counted as key personnel, not company, experience) with council referee raise 5 to 5.5; Sunny Lotay (RPEQ, NER) as associate reviewer adds depth but stays at 5.5 until agreement and CV in hand; capped until planning partner's contributions plan record is named |
+| Relevant experience and team (25%) | 3 | 5.5 | Added Jayden's evidence and referees. Rev G: CPB referee for RAAF Base Townsville added; two Tablelands Regional Council projects (Jayden's work at Langtrees, counted as key personnel, not company, experience) with council referee raise 5 to 5.5; Sunny Lotay (RPEQ, NER) as associate reviewer adds depth but stays at 5.5 until agreement and CV in hand; capped until planning partner's contributions plan record is named |
 | Methodology and understanding (20%) | 6 | 7.5 | Added risk table, hold points HP1 to HP3, editable files to Council |
 | Program and capacity (10%) | 5 | 7 | Gantt chart, hold points, single point of contact |
 | Compliance, WHS, local content, sign-off (5%) | 3 | 5.5 | Insurance stated honestly with PL uplift, conflict and conditions sections; forms still unseen |
@@ -131,5 +131,6 @@ No budget is known. A planning-led RFQ may attract town planning firms pricing l
 
 - JCE_FP_TN-1640786_Final_RevG.docx and .pdf (8 pages, pagination checked; current revision). Rev F kept for record, superseded.
 - FP_Final_text_RevG.md (same text as Rev G; Dropbox copy FINAL_2026-10-12_FP_Final_text_RevG.md). FP_Final_text.md is Rev F, superseded.
+- Dropbox copy of this checklist: FINAL_2026-10-12_SUBMISSION_CHECKLIST_RevG.md (the earlier FINAL_2026-10-12_SUBMISSION_CHECKLIST.md is Rev F, superseded).
 - RFQ_Returnable_Schedules_answers.md
 - SUBMISSION_CHECKLIST.md (this file)

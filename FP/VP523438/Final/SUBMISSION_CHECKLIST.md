@@ -1,6 +1,6 @@
 # Submission checklist: VP523438, MBDC RFT 2026.013 Concept Design for Hawthorn Road
 
-**Rev G (12/10/2026, updated):** adds the Glide Inside / RTK drone capability paragraph and Jayden's drone photogrammetry experience and workflow (DroneDeploy flight planning, RTK via AUSCORS or local base, check points, ReCap Pro, InfraWorks / Civil 3D, QGIS) in FP 5.1, CASA sub-2 kg excluded category with accreditation in place before services start (site more than 30 km from Adelaide Airport and Parafield), a Stage 1 line where the ReCap surface feeds the concept model, and high-resolution aerial stills and video (experience sentence, Stage 1, and a deliverables line); lodge Rev G (13 pages), not Rev F. Adds the Craig Sullivan farm drainage drone survey and the Tablelands Regional Council floodway rectification (Jayden's work while at Langtrees, not a JCE project; listed first, referee Darren Quilliam) to FP 5.4, and replaces the Gunnedah levee with RAAF Base Townsville delivery for CPB Contractors (referee Maverick Partner, CPB). Experience criterion re-scored 6 to 7 (council road floodway project with a council referee, counted as Jayden's personal experience; the Brief scores consultant and key staff experience together, so no change for the Langtrees correction); weighted 6.9 to 7.1.
+**Rev G (12/10/2026, updated):** adds Sunny Lotay (RPEQ, NER), Lotay Civil, to the core team as associate reviewer and certifying engineer (FP 2.0, 5.1, 8.2, 8.3, 12.0), with a 24-hour allowance: lump sum $258,460 to $263,500 ex GST. Also adds the Glide Inside / RTK drone capability paragraph and Jayden's drone photogrammetry experience and workflow (DroneDeploy flight planning, RTK via AUSCORS or local base, check points, ReCap Pro, InfraWorks / Civil 3D, QGIS) in FP 5.1, CASA sub-2 kg excluded category with accreditation in place before services start (site more than 30 km from Adelaide Airport and Parafield), a Stage 1 line where the ReCap surface feeds the concept model, and high-resolution aerial stills and video (experience sentence, Stage 1, and a deliverables line); lodge Rev G (13 pages), not Rev F. Adds the Craig Sullivan farm drainage drone survey and the Tablelands Regional Council floodway rectification (Jayden's work while at Langtrees, not a JCE project; listed first, referee Darren Quilliam) to FP 5.4, and replaces the Gunnedah levee with RAAF Base Townsville delivery for CPB Contractors (referee Maverick Partner, CPB). Experience criterion re-scored 6 to 7 (council road floodway project with a council referee, counted as Jayden's personal experience; the Brief scores consultant and key staff experience together, so no change for the Langtrees correction); weighted 6.9 to 7.1.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status: draft ready (no Pursue/Pass decision yet).
 
@@ -12,14 +12,15 @@ Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status:
 |---|---|
 | JCE labour (760.5 h) | $133,640 |
 | Sub-consultant allowances (raw $99,000, plus 10% coordination) | $108,900 |
+| Associate review and certification, Sunny Lotay (24 h at $200/hr [TBC - Jayden: associate rate]) | $4,800 |
 | Disbursements | $3,610 |
-| 5% risk allowance (rounded) | $12,310 |
-| **Lump sum, Separable Portion 1** | **$258,460** (GST $25,846; $284,306 incl. GST) |
+| 5% risk allowance (rounded) | $12,550 |
+| **Lump sum, Separable Portion 1** | **$263,500** (GST $26,350; $289,850 incl. GST). Was $258,460 before Sunny's allowance (+$5,040) |
 | PC Sum SP2 Detailed Design (70%) | $221,700 |
 | PC Sum SP3 IFC (100%) | $117,700 |
 | **PC Sums total** | **$339,400** |
 
-Stage split: Stage 1 $64,020; Stage 2 $135,940; Stage 3 $58,500. No budget figure is published in the tender documents. Sub-consultant figures are allowances until the quotes arrive: replace them in the Cost Sheet, then update FP Sections 8.1 and 8.2 and the Schedule answers (Item 3).
+Stage split: Stage 1 $64,020; Stage 2 $138,460; Stage 3 $61,020. PC Sums unchanged (SP2/SP3 certification by Sunny to be priced if Council instructs those portions). No budget figure is published in the tender documents. Sub-consultant figures are allowances until the quotes arrive: replace them in the Cost Sheet, then update FP Sections 8.1 and 8.2 and the Schedule answers (Item 3).
 
 ## 2. Lodgement steps (Jayden, on VendorPanel)
 
@@ -60,6 +61,7 @@ Stage split: Stage 1 $64,020; Stage 2 $135,940; Stage 3 $58,500. No budget figur
 9. SA registration: confirm on legislation.sa.gov.au (FP 5.1).
 11. Drone project example (FP 5.4, Craig Sullivan farm drainage): [TBC - Jayden: location, year, approx. area]. Get Craig Sullivan's consent to be named as a referee and his phone/email (FP prints "Referee details available on request").
 13. Tablelands floodway rectification (FP 5.4; delivered by Jayden while at Langtrees, presented as key personnel experience, not JCE company experience): [TBC - Jayden: site, year, value, JCE's role and scope, RPEQ sign-off arrangement]. Get Darren Quilliam's consent to be named, his title, phone and email (FP prints "contact details available on request"). Leachate storage facility job not used here (not relevant to road design); same TBCs if used elsewhere.
+15. **Sunny Lotay (Lotay Civil):** signed standing associate agreement (scope, fee basis, availability, insurance: does JCE's PI cover his work or does Lotay Civil hold its own PI/PL? attach certificates); Sunny's written consent to be named on this bid; RPEQ and NER numbers; CV (add to Attachment B); confirm the $200/hr associate rate. Livio Chiarot no longer named as reviewer (remains a referee).
 12. [TBC - Jayden to confirm] DJI Terra licence, if orthophotos are produced in DJI Terra rather than ReCap Pro.
 10. Keep or drop the four requested amendments (FP 12.0). Compliance may be scored; the liability cap is the one most likely to be marked as a departure.
 
@@ -101,10 +103,10 @@ No criteria or weightings are published. Scored as a strict council panel agains
 | Criterion (assumed weight) | Draft Rev A | Final Rev F | With TBCs filled |
 |---|---|---|---|
 | Understanding and methodology (30%) | 7 | 8 | 8 |
-| Team, experience and sub-consultants (25%) | 4 | 7 | 7.5 |
+| Team, experience and sub-consultants (25%) | 4 | 7.5 | 8 |
 | Price and value (30%) | 6 | 6 | 6 to 7 (quotes) |
 | Program and availability (10%) | 6 | 8 | 8 |
-| Compliance, insurance and terms (5%) | 4 | 7 | 8 |
-| **Weighted** | **5.7** | **7.1** | **7.3** |
+| Compliance, insurance and terms (5%) | 4 | 7.5 | 8 |
+| **Weighted** | **5.7** | **7.2** | **7.5** |
 
 Changes made: (1) experience section filled with Jayden's real projects and two referees; (2) PL departure replaced by a commitment to $20M on award; (3) Gantt program and SP2/SP3 activation statement (cl 2.5.7); (4) sub-consultant shortlist named, with Adelaide Hills firms, and cl 19 consent requested; (5) "how JCE manages the team" section with review before issue and one comments register. Also fixed: Schedule of Rates cross-references (Attachment A), disbursements $3,610 vs $3,790 reconciliation, payment terms to cl 3.2, lighting categories (V5 to the link road, PR5 beyond), RTWSA amendment wording (cl 20.15 vs 10.4), council-side experience statement. Remaining weakness: no named lead from each sub-consultant until quotes arrive, and price is not benchmarked against a budget.

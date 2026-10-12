@@ -1,6 +1,6 @@
 # Submission checklist: VP527224 / DSC RFQ 2026-092 Port Douglas Marine Industry Precinct Scoping Study
 
-**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, two Tablelands Regional Council (QLD) projects (Jayden at Langtree) with referee Darren Quilliam, a RAAF Base Townsville referee (Maverick Partner, CPB Contractors) in place of the Gunnedah levee project, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; RPEQ changed from Ben Lancini to Sunny Lotay (Lotay Civil); price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
+**Rev G (12/10/2026):** adds the Glide Inside and drone photogrammetry capability (DJI Mavic 3 Enterprise with RTK, DroneDeploy, ReCap Pro, InfraWorks), Jayden's drone experience (including high-resolution aerial stills and video, now also a deliverable) and the Craig Sullivan farm drainage example, two Tablelands Regional Council (QLD) projects (Jayden at Langtree) with referee Darren Quilliam, a RAAF Base Townsville referee (Maverick Partner, CPB Contractors) in place of the Gunnedah levee project, a Stage 1 drone capture of the site, and site airspace limits; LiDAR wording removed; RPEQ changed from Ben Lancini to Sunny Lotay (Lotay Civil), now shown in the core team as associate reviewer, certifier and backup lead (his role is priced in the existing PS4, $4,400); price unchanged. Lodge Rev G (`JCE_FP_VP527224_Final_RevG` and `..._JCE_FILLED_RevG`); Rev F is kept for reference.
 
 Prepared 12/10/2026. Nothing has been sent, lodged or uploaded. Register status unchanged (draft ready, no Pursue/Pass tick yet).
 
@@ -40,10 +40,10 @@ Binary files built in the repo (docx, pdf) could not be uploaded to Dropbox from
 
 Most important first:
 
-1. **RPEQ sign-off (Rev G):** Sunny Lotay (RPEQ, Lotay Civil) is named as the RPEQ who signs JCE's engineering outputs. [TBC - Jayden: his RPEQ number, CV and written consent to be named; Lotay Civil address for F2.] Only contact on file: info@lotaycivil.com.au.
+1. **Sunny Lotay, core team (Rev G):** shown as Associate Principal Engineer (RPEQ, NER), Lotay Civil, under a standing associate agreement: technical reviewer, RPEQ sign-off of JCE engineering outputs, and backup project lead. Not a JCE employee, director or shareholder. [TBC - Jayden: signed standing associate agreement with Lotay Civil (scope, fee basis, availability); insurance (does JCE's PI cover his work, or does Lotay Civil hold its own PI/PL? attach certificates); Sunny's written consent to be named; RPEQ and NER numbers; CV; Lotay Civil address for F2; associate rate behind PS4.] Only contact on file: info@lotaycivil.com.au.
 2. **Insurance:** PL $20M quote requested 12/10; bind before lodgement if possible and attach the certificate (the FP keeps "JCE will lift PL to $20M on award" until the policy is bound); workers compensation certificate (icare) and confirmation of cover for Queensland work; motor vehicle certificate.
 3. **Partners:** names, addresses, key people, backups, projects and referees for F1, F2 and E2 once quotes arrive (Section 5).
-4. **JCE backup project lead** (F1 and Section 2).
+4. **JCE backup project lead:** now Sunny Lotay (F1 and Section 2); confirm his availability for the whole contract.
 5. **Far North Queensland council experience:** the proposal uses the cleared general statement only. Name the council and referee only if you want to and have permission.
 6. Schedule A2: bank details, postal address, director's full legal name as on the ASIC record.
 7. Schedules A3, A4, B1, G1 to G3: answer every Yes/No declaration (suggested answers are marked "Suggested" where JCE documents support them).
@@ -79,7 +79,7 @@ Send the reply owed to Richard Gale (27/07 Cameron Place proposal) before the Ve
 | PS1 Economics | $49,500 | Economics | 1.8 |
 | PS2 Engagement (Option B) | $22,000 | Economics | 1.4 |
 | PS3 Marine engineering (RPEQ) | $35,200 | Marine | 1.5 |
-| PS4 RPEQ (Civil) sign-off | $4,400 | Sunny Lotay (Lotay Civil) or marine Option B | 1.5 |
+| PS4 Sunny Lotay review and RPEQ sign-off | $4,400 (existing allowance, rate [TBC - Jayden]) | Sunny Lotay (Lotay Civil) | 1.5 |
 | PS5 Geotechnical (RPEQ) | $6,600 | Geotechnical | 1.5 |
 | PS6 Planning and urban design | $17,600 | Planning (+ Informed Architects A3) | 1.5 |
 | PS7 Environment | $15,400 | Ecology | 1.9 |
@@ -121,11 +121,11 @@ RFIs.md (11/10) is still right, with one change: question 8 no longer asks wheth
 |---|---|---|---|
 | Local knowledge and experience (10%) | 3 | 6 (Rev F: 5) | 7 |
 | Relevant experience (20%) | 3 | 4 (Rev F: 4) | 7 |
-| Capacity and key personnel (15%) | 4 | 6 (Rev F: 5) | 7 |
+| Capacity and key personnel (15%) | 4 | 7 (Rev F: 5) | 7 |
 | Methodology and program (15%) | 6 | 8 | 8 |
 | Price (40%) | 5 | 5 | 5 to 7 (depends on quotes) |
-| Weighted score | 4.4 | 5.5 (Rev F: 5.3) | 6.4 to 7.2 |
+| Weighted score | 4.4 | 5.7 (Rev F: 5.3) | 6.4 to 7.2 |
 
-Rev G re-score: the two Tablelands Regional Council projects (Far North Queensland council civil work, with a council referee) lift local knowledge from 5 to 6. Because they were delivered at Langtree, they count as key personnel experience (capacity and key personnel 5 to 6), not company experience (relevant experience stays at 4); weighted 5.3 to 5.5. The drone capability supports capacity but does not move it from 5. The RAAF Base Townsville referee strengthens the evidence for relevant experience but does not change any score by a whole point. These gains depend on Jayden confirming the details in items 14 to 16.
+Rev G re-score: the two Tablelands Regional Council projects (Far North Queensland council civil work, with a council referee) lift local knowledge from 5 to 6. Because they were delivered at Langtree, they count as key personnel experience (capacity and key personnel 5 to 6), not company experience (relevant experience stays at 4); weighted 5.3 to 5.5. Naming Sunny Lotay (RPEQ, NER) as associate reviewer, certifier and backup project lead lifts capacity and key personnel from 6 to 7; weighted 5.7. The drone capability supports capacity but does not move it from 5. The RAAF Base Townsville referee strengthens the evidence for relevant experience but does not change any score by a whole point. These gains depend on Jayden confirming the details in items 14 to 16.
 
 Changes made in RevF: North Queensland evidence (based in Townsville to 05/2026, Cape York DATSIP subdivisions, HMAS Cairns) and the client-side council statement; RPEQ sign-off named; study lead and integrator role with hold points and a management method; risks, non-conformance and coordination (H1 points); Gantt chart; Schedule I1 completed item by item; insurance position stated per the Win Themes; contractions and dashes removed. The remaining gap is partner evidence, which only the quotes can fill.

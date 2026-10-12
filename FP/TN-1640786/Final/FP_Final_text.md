@@ -1,3 +1,5 @@
+> SUPERSEDED by Rev G (FP_Final_text_RevG.md). Kept for record only.
+
 # JCE Infrastructure Pty Ltd
 
 ABN 29 699 165 663 · 0477 207 027 · jayden@jceinfrastructure.com.au · jceinfrastructure.com.au
@@ -172,7 +174,7 @@ BEng (Hons) Civil, Deakin University; MIEAust (EA 11036201). Accountable for del
 - **Regional and remote delivery.** Civil design management, subconsultant coordination, site inspections and engineering services reports for subdivisions in the remote Cape York communities of Aurukun, Pormpuraaw and Napranum (Langtree).
 - **Infrastructure programs.** Senior Engineer and Design Manager, SCP Consulting (06/2023 to 03/2025): primary contact for tier-one contractors on Defence projects, including the North Queensland Mid-Term Refresh at RAAF Base Townsville, Townsville Field Training Area and HMAS Cairns (about $104 million combined).
 - **Roads, pavements and drainage.** Road geometry to the Austroads guides with Transport for NSW supplements; pavement design with CIRCLY; stormwater in DRAINS and MUSIC X; flood impact assessment to ARR 2019.
-- **Council work.** Has worked for a regional council in Far North Queensland, including shortlisting consultants for a council tender. JCE also prepared the flood levee inspection and certification report for 6887 Oxley Highway, Gunnedah (2026), for a development application under Gunnedah LEP 2012.
+- **Council work.** Has worked for a regional council in Far North Queensland, including shortlisting consultants for a council tender.
 
 ### Lead contributions planner (planning partner)
 
