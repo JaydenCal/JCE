@@ -110,7 +110,7 @@ def three_point_turn(v: Vehicle, start, side: int = 1, total_deg: float = 180.0,
 
 
 def park_in_90(v: Vehicle, start, side: int = 1, approach_m: float = 3.0, run_in_m: float = 1.0, step: float = 0.1) -> Sweep:
-    """Forward past the bay by approach_m, then reverse on full lock through 90 deg into the bay (bay on `side`), straighten."""
+    """Forward past the bay by approach_m, then reverse on full lock (steer toward `side`; tail swings that way) through 90 deg, straighten."""
     return simulate(v, start, [(approach_m, 0.0), (-arc_len(v, 90.0), side * v.max_steer), (-run_in_m, 0.0)], step)
 
 

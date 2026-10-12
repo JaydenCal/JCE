@@ -56,7 +56,8 @@ class Sa3Driveway:
         # swept path: park nose-in, reverse out onto the street
         v = sw.VEHICLES.get(req.vehicle) or sw.VEHICLES["B85"]
         heading = math.atan2(n[1], n[0])
-        side = 1 if np.cross(n, np.array(lay.front_dir)) < 0 else -1
+        fd = lay.front_dir
+        side = 1 if (n[0] * fd[1] - n[1] * fd[0]) < 0 else -1
         s1 = sw.reverse_out(v, tuple(gp), heading, gd + req.kerb_to_boundary_m, 90.0, side)
         sweeps = [s1.polygon]
         start_turn = (*(bp + n * max(gd / 2, 0)), heading)
