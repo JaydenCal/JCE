@@ -325,13 +325,13 @@ Applies to variations and additional services.
 
 | Role | Rate (excl. GST) |
 |---|---|
-| Director / Principal Engineer | $200/hr  |  $1,600/day |
-| Specialist Advice / Independent Peer Review | $200/hr  |  $1,600/day |
-| Senior Engineer | $190/hr  |  $1,520/day |
-| Project Engineer | $180/hr  |  $1,440/day |
-| Design Engineer | $170/hr  |  $1,360/day |
-| CAD / Drafting Technician | $160/hr  |  $1,280/day |
-| Administration / Document Control | $140/hr  |  $1,120/day |
+| Director / Principal Engineer | $200/hr, $1,600/day |
+| Specialist Advice / Independent Peer Review | $200/hr, $1,600/day |
+| Senior Engineer | $190/hr, $1,520/day |
+| Project Engineer | $180/hr, $1,440/day |
+| Design Engineer | $170/hr, $1,360/day |
+| CAD / Drafting Technician | $160/hr, $1,280/day |
+| Administration / Document Control | $140/hr, $1,120/day |
 | Sub-consultant services | At cost + 10% |
 
 Rates are exclusive of GST and fixed for the term of the Contract. A day is eight hours. Disbursements (printing, travel and authority fees) are charged at cost.

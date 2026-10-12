@@ -123,6 +123,7 @@ JCE will not start any SP2 or SP3 work until Council issues a written Variation 
 - Project staging plan
 - Concept design cost estimate
 - Appendices: engineering survey, geotechnical and pavement design report, Tree Assessment Report and lighting concept
+
 Design status. Drawings and reports are issued for the purpose stated in the transmittal. Concept design documents are not suitable for construction.
 
 
@@ -158,7 +159,8 @@ The program assumes Council returns consolidated comments within ten business da
 - Stormwater and flooding: DRAINS (core workshop) and MUSIC X; flood impact assessment to ARR 2019 with specialist flood modellers.
 - Costs: engineer's estimates, bills of quantities and variation pricing.
 - Software: Civil 3D (advanced, with AutoLISP automation), Navisworks and InfraWorks.
-**Registration.** The Brief and Agreement do not require CPEng, NER or any State registration for this work. South Australia's engineer registration scheme is not in force for civil road and drainage design; Consumer and Business Services has said the scheme starts with engineers working on buildings. If a registration requirement starts during the commission and applies to these services, JCE will comply, including by engaging a registered engineer for review and sign-off.
+
+**Registration.** The Brief and Agreement do not require CPEng, NER or any State registration for this work. South Australia does not currently require engineers to be registered to provide these services [TBC - Jayden: confirm on legislation.sa.gov.au before lodging]. If a registration requirement starts during the commission and applies to these services, JCE will comply, including by engaging a registered engineer for review and sign-off.
 
 
 ### 5.2   Schedule of proposed sub-consultants
@@ -218,6 +220,7 @@ The following are excluded unless Council adds them in writing:
 - Quantity surveyor estimates in Separable Portion 1 (JCE prepares the concept estimate)
 - Contamination, ecology, cultural heritage and acoustic assessments
 - Traffic counts beyond the data Council provides
+
 Assumptions:
 
 - About 3 km of Hawthorn Road, with side-road tie-ins of up to 50 m
@@ -314,6 +317,7 @@ JCE declares that it has no actual, potential or perceived conflict of interest 
 - Public Liability: JCE currently holds $10 million. JCE will lift its Public Liability cover to $20 million any one occurrence on award, as Item 14 requires, and provide the certificate of currency before the Services start.
 - Workers compensation: JCE has no workers in South Australia and its Director performs the JCE services. JCE will provide evidence of its workers compensation and accident cover under clause 20.15.6, and of Return to Work SA registration if the law requires it. [TBC - Jayden: confirm the cover held and attach the certificate.]
 - Sub-consultants will be required to hold the insurances in clause 10.5 and 20.15.3.
+
 Certificates of currency for Professional Indemnity and Public Liability (current to 02/07/2027) are in Attachment C.
 
 
