@@ -61,15 +61,15 @@ def draw_frame(sheet: Sheet, proj: Proj, index: int, total: int, main_scale_text
     bh = 24.0 + 3.0 * len(extra)
     _box(v, X0, y - bh, X1, y)
     if b is not None:
-        polys, uw, uh = logo_in_box(b.logo_path, X0 + 3, y - 3 - 15, 30, 15)
+        polys, uw, uh = logo_in_box(b.logo_path, X0 + 3, y - 3 - 12, 24, 12)
         from shapely.geometry import MultiPolygon
         for p in polys:
             v.fill(p, "C-ANNO-LOGO", GOLD, 1.0, anno=True)
         tx = X0 + 3 + (uw if uw else 0) + 3
-        v.text(tx, y - 4.5, b.company_name.upper(), 3.6, "TOP_LEFT", bold=True, layer="C-ANNO-TTLB")
-        for i, ln in enumerate(fonts.wrap(b.trading_line, 2.2, X1 - tx - 2)[:2]):
-            v.text(tx, y - 9.5 - i * 3.0, ln, 2.2, "TOP_LEFT", layer="C-ANNO-TTLB", color=(0.25, 0.25, 0.25))
-        v.text(X0 + 3, y - 20.5, b.website, 2.4, "TOP_LEFT", layer="C-ANNO-TTLB", color=(0.1, 0.25, 0.55))
+        v.text(tx, y - 4.5, b.company_name.upper(), 2.8, "TOP_LEFT", bold=True, layer="C-ANNO-TTLB")
+        for i, ln in enumerate(fonts.wrap(b.trading_line, 2.0, X1 - tx - 2)[:3]):
+            v.text(tx, y - 8.5 - i * 2.6, ln, 2.0, "TOP_LEFT", layer="C-ANNO-TTLB", color=(0.25, 0.25, 0.25))
+        v.text(X0 + 3, y - 19.5, b.website, 2.4, "TOP_LEFT", layer="C-ANNO-TTLB", color=(0.1, 0.25, 0.55))
         for i, t in enumerate(extra):
             v.text(X0 + 3, y - 24.0 - i * 3.0, t, 2.0, "TOP_LEFT", layer="C-ANNO-TTLB")
     y -= bh
@@ -78,7 +78,7 @@ def draw_frame(sheet: Sheet, proj: Proj, index: int, total: int, main_scale_text
     if sheet.north is not None:
         nh = 24.0
         _box(v, X0, y - nh, X1, y)
-        cx, cy, r = X0 + 14, y - nh / 2, 8.5
+        cx, cy, r = X0 + 14, y - nh / 2 - 1.5, 6.5
         a = math.radians(sheet.north)
         ux, uy = math.sin(a), math.cos(a)
         nx, ny = uy, -ux
@@ -103,19 +103,19 @@ def draw_frame(sheet: Sheet, proj: Proj, index: int, total: int, main_scale_text
     # drawing number / revision / sheet
     h = 14.0
     _box(v, X0, yb, X1, yb + h)
-    v.line([(X0 + 40, yb), (X0 + 40, yb + h)], "C-ANNO-TTLB", False, 0.25)
-    v.line([(X0 + 52, yb), (X0 + 52, yb + h)], "C-ANNO-TTLB", False, 0.25)
+    v.line([(X0 + 36, yb), (X0 + 36, yb + h)], "C-ANNO-TTLB", False, 0.25)
+    v.line([(X0 + 60, yb), (X0 + 60, yb + h)], "C-ANNO-TTLB", False, 0.25)
     v.text(X0 + 2, yb + h - 1.4, "DRAWING No.", 1.8, "TOP_LEFT", color=(0.35, 0.35, 0.35), layer="C-ANNO-TTLB")
     v.text(X0 + 2, yb + 2.0, sheet.number, 6.5, "BOTTOM_LEFT", bold=True, layer="C-ANNO-TTLB")
-    v.text(X0 + 54, yb + h - 1.4, "REV", 1.8, "TOP_LEFT", color=(0.35, 0.35, 0.35), layer="C-ANNO-TTLB")
-    v.text(X0 + 54, yb + 2.0, sheet.revision, 6.5, "BOTTOM_LEFT", bold=True, layer="C-ANNO-TTLB")
-    v.text(X0 + 42, yb + h - 1.4, "SHEET", 1.8, "TOP_LEFT", color=(0.35, 0.35, 0.35), layer="C-ANNO-TTLB")
-    v.text(X0 + 42, yb + 2.0, f"{index} of {total}", 4.2, "BOTTOM_LEFT", bold=True, layer="C-ANNO-TTLB")
+    v.text(X0 + 62, yb + h - 1.4, "REV", 1.8, "TOP_LEFT", color=(0.35, 0.35, 0.35), layer="C-ANNO-TTLB")
+    v.text(X0 + 62, yb + 2.0, sheet.revision, 6.5, "BOTTOM_LEFT", bold=True, layer="C-ANNO-TTLB")
+    v.text(X0 + 38, yb + h - 1.4, "SHEET", 1.8, "TOP_LEFT", color=(0.35, 0.35, 0.35), layer="C-ANNO-TTLB")
+    v.text(X0 + 38, yb + 2.0, f"{index} of {total}", 3.8, "BOTTOM_LEFT", bold=True, layer="C-ANNO-TTLB")
     yb += h
     # status stamp
     h = 10.0
     v.line([(X0, yb), (X1, yb), (X1, yb + h), (X0, yb + h)], "C-ANNO-STMP", True, 0.5, color=RED)
-    v.text((X0 + X1) / 2, yb + h / 2, STAMP, 3.2, "MIDDLE_CENTER", bold=True, color=RED, layer="C-ANNO-STMP")
+    v.text((X0 + X1) / 2, yb + h / 2, STAMP, 2.7, "MIDDLE_CENTER", bold=True, color=RED, layer="C-ANNO-STMP")
     yb += h
     # scale / date / drawn / checked
     h = 22.0
@@ -141,7 +141,7 @@ def draw_frame(sheet: Sheet, proj: Proj, index: int, total: int, main_scale_text
         v.text(X0 + 2, yb + 1.6, fonts.wrap(sheet.subtitle, 2.2, W - 4)[0], 2.2, "BOTTOM_LEFT", layer="C-ANNO-TTLB", color=(0.2, 0.2, 0.2))
     yb += h
     # project box
-    h = 40.0
+    h = 44.0
     _box(v, X0, yb, X1, yb + h)
     yy = yb + h - 1.0
     v.text(X0 + 2, yy, "PROJECT", 1.8, "TOP_LEFT", color=(0.35, 0.35, 0.35), layer="C-ANNO-TTLB")
@@ -149,6 +149,7 @@ def draw_frame(sheet: Sheet, proj: Proj, index: int, total: int, main_scale_text
     for ln in fonts.wrap(proj.title, 3.2, W - 4, True)[:2]:
         v.text(X0 + 2, yy, ln, 3.2, "TOP_LEFT", bold=True, layer="C-ANNO-TTLB")
         yy -= 3.9
+    yy -= 1.2
     rows = [("SITE", proj.address), ("LOT / PLAN", proj.lotplan), ("COUNCIL", proj.council), ("ZONE / AREA", f"{proj.zone}  {proj.area}".strip()),
             ("DEVELOPMENT", proj.dev_label)]
     for l, t in rows:
@@ -216,7 +217,8 @@ def _legend_row(v: View, e: LegendEntry, x: float, y: float) -> None:
 
 
 def scale_bar(v: View, x: float, y: float, scale: int, label: str | None = None) -> float:
-    """Paper-space scale bar at (x, y) = left end, bar sits above y.  Returns the bar length in mm."""
+    """Scale bar at paper position (x, y) = left end, bar above y.  Returns the bar length in mm."""
+    T = (lambda a, b: v.tm(a, b)) if not v.paper else (lambda a, b: (a, b))  # noqa: E731
     target = 55.0
     best = 1.0
     for n in (1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 5000):
@@ -225,15 +227,20 @@ def scale_bar(v: View, x: float, y: float, scale: int, label: str | None = None)
     seg = best / 4.0
     L = best * 1000.0 / scale
     from shapely.geometry import Polygon
+    # white backing so the bar stays legible over aerial imagery
+    bk = [(x - 2, y - 4.5), (x + L + 12, y - 4.5), (x + L + 12, y + 5.5), (x - 2, y + 5.5)]
+    v.fill(Polygon([T(*p) for p in bk]), "C-ANNO-NRTH", (1, 1, 1), 0.8, anno=True)
     for i in range(4):
         x0 = x + i * L / 4
-        poly = Polygon([(x0, y), (x0 + L / 4, y), (x0 + L / 4, y + 1.6), (x0, y + 1.6)])
+        quad = [T(x0, y), T(x0 + L / 4, y), T(x0 + L / 4, y + 1.6), T(x0, y + 1.6)]
         if i % 2 == 0:
-            v.fill(poly, "C-ANNO-NRTH", (0, 0, 0), 1.0, anno=True)
-        v.line([(x0, y), (x0 + L / 4, y), (x0 + L / 4, y + 1.6), (x0, y + 1.6)], "C-ANNO-NRTH", True, 0.18, anno=True)
+            v.fill(Polygon(quad), "C-ANNO-NRTH", (0, 0, 0), 1.0, anno=True)
+        v.line(quad, "C-ANNO-NRTH", True, 0.18, anno=True)
     for i in range(5):
         val = seg * i
-        t = f"{val:g}" + (" m" if i == 4 else "")
-        v.text(x + i * L / 4, y + 2.1, t, 1.8, "BOTTOM_CENTER" if i < 4 else "BOTTOM_LEFT", layer="C-ANNO-NRTH") if i < 4 else v.text(x + L + 0.3, y + 0.2, t, 1.8, "BOTTOM_LEFT", layer="C-ANNO-NRTH")
-    v.text(x, y - 0.6, label or f"SCALE 1:{scale} (A3)", 2.0, "TOP_LEFT", bold=True, layer="C-ANNO-NRTH")
+        if i < 4:
+            v.text(*T(x + i * L / 4, y + 2.1), f"{val:g}", 1.8, "BOTTOM_CENTER", layer="C-ANNO-NRTH")
+        else:
+            v.text(*T(x + L + 0.5, y + 0.2), f"{val:g} m", 1.8, "BOTTOM_LEFT", layer="C-ANNO-NRTH")
+    v.text(*T(x, y - 0.8), label or f"SCALE 1:{scale} (A3)", 2.0, "TOP_LEFT", bold=True, layer="C-ANNO-NRTH")
     return L

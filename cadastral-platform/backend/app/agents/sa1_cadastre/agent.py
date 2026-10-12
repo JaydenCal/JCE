@@ -139,7 +139,6 @@ class Sa1Cadastre:
             minx, miny, maxx, maxy = lot_gda.buffer(0.0003).bounds
             r = self.client.query(layer, geometry={"xmin": minx, "ymin": miny, "xmax": maxx, "ymax": maxy,
                                                    "spatialReference": {"wkid": 7844}}, geometry_type="esriGeometryEnvelope")
-            snaps.append(r.snapshot)
         except Exception:  # noqa: BLE001
             return []
         out, own = [], mga.buffer(0.01)

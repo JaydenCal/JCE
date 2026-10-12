@@ -61,9 +61,6 @@ def render_dxf(sheets: list[tuple[Sheet, list[View]]], path: str | Path) -> dict
     msp = doc.modelspace()
     seen: set = set()
     stats = {"model_entities": 0, "layouts": 0}
-    for name in list(doc.layout_names()):
-        if name.lower().startswith("layout"):
-            doc.layouts.delete(name)
     for sh, views in sheets:
         lay = doc.layouts.new(sh.number)
         lay.page_setup(size=A3, margins=(0, 0, 0, 0), units="mm", scale=(1, 1), name="ISO_A3_(420.00_x_297.00_MM)", device="DWG To PDF.pc3")
@@ -79,7 +76,7 @@ def render_dxf(sheets: list[tuple[Sheet, list[View]]], path: str | Path) -> dict
                     stats["model_entities"] += _emit_model(msp, doc, v, it, seen)
             if not v.paper:
                 used_by_view.append((v, layers_geo))
-        all_names = [l.name for l in doc.layers]
+        all_names = [l.dxf.name for l in doc.layers]
         for v, used in used_by_view:
             r = v.rect
             vp = lay.add_viewport(center=((r[0] + r[2]) / 2, (r[1] + r[3]) / 2), size=(r[2] - r[0], r[3] - r[1]),
@@ -87,6 +84,12 @@ def render_dxf(sheets: list[tuple[Sheet, list[View]]], path: str | Path) -> dict
             vp.dxf.layer = "C-ANNO-VPRT"
             vp.dxf.status = 1
             vp.frozen_layers = [n for n in all_names if n not in used and n != "0" and n != "Defpoints"]
+    for name in list(doc.layout_names()):
+        if name.lower().startswith("layout"):
+            try:
+                doc.layouts.delete(name)
+            except Exception:  # noqa: BLE001
+                pass
     doc.saveas(str(path))
     aud = doc.audit()
     stats["audit_errors"] = len(aud.errors)

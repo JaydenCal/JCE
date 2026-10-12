@@ -165,7 +165,7 @@ def spot_levels(v: View, s: Site, maxn: int = 120) -> int:
     """DEM posts inside the view as small crosses with RL (indicative)."""
     n = 0
     for x, y, z in s.spots:
-        if not v.inside(x, y, 6) or n >= maxn:
+        if not v.inside(x, y, 6) or n >= maxn or not s.lot.buffer(12).contains(Point(x, y)):
             continue
         px, py = v.tp(x, y)
         v.line([v.tm(px - 0.8, py), v.tm(px + 0.8, py)], "C-TOPO-SPOT", lw=0.1, color=LGREY, anno=True)
@@ -280,17 +280,21 @@ def services(v: View, s: Site, which: str | None = None) -> int:
 
 
 def panel(v: View, x0, y0, x1, y1, title: str, lines: list[str], h: float = 2.2, warn: bool = False, layer: str = "C-ANNO-NOTE") -> float:
-    """Boxed text panel on a paper view; returns the y of the bottom of the text."""
+    """Boxed text panel given in PAPER mm (works on paper and model views); returns the paper y of the bottom of the text."""
+    T = (lambda a, b: v.tm(a, b)) if not v.paper else (lambda a, b: (a, b))  # noqa: E731
     col = (0.72, 0.1, 0.1) if warn else (0, 0, 0)
-    v.line([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], "C-DATA-NONE" if warn else "C-ANNO-TABL", True, 0.35 if warn else 0.25, color=col if warn else None)
-    v.text(x0 + 2, y1 - 1.2, title, 2.8, "TOP_LEFT", bold=True, color=col, layer=layer)
+    if warn:
+        from shapely.geometry import Polygon
+        v.fill(Polygon([T(x0, y0), T(x1, y0), T(x1, y1), T(x0, y1)]), layer, (1, 1, 1), 0.9, anno=True)
+    v.line([T(x0, y0), T(x1, y0), T(x1, y1), T(x0, y1)], "C-DATA-NONE" if warn else "C-ANNO-TABL", True, 0.35 if warn else 0.25, color=col if warn else None, anno=True)
+    v.text(*T(x0 + 2, y1 - 1.2), title, 2.8, "TOP_LEFT", bold=True, color=col, layer=layer)
     yy = y1 - 6.4
     for ln in lines:
         bullet = ln.startswith("- ")
         for k, w in enumerate(fonts.wrap(ln, h, x1 - x0 - 5 - (3 if bullet else 0))):
             if yy < y0 + 1.2:
                 return yy
-            v.text(x0 + 2 + (3 if bullet and k else 0), yy, w, h, "TOP_LEFT", layer=layer, color=col if warn else None)
+            v.text(*T(x0 + 2 + (3 if bullet and k else 0), yy), w, h, "TOP_LEFT", layer=layer, color=col if warn else None)
             yy -= h + 1.0
         yy -= 0.8
     return yy

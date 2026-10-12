@@ -137,7 +137,8 @@ def c410(ctx: Ctx) -> Sheet:
     ex, st, L = p["ex"], p["st"], p["L"]
     zs = [e[1] for e in ex] + [x[1] for x in st]
     zmin, zmax = min(zs) - 0.3, max(zs) + 0.3
-    hs = pick_scale(L + 4, 1, 290, 1)
+    from app.agents.sa5_cad_dxf.planset.core import STD_SCALES
+    hs = next((x for x in STD_SCALES if (L + 4) * 1000 / x <= 285), 1000)
     vs = hs
     for k in (1, 2, 5, 10, 20):
         vs = hs / k

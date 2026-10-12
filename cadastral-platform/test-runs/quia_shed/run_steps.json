@@ -1,7 +1,7 @@
 {
  "facts": {
   "development_type": "shed",
-  "started": "2026-10-12T16:58:59+00:00",
+  "started": "2026-10-12T17:25:27+00:00",
   "args": {
    "check_network": false,
    "lga": null,
@@ -22,8 +22,16 @@
    "params_json": null,
    "sa9_endpoints": null,
    "acknowledge": true,
+   "profile": null,
+   "parcel": null,
    "scale": 200,
+   "planset": false,
+   "council": null,
    "base_rl": 0.0,
+   "flood_level_ahd": null,
+   "flood_event": "1% AEP",
+   "freeboard_m": null,
+   "report": true,
    "title": null,
    "out": "../test-runs/quia_shed"
   },
@@ -38,12 +46,13 @@
   "snapshots": [
    "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
    "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Transport_Theme/MapServer/5",
-   "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2"
+   "https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2",
+   "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9"
   ],
   "levels_provenance": {
    "source": "NSW_5M_Elevation ImageServer exportImage",
    "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_5M_Elevation/ImageServer",
-   "retrieved": "2026-10-12T16:59:34+00:00",
+   "retrieved": "2026-10-12T17:25:36+00:00",
    "copyright": "DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata)",
    "datum": "AHD (orthometric, per service heightModelInfo)",
    "native_cell_web_mercator_units": 5.0,
@@ -102,6 +111,12 @@
    "files": []
   },
   {
+   "name": "FFL (flood)",
+   "status": "UNRESOLVED",
+   "detail": "Obtain the flood level / flood planning level certificate from the council or enter it; dwelling FFL not set from flood. Freeboard: UNRESOLVED",
+   "files": []
+  },
+  {
    "name": "SA3 terrain/earthworks",
    "status": "OK",
    "detail": "TIN built from the supplied survey",
@@ -128,6 +143,15 @@
    "detail": "Shed preset at placeholder RL 0 (NO survey, not AHD). Default dimensions are editable drawing inputs, NOT compliance limits; verify size, height and setback limits against the cited planning requirements. Setbacks UNRESOLVED: placement illustrative only. 9 parts; no terrain (no survey)",
    "files": [
     "../test-runs/quia_shed/scene_bundle.json"
+   ]
+  },
+  {
+   "name": "Site report",
+   "status": "OK",
+   "detail": "Site Assessment and Planning Constraints Report",
+   "files": [
+    "../test-runs/quia_shed/site_report.pdf",
+    "../test-runs/quia_shed/site_report.json"
    ]
   },
   {

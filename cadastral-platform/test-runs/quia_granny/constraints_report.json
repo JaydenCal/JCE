@@ -1,11 +1,21 @@
 {
  "meta": {
   "lotplan": "3//DP263990",
-  "lga_name": "",
+  "lga_name": "Gunnedah",
   "jurisdiction": "NSW",
   "development_type": "Secondary dwelling (granny flat)",
+  "development_type_key": "secondary_dwelling",
   "date": "2026-10-12",
-  "data_currency": "currency field not returned; fetched 2026-10-12; source currency 2022-03-01; fetched 2026-10-12; source currency 2024-12-13; fetched 2026-10-12; source currency 2026-10-03; fetched 2026-10-12; The NSW BFPL Map is collated and merged together from individual NSW local council maps which are submitted by the local council for certification. The maps are often a product of or derived from local and state vegetation mapping with input from Local Council and RFS staff. In some cases the maps are produced under contract for local council by various companies. Please refer to the individual metadata statements for each LGA BFPL Map. (text from ePlanning/Planning_Portal_Hazard layer 229, same dataset)"
+  "data_currency": "currency field not returned; fetched 2026-10-12; source currency 2022-03-01; fetched 2026-10-12; source currency 2024-12-13; fetched 2026-10-12; source currency 2026-10-03; fetched 2026-10-12; The NSW BFPL Map is collated and merged together from individual NSW local council maps which are submitted by the local council for certification. The maps are often a product of or derived from local and state vegetation mapping with input from Local Council and RFS staff. In some cases the maps are produced under contract for local council by various companies. Please refer to the individual metadata statements for each LGA BFPL Map. (text from ePlanning/Planning_Portal_Hazard layer 229, same dataset)",
+  "zone_code": "RU1",
+  "area_m2": 509264.46,
+  "area_registered": null,
+  "mga_srid": 7856,
+  "flags": [
+   "road_tolerance_widened_to_25m"
+  ],
+  "flood_ffl_text": null,
+  "project_title": "Test run: 3//DP263990"
  },
  "layers": [
   {
@@ -551,5 +561,601 @@
    "unresolved": true
   }
  ],
- "legal": "This report is informational only. It is NOT a planning certificate (NSW s10.7 certificate) or a council property/planning report. Verify all matters with the council and the relevant authority. Mapping data may be out of date, incomplete or inaccurate. 'Not checked' means the layer could not be queried; it does not mean clear."
+ "legal": "This report is informational and indicative only. It is not a planning certificate under section 10.7 of the NSW Environmental Planning and Assessment Act 1979, and it is not a council property or planning report. Mapping data may be out of date, incomplete or inaccurate, and cadastral boundaries are not a survey. Verify every matter with the relevant council and authority, and use a registered surveyor, a qualified engineer and an accredited certifier where their sign-off is needed.",
+ "report": {
+  "title": "Site Assessment and Planning Constraints Report",
+  "status": "DRAFT, indicative",
+  "meta": {
+   "lotplan": "3//DP263990",
+   "lga_name": "Gunnedah",
+   "jurisdiction": "NSW",
+   "development_type": "Secondary dwelling (granny flat)",
+   "development_type_key": "secondary_dwelling",
+   "date": "2026-10-12",
+   "data_currency": "currency field not returned; fetched 2026-10-12; source currency 2022-03-01; fetched 2026-10-12; source currency 2024-12-13; fetched 2026-10-12; source currency 2026-10-03; fetched 2026-10-12; The NSW BFPL Map is collated and merged together from individual NSW local council maps which are submitted by the local council for certification. The maps are often a product of or derived from local and state vegetation mapping with input from Local Council and RFS staff. In some cases the maps are produced under contract for local council by various companies. Please refer to the individual metadata statements for each LGA BFPL Map. (text from ePlanning/Planning_Portal_Hazard layer 229, same dataset)",
+   "zone_code": "RU1",
+   "area_m2": 509264.46,
+   "area_registered": null,
+   "mga_srid": 7856,
+   "flags": [
+    "road_tolerance_widened_to_25m"
+   ],
+   "flood_ffl_text": null,
+   "project_title": "Test run: 3//DP263990",
+   "lot_label": "Lot 3 DP 263990"
+  },
+  "pages": 17,
+  "counts": {
+   "clear": 11,
+   "affected": 1,
+   "unchecked": 2,
+   "mapped": 2,
+   "notmapped": 2
+  },
+  "unresolved_items": 20,
+  "findings": [
+   {
+    "key": "nsw_flood",
+    "label": "Flood planning area",
+    "status": "clear",
+    "headline": "No flood planning area is mapped on the lot or within about 150 m of it. The lot is not within the mapped flood planning area, but council may still apply flood controls from its flood studies. Ask council for flood information (or a flood certificate) before design.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/Hazard / Flood Planning",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_bushfire",
+    "label": "Bush fire prone land",
+    "status": "affected",
+    "headline": "The lot is mapped as bush fire prone land (Vegetation Category 3); 100% of the lot is covered.",
+    "currency": "Mapping current to 3 Oct 2026; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Fire/BFPL / NSW Bush Fire Prone Lands",
+    "features": [
+     {
+      "name": "Vegetation Category 3",
+      "distance_m": 0.0,
+      "overlap_m2": 509264.5
+     }
+    ],
+    "has_page": true,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_heritage_item",
+    "label": "Heritage item",
+    "status": "clear",
+    "headline": "No heritage item is mapped on the lot or within about 150 m of it.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/EPI_Primary_Planning_Layers / Heritage",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_heritage_conservation",
+    "label": "Heritage conservation area",
+    "status": "clear",
+    "headline": "No heritage conservation area is mapped on the lot or within about 150 m of it.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/EPI_Primary_Planning_Layers / Heritage",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_acid_sulfate",
+    "label": "Acid sulfate soils",
+    "status": "clear",
+    "headline": "No acid sulfate soils is mapped on the lot or within about 150 m of it.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/Protection / Acid Sulfate Soils",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_biodiversity",
+    "label": "Biodiversity values",
+    "status": "clear",
+    "headline": "No biodiversity values is mapped on the lot or within about 150 m of it.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: ePlanning/BiodiversityValuesMap / Biodiversity Values",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_coastal",
+    "label": "Coastal wetlands",
+    "status": "clear",
+    "headline": "No coastal wetlands is mapped on the lot or within about 150 m of it.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/SEPP_Resilience_and_Hazards_2021 / Coastal Wetlands",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_riparian",
+    "label": "Riparian land and watercourses",
+    "status": "clear",
+    "headline": "No riparian land and watercourses is mapped on the lot or within about 150 m of it.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/Protection / Riparian Lands and Watercourses",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_land_reservation",
+    "label": "Land reservation acquisition",
+    "status": "clear",
+    "headline": "No land reservation acquisition is mapped on the lot or within about 150 m of it.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/EPI_Primary_Planning_Layers / Land Reservation Acquisition",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_airport",
+    "label": "Airport noise and obstacles",
+    "status": "clear",
+    "headline": "No airport noise and obstacles is mapped on the lot or within about 150 m of it.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/Protection / Airport Noise",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_mine_subsidence",
+    "label": "Mine subsidence district",
+    "status": "clear",
+    "headline": "No mine subsidence district is mapped on the lot or within about 150 m of it.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: ePlanning/Planning_Portal_Subsidence_Advisory / Mine Subsidence District",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_contamination",
+    "label": "Contaminated land",
+    "status": "unchecked",
+    "headline": "",
+    "currency": "Currency unknown (layer not queried)",
+    "source": "NSW Government planning spatial services",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": "No public data service for this layer is connected to the platform yet."
+   },
+   {
+    "key": "nsw_transport_corridor",
+    "label": "Road and rail corridors",
+    "status": "unchecked",
+    "headline": "",
+    "currency": "Currency unknown (layer not queried)",
+    "source": "NSW Government planning spatial services",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": "No public data service for this layer is connected to the platform yet."
+   },
+   {
+    "key": "nsw_sepp_area",
+    "label": "State policy land application",
+    "status": "mapped",
+    "headline": "The lot is inside the land application area of: State Environmental Planning Policy (Resilience and Hazards) 2021.",
+    "currency": "Mapping current to 1 Mar 2022; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/SEPP_Resilience_and_Hazards_2021 / Land Application Map",
+    "features": [
+     {
+      "name": "State Environmental Planning Policy (Resilience and Hazards) 2021",
+      "distance_m": 0.0,
+      "overlap_m2": 509264.5
+     }
+    ],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_urban_release",
+    "label": "Urban release area",
+    "status": "clear",
+    "headline": "No urban release area is mapped on the lot or within about 150 m of it.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/Development_Control / Urban Release Area",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_lot_size_map",
+    "label": "Minimum lot size",
+    "status": "mapped",
+    "headline": "200-399.9 ha class",
+    "currency": "Mapping current to 13 Dec 2024; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/EPI_Primary_Planning_Layers / Lot Size",
+    "features": [
+     {
+      "name": "Gunnedah Local Environmental Plan 2012",
+      "distance_m": 0.0,
+      "overlap_m2": 509264.5
+     }
+    ],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_height_map",
+    "label": "Maximum building height",
+    "status": "notmapped",
+    "headline": "No maximum building height control is mapped on the lot in the LEP map layer.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/EPI_Primary_Planning_Layers / Height of Building",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   },
+   {
+    "key": "nsw_fsr_map",
+    "label": "Floor space ratio",
+    "status": "notmapped",
+    "headline": "No floor space ratio control is mapped on the lot in the LEP map layer.",
+    "currency": "Mapping date not published by the service; retrieved 12 Oct 2026",
+    "source": "NSW Government planning spatial services: Planning/EPI_Primary_Planning_Layers / Floor Space Ratio",
+    "features": [],
+    "has_page": false,
+    "why_unchecked": null
+   }
+  ],
+  "triggers": [
+   {
+    "rule_id": "bushfire.habitable",
+    "layer_key": "nsw_bushfire",
+    "layer_label": "Bushfire prone land (vegetation category and buffer)",
+    "title": "Bushfire prone land (habitable building)",
+    "attributes": [
+     {
+      "Category": 3,
+      "d_Category": "Vegetation Category 3"
+     }
+    ],
+    "consequences": [
+     {
+      "item": "bal_assessment_as3959",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "pbp_compliance",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "spp_bushfire_hazard",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "asset_protection_zone",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "rfs_referral",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     }
+    ],
+    "next_steps": [
+     "Commission a BAL assessment (AS 3959) by an accredited practitioner",
+     "NSW: check Planning for Bushfire Protection (habitable buildings)",
+     "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+    ],
+    "development_pathway_hint": "may apply: BAL construction requirements for a habitable building; verify with council / certifier",
+    "source": "to be cited from Planning for Bushfire Protection / AS 3959 / NCC",
+    "unresolved": true
+   },
+   {
+    "rule_id": "generic",
+    "layer_key": "nsw_sepp_area",
+    "layer_label": "SEPP-mapped areas",
+    "title": "Mapped constraint",
+    "attributes": [
+     {
+      "EPI_NAME": "State Environmental Planning Policy (Resilience and Hazards) 2021",
+      "LAY_CLASS": "Land Application"
+     },
+     {
+      "EPI_NAME": "State Environmental Planning Policy (Resilience and Hazards) 2021",
+      "LAY_CLASS": "Land Application"
+     }
+    ],
+    "consequences": [],
+    "next_steps": [
+     "Obtain the authoritative statement of what this layer triggers",
+     "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+    ],
+    "development_pathway_hint": "may apply: verify with council",
+    "source": "to be cited",
+    "unresolved": true
+   },
+   {
+    "rule_id": "generic",
+    "layer_key": "nsw_lot_size_map",
+    "layer_label": "Minimum lot size map",
+    "title": "Mapped constraint",
+    "attributes": [
+     {
+      "EPI_NAME": "Gunnedah Local Environmental Plan 2012",
+      "LAY_CLASS": "200-399.9",
+      "LOT_SIZE": 200.0,
+      "UNITS": "ha"
+     }
+    ],
+    "consequences": [],
+    "next_steps": [
+     "Obtain the authoritative statement of what this layer triggers",
+     "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+    ],
+    "development_pathway_hint": "may apply: verify with council",
+    "source": "to be cited",
+    "unresolved": true
+   },
+   {
+    "rule_id": "pathway.secondary_dwelling",
+    "layer_key": "development_type",
+    "layer_label": "secondary_dwelling",
+    "title": "Secondary dwelling approval pathway",
+    "attributes": [],
+    "consequences": [
+     {
+      "item": "exempt_development_eligibility",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "complying_development_eligibility",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "da_requirement",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "max_floor_area",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "min_lot_size",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "setbacks",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "private_open_space",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "parking",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "basix_certificate",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     }
+    ],
+    "next_steps": [
+     "Check whether exempt or complying development may apply to this lot and design (verify with council / accredited certifier)",
+     "If not, a development application is likely required",
+     "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+    ],
+    "development_pathway_hint": "may apply: complying development or DA; verify with council / certifier",
+    "source": "to be cited from the State planning policy for secondary dwellings and the LEP/DCP",
+    "unresolved": true
+   },
+   {
+    "rule_id": "services.secondary_dwelling",
+    "layer_key": "development_type",
+    "layer_label": "secondary_dwelling",
+    "title": "Secondary dwelling services connection",
+    "attributes": [],
+    "consequences": [
+     {
+      "item": "sewer_connection",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "water_connection",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "electricity_connection",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "separate_metering",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "section_73_certificate",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     },
+     {
+      "item": "stormwater_disposal",
+      "status": "to_be_confirmed",
+      "value": null,
+      "citation": null,
+      "instruction": "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+     }
+    ],
+    "next_steps": [
+     "Contact the water authority about sewer and water capacity and connection",
+     "Contact the electricity distributor about connection and metering",
+     "Obtain the s10.7 planning certificate (EP&A Act) for the lot and confirm with the council."
+    ],
+    "development_pathway_hint": "may apply: authority approval / certificate before occupation; verify with the authorities",
+    "source": "to be cited from the water authority and distributor requirements",
+    "unresolved": true
+   }
+  ],
+  "figures": [
+   {
+    "figure": 1,
+    "title": "Site aerial",
+    "aerial": true,
+    "imagery_date": "2011-08-16",
+    "note": ""
+   },
+   {
+    "figure": 2,
+    "title": "Lot detail",
+    "aerial": true,
+    "imagery_date": "2011-08-16",
+    "note": ""
+   },
+   {
+    "figure": 3,
+    "title": "Neighbourhood",
+    "aerial": true,
+    "imagery_date": "2011-08-16",
+    "note": ""
+   },
+   {
+    "figure": 4,
+    "title": "Bush fire prone land",
+    "aerial": true,
+    "imagery_date": "2011-08-16",
+    "note": ""
+   }
+  ],
+  "requirements_shown": [
+   "secondary_dwelling.private_open_space_min_m2",
+   "secondary_dwelling.private_open_space_min_depth_m",
+   "secondary_dwelling.max_floor_area_m2",
+   "secondary_dwelling.max_floor_area_pct_of_principal",
+   "parking.secondary_dwelling.no_loss_of_principal_parking",
+   "access.crossing_standard",
+   "access.internal_surface_alternative_allowed",
+   "access.multiple_access_points",
+   "access.rural.sight_distance",
+   "access.rural.design_vehicle_length_m",
+   "access.rural.designed_per_eng_standards",
+   "setback.secondary_dwelling.front_m",
+   "setback.secondary_dwelling.side_m",
+   "setback.secondary_dwelling.rear_m",
+   "stormwater.farm_building_disposal_clear_of_buildings_m",
+   "access.farm_building_via_existing_legal_access",
+   "flood.freeboard_m",
+   "flood.planning_level_aep_pct",
+   "flood.habitable_floor_at_or_above_fpl",
+   "flood.safe_access_freeboard_m",
+   "flood.residential_garage_at_or_above_1pct_aep",
+   "flood.outbuilding_flood_compatible_materials",
+   "flood.outbuilding_sensitive_equipment_above_1pct_aep",
+   "flood.onsite_sewage_no_discharge_to_floodwater",
+   "site.slope_geotech_threshold_pct",
+   "water.unserviced_min_tank_storage_l",
+   "water.potable_connection_required_if_available",
+   "utilities.servicing_strategy_required",
+   "rwt.max_height_m.urban_zones",
+   "rwt.location_behind_street_setback",
+   "util.build_over_sewer_policy",
+   "stormwater.designed_per_eng_standards",
+   "driveway.min_width_m",
+   "driveway.max_width_m",
+   "driveway.min_separation_m",
+   "driveway.min_crossing_kerb_separation_m",
+   "driveway.min_separation_from_common_boundary_m",
+   "driveway.max_crossings_per_frontage",
+   "driveway.min_culvert_diameter_mm.rural",
+   "driveway.min_culvert_width_m",
+   "driveway.rural_gate_recessed",
+   "water.min_cover_m",
+   "water.min_cover_m.footway_reserve",
+   "sewer.junction_min_diameter_mm",
+   "sewer.house_connection_min_cover_m",
+   "sewer.house_connection_min_grade_1_in",
+   "stormwater.osd_roof_plumbing_design_aep_pct",
+   "stormwater.rainwater_tank_excluded_from_detention_volume",
+   "stormwater.osd_roof_water_to_basix_tank",
+   "rwt.underground_tank_min_clearance_m",
+   "secondary_dwelling.cdc_min_lot_area_m2",
+   "secondary_dwelling.permitted_zones_housing_sepp",
+   "secondary_dwelling.lot_cannot_be_subdivided",
+   "secondary_dwelling.housing_sepp_additional_parking_required",
+   "secondary_dwelling.max_dwellings_on_site",
+   "bushfire.exempt_clearing_trees_within_m",
+   "bushfire.exempt_clearing_undergrowth_within_m",
+   "rwt.exempt.min_boundary_setback_m",
+   "rwt.exempt.min_boundary_setback_m.tank_over_1_8m_high",
+   "basix.certificate_required_new_dwelling",
+   "basix.renovation_threshold_aud",
+   "basix.pool_spa_threshold_l",
+   "basix.water.max_reduction_target_pct",
+   "basix.water.benchmark_l_per_person_per_year"
+  ],
+  "pathway": "not run",
+  "civil": true,
+  "legal": "This report is informational and indicative only. It is not a planning certificate under section 10.7 of the NSW Environmental Planning and Assessment Act 1979, and it is not a council property or planning report. Mapping data may be out of date, incomplete or inaccurate, and cadastral boundaries are not a survey. Verify every matter with the relevant council and authority, and use a registered surveyor, a qualified engineer and an accredited certifier where their sign-off is needed.",
+  "brand": {
+   "company": "JCE Infrastructure"
+  }
+ }
 }

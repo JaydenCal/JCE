@@ -20,7 +20,16 @@ def _aerial(inp: PlansetInput, ext, out_dir: Path, name: str, long_px: int = 180
     try:
         w, h = ext[2] - ext[0], ext[3] - ext[1]
         size = (long_px, max(64, int(long_px * h / w))) if w >= h else (max(64, int(long_px * w / h)), long_px)
-        r = inp.imagery.fetch(tuple(ext), inp.lot.mga_srid, size)
+        r = None
+        for k in (1.0, 0.6, 0.35):
+            try:
+                sz = (max(64, int(size[0] * k)), max(64, int(size[1] * k)))
+                r = inp.imagery.fetch(tuple(ext), inp.lot.mga_srid, sz)
+                break
+            except Exception as ex:  # noqa: BLE001
+                err = ex
+        if r is None:
+            raise err
         p = out_dir / name
         p.write_bytes(r.data)
         m = r.meta
@@ -34,7 +43,10 @@ def build_planset(inp: PlansetInput, out_dir: str | Path, stem: str = "planset")
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     fi = fonts.info()
+    import time as _t; _t0 = _t.time()
+    print('planset: building site (local DEM)...', flush=True)
     site = build_site(inp)
+    print(f'planset: site built {_t.time()-_t0:.0f}s', flush=True)
     scale, centre = SP.plan_window(site)
     from app.agents.sa5_cad_dxf.planset.core import View
     win_v = View("w", SP.MAIN, centre, scale)
@@ -45,6 +57,7 @@ def build_planset(inp: PlansetInput, out_dir: str | Path, stem: str = "planset")
     lb = site.lot.bounds
     cx, cy = (lb[0] + lb[2]) / 2, (lb[1] + lb[3]) / 2
     span = max(lb[2] - lb[0], lb[3] - lb[1], 200) * 0.75
+    print(f'planset: aerial site {_t.time()-_t0:.0f}s', flush=True)
     site.aerial_loc = _aerial(inp, (cx - span * 1.05, cy - span * 0.9, cx + span * 1.05, cy + span * 0.9), out, f"{stem}_aerial_locality.png", 1400)
     if inp.esc_output is not None:
         site.esc = inp.esc_output
@@ -53,6 +66,7 @@ def build_planset(inp: PlansetInput, out_dir: str | Path, stem: str = "planset")
             site.esc = inp.esc_runner(site)
         except Exception as ex:  # noqa: BLE001
             print(f"ESC layout unavailable: {type(ex).__name__}: {ex}")
+    print(f'planset: aerial loc {_t.time()-_t0:.0f}s', flush=True)
     ks, kc = SP.key_window(site, win_v.window_poly())
     b = inp.brand
     if b is None:

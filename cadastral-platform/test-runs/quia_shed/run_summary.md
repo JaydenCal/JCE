@@ -1,6 +1,6 @@
 # Run summary: 3//DP263990
 
-- Generated: 2026-10-12T16:58:59+00:00 by `scripts/run_site.py`
+- Generated: 2026-10-12T17:25:27+00:00 by `scripts/run_site.py`
 - Development type: **shed**
 - Location input: `{'lotplan': '3//DP263990'}`
 - Lot: 3//DP263990, , zone RU1, 509264 m2 calculated (registered n/a); SA1 flags ['road_tolerance_widened_to_25m']
@@ -12,16 +12,20 @@
 | 3 | levels (NSW 5 m DEM) | UNRESOLVED | 1848 points, NSW_5M_Elevation ImageServer exportImage, DFSI 2019 (as stated by service copyrightText; no licence text published in service metadata); coarse sampling: every 4th cell used (cap 2000 points) - about 17.1 m mean spacing; vertical accuracy UNKNOWN: not stated in NSW_5M_Elevation metadata; 5.0 m placeholder used only so uncertainty is not understated (not a stated figure) |
 | 4 | SA2 DCP rules | UNRESOLVED | 4 rule(s) USER ENTERED from ../test-runs/rules/RU1_outbuilding.json (not extracted from a DCP; unverified); not supplied: garage_front, site_cover_max |
 | 5 | ENV result | UNRESOLVED | envelope 470606 m2; unresolved rules: site_cover_max, height_max; 0 unresolved driveway requirement(s) |
-| 6 | SA3 terrain/earthworks | OK | TIN built from the supplied survey |
-| 7 | SA4 result | OK | 0 service assets, 0 connections; 0 unresolved requirement(s); no DBYD/RWT inputs supplied; No service assets supplied; results contain no existing-service constraints.; Depths are never inferred; unknown depths must be confirmed by potholing. All outputs unverified. |
-| 8 | SA5 result | OK | 13 annotations |
-| 9 | SA6 scene bundle | UNRESOLVED | Shed preset at placeholder RL 0 (NO survey, not AHD). Default dimensions are editable drawing inputs, NOT compliance limits; verify size, height and setback limits against the cited planning requirements. Setbacks UNRESOLVED: placement illustrative only. 9 parts; no terrain (no survey) |
-| 10 | SA9 constraints report | UNRESOLVED | 18 layers: 3 affected, 2 NOT CHECKED (no endpoint in endpoints_nsw.json, SA9_ENDPOINT_<KEY> or --sa9-endpoints); 4 trigger(s); rules with unresolved values: bushfire.class10a, generic, generic, pathway.shed |
+| 6 | FFL (flood) | UNRESOLVED | Obtain the flood level / flood planning level certificate from the council or enter it; dwelling FFL not set from flood. Freeboard: UNRESOLVED |
+| 7 | SA3 terrain/earthworks | OK | TIN built from the supplied survey |
+| 8 | SA4 result | OK | 0 service assets, 0 connections; 0 unresolved requirement(s); no DBYD/RWT inputs supplied; No service assets supplied; results contain no existing-service constraints.; Depths are never inferred; unknown depths must be confirmed by potholing. All outputs unverified. |
+| 9 | SA5 result | OK | 13 annotations |
+| 10 | SA6 scene bundle | UNRESOLVED | Shed preset at placeholder RL 0 (NO survey, not AHD). Default dimensions are editable drawing inputs, NOT compliance limits; verify size, height and setback limits against the cited planning requirements. Setbacks UNRESOLVED: placement illustrative only. 9 parts; no terrain (no survey) |
+| 11 | Site report | OK | Site Assessment and Planning Constraints Report |
+| 12 | SA9 constraints report | UNRESOLVED | 18 layers: 3 affected, 2 NOT CHECKED (no endpoint in endpoints_nsw.json, SA9_ENDPOINT_<KEY> or --sa9-endpoints); 4 trigger(s); rules with unresolved values: bushfire.class10a, generic, generic, pathway.shed |
 
 ## Files
 - `../test-runs/quia_shed/plan.dxf`
 - `../test-runs/quia_shed/plan.pdf`
 - `../test-runs/quia_shed/scene_bundle.json`
+- `../test-runs/quia_shed/site_report.pdf`
+- `../test-runs/quia_shed/site_report.json`
 - `../test-runs/quia_shed/constraints_report.pdf`
 - `../test-runs/quia_shed/constraints_report.json`
 - `../test-runs/quia_shed/constraints.geojson`
