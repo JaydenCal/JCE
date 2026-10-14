@@ -3,7 +3,8 @@ import type { ActivityEvent, Artifact, ConstraintLayer, LotCandidate, PathwayDat
 /** SAMPLE DATA ONLY. Used when an endpoint from the brief (section 6.5) does not exist yet or the API is unreachable.
  *  Every surface that renders it shows a "Sample data" banner. Nothing here is a real result, and no value from here may reach production. */
 
-const DOC = "SAMPLE: placeholder citation (not a real document)";
+export const SOURCE_PLACEHOLDER = "SAMPLE: placeholder citation (not a real document)";
+const DOC = SOURCE_PLACEHOLDER;
 
 export const SAMPLE_LOTS: LotCandidate[] = [
   { lotplan: "2//DP227508", address: "Sample lot, Gunnedah NSW", lga: "Gunnedah", zone: "R2 Low Density Residential", area_m2: 956, jurisdiction: "NSW",

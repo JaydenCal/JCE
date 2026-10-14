@@ -8,6 +8,11 @@ import { PlanShowcase } from "@/components/home/PlanShowcase";
 import { EngineerEnquiryButton } from "@/components/enquiry/EngineerEnquiryButton";
 import { ENGINEER_BTN } from "@/components/styles";
 import { FAQS } from "@/components/home/faqs";
+import { Evidence } from "@/components/home/Evidence";
+import { Roles } from "@/components/home/Roles";
+import { Compare } from "@/components/home/Compare";
+import { ENQUIRY_CSS } from "@/components/enquiry/styles";
+import EngineerEnquiryForm from "@/components/enquiry/EngineerEnquiryForm";
 
 const W = "mx-auto max-w-7xl px-4 sm:px-8";
 const Eyebrow = ({ children }: { children: ReactNode }) => <p className="h-eyebrow">{children}</p>;
@@ -50,12 +55,47 @@ export default function Home() {
       </dl>
     </section>
 
+    {/* PROBLEM */}
+    <section className={`${W} py-20 lg:py-28`}>
+      <Eyebrow>The problem</Eyebrow>
+      <h2 className="h-display mt-4 max-w-3xl text-[clamp(2.2rem,4.6vw,3.8rem)]">Preparing a site package is <span className="accent">slow</span>, and easy to get wrong.</h2>
+      <div className="titleblock mt-12 md:grid-cols-3 [&>div]:border-b md:[&>div]:border-b-0 md:[&>div:not(:last-child)]:border-r">
+        {[["Information is scattered", "Zoning, overlays, council controls and engineering standards sit in different places and different formats."], ["Numbers lose their source", "A setback copied into a drawing rarely says which document, version and page it came from."], ["Gaps surface late", "A missing rule or an unchecked layer is usually found at assessment, after the drawings are done."]].map(([t, d], i) => <div key={t}><span className="font-mono text-xs text-gold">0{i + 1}</span><h3 className="mt-3 font-display text-xl font-medium">{t}</h3><p className="mt-2 text-sm leading-relaxed text-muted">{d}</p></div>)}
+      </div>
+    </section>
+    <Rule />
+
     {/* HOW IT WORKS */}
     <section id="how" className={`${W} py-20 lg:py-28`}>
       <Eyebrow>How it works</Eyebrow>
       <h2 className="h-display mt-4 max-w-3xl text-[clamp(2.2rem,4.6vw,3.8rem)]">The <span className="accent">full package</span>, from lot to lodgement.</h2>
       <div className="mt-12"><Pipeline /></div>
       <p className="mt-6 max-w-3xl font-mono text-[11px] leading-relaxed text-muted">Items marked In development are being built and are not yet in the product. Approval pathways must be verified with the council or a certifier.</p>
+    </section>
+    <Rule />
+
+    {/* EVIDENCE */}
+    <section id="evidence" className={`${W} py-20 lg:py-28`}>
+      <Eyebrow>Every value, with its source</Eyebrow>
+      <h2 className="h-display mt-4 max-w-3xl text-[clamp(2.2rem,4.6vw,3.8rem)]">Click a control. See <span className="accent">where it came from</span>.</h2>
+      <p className="mt-5 max-w-2xl text-[17px] leading-relaxed text-muted">Each requirement links to the document, version, page and quote behind it. When no source exists, the number is not shown. It is marked Unresolved, with the next step.</p>
+      <div className="mt-12"><Evidence /></div>
+    </section>
+    <Rule />
+
+    {/* COMPARE */}
+    <section className={`${W} py-20 lg:py-28`}>
+      <Eyebrow>Compared</Eyebrow>
+      <h2 className="h-display mt-4 max-w-3xl text-[clamp(2.2rem,4.6vw,3.8rem)]">Not another <span className="accent">chatbot</span>.</h2>
+      <div className="mt-10"><Compare /></div>
+    </section>
+    <Rule />
+
+    {/* ROLES */}
+    <section id="roles" className={`${W} py-20 lg:py-28`}>
+      <Eyebrow>Who it is for</Eyebrow>
+      <h2 className="h-display mt-4 max-w-3xl text-[clamp(2.2rem,4.6vw,3.8rem)]">Pick your <span className="accent">role</span>.</h2>
+      <div className="mt-10"><Roles /></div>
     </section>
     <Rule />
 
@@ -75,7 +115,7 @@ export default function Home() {
     <Rule />
 
     {/* 3D */}
-    <section className={`${W} py-20 lg:py-28`}>
+    <section id="3d" className={`${W} py-20 lg:py-28`}>
       <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.4fr)]">
         <div><Eyebrow>3D walk-through</Eyebrow><h2 className="h-display mt-4 text-[clamp(2.2rem,4.2vw,3.4rem)]">Orbit it. Then <span className="accent">walk</span> it.</h2>
           <p className="mt-5 text-[17px] leading-relaxed text-muted">Review the lot from above, switch on cut and fill, then drop into first person to check sightlines, clearances and driveway grade. Furnish rooms from store products with real dimensions.</p>
@@ -122,6 +162,15 @@ export default function Home() {
     <section id="faq" className={`${W} pb-20 lg:pb-28`}>
       <div className="grid gap-10 lg:grid-cols-[.8fr_1.4fr]"><div><Eyebrow>FAQ</Eyebrow><h2 className="h-display mt-4 text-[clamp(2.2rem,4.2vw,3.4rem)]">Questions, <span className="accent">answered</span>.</h2></div>
         <div className="border-t border-ink/30">{FAQS.slice(0, 6).map(([q, a]) => <details key={q} className="group border-b border-ink/20 py-5"><summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-display text-xl font-medium [&::-webkit-details-marker]:hidden">{q}<span aria-hidden className="font-mono text-lg text-gold transition-transform group-open:rotate-45">+</span></summary><p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted">{a}</p></details>)}</div></div>
+    </section>
+
+    {/* CONTACT */}
+    <section id="contact" className={`${W} pb-20 lg:pb-28`}>
+      <div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr]">
+        <div><Eyebrow>Contact</Eyebrow><h2 className="h-display mt-4 text-[clamp(2.2rem,4.2vw,3.4rem)]">Talk to a civil <span className="accent">engineer</span>.</h2>
+          <p className="mt-5 max-w-md text-[17px] leading-relaxed text-muted">JCE Infrastructure is our industry partner. Ask about certification, design, a custom municipality, or anything this page does not answer. No response time is promised through this form.</p></div>
+        <div className="enq enq-page !max-w-none !p-0"><style>{ENQUIRY_CSS}</style><div className="enq-card"><EngineerEnquiryForm /></div></div>
+      </div>
     </section>
 
     {/* CTA */}

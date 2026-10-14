@@ -19,7 +19,7 @@ function ThemeToggle() {
   useEffect(() => { try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; setD(document.documentElement.dataset.theme === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)); } catch { /* */ } }, []);
   return <button aria-label="Toggle theme" className="rounded-md border border-line px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-wider text-muted hover:border-ink hover:text-ink" onClick={() => { const n = d ? "light" : "dark"; document.documentElement.dataset.theme = n; try { localStorage.setItem("theme", n); } catch { /* */ } setD(!d); }}>{d ? "Paper" : "Night"}</button>;
 }
-const links: [string, string][] = [["How it works", "/how-it-works"], ["Example output", "/example-output"], ["What it does not know", "/limits"], ["Pricing", "/pricing"], ["FAQ", "/faq"]];
+const links: [string, string][] = [["How it works", "/#how"], ["Who it is for", "/#roles"], ["Civil plans", "/#plans"], ["Pricing", "/#pricing"], ["FAQ", "/#faq"], ["Contact", "/#contact"]];
 export function Header() {
   const [open, setOpen] = useState(false);
   return (
@@ -46,7 +46,7 @@ export const Footer = () => (
     <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 text-sm text-muted sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
       <div><Logo /><p className="mt-4 max-w-sm leading-relaxed">Civil plans and DA/CDC application material from the lot, for builders, designers and owners. NSW first, with every value cited or marked unresolved.</p></div>
       <nav aria-label="Product" className="flex flex-col gap-2"><span className="h-eyebrow">Product</span>{links.map(([t, h]) => <Link key={h} href={h} className="hover:text-ink">{t}</Link>)}</nav>
-      <nav aria-label="Legal" className="flex flex-col gap-2"><span className="h-eyebrow">Legal</span><Link href="/legal/terms" className="hover:text-ink">Terms of Use</Link><Link href="/privacy" className="hover:text-ink">Privacy</Link><Link href="/custom-municipality" className="hover:text-ink">Custom municipality</Link><EngineerEnquiryButton className="text-left hover:text-ink">Talk to an engineer</EngineerEnquiryButton><Link href="/projects" className="hover:text-ink">Projects</Link></nav>
+      <nav aria-label="Legal" className="flex flex-col gap-2"><span className="h-eyebrow">Legal</span><Link href="/legal/terms" className="hover:text-ink">Terms of Use</Link><Link href="/privacy" className="hover:text-ink">Privacy</Link><Link href="/limits" className="hover:text-ink">What it does not know</Link><Link href="/example-output" className="hover:text-ink">Example output</Link><Link href="/faq" className="hover:text-ink">All FAQs</Link><Link href="/custom-municipality" className="hover:text-ink">Custom municipality</Link><EngineerEnquiryButton className="text-left hover:text-ink">Talk to an engineer</EngineerEnquiryButton><Link href="/projects" className="hover:text-ink">Projects</Link></nav>
     </div>
     <div className="border-t border-line"><p className="mx-auto max-w-7xl px-4 py-5 font-mono text-[11px] leading-relaxed text-muted sm:px-8">Outputs are indicative drafts only and are not survey, engineering or planning advice. A registered surveyor, engineer and planner must check them on a real job. Verify BYDA plans and locate services before excavation. Approval pathways must be verified with the council or a certifier. Features marked In development are not yet available. JCE Site Planner, with JCE Infrastructure.</p></div>
   </footer>
