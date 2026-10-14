@@ -1,0 +1,15 @@
+[01] locate lot                 OK         lot identifier 2//DP227508
+[02] SA1 cadastre/zoning        FAILED     SA1_UPSTREAM_UNAVAILABLE: https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9/query: <urlopen error Tunnel connection failed: 403 Forbidden>
+[03] SA2 DCP rules              SKIPPED    upstream SA1 did not produce a lot
+[04] ENV setbacks/driveway      SKIPPED    upstream SA1 did not produce a lot
+[05] SA3 terrain                SKIPPED    upstream SA1 did not produce a lot
+[06] SA4 services/RWT           SKIPPED    upstream SA1 did not produce a lot
+[07] SA5 DXF + PDF plan         SKIPPED    upstream SA1 did not produce a lot
+[08] SA6 scene bundle           SKIPPED    upstream SA1 did not produce a lot
+[09] SA9 constraints            SKIPPED    upstream SA1 did not produce a lot
+
+summary: out/live_lot2/run_summary.md
+
+real	0m3.707s
+user	0m1.506s
+sys	0m0.171s
