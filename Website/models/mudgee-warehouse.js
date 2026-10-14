@@ -224,17 +224,18 @@ const MODEL = {"parts":[{"n":"FS_dish","c":"surface","col":"#cfd0cb","a":1.0,"ro
     anim={raf:0};
     sheetReady.then(function(){
       if(!anim) return;
-      var T0=SC.clone(); var t0=performance.now(), HOLD=reduce?0:(window.__buildHold!=null?window.__buildHold:3.0), DUR=reduce?0.01:(window.__buildDur||8.0), dir0=P0.clone().sub(T0), dir1=P1.clone().sub(T);
-      (function frame(now){
+      var T0=SC.clone(); var t0=performance.now(), HOLD=(reduce||window.__scrubMode)?0:(window.__buildHold!=null?window.__buildHold:3.0), DUR=reduce?0.01:(window.__buildDur||8.0), dir0=P0.clone().sub(T0), dir1=P1.clone().sub(T);
+      (anim.step=function frame(now){
         if(!anim) return;
-        var el=(now-t0)/1000, t=Math.min(1,Math.max(0,el-HOLD)/DUR);
+        var el=window.__scrubMode?(HOLD+window.__scrubT*DUR):(now-t0)/1000, t=Math.min(1,Math.max(0,el-HOLD)/DUR);
         var u=ease((t-0.1)/0.72), dir=dir0.clone().lerp(dir1,u).normalize().multiplyScalar(dir0.length()+(dir1.length()-dir0.length())*u);
         var tg=T0.clone().lerp(T,u); cam.position.copy(tg).add(dir); cam.lookAt(tg); c.target.copy(tg); c.update();
         sheetMat.opacity=el<HOLD?Math.min(1,el/0.6):(t<0.2?1:Math.max(0,1-(t-0.2)/0.2));
         var kOf=new Map();
         items.forEach(function(it){ var k=ease((t-it.delay)/it.dur); kOf.set(it.o,k); it.o.scale.z=Math.max(0.001,k); it.o.position.z=Zs*(1-Math.max(0.001,k)); it.o.visible=it.vis&&k>0.004; });
         edges.forEach(function(e){ var k=kOf.has(e.owner)?kOf.get(e.owner):1; e.o.scale.z=Math.max(0.001,k); e.o.position.z=Zs*(1-Math.max(0.001,k)); e.o.visible=e.vis&&k>0.004; });
-        if(t<1){ anim.raf=requestAnimationFrame(frame); }
+        if(window.__scrubMode){ /* scroll-scrubbed: held until the next t arrives */ }
+        else if(t<1){ anim.raf=requestAnimationFrame(frame); }
         else { anim=null; resetRise(); c.enabled=true; c.autoRotate=!reduce; c.autoRotateSpeed=0.55; }
       })(performance.now());
     });
@@ -257,6 +258,7 @@ const MODEL = {"parts":[{"n":"FS_dish","c":"surface","col":"#cfd0cb","a":1.0,"ro
   }
   window.addEventListener('message',function(e){
     var d=e.data||{}; if(e.source!==window.parent) return;
+    if(d.type==='morph'){ window.__scrubMode=true; window.__scrubT=Math.max(0,Math.min(1,+d.t||0)); if(!anim) startBuild(); else if(anim.step) anim.step(performance.now()); return; }
     if(d.jceStep) apply(d.jceStep);
     if(d.jceReset){ if(current==='build') stopBuild(); apply(current==='build'?'design':current); }
   });

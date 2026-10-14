@@ -4,6 +4,8 @@ var d=document,root=d.documentElement;
 var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function $(s,c){return (c||d).querySelector(s)}
 function $$(s,c){return Array.prototype.slice.call((c||d).querySelectorAll(s))}
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
 
 /* submission key */
 var key=$('input[name=submission_key]');
@@ -16,116 +18,177 @@ if(tg&&menu){
   $$('a',menu).forEach(function(a){a.addEventListener('click',function(){menu.classList.remove('open');tg.setAttribute('aria-expanded','false')})});
 }
 
-/* tabs */
-var tabs=$('#tabs');
-if(tabs){
-  var btns=$$('[role=tab]',tabs),panels=$$('[role=tabpanel]',tabs);
-  function sel(i,focus){btns.forEach(function(b,j){var on=i===j;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;panels[j].hidden=!on;if(on&&focus)b.focus()})}
-  btns.forEach(function(b,i){
-    b.addEventListener('click',function(){sel(i)});
-    b.addEventListener('keydown',function(e){
-      var n=null;
-      if(e.key==='ArrowRight')n=(i+1)%btns.length;
-      if(e.key==='ArrowLeft')n=(i-1+btns.length)%btns.length;
-      if(n!==null){e.preventDefault();sel(n,true)}
-    });
+var hubTabs=$$('[data-hub]'),hubPanels=$$('.hub-panel'),modelsReq=null,hubNear=false;
+/* ---------- audience picker ---------- */
+var G='guides/';
+var GUIDE={
+  'stormwater-management-plans-and-osd':[G+'stormwater-management-plans-and-osd-nsw.html','Stormwater plans and OSD'],
+  'erosion-and-sediment-control-plans':[G+'erosion-and-sediment-control-plans-nsw.html','Erosion and sediment control plans'],
+  'flood-maps-and-1-percent-aep':[G+'flood-maps-and-1-percent-aep-regional-nsw.html','Flood maps and the 1% AEP'],
+  'pump-station-and-pressure-sewer-design':[G+'pump-station-and-pressure-sewer-design-nsw.html','Pump station and pressure sewer design'],
+  'swept-path-analysis':[G+'swept-path-analysis-nsw.html','Swept path analysis'],
+  'site-classification-footings-and-piers':[G+'site-classification-footings-and-piers.html','Site classification, footings and piers']
+};
+var MODELNAME={subdivision:'Subdivisions',commercial:'Commercial and industrial',house:'Residential'};
+var HUBTAB={subdivision:'subdivision',commercial:'commercial',house:'residential'};
+var ROLES={
+  developer:{label:'Developer',bullets:['Subdivision and multi-dwelling civil packages','Feasibility, OSD and stormwater','Flood and services (water and sewer) coordinated'],guides:['stormwater-management-plans-and-osd','erosion-and-sediment-control-plans'],model:'subdivision',project:'Subdivision',need:'Subdivision design'},
+  council:{label:'Council',bullets:['RFI responses and flood assessments to the NSW Flood Risk Management Manual','Water and sewer designed to your specification','Independent peer review'],guides:['flood-maps-and-1-percent-aep','pump-station-and-pressure-sewer-design'],model:'subdivision',project:'Council or infrastructure work',need:'Council request for information'},
+  architect:{label:'Architect',bullets:['Early stormwater and levels advice','Driveways, swept paths and accessible paths','Civil sub-consultant for DA and CC'],guides:['swept-path-analysis','site-classification-footings-and-piers'],model:'commercial',project:'Duplex or multi-dwelling',need:'Stormwater plan'},
+  individual:{label:'Individual',bullets:['Stormwater plan for a DA, granny flat or extension','Slab and footings','Driveway design'],guides:['stormwater-management-plans-and-osd','site-classification-footings-and-piers'],model:'house',project:'New house or granny flat',need:'Stormwater plan'}
+};
+var state={role:'',need:'',project:''};
+var roleField=$('#roleField');
+function el(tag,cls,txt){var e=d.createElement(tag);if(cls)e.className=cls;if(txt)e.textContent=txt;return e}
+function setRole(name,opts){
+  var r=ROLES[name];if(!r)return;
+  opts=opts||{};
+  state.role=name;state.need=r.need;state.project=r.project;
+  if(roleField)roleField.value=r.label;
+  $$('input[name=role-sel]').forEach(function(i){i.checked=i.value===name});
+  var ul=$('#rbullets');ul.textContent='';
+  r.bullets.forEach(function(b){ul.appendChild(el('li','',b))});
+  var gd=$('#rguides');gd.textContent='';
+  r.guides.forEach(function(slug){var g=GUIDE[slug];var a=el('a','chip',g[1]);a.href=g[0];gd.appendChild(a)});
+  $('#rmodel').textContent=MODELNAME[r.model]+' model, ready to explore.';
+  var go=$('#rmodel-go');go.textContent='Open the '+MODELNAME[r.model].toLowerCase()+' model';
+  go.setAttribute('data-model',r.model);
+  if(!opts.silent)store('jce-role',name);
+  hubSwitch(HUBTAB[r.model],false);
+}
+$$('input[name=role-sel]').forEach(function(i){i.addEventListener('change',function(){setRole(i.value)})});
+var saved=store('jce-role');if(saved&&ROLES[saved])setRole(saved,{silent:true});
+var rgo=$('#rmodel-go');
+if(rgo)rgo.addEventListener('click',function(){var m=rgo.getAttribute('data-model');if(m)hubSwitch(HUBTAB[m],false)});
+
+/* ---------- quote bar and quote links: preselect what is known, then scroll ---------- */
+function setSel(name,val){var s=$('#quoteForm [name='+name+']');if(!s||!val)return;for(var i=0;i<s.options.length;i++){if(s.options[i].text===val){s.selectedIndex=i;return}}}
+function prefill(need){
+  setSel('project',state.project);
+  setSel('need',need||state.need);
+}
+$$('[data-quote]').forEach(function(a){a.addEventListener('click',function(){prefill()})});
+$$('.svc[data-need]').forEach(function(a){if(a.getAttribute('href')==='#contact')a.addEventListener('click',function(){prefill(a.getAttribute('data-need'))})});
+
+/* in-page links jump straight to the target: smooth scrolling is cut short by the pinned section */
+$$('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var id=a.getAttribute('href');if(id.length<2)return;
+    var t=d.getElementById(id.slice(1));if(!t)return;
+    e.preventDefault();
+    var y=t.getBoundingClientRect().top+window.pageYOffset-(id==='#top'?0:76);
+    root.style.scrollBehavior='auto';window.scrollTo(0,Math.max(0,y));root.style.scrollBehavior='';
+    try{history.replaceState(null,'',id)}catch(x){}
   });
-  tabs.classList.add('ready');sel(0);
-}
-
-/* model loader */
-var mb=$('#model-box'),ml=$('#model-load');
-if(mb&&ml){
-  ml.addEventListener('click',function(){
-    var f=d.createElement('iframe');
-    f.src='model/index.html';f.title='Interactive 3D site model';f.allowFullscreen=true;
-    mb.appendChild(f);mb.classList.add('live');
-  });
-}
-
-/* GSAP */
-if(!window.gsap||!window.ScrollTrigger){root.classList.remove('js');return}
-var gsap=window.gsap;gsap.registerPlugin(window.ScrollTrigger);
-
-if(reduce){root.classList.remove('js');if(tabs){$$('[role=tabpanel]',tabs).forEach(function(p,i){p.hidden=i!==0})}return}
-
-/* hero headline reveal */
-var h1=$('#h1');
-if(h1){
-  (function wrap(node){
-    $$('*',node).length;
-    Array.prototype.slice.call(node.childNodes).forEach(function(n){
-      if(n.nodeType===3){
-        var frag=d.createDocumentFragment();
-        n.textContent.split(/(\s+)/).forEach(function(w){
-          if(!w)return;
-          if(/^\s+$/.test(w)){frag.appendChild(d.createTextNode(' '));return}
-          var s=d.createElement('span');s.className='hw';s.textContent=w;frag.appendChild(s);
-        });
-        node.replaceChild(frag,n);
-      }else if(n.nodeType===1){
-        var em=n;
-        var parts=em.textContent.split(/(\s+)/);em.textContent='';
-        parts.forEach(function(w){
-          if(!w)return;
-          if(/^\s+$/.test(w)){em.appendChild(d.createTextNode(' '));return}
-          var s=d.createElement('span');s.className='hw';s.textContent=w;em.appendChild(s);
-        });
-      }
-    });
-  })(h1);
-  gsap.to('.hw',{opacity:1,y:0,duration:.8,ease:'power3.out',stagger:.07,delay:.1});
-}
-gsap.fromTo('.hero-copy > *:not(h1), .hero-cards > *',{opacity:0,y:24},{opacity:1,y:0,duration:.8,ease:'power3.out',stagger:.1,delay:.35,clearProps:'transform'});
-
-/* generic reveals */
-$$('.sec-head, .card, .cmp, .ptable, .faq, .form, .panel, .stat, .model-box').forEach(function(el){el.setAttribute('data-reveal','')});
-window.ScrollTrigger.batch('[data-reveal]',{
-  start:'top 90%',once:true,
-  onEnter:function(b){gsap.to(b,{opacity:1,y:0,duration:.7,ease:'power3.out',stagger:.08,overwrite:true})}
 });
 
-/* timeline draw */
-var tl=$$('.timeline li');
-if(tl.length){
-  tl.forEach(function(li){li.style.setProperty('--p',0)});
-  var o={p:0};
-  window.ScrollTrigger.create({trigger:'.timeline',start:'top 92%',once:true,onEnter:function(){
-    tl.forEach(function(li,i){
-      gsap.to(li,{'--p':1,duration:.6,delay:i*.18,ease:'power2.out'});
-      gsap.from(li.querySelector('.node'),{scale:0,duration:.4,delay:i*.18,ease:'back.out(2)'});
-    });
-  }});
+/* ---------- FAQ: one open at a time ---------- */
+$$('.faq details').forEach(function(dt){dt.addEventListener('toggle',function(){if(dt.open)$$('.faq details').forEach(function(o){if(o!==dt)o.open=false})})});
+
+/* ---------- model hub (jce-models.js loaded on first need) ---------- */
+function loadScript(src){return new Promise(function(ok,bad){var s=d.createElement('script');s.src=src;s.onload=ok;s.onerror=bad;d.head.appendChild(s)})}
+function loadModels(){
+  if(modelsReq)return modelsReq;
+  modelsReq=loadScript('vendor/three-r128.min.js').then(function(){return loadScript('jce-models.js')}).catch(function(){root.classList.add('no3d')});
+  return modelsReq;
 }
-
-/* count-up */
-$$('[data-count]').forEach(function(el){
-  var end=+el.getAttribute('data-count'),pre=el.getAttribute('data-prefix')||'',suf=el.getAttribute('data-suffix')||'',o={v:0};
-  window.ScrollTrigger.create({trigger:el,start:'top 92%',once:true,onEnter:function(){
-    gsap.to(o,{v:end,duration:1.4,ease:'power2.out',onUpdate:function(){el.textContent=pre+Math.round(o.v)+suf},onComplete:function(){el.textContent=pre+end+suf}});
-  }});
+function hubSwitch(name,focus){
+  hubTabs.forEach(function(b){var on=b.getAttribute('data-hub')===name;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;if(on&&focus)b.focus()});
+  hubPanels.forEach(function(p){var on=p.id==='hub-'+name;p.classList.toggle('on',on)});
+  if(modelsReq||hubNear)loadModels();
+}
+hubTabs.forEach(function(b,i){
+  b.addEventListener('click',function(){loadModels();hubSwitch(b.getAttribute('data-hub'),false)});
+  b.addEventListener('keydown',function(e){
+    var n=null;
+    if(e.key==='ArrowRight')n=(i+1)%hubTabs.length;
+    if(e.key==='ArrowLeft')n=(i-1+hubTabs.length)%hubTabs.length;
+    if(n!==null){e.preventDefault();loadModels();hubSwitch(hubTabs[n].getAttribute('data-hub'),true)}
+  });
 });
+var hub=$('#models');
+if(hub&&'IntersectionObserver' in window){
+  var hio=new IntersectionObserver(function(en){if(en[0].isIntersecting){hubNear=true;loadModels();hio.disconnect()}},{rootMargin:'700px 0px'});
+  hio.observe(hub);
+}else{hubNear=true;loadModels()}
 
-/* pinned walkthrough */
-var mm=window.matchMedia('(min-width: 600px)');
-var walk=$('#walkthrough');
-if(walk){
-  var frames=$$('.frame',walk),steps=$$('.walk-steps li',walk),cur=$('.cur',walk);
-  walk.classList.add('pinned');
-  var idx=0;
-  function show(i){
-    if(i===idx)return;
-    gsap.to(frames[idx],{opacity:0,duration:.45,overwrite:true});
-    gsap.to(frames[i],{opacity:1,duration:.45,overwrite:true});
-    steps.forEach(function(s,j){s.classList.toggle('on',j===i)});
-    cur.textContent='0'+(i+1);
-    idx=i;
+/* ---------- plan to model showcase ---------- */
+var sec=$('#showcase'),slots=$$('.slot',sec),toggles=$$('.tg',sec);
+var range=$('#showRange'),rdFill=$('#rdFill'),rdPct=$('#rdPct'),rdStage=$('#rdStage'),cap=$('#showCap');
+var CAPS={seniors:'32 single-storey units on a sloping lot. The graded surface, accessways, ramps and services rise out of the issued plan as you scroll.',industrial:'A warehouse development at siteworks stage. The issued levels plan lifts into ground, drainage and buildings as you scroll.'};
+var cur='seniors',prog=0,webgl=false;
+try{var cv=d.createElement('canvas');webgl=!!(window.WebGLRenderingContext&&(cv.getContext('webgl')||cv.getContext('experimental-webgl')))}catch(e){}
+var ready={seniors:false,industrial:false};
+function slot(m){return slots.filter(function(s){return s.getAttribute('data-m')===m})[0]}
+function frameOf(m){var s=slot(m);return s&&$('iframe',s)}
+function mapT(p){return reduce?1:clamp((p-0.06)/0.88,0,1)}
+function send(m,t){
+  var f=frameOf(m);if(!f||!f.contentWindow||!ready[m])return;
+  try{f.contentWindow.postMessage({type:'morph',t:t},'*')}catch(e){}
+}
+function readout(p){
+  var pct=Math.round(p*100);
+  rdPct.textContent=('00'+pct).slice(-3);rdFill.style.width=pct+'%';
+  rdStage.textContent=p<0.06?'PLAN':p>0.94?'MODEL':'RISING';
+  if(range&&+range.value!==pct)range.value=pct;
+}
+var pend=false;
+function update(p){
+  prog=clamp(p,0,1);readout(prog);
+  if(pend)return;pend=true;
+  requestAnimationFrame(function(){pend=false;send(cur,mapT(prog))});
+}
+function loadFrame(m){
+  var f=frameOf(m);if(!f||f.getAttribute('src')||!webgl)return;
+  f.setAttribute('src',f.getAttribute('data-src'));
+}
+function markReady(m){ready[m]=true;slot(m).classList.add('ready');send(m,mapT(prog))}
+window.addEventListener('message',function(e){
+  var dta=e.data;if(!dta)return;
+  ['seniors','industrial'].forEach(function(m){
+    var f=frameOf(m);if(!f||e.source!==f.contentWindow)return;
+    if(dta.type==='morph-ready'||dta.jceModelReady)markReady(m);
+  });
+});
+function pick(m){
+  cur=m;
+  toggles.forEach(function(b){var on=b.getAttribute('data-m')===m;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});
+  slots.forEach(function(s){s.classList.toggle('on',s.getAttribute('data-m')===m)});
+  cap.textContent=CAPS[m];
+  loadFrame(m);send(m,mapT(prog));
+}
+toggles.forEach(function(b){b.addEventListener('click',function(){pick(b.getAttribute('data-m'))})});
+if(!webgl){var n=$('#stageNote');if(n)n.hidden=false}
+if(range)range.addEventListener('input',function(){update(range.value/100)});
+if(sec&&'IntersectionObserver' in window){
+  var sio=new IntersectionObserver(function(en){if(en[0].isIntersecting){loadFrame(cur);sio.disconnect()}},{rootMargin:'900px 0px'});
+  sio.observe(sec);
+}else loadFrame(cur);
+readout(0);
+if(reduce){root.classList.add('rm');update(1)}
+
+/* ---------- GSAP: reveals, count-up, pinned scrub ---------- */
+function start(){
+  var gsap=window.gsap,ST=window.ScrollTrigger;
+  if(!gsap||!ST){root.classList.add('nopin');return}
+  gsap.registerPlugin(ST);
+  if(reduce)return;
+  root.classList.add('rv');
+  $$('.sh,.card,.cmp,.ptable,.faq,.form,.stat,.rev,.note,.picker,.hub-tabs').forEach(function(e){e.setAttribute('data-reveal','')});
+  ST.batch('[data-reveal]',{start:'top 92%',once:true,onEnter:function(b){gsap.to(b,{opacity:1,y:0,duration:.7,ease:'power3.out',stagger:.07,overwrite:true})}});
+  $$('[data-count]').forEach(function(e){
+    var end=+e.getAttribute('data-count'),pre=e.getAttribute('data-prefix')||'',suf=e.getAttribute('data-suffix')||'',o={v:0};
+    ST.create({trigger:e,start:'top 92%',once:true,onEnter:function(){
+      gsap.to(o,{v:end,duration:1.2,ease:'power2.out',onUpdate:function(){e.textContent=pre+Math.round(o.v)+suf},onComplete:function(){e.textContent=pre+end+suf}});
+    }});
+  });
+  var pin=$('#showPin');
+  if(pin){
+    var mobile=window.matchMedia('(max-width:639px)').matches;
+    ST.create({trigger:pin,start:'top top',end:'+='+(mobile?'160%':'220%'),pin:true,anticipatePin:1,onUpdate:function(self){update(self.progress)},onRefresh:function(self){update(self.progress)}});
   }
-  gsap.set(frames,{opacity:function(i){return i===0?1:0}});
-  window.ScrollTrigger.create({
-    trigger:walk,start:'top top',end:'+=300%',pin:true,anticipatePin:1,
-    onUpdate:function(self){show(Math.min(3,Math.floor(self.progress*4)))}
-  });
+  window.addEventListener('load',function(){ST.refresh()});
 }
-window.addEventListener('load',function(){window.ScrollTrigger.refresh()});
+if(window.gsap&&window.ScrollTrigger)start();
+else window.addEventListener('load',start);
 })();

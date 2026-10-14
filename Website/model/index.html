@@ -1,6 +1,7 @@
 <!doctype html><html lang="en-AU" data-theme="dark"><head><title>Seniors Living Development · 3D Site Model</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script>if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add("embed");if(/[?&]morph=1/.test(location.search))window.__morph=true}</script>
 <style>
 /* One-screen 3D review tool */
 :root{
@@ -55,6 +56,14 @@ td.v{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;
 .readout span:nth-child(odd){color:var(--muted)}
 .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:500 13px var(--body);color:var(--muted);pointer-events:none}
 @media (max-width:900px){ .main{grid-template-columns:1fr;grid-template-rows:58vh auto} .dock{border-left:0;border-top:1px solid var(--line)} }
+/* website embed: canvas only, dark scene; the parent page drives the 2D to 3D morph by postMessage */
+html.embed .top,html.embed .dock,html.embed .hud,html.embed .compass,html.embed .legend,html.embed .loading{display:none!important}
+html.embed .main{grid-template-columns:1fr!important;grid-template-rows:1fr!important;height:100%;min-height:0}
+html.embed .stage{height:100%;min-height:0}
+html.embed .app{grid-template-rows:1fr!important}
+html.embed body{background:#0c0b0a}
+html.embed,html.embed[data-theme="dark"]{--scene-bg:#0c0b0a!important;--edge:#000000!important}
+html.embed canvas{touch-action:pan-y}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 </style>
 
@@ -327,8 +336,56 @@ const MODEL = {"parts":[{"n":"FS_accessway_concrete","c":"surface","col":"#c4c3b
   function loop(){ requestAnimationFrame(loop); controls.update(); sizeLabels(); const n = new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion.clone().invert()); needle.setAttribute('transform','rotate('+(Math.atan2(n.x,n.y)*180/Math.PI)+' 27 27)'); renderer.render(scene, camera); }
   loop();
   window.__viewer = {setView, applyVis, cOn, set:(k,v)=>{cOn[k]=v; const el=document.getElementById('L-'+k); if(el) el.checked=v; applyVis();}, cutfill:(v)=>{cutfill=v; document.getElementById('O-cutfill').checked=v; applyVis();},
-    opt:(id,v)=>{ const el=document.getElementById(id); if(el && el.checked!==v){ el.checked=v; el.dispatchEvent(new Event('change')); } }, camera:()=>camera, controls:()=>controls, grass:setGrass, grasses:()=>Object.keys(GRASS)};
+    opt:(id,v)=>{ const el=document.getElementById(id); if(el && el.checked!==v){ el.checked=v; el.dispatchEvent(new Event('change')); } }, camera:()=>camera, controls:()=>controls, setCamera:(c)=>{camera=c;}, ctx:{root,meshes,edgeLines,lineObjs,sprites,scene,renderer,centre,size,radius,bbox,Z0,resize},grass:setGrass, grasses:()=>Object.keys(GRASS)};
 })();
 </script>
 
+<script>
+/* Embed morph: ?embed=1&morph=1, parent sends window.postMessage({type:'morph',t:0..1}).
+   t=0 flat top-down plan look (z flattened, fills faded, edges gold, labels off), t=1 the full solid iso view. */
+(function(){
+  if(!window.__morph) return;
+  var V=window.__viewer, X=V.ctx, root=X.root, THREE_=THREE, Z0=X.Z0;
+  var clamp=function(v,a,b){return v<a?a:v>b?b:v}, sm=function(x){x=clamp(x,0,1);return x*x*(3-2*x)};
+  var lerp=function(a,b,t){return a+(b-a)*t};
+  V.setView('iso-sw'); var c1=V.camera(), ctl=V.controls(); ctl.enabled=false;
+  var T=ctl.target.clone(), P1=c1.position.clone(), d1=P1.distanceTo(T), dir1=P1.clone().sub(T).normalize();
+  var dir0=new THREE_.Vector3(0,-0.0001,1).normalize(), FOV1=42, FOV0=5;
+  var cam=new THREE_.PerspectiveCamera(FOV1,1,1,5000); cam.up.set(0,0,1); V.setCamera(cam); X.resize();
+  var H1=d1*Math.tan(FOV1*Math.PI/360);
+  var DARK=new THREE_.Color(0x020201), GOLD=new THREE_.Color(0xc7a256);
+  /* materials: remember originals so t=1 is exactly the stock look */
+  var mats=[]; X.meshes.forEach(function(m){ var u=m.userData.mat; mats.push({m:u,col:u.color.clone(),emi:u.emissive?u.emissive.clone():null,map:u.map}); });
+  var edges=X.edgeLines.map(function(e){return {m:e.material,col:e.material.color.clone(),op:e.material.opacity}});
+  var lines=X.lineObjs.map(function(l){return {m:l.material,col:l.material.color.clone(),op:l.material.opacity}});
+  var grid=new THREE_.GridHelper(Math.max(X.size.x,X.size.y)*1.6,48,0xc7a256,0xc7a256); grid.rotation.x=Math.PI/2;
+  grid.position.set(X.centre.x,X.centre.y,Z0-0.15); grid.material.transparent=true; grid.material.depthWrite=false; X.scene.add(grid);
+  var asp=function(){return cam.aspect||1.5};
+  function apply(t){
+    t=clamp(+t||0,0,1);
+    var u=sm(t), zk=lerp(0.001,1,sm((t-0.12)/0.7)), fk=sm((t-0.08)/0.75), lk=sm((t-0.82)/0.18);
+    var plan=(t<=0.0005);
+    /* z flatten, same recipe as the viewer's level exaggeration control */
+    root.scale.set(1,1,zk); root.position.z=Z0*(1-zk);
+    /* camera: dolly zoom from a near-orthographic top view to the iso perspective */
+    var fov=FOV0*Math.pow(FOV1/FOV0,u);
+    var H0=Math.max(X.size.y/2, X.size.x/2/asp())*1.12;
+    var H=lerp(H0,H1,u), dist=H/Math.tan(fov*Math.PI/360);
+    var dir=dir0.clone().lerp(dir1,u).normalize();
+    cam.fov=fov; cam.near=Math.max(0.5,dist*0.35); cam.far=dist*2+X.size.length()*2;
+    cam.position.copy(T).addScaledVector(dir,dist); cam.lookAt(T); cam.updateProjectionMatrix();
+    /* fills fade toward the dark ground, line work stays bright */
+    var f=lerp(0.1,1,fk);
+    mats.forEach(function(r){ r.m.color.copy(r.col).lerp(DARK,1-f); if(r.m.emissive&&r.emi) r.m.emissive.copy(r.emi); });
+    edges.forEach(function(r){ r.m.color.copy(r.col).lerp(GOLD,1-fk); r.m.opacity=lerp(1,r.op,fk); });
+    lines.forEach(function(r){ r.m.color.copy(r.col).lerp(GOLD,(1-fk)*0.35); r.m.opacity=lerp(1,r.op,fk); r.m.transparent=true; });
+    X.sprites.forEach(function(s){ s.material.opacity=lk; });
+    grid.material.opacity=0.28*(1-sm(t/0.6)); grid.visible=grid.material.opacity>0.003;
+    X.renderer.shadowMap.enabled=t>0.6;
+  }
+  window.addEventListener('message',function(e){ var d=e.data; if(!d||d.type!=='morph') return; apply(d.t); });
+  apply(0);
+  try{ window.parent.postMessage({type:'morph-ready'},'*'); }catch(_){}
+})();
+</script>
 </body></html>
