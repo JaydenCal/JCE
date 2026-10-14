@@ -159,7 +159,7 @@ function syncOrbit(){
 }
 function buildViews(){
   vcol.textContent='';
-  var list=(views[cur]||[]).map(function(v){return {id:v.id,label:v.id==='inside'?'Inside dwellings':v.label}});
+  var list=(views[cur]||[]).map(function(v){return {id:v.id,label:(v.id==='inside'&&/dwelling/i.test(v.label))?'Inside dwellings':v.label}});
   function rank(v){return /^services?$/.test(v.id)?0:v.id==='inside'?1:2}
   list=list.map(function(v,i){return {v:v,i:i}}).sort(function(a,b){return rank(a.v)-rank(b.v)||a.i-b.i}).map(function(o){return o.v});
   list.forEach(function(v){

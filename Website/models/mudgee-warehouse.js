@@ -76,8 +76,8 @@ const MODEL = {"parts":[{"n":"FS_dish","c":"surface","col":"#cfd0cb","a":1.0,"ro
   const hasCF = MODEL.parts.some(p=>p.c==='cutfill'); if(!hasCF) document.getElementById('cfwrap').style.display='none';
   const sumEl = document.getElementById('summary'); for (const [k,v] of (MODEL.summary||[])){ const tr=document.createElement('tr'); tr.innerHTML='<td></td><td class="v"></td>'; tr.children[0].textContent=k; tr.children[1].textContent=v; sumEl.appendChild(tr); }
   const notesEl = document.getElementById('notes'); for (const n of (MODEL.notes||[])){ const li=document.createElement('li'); li.textContent=n; notesEl.appendChild(li); }
-  const viewsEl = document.getElementById('views'); const VIEWS = MODEL.views || {};
-  const vnames = {'iso-sw':'Iso SW','iso-ne':'Iso NE','iso-se':'Iso SE','plan':'Plan','s':'South','w':'West','frontage':'Frontage','dda':'DDA bay','west':'West driveway','lane':'Rear lane','rear':'Rear','street':'Street','entry':'Entry','service':'Service area'};
+  const viewsEl = document.getElementById('views'); const VIEWS = MODEL.views || {}; VIEWS.inside=VIEWS.inside||{dir:[0.5,-0.7,0.3],target:[0,0,0],dist:6};
+  const vnames = {'inside':'Warehouse close-up','iso-sw':'Iso SW','iso-ne':'Iso NE','iso-se':'Iso SE','plan':'Plan','s':'South','w':'West','frontage':'Frontage','dda':'DDA bay','west':'West driveway','lane':'Rear lane','rear':'Rear','street':'Street','entry':'Entry','service':'Service area'};
   for (const k in VIEWS){ const b=document.createElement('button'); b.className='view'; b.dataset.v=k; b.textContent=vnames[k]||k; viewsEl.appendChild(b); }
 
   // ---- cameras / views
@@ -92,6 +92,7 @@ const MODEL = {"parts":[{"n":"FS_dish","c":"surface","col":"#cfd0cb","a":1.0,"ro
     const vd = VIEWS[name] || VIEWS['iso-sw'] || {dir:[-1,-1,0.8]}; ortho = !!vd.ortho;
     if (controls) controls.dispose();
     camera = makeCamera(ortho, name);
+    if(name==='inside'){ const bb=new THREE.Box3(); meshes.forEach(m=>{ if(m.userData.c==='buildings'){ m.geometry.computeBoundingBox(); bb.union(m.geometry.boundingBox); } }); if(!bb.isEmpty()){ const ct=bb.getCenter(new THREE.Vector3()); vd.target=[ct.x,ct.y,bb.min.z+2.0]; vd.dist=Math.max(5,Math.min(bb.getSize(new THREE.Vector3()).x,bb.getSize(new THREE.Vector3()).y)*0.3); } }
     const v = new THREE.Vector3(...vd.dir).normalize();
     let tgt = centre.clone(), d = radius*2.0;
     if (vd.target){ tgt = new THREE.Vector3(...vd.target); d = vd.dist||20; }
