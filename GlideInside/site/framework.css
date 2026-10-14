@@ -179,3 +179,5 @@ html,body{overflow-x:clip}
 .launch-stage{position:fixed;inset:0;z-index:80;background:#000;display:none;flex-direction:column}.launch-stage.on{display:flex}
 .launch-bar{display:flex;gap:10px;align-items:center;padding:8px 14px;background:var(--deep);color:#fff}.launch-bar strong{margin-right:auto}
 .launch-stage iframe{flex:1;border:0;width:100%;background:#fff}
+/* v4.13 split-screen video fills the viewport */
+.vp-split{display:block}.vp-mid .viewport-stage{aspect-ratio:16/9;min-height:0;height:auto}
