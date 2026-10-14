@@ -52,9 +52,9 @@
     <a href="../index.html#how">How it works</a>
     <a href="../plan-studio/index.html#addons">Add-ons</a>
     <a href="../index.html#faq">FAQ</a>
-    <a href="../index.html#enquire">Contact</a>
+    <a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au">Contact</a>
   </nav>
-  <a class="btn btn-sm" href="../index.html#enquire">Start a project</a>
+  <a class="btn btn-sm" href="#pricing">Order a plan</a>
   <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
 </div></header>
 
@@ -70,7 +70,7 @@
       <div class="hero-cta">
         <a class="btn" href="#" aria-disabled="true" tabindex="-1">Start designing</a>
         <span class="chip soon">Coming soon</span>
-        <a class="btn btn-ghost" data-cfg-href="planOrderUrl" href="../index.html?project=floor-plan#enquire">Order a plan from us</a>
+        <a class="btn btn-ghost" href="#pricing">Order a plan from us</a>
       </div>
       <p class="fineprint">Concept designs only. Not for construction or council lodgement.</p>
     </div>
@@ -234,6 +234,17 @@
 </div>
 </section>
 
+<section class="section" id="pricing" style="padding-top:0">
+<div class="shell"><div class="card" style="max-width:860px;margin:0 auto;text-align:center;padding:clamp(28px,5vw,56px)">
+  <p class="eyebrow">Simple pricing</p>
+  <h2><span data-cfg="planPackPrice">A$30</span> <em>per plan.</em></h2>
+  <p class="lead" style="margin:16px auto 24px">Create an account, pay once per plan, download your plan set. Every plan after your first is the same A$30.</p>
+  <ol class="steps" style="grid-template-columns:repeat(3,1fr);text-align:left;margin-bottom:32px"><li><h3>Create an account</h3><p>Takes a minute. Your plans are saved to it.</p></li><li><h3>Pay A$30 by card</h3><p>Secure Stripe checkout. Choose how many plans.</p></li><li><h3>Download</h3><p>PDF, DXF and 3D model for each plan.</p></li></ol>
+  <div class="hero-cta" style="justify-content:center"><a class="btn" data-cfg-href="signupUrl" id="pa-signup" aria-disabled="true">Create account &amp; order <span aria-hidden="true">→</span></a><a class="btn btn-ghost" data-cfg-href="stripePlan" id="pa-pay" aria-disabled="true">Already registered? Pay A$30</a></div>
+  <p class="fineprint" style="justify-content:center">Add a fly-through (A$5) or complex renderings (A$10) to any plan below.</p>
+</div></div>
+</section>
+
 <section class="section" id="addons" style="padding-top:0">
 <div class="shell">
   <div class="section-head"><h2>Add-ons for your <em>plan</em></h2><p>Extras on top of your plan. Pay by card through Stripe.</p></div>
@@ -316,7 +327,7 @@
   <div class="hero-cta">
     <a class="btn" href="#" aria-disabled="true" tabindex="-1">Start designing</a>
     <span class="chip soon" style="background:transparent">Coming soon</span>
-    <a class="btn btn-ghost" style="color:#fff;border-color:#fff" data-cfg-href="planOrderUrl" href="../index.html?project=floor-plan#enquire">Order a plan from us</a>
+    <a class="btn btn-ghost" style="color:#fff;border-color:#fff" data-cfg-href="planOrderUrl" href="mailto:hello@glideinside.com.au">Order a plan from us</a>
   </div>
 </div>
 </section>

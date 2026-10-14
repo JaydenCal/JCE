@@ -20,9 +20,9 @@
     <a href="#how">How it works</a>
     <a href="#services">Add-ons</a>
     <a href="#faq">FAQ</a>
-    <a href="#enquire">Contact</a>
+    <a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au">Contact</a>
   </nav>
-  <a class="btn btn-sm" href="#enquire">Start a project</a>
+  <a class="btn btn-sm" data-cfg-href="toolUrl" href="plan-studio/index.html">Start designing</a>
   <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
 </div></header>
 
@@ -51,7 +51,7 @@
     <div class="viewport-foot" data-panel="to3d" hidden><label class="rangewrap" style="display:flex;gap:12px;align-items:center;flex:1;min-width:240px"><span class="chip">2D PLAN</span><input type="range" id="vp-range" min="0" max="100" value="0" style="flex:1;accent-color:#a3532d" aria-label="Plan to 3D"><span class="chip">3D MODEL</span></label><a class="link" href="plan-studio/index.html">See how Pocket Architect works →</a></div>
     <div class="viewport-stage" data-panel="subdivision" id="vp-sub" hidden></div>
     <div class="viewport-foot" data-panel="plans"><span>Pocket Architect: draw the plan, see it in 3D, furnish and render it, export PDF and DXF.</span><a class="link" href="plan-studio/index.html">See the shed example →</a></div>
-    <div class="viewport-foot" data-panel="subdivision" hidden><span>Subdivision modelling is by quote. <a class="link" href="subdivision/index.html">See the plan-to-model example →</a></span><a class="btn btn-sm" data-cfg-href="subdivisionOrderUrl" href="index.html?project=subdivision#enquire">Request a quote →</a></div>
+    <div class="viewport-foot" data-panel="subdivision" hidden><span>Subdivision modelling is by quote. <a class="link" href="subdivision/index.html">See the plan-to-model example →</a></span><a class="btn btn-sm" data-cfg-href="subdivisionOrderUrl" href="mailto:hello@glideinside.com.au">Request a quote →</a></div>
   </div>
 </section>
 <script>
@@ -84,7 +84,7 @@
 <section class="band section" id="products"><div class="shell">
   <div class="section-head"><div><p class="eyebrow">Products</p><h2>Pick the tool for <em>the job.</em></h2></div></div>
   <div class="grid-2">
-    <article class="card"><span class="num">01 · PLAN STUDIO</span><h3>Draw it. Furnish it. See it in 3D.</h3><p>Draw floor plans for sheds, homes and extensions, see them as 3D models, add furniture and renderings, then export PDF and DXF. The self-serve Pocket Architect tool (<span data-cfg="planPackPrice">A$30</span> per project) is coming soon.</p><p style="margin-top:16px"><a class="btn btn-sm" href="plan-studio/index.html">Open Pocket Architect</a></p></article>
+    <article class="card"><span class="num">01 · PLAN STUDIO</span><h3>Draw it. Furnish it. See it in 3D.</h3><p>Draw floor plans for sheds, homes and extensions, see them as 3D models, add furniture and renderings, then export PDF and DXF. The self-serve Pocket Architect tool is <span data-cfg="planPackPrice">A$30</span> per plan, with an account.</p><p style="margin-top:16px"><a class="btn btn-sm" href="plan-studio/index.html">Open Pocket Architect</a></p></article>
     <article class="card"><span class="num">02 · SUBDIVISION</span><h3>Concept lots, access and staging</h3><p>Preliminary feasibility from a licensed civil engineer, shown as a clear layout and a 3D site model.</p><p style="margin-top:16px"><a class="btn btn-sm" href="subdivision/index.html">Open subdivision modelling</a></p></article>
   </div>
 </div></section>
@@ -106,12 +106,6 @@
   <details><summary>Can I use both products on one project?</summary><p>Yes. A common path is a subdivision concept first, then Pocket Architect for the buildings on each lot.</p></details>
 </section>
 
-<section class="band section cta-band" id="enquire"><div class="shell">
-  <h2>Tell us what you're <em>planning.</em></h2>
-  <p class="lead" style="margin-inline:auto">Send a brief, a sketch or an existing plan. We reply within one business day.</p>
-  <div class="hero-cta"><a class="btn" data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au">Start your project brief</a></div>
-  <!-- Integration: swap this block for the existing #enquire form on the live index.html -->
-</div></section>
 </main>
 
 <footer class="site-footer"><div class="shell">

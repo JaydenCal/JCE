@@ -4,7 +4,7 @@
   // data-cfg="key" fills text; data-cfg-href="key" sets links
   document.querySelectorAll("[data-cfg]").forEach(function (el) { var v = cfg[el.dataset.cfg]; if (v != null) el.textContent = v; });
   var fs = document.querySelector('script[src*="framework.js"]'), root = fs ? fs.src.replace(/framework\.js.*$/, "") : "";
-  document.querySelectorAll("[data-cfg-href]").forEach(function (el) { var v = cfg[el.dataset.cfgHref]; if (!v) return; if (!/^(https?:|mailto:|tel:|#)/.test(v)) v = new URL(v, root || location.href).href; el.setAttribute("href", v); });
+  document.querySelectorAll("[data-cfg-href]").forEach(function (el) { var v = cfg[el.dataset.cfgHref]; if (!v) return; if (!/^(https?:|mailto:|tel:|#)/.test(v)) v = new URL(v, root || location.href).href; el.setAttribute("href", v); el.removeAttribute("aria-disabled"); });
   // mobile nav
   var t = document.querySelector(".nav-toggle"), n = document.querySelector(".site-nav");
   if (t && n) t.addEventListener("click", function () { var o = n.classList.toggle("open"); t.setAttribute("aria-expanded", o); });
