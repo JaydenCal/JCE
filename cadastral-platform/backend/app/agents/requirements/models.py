@@ -66,6 +66,13 @@ STORMWATER_KEY_HELP: dict[str, str] = {
 }
 EXTRA_KEY_HELP.update(STORMWATER_KEY_HELP)
 
+# Driveway keys used by the 3D site design tools (stage 6) that are not in the SA3 standard set above. None has a platform default: unresolved until an
+# LGA row or a user entry supplies the value.
+DRIVEWAY_KEY_HELP: dict[str, str] = {
+    "driveway.crossover_splay_m": "kerb return splay of the crossover footprint (m), measured along the kerb line from each side of the crossover width",
+}
+EXTRA_KEY_HELP.update(DRIVEWAY_KEY_HELP)
+
 
 def key_help(key: str) -> str:
     try:

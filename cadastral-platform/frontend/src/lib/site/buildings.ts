@@ -9,7 +9,10 @@ import { normDeg } from './snap';
 import { BUILDING_USES, type Building, type BuildingLevel, type Param, type Pos } from './types';
 
 export const IMPORT_SCHEMA = 'building_import.v1';
-const MAX_LEVELS = 16, MAX_RINGS = 64, MAX_RING_VERTICES = 10000, MAX_EXITS = 256, MAX_NOTES = 30;
+const MAX_LEVELS = 16, MAX_RINGS = 64, MAX_RING_VERTICES = 10000, MAX_NOTES = 30;
+/** the same limits as the backend model (BuildingExits) and the importer: an import above them is refused by the server, never cut */
+export const MAX_SEWER_EXITS = 64, MAX_WATER_EXITS = 64, MAX_DOWNPIPES = 256, MAX_TANKS = 64;
+export const IMPORT_ID_RE = /^[0-9a-f]{32}$/;
 
 export type Pt = [number, number];
 export interface ImportedLevel { name: string; elevation_m?: number; rings: Pt[][] }
@@ -27,6 +30,8 @@ export interface ImportPayload {
   /** local point that goes under the cursor when the building is placed */
   ref: Pt;
   aligned_at?: Pt;
+  /** set by the import route, which stores the payload under it; place_building needs it */
+  import_id?: string;
   extras: ImportedExtra[];
   warnings: string[];
   requires_confirmation: boolean;
@@ -71,7 +76,10 @@ export function parseImportPayload(raw: unknown): ImportPayload {
   const ex = (b.exits ?? {}) as Record<string, unknown>;
   const params: Record<string, Param> = {};
   for (const [k, p] of Object.entries((b.params ?? {}) as Record<string, Param>)) params[k] = p;
-  const extras = (Array.isArray(r.extras) ? r.extras : []).slice(0, 64).map((e): ImportedExtra => {
+  const extraList = Array.isArray(r.extras) ? r.extras : [];
+  if (extraList.length > MAX_TANKS) fail(`the import has ${extraList.length} rainwater tanks, more than the ${MAX_TANKS} that can be placed with one building`);
+  if (r.import_id !== undefined && r.import_id !== null && !(typeof r.import_id === 'string' && IMPORT_ID_RE.test(r.import_id))) fail('the building import has an invalid import_id');
+  const extras = extraList.map((e): ImportedExtra => {
     const o = e as Record<string, unknown>;
     if (!o || o.type !== 'rwt') return fail('only rainwater tanks come with a building');
     return { type: 'rwt', p: pt(o.p, 'tank'), yaw_deg: fin(o.yaw_deg) ? o.yaw_deg : 0, status: o.status === 'existing' ? 'existing' : 'proposed', ...(typeof o.label === 'string' ? { label: o.label.slice(0, 120) } : {}), params: (o.params ?? {}) as Record<string, Param> };
@@ -81,11 +89,11 @@ export function parseImportPayload(raw: unknown): ImportPayload {
     used_site_export: r.used_site_export === true,
     building: {
       levels, datum_index: datum, ...(b.roof_outline ? { roof_outline: rings(b.roof_outline, 'roof outline') } : {}),
-      exits: { sewer: pts(ex.sewer, 'sewer exit', MAX_EXITS), water: pts(ex.water, 'water exit', MAX_EXITS), downpipes: pts(ex.downpipes, 'downpipe', MAX_EXITS) },
+      exits: { sewer: pts(ex.sewer, 'sewer exit', MAX_SEWER_EXITS), water: pts(ex.water, 'water exit', MAX_WATER_EXITS), downpipes: pts(ex.downpipes, 'downpipe', MAX_DOWNPIPES) },
       ...(fin(b.north_deg) ? { north_deg: b.north_deg } : {}),
       notes: (Array.isArray(b.notes) ? b.notes : []).filter((n): n is string => typeof n === 'string').slice(0, MAX_NOTES).map((n) => n.slice(0, 400)), params,
     },
-    ref: pt(r.ref, 'ref'), ...(Array.isArray(r.aligned_at) ? { aligned_at: pt(r.aligned_at, 'aligned_at') } : {}), extras,
+    ref: pt(r.ref, 'ref'), ...(Array.isArray(r.aligned_at) ? { aligned_at: pt(r.aligned_at, 'aligned_at') } : {}), ...(typeof r.import_id === 'string' ? { import_id: r.import_id } : {}), extras,
     warnings: (Array.isArray(r.warnings) ? r.warnings : []).filter((n): n is string => typeof n === 'string').slice(0, 30).map((n) => n.slice(0, 400)),
     requires_confirmation: r.requires_confirmation === true,
     ...(r.alignment && typeof r.alignment === 'object' ? { alignment: r.alignment as ImportPayload['alignment'] } : {}),

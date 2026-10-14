@@ -1,6 +1,6 @@
 # 17. Stage 5: buildings import and placement
 
-Date: 15/10/2026. Status: STAGE 5 COMPLETE, AWAITING OWNER REVIEW. Local commits only; nothing pushed.
+Date: 15/10/2026. Status: STAGE 5 COMPLETE, REVIEW FIXES APPLIED (section 8), AWAITING OWNER REVIEW. Local commits only; nothing pushed.
 
 Owner decisions applied: the house is designed in Plan Studio (or imported from a PDF or DXF) and then placed on the LiDAR terrain here. A building is never designed in JCESITE. Pools, sheds, granny flats, units, gardens, footpaths and lawn furniture are placeable.
 
@@ -35,7 +35,7 @@ All return one `building_import.v1` payload in LOCAL plan coordinates (metres, x
 - *Vectorisation and tolerance.* The 100 mm raster is merged into polygons and simplified with Douglas-Peucker at 0.05 m (half a cell, so a one cell feature survives). The area change is at most the perimeter times 0.05 m. Only outer rings are kept; courtyards are reported in the notes. A house turned off the grid gives many vertices at this tolerance.
 - *Handedness, units, north.* Plan Studio plan y points down the sheet and its north arrow is rotated clockwise by `site.northDeg`. A plan point (px, py) in mm becomes (E, N) = (px cos n + py sin n, px sin n - py cos n) / 1000: a rotation composed with a flip. Rings are re-oriented counter clockwise. With the default yaw the building is true-north oriented.
 - *Roof.* The roof outline is the dilated footprint only where the source gives an eave overhang (otherwise the note says ROOF OVERHANG NOT IN SOURCE). The plan area is Plan Studio's raster value labelled `APPROXIMATE (PLAN STUDIO RASTER)`. Overhang rounding follows JavaScript `Math.round` (halves up), not Python's banker's rounding; a test pins it.
-- *Tanks.* Site tanks become `rwt` objects with `capacity_l`, `diameter_m` and `height_m` from the file. Inlet, overflow and outlet levels are NOT SET.
+- *Tanks.* Site tanks become `rwt` objects with `capacity_l`, `diameter_m` and `height_m` from the file (at most 64; more is a 422). A non standard capacity has a Plan Studio ESTIMATE for its diameter and height, not a manufacturer dimension: those two parameters carry the basis `platform_default` with the reference `PLAN STUDIO ESTIMATE: ...` (the basis list is closed). Inlet, overflow and outlet levels are NOT SET.
 - *Not in a Plan Studio file:* the roof ridge height and the absolute floor level. Both stay NOT SET and the notes say so (the ceiling height of the top level is quoted as information only).
 
 **Footprint entry.** Width and depth (or a drawn polygon) plus the use. Height, FFL and roof area NOT SET.
@@ -70,5 +70,20 @@ All return one `building_import.v1` payload in LOCAL plan coordinates (metres, x
 - **Rotated houses vectorise to many vertices** at 0.05 m. A tighter or looser tolerance is a one line change; the area difference is bounded as stated above.
 - **Roof height and pitch are not in a Plan Studio file**, so the overall height stays NOT SET until the user enters it.
 - Courtyards are not representable in a footprint and are reported, not kept.
-- The embed transport (`ps:get-project`) is built and tested in Plan Studio, but this stage has no host page that calls it; the file picker is the working path.
+- The embed transport (`ps:get-project`) is built and tested in Plan Studio, but this stage has no host page that calls it; the file picker is the working path. It answers only a host in Plan Studio's fixed list, after the user confirms (section 8).
 - The PS premium UI tests (3 of 44) fail in this environment both before and after the changes (browser driven).
+
+## 8. Review fixes
+
+1. **Embed host allowlist (Plan Studio).** The host list is no longer read from `?host=` (any site could frame the app and name itself). `CONFIG.embedHosts` is fixed at build time (`PS_EMBED_HOSTS` writes `<meta name="ps-embed-hosts">`). `ps:get-project` is answered only to an origin in that list AND after the user agrees in a visible prompt, once per session per host. The server (`EMBED_HOSTS`) sends `Content-Security-Policy: frame-ancestors 'self' <hosts>` on every response, and `worker.js` adds it to HTML served from the assets binding; any other host that serves the HTML must send the same header (`tools/build-single.mjs` writes `dist/_headers`).
+2. **Exit limits.** More than 64 sewer or 64 water exits (or 256 downpipes) is a 422 `TOO_MANY_EXITS`; model construction is wrapped so a limit of the site design model is a 422 `IMPORT_EXCEEDS_LIMITS`, never a 500. Nothing is dropped.
+3. **CPU budget (Plan Studio importer).** Limits: 2,000 vertices per room, 100,000 vertices per file, a work estimate (grid cells per level, room bounding box cells times vertices, a cost per wall, the roof dilation) of at most 300 million, 20,000 row runs per level mask, a roof overhang of at most 5,000 mm, and a 10 s wall clock for rasterise and derive. Any of them is a 422 `IMPORT_TOO_COMPLEX` ("IMPORT TOO COMPLEX: ..."). The estimate is checked before rasterising.
+4. **PDF alignment.** A payload with `aligned_at` is placed at that MGA position with yaw 0 (SA7 returns the footprint in MGA orientation), labelled `PLACED BY PDF ALIGNMENT, CHECK`. It is an ordinary building afterwards: drag and turn it as usual.
+5. **Stored imports.** The import route saves each payload under `<project dir>/imports/<import_id>.json` (200 per project, the oldest unused first) and returns `import_id`. `place_building` takes `import_id` plus the payload and the building carries `building.import_id`. On every PUT the server compares each building with its stored import: levels, rings, roof outline, exits, datum, north angle, notes, the footprint polygon and the read only facts (`source`, `source_file`, `roof_area_basis`, `roof_plan_area_m2`), through the building's placement (`MGA = frame.origin + R(yaw) . local`, to 1 mm). Only placement, label, status, `building_use`, `ffl_rl`, `height_m` and `glb_name` may differ. Otherwise 422 `BUILDING_NOT_FROM_IMPORT` or `BUILDING_IMPORT_MISMATCH`, and the page shows the message. `place_building` is marked `ai: false` and is not in `toolSchemas()`: the AI (stage 10) may move existing buildings only.
+6. **Building use.** A use the file or the user does not give is NOT SET (unresolved), never `other` with a user basis.
+7. **Tank estimates.** See section 3. Plan Studio writes `sizeBasis` ("standard" or "estimate") on each tank; an older file is judged by the standard size table.
+8. **Tank cap.** 64 tanks with one building, enforced by the server (422 `TOO_MANY_TANKS`) and by the client parser (an error, no truncation); the server message is shown.
+9. **GLB vertical datum.** `glbMatrix` subtracts the datum level's elevation, so when no level is at 0 and the lowest level is the datum, the GLB slab meets the footprint slab at `ffl_rl`. A test pushes one plan point through `place_building` and `glbMatrix` with a non zero north angle and yaw.
+10. **Upload cap.** The import route cuts a chunked upload off with 413 as soon as the bytes received pass the cap (15 MB plus 64 KB of framing), before the multipart parser has spooled the body.
+11. **Drawn footprints.** A ring that crosses itself is a 422 "FOOTPRINT RING SELF INTERSECTS, REDRAW" (no repair, so the centroid the page places at is the drawn one).
+12. **to_be_removed.** A building is never placed as `to_be_removed`; `set_status` allows it for an EXISTING building only (a proposed building is deleted instead).

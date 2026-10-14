@@ -7,7 +7,7 @@
  * the AI (`toolSchemas()` emits Anthropic tool definitions).
  */
 import { centroid, dedupe, ringCentroid, rotateClockwise } from './geom';
-import { READ_ONLY_BUILDING_PARAMS, IMPORT_PARAM_KEYS, levelsToMga, localToMga, moveBuilding, parseImportPayload, rotateBuilding } from './buildings';
+import { READ_ONLY_BUILDING_PARAMS, IMPORT_PARAM_KEYS, IMPORT_ID_RE, levelsToMga, localToMga, moveBuilding, parseImportPayload, rotateBuilding } from './buildings';
 import { applyPatch, ptr, type Patch } from './patch';
 import { normDeg } from './snap';
 import {
@@ -18,9 +18,15 @@ import {
 import { OpError, fail } from './errors';
 export { OpError };
 
+/** The assumed kerb line as the operations need it: first point, unit direction and length, in MGA metres. */
+export interface KerbRef { a: readonly number[]; u: readonly number[]; length: number }
+/** How close to the kerb line (metres) a crossover point must be for `set_driveway_crossover`; also the slack allowed at the ends of the line. */
+export const KERB_TOL_M = 0.05;
 export interface OpCtx {
   /** id generator; ops fall back to a unique id when it returns one already in use */
   newId(type: ObjectType): string;
+  /** the assumed kerb line of the 3D model, or null/absent when the model has none (the crossover is then not constrained and no chainage is stored) */
+  kerb?: () => KerbRef | null;
 }
 let seq = 0;
 export const defaultCtx: OpCtx = { newId: (t) => `${t}_${Date.now().toString(36)}${(seq++).toString(36)}${Math.random().toString(36).slice(2, 5)}` };
@@ -32,6 +38,8 @@ export interface OpDef {
   description: string;
   params: Record<string, JsonSchema>;
   required: string[];
+  /** false: the operation is for the person at the keyboard only and is NOT offered to the AI (`toolSchemas` leaves it out) */
+  ai?: false;
   run(doc: SiteDesign, args: Record<string, unknown>, ctx: OpCtx): OpOutcome;
 }
 
@@ -130,7 +138,10 @@ const UNRESOLVED: Param = { value: null, basis: 'unresolved' };
 function startingParams(type: ObjectType, shape: GeometryKind): Record<string, Param> {
   const keys: string[] = type === 'pool' ? ['depth_m', 'coping_width_m', 'barrier_requirements']
     : type === 'footpath' ? (shape === 'polyline' ? ['width_m', 'surface_kind'] : ['surface_kind'])
-    : type === 'furniture' ? ['catalogue_item', 'width_m', 'depth_m', 'height_m'] : [];
+    : type === 'furniture' ? ['catalogue_item', 'width_m', 'depth_m', 'height_m']
+    // stage 6: a driveway starts with no width, end level, surface or batter slope (all NOT SET). A grading area keeps starting with NO parameters
+    // (stage 4 contract): an absent target or batter slope is NOT SET, and the panel lists the keys it can take (PANEL_KEYS).
+    : type === 'driveway' ? ['width_m', 'end_level_rl', 'surface_kind', 'batter_cut_h_per_v', 'batter_fill_h_per_v'] : [];
   return Object.fromEntries(keys.map((k) => [k, { ...UNRESOLVED }]));
 }
 
@@ -279,11 +290,14 @@ export const OPS: Record<string, OpDef> = {
   },
   set_status: {
     label: 'Set status',
-    description: 'Set an object to existing, proposed or to_be_removed.',
+    description: 'Set an object to existing, proposed or to_be_removed. A building can be set to to_be_removed only when it is existing.',
     params: { id: ID, status: P.enm(STATUSES, 'New status') },
     required: ['id', 'status'],
     run(doc, a) {
       const { o, i } = find(doc, a.id), status = oneOf<Status>(a.status, STATUSES, 'status');
+      // A building is never placed as to_be_removed (place_building refuses it), so only an EXISTING building may become one: a proposed
+      // building that is not wanted is deleted, not "removed". Existing and to_be_removed may be switched back and forth.
+      if (o.type === 'building' && status === 'to_be_removed' && o.status !== 'existing' && o.status !== 'to_be_removed') fail('only an existing building can be set to be removed; delete a proposed building instead');
       return { patch: status === o.status ? [] : [{ op: 'replace', path: objPath(i, 'status'), value: status }], result: { id: o.id } };
     },
   },
@@ -317,17 +331,22 @@ export const OPS: Record<string, OpDef> = {
   },
   place_building: {
     label: 'Place building',
-    description: 'Place an imported building (a building_import.v1 payload from the import route) on the site. `at` is the MGA position that the payload reference point goes to, yaw_deg a clockwise turn in degrees. The footprint, levels, roof outline and exit points are copied as given (read only). Finished floor level and height start NOT SET unless the source gave them. A rainwater tank that came with the building is added as an rwt object in the same step. Nothing is designed here.',
+    description: 'Place an imported building (a building_import.v1 payload from the import route) on the site. `import_id` is the id the import route stored the payload under; the server only accepts a saved building that matches that stored import (its levels, outlines, roof outline, exits and source facts), so a payload that was edited here is refused when the design is saved. `at` is the MGA position that the payload reference point goes to, yaw_deg a clockwise turn in degrees. The footprint, levels, roof outline and exit points are copied as given (read only). Finished floor level and height start NOT SET unless the source gave them; a building use the source does not give starts NOT SET. A rainwater tank that came with the building is added as an rwt object in the same step. Nothing is designed here. Not offered to the AI: it may only move buildings that exist.',
+    ai: false,
     params: {
+      import_id: P.str('The import_id returned by the import route (32 hex characters)'),
       payload: { type: 'object', description: 'The building_import.v1 document returned by the import route' },
       at: P.pos('MGA position (E, N) for the reference point of the import'),
       yaw_deg: P.num('Clockwise rotation in degrees (default 0: true north up)'),
-      status: P.enm(STATUSES, 'existing or proposed. Default proposed.'),
+      status: P.enm(STATUSES, 'existing or proposed. Default proposed. (A placed building is never to_be_removed; set an existing building to to_be_removed afterwards.)'),
       label: P.str('Optional label'), glb_name: P.str('Name of the Plan Studio GLB shown as the visual'), id: P.str('Optional id for the building'),
     },
-    required: ['payload', 'at'],
+    required: ['import_id', 'payload', 'at'],
     run(doc, a, ctx) {
       const pl = parseImportPayload(a.payload), at = parsePos(a.at, 'at'), yaw = num(a.yaw_deg ?? 0, 'yaw_deg');
+      const importId = typeof a.import_id === 'string' ? a.import_id : '';
+      if (!IMPORT_ID_RE.test(importId)) fail('import_id is missing or invalid: a building can only be placed from an import made by the server (import the file or footprint again)');
+      if (pl.import_id !== undefined && pl.import_id !== importId) fail('import_id does not match the payload');
       const status = oneOf<Status>(a.status ?? 'proposed', STATUSES, 'status');
       if (status === 'to_be_removed') fail('a building is placed as existing or proposed');
       const A: [number, number] = [at[0], at[1]], f = (p: readonly number[]) => localToMga(p, pl.ref, A, yaw);
@@ -344,14 +363,14 @@ export const OPS: Record<string, OpDef> = {
         const raw = pl.building.params[k];
         if (raw !== undefined) params[k] = checkTypedParam('building', k, parseParam(k, raw));
       }
-      if (!params.building_use || params.building_use.value === null) params.building_use = { value: 'other', basis: 'user', ref: 'NOT GIVEN BY THE IMPORT: CHOOSE THE USE' };
+      if (!params.building_use || params.building_use.value === null) params.building_use = { ...UNRESOLVED };          // the use is NOT SET until the user chooses it; never defaulted
       const origin = f([0, 0]);
       const building: Building = {
         levels, datum_index: pl.building.datum_index,
         ...(pl.building.roof_outline ? { roof_outline: pl.building.roof_outline.map((r) => r.map((p) => f(p))) } : {}),
         exits: { sewer: pl.building.exits.sewer.map((p) => f(p)), water: pl.building.exits.water.map((p) => f(p)), downpipes: pl.building.exits.downpipes.map((p) => f(p)) },
         frame: { origin: [origin[0], origin[1]], yaw_deg: ((yaw % 360) + 360) % 360, ...(pl.building.north_deg !== undefined ? { north_deg: pl.building.north_deg } : {}) },
-        ...(a.glb_name ? { glb_name: String(a.glb_name).slice(0, 200) } : {}), notes: pl.building.notes,
+        ...(a.glb_name ? { glb_name: String(a.glb_name).slice(0, 200) } : {}), import_id: importId, notes: pl.building.notes,
       };
       const bid = fresh('building', a.id);
       const obj: SiteObject = {
@@ -396,6 +415,58 @@ export const OPS: Record<string, OpDef> = {
       return { patch, result: { id: o.id } };
     },
   },
+  set_driveway_crossover: {
+    label: 'Move crossover',
+    description: 'Move the crossover of a driveway: its FIRST centreline point, which lies on the assumed kerb line. With translate true the whole centreline moves by the same offset (the driveway slides along the frontage); otherwise only the first point moves and the rest of the centreline stays where it is. The point must lie on the assumed kerb line of the 3D model (within 0.05 m, and not beyond its ends) or the operation fails; its chainage along the kerb line from the first point of the line is stored as crossover_chainage_m. When the 3D model has no kerb line the point is not constrained and no chainage is stored.',
+    params: { id: ID, point: P.pos('New crossover position (E, N) on the assumed kerb line'), translate: { type: 'boolean', description: 'Move every centreline point by the same offset (default false)' } },
+    required: ['id', 'point'],
+    run(doc, a, ctx) {
+      const { o, i } = find(doc, a.id);
+      const g = o.geometry;
+      if (o.type !== 'driveway' || g.kind !== 'polyline') return fail(`${o.id} is not a driveway`);
+      const p = parsePos(a.point, 'point'), v = g.pts, dx = p[0] - v[0][0], dy = p[1] - v[0][1];
+      const kerb = ctx.kerb?.() ?? null;
+      let chainage: number | null = null;
+      if (kerb) {
+        const rx = p[0] - kerb.a[0], ry = p[1] - kerb.a[1];
+        chainage = rx * kerb.u[0] + ry * kerb.u[1];
+        const off = Math.abs(-rx * kerb.u[1] + ry * kerb.u[0]);
+        if (off > KERB_TOL_M) fail(`the crossover point is ${off.toFixed(2)} m off the assumed kerb line; it must lie on the kerb line (within ${KERB_TOL_M} m)`);
+        if (chainage < -KERB_TOL_M || chainage > kerb.length + KERB_TOL_M) fail(`the crossover point is beyond the ends of the assumed kerb line (chainage ${chainage.toFixed(2)} m of ${kerb.length.toFixed(2)} m)`);
+        chainage = Math.round(Math.min(Math.max(chainage, 0), kerb.length) * 1000) / 1000;
+      }
+      const patch: Patch = [];
+      if (dx !== 0 || dy !== 0) {
+        const pts = a.translate === true ? v.map((q) => shift(q, dx, dy)) : [p.length === 3 ? p : ([p[0], p[1]] as Pos), ...v.slice(1)];
+        patch.push({ op: 'replace', path: objPath(i, 'geometry', 'pts'), value: pts });
+      }
+      const has = hasOwn(o.params, 'crossover_chainage_m');
+      if (chainage !== null) {
+        const cur = has ? o.params.crossover_chainage_m.value : undefined;
+        if (cur !== chainage) patch.push({ op: has ? 'replace' : 'add', path: objPath(i, 'params', 'crossover_chainage_m'), value: { value: chainage, basis: 'user', ref: 'CHAINAGE ALONG THE ASSUMED KERB LINE FROM ITS FIRST POINT (3D MODEL)' } as Param });
+      } else if (has && patch.length) patch.push({ op: 'remove', path: objPath(i, 'params', 'crossover_chainage_m') });          // no kerb line to vouch for it any more: a stale chainage is not kept
+      return { patch, result: { id: o.id } };
+    },
+  },
+  link_driveway_end: {
+    label: 'Link driveway end',
+    description: 'Link the end of a driveway to a placed building, so the design end level is that building\'s finished floor level (ffl_rl, entered by the user or read from the import). building_id null removes the link. The level is read when the driveway is checked, so it follows later changes to the building; a building with no FFL leaves the end level NOT SET. Nothing is defaulted.',
+    params: { id: ID, building_id: { type: 'string', description: 'Id of a building object, or null to remove the link' } },
+    required: ['id'],
+    run(doc, a) {
+      const { o, i } = find(doc, a.id);
+      if (o.type !== 'driveway') fail(`${o.id} is not a driveway`);
+      const has = hasOwn(o.params, 'end_building_id');
+      if (a.building_id === undefined || a.building_id === null || a.building_id === '') {
+        return { patch: has ? [{ op: 'remove', path: objPath(i, 'params', 'end_building_id') }] : [], result: { id: o.id } };
+      }
+      const bid = String(a.building_id), b = doc.objects.find((x) => x.id === bid);
+      if (!b || b.type !== 'building') fail(`${bid} is not a building in this design`);
+      const param: Param = { value: bid, basis: 'user', ref: 'END SNAPPED TO THE BUILDING; END LEVEL IS ITS FFL' };
+      if (has && o.params.end_building_id.value === bid) return { patch: [], result: { id: o.id } };
+      return { patch: [{ op: has ? 'replace' : 'add', path: objPath(i, 'params', 'end_building_id'), value: param }], result: { id: o.id } };
+    },
+  },
   accept_proposal: {
     label: 'Accept proposal',
     description: 'Accept an AI proposal.',
@@ -432,13 +503,14 @@ export function applyOp(doc: SiteDesign, name: string, args: Record<string, unkn
 
 export interface BatchStep { op: string; args?: Record<string, unknown> }
 export type BatchOutcome = { ok: true; op: string; result: Record<string, unknown> } | { ok: false; op: string; error: string };
-export interface BatchResult { doc: SiteDesign; patch: Patch; inverse: Patch; results: BatchOutcome[] }
+export interface BatchResult { doc: SiteDesign; patch: Patch; inverse: Patch; results: BatchOutcome[]; /** atomic batches only: a step failed and nothing was applied */ rolledBack?: boolean }
 
 /**
- * Run several operations against the evolving document and return ONE combined patch and inverse (one undo step). A failing step (any error) is
- * reported and skipped; it changes nothing and never aborts the batch.
+ * Run several operations against the evolving document and return ONE combined patch and inverse (one undo step). By default a failing step (any
+ * error) is reported and skipped; it changes nothing and never aborts the batch (the AI's batch). With `atomic` the batch is all or nothing: at the
+ * first failing step the batch stops, the ORIGINAL document is returned with an empty patch (`rolledBack` true) and `results` ends with the failure.
  */
-export function runBatch(doc: SiteDesign, steps: BatchStep[], ctx: OpCtx = defaultCtx): BatchResult {
+export function runBatch(doc: SiteDesign, steps: BatchStep[], ctx: OpCtx = defaultCtx, opts: { atomic?: boolean } = {}): BatchResult {
   let cur = doc;
   const patch: Patch = [], inverses: Patch[] = [], results: BatchOutcome[] = [];
   for (const s of steps) {
@@ -449,14 +521,15 @@ export function runBatch(doc: SiteDesign, steps: BatchStep[], ctx: OpCtx = defau
       // OpError (bad arguments), PatchError (a patch that does not fit the document) or any other failure of ONE step: report it and
       // carry on. The step changed nothing (applyOp never mutates), so the rest of the batch still runs against `cur`.
       results.push({ ok: false, op: s.op, error: e instanceof Error ? e.message : String(e) });
+      if (opts.atomic) return { doc, patch: [], inverse: [], results, rolledBack: true };
     }
   }
   return { doc: cur, patch, inverse: inverses.reverse().flat(), results };
 }
 
-/** Anthropic tool definitions generated from the registry (stage 10 hands these to the model). */
+/** Anthropic tool definitions generated from the registry (stage 10 hands these to the model). Operations marked `ai: false` (place_building) are left out. */
 export function toolSchemas(): { name: string; description: string; input_schema: { type: 'object'; properties: Record<string, JsonSchema>; required: string[] } }[] {
-  return Object.entries(OPS).map(([name, op]) => ({
+  return Object.entries(OPS).filter(([, op]) => op.ai !== false).map(([name, op]) => ({
     name, description: op.description, input_schema: { type: 'object' as const, properties: structuredClone(op.params), required: [...op.required] },
   }));
 }

@@ -28,6 +28,11 @@ def _pos_integral(d: np.ndarray, A: np.ndarray) -> np.ndarray:
     return out
 
 
+def _ring_points(ring, spacing: float) -> np.ndarray:
+    """Points every ``spacing`` metres along a ring (vectorised; the same points the per-point ``interpolate`` loop gave)."""
+    return shapely.get_coordinates(shapely.line_interpolate_point(ring, np.arange(0, ring.length, spacing)))
+
+
 def pad_surface(existing: Tin, footprint: Polygon, pad: float, cut_h: float = 2.0, fill_h: float = 3.0) -> Callable:
     """Proposed z = clip(existing, pad - d/fill_h, pad + d/cut_h), d = distance to footprint."""
     def f(x, y):
@@ -54,12 +59,10 @@ def cut_fill(existing: Tin, proposed: Callable | Tin, region: Polygon | None = N
     pts.append(np.column_stack([gx.ravel(), gy.ravel()]))
     for g in (footprint, region):
         if g is not None:
-            pts.append(densify(np.array(g.exterior.coords), h / 2)[:, :2] if False else
-                       np.array([g.exterior.interpolate(s).coords[0] for s in np.arange(0, g.exterior.length, h / 2)]))
+            pts.append(_ring_points(g.exterior, h / 2))
     if footprint is not None:
         for k in range(1, 13):
-            r = footprint.buffer(k * h, join_style=2).exterior
-            pts.append(np.array([r.interpolate(s).coords[0] for s in np.arange(0, r.length, h)]))
+            pts.append(_ring_points(footprint.buffer(k * h, join_style=2).exterior, h))
     P = np.unique(np.round(np.vstack(pts), 6), axis=0)
     from scipy.spatial import Delaunay
     tri = Delaunay(P).simplices

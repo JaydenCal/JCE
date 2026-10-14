@@ -129,10 +129,11 @@ export class SiteDesignStore {
     this.commit(label ?? OPS[name]?.label ?? name, r.doc, r.patch, r.inverse);
     return r.result;
   }
-  /** Run several operations as ONE undo step (used by the AI). Failed steps are reported and skipped. */
-  runBatch(label: string, steps: BatchStep[]) {
+  /** Run several operations as ONE undo step (used by the AI). Failed steps are reported and skipped; with `atomic` any failure rolls the whole batch back
+   *  (nothing is committed and the results end with the failing step). */
+  runBatch(label: string, steps: BatchStep[], opts: { atomic?: boolean } = {}) {
     this.assertOpen();
-    const r = runBatch(this._doc, steps, this.ctx);
+    const r = runBatch(this._doc, steps, this.ctx, opts);
     this.commit(label, r.doc, r.patch, r.inverse);
     return r.results;
   }

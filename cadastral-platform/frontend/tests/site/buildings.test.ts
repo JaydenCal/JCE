@@ -14,7 +14,7 @@ import { signedArea, polygonArea, rotateClockwise, ringCentroid } from '@/lib/si
 import {
   BUILDING_USES, FOOTPATH_SURFACES, OBJECT_KINDS, SURFACE_KINDS, dimensionsSet, levelOf, parseDesign, emptyDesign, type Pos, type SiteDesign, type SiteObject,
 } from '@/lib/site/types';
-import { at, doc0, E0, N0, rect, seqCtx } from './helpers';
+import { at, doc0, E0, IMPORT_ID, N0, rect, seqCtx } from './helpers';
 
 const PAYLOAD = JSON.parse(readFileSync(join(__dirname, '../../../backend/tests/fixtures/building_import_planstudio.json'), 'utf8'));
 const pay = () => structuredClone(PAYLOAD);
@@ -22,7 +22,7 @@ const ctx = () => seqCtx();
 const AT = at(10, 20);
 
 function place(args: Record<string, unknown> = {}, doc: SiteDesign = doc0()) {
-  return applyOp(doc, 'place_building', { payload: pay(), at: AT, ...args }, ctx());
+  return applyOp(doc, 'place_building', { import_id: IMPORT_ID, payload: pay(), at: AT, ...args }, ctx());
 }
 const bld = (d: SiteDesign) => d.objects.find((o) => o.type === 'building')!;
 const close = (a: readonly number[], b: readonly number[], tol = 1e-6) => a.forEach((v, i) => expect(v).toBeCloseTo(b[i], -Math.log10(tol)));
@@ -111,26 +111,26 @@ describe('place_building', () => {
     expect(applyPatch(r.doc, r.inverse).doc).toEqual(doc0());
   });
   it('is one exact undo step and does not mutate the document', () => {
-    roundTrip(doc0(), 'place_building', { payload: pay(), at: AT, yaw_deg: 45, glb_name: 'house.glb' });
+    roundTrip(doc0(), 'place_building', { import_id: IMPORT_ID, payload: pay(), at: AT, yaw_deg: 45, glb_name: 'house.glb' });
   });
   it('records the GLB name and a label, and refuses a bad payload, position, status and id', () => {
     const o = bld(place({ glb_name: 'house.glb', label: 'Main house' }).doc);
     expect(o.building!.glb_name).toBe('house.glb'); expect(o.label).toBe('Main house');
-    expect(() => applyOp(doc0(), 'place_building', { payload: { schema: 'x' }, at: AT }, ctx())).toThrow(OpError);
-    expect(() => applyOp(doc0(), 'place_building', { payload: pay() }, ctx())).toThrow(OpError);
+    expect(() => applyOp(doc0(), 'place_building', { import_id: IMPORT_ID, payload: { schema: 'x' }, at: AT }, ctx())).toThrow(OpError);
+    expect(() => applyOp(doc0(), 'place_building', { import_id: IMPORT_ID, payload: pay() }, ctx())).toThrow(OpError);
     expect(() => place({ status: 'to_be_removed' })).toThrow(OpError);
     expect(() => place({ id: 'bad id' })).toThrow(OpError);
     const d = place({ id: 'b1' }).doc;
     expect(() => place({ id: 'b1' }, d)).toThrow(/already in use/);
   });
-  it('takes the building use from the import, or marks it other with a prompt to choose', () => {
+  it('takes the building use from the import, or leaves it NOT SET to be chosen (never other)', () => {
     const p = pay(); delete p.building.params.building_use;
-    const o = bld(applyOp(doc0(), 'place_building', { payload: p, at: AT }, ctx()).doc);
-    expect(o.params.building_use.value).toBe('other'); expect(o.params.building_use.ref).toContain('CHOOSE');
+    const o = bld(applyOp(doc0(), 'place_building', { import_id: IMPORT_ID, payload: p, at: AT }, ctx()).doc);
+    expect(o.params.building_use).toEqual({ value: null, basis: 'unresolved' });
   });
   it('ignores parameters an import is not allowed to set', () => {
     const p = pay(); p.building.params.evil = { value: 1, basis: 'user' };
-    expect(bld(applyOp(doc0(), 'place_building', { payload: p, at: AT }, ctx()).doc).params.evil).toBeUndefined();
+    expect(bld(applyOp(doc0(), 'place_building', { import_id: IMPORT_ID, payload: p, at: AT }, ctx()).doc).params.evil).toBeUndefined();
   });
 });
 
@@ -207,7 +207,7 @@ describe('building parameters', () => {
   it('checks run on the footprint through the store', () => {
     const s = new SiteDesignStore(emptyDesign('p'), ctx());
     s.setEnv({ lot: [[E0, N0], [E0 + 30, N0], [E0 + 30, N0 + 30], [E0, N0 + 30]], terrain: { available: true, sample: () => 100 } });
-    s.run('place_building', { payload: pay(), at: at(15, 15) });
+    s.run('place_building', { import_id: IMPORT_ID, payload: pay(), at: at(15, 15) });
     expect(s.doc.objects[0].issues.map((i) => i.code)).toEqual([]);
     s.run('move_object', { id: 'building_1', dx: 40, dy: 0 });
     expect(s.doc.objects[0].issues.map((i) => i.code)).toContain('OUTSIDE_LOT');

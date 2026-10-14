@@ -11,15 +11,23 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { Built } from '@/lib/viewer/sceneBuilder';
 import { localToMga, mapBuildingPositions, type ImportPayload, type Pt } from './buildings';
-import { dist2, drapePolyline, polygonArea, polylineLength, polylineLength3, ringCentroid, ringPerimeter, samePt, type Pt2 } from './geom';
+import { dist2, drapePolyline, pointInRing, polygonArea, polylineLength, polylineLength3, ringCentroid, ringPerimeter, samePt, type Pt2 } from './geom';
 import { OpError } from './ops';
 import { buildTargets, normDeg, snapPoint, stepYaw15, type SnapResult, type SnapTargets } from './snap';
 import { SiteScene, SELECT_COLOUR, type SceneTerrain } from './siteScene';
 import { SiteDesignStore, type HistoryInfo } from './store';
 import { heightFieldFromMeshes, type HeightField } from './terrain';
-import { OBJECT_KINDS, levelOf, minVertices, verticesOf, type GeometryKind, type ObjectType, type Pos, type SiteObject, type Status } from './types';
+import {
+  chainageOnKerb, drivewayGaps, effectiveDriveway, linkedBuilding, pointAtChainage, polylineChainages, previewProfile, projectToKerb,
+  type GradingResult, type Kerb, type ProfileView, type RuleInfo,
+} from './driveway';
+import { LiveEngine, objectSig, type LiveStatus } from './liveEngine';
+import type { Endpoint } from './persist';
+import { OBJECT_KINDS, dimOf, levelOf, minVertices, verticesOf, type GeometryKind, type ObjectType, type Pos, type SiteDesign, type SiteObject, type Status } from './types';
 
 export const SNAP_PIXELS = 10;
+/** the label of a building that was placed where SA7 aligned the PDF (the user still checks it) */
+export const ALIGNED_LABEL = 'PLACED BY PDF ALIGNMENT, CHECK';
 
 /** Dispose the geometries and materials of an object tree built by this controller (ghost, preview). */
 function disposeObject(o: THREE.Object3D) {
@@ -49,7 +57,17 @@ export interface DesignState {
   furnitureItem: FurnitureChoice | null;
   /** the footprint tool is on: the use the building will get */
   footprintUse: string | null;
+  /** stage 6: the long section of the selected driveway (server result, or a PREVIEW while dragging), its state, and the selected grading area's result */
+  driveway: DrivewayPanel | null;
+  grading: GradingPanel | null;
+  /** hover text of a failing chainage (requirement key, limit and value), or '' */
+  hoverText: string;
+  /** one line about the handle being dragged (crossover chainage along the kerb line, width) */
+  dragInfo: string;
 }
+export interface EnginePanel { status: LiveStatus; error: string; /** the result on show is a PREVIEW or stale */ stale: boolean }
+export interface DrivewayPanel extends EnginePanel { id: string; view: ProfileView | null; gaps: string[]; kerbAvailable: boolean; linkedBuilding: string | null }
+export interface GradingPanel extends EnginePanel { id: string; result: GradingResult | null }
 /** A catalogue item chosen for outdoor furniture. Dimensions are metres from the catalogue; an absent one stays NOT SET. */
 export interface FurnitureChoice { item_id: string; title: string; source_ref: string; width_m?: number; depth_m?: number; height_m?: number }
 export type FootprintHandler = (ring: Pos[], use: string) => void;
@@ -65,9 +83,19 @@ export interface DesignHooks {
   setOrbit(on: boolean): void;
   store?: SiteDesignStore;
   makeLabel?: (text: string, scale: number, accent: string) => THREE.Sprite;
+  /** stage 6: the EXISTING ground meshes (survey / DEM parts only, never the design surface) for the driveway preview and cut / fill colours */
+  existingMeshes?: THREE.Mesh[];
+  /** the assumed kerb line of the 3D model (the crossover is dragged along it); null = not in the bundle */
+  kerb?: Kerb | null;
+  /** where the engines are (POST driveway-profile and grading); null / absent = no server on this page */
+  engine?: Endpoint | null;
+  engineDebounceMs?: number;
+  /** terrain status text of the bundle, shown on the preview */
+  terrainStatus?: string;
 }
 type Drag =
-  | { kind: 'vertex'; id: string; index: number; insert: boolean; px: [number, number]; moved: boolean; pos: Pos | null }
+  | { kind: 'vertex'; id: string; index: number; insert: boolean; px: [number, number]; moved: boolean; pos: Pos | null; translate?: boolean; link?: string | null }
+  | { kind: 'width'; id: string; px: [number, number]; moved: boolean; width: number | null }
   | { kind: 'body'; id: string; px: [number, number]; moved: boolean; grab: Pt2; anchor: Pt2; delta: Pt2 };
 
 /**
@@ -92,6 +120,9 @@ export class DesignController {
   readonly store: SiteDesignStore;
   readonly scene: SiteScene;
   readonly hf: HeightField;
+  /** height field of the EXISTING ground only (survey / DEM parts), or null; the driveway preview and cut / fill colours use it, never the design surface */
+  readonly existingHf: HeightField | null;
+  readonly live: LiveEngine;
   readonly terrain: SceneTerrain;
   active = false;
   listener: (s: DesignState) => void = () => {};
@@ -116,13 +147,24 @@ export class DesignController {
   /** a footpath drawn as an area, and parameters/label a preset tool (garden) gives the new object */
   private shape: 'polyline' | 'polygon' | null = null; private preset: { params?: Record<string, { value: string; basis: 'user' }>; label?: string } | null = null;
   private footprintUse: string | null = null; private footprintHandler: FootprintHandler | null = null;
+  private hoverText = ''; private dragInfo = '';
+  /** the limits of the last server answer (the same resolved requirements), used by the browser preview */
+  private lastRules: Record<string, RuleInfo> | null = null; private lastRulesFor = '';
+  /** the object being dragged as the preview shows it, and the signature of the server request made for it */
+  private dragPv: SiteObject | null = null; private dragSig = '';
 
   constructor(private h: DesignHooks) {
     this.store = h.store ?? new SiteDesignStore();
+    // the operations validate a crossover against the SAME assumed kerb line the tool slides it along (the kerb of this 3D model, or none)
+    this.store.ctx = { ...this.store.ctx, kerb: () => (this.h.kerb ? { a: this.h.kerb.a, u: this.h.kerb.u, length: this.h.kerb.length } : null) };
     this.hf = heightFieldFromMeshes(h.terrainMeshes);
     const O = h.origin;
     this.terrain = { available: h.terrainAvailable && this.hf.triangleCount > 0, sample: (e, n) => this.hf.sample(e - O[0], n - O[1]) };
-    this.scene = new SiteScene({ origin: O, terrain: this.terrain, makeLabel: h.makeLabel });
+    this.existingHf = h.existingMeshes?.length ? heightFieldFromMeshes(h.existingMeshes) : null;
+    const ex = this.existingHf, existing = ex && ex.triangleCount > 0 ? (e: number, n: number) => ex.sample(e - O[0], n - O[1]) : undefined;
+    this.live = new LiveEngine({ ep: h.engine ?? null, debounceMs: h.engineDebounceMs });
+    this.live.listener = (kind, id) => this.onLive(kind, id);
+    this.scene = new SiteScene({ origin: O, terrain: this.terrain, makeLabel: h.makeLabel, existing });
     h.built.root.add(this.scene.group, this.handles);
     this.marker = new THREE.Mesh(new THREE.RingGeometry(0.7, 1, 28), new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, side: THREE.DoubleSide }));
     this.marker.renderOrder = 20; this.marker.visible = false; h.built.root.add(this.marker);
@@ -130,8 +172,9 @@ export class DesignController {
     this.selRing.renderOrder = 20; this.selRing.visible = false; h.built.root.add(this.selRing);
     this.store.setEnv({ lot: h.lot, terrain: this.terrain });
     this.scene.syncAll(this.store.doc);
+    this.refreshAll();
     this.off.push(this.store.on('change', (ev) => {
-      this.scene.apply(ev);
+      this.scene.apply(ev); this.afterChange(ev);
       if (this.selected && !ev.doc.objects.some((o) => o.id === this.selected)) { this.selected = null; this.selVertex = null; }
       if (this.selVertex !== null) { const o = this.selObj(); if (!o || this.selVertex >= verticesOf(o.geometry).length) this.selVertex = null; }
       this.scene.setSelected(this.selected); this.syncHandles(); this.emit();
@@ -165,7 +208,88 @@ export class DesignController {
       lotAvailable: !!this.h.lot, terrainAvailable: this.terrain.available, locked: this.store.locked,
       pendingBuilding: this.pending ? { source_file: this.pending.payload.source_file, warnings: this.pending.payload.warnings, glb: this.pending.glb?.name ?? null } : null,
       furnitureItem: this.furniture, footprintUse: this.footprintUse,
+      driveway: this.drivewayPanel(), grading: this.gradingPanel(), hoverText: this.hoverText, dragInfo: this.dragInfo,
     };
+  }
+
+  // ---- stage 6: engine results for driveways and grading areas -------------------------------------------------------------------------
+  private drivewayPanel(): DrivewayPanel | null {
+    const o = this.selObj(); if (!o || o.type !== 'driveway') return null;
+    const doc = this.store.doc, eff = effectiveDriveway(doc, o), e = this.live.drive.get(o.id), view = this.scene.driveView(o.id);
+    const fresh = !!e && !!e.result && e.resultSig === objectSig(eff) && e.resultDetail === 'full' && !view?.preview;
+    return { id: o.id, view, status: e?.status ?? 'idle', error: e?.error ?? '', stale: !fresh, gaps: drivewayGaps(doc, o), kerbAvailable: !!this.h.kerb, linkedBuilding: linkedBuilding(doc, o)?.id ?? null };
+  }
+  private gradingPanel(): GradingPanel | null {
+    const o = this.selObj(); if (!o || o.type !== 'grading_area') return null;
+    const e = this.live.grade.get(o.id), fresh = !!e && !!e.result && e.resultSig === objectSig(o);
+    return { id: o.id, result: this.scene.gradingResult(o.id), status: e?.status ?? 'idle', error: e?.error ?? '', stale: !fresh };
+  }
+  /** The browser PREVIEW long section of a driveway as the engine would see it (end level from a linked building), or null without existing ground. */
+  previewView(eff: SiteObject): ProfileView | null {
+    const hf = this.existingHf, O = this.h.origin;
+    if (!hf || !hf.triangleCount || eff.geometry.kind !== 'polyline') return null;
+    const ev = levelOf(eff, 'end_level_rl'), lv = eff.params.end_level_rl;
+    return previewProfile({
+      pts: eff.geometry.pts, width: dimOf(eff, 'width_m'), endLevel: ev, endLevelBasis: ev === null || !lv ? 'NOT SET' : lv.basis.toUpperCase().replace(/_/g, ' '),
+      existing: (e, n) => hf.sample(e - O[0], n - O[1]), lot: this.h.lot, kerb: this.h.kerb ?? null, rules: this.lastRules, rulesFor: this.lastRulesFor || undefined,
+      terrainStatus: this.h.terrainStatus ?? 'TERRAIN STATUS NOT STATED', objectId: eff.id,
+    });
+  }
+  /** Put the best known result on show for an object: the server answer for exactly this object, else (driveway) the browser preview, else none. */
+  private settle(id: string) {
+    const doc = this.store.doc, o = doc.objects.find((x) => x.id === id); if (!o) return;
+    if (o.type === 'driveway') {
+      const eff = effectiveDriveway(doc, o), e = this.live.drive.get(id);
+      // a 'profile' answer (made while dragging) has no earthworks: it stays a PREVIEW until the 'full' answer for the same object arrives
+      const mine = e?.result && e.resultSig === objectSig(eff) ? e : null;
+      this.scene.setDriveView(id, mine ? (mine.resultDetail === 'full' ? mine.result : { ...mine.result!, preview: true }) : this.previewView(eff));
+    } else if (o.type === 'grading_area') {
+      const e = this.live.grade.get(id);
+      this.scene.setGradingResult(id, e?.result && e.resultSig === objectSig(o) ? e.result : null);
+    }
+  }
+  private refresh(o: SiteObject) {
+    if (o.type === 'driveway') {
+      const eff = effectiveDriveway(this.store.doc, o), e = this.live.drive.get(o.id);
+      this.settle(o.id);
+      if (!(e && e.sig === objectSig(eff) && e.detail === 'full' && (e.status === 'ok' || e.status === 'pending'))) this.live.requestDrive(eff, { detail: 'full', building: linkedBuilding(this.store.doc, o) });
+    } else if (o.type === 'grading_area') {
+      const e = this.live.grade.get(o.id);
+      this.settle(o.id);
+      if (!(e && e.sig === objectSig(o) && (e.status === 'ok' || e.status === 'pending'))) this.live.requestGrade(o);
+    }
+  }
+  private refreshAll() { for (const o of this.store.doc.objects) this.refresh(o); }
+  private afterChange(ev: { kind: string; doc: SiteDesign; changed: string[]; added: string[]; removed: string[] }) {
+    if (ev.kind === 'saved') {
+      // the server resolves a building link from the SAVED design: an answer that said the linked building was not saved yet is asked for again now it is
+      for (const o of ev.doc.objects) {
+        const e = this.live.drive.get(o.id);
+        if (o.type === 'driveway' && typeof o.params.end_building_id?.value === 'string' && e?.status === 'ok' && e.result?.end_level.link_note) {
+          this.live.requestDrive(effectiveDriveway(ev.doc, o), { detail: 'full', building: linkedBuilding(ev.doc, o) });
+        }
+      }
+      return;
+    }
+    for (const id of ev.removed) this.live.clear(id);
+    const touched = new Set([...ev.changed, ...ev.added]);
+    for (const o of ev.doc.objects) {
+      const link = o.type === 'driveway' ? o.params.end_building_id?.value : null;
+      if (ev.kind === 'replace' || touched.has(o.id) || (typeof link === 'string' && touched.has(link))) this.refresh(o);
+    }
+    this.emit();
+  }
+  private onLive(kind: 'drive' | 'grade', id: string) {
+    if (kind === 'drive') {
+      const e = this.live.drive.get(id);
+      if (e?.status === 'ok' && e.result) { this.lastRules = e.result.rules; this.lastRulesFor = e.result.rules_for; }
+      const dragging = this.drag && 'id' in this.drag && this.drag.id === id && this.drag.moved;
+      if (dragging) {
+        // an answer for the position being dragged (detail 'profile'): shown as a PREVIEW; an answer for an older position is ignored
+        if (e?.status === 'ok' && e.result && e.resultSig === this.dragSig && this.dragPv) this.scene.preview(this.dragPv, { drive: { ...e.result, preview: true } });
+      } else this.settle(id);
+    } else this.settle(id);
+    this.emit();
   }
   private emit() { this.listener(this.state()); }
   private say(m: string) { this.message = m; this.emit(); }
@@ -203,9 +327,19 @@ export class DesignController {
   }
   /** Show a loaded GLB for an existing building (also used to attach it again after a reload; the bytes are not saved in the design). */
   attachGlb(id: string, obj: THREE.Object3D) { this.scene.setGlb(id, obj); this.emit(); }
-  /** The imported footprint follows the cursor on the terrain until it is clicked. R, Q and E turn it. */
+  /**
+   * The imported footprint follows the cursor on the terrain until it is clicked. R, Q and E turn it.
+   * A PDF import that SA7 aligned to the lot (`aligned_at`) is not placed by the cursor: the footprint already is in MGA orientation (yaw 0) and
+   * `aligned_at` is the MGA position of its reference point, so it is placed there at once, labelled PLACED BY PDF ALIGNMENT, CHECK. It stays
+   * an ordinary building: select it and drag or turn it as usual.
+   */
   beginBuildingPlacement(payload: ImportPayload, glb: { object: THREE.Object3D; name: string } | null = null) {
     if (this.store.locked) { this.cancelAll(); this.tool = 'select'; this.type = null; this.say(this.store.locked); return; }
+    if (payload.aligned_at) {
+      this.cancelAll(); this.tool = 'select'; this.type = null; this.syncHandles();
+      this.placeBuildingAt(payload, payload.aligned_at, 0, glb, ALIGNED_LABEL);
+      return;
+    }
     this.cancelAll(); this.tool = 'place'; this.type = 'building'; this.pending = { payload, glb }; this.message = ''; this.yaw = 0;
     const g = new THREE.Group(); g.visible = false; this.ghost = g; this.h.built.root.add(g);
     this.syncHandles(); this.emit();
@@ -217,9 +351,9 @@ export class DesignController {
     this.syncHandles(); this.emit();
   }
   /** Place an imported building at once (no cursor step), e.g. a footprint that was drawn in place. */
-  placeBuildingAt(payload: ImportPayload, at: Pt2, yaw = 0, glb: { object: THREE.Object3D; name: string } | null = null): string | null {
+  placeBuildingAt(payload: ImportPayload, at: Pt2, yaw = 0, glb: { object: THREE.Object3D; name: string } | null = null, label?: string): string | null {
     try {
-      const r = this.store.run('place_building', { payload, at: { e: at[0], n: at[1] }, yaw_deg: yaw, status: this.newStatus, ...(glb ? { glb_name: glb.name } : {}) }, 'Place building');
+      const r = this.store.run('place_building', { payload, import_id: payload.import_id, at: { e: at[0], n: at[1] }, yaw_deg: yaw, status: this.newStatus, ...(glb ? { glb_name: glb.name } : {}), ...(label ? { label } : {}) }, 'Place building');
       const id = r.id as string; if (glb) this.scene.setGlb(id, glb.object);
       this.selected = id; this.scene.setSelected(id); this.message = ''; this.syncHandles(); this.emit(); return id;
     } catch (e) { this.message = e instanceof OpError ? e.message : String(e); this.emit(); return null; }
@@ -266,7 +400,13 @@ export class DesignController {
   }
   private cancelDrag() {
     const d = this.drag; this.drag = null; this.h.setOrbit(true);
-    if (d) { this.scene.restore(d.id); this.syncHandles(); }
+    if (d) this.restoreAfterDrag(d.id, undefined, false);
+  }
+  /** Put an object back as the document has it (a drag that ended without a change, was refused or was cancelled), with its own results. */
+  private restoreAfterDrag(id: string, error?: string, emit = true) {
+    this.dragInfo = ''; this.dragPv = null; this.dragSig = '';
+    this.scene.restore(id); this.settle(id); this.syncHandles();
+    if (error !== undefined) this.say(error); else if (emit) this.emit();
   }
 
   // ---- ghost, preview, markers
@@ -335,7 +475,7 @@ export class DesignController {
     const hit = this.rc.intersectObjects(this.scene.pickables(), false)[0];
     return hit ? SiteScene.idOf(hit.object) : null;
   }
-  private pickHandle(ray: THREE.Ray): { kind: 'vertex' | 'mid'; index: number } | null {
+  private pickHandle(ray: THREE.Ray): { kind: 'vertex' | 'mid' | 'width'; index: number } | null {
     if (!this.handles.children.length || !this.designVisible()) return null;
     this.rc.set(ray.origin, ray.direction); this.rc.far = 5000;
     const hit = this.rc.intersectObjects(this.handles.children, false)[0];
@@ -363,6 +503,29 @@ export class DesignController {
       m.position.copy(at(mid)); m.rotation.z = Math.PI / 4; m.renderOrder = 29; m.userData = { handle: 'mid', index: i + 1 }; this.handles.add(m);
     }
     gv.dispose(); gm.dispose();
+    if (o.type === 'driveway' && o.geometry.kind === 'polyline') this.addWidthHandles(o, at);
+  }
+  /**
+   * Width grips of a driveway: one either side of the centreline at half the width when the width is set; a single grip ON the centreline when it is
+   * NOT SET (no width is implied: dragging it sideways sets the width to twice the distance). Placed at the property boundary, else mid length.
+   */
+  private widthFrame(o: SiteObject): { p: Pt2; n: Pt2 } | null {
+    if (o.geometry.kind !== 'polyline') return null;
+    const pts = o.geometry.pts, cum = polylineChainages(pts), L = cum[cum.length - 1];
+    if (!(L > 0)) return null;
+    const bc = this.scene.driveView(o.id)?.geometry?.boundary_chainage_m ?? L / 2, edge = Math.min(1, L / 4), t = Math.min(Math.max(bc, edge), L - edge);
+    const p = pointAtChainage(pts, cum, t), a = pointAtChainage(pts, cum, t - 0.2), b = pointAtChainage(pts, cum, t + 0.2);
+    let dx = b[0] - a[0], dy = b[1] - a[1]; const n = Math.hypot(dx, dy) || 1; dx /= n; dy /= n;
+    return { p, n: [-dy, dx] };
+  }
+  private addWidthHandles(o: SiteObject, at: (p: readonly number[]) => THREE.Vector3) {
+    const f = this.widthFrame(o); if (!f) return;
+    const w = dimOf(o, 'width_m'), sides = w === null ? [0] : [1, -1];
+    for (const sd of sides) {
+      const q: Pos = [f.p[0] + f.n[0] * sd * (w ?? 0) / 2, f.p[1] + f.n[1] * sd * (w ?? 0) / 2];
+      const m = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.5), new THREE.MeshBasicMaterial({ color: 0x00c2a8, depthTest: false, transparent: true }));
+      m.position.copy(at(q)); m.renderOrder = 31; m.userData = { handle: 'width', index: sd }; this.handles.add(m);
+    }
   }
   /** Per frame: keep handles and markers a constant size on screen. */
   frame() {
@@ -379,6 +542,7 @@ export class DesignController {
   pointerMove(info: PointerInfo) {
     if (!this.active) return;
     if (this.drag) { this.dragMove(info); return; }
+    if (this.tool === 'select') this.hoverFailing(info);
     if (this.tool === 'place' && this.pending && this.ghost) {
       const a = this.aim(info, null);
       if (!a) { this.ghost.visible = false; this.pendingAt = null; this.showSnap(null, null); this.emit(); return; }
@@ -391,14 +555,33 @@ export class DesignController {
     } else if (this.tool === 'draw') {
       const a = this.aim(info, null);
       if (!a) { this.cursor = null; this.showSnap(null, null); this.updatePreview(); this.emit(); return; }
-      this.cursor = [a.mga[0], a.mga[1]]; this.showSnap(a.local, a.snap); this.updatePreview(); this.emit();
+      this.cursor = this.drawPoint(a.mga); this.showSnap(a.local, a.snap); this.updatePreview(); this.emit();
     }
+  }
+  /** Red failing chainages: the hover text is the requirement key, its limit and the value. */
+  private hoverFailing(info: PointerInfo) {
+    let txt = '';
+    if (this.designVisible()) {
+      this.rc.set(info.ray.origin, info.ray.direction); this.rc.far = 5000;
+      const hit = this.rc.intersectObjects(this.scene.failingPickables(), false)[0];
+      if (hit) txt = String(hit.object.userData.failing);
+    }
+    if (txt !== this.hoverText) { this.hoverText = txt; this.emit(); }
+  }
+  /** The first point of a driveway is the crossover and lies on the assumed kerb line (when the 3D model has one). */
+  private drawPoint(mga: Pt2): Pos {
+    if (this.type === 'driveway' && !this.verts.length && this.h.kerb) { const p = projectToKerb(this.h.kerb, mga).p; return [p[0], p[1]]; }
+    return [mga[0], mga[1]];
   }
   /** Returns true when a drag has begun (the engine then disables orbiting). */
   pointerDown(info: PointerInfo): boolean {
     this.downPx = [info.x, info.y];
     if (!this.active || this.tool !== 'select' || info.button !== 0) return false;
     const hh = this.pickHandle(info.ray), ro = this.store.locked !== null;       // read only: selecting still works, dragging does not
+    if (hh && hh.kind === 'width' && this.selected && !ro) {
+      this.drag = { kind: 'width', id: this.selected, px: [info.x, info.y], moved: false, width: null };
+      this.h.setOrbit(false); return true;
+    }
     if (hh && this.selected && !ro) {
       this.drag = { kind: 'vertex', id: this.selected, index: hh.index, insert: hh.kind === 'mid', px: [info.x, info.y], moved: false, pos: null };
       this.h.setOrbit(false); return true;
@@ -413,17 +596,47 @@ export class DesignController {
     this.drag = { kind: 'body', id, px: [info.x, info.y], moved: false, grab, anchor, delta: [0, 0] };
     this.h.setOrbit(false); return true;
   }
+  /** The building whose footprint contains an MGA point (a driveway end dropped on it links to the building's FFL), or null. */
+  private buildingAt(p: readonly number[], exclude?: string): SiteObject | null {
+    return this.store.doc.objects.find((b) => b.type === 'building' && b.id !== exclude && b.accepted !== 'rejected' && b.geometry.kind === 'polygon' && pointInRing(p, b.geometry.ring)) ?? null;
+  }
   private dragMove(info: PointerInfo) {
-    const d = this.drag!; if (!d.moved && Math.hypot(info.x - d.px[0], info.y - d.px[1]) <= DRAG_PX && !(d.kind === 'vertex' && d.insert && false)) return;
+    const d = this.drag!; if (!d.moved && Math.hypot(info.x - d.px[0], info.y - d.px[1]) <= DRAG_PX) return;
     d.moved = true;
     const o = this.store.doc.objects.find((x) => x.id === d.id); if (!o) return;
     const t = this.hitTerrain(info.ray); if (!t) return;
     const O = this.h.origin, cur: Pt2 = [t.local.x + O[0], t.local.y + O[1]];
-    if (d.kind === 'vertex') {
-      const s = this.snapMga(cur, info.alt, t.world, d.id);
+    if (d.kind === 'width') {
+      const f = this.widthFrame(o); if (!f) return;
+      const dist = Math.abs((cur[0] - f.p[0]) * f.n[0] + (cur[1] - f.p[1]) * f.n[1]), step = info.alt ? 0.01 : 0.05;
+      d.width = Math.max(0.1, Math.round((2 * dist) / step) * step);
+      this.dragInfo = `WIDTH ${d.width.toFixed(2)} M`; this.marker.visible = false;
+      this.previewObject(o, (ps) => ps, (pv) => ({ ...pv, params: { ...pv.params, width_m: { value: d.width, basis: 'user' } } }));
+    } else if (d.kind === 'vertex') {
+      const drive = o.type === 'driveway' && !d.insert, n = verticesOf(o.geometry).length, kerb = this.h.kerb ?? null;
+      let s = this.snapMga(cur, info.alt, t.world, d.id), pos: Pt2 = s.p, mod: ((pv: SiteObject) => SiteObject) | undefined;
+      this.dragInfo = '';
+      if (drive && d.index === 0 && kerb) {                                          // the crossover slides along the assumed kerb line only
+        const pr = projectToKerb(kerb, cur), ch = Math.round(pr.chainage * 100) / 100;
+        pos = pr.clamped ? pr.p : [kerb.a[0] + kerb.u[0] * ch, kerb.a[1] + kerb.u[1] * ch];
+        s = { p: pos, kind: 'none', label: '' };
+        d.translate = info.shift;
+        this.dragInfo = `CROSSOVER ${ch.toFixed(2)} M ALONG THE ASSUMED KERB LINE${d.translate ? ' · WHOLE DRIVEWAY MOVES' : ''}${pr.clamped ? ' · END OF THE KERB LINE' : ''}`;
+      } else if (drive && d.index === 0) this.dragInfo = 'ASSUMED KERB LINE NOT AVAILABLE: THE CROSSOVER IS NOT CONSTRAINED';
+      if (drive && n >= 2 && d.index === n - 1) {                                    // the garage end snaps to a placed building and takes its FFL
+        const b = this.buildingAt(pos, o.id); d.link = b ? b.id : null;
+        mod = (pv) => {
+          const params = { ...pv.params };
+          if (b) params.end_building_id = { value: b.id, basis: 'user', ref: 'END SNAPPED TO THE BUILDING; END LEVEL IS ITS FFL' }; else delete params.end_building_id;
+          return { ...pv, params };
+        };
+        this.dragInfo = b ? `END SNAPS TO ${b.label ? b.label.toUpperCase() : b.id.toUpperCase()}: END LEVEL IS ITS FFL${levelOf(b, 'ffl_rl') === null ? ' (FFL NOT SET)' : ''}` : '';
+      }
       const z = d.insert ? undefined : verticesOf(o.geometry)[d.index]?.[2];                  // moving a vertex keeps an RL it already had
-      d.pos = z === undefined ? [s.p[0], s.p[1]] : [s.p[0], s.p[1], z]; this.showSnap(new THREE.Vector3(s.p[0] - O[0], s.p[1] - O[1], this.hf.sample(s.p[0] - O[0], s.p[1] - O[1]) ?? t.local.z), s);
-      this.previewObject(o, (ps) => (d.insert ? [...ps.slice(0, d.index), d.pos!, ...ps.slice(d.index)] : ps.map((p, i) => (i === d.index ? d.pos! : p))));
+      d.pos = z === undefined ? [pos[0], pos[1]] : [pos[0], pos[1], z]; this.showSnap(new THREE.Vector3(pos[0] - O[0], pos[1] - O[1], this.hf.sample(pos[0] - O[0], pos[1] - O[1]) ?? t.local.z), s);
+      const dx = d.translate && d.index === 0 ? pos[0] - verticesOf(o.geometry)[0][0] : 0, dy = d.translate && d.index === 0 ? pos[1] - verticesOf(o.geometry)[0][1] : 0;
+      this.previewObject(o, (ps) => (d.translate && d.index === 0 ? ps.map((p) => (p.length === 3 ? [p[0] + dx, p[1] + dy, p[2]] : [p[0] + dx, p[1] + dy]) as Pos)
+        : d.insert ? [...ps.slice(0, d.index), d.pos!, ...ps.slice(d.index)] : ps.map((p, i) => (i === d.index ? d.pos! : p))), mod);
     } else {
       const want: Pt2 = [d.anchor[0] + (cur[0] - d.grab[0]), d.anchor[1] + (cur[1] - d.grab[1])];
       const s = this.snapMga(want, info.alt, t.world, d.id);
@@ -432,31 +645,54 @@ export class DesignController {
     }
     this.emit();
   }
-  private previewObject(o: SiteObject, f: (ps: Pos[]) => Pos[]) {
+  private previewObject(o: SiteObject, f: (ps: Pos[]) => Pos[], mod?: (pv: SiteObject) => SiteObject) {
     const ps = f(verticesOf(o.geometry) as Pos[]), g = o.geometry;
     const geometry = g.kind === 'point' ? { ...g, p: ps[0] } : g.kind === 'polyline' ? { kind: 'polyline' as const, pts: ps } : { kind: 'polygon' as const, ring: ps };
-    const pv: SiteObject = { ...o, geometry, ...(o.building ? { building: { ...mapBuildingPositions(o.building, (p) => f([p])[0]), frame: { ...o.building.frame, origin: [f([o.building.frame.origin])[0][0], f([o.building.frame.origin])[0][1]] as [number, number] } } } : {}) };
-    this.scene.preview(pv); this.syncHandles(pv);
+    let pv: SiteObject = { ...o, geometry, ...(o.building ? { building: { ...mapBuildingPositions(o.building, (p) => f([p])[0]), frame: { ...o.building.frame, origin: [f([o.building.frame.origin])[0][0], f([o.building.frame.origin])[0][1]] as [number, number] } } } : {}) };
+    if (mod) pv = mod(pv);
+    if (o.type === 'driveway') {
+      // a driveway previews its long section too: the browser PREVIEW now, and the server answer (detail 'profile') once the pointer pauses
+      const eff = effectiveDriveway(this.store.doc, pv);
+      this.dragPv = pv; this.dragSig = objectSig(eff);
+      this.live.requestDrive(eff, { detail: 'profile', building: linkedBuilding(this.store.doc, pv) });
+      this.scene.preview(pv, { drive: this.previewView(eff) });
+    } else this.scene.preview(pv);
+    this.syncHandles(pv);
     if (g.kind !== 'point') this.listener({ ...this.state(), readout: readoutFor(g.kind, ps, this.terrain.sample, true, this.terrain.available) });
   }
   pointerUp(info: PointerInfo, moved: boolean) {
     if (!this.active) return;
     const wasDrag = this.drag; this.downPx = null;
     if (wasDrag) {
-      this.drag = null; this.h.setOrbit(true); this.marker.visible = false; this.snapLabel = '';
+      this.drag = null; this.h.setOrbit(true); this.marker.visible = false; this.snapLabel = ''; this.dragInfo = ''; this.dragPv = null; this.dragSig = '';
       try {
-        if (wasDrag.kind === 'vertex') {
+        if (wasDrag.kind === 'width') {
+          if (wasDrag.moved && wasDrag.width !== null) this.store.run('set_param', { id: wasDrag.id, key: 'width_m', value: wasDrag.width, basis: 'user' }, 'Set driveway width');
+          else { this.restoreAfterDrag(wasDrag.id); return; }
+        } else if (wasDrag.kind === 'vertex') {
           if (wasDrag.moved && wasDrag.pos) {
-            this.store.run('edit_vertices', { id: wasDrag.id, action: wasDrag.insert ? 'insert' : 'move', index: wasDrag.index, point: { e: wasDrag.pos[0], n: wasDrag.pos[1], ...(wasDrag.pos.length === 3 ? { z: wasDrag.pos[2] } : {}) } }, wasDrag.insert ? 'Insert vertex' : 'Move vertex');
+            const o = this.store.doc.objects.find((x) => x.id === wasDrag.id), n = o ? verticesOf(o.geometry).length : 0;
+            const pt = { e: wasDrag.pos[0], n: wasDrag.pos[1], ...(wasDrag.pos.length === 3 ? { z: wasDrag.pos[2] } : {}) };
+            if (o?.type === 'driveway' && !wasDrag.insert && wasDrag.index === 0 && this.h.kerb) {
+              this.store.run('set_driveway_crossover', { id: wasDrag.id, point: pt, translate: !!wasDrag.translate }, 'Move crossover');
+            } else if (o?.type === 'driveway' && !wasDrag.insert && n >= 2 && wasDrag.index === n - 1) {
+              // the end moves and the link to the building follows where it was dropped: ONE undo step
+              // ALL OR NOTHING: if either step fails the whole batch is rolled back (the end does not move without its link), and the error is shown
+              const res = this.store.runBatch('Move driveway end', [
+                { op: 'edit_vertices', args: { id: wasDrag.id, action: 'move', index: wasDrag.index, point: pt } },
+                { op: 'link_driveway_end', args: { id: wasDrag.id, building_id: wasDrag.link ?? null } },
+              ], { atomic: true });
+              const bad = res.find((x) => !x.ok); if (bad && !bad.ok) throw new OpError(bad.error);
+            } else this.store.run('edit_vertices', { id: wasDrag.id, action: wasDrag.insert ? 'insert' : 'move', index: wasDrag.index, point: pt }, wasDrag.insert ? 'Insert vertex' : 'Move vertex');
           } else if (wasDrag.insert) {
             const o = this.selObj(); if (o) { const ps = verticesOf(o.geometry), a = ps[(wasDrag.index - 1 + ps.length) % ps.length], b = ps[wasDrag.index % ps.length]; this.store.run('edit_vertices', { id: wasDrag.id, action: 'insert', index: wasDrag.index, point: { e: (a[0] + b[0]) / 2, n: (a[1] + b[1]) / 2 } }, 'Insert vertex'); }
-          } else { this.selVertex = this.selVertex === wasDrag.index ? null : wasDrag.index; this.scene.restore(wasDrag.id); this.syncHandles(); this.emit(); return; }
+          } else { this.selVertex = this.selVertex === wasDrag.index ? null : wasDrag.index; this.restoreAfterDrag(wasDrag.id); return; }
         } else if (wasDrag.moved && (wasDrag.delta[0] !== 0 || wasDrag.delta[1] !== 0)) {
           this.store.run('move_object', { id: wasDrag.id, dx: wasDrag.delta[0], dy: wasDrag.delta[1] }, 'Move object');
-        } else { this.scene.restore(wasDrag.id); this.syncHandles(); this.emit(); return; }
+        } else { this.restoreAfterDrag(wasDrag.id); return; }
         this.message = '';
       } catch (e) {
-        this.scene.restore(wasDrag.id); this.syncHandles(); this.say(e instanceof OpError ? e.message : String(e)); return;
+        this.restoreAfterDrag(wasDrag.id, e instanceof OpError ? e.message : String(e)); return;
       }
       return;
     }
@@ -491,7 +727,7 @@ export class DesignController {
     if (this.pending) {
       const pb = this.pending;
       try {
-        const r = this.store.run('place_building', { payload: pb.payload, at: { e: a.mga[0], n: a.mga[1] }, yaw_deg: this.yaw, status: this.newStatus, ...(pb.glb ? { glb_name: pb.glb.name } : {}) }, 'Place building');
+        const r = this.store.run('place_building', { payload: pb.payload, import_id: pb.payload.import_id, at: { e: a.mga[0], n: a.mga[1] }, yaw_deg: this.yaw, status: this.newStatus, ...(pb.glb ? { glb_name: pb.glb.name } : {}) }, 'Place building');
         const id = r.id as string;
         if (pb.glb) { this.scene.setGlb(id, pb.glb.object); this.pending = { ...pb, glb: null }; }          // the scene owns the GLB now
         this.setTool('select'); this.selected = id; this.scene.setSelected(id); this.syncHandles(); this.message = '';
@@ -517,7 +753,7 @@ export class DesignController {
   }
   private addVertex(info: PointerInfo) {
     const a = this.aim(info, null); if (!a || !this.type) return;
-    const last = this.verts[this.verts.length - 1], p: Pos = [a.mga[0], a.mga[1]];
+    const last = this.verts[this.verts.length - 1], p: Pos = this.drawPoint(a.mga);
     const closed = this.drawKind() === 'polygon';
     if (closed && this.verts.length >= 3 && samePt(p, this.verts[0])) { this.finishDrawing(); return; }       // click on the first point closes the area
     if (last && dist2(last, p) < MIN_SPACING) return;                                                           // the second click of a double click
@@ -593,7 +829,7 @@ export class DesignController {
   yawDeg() { return normDeg(this.yaw); }
 
   dispose() {
-    this.cancelAll(); this.off.forEach((f) => f()); this.off = [];
+    this.cancelAll(); this.live.dispose(); this.off.forEach((f) => f()); this.off = [];
     this.h.built.root.remove(this.scene.group, this.handles, this.marker, this.selRing); this.scene.dispose();
     this.marker.geometry.dispose(); (this.marker.material as THREE.Material).dispose(); this.selRing.geometry.dispose(); (this.selRing.material as THREE.Material).dispose();
   }

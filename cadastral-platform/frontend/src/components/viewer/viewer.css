@@ -121,3 +121,8 @@
 .v3d .dz-obj{cursor:pointer}
 .v3d .dz-obj.on td{background:var(--chip)}
 .v3d .dz-obj .chip{font-size:11px}
+/* stage 6: driveway long section and checks */
+.v3d .ls-svg{margin:8px 0;background:var(--bg);border:1px solid var(--line);border-radius:6px;font-family:var(--mono)}
+.v3d .ck-table{margin-top:8px;table-layout:fixed}
+.v3d .ck-table th,.v3d .ck-table td{vertical-align:top;overflow-wrap:anywhere}
+.v3d .ck-table tr.ck-fail td{background:color-mix(in srgb,var(--bad) 12%,transparent)}

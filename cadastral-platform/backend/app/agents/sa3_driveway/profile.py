@@ -44,38 +44,48 @@ def vertical_curve_length(delta_pct: float, kind: str) -> float:
 
 
 def _interp(st: list[tuple[float, float, str]]) -> Callable[[float], float]:
+    """Piecewise linear level along the chainage, extended past both ends at the end-segment grades. Accepts a float or an array."""
     s = np.array([p[0] for p in st]); z = np.array([p[1] for p in st])
     g0 = (z[1] - z[0]) / (s[1] - s[0]); g1 = (z[-1] - z[-2]) / (s[-1] - s[-2])
 
-    def f(x: float) -> float:
-        if x < s[0]:
-            return float(z[0] + g0 * (x - s[0]))
-        if x > s[-1]:
-            return float(z[-1] + g1 * (x - s[-1]))
-        return float(np.interp(x, s, z))
+    def f(x):
+        xa = np.asarray(x, float)
+        out = np.where(xa < s[0], z[0] + g0 * (xa - s[0]), np.where(xa > s[-1], z[-1] + g1 * (xa - s[-1]), np.interp(xa, s, z)))
+        return float(out) if np.ndim(x) == 0 else out
     return f
 
 
-def scraping_margin(z: Callable[[float], float], s_lo: float, s_hi: float, tpl=B85_TEMPLATE, step: float = 0.05) -> float:
+def scraping_margin(z: Callable[[float], float], s_lo: float, s_hi: float, tpl=B85_TEMPLATE, step: float = 0.05, max_span_m: float | None = None) -> float:
     """Min vertical gap (m) between the vehicle underbody line and ground, minus nothing: >=0 means no scrape.
     Axles ride on the ground; underbody = axle chord + clearance (mid) / overhang clearance outside the axles.
-    Runs the vehicle forward and (mirrored) in reverse."""
+    Runs the vehicle forward and (mirrored) in reverse.
+
+    Vectorised over the rear axle position and the body points (same positions, same arithmetic as the scalar loops it replaced, so the
+    result is identical); ``z`` must accept an array. The live driveway tool calls this on every drag, so it has to be fast.
+
+    ``max_span_m`` (optional) refuses a span longer than that with ValueError BEFORE any array is built: the work and the memory grow with the span
+    (``step`` positions times ~50 body points), so a caller that takes the span from user input must give it."""
+    if max_span_m is not None and not (s_hi - s_lo) <= max_span_m:
+        raise ValueError(f"profile span {s_hi - s_lo:g} m is longer than the {max_span_m:g} m limit")
     wb, fo, ro = tpl["wheelbase"], tpl["front_oh"], tpl["rear_oh"]
     worst = math.inf
     for flip in (False, True):
         zz = (lambda x: z(-x)) if flip else z
         lo, hi = (-s_hi, -s_lo) if flip else (s_lo, s_hi)
-        for sr in np.arange(lo - fo, hi + ro, step):          # rear axle position
-            zr, zf = zz(sr), zz(sr + wb)
-            for x in np.arange(sr - ro, sr + wb + fo + 1e-9, 0.1):
-                c = tpl["clear_mid"] if sr <= x <= sr + wb else tpl["clear_oh"]
-                body = zr + (zf - zr) * (x - sr) / wb + c
-                worst = min(worst, body - zz(x))
+        sr = np.arange(lo - fo, hi + ro, step)                                   # rear axle position
+        if not len(sr):
+            continue
+        nx = len(np.arange(sr[0] - ro, sr[0] + wb + fo + 1e-9, 0.1))             # body points per position (the same count for every position)
+        x = (sr - ro)[:, None] + 0.1 * np.arange(nx)[None, :]
+        zr, zf = np.asarray(zz(sr), float)[:, None], np.asarray(zz(sr + wb), float)[:, None]
+        c = np.where((sr[:, None] <= x) & (x <= sr[:, None] + wb), tpl["clear_mid"], tpl["clear_oh"])
+        body = zr + (zf - zr) * (x - sr[:, None]) / wb + c
+        worst = min(worst, float(np.min(body - np.asarray(zz(x), float))))
     return float(worst)
 
 
 def check_profile(stations: list[tuple[float, float, str]], std: CouncilDrivewayStandard = DEFAULT_STANDARD,
-                  transition_len_m: float | None = None, strict: bool = False) -> list[CheckItem]:
+                  transition_len_m: float | None = None, strict: bool = False, max_span_m: float | None = None) -> list[CheckItem]:
     items: list[CheckItem] = []
     if len(stations) < 2:
         return [CheckItem(name="profile", passed=None, note="insufficient levels supplied; profile not checked")]
@@ -100,7 +110,7 @@ def check_profile(stations: list[tuple[float, float, str]], std: CouncilDriveway
             ok = need <= transition_len_m + 1e-9
             note += f"; provided {transition_len_m:.1f} m"
         items.append(CheckItem(name=f"change_of_grade@{st[i][2]}", passed=ok, value=round(abs(d), 2), limit=lim, unit="%", note=note))
-    margin = scraping_margin(_interp(st), st[0][0], st[-1][0])
+    margin = scraping_margin(_interp(st), st[0][0], st[-1][0], max_span_m=max_span_m)
     items.append(CheckItem(name="b85_scraping_clearance", passed=margin >= 0, value=round(margin, 3), limit=0.0, unit="m",
                            note="B85 template, forward and reverse; min underbody-to-ground gap (negative = scrape). Not certification."))
     return items

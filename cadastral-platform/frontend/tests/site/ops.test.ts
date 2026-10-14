@@ -22,7 +22,7 @@ function seeded() {
   return d;
 }
 
-const STAGE5 = ['building', 'pool', 'footpath', 'furniture'];
+const STAGE5 = ['building', 'pool', 'footpath', 'furniture', 'driveway'];       // later stages: their own tests below
 describe('add_object', () => {
   it('adds each of the eleven stage 4 types with the right geometry and no invented parameters', () => {
     for (const type of OBJECT_TYPES.filter((t) => !STAGE5.includes(t))) {
@@ -189,8 +189,8 @@ describe('runBatch', () => {
 describe('toolSchemas', () => {
   const tools = toolSchemas();
   it('has one Anthropic tool definition per registry operation', () => {
-    expect(tools.map((t) => t.name).sort()).toEqual(['accept_proposal', 'add_object', 'delete_object', 'duplicate_object', 'edit_vertices', 'move_object', 'place_building', 'reject_proposal', 'remove_param', 'rotate_object', 'set_catalogue_item', 'set_param', 'set_status'].sort());
-    expect(tools.map((t) => t.name)).toEqual(Object.keys(OPS));
+    expect(tools.map((t) => t.name).sort()).toEqual(['accept_proposal', 'add_object', 'delete_object', 'duplicate_object', 'edit_vertices', 'link_driveway_end', 'move_object', 'reject_proposal', 'remove_param', 'rotate_object', 'set_catalogue_item', 'set_driveway_crossover', 'set_param', 'set_status'].sort());
+    expect(tools.map((t) => t.name)).toEqual(Object.keys(OPS).filter((k) => k !== 'place_building'));       // place_building is not offered to the AI
   });
   it('each tool has name, description and an object input_schema whose required keys are properties', () => {
     for (const t of tools) {

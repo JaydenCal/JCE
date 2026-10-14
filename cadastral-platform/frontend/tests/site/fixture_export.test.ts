@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SiteDesignStore } from '@/lib/site/store';
 import { emptyDesign, OBJECT_TYPES } from '@/lib/site/types';
-import { at, seqCtx } from './helpers';
+import { at, IMPORT_ID, seqCtx } from './helpers';
 
 const GOLDEN = join(__dirname, '../../../backend/tests/fixtures/site_design_v1_frontend.json');
 const PAYLOAD = join(__dirname, '../../../backend/tests/fixtures/building_import_planstudio.json');
@@ -48,7 +48,7 @@ function build() {
   s.run('remove_param', { id: 'tree_1', key: 'protected' });
   // stage 5: a building from the importer payload (SYNTHETIC TEST FIXTURE), moved and turned; a pool, two footpaths and an item of furniture
   const payload = JSON.parse(readFileSync(PAYLOAD, 'utf8'));
-  const placed = s.run('place_building', { payload, at: at(15, 14), yaw_deg: 20, glb_name: 'house.glb' });
+  const placed = s.run('place_building', { import_id: IMPORT_ID, payload, at: at(15, 14), yaw_deg: 20, glb_name: 'house.glb' });
   s.run('set_param', { id: placed.id, key: 'ffl_rl', value: 101.35 });
   s.run('move_object', { id: placed.id, dx: 0.5, dy: 0.25 });
   s.run('rotate_object', { id: placed.id, angle_deg: 10 });
@@ -58,13 +58,22 @@ function build() {
   const f = s.run('add_object', { type: 'furniture', points: [at(22, 10)], yaw_deg: 15 });
   s.run('set_catalogue_item', { id: f.id, item_id: 'plan_studio:bbq', source_ref: 'PLAN STUDIO CATALOGUE', width_m: 1.3, depth_m: 0.56, height_m: 1.15 });
   s.run('set_param', { id: 'landscape_area_9', key: 'surface_kind', value: 'garden_bed' });
+  // stage 6: a driveway from the kerb to the building (width, surface, a user batter), its crossover moved, its end linked to the building; a grading area with a target
+  const dv = s.run('add_object', { type: 'driveway', points: [at(6, 0), at(6, 8), at(14, 12)] });
+  s.run('set_param', { id: dv.id, key: 'width_m', value: 3.2 });
+  s.run('set_param', { id: dv.id, key: 'surface_kind', value: 'concrete' });
+  s.run('set_param', { id: dv.id, key: 'batter_fill_h_per_v', value: 3 });
+  s.run('set_driveway_crossover', { id: dv.id, point: at(7, 0), translate: false });
+  s.run('link_driveway_end', { id: dv.id, building_id: placed.id });
+  s.run('set_param', { id: 'grading_area_10', key: 'target_level_m', value: 100.5 });
+  s.run('set_param', { id: 'grading_area_10', key: 'batter_cut_h_per_v', value: 2 });
   return s.doc;
 }
 
 describe('frontend output vs the Pydantic model (golden file)', () => {
-  it('covers all fifteen object types, a vertex z, every basis and an issue', () => {
+  it('covers all sixteen object types, a vertex z, every basis and an issue', () => {
     const d = build();
-    expect(OBJECT_TYPES).toHaveLength(15);
+    expect(OBJECT_TYPES).toHaveLength(16);
     expect(new Set(d.objects.map((o) => o.type))).toEqual(new Set(OBJECT_TYPES));
     expect(d.objects.some((o) => o.type === 'footpath' && o.geometry.kind === 'polygon')).toBe(true);
     expect(d.objects.some((o) => o.geometry.kind === 'polyline' && o.geometry.pts.some((p) => p.length === 3))).toBe(true);

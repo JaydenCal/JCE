@@ -5,12 +5,13 @@ import type { DesignController, DesignState } from '@/lib/site/designController'
 import type { ImportEndpoint, LotInfo } from '@/lib/site/buildingImport';
 import { READ_ONLY_BUILDING_PARAMS } from '@/lib/site/buildings';
 import { BuildingImportBox, BuildingInfo, FeatureTools } from './BuildingTools';
+import { DrivewaySection, GradingSection } from './EngineSections';
 import { FFL_NOT_SET, HEIGHT_NOT_SET, POOL_BARRIER_LABEL, dimOf, levelOf } from '@/lib/site/types';
 import { OpError } from '@/lib/site/ops';
 import { LOADING_NOTE, type AutosaveState, type LoadState } from '@/lib/site/persist';
 import { worstSeverity } from '@/lib/site/checks';
 import {
-  BASIS_LABEL, DIMENSIONS_NOT_SET, OBJECT_KINDS, ORIGIN_LABEL, PARAM_ENUMS, STATUSES, STATUS_LABEL, dimKeys, verticesOf,
+  BASIS_LABEL, DIMENSIONS_NOT_SET, OBJECT_KINDS, ORIGIN_LABEL, PANEL_KEYS, PARAM_ENUMS, STATUSES, STATUS_LABEL, TARGET_NOT_SET, WIDTH_NOT_SET, dimKeys, dimensionsSet, verticesOf,
   type ObjectType, type SiteDesign, type SiteObject, type Status,
 } from '@/lib/site/types';
 
@@ -32,7 +33,7 @@ export interface DesignPanelProps {
 }
 const GROUPS: { title: string; types: ObjectType[] }[] = [
   { title: 'Points', types: ['tree', 'rwt', 'pit', 'osd'] },
-  { title: 'Lines', types: ['retaining_wall', 'infiltration_trench', 'stormwater_pipe', 'service_trace'] },
+  { title: 'Lines', types: ['retaining_wall', 'infiltration_trench', 'stormwater_pipe', 'service_trace', 'driveway'] },
   { title: 'Areas', types: ['landscape_area', 'grading_area', 'osd_basin'] },
 ];
 const GRIDS = [0, 0.1, 0.25, 0.5, 1, 2, 5];
@@ -48,7 +49,7 @@ function Issues({ o }: { o: SiteObject }) {
 function Props({ o, ctl, locked }: { o: SiteObject; ctl: DesignController; locked: boolean }) {
   const [err, setErr] = useState(''), [k, setK] = useState(''), [v, setV] = useState('');
   const run = (name: string, args: Record<string, unknown>, label?: string) => { try { ctl.store.run(name, { id: o.id, ...args }, label); setErr(''); } catch (e) { setErr(e instanceof OpError ? e.message : String(e)); } };
-  const keys = [...new Set([...dimKeys(o), ...(o.type === 'building' ? ['building_use', 'ffl_rl', 'height_m'] : []), ...Object.keys(o.params)])];
+  const keys = [...new Set([...dimKeys(o), ...(PANEL_KEYS[o.type] ?? []), ...(o.type === 'building' ? ['building_use', 'ffl_rl', 'height_m'] : []), ...Object.keys(o.params)])];
   const parse = (s: string): unknown => (s.trim() === '' ? null : Number.isFinite(Number(s)) && s.trim() !== '' ? Number(s) : s.trim());
   const set = (key: string, s: string) => run('set_param', { key, value: parse(s) }, 'Set parameter');
   return (
@@ -178,6 +179,7 @@ export function DesignPanel({ ds, doc, ctl, save, onResolve, gate, onRetryLoad, 
         <div className="note">{ds.hint}</div>
         <div className="note">Snaps to boundary and object vertices, then edges, then the grid. Hold Alt to turn snapping off.{ds.snapLabel ? ` ${ds.snapLabel}` : ''}</div>
         {ds.message && <div className="note" style={{ color: 'var(--bad)' }} role="alert">{ds.message}</div>}
+        {(ds.dragInfo || ds.hoverText) && <div className="note" role="status" aria-live="polite" style={ds.hoverText && !ds.dragInfo ? { color: 'var(--bad)' } : undefined}>{ds.dragInfo || ds.hoverText}</div>}
         {r && (
           <div style={{ marginTop: 8 }} aria-live="polite">
             <div className="readout">
@@ -199,7 +201,7 @@ export function DesignPanel({ ds, doc, ctl, save, onResolve, gate, onRetryLoad, 
               const w = worstSeverity(o.issues);
               return (
                 <tr key={o.id} className={'dz-obj' + (o.id === ds.selectedId ? ' on' : '')} onClick={() => ctl.select(o.id)}>
-                  <td><button className="chip" aria-pressed={o.id === ds.selectedId} onClick={(e) => { e.stopPropagation(); ctl.select(o.id); }}>{OBJECT_KINDS[o.type].label}</button>{dimsMissing(o) ? <div className="note">{DIMENSIONS_NOT_SET}</div> : null}{o.type === 'building' ? <>{levelOf(o, 'ffl_rl') === null && <div className="note">{FFL_NOT_SET}</div>}{dimOf(o, 'height_m') === null && <div className="note">{HEIGHT_NOT_SET}</div>}</> : null}</td>
+                  <td><button className="chip" aria-pressed={o.id === ds.selectedId} onClick={(e) => { e.stopPropagation(); ctl.select(o.id); }}>{OBJECT_KINDS[o.type].label}</button>{!dimensionsSet(o) ? <div className="note">{o.type === 'driveway' ? WIDTH_NOT_SET : o.type === 'grading_area' ? TARGET_NOT_SET : DIMENSIONS_NOT_SET}</div> : null}{o.type === 'building' ? <>{levelOf(o, 'ffl_rl') === null && <div className="note">{FFL_NOT_SET}</div>}{dimOf(o, 'height_m') === null && <div className="note">{HEIGHT_NOT_SET}</div>}</> : null}</td>
                   <td>{STATUS_LABEL[o.status]}</td>
                   <td>{ORIGIN_LABEL[o.origin]}{o.accepted ? <div className="note">{o.accepted.toUpperCase()}</div> : null}</td>
                   <td>{o.issues.length ? <span className={'badge sev-' + w}>{o.issues.length}</span> : <span className="note">NONE</span>}</td>
@@ -210,7 +212,8 @@ export function DesignPanel({ ds, doc, ctl, save, onResolve, gate, onRetryLoad, 
         )}
       </section>
       {sel && <section><h2>Properties</h2><Props o={sel} ctl={ctl} key={sel.id} locked={locked} /></section>}
+      {sel && ds.driveway && ds.driveway.id === sel.id && <DrivewaySection p={ds.driveway} o={sel} doc={doc} ctl={ctl} locked={locked} key={'dv' + sel.id} />}
+      {sel && ds.grading && ds.grading.id === sel.id && <GradingSection p={ds.grading} o={sel} locked={locked} key={'gr' + sel.id} />}
     </>
   );
 }
-const dimsMissing = (o: SiteObject) => dimKeys(o).some((k) => { const p = o.params[k]; return !(p && p.basis !== 'unresolved' && typeof p.value === 'number' && p.value > 0); });

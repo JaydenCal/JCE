@@ -5,6 +5,10 @@ One document per project holds every object the user (or, later, the AI) places 
 by the user, taken from an LGA rule (with its reference), a stamped platform default, or UNRESOLVED (value ``None``).
 Type-specific parameters are placeholders until stage 7; no default dimension is ever invented here.
 
+Stage 6 adds the ``driveway`` object type (a centreline polyline whose first point is the crossover on the assumed kerb line) and the grading parameters
+of ``grading_area`` (see PARAM_ENUMS and PARAM_NUMBERS). Their dimensions are never defaulted: a width, an end level or a batter slope that is not
+entered is UNRESOLVED / NOT SET, and the engines (``driveway_engine``, ``grading_engine``) say so instead of assuming a value.
+
 Stage 5 adds four object types: ``building`` (a polygon footprint plus a read only ``building`` block with the levels, roof outline, exit
 points and the import frame; it is imported or entered as a footprint, never designed), ``pool`` (polygon), ``footpath`` (a polyline with a
 width, or a polygon) and ``furniture`` (point). Their text parameters are limited to the lists below and their numbers must be numbers.
@@ -23,7 +27,7 @@ SCHEMA = "site_design.v1"
 
 ObjectType = Literal["tree", "rwt", "pit", "osd", "retaining_wall", "infiltration_trench", "stormwater_pipe",
                      "service_trace", "landscape_area", "grading_area", "osd_basin",
-                     "building", "pool", "footpath", "furniture"]
+                     "building", "pool", "footpath", "furniture", "driveway"]
 GeometryKind = Literal["point", "polyline", "polygon"]
 Status = Literal["existing", "proposed", "to_be_removed"]
 Origin = Literal["user", "ai_proposal", "imported", "dbyd"]
@@ -36,7 +40,7 @@ GEOMETRY_OF: dict[str, GeometryKind] = {
     "tree": "point", "rwt": "point", "pit": "point", "osd": "point",
     "retaining_wall": "polyline", "infiltration_trench": "polyline", "stormwater_pipe": "polyline", "service_trace": "polyline",
     "landscape_area": "polygon", "grading_area": "polygon", "osd_basin": "polygon",
-    "building": "polygon", "pool": "polygon", "footpath": "polyline", "furniture": "point",
+    "building": "polygon", "pool": "polygon", "footpath": "polyline", "furniture": "point", "driveway": "polyline",
 }
 #: a second geometry kind an object type may also use (a footpath is a line with a width param, or an area)
 ALT_GEOMETRY_OF: dict[str, GeometryKind] = {"footpath": "polygon"}
@@ -47,15 +51,20 @@ BUILDING_SOURCES = ("plan_studio", "pdf", "dxf", "footprint_entry")
 ROOF_AREA_BASES = ("SOURCE VALUE", "APPROXIMATE (PLAN STUDIO RASTER)", "NOT SET")
 SURFACE_KINDS = ("turf", "garden_bed", "mulch", "gravel", "permeable_paving", "impervious_paving")
 FOOTPATH_SURFACES = ("concrete", "pavers", "gravel", "permeable_pavers")
+DRIVEWAY_SURFACES = ("concrete", "asphalt", "pavers", "gravel", "permeable_pavers")
 PARAM_ENUMS: dict[tuple[str, str], tuple[str, ...]] = {
     ("building", "building_use"): BUILDING_USES, ("building", "source"): BUILDING_SOURCES,
     ("building", "roof_area_basis"): ROOF_AREA_BASES,
     ("landscape_area", "surface_kind"): SURFACE_KINDS, ("footpath", "surface_kind"): FOOTPATH_SURFACES,
+    ("driveway", "surface_kind"): DRIVEWAY_SURFACES,
 }
 #: parameters that must be numbers when they carry a value
 PARAM_NUMBERS: dict[str, tuple[str, ...]] = {
     "building": ("ffl_rl", "height_m", "roof_plan_area_m2"),
     "pool": ("depth_m", "coping_width_m"), "footpath": ("width_m",), "furniture": ("width_m", "depth_m", "height_m"),
+    # stage 6. Batter slopes are H per V (a 1 in 3 batter is 3). A grade is a percentage; a fall direction is a grid bearing in degrees.
+    "driveway": ("width_m", "end_level_rl", "crossover_chainage_m", "batter_cut_h_per_v", "batter_fill_h_per_v"),
+    "grading_area": ("target_level_m", "target_grade_pct", "fall_direction_deg", "pivot_level_m", "batter_cut_h_per_v", "batter_fill_h_per_v"),
 }
 
 # Sanity limits that protect the server from abusive payloads. They are not engineering values.
@@ -215,6 +224,7 @@ class Building(_Strict):
     exits: BuildingExits = Field(default_factory=BuildingExits)
     frame: BuildingFrame
     glb_name: str | None = Field(default=None, max_length=200)
+    import_id: str | None = Field(default=None, pattern=r"^[0-9a-f]{32}$")     # the stored import this building came from (checked on every PUT)
     notes: list[Annotated[str, Field(max_length=400)]] = Field(default_factory=list, max_length=30)
 
     @field_validator("roof_outline")

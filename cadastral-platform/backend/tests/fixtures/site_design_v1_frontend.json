@@ -272,7 +272,16 @@
           ]
         ]
       },
-      "params": {},
+      "params": {
+        "target_level_m": {
+          "value": 100.5,
+          "basis": "user"
+        },
+        "batter_cut_h_per_v": {
+          "value": 2,
+          "basis": "user"
+        }
+      },
       "issues": []
     },
     {
@@ -506,12 +515,14 @@
           "north_deg": 30
         },
         "glb_name": "house.glb",
+        "import_id": "abababababababababababababababab",
         "notes": [
           "Rooms under the roof, dilated by the eave overhang, on a 100 mm raster. Approximate, not a measured roof area.",
           "Roof plan area is Plan Studio's approximate raster value (100 mm cells, rooms under the roof plus the eave overhang). It is not a measured area.",
           "Overall height is NOT SET: the file gives the ceiling height of the top level (2.55 m above the ground floor), not the roof ridge. Enter it, or take it from the Plan Studio GLB.",
           "Finished floor level (ffl_rl) is NOT SET: Plan Studio levels are relative to the ground floor. Enter the absolute RL.",
-          "1 rainwater tank(s) in the file are imported as rwt objects with their capacity. Inlet, overflow and outlet levels are NOT SET."
+          "1 rainwater tank(s) in the file are imported as rwt objects with their capacity. Inlet, overflow and outlet levels are NOT SET.",
+          "1 tank(s) have a non standard capacity: their diameter and height are PLAN STUDIO ESTIMATES (basis PLAN STUDIO ESTIMATE), not manufacturer dimensions."
         ]
       }
     },
@@ -538,13 +549,13 @@
         },
         "diameter_m": {
           "value": 2.3,
-          "basis": "user",
-          "ref": "IMPORTED FROM PLAN STUDIO TANK: synthetic.planstudio.json"
+          "basis": "platform_default",
+          "ref": "PLAN STUDIO ESTIMATE: size for a non standard capacity, not a manufacturer dimension (synthetic.planstudio.json)"
         },
         "height_m": {
           "value": 1.9,
-          "basis": "user",
-          "ref": "IMPORTED FROM PLAN STUDIO TANK: synthetic.planstudio.json"
+          "basis": "platform_default",
+          "ref": "PLAN STUDIO ESTIMATE: size for a non standard capacity, not a manufacturer dimension (synthetic.planstudio.json)"
         }
       },
       "issues": []
@@ -696,6 +707,58 @@
           "value": 1.15,
           "basis": "platform_default",
           "ref": "PLAN STUDIO CATALOGUE: plan_studio:bbq"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "driveway_19",
+      "type": "driveway",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496007,
+            6650000
+          ],
+          [
+            496006,
+            6650008
+          ],
+          [
+            496014,
+            6650012
+          ]
+        ]
+      },
+      "params": {
+        "width_m": {
+          "value": 3.2,
+          "basis": "user"
+        },
+        "end_level_rl": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "surface_kind": {
+          "value": "concrete",
+          "basis": "user"
+        },
+        "batter_cut_h_per_v": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "batter_fill_h_per_v": {
+          "value": 3,
+          "basis": "user"
+        },
+        "end_building_id": {
+          "value": "building_13",
+          "basis": "user",
+          "ref": "END SNAPPED TO THE BUILDING; END LEVEL IS ITS FFL"
         }
       },
       "issues": []

@@ -11,9 +11,10 @@ import { HeightField } from '@/lib/site/terrain';
 import { parseImportPayload } from '@/lib/site/buildings';
 import { emptyDesign, type Pos, type SiteObject } from '@/lib/site/types';
 import type { Built } from '@/lib/viewer/sceneBuilder';
-import { seqCtx } from './helpers';
+import { IMPORT_ID, seqCtx } from './helpers';
 
-const PAYLOAD = parseImportPayload(JSON.parse(readFileSync(join(__dirname, '../../../backend/tests/fixtures/building_import_planstudio.json'), 'utf8')));
+const RAW = JSON.parse(readFileSync(join(__dirname, '../../../backend/tests/fixtures/building_import_planstudio.json'), 'utf8'));
+const PAYLOAD = parseImportPayload({ ...RAW, import_id: IMPORT_ID });
 const O: [number, number] = [496000, 6650000];
 const zOf = (x: number, y: number) => 100 + 0.1 * x + 0.05 * y;
 function terrainMesh() {
@@ -42,8 +43,8 @@ describe('cut and fill colour (the scene bundle convention)', () => {
 describe('GLB placement matrix', () => {
   it('maps Plan Studio GLB space (Y up, X = plan x, Z = plan y down the sheet) to the scene at the floor level', () => {
     const m = glbMatrix([O[0] + 5, O[1] + 7], 0, 0, 100, O);
-    const p = new THREE.Vector3(2, 3, 4).applyMatrix4(m);         // 2 m east of the origin, 3 m above the floor, 4 m down the sheet (south)
-    expect(p.x).toBeCloseTo(7, 9); expect(p.y).toBeCloseTo(3, 9); expect(p.z).toBeCloseTo(103, 9);
+    const p = new THREE.Vector3(2, 3, 4).applyMatrix4(m);         // GLB point: plan x 2 m, 3 m UP (Y), plan y 4 m (Z, down the sheet). North is up the screen (angle 0), so the plan y runs SOUTH:
+    expect(p.x).toBeCloseTo(7, 9); expect(p.y).toBeCloseTo(3, 9); expect(p.z).toBeCloseTo(103, 9);        // x = 5 + 2 east; y (northing) = 7 - 4 = 3, i.e. 4 m south of the origin; z = floor 100 + 3 m up
     expect(m.determinant()).toBeCloseTo(1, 9);                    // a proper rotation: no mirroring
     const n = glbMatrix([O[0], O[1]], 0, 90, 0, O), q = new THREE.Vector3(1, 0, 0).applyMatrix4(n);       // north arrow turned 90 degrees clockwise: plan x points south
     expect(q.x).toBeCloseTo(0, 9); expect(q.y).toBeCloseTo(1, 9);
@@ -60,7 +61,7 @@ describe('SiteScene: buildings', () => {
     const s = new SiteDesignStore(emptyDesign('p'), seqCtx());
     const sc = new SiteScene({ origin: O, terrain: { available: true, sample: (e, n) => sample(e - O[0], n - O[1]) }, makeLabel: label });
     s.on('change', (e) => sc.apply(e));
-    const r = s.run('place_building', { payload: PAYLOAD, at: { e: O[0] + 40, n: O[1] + 40 } });
+    const r = s.run('place_building', { import_id: IMPORT_ID, payload: PAYLOAD, at: { e: O[0] + 40, n: O[1] + 40 } });
     return { s, sc, id: r.id as string };
   }
   it('FFL NOT SET and HEIGHT NOT SET: only a draped outline and fill, no block', () => {
@@ -107,15 +108,36 @@ describe('SiteScene: buildings', () => {
     s.run('set_param', { id, key: 'ffl_rl', value: 108 }); s.run('set_param', { id, key: 'height_m', value: 5 });
     const placed = sc.groupOf(id)!.children.find((c) => c.userData.glb)!;
     expect(placed).toBeTruthy(); expect(placed.matrixAutoUpdate).toBe(false);
-    const o = s.doc.objects[0];
-    const expected = glbMatrix(o.building!.frame.origin, o.building!.frame.yaw_deg, o.building!.frame.north_deg ?? 0, 108, O);
-    expect(placed.matrix.equals(expected)).toBe(true);
-    expect(new THREE.Vector3(0, 0, 0).applyMatrix4(placed.matrix).z).toBeCloseTo(108, 9);
+    expect(new THREE.Vector3(0, 0, 0).applyMatrix4(placed.matrix).z).toBeCloseTo(108, 9);                        // GLB height 0 is the datum level here (elevation 0): its slab is at the FFL
     expect(meshes(sc.groupOf(id)!).some((m) => m.material instanceof THREE.MeshStandardMaterial && !m.userData.shared)).toBe(false);           // no wall block under the GLB
     s.run('move_object', { id, dx: 2, dy: 0 });
     expect(sc.groupOf(id)!.children.some((c) => c.userData.glb)).toBe(true);                       // a move rebuilds with the GLB
     expect(sc.hasGlb(id)).toBe(true);
     sc.setGlb(id, null); expect(sc.hasGlb(id)).toBe(false);
+  });
+  it('a Plan Studio point placed by place_building and the same point in the GLB coincide, with north, yaw and a datum level above the ground floor', () => {
+    const north = 30, yaw = 37, planPt = [6000, 2500], datumEl = 0.6;                                              // mm in Plan Studio\'s frame (y down the sheet); no level at 0
+    const n = (north * Math.PI) / 180;
+    const toLocal = (x: number, y: number): [number, number] => [(x * Math.cos(n) + y * Math.sin(n)) / 1000, (x * Math.sin(n) - y * Math.cos(n)) / 1000];     // the importer\'s mapping, restated
+    const sq = ([[0, 0], [8000, 0], [8000, 5000], [0, 5000]] as [number, number][]).map(([x, y]) => toLocal(x, y));
+    const payload = parseImportPayload({
+      ...RAW, import_id: IMPORT_ID, extras: [], ref: sq[0],
+      building: { levels: [{ name: 'Lower', elevation_m: datumEl, rings: [sq] }], datum_index: 0, exits: { sewer: [toLocal(planPt[0], planPt[1])], water: [], downpipes: [] }, north_deg: north, notes: [], params: {} },
+    });
+    const s = new SiteDesignStore(emptyDesign('p'), seqCtx());
+    const sc = new SiteScene({ origin: O, terrain: { available: true, sample: (e, n2) => sample(e - O[0], n2 - O[1]) }, makeLabel: label });
+    s.on('change', (e) => sc.apply(e));
+    const id = s.run('place_building', { import_id: IMPORT_ID, payload, at: { e: O[0] + 40, n: O[1] + 40 }, yaw_deg: yaw }).id as string;
+    sc.setGlb(id, new THREE.Group());
+    s.run('set_param', { id, key: 'ffl_rl', value: 108 }); s.run('set_param', { id, key: 'height_m', value: 5 });
+    const placed = sc.groupOf(id)!.children.find((c) => c.userData.glb)!;
+    const b = s.doc.objects[0].building!;
+    expect(b.frame.yaw_deg).toBe(yaw); expect(b.frame.north_deg).toBe(north); expect(b.levels[b.datum_index].elevation_m).toBe(datumEl);
+    const exit = b.exits.sewer[0], v = new THREE.Vector3(planPt[0] / 1000, datumEl, planPt[1] / 1000).applyMatrix4(placed.matrix);        // GLB: X = plan x, Y up (the datum slab is at datumEl), Z = plan y
+    expect(v.x).toBeCloseTo(exit[0] - O[0], 6); expect(v.y).toBeCloseTo(exit[1] - O[1], 6);
+    expect(v.z).toBeCloseTo(108, 6);                                                                                 // the GLB datum slab meets the footprint slab at the FFL
+    const ground = new THREE.Vector3(planPt[0] / 1000, 0, planPt[1] / 1000).applyMatrix4(placed.matrix);
+    expect(ground.z).toBeCloseTo(108 - datumEl, 6);                                                                   // the Plan Studio ground floor is below the datum slab
   });
   it('pool, footpath, garden and furniture are drawn with their NOT SET labels', () => {
     const s = new SiteDesignStore(emptyDesign('p'), seqCtx());
@@ -180,6 +202,21 @@ describe('DesignController: placing an imported building', () => {
     expect(r.ctl.store.history().undoLabel).toBe('Place building');
     r.ctl.undo(); expect(r.doc().objects).toHaveLength(0);
   });
+  it('a PDF import with aligned_at is placed there at once, labelled for checking, and can still be moved', () => {
+    const r = rig(), aligned: [number, number] = [O[0] + 40, O[1] + 40];
+    const payload = parseImportPayload({ ...RAW, import_id: IMPORT_ID, extras: [], aligned_at: aligned });
+    r.ctl.beginBuildingPlacement(payload);
+    const o = r.doc().objects.find((x) => x.type === 'building')!;
+    expect(o).toBeTruthy(); expect(o.label).toBe('PLACED BY PDF ALIGNMENT, CHECK');
+    expect(r.last().pendingBuilding).toBeNull(); expect(r.last().tool).toBe('select'); expect(r.last().selectedId).toBe(o.id);
+    const src = RAW.building.levels[0].rings[0] as [number, number][], ring = (o.geometry as { ring: Pos[] }).ring;
+    ring.forEach((q, i) => { expect(q[0]).toBeCloseTo(aligned[0] + src[i][0] - RAW.ref[0], 6); expect(q[1]).toBeCloseTo(aligned[1] + src[i][1] - RAW.ref[1], 6); });
+    expect(o.building!.frame.yaw_deg).toBe(0);                                                                         // SA7 gives the footprint in MGA orientation
+    r.root.updateMatrixWorld(true); r.ctl.select(o.id);
+    expect(r.ctl.pointerDown(r.info(40, 40))).toBe(true);
+    r.ctl.pointerMove(r.info(46, 40, { x: 600, y: 600 })); r.ctl.pointerUp(r.info(46, 40, { x: 600, y: 600 }), true);
+    expect((r.doc().objects[0].geometry as { ring: Pos[] }).ring[0][0] - ring[0][0]).toBeCloseTo(6, 4);               // still movable
+  });
   it('Escape and a locked store cancel the placement', () => {
     const r = rig(); r.ctl.beginBuildingPlacement(PAYLOAD); r.move(20, 20); r.key('Escape');
     expect(r.last().pendingBuilding).toBeNull(); expect(r.last().tool).toBe('select'); expect(ghostLines(r.root)).toHaveLength(0);
@@ -207,7 +244,7 @@ describe('DesignController: placing an imported building', () => {
     expect(got).not.toBeNull(); expect(got!.use).toBe('shed'); expect(got!.ring).toHaveLength(4);
     expect(r.doc().objects).toHaveLength(0);                                                    // nothing is added until the import answers
     expect(r.last().tool).toBe('select');
-    const payload = parseImportPayload({ ...JSON.parse(readFileSync(join(__dirname, '../../../backend/tests/fixtures/building_import_planstudio.json'), 'utf8')), extras: [] });
+    const payload = parseImportPayload({ ...RAW, import_id: IMPORT_ID, extras: [] });
     const id = r.ctl.placeBuildingAt(payload, [O[0] + 25, O[1] + 24]);
     expect(id).not.toBeNull(); expect(r.doc().objects[0].type).toBe('building');
     expect(r.ctl.placeBuildingAt({ ...payload, building: { ...payload.building, levels: [] } } as never, [0, 0])).toBeNull(); expect(r.last().message).not.toBe('');

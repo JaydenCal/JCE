@@ -10,25 +10,64 @@ Location convention (same as the scene bundle): ``<base>/<project_id>/site_desig
   version + 1, stamps ``updated_at`` and the project id, and returns the stored document.
 * Limits (sanity limits, not engineering values): the PUT body is at most ``MAX_BODY_BYTES`` (5 MB; 413 above it, checked on the
   declared length and again while streaming) and a document holds at most ``MAX_POSITIONS`` positions in total (200000, 422 above it).
+* Buildings: every building in a PUT must be a stored import (``building.import_id``) and match it, see ``app.design.import_store``;
+  otherwise 422 with the code BUILDING_NOT_FROM_IMPORT or BUILDING_IMPORT_MISMATCH. Only placement, use, floor level and height may differ.
+* The import route stores each payload it returns under ``<project dir>/imports/<import_id>.json`` (at most 200 per project; the oldest
+  imports that no saved building uses are removed first) and caps the upload while it streams (413 before the body is spooled).
 * Nothing is generated or invented here. The document is validated with the Pydantic model before it is written.
+
+Stage 6 adds two engine routes. Both are pure computations on the request body and the project's cached terrain (nothing is stored):
+
+* POST /projects/{id}/site-design/driveway-profile  body ``{"driveway": <site object>, "detail": "profile" | "full", "building": <site object> | null}``.
+  A driveway whose end is linked to a building (``end_building_id``) takes its end level from that building's FFL, resolved HERE from the saved site
+  design (or from ``building``, accepted only when the saved design holds that building); the object's own ``end_level_rl`` is ignored then. Returns the long
+  section (chainage, existing level, design level, grade, transition flags), the checks against the resolved requirements (each with its
+  requirement key and basis or UNRESOLVED), the failing chainages, and with ``detail`` "full" the batters, cut and fill polygons and volumes.
+* POST /projects/{id}/site-design/grading  body ``{"grading_area": <site object>}``. Returns the design surface patch, the batters and the
+  INDICATIVE cut and fill volumes with the terrain status.
+
+LIMITS: a request over the caps of ``app.design.engine_limits`` (geometry outside the terrain bounds plus 20 m, a driveway over 300 m or 200 vertices, a
+grading area over 20000 m2 or 500 vertices, a cut and fill grid over the cell cap) is refused with 422 before any work is done.
+
+CONCURRENCY: the two routes are heavy (numpy, shapely, scipy), so they run on a small dedicated thread pool (``ENGINE_THREADS`` threads in all, so a burst
+cannot starve the rest of the API) and at most ``ENGINE_PER_PROJECT`` requests of one project compute at the same time; the others wait their turn.
+
+TERRAIN: the EXISTING ground of the project's scene bundle (``scene_bundle.json``, parts of class existing and context; see
+``app.design.terrain_source``), parsed once per bundle file and cached. 404 NO_BUNDLE when the project has no bundle, 409
+TERRAIN_NOT_AVAILABLE when the bundle has no existing ground. REQUIREMENTS: the LGA and jurisdiction of the project's primary lot, through
+``app.design.site_rules`` (the dependency ``site_rules_dep``, overridable in tests).
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import threading
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, Response, UploadFile
+from fastapi.routing import APIRoute
 from fastapi.responses import JSONResponse
 from psycopg import Connection
 from pydantic import ValidationError
 
 from app.api.deps import ApiError, get_conn, require_project, require_terms
+from pydantic import BaseModel, ConfigDict
+from typing import Literal
+
 from app.design import building_import as bi
-from app.design.site_design import SiteDesign, empty_design
+from app.design import import_store as istore
+from app.design import engine_limits as EL
+from app.design.driveway_engine import driveway_profile
+from app.design.driveway_link import link_id
+from app.design.grading_engine import grading
+from app.design.site_design import SiteDesign, SiteObject, empty_design
+from app.design.site_rules import SiteRules, project_rules
+from app.design.terrain_source import TerrainUnavailable, load_terrain
 
 router = APIRouter()
 
@@ -92,6 +131,10 @@ def put_site_design(project_id: UUID, request: Request, _user: UUID = Depends(si
         raise HTTPException(status_code=422, detail=e.errors(include_url=False, include_context=False, include_input=False)) from None
     folder = site_design_base(request) / str(project_id)
     path = folder / SITE_DESIGN_FILE
+    try:
+        istore.check_design(body, folder)
+    except istore.ImportMismatch as e:
+        raise ApiError(422, e.code, e.message) from None
     with _LOCK:
         current = _read(path, project_id)
         if body.version != current.version:
@@ -104,8 +147,49 @@ def put_site_design(project_id: UUID, request: Request, _user: UUID = Depends(si
         tmp = path.with_suffix(".json.tmp")
         tmp.write_text(json.dumps(saved.dump(), separators=(",", ":")), encoding="utf-8")
         os.replace(tmp, path)
+        istore.prune(folder, istore.used_import_ids(saved))
     return _json(saved)
 
+
+class _TooLarge(HTTPException):
+    pass
+
+
+class CappedUploadRoute(APIRoute):
+    """Refuses an upload over the cap WHILE IT STREAMS: the declared length is checked first, and a chunked body (no length) is cut off with 413
+    as soon as the bytes received pass the cap, before the multipart parser has spooled the rest to disk."""
+
+    def get_route_handler(self):
+        original = super().get_route_handler()
+
+        async def handler(request: Request) -> Response:
+            cap = MAX_IMPORT_BYTES + 64 * 1024                      # the file cap plus the multipart framing and the small form fields
+            too_big = JSONResponse(status_code=413, content={"code": "FILE_TOO_LARGE", "message": f"the import is larger than the {MAX_IMPORT_BYTES // (1024 * 1024)} MB limit"},
+                                   headers={"Cache-Control": "no-store"})
+            declared = request.headers.get("content-length")
+            if declared is not None and declared.isdigit() and int(declared) > cap:
+                return too_big
+            seen = 0
+            inner = request.receive
+
+            async def receive():
+                nonlocal seen
+                msg = await inner()
+                if msg["type"] == "http.request":
+                    seen += len(msg.get("body", b""))
+                    if seen > cap:
+                        raise _TooLarge(status_code=413, detail="too large")
+                return msg
+
+            try:
+                return await original(Request(request.scope, receive))
+            except _TooLarge:
+                return too_big
+
+        return handler
+
+
+import_router = APIRouter(route_class=CappedUploadRoute)
 
 IMPORT_SOURCES = ("auto", "plan_studio", "pdf", "dxf", "footprint_entry")
 _EXT_SOURCE = {".json": "plan_studio", ".pdf": "pdf", ".dxf": "dxf"}
@@ -125,7 +209,7 @@ def _sniff(name: str, head: bytes) -> str:
     return source
 
 
-@router.post("/projects/{project_id}/site-design/import-building")
+@import_router.post("/projects/{project_id}/site-design/import-building")
 def import_building(
     project_id: UUID,
     request: Request,
@@ -191,4 +275,115 @@ def import_building(
                 raise ApiError(422, "BAD_FOOTPRINT", "Give width_m and depth_m, or a drawn ring.")
     except bi.ImportFailure as e:
         raise ApiError(e.status, e.code, e.message) from None
-    return JSONResponse(content=payload.dump(), headers={"Cache-Control": "no-store"})
+    folder = site_design_base(request) / str(project_id)
+    body = payload.dump()
+    iid = istore.save_import(folder, body)               # a building is later accepted only if it matches this stored payload (PUT)
+    body["import_id"] = iid
+    try:
+        keep = istore.used_import_ids(_read(folder / SITE_DESIGN_FILE, project_id)) | {iid}
+    except HTTPException:
+        keep = {iid}
+    istore.prune(folder, keep)
+    return JSONResponse(content=body, headers={"Cache-Control": "no-store"})
+
+
+router.include_router(import_router)
+
+
+# ---- stage 6: driveway profile and grading engines ----------------------------------------------------------------------------------
+SCENE_BUNDLE_FILE = "scene_bundle.json"
+
+
+def site_rules_dep(project_id: UUID, conn: Connection = Depends(get_conn)) -> SiteRules:
+    """The requirements of the project's LGA (from its primary lot). Overridable in tests."""
+    return project_rules(conn, project_id)
+
+
+class _Body(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class DrivewayProfileRequest(_Body):
+    driveway: SiteObject
+    detail: Literal["profile", "full"] = "full"
+    building: SiteObject | None = None        # the linked building as the browser has it now (current FFL and footprint); checked against the saved design
+
+
+class GradingRequest(_Body):
+    grading_area: SiteObject
+
+
+def _terrain_at(base: Path, project_id: UUID):
+    try:
+        return load_terrain(base / str(project_id) / SCENE_BUNDLE_FILE)
+    except TerrainUnavailable as e:
+        raise ApiError(404 if e.code == "NO_BUNDLE" else 409, "NO_BUNDLE" if e.code == "NO_BUNDLE" else "TERRAIN_NOT_AVAILABLE", e.message) from None
+
+
+def _engine_json(content: dict) -> JSONResponse:
+    return JSONResponse(content=content, headers={"Cache-Control": "no-store"})
+
+
+ENGINE_THREADS = 4
+ENGINE_PER_PROJECT = 2
+_POOL = ThreadPoolExecutor(max_workers=ENGINE_THREADS, thread_name_prefix="site-engine")
+_GATES: dict[str, list] = {}         # project id -> [semaphore, users]; an entry exists only while the project has requests in flight or waiting
+
+
+@asynccontextmanager
+async def _project_gate(project_id: UUID):
+    """At most ``ENGINE_PER_PROJECT`` engine requests of one project compute at once; the rest wait here (on the event loop, not on a pool thread)."""
+    key = str(project_id)
+    g = _GATES.get(key)
+    if g is None:
+        g = _GATES[key] = [asyncio.Semaphore(ENGINE_PER_PROJECT), 0]
+    g[1] += 1
+    try:
+        async with g[0]:
+            yield
+    finally:
+        g[1] -= 1
+        if g[1] == 0 and _GATES.get(key) is g:
+            del _GATES[key]
+
+
+async def _run_engine(project_id: UUID, work):
+    """Run ``work()`` on the engine pool under the project gate. A request over an engine cap is 422."""
+    def guarded():
+        try:
+            return work()
+        except EL.EngineLimitError as e:
+            raise ApiError(422, e.code, e.message) from None
+    async with _project_gate(project_id):
+        return await asyncio.get_running_loop().run_in_executor(_POOL, guarded)
+
+
+def _limit_422(check, obj) -> None:
+    try:
+        check(obj)
+    except EL.EngineLimitError as e:
+        raise ApiError(422, e.code, e.message) from None
+
+
+@router.post("/projects/{project_id}/site-design/driveway-profile")
+async def post_driveway_profile(project_id: UUID, body: DrivewayProfileRequest, request: Request, _user: UUID = Depends(site_design_access),
+                                rules: SiteRules = Depends(site_rules_dep)) -> JSONResponse:
+    if body.driveway.type != "driveway" or body.driveway.geometry.kind != "polyline":
+        raise ApiError(422, "NOT_A_DRIVEWAY", "the object is not a driveway with a centreline")
+    _limit_422(EL.check_driveway, body.driveway)                      # cheap checks first: nothing is read from disk for an oversized request
+    base = site_design_base(request)
+
+    def work():
+        saved = _read(base / str(project_id) / SITE_DESIGN_FILE, project_id) if link_id(body.driveway) else None       # only a linked end needs the saved design
+        return driveway_profile(body.driveway, _terrain_at(base, project_id), rules, detail=body.detail, saved_design=saved, building=body.building)
+    return _engine_json(await _run_engine(project_id, work))
+
+
+@router.post("/projects/{project_id}/site-design/grading")
+async def post_grading(project_id: UUID, body: GradingRequest, request: Request, _user: UUID = Depends(site_design_access),
+                       rules: SiteRules = Depends(site_rules_dep)) -> JSONResponse:
+    if body.grading_area.type != "grading_area" or body.grading_area.geometry.kind != "polygon":
+        raise ApiError(422, "NOT_A_GRADING_AREA", "the object is not a grading area with an outline")
+    _limit_422(EL.check_grading, body.grading_area)
+    base = site_design_base(request)
+    return _engine_json(await _run_engine(project_id, lambda: grading(body.grading_area, _terrain_at(base, project_id), rules)))

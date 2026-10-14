@@ -283,7 +283,7 @@ def test_footprint_entry_rectangle_and_polygon():
     assert any("height is NOT SET" in n for n in pl.building.notes) and pl.building.params["roof_area_basis"].value == "NOT SET"
     dr = bi.footprint_from_ring([(100, 200), (110, 200), (110, 208), (100, 208)], "granny_flat")
     assert area(dr.building.levels[0].rings[0]) == pytest.approx(80.0) and dr.ref == [pytest.approx(0.0), pytest.approx(0.0)]
-    assert any("BUILDING USE NOT GIVEN" in w for w in bi.import_footprint_entry(5, 5, None).warnings)
+    assert any("BUILDING USE NOT SET" in w for w in bi.import_footprint_entry(5, 5, None).warnings)
 
 
 @pytest.mark.parametrize("w,d,use", [(0, 5, "house"), (5, -1, "house"), (float("nan"), 5, "house"), (2000, 5, "house"), (5, 5, "mansion")])

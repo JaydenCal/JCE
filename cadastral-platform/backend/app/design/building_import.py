@@ -28,6 +28,7 @@ import json
 import math
 import os
 import tempfile
+import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -53,10 +54,23 @@ SIMPLIFY_TOL_M = 0.05                     # Douglas-Peucker tolerance of the vec
 MAX_LEVELS = 16
 MAX_ELEMENTS = 20_000                     # walls plus rooms per level (sanity limit)
 MAX_RINGS = 64
+MAX_SEWER_EXITS = 64                      # the site design model limits (BuildingExits); an import above them is refused, never cut
+MAX_WATER_EXITS = 64
+MAX_DOWNPIPES = 256
+MAX_TANKS = 64                            # rainwater tanks that come with one building
+# CPU budget for the Plan Studio importer (sanity limits that protect the server, not engineering values)
+MAX_ROOM_VERTICES = 2000                  # vertices in one room outline
+MAX_FILE_VERTICES = 100_000               # all outline, wall, stair and site_export vertices in one file
+MAX_WORK_UNITS = 300_000_000              # estimated raster work: grid cells per level plus (room bounding box cells x vertices) plus wall cost
+MAX_OVERHANG_MM = 5000                    # Plan Studio limits the eave overhang to 1500 mm; a larger value in a file is refused
+MAX_RUNS_PER_LEVEL = 20_000               # row runs of one raster mask handed to the polygon union
+WALL_CLOCK_S = 10.0                       # wall clock budget for rasterise and derive
+WALL_UNIT_COST = 20_000                   # python overhead of one wall, in work units
 
 BASIS_RASTER = "APPROXIMATE (PLAN STUDIO RASTER)"
 BASIS_SOURCE = "SOURCE VALUE"
 BASIS_NOT_SET = "NOT SET"
+BASIS_PS_ESTIMATE = "PLAN STUDIO ESTIMATE"
 
 
 class ImportFailure(Exception):
@@ -65,6 +79,32 @@ class ImportFailure(Exception):
     def __init__(self, code: str, message: str, status: int = 422) -> None:
         super().__init__(f"{code}: {message}")
         self.code, self.message, self.status = code, message, status
+
+
+def too_complex(why: str) -> ImportFailure:
+    return ImportFailure("IMPORT_TOO_COMPLEX", f"IMPORT TOO COMPLEX: {why}. Simplify the plan, or enter the footprint instead.")
+
+
+class Budget:
+    """Wall clock budget for rasterise and derive. ``check`` raises IMPORT TOO COMPLEX (422) once it is spent."""
+
+    def __init__(self, seconds: float | None = None) -> None:
+        self.limit = WALL_CLOCK_S if seconds is None else seconds
+        self.t0 = time.monotonic()
+
+    def check(self) -> None:
+        if time.monotonic() - self.t0 > self.limit:
+            raise too_complex(f"it took longer than {self.limit:g} s to read")
+
+
+def _build(cls, **kw):
+    """Construct a payload model; a ValidationError (a limit of the site design model) is a 422 with a plain message, never a 500."""
+    try:
+        return cls(**kw)
+    except ValidationError as e:
+        first = e.errors(include_url=False)[0]
+        where = ".".join(str(x) for x in first.get("loc", ()))
+        raise ImportFailure("IMPORT_EXCEEDS_LIMITS", f"the import is larger than the site design allows ({where}: {first['msg']})") from None
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------
@@ -112,6 +152,7 @@ class BuildingImportPayload(_M):
     building: ImportedBuilding
     ref: list[float]                                  # local reference point that the frontend puts under the cursor
     aligned_at: list[float] | None = None             # MGA position of ``ref`` when the source was aligned to the lot (PDF)
+    import_id: str | None = Field(default=None, pattern=r"^[0-9a-f]{32}$")     # set by the import route, which stores the payload under it
     extras: list[ImportedExtra] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
     requires_confirmation: bool = False
@@ -178,7 +219,7 @@ def _level_from_polys(name: str, elevation_m: float | None, polys: list[Polygon]
     """Level with up to MAX_RINGS rings (largest first); returns it with the number of rings that did not fit."""
     ps = _largest_first(polys)
     kept, dropped = ps[:MAX_RINGS], max(0, len(ps) - MAX_RINGS)
-    return BuildingLevel(name=name, elevation_m=elevation_m, rings=[_ring_pts(p) for p in kept]), dropped
+    return _build(BuildingLevel, name=name, elevation_m=elevation_m, rings=[_ring_pts(p) for p in kept]), dropped
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------
@@ -294,18 +335,21 @@ def _in_convex(px: np.ndarray, py: np.ndarray, q: np.ndarray) -> np.ndarray:
     return ~(pos & neg)
 
 
-def rasterise_level(g: Grid, level: dict) -> np.ndarray:
+def rasterise_level(g: Grid, level: dict, budget: Budget | None = None) -> np.ndarray:
     """footprint.js ``rasteriseLevel``: rooms, walls and the area enclosed by walls (flood fill from outside). Returns the footprint mask
     [ny, nx]. Elements marked ``demolish`` are left out: the site model shows the proposed state."""
     rooms = np.zeros((g.ny, g.nx), dtype=bool)
     walls = np.zeros_like(rooms); blocked = np.zeros_like(rooms)
+    budget = budget or Budget()
     for r in level["rooms"]:
+        budget.check()
         if r.get("status") == "demolish":
             continue
         if r.get("outdoor") and not r.get("roofed"):
             continue
         _raster_polygon(g, rooms, [_pt(p) for p in r["polygon"]])
     for w in level["walls"]:
+        budget.check()
         if w.get("status") == "demolish":
             continue
         ax, ay = _pt(w["a"]); bx, by = _pt(w["b"])
@@ -331,23 +375,26 @@ def rasterise_level(g: Grid, level: dict) -> np.ndarray:
     return rooms | walls | enclosed
 
 
-def mask_to_polygons(mask: np.ndarray, x0: float, y0: float, cell: float, tol: float) -> tuple[list[Polygon], int]:
+def mask_to_polygons(mask: np.ndarray, x0: float, y0: float, cell: float, tol: float, budget: Budget | None = None) -> tuple[list[Polygon], int]:
     """Vectorise a raster mask: merge row runs into boxes, union them, keep the OUTER rings, simplify with ``tol`` (same units as x0, y0).
-    Returns (polygons, number of holes dropped)."""
+    Returns (polygons, number of holes dropped). A mask with more than MAX_RUNS_PER_LEVEL row runs is refused (IMPORT TOO COMPLEX)."""
     from shapely import box, union_all
-    boxes = []
-    for j in range(mask.shape[0]):
-        row = mask[j]
-        if not row.any():
-            continue
-        d = np.diff(np.concatenate([[0], row.astype(np.int8), [0]]))
-        for s, e in zip(np.where(d == 1)[0], np.where(d == -1)[0]):
-            boxes.append(box(x0 + s * cell, y0 + j * cell, x0 + e * cell, y0 + (j + 1) * cell))
-    if not boxes:
+    budget = budget or Budget()
+    padded = np.zeros((mask.shape[0], mask.shape[1] + 2), dtype=np.int8)
+    padded[:, 1:-1] = mask
+    d = np.diff(padded, axis=1)
+    rj, rs = np.nonzero(d == 1)                       # row-major order: the starts and the ends pair up run by run
+    _, re = np.nonzero(d == -1)
+    if len(rj) == 0:
         return [], 0
+    if len(rj) > MAX_RUNS_PER_LEVEL:
+        raise too_complex(f"a level outline has {len(rj)} separate row runs, the limit is {MAX_RUNS_PER_LEVEL}")
+    boxes = box(x0 + rs * cell, y0 + rj * cell, x0 + re * cell, y0 + (rj + 1) * cell)
+    budget.check()
     holes = 0
     out: list[Polygon] = []
     for p in _polys_of(union_all(boxes)):
+        budget.check()
         holes += len(p.interiors)
         s = Polygon(p.exterior).simplify(tol, preserve_topology=True)
         for q in _polys_of(s):
@@ -356,17 +403,51 @@ def mask_to_polygons(mask: np.ndarray, x0: float, y0: float, cell: float, tol: f
     return out, holes
 
 
-def derive_footprints(project: dict) -> list[tuple[dict, list[Polygon], int]]:
+def work_estimate(project: dict, grid: Grid | None) -> int:
+    """Estimated raster work for the derive path, in units of about one cell operation: per level the grid cells (flood fill and masks), per
+    room its bounding box cells times its vertices, per wall a fixed python cost plus its bounding box cells. Used to refuse a file BEFORE
+    rasterising it (the wall clock budget is the second line of defence)."""
+    c = CELL_MM
+    total = 0
+    for lv in project["levels"]:
+        if grid is not None:
+            total += 8 * grid.nx * grid.ny
+        for r in lv["rooms"]:
+            if r.get("status") == "demolish":
+                continue
+            xs = [float(q["x"]) for q in r["polygon"]]; ys = [float(q["y"]) for q in r["polygon"]]
+            nx = int((max(xs) - min(xs)) / c) + 2; ny = int((max(ys) - min(ys)) / c) + 2
+            if grid is not None:
+                nx, ny = min(nx, grid.nx), min(ny, grid.ny)
+            total += nx * ny * len(xs) + 2000
+        for w in lv["walls"]:
+            if w.get("status") == "demolish":
+                continue
+            ax, ay = _pt(w["a"]); bx, by = _pt(w["b"])
+            t = float(w.get("thickness") or 100)
+            nx = int((abs(bx - ax) + t) / c) + 2; ny = int((abs(by - ay) + t) / c) + 2
+            if grid is not None:
+                nx, ny = min(nx, grid.nx), min(ny, grid.ny)
+            total += WALL_UNIT_COST + 24 * nx * ny
+    return total
+
+
+def derive_footprints(project: dict, budget: Budget | None = None) -> list[tuple[dict, list[Polygon], int]]:
     """Per level (in the order of ``project['levels']``): (level, outer footprint polygons in plan mm, holes dropped)."""
+    budget = budget or Budget()
     g = make_grid(project)
+    est = work_estimate(project, g)
+    if est > MAX_WORK_UNITS:
+        raise too_complex(f"the plan needs about {est:,} raster steps, the limit is {MAX_WORK_UNITS:,}")
     res = []
     for lv in project["levels"]:
-        polys, holes = mask_to_polygons(rasterise_level(g, lv), g.x0, g.y0, g.cell, SIMPLIFY_TOL_M * 1000)
+        budget.check()
+        polys, holes = mask_to_polygons(rasterise_level(g, lv, budget), g.x0, g.y0, g.cell, SIMPLIFY_TOL_M * 1000, budget)
         res.append((lv, polys, holes))
     return res
 
 
-def derive_roof(project: dict, use_overhang_from: list[dict]) -> tuple[list[Polygon], float | None, int, list[str]]:
+def derive_roof(project: dict, use_overhang_from: list[dict], budget: Budget | None = None) -> tuple[list[Polygon], float | None, int, list[str]]:
     """schedules.js ``roofPlanAreaM2`` ported: per level with the roof enabled, the rooms under the roof (not demolished; outdoor rooms only
     when roofed) rasterised on a 100 mm grid, dilated by the eave overhang (square element, clipped to the 12 cell margin like Plan Studio),
     unioned over the levels. ``use_overhang_from`` is the RAW levels list: the overhang is used only when the source gives one.
@@ -374,7 +455,10 @@ def derive_roof(project: dict, use_overhang_from: list[dict]) -> tuple[list[Poly
     cells_x: list[np.ndarray] = []
     cells_y: list[np.ndarray] = []
     notes: list[str] = []
+    budget = budget or Budget()
+    work = 0
     for lv, raw in zip(project["levels"], use_overhang_from):
+        budget.check()
         roof = raw.get("roof") if isinstance(raw.get("roof"), dict) else {}
         if roof.get("enabled") is False:
             continue
@@ -390,8 +474,18 @@ def derive_roof(project: dict, use_overhang_from: list[dict]) -> tuple[list[Poly
         ny = math.ceil((maxy - miny) / CELL_MM) + 2 * ROOF_MARGIN_CELLS + 1
         if nx * ny > MAX_GRID_CELLS:
             continue                                              # Plan Studio skips a level whose raster is too large
+        ov = roof.get("overhang")
+        r = 0
+        if _fin(ov) and ov > 0:
+            if ov > MAX_OVERHANG_MM:
+                raise ImportFailure("PS_INVALID", f"the roof overhang of level {str(lv.get('name', '?'))[:40]} is above {MAX_OVERHANG_MM} mm")
+            r = int(math.floor(ov / CELL_MM + 0.5))      # JS Math.round (halves go up), not banker's rounding
+        work += nx * ny * (2 * r + 1) ** 2 // 8 + 8 * nx * ny + sum((int((max(p[0] for p in poly) - min(p[0] for p in poly)) / CELL_MM) + 2) * (int((max(p[1] for p in poly) - min(p[1] for p in poly)) / CELL_MM) + 2) * len(poly) + 2000 for poly in polys)
+        if work > MAX_WORK_UNITS:
+            raise too_complex(f"the roof needs about {work:,} raster steps, the limit is {MAX_WORK_UNITS:,}")
         data = np.zeros((ny, nx), dtype=bool)
         for poly in polys:
+            budget.check()
             xs = [p[0] for p in poly]; ys = [p[1] for p in poly]
             ix0 = max(0, math.floor(min(xs) / CELL_MM) - gx0); ix1 = min(nx - 1, math.ceil(max(xs) / CELL_MM) - gx0)
             iy0 = max(0, math.floor(min(ys) / CELL_MM) - gy0); iy1 = min(ny - 1, math.ceil(max(ys) / CELL_MM) - gy0)
@@ -400,9 +494,7 @@ def derive_roof(project: dict, use_overhang_from: list[dict]) -> tuple[list[Poly
             ii, jj = np.meshgrid(np.arange(ix0, ix1 + 1), np.arange(iy0, iy1 + 1))
             ins = _pip((gx0 + ii + 0.5) * CELL_MM, (gy0 + jj + 0.5) * CELL_MM, poly)
             data[jj[ins], ii[ins]] = True
-        ov = roof.get("overhang")
         if _fin(ov) and ov > 0:
-            r = int(math.floor(ov / CELL_MM + 0.5))      # JS Math.round (halves go up), not banker's rounding
             data = ndimage.binary_dilation(data, structure=np.ones((2 * r + 1, 2 * r + 1), dtype=bool)) if r > 0 else data
         elif not _fin(ov):
             notes.append(f"ROOF OVERHANG NOT IN SOURCE for level {lv.get('name', '?')}: its roof outline is the roofed rooms without eaves")
@@ -410,13 +502,14 @@ def derive_roof(project: dict, use_overhang_from: list[dict]) -> tuple[list[Poly
         cells_x.append((gx0 + ii).astype(np.int64)); cells_y.append((gy0 + jj).astype(np.int64))
     if not cells_x:
         return [], None, 0, notes
-    uniq = np.unique(np.stack([np.concatenate(cells_x), np.concatenate(cells_y)], axis=1), axis=0)      # union over the levels, in absolute cell indices
-    cx, cy = uniq[:, 0], uniq[:, 1]
-    minx, miny = int(cx.min()), int(cy.min())
-    mask = np.zeros((int(cy.max()) - miny + 1, int(cx.max()) - minx + 1), dtype=bool)
-    mask[cy - miny, cx - minx] = True
-    area = len(uniq) * (CELL_MM * CELL_MM) / 1e6
-    polys, holes = mask_to_polygons(mask, float(minx * CELL_MM), float(miny * CELL_MM), CELL_MM, SIMPLIFY_TOL_M * 1000)
+    allx, ally = np.concatenate(cells_x), np.concatenate(cells_y)
+    minx, miny = int(allx.min()), int(ally.min())
+    width = int(allx.max()) - minx + 1
+    keys = np.unique((ally - miny) * width + (allx - minx))                    # union over the levels, in absolute cell indices
+    mask = np.zeros((int(ally.max()) - miny + 1, width), dtype=bool)
+    mask[keys // width, keys % width] = True
+    area = len(keys) * (CELL_MM * CELL_MM) / 1e6
+    polys, holes = mask_to_polygons(mask, float(minx * CELL_MM), float(miny * CELL_MM), CELL_MM, SIMPLIFY_TOL_M * 1000, budget)
     return polys, area, holes, notes
 
 
@@ -470,6 +563,7 @@ def check_planstudio(raw: Any) -> dict:
     if not _fin(north):
         raise ImportFailure("PS_INVALID", "site.northDeg is not a number")
     ids: set[str] = set()
+    vertices = 0
 
     def seen(i: Any, what: str) -> None:
         if not i or not isinstance(i, str):
@@ -502,10 +596,16 @@ def check_planstudio(raw: Any) -> dict:
             seen(w.get("id"), "wall")
             if not (finite_pt(w.get("a")) and finite_pt(w.get("b")) and _fin(w.get("thickness"))):
                 raise ImportFailure("PS_INVALID", f"wall {w.get('id')} has invalid geometry")
+        vertices += 2 * len(lv["walls"]) + len(lv["stairs"])
         for r in lv["rooms"]:
             seen(r.get("id"), "room")
             if not isinstance(r.get("polygon"), list) or len(r["polygon"]) < 3 or not all(finite_pt(q) for q in r["polygon"]):
                 raise ImportFailure("PS_INVALID", f"room {r.get('id')} has an invalid outline")
+            if len(r["polygon"]) > MAX_ROOM_VERTICES:
+                raise too_complex(f"room {str(r.get('id'))[:40]} has {len(r['polygon'])} vertices, the limit is {MAX_ROOM_VERTICES}")
+            vertices += len(r["polygon"])
+        if vertices > MAX_FILE_VERTICES:
+            raise too_complex(f"the file has more than {MAX_FILE_VERTICES:,} outline vertices")
         for st in lv["stairs"]:
             seen(st.get("id"), "stair")
             if not finite_pt(st):
@@ -541,6 +641,14 @@ def _read_site_export(p: dict, warnings: list[str]) -> dict | None:
 
     def rings_ok(rs: Any) -> bool:
         return isinstance(rs, list) and len(rs) <= MAX_RINGS and all(isinstance(r, list) and 3 <= len(r) <= MAX_VERTICES and all(isinstance(q, list) and len(q) == 2 and _fin(q[0]) and _fin(q[1]) for q in r) for r in rs)
+    total = 0
+    for x in lv:
+        total += sum(len(r) for r in x.get("footprint", []) if isinstance(r, list)) if isinstance(x.get("footprint"), list) else 0
+    ro = se.get("roof")
+    if isinstance(ro, dict) and isinstance(ro.get("outline"), list):
+        total += sum(len(r) for r in ro["outline"] if isinstance(r, list))
+    if total > MAX_FILE_VERTICES:
+        raise too_complex(f"the site_export block has more than {MAX_FILE_VERTICES:,} footprint vertices")
     for x, lv_ in zip(lv, p["levels"]):
         if not rings_ok(x.get("footprint")) or not _fin(x.get("ffl_above_ground_floor_mm")):
             bad("a level footprint is malformed")
@@ -572,12 +680,36 @@ def _exits_mm(p: dict, se: dict | None) -> tuple[list[tuple[float, float]], list
     return g("sewer_exit"), g("water_exit"), g("downpipe")
 
 
-_PS_USE = {"house": "house", "unit": "unit", "shed": "shed", "extension": "other"}
+_PS_USE = {"house": "house", "unit": "unit", "shed": "shed"}          # Plan Studio types that name a use; "extension" and anything else do not
+
+
+def _use_param(use: str | None, derived: str | None, source_file: str, what: str) -> Param:
+    """The building use: the one the user chose, else the one the source names, else NOT SET (unresolved). Never defaulted to 'other'."""
+    if use:
+        return _param(use, source_file, what)
+    if derived:
+        return _param(derived, source_file, what)
+    return Param(value=None, basis="unresolved")
+
+
+# Plan Studio's standard round tanks (schema.js DEFAULTS.tanks): capacity (L) -> (diameter, height) in mm. Any other capacity is sized by
+# Plan Studio's own estimate (schema.js tankSize), which is not a manufacturer dimension.
+_PS_STANDARD_TANKS = {2000: (1350, 1600), 5000: (1850, 2000), 10000: (2400, 2400), 22500: (3600, 2400)}
+
+
+def _tank_size_is_estimate(t: dict) -> bool:
+    """Plan Studio writes ``sizeBasis`` ("standard" or "estimate") on a tank from stage 5; older files are judged by the standard size table."""
+    sb = t.get("sizeBasis")
+    if sb in ("standard", "estimate"):
+        return sb == "estimate"
+    cap = t.get("capacityL")
+    return not (_fin(cap) and int(cap) == cap and _PS_STANDARD_TANKS.get(int(cap)) == (t.get("diameter"), t.get("height")))
 
 
 def import_planstudio(data: bytes | str | dict, source_file: str = "design.planstudio.json", use: str | None = None) -> BuildingImportPayload:
     """``.planstudio.json`` -> ``building_import.v1`` (see the module docstring)."""
     use = check_use(use)
+    budget = Budget()
     if isinstance(data, dict):
         raw = data
     else:
@@ -597,10 +729,11 @@ def import_planstudio(data: bytes | str | dict, source_file: str = "design.plans
     per_level: list[tuple[dict, list[Polygon]]] = []
     if se is not None:
         for lv, x in zip(p["levels"], se["levels"]):
+            budget.check()
             polys = [q for r in x["footprint"] for q in _polys_of((lambda g: g if g.is_valid else g.buffer(0))(Polygon([(a, b) for a, b in r])))]
             per_level.append((lv, polys))
     else:
-        for lv, polys, holes in derive_footprints(p):
+        for lv, polys, holes in derive_footprints(p, budget):
             holes_total += holes
             per_level.append((lv, polys))
     if holes_total:
@@ -645,7 +778,7 @@ def import_planstudio(data: bytes | str | dict, source_file: str = "design.plans
             basis = BASIS_SOURCE if r.get("area_basis") == "source" else BASIS_RASTER
         notes.extend(str(n)[:400] for n in (r.get("notes") or [])[:10] if isinstance(n, str))
     elif se is None:
-        polys, area, holes, rnotes = derive_roof(p, raw_levels)
+        polys, area, holes, rnotes = derive_roof(p, raw_levels, budget)
         notes.extend(rnotes)
         if polys:
             loc = _local_polys([list(q.exterior.coords)[:-1] for q in polys], north)
@@ -662,7 +795,10 @@ def import_planstudio(data: bytes | str | dict, source_file: str = "design.plans
     # ---- exits
     sew, wat, dps = _exits_mm(p, se)
     cv = lambda pts: [list(to_local(x, y, north)) for x, y in pts]       # noqa: E731
-    exits = BuildingExits(sewer=cv(sew), water=cv(wat), downpipes=cv(dps))
+    for what, n, cap in (("sewer exits", len(sew), MAX_SEWER_EXITS), ("water exits", len(wat), MAX_WATER_EXITS), ("downpipes", len(dps), MAX_DOWNPIPES)):
+        if n > cap:
+            raise ImportFailure("TOO_MANY_EXITS", f"the design has {n} {what}, more than the {cap} that one building can hold. Remove some in Plan Studio and import again.")
+    exits = _build(BuildingExits, sewer=cv(sew), water=cv(wat), downpipes=cv(dps))
 
     # ---- height: not in a Plan Studio file (only the ceiling height of each level is), so it stays NOT SET
     top = max(p["levels"], key=lambda lv: float(lv["elevation"]))
@@ -677,34 +813,42 @@ def import_planstudio(data: bytes | str | dict, source_file: str = "design.plans
         notes.append(f"{skipped} wall(s) and room(s) marked demolish were left out (the proposed state is imported)")
 
     params: dict[str, Param] = {
-        "building_use": _param(use or _PS_USE.get(str(p.get("type")), "other"), source_file, "PLAN STUDIO"),
+        "building_use": _use_param(use, _PS_USE.get(str(p.get("type"))), source_file, "PLAN STUDIO"),
         "source": Param(value="plan_studio", basis="user", ref=f"IMPORTED FROM PLAN STUDIO: {source_file}"[:200]),
         "source_file": Param(value=source_file[:200], basis="user", ref="IMPORTED"),
         "roof_area_basis": Param(value=basis, basis="user", ref=f"IMPORTED FROM PLAN STUDIO: {source_file}"[:200]),
     }
-    if use is None and str(p.get("type")) == "extension":
-        warnings.append("Plan Studio type 'extension' imported with use 'other': set the building use (house, granny flat, unit, shed or other)")
+    if params["building_use"].basis == "unresolved":
+        warnings.append("BUILDING USE NOT SET: the file does not name one (Plan Studio type %s). Choose house, granny flat, unit, shed or other." % str(p.get("type"))[:40])
     if roof_area is not None:
         params["roof_plan_area_m2"] = _param(round(roof_area, 3), source_file, "PLAN STUDIO " + ("FILE" if basis == BASIS_SOURCE else "RASTER"))
 
     # ---- tanks -> rwt (capacity from the file; no levels invented)
     extras: list[ImportedExtra] = []
-    for t in p["site"]["tanks"]:
-        if t.get("status") == "demolish" or not (_fin(t.get("x")) and _fin(t.get("y"))):
-            continue
+    live_tanks = [t for t in p["site"]["tanks"] if t.get("status") != "demolish" and _fin(t.get("x")) and _fin(t.get("y"))]
+    if len(live_tanks) > MAX_TANKS:
+        raise ImportFailure("TOO_MANY_TANKS", f"the design has {len(live_tanks)} rainwater tanks, more than the {MAX_TANKS} that can be imported with one building. Remove some in Plan Studio and import again.")
+    estimated = 0
+    for t in live_tanks:
         e, n = to_local(float(t["x"]), float(t["y"]), north)
         tp: dict[str, Param] = {}
         if _fin(t.get("capacityL")) and t["capacityL"] > 0:
             tp["capacity_l"] = _param(float(t["capacityL"]), source_file, "PLAN STUDIO TANK")
-        if _fin(t.get("diameter")) and t["diameter"] > 0:
-            tp["diameter_m"] = _param(float(t["diameter"]) / 1000.0, source_file, "PLAN STUDIO TANK")
-        if _fin(t.get("height")) and t["height"] > 0:
-            tp["height_m"] = _param(float(t["height"]) / 1000.0, source_file, "PLAN STUDIO TANK")
-        extras.append(ImportedExtra(type="rwt", p=[e, n], status="existing" if t.get("status") == "existing" else "proposed", label=(f"{int(t['capacityL'])} L tank" if tp.get("capacity_l") else "Tank")[:120], params=tp))
+        est = _tank_size_is_estimate(t)
+        for key, field_, div in (("diameter_m", "diameter", 1000.0), ("height_m", "height", 1000.0)):
+            if _fin(t.get(field_)) and t[field_] > 0:
+                if est:
+                    tp[key] = Param(value=float(t[field_]) / div, basis="platform_default", ref=f"{BASIS_PS_ESTIMATE}: size for a non standard capacity, not a manufacturer dimension ({source_file})"[:200])
+                else:
+                    tp[key] = _param(float(t[field_]) / div, source_file, "PLAN STUDIO TANK")
+        estimated += 1 if est and ("diameter_m" in tp or "height_m" in tp) else 0
+        extras.append(_build(ImportedExtra, type="rwt", p=[e, n], status="existing" if t.get("status") == "existing" else "proposed", label=(f"{int(t['capacityL'])} L tank" if tp.get("capacity_l") else "Tank")[:120], params=tp))
     if extras:
         notes.append(f"{len(extras)} rainwater tank(s) in the file are imported as rwt objects with their capacity. Inlet, overflow and outlet levels are NOT SET.")
+    if estimated:
+        notes.append(f"{estimated} tank(s) have a non standard capacity: their diameter and height are PLAN STUDIO ESTIMATES (basis {BASIS_PS_ESTIMATE}), not manufacturer dimensions.")
 
-    b = ImportedBuilding(levels=levels, datum_index=datum, roof_outline=roof_rings, exits=exits, north_deg=north, notes=[n[:400] for n in notes[:30]], params=params)
+    b = _build(ImportedBuilding, levels=levels, datum_index=datum, roof_outline=roof_rings, exits=exits, north_deg=north, notes=[n[:400] for n in notes[:30]], params=params)
     return _finish({"source": "plan_studio", "source_file": source_file, "used_site_export": se is not None, "building": b.model_dump(mode="json"), "ref": ref,
                     "extras": [x.model_dump(mode="json") for x in extras], "warnings": warnings})
 
@@ -723,14 +867,14 @@ def _single_level_payload(source: str, source_file: str, polys: list[Polygon], u
                                  "Roof plan area is NOT SET: the source gives none."]
     what = {"pdf": "PDF (SA7)", "dxf": "DXF (SA8)", "footprint_entry": "FOOTPRINT ENTRY"}[source]
     params = {
-        "building_use": _param(use or "other", source_file, what),
+        "building_use": _use_param(use, None, source_file, what),
         "source": Param(value=source, basis="user", ref=f"IMPORTED FROM {what}: {source_file}"[:200]),
         "source_file": Param(value=source_file[:200], basis="user", ref="IMPORTED"),
         "roof_area_basis": Param(value=BASIS_NOT_SET, basis="user", ref=f"IMPORTED FROM {what}: {source_file}"[:200]),
     }
     if use is None:
-        warnings.append("BUILDING USE NOT GIVEN: imported as 'other'; set it to house, granny flat, unit or shed")
-    b = ImportedBuilding(levels=[local], datum_index=0, notes=[n[:400] for n in notes], params=params)
+        warnings.append("BUILDING USE NOT SET: choose house, granny flat, unit, shed or other")
+    b = _build(ImportedBuilding, levels=[local], datum_index=0, notes=[n[:400] for n in notes], params=params)
     return _finish({"source": source, "source_file": source_file, "building": b.model_dump(mode="json"), "ref": ref,
                     "aligned_at": ([ref[0] + aligned_offset[0], ref[1] + aligned_offset[1]] if aligned_offset else None),
                     "warnings": warnings, "requires_confirmation": requires_confirmation, "alignment": alignment})
@@ -747,16 +891,18 @@ def import_footprint_entry(width_m: float, depth_m: float, use: str | None, sour
 
 
 def footprint_from_ring(ring: list[tuple[float, float]], use: str | None, source_file: str = "drawn footprint") -> BuildingImportPayload:
-    """A polygon drawn by the user (any local or MGA coordinates). Returned relative to its centroid."""
+    """A polygon drawn by the user (any local or MGA coordinates). Returned relative to its centroid.
+    A ring that crosses itself is refused (422): repairing it would change the shape and move its centroid away from the drawn one."""
+    if len(ring) < 3 or len(ring) > MAX_VERTICES or not all(_fin(x) and _fin(y) for x, y in ring):
+        raise ImportFailure("BAD_FOOTPRINT", f"a footprint needs 3 to {MAX_VERTICES} finite vertices")
     p = Polygon(ring)
     if not p.is_valid:
-        p = p.buffer(0)
-    polys = _polys_of(p)
-    if not polys or p.area <= 0:
+        raise ImportFailure("FOOTPRINT_SELF_INTERSECTS", "FOOTPRINT RING SELF INTERSECTS, REDRAW")
+    if p.is_empty or p.area <= 0:
         raise ImportFailure("BAD_FOOTPRINT", "the footprint has no area")
-    c = polys[0].centroid
+    c = p.centroid
     from shapely.affinity import translate
-    return _single_level_payload("footprint_entry", source_file, [translate(q, -c.x, -c.y) for q in polys], check_use(use), ["Footprint drawn by the user."], [])
+    return _single_level_payload("footprint_entry", source_file, [translate(p, -c.x, -c.y)], check_use(use), ["Footprint drawn by the user."], [])
 
 
 def import_dxf(data: bytes, source_file: str = "plan.dxf", use: str | None = None) -> BuildingImportPayload:

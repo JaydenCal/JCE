@@ -13,24 +13,20 @@ import * as THREE from 'three';
 import { makeSprite } from '@/lib/viewer/textures';
 import { worstSeverity } from './checks';
 import { drapePolyline, ringCentroid } from './geom';
+import { CUT_COLOUR, CUTFILL_SATURATION_M, FILL_COLOUR, LIFT, cutFillColour, meshOf, strip, tessellate } from './meshUtil';
+export { CUT_COLOUR, CUTFILL_SATURATION_M, FILL_COLOUR, LIFT, cutFillColour };
 import type { ChangeEvent } from './store';
+import { drivewayParts, gradingParts } from './earthworksScene';
+import type { GradingResult, ProfileView } from './driveway';
 import {
-  BUILDING_USE_LABEL, DIMENSIONS_NOT_SET, FFL_NOT_SET, HEIGHT_NOT_SET, OBJECT_KINDS, POOL_BARRIER_LABEL, STATUS_LABEL, SURFACE_LABEL, dimOf, dimensionsSet, levelOf, verticesOf,
+  BUILDING_USE_LABEL, DIMENSIONS_NOT_SET, END_LEVEL_NOT_SET, FFL_NOT_SET, HEIGHT_NOT_SET, TARGET_NOT_SET, WIDTH_NOT_SET, OBJECT_KINDS, POOL_BARRIER_LABEL, STATUS_LABEL, SURFACE_LABEL, dimOf, dimensionsSet, levelOf, verticesOf,
   type Pos, type SiteDesign, type SiteObject,
 } from './types';
 
-export const LIFT = 0.04;            // metres above the terrain for flat things, avoids z fighting
 export const DRAPE_STEP = 1.0;       // metres between terrain samples along lines (display resolution)
 export const MARKER_RADIUS = 0.4;    // metres, marker for an object without dimensions (no real size is implied)
 export const OUTLINE_WIDTH = 0.14;   // metres, drawn width of an outline ribbon (lines are 1 pixel in WebGL, too thin to see)
 export const SELECT_COLOUR = '#ffd24a';
-/** Cut / fill colours of the scene bundle (backend sa6_site3d build.py cutfill_rgb): cut orange-red, fill blue, white at zero, saturating at 1.5 m. */
-export const CUT_COLOUR = '#d9582b', FILL_COLOUR = '#2b6fd9', CUTFILL_SATURATION_M = 1.5;
-/** Colour for cf = FFL minus existing ground, metres: negative is cut (the ground is above the floor), positive is fill. */
-export function cutFillColour(cf: number): THREE.Color {
-  const t = Math.min(1, Math.abs(cf) / CUTFILL_SATURATION_M);
-  return new THREE.Color('#ffffff').lerp(new THREE.Color(cf < 0 ? CUT_COLOUR : FILL_COLOUR), t);
-}
 const RED = '#d11d1d', AMBER = '#e0a100', GREY = '#7b8087';
 
 export interface SceneTerrain { available: boolean; sample(e: number, n: number): number | null }
@@ -39,12 +35,18 @@ export interface SiteSceneOptions {
   terrain: SceneTerrain | null;
   /** injectable for tests (needs a DOM canvas otherwise) */
   makeLabel?: (text: string, scale: number, accent: string) => THREE.Sprite;
+  /** the EXISTING ground (survey / DEM parts; never the design surface) for cut / fill colours; without it earthworks are drawn grey */
+  existing?: (e: number, n: number) => number | null;
 }
 
 interface Ctx {
   O: readonly [number, number]; sample: (e: number, n: number) => number | null; label: (t: string, s: number, a: string) => THREE.Sprite;
   /** a loaded GLB visual for a building id (a fresh clone), or null */
   glb?: (id: string) => THREE.Object3D | null;
+  existing?: (e: number, n: number) => number | null;
+  /** engine results held for an object id (stage 6) */
+  drive?: (id: string) => ProfileView | null;
+  grading?: (id: string) => GradingResult | null;
 }
 type V3 = [number, number, number];
 
@@ -87,20 +89,12 @@ function solidMat(col: THREE.Color, op: number): THREE.MeshStandardMaterial {
 function flatMat(col: THREE.Color, op: number): THREE.MeshBasicMaterial {
   return new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.35 * op, side: THREE.DoubleSide, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
 }
-function meshOf(pos: number[], mat: THREE.Material): THREE.Mesh {
-  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals();
-  const m = new THREE.Mesh(g, mat); m.userData.pick = true; return m;
-}
 /** Outline of a draped path as a thin flat ribbon so it stays visible at any zoom. */
 function outline(path: V3[], col: THREE.Color, op: number, c: Ctx): THREE.Mesh {
   const { left, right } = offsets(path, OUTLINE_WIDTH / 2, c), pos: number[] = [];
   strip(left, right, pos);
   const m = meshOf(pos, new THREE.MeshBasicMaterial({ color: col, transparent: op < 1, opacity: op, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
   m.userData.baseColour = col.getHex(); return m;
-}
-/** Strip of quads between two equally long paths. */
-function strip(a: V3[], b: V3[], out: number[]) {
-  for (let i = 0; i + 1 < a.length; i++) out.push(...a[i], ...b[i], ...a[i + 1], ...a[i + 1], ...b[i], ...b[i + 1]);
 }
 /** Left and right offset paths of a draped path, half a width either side (plan offset, heights re-sampled from the terrain). */
 function offsets(path: V3[], half: number, c: Ctx): { left: V3[]; right: V3[] } {
@@ -113,12 +107,6 @@ function offsets(path: V3[], half: number, c: Ctx): { left: V3[]; right: V3[] } 
     left.push([p[0] + nx, p[1] + ny, zl !== null ? zl + LIFT : p[2]]); right.push([p[0] - nx, p[1] - ny, zr !== null ? zr + LIFT : p[2]]);
   }
   return { left, right };
-}
-function tessellate(tri: [number, number][], maxEdge: number, out: [number, number][][], depth = 0) {
-  const [a, b, c] = tri, e = Math.max(Math.hypot(a[0] - b[0], a[1] - b[1]), Math.hypot(b[0] - c[0], b[1] - c[1]), Math.hypot(c[0] - a[0], c[1] - a[1]));
-  if (e <= maxEdge || depth >= 7) { out.push(tri); return; }
-  const m = (p: [number, number], q: [number, number]): [number, number] => [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], ab = m(a, b), bc = m(b, c), ca = m(c, a);
-  for (const t of [[a, ab, ca], [ab, b, bc], [ca, bc, c], [ab, bc, ca]] as [number, number][][]) tessellate(t, maxEdge, out, depth + 1);
 }
 /** Polygon fill draped on the terrain: triangulate in plan, subdivide, lift each vertex onto the terrain. */
 function fillMesh(ring: readonly Pos[], c: Ctx, mat: THREE.Material): THREE.Mesh | null {
@@ -166,16 +154,21 @@ function wallsMesh(ring: readonly Pos[], ffl: number, height: number, c: Ctx, co
 const roofOutline = (rings: readonly (readonly Pos[])[], z: number, col: THREE.Color, op: number, c: Ctx): THREE.Object3D[] =>
   rings.map((r) => lineObj([...r, r[0]].map((p) => [p[0] - c.O[0], p[1] - c.O[1], z] as V3), col, op));
 
-/** Matrix from Plan Studio GLB space (metres, Y up, X = plan x, Z = plan y which points down the sheet) to scene space (E - O, N - O, up). */
-export function glbMatrix(origin: readonly [number, number], yawDeg: number, northDeg: number, ffl: number, O: readonly [number, number]): THREE.Matrix4 {
+/**
+ * Matrix from Plan Studio GLB space (metres, Y up, X = plan x, Z = plan y which points down the sheet) to scene space (E - O, N - O, up).
+ * In the GLB, height 0 is the Plan Studio ground floor and the datum level's slab sits at `datumElevationM` (its elevation above the ground
+ * floor, as the importer states it). The footprint slab of the datum level is drawn at `ffl`, so the GLB is lowered by `datumElevationM`:
+ * when no level is at elevation 0 and the lowest level is the datum, its slab in the GLB then meets the footprint slab at `ffl`.
+ */
+export function glbMatrix(origin: readonly [number, number], yawDeg: number, northDeg: number, ffl: number, O: readonly [number, number], datumElevationM = 0): THREE.Matrix4 {
   const n = (northDeg * Math.PI) / 180, cn = Math.cos(n), sn = Math.sin(n);
   const toLocal = new THREE.Matrix4().set(cn, 0, sn, 0, sn, 0, -cn, 0, 0, 1, 0, 0, 0, 0, 0, 1);       // (gx, gy, gz) -> (E, N, up): E = x cos n + y sin n, N = x sin n - y cos n
   const yaw = new THREE.Matrix4().makeRotationZ((-yawDeg * Math.PI) / 180);                               // a clockwise turn seen from above
-  const place = new THREE.Matrix4().makeTranslation(origin[0] - O[0], origin[1] - O[1], ffl);
+  const place = new THREE.Matrix4().makeTranslation(origin[0] - O[0], origin[1] - O[1], ffl - datumElevationM);
   return place.multiply(yaw).multiply(toLocal);
 }
 
-function labelLines(o: SiteObject): string {
+function labelLines(o: SiteObject, c?: Ctx): string {
   const k = OBJECT_KINDS[o.type], L = [o.label ? `${k.label}: ${o.label.toUpperCase()}` : k.label];
   const tags: string[] = [];
   if (o.status !== 'proposed') tags.push(STATUS_LABEL[o.status]);
@@ -196,8 +189,32 @@ function labelLines(o: SiteObject): string {
     else if (o.type === 'footpath') L.push('SURFACE NOT SET');
   }
   if (o.type === 'furniture' && typeof o.params.catalogue_item?.value === 'string') L.push(String(o.params.catalogue_item.value).toUpperCase());
-  if (!dimensionsSet(o)) L.push(DIMENSIONS_NOT_SET);
+  if (o.type === 'driveway') L.push(...drivewayLabel(o, c?.drive?.(o.id) ?? null));
+  else if (o.type === 'grading_area') L.push(...gradingLabel(o, c?.grading?.(o.id) ?? null));
+  else if (!dimensionsSet(o)) L.push(DIMENSIONS_NOT_SET);
   return L.join('\n');
+}
+
+function drivewayLabel(o: SiteObject, v: ProfileView | null): string[] {
+  const out: string[] = [], w = dimOf(o, 'width_m'), sk = o.params.surface_kind?.value;
+  out.push(w === null ? WIDTH_NOT_SET : `WIDTH ${w.toFixed(2)} M`);
+  const linked = typeof o.params.end_building_id?.value === 'string';
+  const ev = v ? v.end_level.value : linked ? null : levelOf(o, 'end_level_rl');            // a linked end level is the building FFL, never the object's own (possibly stale) level
+  out.push(ev === null ? END_LEVEL_NOT_SET : `END LEVEL ${ev.toFixed(2)} RL`);
+  out.push(typeof sk === 'string' ? sk.replace(/_/g, ' ').toUpperCase() : 'SURFACE NOT SET');
+  if (v) {
+    const bad = v.checks.filter((k) => k.status === 'FAIL').length;
+    out.push(bad ? `${bad} CHECK${bad === 1 ? '' : 'S'} FAIL` : v.checks.some((k) => k.status === 'NOT EVALUATED' && k.basis === 'UNRESOLVED') ? 'SOME LIMITS UNRESOLVED' : 'CHECKS WITHIN RESOLVED LIMITS');
+    if (v.preview) out.push('PREVIEW');
+  }
+  return out;
+}
+function gradingLabel(o: SiteObject, r: GradingResult | null): string[] {
+  if (!dimensionsSet(o)) return [TARGET_NOT_SET];
+  if (!r) return [];
+  if (r.status !== 'OK' || !r.earthworks) return [r.status];
+  const e = r.earthworks;
+  return [`CUT ${e.cut_m3.toFixed(1)} M3, FILL ${e.fill_m3.toFixed(1)} M3`, r.label, ...(e.batters_computed ? [] : ['BATTER SLOPE UNRESOLVED'])];
 }
 
 /**
@@ -216,7 +233,7 @@ function buildingParts(o: SiteObject, g: THREE.Group, col: THREE.Color, oc: THRE
   }
   const glb = c.glb?.(o.id) ?? null;
   if (glb) {
-    glb.matrixAutoUpdate = false; glb.matrix.copy(glbMatrix(b.frame.origin, b.frame.yaw_deg, b.frame.north_deg ?? 0, ffl, c.O)); glb.matrixWorldNeedsUpdate = true;
+    glb.matrixAutoUpdate = false; glb.matrix.copy(glbMatrix(b.frame.origin, b.frame.yaw_deg, b.frame.north_deg ?? 0, ffl, c.O, datum.elevation_m ?? 0)); glb.matrixWorldNeedsUpdate = true;
     glb.traverse((x) => { x.userData.pick = true; x.userData.shared = true; }); glb.userData.glb = true; g.add(glb);      // shared: geometry and materials belong to the loaded template
     for (const r of datum.rings) { const sl = slabMesh(r, ffl, c, 0.5); if (sl) g.add(sl); }
     return (h ?? 6) + 1;
@@ -265,12 +282,18 @@ export function buildObject(o: SiteObject, c: Ctx): THREE.Group {
     const ps = verticesOf(geom), closed = geom.kind === 'polygon', path = drapedPath(ps, closed, c);
     g.add(outline(path, oc, op, c));
     const lifted = lift(ps, c);
-    if (!set && o.type !== 'building') lifted.forEach((p) => g.add(dot([p[0], p[1], p[2] + LIFT], oc)));
+    if (!set && o.type !== 'building' && o.type !== 'grading_area') lifted.forEach((p) => g.add(dot([p[0], p[1], p[2] + LIFT], oc)));
     labelAt = closed ? (() => { const m = ringCentroid(ps); const z = c.sample(m[0], m[1]); return [m[0] - c.O[0], m[1] - c.O[1], z ?? lifted[0][2]] as V3; })() : lifted[Math.floor((lifted.length - 1) / 2)];
     if (o.type === 'building' && o.building) {
       labelRise = buildingParts(o, g, col, oc, op, c) ?? labelRise;
+    } else if (o.type === 'grading_area') {
+      const res = c.grading?.(o.id) ?? null, parts = gradingParts(o, res, { O: c.O, existing: c.existing ?? (() => null) });
+      if (parts.length) parts.forEach((x) => g.add(x)); else { const f = fillMesh(ps, c, flatMat(col, op)); if (f) g.add(f); }
     } else if (closed) {
       const f = fillMesh(ps, c, flatMat(col, op)); if (f) g.add(f);
+    } else if (o.type === 'driveway') {
+      const w = dimOf(o, 'width_m');
+      if (w !== null) drivewayParts(o, w, c.drive?.(o.id) ?? null, { O: c.O, existing: c.existing ?? (() => null) }).forEach((x) => g.add(x));
     } else if (set && (o.type === 'retaining_wall' || o.type === 'infiltration_trench' || o.type === 'stormwater_pipe' || o.type === 'footpath')) {
       const half = (o.type === 'retaining_wall' ? dimOf(o, 'thickness_m')! : o.type === 'infiltration_trench' || o.type === 'footpath' ? dimOf(o, 'width_m')! : dimOf(o, 'diameter_mm')! / 1000) / 2;
       const { left, right } = offsets(path, half, c), pos: number[] = [];
@@ -282,7 +305,7 @@ export function buildObject(o: SiteObject, c: Ctx): THREE.Group {
     }
     labelRise = Math.max(labelRise, 1.0);
   }
-  const sp = c.label(labelLines(o), 1.1, `#${outlineColour(o).getHexString()}`);
+  const sp = c.label(labelLines(o, c), 1.1, `#${outlineColour(o).getHexString()}`);
   if (geom.kind === 'point') sp.position.set(0, 0, labelRise); else sp.position.set(labelAt[0], labelAt[1], labelAt[2] + labelRise);
   sp.userData.label = true; g.add(sp);
   if (o.accepted === 'rejected') g.visible = false;
@@ -312,7 +335,10 @@ export class SiteScene {
 
   constructor(private opts: SiteSceneOptions) {
     this.group.name = 'site_design';
-    this.ctx = { O: opts.origin, sample: (e, n) => (opts.terrain ? opts.terrain.sample(e, n) : null), label: opts.makeLabel ?? makeSprite, glb: (id) => this.glbs.get(id)?.clone(true) ?? null };
+    this.ctx = {
+      O: opts.origin, sample: (e, n) => (opts.terrain ? opts.terrain.sample(e, n) : null), label: opts.makeLabel ?? makeSprite, glb: (id) => this.glbs.get(id)?.clone(true) ?? null,
+      existing: opts.existing, drive: (id) => this.drives.get(id) ?? null, grading: (id) => this.gradings.get(id) ?? null,
+    };
   }
   /** Loaded Plan Studio GLBs by building id. The bytes are not part of the document: after a reload the visual is missing until it is attached again. */
   private glbs = new Map<string, THREE.Object3D>();
@@ -324,6 +350,23 @@ export class SiteScene {
     const o = this.doc?.objects.find((x) => x.id === id); if (o) { this.lastRebuilt = []; this.put(o); }
   }
   setTerrain(t: SceneTerrain | null) { this.opts.terrain = t; }
+
+  // ---- stage 6 engine results (outside the document): a long section for a driveway, volumes for a grading area
+  private drives = new Map<string, ProfileView>();
+  private gradings = new Map<string, GradingResult>();
+  driveView(id: string): ProfileView | null { return this.drives.get(id) ?? null; }
+  gradingResult(id: string): GradingResult | null { return this.gradings.get(id) ?? null; }
+  /** Show (or clear, with null) the long section of a driveway: the ribbon moves to the design level and the batters appear. Rebuilds that object only. */
+  setDriveView(id: string, v: ProfileView | null) { if (v) this.drives.set(id, v); else this.drives.delete(id); this.rebuild(id); }
+  setGradingResult(id: string, r: GradingResult | null) { if (r) this.gradings.set(id, r); else this.gradings.delete(id); this.rebuild(id); }
+  private rebuild(id: string) { const o = this.doc?.objects.find((x) => x.id === id); this.lastRebuilt = []; if (o) this.put(o); }
+  /** The red failing-chainage meshes (hover them for the requirement key, limit and value). */
+  failingPickables(): THREE.Object3D[] {
+    const out: THREE.Object3D[] = [];
+    if (!this.group.visible) return out;
+    for (const g of this.groups.values()) if (g.visible) g.traverse((o) => { if (typeof o.userData.failing === 'string') out.push(o); });
+    return out;
+  }
 
   /** Rebuild everything (first load, or the terrain changed). */
   syncAll(doc: SiteDesign) {
@@ -339,7 +382,7 @@ export class SiteScene {
     const byId = new Map(ev.doc.objects.map((o) => [o.id, o]));
     for (const id of [...ev.changed, ...ev.added]) { const o = byId.get(id); if (o) this.put(o); }
   }
-  private drop(id: string) { const g = this.groups.get(id); if (g) { this.group.remove(g); disposeGroup(g); this.groups.delete(id); } }
+  private drop(id: string) { const g = this.groups.get(id); if (g) { this.group.remove(g); disposeGroup(g); this.groups.delete(id); } if (!this.doc?.objects.some((x) => x.id === id)) { this.drives.delete(id); this.gradings.delete(id); } }
   private put(o: SiteObject) {
     this.drop(o.id);
     const g = buildObject(o, this.ctx); this.group.add(g); this.groups.set(o.id, g);
@@ -347,7 +390,10 @@ export class SiteScene {
     if (o.id === this.selected) this.paint(g, true);
   }
   /** Show an object in a transient state (during a drag) without touching the document. */
-  preview(o: SiteObject) { this.lastRebuilt = []; this.put(o); }
+  preview(o: SiteObject, derived?: { drive?: ProfileView | null }) {
+    if (derived && 'drive' in derived) { if (derived.drive) this.drives.set(o.id, derived.drive); else this.drives.delete(o.id); }
+    this.lastRebuilt = []; this.put(o);
+  }
   /** Rebuild one object from the document (drag cancelled). */
   restore(id: string) { this.lastRebuilt = []; const o = this.doc?.objects.find((x) => x.id === id); if (o) this.put(o); else this.drop(id); }
 

@@ -39,7 +39,11 @@ export async function saveSiteDesign(e: Endpoint, doc: SiteDesign, opts: { keepa
   try { r = await f(url(e), { method: 'PUT', headers: { 'Content-Type': 'application/json', ...e.headers }, credentials: 'include', body, ...(keepalive ? { keepalive: true } : {}) }); }
   catch (err) { throw new SiteDesignHttpError(0, `site design save failed: ${String(err)}`); }
   if (r.status === 409) { let cur: number | null = null; try { cur = Number((await r.json()).current_version); } catch { /* ignore */ } throw new VersionConflict(Number.isFinite(cur) ? cur : null); }
-  if (!r.ok) throw new SiteDesignHttpError(r.status, `site design save returned ${r.status}`);
+  if (!r.ok) {
+    let why = '';                                                    // the server explains a refused building (BUILDING_IMPORT_MISMATCH and the like): show it
+    try { const b = await r.json(); if (b && typeof b.message === 'string') why = b.message.slice(0, 400); } catch { /* not JSON */ }
+    throw new SiteDesignHttpError(r.status, why || `site design save returned ${r.status}`);
+  }
   return parseDesign(await r.json());
 }
 

@@ -106,11 +106,11 @@ function ViewerInner({ bundle, projectId, catalogue, provider, onItemsChange, co
   useEffect(() => {
     const e = new ViewerEngine(canvas.current!, stage.current!, root.current!, bundle, {
       onHover: setHover, onPick: setPick, onFp: (a, l) => { setFpOn(a); setLocked(l); }, onPlace: setPl, onItemsChange: (i) => cb.current.onItemsChange?.(i), onDesign: setDs,
-    }, { store });
+    }, { store, engine: persistent && projectId ? { base: API_BASE, projectId, headers: { 'X-User-Id': DEV_USER_ID } } : null });
     e.hud.needle = needle.current; e.place.check = (i, c) => cb.current.complianceCheck?.(i, c) ?? [];
     (window as unknown as { __viewer?: ViewerEngine }).__viewer = e; setEng(e); setPl(e.place.state()); setDs(e.design.state());
     return () => { e.dispose(); setEng(null); };
-  }, [bundle, store]);
+  }, [bundle, store, persistent, projectId]);
   // catalogue + persisted items from provider
   useEffect(() => {
     if (catalogue) { setCat(catalogue); return; }

@@ -6,7 +6,8 @@ export type ObjectType =
   | 'tree' | 'rwt' | 'pit' | 'osd'
   | 'retaining_wall' | 'infiltration_trench' | 'stormwater_pipe' | 'service_trace'
   | 'landscape_area' | 'grading_area' | 'osd_basin'
-  | 'building' | 'pool' | 'footpath' | 'furniture';
+  | 'building' | 'pool' | 'footpath' | 'furniture'
+  | 'driveway';
 export type GeometryKind = 'point' | 'polyline' | 'polygon';
 export type Status = 'existing' | 'proposed' | 'to_be_removed';
 export type Origin = 'user' | 'ai_proposal' | 'imported' | 'dbyd';
@@ -64,6 +65,8 @@ export interface Building {
   frame: BuildingFrame;
   /** name of the Plan Studio GLB shown as the visual (the bytes are not stored in the document) */
   glb_name?: string;
+  /** the stored server side import this building came from; the server refuses a saved building that does not match it */
+  import_id?: string;
   notes: string[];
 }
 
@@ -99,13 +102,16 @@ export const OBJECT_KINDS: Record<ObjectType, ObjectKind> = {
   stormwater_pipe: { geometry: 'polyline', label: 'STORMWATER PIPE', dims: ['diameter_mm'], colour: '#1f5fd1' },
   service_trace: { geometry: 'polyline', label: 'SERVICE TRACE', dims: [], colour: '#d9822b' },
   landscape_area: { geometry: 'polygon', label: 'LANDSCAPE AREA', dims: [], colour: '#6aa84f' },
-  grading_area: { geometry: 'polygon', label: 'GRADING AREA', dims: ['target_level_m'], colour: '#b8860b' },
+  // stage 6: the target is a level OR a grade with a fall direction (see gradingTargetSet), so there is no single dimension key
+  grading_area: { geometry: 'polygon', label: 'GRADING AREA', dims: [], colour: '#b8860b' },
   osd_basin: { geometry: 'polygon', label: 'OSD BASIN', dims: ['depth_m'], colour: '#5b6fd6' },
   // stage 5. A building is imported (never designed here): its footprint is its dimension, so it has no dimension parameters.
   building: { geometry: 'polygon', label: 'BUILDING', dims: [], colour: '#8d7b68' },
   pool: { geometry: 'polygon', label: 'POOL', dims: ['depth_m'], colour: '#29a3c7' },
   footpath: { geometry: 'polyline', alt: 'polygon', label: 'FOOTPATH', dims: ['width_m'], colour: '#b3a58f' },
   furniture: { geometry: 'point', label: 'OUTDOOR FURNITURE', dims: ['width_m', 'depth_m', 'height_m'], colour: '#a0642d' },
+  // stage 6. The centreline's FIRST point is the crossover on the assumed kerb line; the last is the garage end. The width is never defaulted.
+  driveway: { geometry: 'polyline', label: 'DRIVEWAY', dims: [], colour: '#6b7280' },
 };
 
 // ---- stage 5 enumerations (the same lists are in backend/app/design/site_design.py; a value outside a list is refused) ------------
@@ -116,14 +122,24 @@ export const ROOF_AREA_BASES = ['SOURCE VALUE', 'APPROXIMATE (PLAN STUDIO RASTER
 export const SURFACE_KINDS = ['turf', 'garden_bed', 'mulch', 'gravel', 'permeable_paving', 'impervious_paving'] as const;
 export const SURFACE_LABEL: Record<(typeof SURFACE_KINDS)[number], string> = { turf: 'TURF', garden_bed: 'GARDEN BED', mulch: 'MULCH', gravel: 'GRAVEL', permeable_paving: 'PERMEABLE PAVING', impervious_paving: 'IMPERVIOUS PAVING' };
 export const FOOTPATH_SURFACES = ['concrete', 'pavers', 'gravel', 'permeable_pavers'] as const;
+export const DRIVEWAY_SURFACES = ['concrete', 'asphalt', 'pavers', 'gravel', 'permeable_pavers'] as const;
 /** Text parameters limited to a list, by [object type, key]. */
 export const PARAM_ENUMS: Record<string, readonly string[]> = {
   'building.building_use': BUILDING_USES, 'building.source': BUILDING_SOURCES, 'building.roof_area_basis': ROOF_AREA_BASES,
-  'landscape_area.surface_kind': SURFACE_KINDS, 'footpath.surface_kind': FOOTPATH_SURFACES,
+  'landscape_area.surface_kind': SURFACE_KINDS, 'footpath.surface_kind': FOOTPATH_SURFACES, 'driveway.surface_kind': DRIVEWAY_SURFACES,
 };
 /** Parameters that must be numbers when they carry a value. */
 export const PARAM_NUMBERS: Record<string, readonly string[]> = {
   building: ['ffl_rl', 'height_m', 'roof_plan_area_m2'], pool: ['depth_m', 'coping_width_m'], footpath: ['width_m'], furniture: ['width_m', 'depth_m', 'height_m'],
+  // stage 6. Batter slopes are H per V (a 1 in 3 batter is 3); a grade is a percentage; a fall direction is a grid bearing in degrees.
+  driveway: ['width_m', 'end_level_rl', 'crossover_chainage_m', 'batter_cut_h_per_v', 'batter_fill_h_per_v'],
+  grading_area: ['target_level_m', 'target_grade_pct', 'fall_direction_deg', 'pivot_level_m', 'batter_cut_h_per_v', 'batter_fill_h_per_v'],
+};
+export const WIDTH_NOT_SET = 'WIDTH NOT SET', END_LEVEL_NOT_SET = 'END LEVEL NOT SET', TARGET_NOT_SET = 'TARGET NOT SET';
+/** Parameter keys the panel always lists for a type (shown NOT SET until a value is entered), besides the keys the object already has. */
+export const PANEL_KEYS: Partial<Record<ObjectType, string[]>> = {
+  driveway: ['width_m', 'end_level_rl', 'surface_kind', 'batter_cut_h_per_v', 'batter_fill_h_per_v'],
+  grading_area: ['target_level_m', 'target_grade_pct', 'fall_direction_deg', 'pivot_level_m', 'batter_cut_h_per_v', 'batter_fill_h_per_v'],
 };
 export const FFL_NOT_SET = 'FFL NOT SET', HEIGHT_NOT_SET = 'HEIGHT NOT SET', NOT_SET = 'NOT SET';
 export const POOL_BARRIER_LABEL = 'POOL BARRIER REQUIREMENTS: SEE RULES';
@@ -152,8 +168,14 @@ export function dimKeys(o: SiteObject): string[] {
   return k.alt && o.geometry.kind === k.alt ? [] : k.dims;
 }
 export function dimensionsSet(o: SiteObject): boolean {
+  if (o.type === 'grading_area') return gradingTargetSet(o);
+  if (o.type === 'driveway') return dimOf(o, 'width_m') !== null;
   const k = dimKeys(o);
   return k.length === 0 || k.every((key) => dimOf(o, key) !== null);
+}
+/** A grading area has a target when it has a level, or a grade together with its fall direction. Anything else is "not set". */
+export function gradingTargetSet(o: SiteObject): boolean {
+  return levelOf(o, 'target_level_m') !== null || (levelOf(o, 'target_grade_pct') !== null && levelOf(o, 'fall_direction_deg') !== null);
 }
 /** A numeric level (an RL may be zero or negative) that is set: finite and not UNRESOLVED. */
 export function levelOf(o: SiteObject, key: string): number | null {

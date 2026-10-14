@@ -8,6 +8,8 @@ import { drawMinimap } from './minimap';
 import { floorGround, maxGround } from './movement';
 import { DesignController, type DesignState, type PointerInfo } from '../site/designController';
 import { lotRingFromBundle, terrainAvailable } from '../site/lot';
+import { kerbFromBundle } from '../site/driveway';
+import type { Endpoint } from '../site/persist';
 import { designTerrainMeshes } from '../site/terrain';
 import { metresPerPixelOrtho, metresPerPixelPerspective } from '../site/snap';
 import type { SiteDesignStore } from '../site/store';
@@ -30,7 +32,7 @@ export class ViewerEngine {
   private lamp = new THREE.PointLight(0xffd9a8, 0, 12, 2); private interior = 0; private walkMeshes: THREE.Mesh[];
   private bounds: [number, number, number, number]; private cleanups: Array<() => void> = [];
 
-  constructor(private canvas: HTMLCanvasElement, private stage: HTMLElement, private theme: HTMLElement, private bundle: SceneBundle, private ev: EngineEvents = {}, opts: { store?: SiteDesignStore } = {}) {
+  constructor(private canvas: HTMLCanvasElement, private stage: HTMLElement, private theme: HTMLElement, private bundle: SceneBundle, private ev: EngineEvents = {}, opts: { store?: SiteDesignStore; /** where the stage 6 engines are (driveway long section, grading); absent = no server on this page */ engine?: Endpoint | null; engineDebounceMs?: number } = {}) {
     const css = (n: string) => getComputedStyle(this.theme).getPropertyValue(n).trim();
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); this.renderer.shadowMap.enabled = true; this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -51,8 +53,12 @@ export class ViewerEngine {
     const O = bundle.info.origin;
     // Design ground is terrain surface parts only (never the walkMeshes fallback of "every other mesh", which can include buildings, the aerial or items)
     const designGround = designTerrainMeshes(this.built.meshes, w?.terrain ?? []);
+    const lot = lotRingFromBundle(bundle);
     this.design = new DesignController({
-      built: this.built, origin: [O[0], O[1]], terrainMeshes: designGround, lot: lotRingFromBundle(bundle), terrainAvailable: designGround.length > 0 && terrainAvailable(bundle), store: opts.store,
+      built: this.built, origin: [O[0], O[1]], terrainMeshes: designGround, lot, terrainAvailable: designGround.length > 0 && terrainAvailable(bundle), store: opts.store,
+      // stage 6: the EXISTING ground (survey / DEM parts only; the design surface is never ground), the assumed kerb line, the engines and the terrain status
+      existingMeshes: this.built.meshes.filter((m) => m.userData.c === 'existing' || m.userData.c === 'context'), kerb: kerbFromBundle(bundle, lot),
+      engine: opts.engine ?? null, engineDebounceMs: opts.engineDebounceMs, terrainStatus: (bundle.info.terrain?.status ?? '').toUpperCase() || undefined,
       mpp: (p) => this.metresPerPixel(p), setOrbit: (on) => { if (this.controls) this.controls.enabled = on && !this.fpActive; },
     });
     this.design.listener = (s) => { this.canvas.style.cursor = s.active && s.tool !== 'select' ? 'crosshair' : ''; this.ev.onDesign?.(s); };
