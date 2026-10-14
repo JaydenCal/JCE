@@ -7,6 +7,7 @@
   var st=document.createElement('style');st.textContent='html.orbit canvas{cursor:grab}html.orbit canvas:active{cursor:grabbing}';document.head.appendChild(st);
   /* the page keeps the wheel until control is taken */
   window.addEventListener('wheel',function(e){if(zoomOn)return;e.stopImmediatePropagation();e.preventDefault();post({type:'wheel',dx:e.deltaX,dy:e.deltaY})},{capture:true,passive:false});
+  window.addEventListener('pointerdown',function(){if(!zoomOn)post({type:'engage'})},true);
   window.addEventListener('load',function(){post({type:'ready',views:views()})});
   window.addEventListener('message',function(e){
     if(e.source!==parent)return;var d=e.data||{};
