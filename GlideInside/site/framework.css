@@ -146,3 +146,23 @@ h1 em,h2 em{font-style:italic;font-weight:700;color:var(--accent);font-family:Ge
 .vp-btn:hover{background:#8d4524}
 .vp-cap{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;background:rgba(0,0,0,.45);color:#dfe6dc;padding:6px 14px;border-radius:99px}
 @media(prefers-reduced-motion:reduce){.vp-bg svg path,.vp-bg svg circle{animation:none;stroke-dashoffset:0}}
+
+.quote-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--deep);color:#eef1ea;border-top:2px solid var(--accent);box-shadow:0 -8px 24px rgba(0,0,0,.2)}
+.quote-bar .shell{display:flex;gap:20px;align-items:center;justify-content:space-between;padding-block:12px}
+.quote-bar .muted{color:#b9c4bb}.quote-bar .btn{white-space:nowrap}
+@media(max-width:700px){.quote-bar .shell>span{font-size:13px}.quote-bar .shell>span .muted{display:none}}
+.has-quote-bar{padding-bottom:76px}
+
+/* v4.3 polish */
+.ptm .toggle{background:rgba(0,0,0,.25);border:1px solid var(--line);padding:4px;border-radius:0;color:var(--text);font:inherit}
+.hero-centre{position:relative;isolation:isolate}
+.hero-centre::before{content:"";position:absolute;inset:-40px -10vw 0;z-index:-1;background:radial-gradient(ellipse 60% 70% at 50% 0%,rgba(163,83,45,.16),transparent 70%),linear-gradient(rgba(35,42,40,.05) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(35,42,40,.05) 1px,transparent 1px) 0 0/48px 48px;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+.hero-centre h1{font-size:clamp(44px,7vw,92px)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px}
+.chips .chip{background:#fff;color:var(--ink);font-family:var(--font);font-weight:600;font-size:13px;padding:8px 16px;box-shadow:0 1px 0 var(--line)}
+.chips .chip::before{content:"✓ ";color:var(--ok)}
+.viewport{box-shadow:0 30px 80px -30px rgba(28,48,37,.45);border-radius:20px}
+.btn{transition:transform .15s,box-shadow .15s}.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px -8px rgba(163,83,45,.6)}
+.card{transition:transform .2s,border-color .2s,box-shadow .2s}.card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 16px 36px -20px rgba(28,48,37,.4)}
+.js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}.js .reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none}}

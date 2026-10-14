@@ -31,6 +31,7 @@
   <p class="eyebrow">Concept planning tools · Regional Australia</p>
   <h1>From site to proposal in a fraction of the <em>time</em></h1>
   <p class="lead">Draw a shed, house or extension as a clean 2D plan set, or test how a site could subdivide into lots, roads and stages. Two tools, one workflow, built for the concept stage.</p>
+  <div class="chips"><span class="chip">No account needed</span><span class="chip">Concept plans in minutes</span><span class="chip">Led by a licensed civil engineer</span></div>
 </section>
 
 <section class="shell" id="viewport-section">
@@ -47,7 +48,7 @@
     </div>
     <div class="viewport-stage" data-panel="subdivision" id="vp-sub" hidden></div>
     <div class="viewport-foot" data-panel="plans"><span>2D plan outputs: dimensioned plans, schedules, PDF and DXF.</span><a class="link" href="plan-studio/index.html">See the shed example →</a></div>
-    <div class="viewport-foot" data-panel="subdivision" hidden><span>Subdivision modelling is by quote. Interactive 3D site model shown.</span><a class="link" href="subdivision/index.html">See the plans and 12-lot example →</a></div>
+    <div class="viewport-foot" data-panel="subdivision" hidden><span>Subdivision modelling is by quote. <a class="link" href="subdivision/index.html">See the plan-to-model example →</a></span><a class="btn btn-sm" data-cfg-href="subdivisionOrderUrl" href="index.html?project=subdivision#enquire">Request a quote →</a></div>
   </div>
 </section>
 <script>
@@ -55,7 +56,7 @@
   var cfg=window.GI_CONFIG||{},p=document.getElementById('vp-plans'),s=document.getElementById('vp-sub');
   if(cfg.heroVideoPlans){var bg=document.getElementById('vp-bg');bg.innerHTML='<video autoplay muted loop playsinline preload="auto" src="'+cfg.heroVideoPlans+'"'+(cfg.heroPoster?' poster="'+cfg.heroPoster+'"':'')+'></video>';}
   document.querySelector('[data-tab=subdivision]').addEventListener('click',function(){
-    if(!s.firstChild){s.innerHTML='<iframe title="Interactive subdivision site model" loading="lazy" src="subdivision/site-model.html"></iframe>';}
+    if(!s.firstChild){s.innerHTML='<iframe title="Interactive subdivision site model" loading="lazy" src="subdivision/ptm/model/index.html"></iframe>';}
   });
 })();
 </script>

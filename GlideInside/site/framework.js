@@ -3,7 +3,8 @@
   var cfg = window.GI_CONFIG || {};
   // data-cfg="key" fills text; data-cfg-href="key" sets links
   document.querySelectorAll("[data-cfg]").forEach(function (el) { var v = cfg[el.dataset.cfg]; if (v != null) el.textContent = v; });
-  document.querySelectorAll("[data-cfg-href]").forEach(function (el) { var v = cfg[el.dataset.cfgHref]; if (v) el.setAttribute("href", v); });
+  var fs = document.querySelector('script[src*="framework.js"]'), root = fs ? fs.src.replace(/framework\.js.*$/, "") : "";
+  document.querySelectorAll("[data-cfg-href]").forEach(function (el) { var v = cfg[el.dataset.cfgHref]; if (!v) return; if (!/^(https?:|mailto:|tel:|#)/.test(v)) v = new URL(v, root || location.href).href; el.setAttribute("href", v); });
   // mobile nav
   var t = document.querySelector(".nav-toggle"), n = document.querySelector(".site-nav");
   if (t && n) t.addEventListener("click", function () { var o = n.classList.toggle("open"); t.setAttribute("aria-expanded", o); });
@@ -56,4 +57,10 @@
     }
     root.addEventListener("change", upd); upd();
   });
+  // reveal on scroll
+  if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("js");
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: .12 });
+    document.querySelectorAll(".section-head,.card,.steps li,.faq details,.product-card").forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+  }
 })();

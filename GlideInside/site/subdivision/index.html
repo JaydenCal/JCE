@@ -34,7 +34,7 @@
 .demo tr[data-info]{cursor:pointer}.demo .tab-panel{padding:8px 12px 14px;overflow-x:auto}
 </style>
 </head>
-<body>
+<body class="has-quote-bar">
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header"><div class="shell">
   <a class="logo" href="../index.html" aria-label="Glide Inside home"><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
@@ -216,6 +216,50 @@
     <div class="demo-note">Illustrative example, not a real site. Areas, levels and services are indicative and not survey data.</div>
   </div>
 </section>
+<div class="ptm" id="showcase-wrap">
+<section class="showcase draft" id="showcase" aria-labelledby="show-h">
+  <i class="reg tl" aria-hidden="true"></i><i class="reg tr" aria-hidden="true"></i><i class="reg bl" aria-hidden="true"></i><i class="reg br" aria-hidden="true"></i>
+  <div class="show-pin" id="showPin">
+    <div class="wrap">
+      <header class="sh">
+        <p class="label">PLAN TO MODEL</p>
+        <h2 id="show-h" class="h-lg">Watch the plan become a 3D model</h2>
+      </header>
+      <div class="show-bar">
+        <div class="toggle" role="group" aria-label="Choose a project to show">
+          <button type="button" class="tg on" data-m="seniors" aria-pressed="true">Seniors living</button>
+          <button type="button" class="tg" data-m="industrial" aria-pressed="false">Industrial warehouse</button>
+        </div>
+        <p class="readout mono" aria-hidden="true"><span id="rdStage">PLAN</span> <span class="rdbar"><i id="rdFill"></i></span> <span id="rdPct">000</span>%</p>
+      </div>
+      <div class="stagewrap">
+      <div class="show-stage" id="showStage">
+        <i class="reg tl" aria-hidden="true"></i><i class="reg tr" aria-hidden="true"></i><i class="reg bl" aria-hidden="true"></i><i class="reg br" aria-hidden="true"></i>
+        <div class="slot on" data-m="seniors">
+          <div class="paper"><img class="poster" src="ptm/assets/plan-a.webp" alt="Issued civil plan sheet for the seniors living development, shown as a PDF" width="3200" height="1860" loading="lazy"><span class="pdftag">PDF &middot; Levels plan, sheet 1 of 1</span></div>
+          <iframe data-src="ptm/model/index.html?embed=1&amp;morph=1" title="3D model of a seniors living development morphing from plan to solid model" tabindex="-1"></iframe>
+        </div>
+        <div class="slot" data-m="industrial">
+          <div class="paper"><img class="poster" src="ptm/assets/plan-b.webp" alt="Issued siteworks and levels plan of the industrial warehouse, shown as a PDF" width="3600" height="2543" loading="lazy"><span class="pdftag">PDF &middot; Levels plan, sheet 1 of 1</span></div>
+          <iframe data-src="ptm/models/warehouse.html?embed=1" title="3D model of an industrial warehouse building up from its siteworks plan" tabindex="-1"></iframe>
+        </div>
+        <p class="stage-note" id="stageNote" hidden>Interactive view unavailable on this device. Showing the plan sheet.</p>
+      </div>
+      <div class="ctl-card" id="ctlCard" hidden><span class="label">Take control of the model</span><button type="button" class="btn btn-sm" id="ctlBtn">Take control</button></div>
+      <div class="vcol" id="vcol" role="group" aria-label="Model views" hidden></div>
+      </div>
+      <div class="show-foot">
+        <label class="rangewrap" for="showRange"><span class="label">PLAN</span><input type="range" id="showRange" min="0" max="100" value="0" aria-label="Plan to model progress"><span class="label">MODEL</span></label>
+        <p class="cap" id="showCap">32 single-storey units on a sloping lot. The graded surface, accessways, ramps and services rise out of the issued plan as you scroll.</p>
+        <p class="cap links"><a href="ptm/model/index.html" target="_blank" rel="noopener">Full seniors living viewer</a> <a href="ptm/models/warehouse.html" target="_blank" rel="noopener">Full warehouse viewer</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+<link rel="stylesheet" href="ptm/css/ptm.css">
+<script src="ptm/vendor/gsap.min.js" defer></script><script src="ptm/vendor/ScrollTrigger.min.js" defer></script><script src="ptm/js/ptm.js" defer></script>
+
 </div>
 
 <section class="section" style="padding-top:clamp(24px,4vw,48px)">
@@ -229,7 +273,7 @@
   <div style="margin-top:28px">
     <button type="button" class="btn btn-ghost" id="load-model" aria-controls="model-wrap">Load a 3D model example</button>
     <div id="model-wrap" style="margin-top:16px" hidden>
-      <iframe class="model-frame" id="model-frame" title="Example 3D site model" data-src="../commercial/index.html?embed=1" loading="lazy"></iframe>
+      <iframe class="model-frame" id="model-frame" title="Example 3D site model" data-src="ptm/model/index.html" loading="lazy"></iframe>
       <p class="muted" style="font-size:13px;margin:8px 0 0">Example model from our commercial and rural work. <a class="link" href="../commercial/index.html">Open it full size</a>.</p>
     </div>
   </div>
@@ -310,5 +354,7 @@
   b.addEventListener('click',function(){if(!f.src||f.src===location.href){f.src=f.dataset.src;}w.hidden=false;b.hidden=true;});
 })();
 </script>
+
+<div class="quote-bar" role="region" aria-label="Request a quote"><div class="shell"><span><strong>Subdivision modelling is by quote.</strong> <span class="muted">Tell us about your site and we reply within one business day.</span></span><a class="btn" data-cfg-href="subdivisionOrderUrl" href="../index.html?project=subdivision#enquire">Request a quote <span aria-hidden="true">→</span></a></div></div>
 </body>
 </html>

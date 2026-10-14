@@ -12,9 +12,9 @@ window.GI_CONFIG = {
   heroVideoPlans: "",             // e.g. "assets/plan-creation.mp4": plays muted on loop behind the button
   heroPoster: "",
   premiumEnabled: false,          // Phase 1: Plan Pack shows "Coming soon"
-  orderUrl: "../index.html#enquire",         // existing live enquiry form
-  planOrderUrl: "../index.html?project=floor-plan#enquire",
-  subdivisionOrderUrl: "../index.html?project=subdivision#enquire",
+  orderUrl: "index.html#enquire",         // existing live enquiry form
+  planOrderUrl: "index.html?project=floor-plan#enquire",
+  subdivisionOrderUrl: "index.html?project=subdivision#enquire",
   email: "hello@glideinside.com.au",
   phone: "0477 207 027"
 };
