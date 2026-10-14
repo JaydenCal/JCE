@@ -14,6 +14,7 @@ window.GI_CONFIG = {
   premiumEnabled: true,
   orderUrl: "mailto:hello@glideinside.com.au?subject=Glide%20Inside%20enquiry",
   planOrderUrl: "mailto:hello@glideinside.com.au?subject=Pocket%20Architect%20enquiry",
+  subdivisionOrderUrl: "mailto:hello@glideinside.com.au?subject=Subdivision%20quote%20request", // or a quote form inside the app
   email: "hello@glideinside.com.au",
   phone: "0477 207 027"
 };
