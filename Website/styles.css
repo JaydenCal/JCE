@@ -251,7 +251,7 @@ h1,h2,h3{font-family:var(--disp);font-weight:500;letter-spacing:-.02em;line-heig
 .stagewrap{position:relative}
 .ctl-card{position:absolute;top:10px;right:10px;z-index:5;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 14px;background:rgba(10,10,9,.92);border:1px solid var(--gold)}
 .ctl-card .label{margin:0}
-.vcol{position:absolute;right:10px;top:68px;bottom:10px;z-index:5;display:flex;flex-direction:column;gap:5px;overflow-y:auto;padding:6px;background:rgba(10,10,9,.82);border:1px solid var(--line);scrollbar-width:thin}
+.vcol{position:absolute;right:10px;top:98px;bottom:10px;z-index:5;display:flex;flex-direction:column;gap:5px;overflow-y:auto;padding:6px;background:rgba(10,10,9,.82);border:1px solid var(--line);scrollbar-width:thin}
 .vcol[hidden],.ctl-card[hidden]{display:none}
 .vbtn{flex:none;min-height:32px;padding:0 10px;background:transparent;color:var(--gold2);border:1px solid var(--line);font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;text-align:left;cursor:pointer;white-space:nowrap}
 .vbtn:hover{border-color:var(--gold)}
