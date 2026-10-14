@@ -1,0 +1,21 @@
+name = "pocket-architect-api"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+routes = [{ pattern = "glideinside.com.au/api/*", zone_name = "glideinside.com.au" }]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pocket-architect"
+database_id = "PASTE_ID"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "pocket-architect-files"
+
+[vars]
+SITE_URL = "https://glideinside.com.au"
+APP_URL = "https://glideinside.com.au/plan-studio/app/"
+PLAN_PRICE_CENTS = "3500"
+PLAN_PACK_CREDITS = "500"
+ENTITLEMENT_DAYS = "365"
+# Secrets (wrangler secret put): STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ENTITLEMENT_SECRET. Optional: STRIPE_PRICE_ID, ANTHROPIC_API_KEY
