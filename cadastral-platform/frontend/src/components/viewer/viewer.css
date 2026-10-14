@@ -126,3 +126,20 @@
 .v3d .ck-table{margin-top:8px;table-layout:fixed}
 .v3d .ck-table th,.v3d .ck-table td{vertical-align:top;overflow-wrap:anywhere}
 .v3d .ck-table tr.ck-fail td{background:color-mix(in srgb,var(--bad) 12%,transparent)}
+.v3d .readout .ck-fail{color:var(--bad)}
+/* stage 7: checks list, typed fields, wall screening */
+.v3d .badge.basis-model_check{background:var(--muted)}
+.v3d .badge.basis-state_rule{background:#2d6cdf}
+.v3d .badge.ck-status{background:var(--chip);color:var(--fg)}
+.v3d .ck-list{list-style:none;margin:4px 0 8px;padding:0;display:flex;flex-direction:column;gap:6px}
+.v3d .ck-row{border:1px solid var(--line);border-radius:6px;padding:6px}
+.v3d .ck-row.sev-row-blocking{border-left:4px solid var(--bad)}
+.v3d .ck-row.sev-row-warning{border-left:4px solid #b8860b}
+.v3d .ck-hit{all:unset;display:block;cursor:pointer;width:100%;font-size:12px;color:var(--fg);font-family:var(--body)}
+.v3d .ck-hit:disabled{cursor:default}
+.v3d .ck-hit:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.v3d .ck-msg{margin-top:2px;overflow-wrap:anywhere}
+.v3d .ck-meta{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin-top:4px;font-size:11px}
+.v3d .dz-wide{grid-template-columns:minmax(90px,1fr) 1.2fr auto}
+.v3d .dz-groups details{margin:6px 0}
+.v3d .screen-box{border:1px dashed var(--bad);border-radius:6px;padding:6px;margin-top:8px;font-size:12px}

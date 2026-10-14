@@ -18,8 +18,9 @@ export { CUT_COLOUR, CUTFILL_SATURATION_M, FILL_COLOUR, LIFT, cutFillColour };
 import type { ChangeEvent } from './store';
 import { drivewayParts, gradingParts } from './earthworksScene';
 import type { GradingResult, ProfileView } from './driveway';
+import { SRZ_LABEL, TPZ_LABEL, extraLabelLines } from './siteObjects';
 import {
-  BUILDING_USE_LABEL, DIMENSIONS_NOT_SET, END_LEVEL_NOT_SET, FFL_NOT_SET, HEIGHT_NOT_SET, TARGET_NOT_SET, WIDTH_NOT_SET, OBJECT_KINDS, POOL_BARRIER_LABEL, STATUS_LABEL, SURFACE_LABEL, dimOf, dimensionsSet, levelOf, verticesOf,
+  BUILDING_USE_LABEL, DIMENSIONS_NOT_SET, END_LEVEL_NOT_SET, FFL_NOT_SET, HEIGHT_NOT_SET, TARGET_NOT_SET, WIDTH_NOT_SET, OBJECT_KINDS, POOL_BARRIER_LABEL, STATUS_LABEL, SURFACE_LABEL, dimOf, dimensionsSet, levelOf, rwtShape, textOf, verticesOf, wallHeightAt,
   type Pos, type SiteDesign, type SiteObject,
 } from './types';
 
@@ -47,6 +48,8 @@ interface Ctx {
   /** engine results held for an object id (stage 6) */
   drive?: (id: string) => ProfileView | null;
   grading?: (id: string) => GradingResult | null;
+  /** tree protection zone radii of an object id from the last server check (stage 7), metres; absent = the rule keys are UNRESOLVED */
+  zones?: (id: string) => { tpz: number | null; srz: number | null };
 }
 type V3 = [number, number, number];
 
@@ -182,7 +185,13 @@ function labelLines(o: SiteObject, c?: Ctx): string {
     const ra = dimOf(o, 'roof_plan_area_m2'), rb = o.params.roof_area_basis?.value;
     L.push(ra !== null ? `ROOF ${ra.toFixed(1)} M2 ${typeof rb === 'string' ? rb : ''}`.trim() : 'ROOF AREA NOT SET');
   }
-  if (o.type === 'pool') L.push(POOL_BARRIER_LABEL);
+  if (o.type === 'pool' || o.type === 'pool_barrier') L.push(POOL_BARRIER_LABEL);
+  L.push(...extraLabelLines(o));
+  if (o.type === 'tree' && c?.zones) {
+    const z = c.zones(o.id);
+    if (z.tpz !== null) L.push(`${TPZ_LABEL} R ${z.tpz.toFixed(2)} M`);
+    if (z.srz !== null) L.push(`${SRZ_LABEL} R ${z.srz.toFixed(2)} M`);
+  }
   if (o.type === 'footpath' || o.type === 'landscape_area') {
     const sk = o.params.surface_kind?.value;
     if (typeof sk === 'string') L.push(((SURFACE_LABEL as Record<string, string>)[sk] ?? sk.replace(/_/g, ' ').toUpperCase()));
@@ -245,6 +254,98 @@ function buildingParts(o: SiteObject, g: THREE.Group, col: THREE.Color, oc: THRE
   return h + 1;
 }
 
+// ---- stage 7 models -----------------------------------------------------------------------------------------------------------------
+/** Display colours of the landscape surface kinds (a drawing convention, not data). */
+const LANDSCAPE_COLOURS: Record<string, string> = { turf: '#6aa84f', garden_bed: '#7b5a3a', mulch: '#8a6a45', gravel: '#b7b0a2', permeable_paving: '#a8b9c4', impervious_paving: '#7d8084' };
+function landscapeColour(o: SiteObject, fallback: THREE.Color): THREE.Color {
+  const k = textOf(o, 'surface_kind');
+  return k && LANDSCAPE_COLOURS[k] ? new THREE.Color(LANDSCAPE_COLOURS[k]) : fallback;
+}
+/** Samples along a polyline with their chainage (heights from the terrain, nearest known value where it does not reach), plus the chainage of every vertex. */
+function alongLine(ps: readonly Pos[], c: Ctx): { s: { x: number; y: number; z: number; t: number }[]; vt: number[] } {
+  const d = drapePolyline(ps, c.sample, DRAPE_STEP, false), known = d.map((x) => x.p[2]).filter((z): z is number => z !== null);
+  let last = known.length ? known[0] : 0, t = 0;
+  const s = d.map((x, i) => { if (i) t += Math.hypot(x.p[0] - d[i - 1].p[0], x.p[1] - d[i - 1].p[1]); const z = x.p[2] ?? last; last = z; return { x: x.p[0] - c.O[0], y: x.p[1] - c.O[1], z, t }; });
+  const vt: number[] = []; d.forEach((x, i) => { if (x.vertex !== null) vt[x.vertex] = s[i].t; });
+  return { s, vt };
+}
+/** Linear interpolation of a value given at the vertices (by chainage along the line). */
+function interp(vt: number[], vals: number[], t: number): number {
+  if (t <= vt[0]) return vals[0];
+  for (let i = 1; i < vt.length; i++) if (t <= vt[i]) { const u = (t - vt[i - 1]) / ((vt[i] - vt[i - 1]) || 1); return vals[i - 1] + (vals[i] - vals[i - 1]) * u; }
+  return vals[vals.length - 1];
+}
+/** Retaining wall: top and bottom surfaces from the vertex levels (top RL and bottom RL), or the uniform height above the terrain. Heights are never invented. */
+function wallParts(o: SiteObject, ps: readonly Pos[], c: Ctx, col: THREE.Color, op: number): { parts: THREE.Object3D[]; rise: number } {
+  const th = dimOf(o, 'thickness_m')!, { s, vt } = alongLine(ps, c), r = o.vertex_rls;
+  const zAt = (i: number) => { const z = ps[i][2] ?? c.sample(ps[i][0], ps[i][1]); return z ?? s[0].z; };
+  const bot: number[] = [], top: number[] = [];
+  ps.forEach((_, i) => {
+    const both = r && r.top[i] != null && r.bottom[i] != null;
+    bot.push(both ? (r!.bottom[i] as number) : zAt(i));
+    top.push(both ? (r!.top[i] as number) : zAt(i) + (wallHeightAt(o, i) ?? 0));
+  });
+  const path: V3[] = s.map((q) => [q.x, q.y, q.z]), { left, right } = offsets(path, th / 2, c);
+  const setZ = (a: V3[], f: (t: number) => number): V3[] => a.map((p, i) => [p[0], p[1], f(s[i].t)]);
+  const bt = (t: number) => interp(vt, bot, t), tp = (t: number) => interp(vt, top, t);
+  const pos: number[] = [];
+  strip(setZ(left, tp), setZ(right, tp), pos); strip(setZ(left, bt), setZ(left, tp), pos); strip(setZ(right, bt), setZ(right, tp), pos);
+  return { parts: [meshOf(pos, solidMat(col, op))], rise: Math.max(...top.map((t, i) => t - zAt(i)), 0.5) + 0.8 };
+}
+/** Pipe as a tube along its axis (invert plus half the diameter), the invert interpolated between the upstream and downstream inverts by chainage. */
+function pipeMesh(o: SiteObject, ps: readonly Pos[], c: Ctx, col: THREE.Color, op: number): THREE.Mesh {
+  const r = dimOf(o, 'diameter_mm')! / 2000, up = levelOf(o, 'upstream_invert_rl')!, dn = levelOf(o, 'downstream_invert_rl')!;
+  const { s } = alongLine(ps, c), L = s[s.length - 1].t || 1, K = 12, pos: number[] = [];
+  const axis: V3[] = s.map((q) => [q.x, q.y, up + (dn - up) * (q.t / L) + r]);
+  const ring = (i: number, k: number): V3 => {
+    const a = axis[Math.max(0, i - 1)], b = axis[Math.min(axis.length - 1, i + 1)]; let dx = b[0] - a[0], dy = b[1] - a[1]; const n = Math.hypot(dx, dy) || 1; dx /= n; dy /= n;
+    const ang = (k / K) * Math.PI * 2, rx = -dy * Math.cos(ang) * r, ry = dx * Math.cos(ang) * r;
+    return [axis[i][0] + rx, axis[i][1] + ry, axis[i][2] + Math.sin(ang) * r];
+  };
+  for (let i = 0; i + 1 < axis.length; i++) for (let k = 0; k < K; k++) pos.push(...ring(i, k), ...ring(i + 1, k), ...ring(i, k + 1), ...ring(i, k + 1), ...ring(i + 1, k), ...ring(i + 1, k + 1));
+  return meshOf(pos, solidMat(col, op));
+}
+/** A cone at the last point of a path pointing along its last segment (an overflow route's direction of flow). */
+function arrowHead(path: V3[], oc: THREE.Color, op: number): THREE.Mesh {
+  const a = path[path.length - 2], b = path[path.length - 1];
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.9, 12), new THREE.MeshBasicMaterial({ color: oc, transparent: op < 1, opacity: op }));
+  cone.rotation.set(0, 0, Math.atan2(b[1] - a[1], b[0] - a[0]) - Math.PI / 2); cone.position.set(b[0], b[1], b[2] + 0.3); cone.userData.pick = true; cone.userData.baseColour = oc.getHex();
+  return cone;
+}
+/** Ring pushed outwards by `d` metres with mitred corners (the coping edge). Returns null for a ring with no area. */
+export function offsetRing(ring: readonly Pos[], d: number): [number, number][] | null {
+  const n = ring.length; let a2 = 0; for (let i = 0; i < n; i++) { const p = ring[i], q = ring[(i + 1) % n]; a2 += p[0] * q[1] - q[0] * p[1]; }
+  if (n < 3 || Math.abs(a2) < 1e-9) return null;
+  const sgn = a2 > 0 ? 1 : -1, out: [number, number][] = [];
+  for (let i = 0; i < n; i++) {
+    const p = ring[(i + n - 1) % n], q = ring[i], r = ring[(i + 1) % n];
+    const n1 = norm(q[0] - p[0], q[1] - p[1], sgn), n2 = norm(r[0] - q[0], r[1] - q[1], sgn), bx = n1[0] + n2[0], by = n1[1] + n2[1], k = 1 + (n1[0] * n2[0] + n1[1] * n2[1]);
+    const m = Math.min(1 / Math.max(k, 0.05), 20) * d;
+    out.push([q[0] + bx * m, q[1] + by * m]);
+  }
+  return out;
+}
+const norm = (dx: number, dy: number, sgn: number): [number, number] => { const L = Math.hypot(dx, dy) || 1; return [(dy / L) * sgn, (-dx / L) * sgn]; };
+function flatFill(ring: readonly Pos[], z: number, c: Ctx, mat: THREE.Material): THREE.Mesh | null {
+  const loc = ring.map((p) => new THREE.Vector2(p[0] - c.O[0], p[1] - c.O[1])), faces = THREE.ShapeUtils.triangulateShape(loc, []);
+  if (!faces.length) return null;
+  const pos: number[] = []; for (const f of faces) for (const i of f) pos.push(loc[i].x, loc[i].y, z);
+  return meshOf(pos, mat);
+}
+/** Pool: water surface at the water level, walls and floor down by the depth, and the coping band outside the water edge. Needs depth, coping width and water level. */
+function poolParts(o: SiteObject, ps: readonly Pos[], c: Ctx, col: THREE.Color, op: number): THREE.Object3D[] {
+  const wl = levelOf(o, 'water_level_rl')!, D = dimOf(o, 'depth_m')!, cw = dimOf(o, 'coping_width_m')!, out: THREE.Object3D[] = [];
+  const water = flatFill(ps, wl, c, new THREE.MeshBasicMaterial({ color: new THREE.Color('#29a3c7'), transparent: true, opacity: 0.55 * op, side: THREE.DoubleSide, depthWrite: false })); if (water) out.push(water);
+  out.push(wallsMesh(ps, wl - D, D, c, col, 0.35 * op));
+  const floor = flatFill(ps, wl - D, c, solidMat(col, 0.35 * op)); if (floor) out.push(floor);
+  const outer = offsetRing(ps, cw);
+  if (outer) {
+    const a: V3[] = ps.map((p) => [p[0] - c.O[0], p[1] - c.O[1], wl + 0.02]), b: V3[] = outer.map((p) => [p[0] - c.O[0], p[1] - c.O[1], wl + 0.02]); a.push(a[0]); b.push(b[0]);
+    const pos: number[] = []; strip(a, b, pos); out.push(meshOf(pos, solidMat(new THREE.Color('#d8d2c4'), op)));
+  }
+  return out;
+}
+
 export function buildObject(o: SiteObject, c: Ctx): THREE.Group {
   const g = new THREE.Group(); g.userData = { siteId: o.id, type: o.type };
   const geom = o.geometry, kind = OBJECT_KINDS[o.type], col = baseColour(o), oc = outlineColour(o), op = opacityOf(o);
@@ -261,22 +362,39 @@ export function buildObject(o: SiteObject, c: Ctx): THREE.Group {
       const s = add(new THREE.Mesh(new THREE.SphereGeometry(cd / 2, 20, 14), solidMat(col, op))); s.position.z = zc;
       own.add(pick(lineObj([[0, 0, 0], [0, 0, zc]], oc, op))); labelRise = h + 0.6;
     } else if (set && o.type === 'rwt') {
-      const d = dimOf(o, 'diameter_m')!, h = dimOf(o, 'height_m')!, cg = new THREE.CylinderGeometry(d / 2, d / 2, h, 28); cg.rotateX(Math.PI / 2); cg.translate(0, 0, h / 2);
-      add(new THREE.Mesh(cg, solidMat(col, op))); labelRise = h + 0.6;
+      const sh = rwtShape(o)!, h = dimOf(o, 'height_m')!;
+      if (sh === 'round') {
+        const d = dimOf(o, 'diameter_m')!, cg = new THREE.CylinderGeometry(d / 2, d / 2, h, 28); cg.rotateX(Math.PI / 2); cg.translate(0, 0, h / 2);
+        add(new THREE.Mesh(cg, solidMat(col, op))); labelRise = h + 0.6;
+      } else {
+        const w = dimOf(o, 'width_m')!, l = dimOf(o, 'length_m')!, bg = new THREE.BoxGeometry(w, l, h);
+        if (sh === 'underground') {             // below the surface: a translucent body with its top outline at the surface
+          bg.translate(0, 0, -h / 2); add(new THREE.Mesh(bg, solidMat(col, 0.35 * op)));
+          const hw = w / 2, hl = l / 2; own.add(pick(lineObj([[-hw, -hl, LIFT], [hw, -hl, LIFT], [hw, hl, LIFT], [-hw, hl, LIFT], [-hw, -hl, LIFT]], oc, op))); labelRise = 1.2;
+        } else { bg.translate(0, 0, h / 2); add(new THREE.Mesh(bg, solidMat(col, op))); labelRise = h + 0.6; }
+      }
     } else if (set && o.type === 'osd') {
-      const w = dimOf(o, 'width_m')!, l = dimOf(o, 'length_m')!, h = dimOf(o, 'height_m')!, bg = new THREE.BoxGeometry(w, l, h); bg.translate(0, 0, h / 2);
-      add(new THREE.Mesh(bg, solidMat(col, op))); labelRise = h + 0.6;
+      const w = dimOf(o, 'width_m')!, l = dimOf(o, 'length_m')!, h = dimOf(o, 'height_m')!, below = textOf(o, 'form') !== 'tank', bg = new THREE.BoxGeometry(w, l, h);
+      bg.translate(0, 0, below ? -h / 2 : h / 2); add(new THREE.Mesh(bg, solidMat(col, below ? 0.35 * op : op)));
+      if (below) { const hw = w / 2, hl = l / 2; own.add(pick(lineObj([[-hw, -hl, LIFT], [hw, -hl, LIFT], [hw, hl, LIFT], [-hw, hl, LIFT], [-hw, -hl, LIFT]], oc, op))); labelRise = 1.2; } else labelRise = h + 0.6;
     } else if (set && o.type === 'furniture') {
       const w = dimOf(o, 'width_m')!, d = dimOf(o, 'depth_m')!, h = dimOf(o, 'height_m')!, bg = new THREE.BoxGeometry(w, d, h); bg.translate(0, 0, h / 2);
       add(new THREE.Mesh(bg, solidMat(col, op))); labelRise = h + 0.6;
-    } else if (set && o.type === 'pit') {
+    } else if (set && o.type === 'stormwater_pit') {
       const w = dimOf(o, 'width_m')!, l = dimOf(o, 'length_m')!, pg = new THREE.PlaneGeometry(w, l); pg.translate(0, 0, LIFT);
       add(new THREE.Mesh(pg, flatMat(col, 1))); const hw = w / 2, hl = l / 2;
       own.add(pick(lineObj([[-hw, -hl, LIFT], [hw, -hl, LIFT], [hw, hl, LIFT], [-hw, hl, LIFT], [-hw, -hl, LIFT]], oc, op)));
+      const inv = levelOf(o, 'invert_rl'), surface = c.sample(geom.p[0], geom.p[1]);          // the depth is drawn only when the invert is set and the terrain reaches the pit
+      if (inv !== null && surface !== null && surface - inv > 0) { const dep = surface - inv, bg = new THREE.BoxGeometry(w, l, dep); bg.translate(0, 0, -dep / 2); add(new THREE.Mesh(bg, solidMat(col, 0.35 * op))); }
     } else {
       // marker: no dimensions are known, so no size is implied. Pole and heading tick show position and rotation only.
       add(new THREE.Mesh(new THREE.SphereGeometry(MARKER_RADIUS, 14, 10), new THREE.MeshBasicMaterial({ color: oc, transparent: op < 1, opacity: op }))).position.z = MARKER_RADIUS;
       own.add(pick(lineObj([[0, 0, 0], [0, 0, 2.2]], oc, op))); own.add(pick(lineObj([[0, 0, 0.05], [0, 1.2, 0.05]], oc, op))); labelRise = 2.6;
+    }
+    if (o.type === 'tree' && o.status !== 'proposed' && c.zones) {            // protection zones only when the server resolved the rule keys (never a built in multiplier)
+      const z = c.zones(o.id), ring = (r: number, col2: string) => { const v: V3[] = []; for (let i = 0; i <= 48; i++) { const a = (i / 48) * Math.PI * 2; v.push([r * Math.cos(a), r * Math.sin(a), LIFT * 2]); } return lineObj(v, new THREE.Color(col2), op); };
+      if (z.tpz !== null) own.add(ring(z.tpz, '#2e9e44'));
+      if (z.srz !== null) own.add(ring(z.srz, '#c0392b'));
     }
   } else {
     const ps = verticesOf(geom), closed = geom.kind === 'polygon', path = drapedPath(ps, closed, c);
@@ -289,19 +407,34 @@ export function buildObject(o: SiteObject, c: Ctx): THREE.Group {
     } else if (o.type === 'grading_area') {
       const res = c.grading?.(o.id) ?? null, parts = gradingParts(o, res, { O: c.O, existing: c.existing ?? (() => null) });
       if (parts.length) parts.forEach((x) => g.add(x)); else { const f = fillMesh(ps, c, flatMat(col, op)); if (f) g.add(f); }
-    } else if (closed) {
+    } else if (o.type === 'pool' && set) {
+      poolParts(o, ps, c, col, op).forEach((x) => g.add(x));
+    } else if (o.type === 'osd_basin' && set) {
       const f = fillMesh(ps, c, flatMat(col, op)); if (f) g.add(f);
+      const m = ringCentroid(ps), z0 = c.sample(m[0], m[1]), D = dimOf(o, 'depth_m')!;
+      if (z0 !== null) g.add(wallsMesh(ps, z0 - D, D, c, col, 0.35 * op));
+    } else if (closed) {
+      const f = fillMesh(ps, c, o.type === 'landscape_area' ? flatMat(landscapeColour(o, col), op) : flatMat(col, op)); if (f) g.add(f);
     } else if (o.type === 'driveway') {
       const w = dimOf(o, 'width_m');
       if (w !== null) drivewayParts(o, w, c.drive?.(o.id) ?? null, { O: c.O, existing: c.existing ?? (() => null) }).forEach((x) => g.add(x));
-    } else if (set && (o.type === 'retaining_wall' || o.type === 'infiltration_trench' || o.type === 'stormwater_pipe' || o.type === 'footpath')) {
-      const half = (o.type === 'retaining_wall' ? dimOf(o, 'thickness_m')! : o.type === 'infiltration_trench' || o.type === 'footpath' ? dimOf(o, 'width_m')! : dimOf(o, 'diameter_mm')! / 1000) / 2;
-      const { left, right } = offsets(path, half, c), pos: number[] = [];
-      if (o.type === 'retaining_wall') {
-        const h = dimOf(o, 'height_m')!, up = (a: V3[]): V3[] => a.map((p) => [p[0], p[1], p[2] + h]);
-        strip(up(left), up(right), pos); strip(left, up(left), pos); strip(right, up(right), pos); labelRise = h + 0.8;
-      } else strip(left, right, pos);
-      g.add(meshOf(pos, o.type === 'retaining_wall' ? solidMat(col, op) : flatMat(col, op)));
+    } else if (set && o.type === 'footpath') {
+      const { left, right } = offsets(path, dimOf(o, 'width_m')! / 2, c), pos: number[] = [];
+      strip(left, right, pos); g.add(meshOf(pos, flatMat(col, op)));
+    } else if (set && o.type === 'retaining_wall') {
+      const r = wallParts(o, ps, c, col, op); r.parts.forEach((x) => g.add(x)); labelRise = r.rise;
+    } else if (set && o.type === 'infiltration_trench') {
+      const { left, right } = offsets(path, dimOf(o, 'width_m')! / 2, c), D = dimOf(o, 'depth_m')!, pos: number[] = [];
+      const dn = (a: V3[]): V3[] => a.map((p) => [p[0], p[1], p[2] - D]);
+      strip(left, right, pos); g.add(meshOf(pos, flatMat(col, op)));
+      const body: number[] = []; strip(dn(left), dn(right), body); strip(left, dn(left), body); strip(right, dn(right), body); g.add(meshOf(body, solidMat(col, 0.35 * op)));
+    } else if (set && o.type === 'stormwater_pipe') {
+      g.add(pipeMesh(o, ps, c, col, op));
+    } else if (set && o.type === 'pool_barrier') {
+      const h = dimOf(o, 'height_m')!, pos: number[] = [], up = path.map((p): V3 => [p[0], p[1], p[2] + h]);
+      strip(path, up, pos); g.add(meshOf(pos, solidMat(col, 0.6 * op))); labelRise = h + 0.8;
+    } else if (o.type === 'overflow_route' && path.length >= 2) {
+      g.add(arrowHead(path, oc, op));
     }
     labelRise = Math.max(labelRise, 1.0);
   }
@@ -338,6 +471,7 @@ export class SiteScene {
     this.ctx = {
       O: opts.origin, sample: (e, n) => (opts.terrain ? opts.terrain.sample(e, n) : null), label: opts.makeLabel ?? makeSprite, glb: (id) => this.glbs.get(id)?.clone(true) ?? null,
       existing: opts.existing, drive: (id) => this.drives.get(id) ?? null, grading: (id) => this.gradings.get(id) ?? null,
+      zones: (id) => this.zones.get(id) ?? { tpz: null, srz: null },
     };
   }
   /** Loaded Plan Studio GLBs by building id. The bytes are not part of the document: after a reload the visual is missing until it is attached again. */
@@ -350,6 +484,22 @@ export class SiteScene {
     const o = this.doc?.objects.find((x) => x.id === id); if (o) { this.lastRebuilt = []; this.put(o); }
   }
   setTerrain(t: SceneTerrain | null) { this.opts.terrain = t; }
+
+  // ---- stage 7: tree protection zones from the server check (outside the document; shown only when the rule keys resolved)
+  private zones = new Map<string, { tpz: number | null; srz: number | null }>();
+  zoneOf(id: string) { return this.zones.get(id) ?? { tpz: null, srz: null }; }
+  /** Set the zone radii of the trees (an id missing from `next` has none). Rebuilds only the trees whose radii changed. */
+  setZones(next: Record<string, { tpz: number | null; srz: number | null }>) {
+    const ids = new Set([...this.zones.keys(), ...Object.keys(next)]);
+    let first = true;
+    for (const id of ids) {
+      const a = this.zones.get(id) ?? { tpz: null, srz: null }, b = next[id] ?? { tpz: null, srz: null };
+      if (a.tpz === b.tpz && a.srz === b.srz) continue;
+      if (first) { this.lastRebuilt = []; first = false; }
+      if (b.tpz === null && b.srz === null) this.zones.delete(id); else this.zones.set(id, b);
+      const o = this.doc?.objects.find((x) => x.id === id); if (o) this.put(o);
+    }
+  }
 
   // ---- stage 6 engine results (outside the document): a long section for a driveway, volumes for a grading area
   private drives = new Map<string, ProfileView>();

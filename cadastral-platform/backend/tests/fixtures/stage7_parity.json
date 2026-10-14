@@ -1,0 +1,265 @@
+{
+ "note": "SYNTHETIC TEST FIXTURE. One document run through the Python checks (backend/tests/test_site_objects_review.py) and the TypeScript computed values (frontend/tests/site/stage7_review.test.ts). Ground: z = z0 + slope_y x (northing - origin_n).",
+ "ground": {
+  "origin_e": 334500.0,
+  "origin_n": 6263900.0,
+  "z0": 100.0,
+  "slope_y": 0.05
+ },
+ "doc": {
+  "schema": "site_design.v1",
+  "version": 1,
+  "objects": [
+   {
+    "id": "pit_ok",
+    "type": "stormwater_pit",
+    "geometry": {
+     "kind": "point",
+     "p": [
+      334503.0,
+      6263910.0
+     ]
+    },
+    "params": {
+     "width_m": {
+      "value": 0.6,
+      "basis": "user"
+     },
+     "length_m": {
+      "value": 0.6,
+      "basis": "user"
+     },
+     "invert_rl": {
+      "value": 99.0,
+      "basis": "user"
+     }
+    }
+   },
+   {
+    "id": "pit_neg",
+    "type": "stormwater_pit",
+    "geometry": {
+     "kind": "point",
+     "p": [
+      334503.0,
+      6263914.0
+     ]
+    },
+    "params": {
+     "width_m": {
+      "value": 0.6,
+      "basis": "user"
+     },
+     "length_m": {
+      "value": 0.6,
+      "basis": "user"
+     },
+     "invert_rl": {
+      "value": 101.2,
+      "basis": "user"
+     }
+    }
+   },
+   {
+    "id": "tank_round",
+    "type": "rwt",
+    "geometry": {
+     "kind": "point",
+     "p": [
+      334510.0,
+      6263920.0
+     ]
+    },
+    "params": {
+     "shape": {
+      "value": "round",
+      "basis": "user"
+     },
+     "diameter_m": {
+      "value": 2.0,
+      "basis": "user"
+     },
+     "height_m": {
+      "value": 2.0,
+      "basis": "user"
+     }
+    }
+   },
+   {
+    "id": "tank_slim",
+    "type": "rwt",
+    "geometry": {
+     "kind": "point",
+     "p": [
+      334514.0,
+      6263920.0
+     ]
+    },
+    "params": {
+     "shape": {
+      "value": "slimline",
+      "basis": "user"
+     },
+     "length_m": {
+      "value": 2.0,
+      "basis": "user"
+     },
+     "width_m": {
+      "value": 0.8,
+      "basis": "user"
+     },
+     "height_m": {
+      "value": 1.8,
+      "basis": "user"
+     }
+    }
+   },
+   {
+    "id": "tank_ug",
+    "type": "rwt",
+    "geometry": {
+     "kind": "point",
+     "p": [
+      334514.0,
+      6263926.0
+     ]
+    },
+    "params": {
+     "shape": {
+      "value": "underground",
+      "basis": "user"
+     },
+     "length_m": {
+      "value": 3.0,
+      "basis": "user"
+     },
+     "width_m": {
+      "value": 1.5,
+      "basis": "user"
+     },
+     "height_m": {
+      "value": 1.2,
+      "basis": "user"
+     }
+    }
+   },
+   {
+    "id": "trench",
+    "type": "infiltration_trench",
+    "geometry": {
+     "kind": "polyline",
+     "pts": [
+      [
+       334504.0,
+       6263920.0
+      ],
+      [
+       334509.0,
+       6263920.0
+      ]
+     ]
+    },
+    "params": {
+     "width_m": {
+      "value": 1.0,
+      "basis": "user"
+     },
+     "depth_m": {
+      "value": 1.2,
+      "basis": "user"
+     },
+     "void_ratio": {
+      "value": 0.35,
+      "basis": "user"
+     }
+    }
+   },
+   {
+    "id": "pipe",
+    "type": "stormwater_pipe",
+    "geometry": {
+     "kind": "polyline",
+     "pts": [
+      [
+       334505.0,
+       6263910.0
+      ],
+      [
+       334505.0,
+       6263930.0
+      ]
+     ]
+    },
+    "params": {
+     "diameter_mm": {
+      "value": 300,
+      "basis": "user"
+     },
+     "upstream_invert_rl": {
+      "value": 99.5,
+      "basis": "user"
+     },
+     "downstream_invert_rl": {
+      "value": 99.1,
+      "basis": "user"
+     }
+    }
+   }
+  ]
+ },
+ "expected": [
+  {
+   "object": "pit_ok",
+   "key": "depth_m",
+   "value": 1.5,
+   "tol": 0.001
+  },
+  {
+   "object": "pit_ok",
+   "key": "surface_rl",
+   "value": 100.5,
+   "tol": 0.001
+  },
+  {
+   "object": "pit_neg",
+   "key": "depth_m",
+   "status": "FAIL"
+  },
+  {
+   "object": "tank_round",
+   "key": "geometric_volume_l",
+   "value": 6283.185,
+   "tol": 0.6
+  },
+  {
+   "object": "tank_slim",
+   "key": "geometric_volume_l",
+   "value": 2880.0,
+   "tol": 0.6
+  },
+  {
+   "object": "tank_ug",
+   "key": "geometric_volume_l",
+   "value": 5400.0,
+   "tol": 0.6
+  },
+  {
+   "object": "trench",
+   "key": "storage_volume_m3",
+   "value": 2.1,
+   "tol": 0.001
+  },
+  {
+   "object": "pipe",
+   "key": "grade_pct",
+   "value": 2.0,
+   "tol": 0.001
+  },
+  {
+   "object": "pipe",
+   "key": "min_cover_m",
+   "value": 0.7,
+   "tol": 0.01
+  }
+ ]
+}

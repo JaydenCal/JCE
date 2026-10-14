@@ -25,7 +25,7 @@ describe('store: patch based undo and redo', () => {
   });
   it('a new edit clears the redo stack', () => {
     const s = mk(); s.run('add_object', { type: 'tree', points: [at(1, 1)] }); s.undo(); expect(s.canRedo()).toBe(true);
-    s.run('add_object', { type: 'pit', points: [at(2, 2)] }); expect(s.canRedo()).toBe(false);
+    s.run('add_object', { type: 'stormwater_pit', points: [at(2, 2)] }); expect(s.canRedo()).toBe(false);
   });
   it('every step has a label; undo and redo report them', () => {
     const s = mk();
@@ -57,7 +57,7 @@ describe('store: patch based undo and redo', () => {
     const s = mk();
     const res = s.runBatch('AI first design', [
       { op: 'add_object', args: { type: 'tree', points: [at(1, 1)], origin: 'ai_proposal', id: 'a' } },
-      { op: 'add_object', args: { type: 'pit', points: [at(2, 2)], origin: 'ai_proposal', id: 'b' } },
+      { op: 'add_object', args: { type: 'stormwater_pit', points: [at(2, 2)], origin: 'ai_proposal', id: 'b' } },
       { op: 'add_object', args: { type: 'landscape_area', points: rect(0, 0, 3, 3), origin: 'ai_proposal', id: 'c' } },
       { op: 'delete_object', args: { id: 'missing' } },
     ]);
@@ -73,14 +73,14 @@ describe('store: patch based undo and redo', () => {
 describe('store: events', () => {
   it('emits change with the ids that changed, were added or removed', () => {
     const s = mk(), ev: ChangeEvent[] = []; s.on('change', (e) => ev.push(e));
-    s.run('add_object', { type: 'tree', points: [at(1, 1)] }); s.run('add_object', { type: 'pit', points: [at(2, 2)] });
-    s.run('move_object', { id: 'tree_1', dx: 1, dy: 0 }); s.run('delete_object', { id: 'pit_2' }); s.undo(); s.redo();
+    s.run('add_object', { type: 'tree', points: [at(1, 1)] }); s.run('add_object', { type: 'stormwater_pit', points: [at(2, 2)] });
+    s.run('move_object', { id: 'tree_1', dx: 1, dy: 0 }); s.run('delete_object', { id: 'stormwater_pit_2' }); s.undo(); s.redo();
     expect(ev.map((e) => e.kind)).toEqual(['edit', 'edit', 'edit', 'edit', 'undo', 'redo']);
     expect(ev[0]).toMatchObject({ added: ['tree_1'], changed: [], removed: [] });
-    expect(ev[2]).toMatchObject({ added: [], changed: ['tree_1'], removed: [] });      // only the moved object, not pit_2
-    expect(ev[3]).toMatchObject({ removed: ['pit_2'] });
-    expect(ev[4]).toMatchObject({ added: ['pit_2'] });                                   // undo of the delete
-    expect(ev[5]).toMatchObject({ removed: ['pit_2'], label: 'Delete object' });
+    expect(ev[2]).toMatchObject({ added: [], changed: ['tree_1'], removed: [] });      // only the moved object, not stormwater_pit_2
+    expect(ev[3]).toMatchObject({ removed: ['stormwater_pit_2'] });
+    expect(ev[4]).toMatchObject({ added: ['stormwater_pit_2'] });                                   // undo of the delete
+    expect(ev[5]).toMatchObject({ removed: ['stormwater_pit_2'], label: 'Delete object' });
   });
   it('emits history events and an unsubscribe works', () => {
     const s = mk(), seen: boolean[] = []; const off = s.on('history', (h) => seen.push(h.canUndo));
@@ -93,8 +93,8 @@ describe('store: events', () => {
     expect(ok).toBe(1);
   });
   it('diffIds works on identity', () => {
-    const s = mk(); s.run('add_object', { type: 'tree', points: [at(1, 1)] }); const a = s.doc; s.run('add_object', { type: 'pit', points: [at(2, 2)] });
-    expect(diffIds(a, s.doc)).toEqual({ changed: [], added: ['pit_2'], removed: [] });
+    const s = mk(); s.run('add_object', { type: 'tree', points: [at(1, 1)] }); const a = s.doc; s.run('add_object', { type: 'stormwater_pit', points: [at(2, 2)] });
+    expect(diffIds(a, s.doc)).toEqual({ changed: [], added: ['stormwater_pit_2'], removed: [] });
   });
 });
 

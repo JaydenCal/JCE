@@ -126,8 +126,8 @@ describe('set_param, set_status, delete, duplicate, accept, reject', () => {
     expect(b.doc.objects[0].params.height_m.value).toBe(9);
     const c = roundTrip(b.doc, 'set_param', { id: 'tree_1', key: 'height_m' });
     expect(c.doc.objects[0].params.height_m).toEqual({ value: null, basis: 'unresolved' });
-    const e = roundTrip(d, 'set_param', { id: 'tree_1', key: 'surface', value: 'turf', basis: 'platform_default', ref: 'PLATFORM DEFAULT, LGA RULE NOT LOADED' });
-    expect(e.doc.objects[0].params.surface).toEqual({ value: 'turf', basis: 'platform_default', ref: 'PLATFORM DEFAULT, LGA RULE NOT LOADED' });
+    const e = roundTrip(d, 'set_param', { id: 'tree_1', key: 'surface', value: 'turf', basis: 'lga_rule', ref: 'landscape.runoff_coefficient.turf' });
+    expect(e.doc.objects[0].params.surface).toEqual({ value: 'turf', basis: 'lga_rule', ref: 'landscape.runoff_coefficient.turf' });
     expect(() => applyOp(d, 'set_param', { id: 'tree_1', key: 'x', value: 1, basis: 'lga_rule' }, ctx())).toThrow(OpError);
     expect(() => applyOp(d, 'set_param', { id: 'tree_1', key: 'Bad Key', value: 1 }, ctx())).toThrow(OpError);
     expect(() => applyOp(d, 'set_param', { id: 'tree_1', key: 'x', value: { a: 1 } }, ctx())).toThrow(OpError);
@@ -189,7 +189,7 @@ describe('runBatch', () => {
 describe('toolSchemas', () => {
   const tools = toolSchemas();
   it('has one Anthropic tool definition per registry operation', () => {
-    expect(tools.map((t) => t.name).sort()).toEqual(['accept_proposal', 'add_object', 'delete_object', 'duplicate_object', 'edit_vertices', 'link_driveway_end', 'move_object', 'reject_proposal', 'remove_param', 'rotate_object', 'set_catalogue_item', 'set_driveway_crossover', 'set_param', 'set_status'].sort());
+    expect(tools.map((t) => t.name).sort()).toEqual(['accept_proposal', 'add_object', 'delete_object', 'duplicate_object', 'edit_vertices', 'link_driveway_end', 'move_object', 'reject_proposal', 'remove_param', 'rotate_object', 'set_catalogue_item', 'set_driveway_crossover', 'set_param', 'set_status', 'set_vertex_rl', 'clear_vertex_rls'].sort());
     expect(tools.map((t) => t.name)).toEqual(Object.keys(OPS).filter((k) => k !== 'place_building'));       // place_building is not offered to the AI
   });
   it('each tool has name, description and an object input_schema whose required keys are properties', () => {

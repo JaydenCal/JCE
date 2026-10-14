@@ -47,7 +47,8 @@ def screen(h: float, a: WallAssumptions) -> tuple[float, float, float, float]:
 
 def find_walls(existing: Tin, footprint: Polygon, pad: float, threshold: float = 0.5,
                spacing: float = 1.0, a: WallAssumptions | None = None) -> WallsOut:
-    a = a or WallAssumptions()
+    if a is None:       # the legacy SA3 path: the model defaults are PLACEHOLDERS and the output says so (the 3D site tool never takes this path, see app.design.wall_screening)
+        a = WallAssumptions(note="PLACEHOLDER, NOT A REQUIREMENT: soil, factors of safety and the 1.0 m certification height are platform placeholders. " + WallAssumptions().note)
     ring = footprint.exterior
     n = max(int(ring.length / spacing), 4)
     xy = np.array([ring.interpolate(s).coords[0] for s in np.linspace(0, ring.length, n, endpoint=False)])

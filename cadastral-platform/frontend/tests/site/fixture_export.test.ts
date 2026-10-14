@@ -24,7 +24,7 @@ function build() {
   const ring = [at(1, 1), at(9, 1), at(9, 9), at(1, 9)];
   s.run('add_object', { type: 'tree', points: [at(5, 5)], yaw_deg: 380, label: 'Existing tree', status: 'existing' });
   s.run('add_object', { type: 'rwt', points: [at(7, 5)] });
-  s.run('add_object', { type: 'pit', points: [at(8, 5)], origin: 'ai_proposal' });
+  s.run('add_object', { type: 'stormwater_pit', points: [at(8, 5)], origin: 'ai_proposal' });
   s.run('add_object', { type: 'osd', points: [at(9, 5)], status: 'to_be_removed' });
   s.run('add_object', { type: 'retaining_wall', points: [at(1, 20), { ...at(10, 20), z: 21.5 }, at(10, 25)], status: 'proposed' });
   s.run('add_object', { type: 'infiltration_trench', points: pts(3) });
@@ -38,10 +38,10 @@ function build() {
   s.run('set_param', { id: 'tree_1', key: 'species', value: 'Eucalyptus' });
   s.run('set_param', { id: 'tree_1', key: 'protected', value: true });
   s.run('set_param', { id: 'retaining_wall_5', key: 'height_m', value: 0.6, basis: 'lga_rule', ref: 'retaining_wall.max_height_m' });
-  s.run('set_param', { id: 'landscape_area_9', key: 'surface_kind', value: 'turf', basis: 'platform_default', ref: 'PLATFORM DEFAULT, LGA RULE NOT LOADED' });
-  s.run('set_param', { id: 'pit_3', key: 'text_at_limit', value: 'x'.repeat(200) });
+  s.run('set_param', { id: 'landscape_area_9', key: 'surface_kind', value: 'turf' });                 // a platform default cannot be set (set_param refuses it)
+  s.run('set_param', { id: 'stormwater_pit_3', key: 'text_at_limit', value: 'x'.repeat(200) });
   s.run('duplicate_object', { id: 'tree_1', dx: 1, dy: 1 });
-  s.run('reject_proposal', { id: 'pit_3' });
+  s.run('reject_proposal', { id: 'stormwater_pit_3' });
   s.run('move_object', { id: 'osd_4', dx: 0.5, dy: -0.25 });
   s.run('rotate_object', { id: 'rwt_2', angle_deg: 45 });
   s.run('edit_vertices', { id: 'infiltration_trench_6', action: 'insert', index: 1, point: at(6, 6) });
@@ -67,13 +67,37 @@ function build() {
   s.run('link_driveway_end', { id: dv.id, building_id: placed.id });
   s.run('set_param', { id: 'grading_area_10', key: 'target_level_m', value: 100.5 });
   s.run('set_param', { id: 'grading_area_10', key: 'batter_cut_h_per_v', value: 2 });
+  // stage 7: typed parameters (shape, true or false, ISO date, object links), per vertex wall levels, a pool barrier and an overflow route
+  s.run('set_param', { id: 'rwt_2', key: 'shape', value: 'slimline' });
+  for (const [k, v] of [['length_m', 2.4], ['width_m', 0.6], ['height_m', 1.9], ['capacity_l', 2000], ['inlet_rl', 100.4], ['connected_roof_area_m2', 60]] as const) s.run('set_param', { id: 'rwt_2', key: k, value: v });
+  s.run('set_param', { id: 'rwt_2', key: 'reuse_toilet', value: true });
+  s.run('set_param', { id: 'rwt_2', key: 'reuse_garden', value: false });
+  s.run('set_param', { id: 'rwt_2', key: 'roof_building_id', value: placed.id });
+  s.run('set_param', { id: 'retaining_wall_5', key: 'wall_type', value: 'block' });
+  s.run('set_vertex_rl', { id: 'retaining_wall_5', index: 0, top: 101.5, bottom: 100.2 });
+  s.run('set_vertex_rl', { id: 'retaining_wall_5', index: 2, top: 101.0 });                                  // a level that is NOT SET stays null
+  s.run('set_param', { id: 'infiltration_trench_6', key: 'infiltration_basis', value: 'site_test' });
+  s.run('set_param', { id: 'infiltration_trench_6', key: 'test_date', value: '2026-03-04' });
+  s.run('set_param', { id: 'infiltration_trench_6', key: 'void_ratio', value: 0.35 });
+  s.run('set_param', { id: 'osd_4', key: 'form', value: 'below_ground' });
+  s.run('set_param', { id: 'tree_1', key: 'trunk_diameter_mm', value: 450 });
+  s.run('set_param', { id: 'stormwater_pipe_7', key: 'diameter_mm', value: 225 });
+  s.run('set_param', { id: 'stormwater_pipe_7', key: 'upstream_invert_rl', value: 99.2 });
+  const pool = s.doc.objects.find((o) => o.type === 'pool')!;
+  const bar = s.run('add_object', { type: 'pool_barrier', points: [at(19, 1), at(27, 1), at(27, 7), at(19, 7)], params: { height_m: { value: 1.2, basis: 'user' } } });
+  s.run('set_param', { id: bar.id, key: 'pool_id', value: pool.id });
+  const ov = s.run('add_object', { type: 'overflow_route', points: [at(9, 5), at(9, 12), at(12, 20)] });
+  s.run('set_param', { id: ov.id, key: 'osd_id', value: 'osd_4' });
+  const fp = s.doc.objects.find((o) => o.type === 'footpath' && o.geometry.kind === 'polyline')!;
+  s.run('set_param', { id: fp.id, key: 'impervious', value: false });
+  s.run('set_param', { id: fp.id, key: 'crossfall_pct', value: 2 });
   return s.doc;
 }
 
 describe('frontend output vs the Pydantic model (golden file)', () => {
-  it('covers all sixteen object types, a vertex z, every basis and an issue', () => {
+  it('covers all eighteen object types, a vertex z, every basis and an issue', () => {
     const d = build();
-    expect(OBJECT_TYPES).toHaveLength(16);
+    expect(OBJECT_TYPES).toHaveLength(18);
     expect(new Set(d.objects.map((o) => o.type))).toEqual(new Set(OBJECT_TYPES));
     expect(d.objects.some((o) => o.type === 'footpath' && o.geometry.kind === 'polygon')).toBe(true);
     expect(d.objects.some((o) => o.geometry.kind === 'polyline' && o.geometry.pts.some((p) => p.length === 3))).toBe(true);

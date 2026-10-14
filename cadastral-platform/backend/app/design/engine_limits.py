@@ -8,6 +8,10 @@ triangulation or grid is built.
 * a driveway centreline is at most ``MAX_CENTRELINE_M`` long and has at most ``MAX_DRIVEWAY_VERTICES`` vertices
 * a grading area outline encloses at most ``MAX_GRADING_AREA_M2`` and has at most ``MAX_GRADING_VERTICES`` vertices
 * the cut and fill grid (platform plus batter reach) has at most ``MAX_GRID_CELLS`` cells
+
+Stage 7 adds the caps of the whole design check (``check_site_design``, run before any work is done): at most ``MAX_CHECK_OBJECTS`` objects; each stormwater pipe at
+most ``MAX_CHECK_PIPE_M`` long, ``MAX_CHECK_PIPE_VERTICES`` vertices and ``MAX_CHECK_PIPE_STATIONS`` cover stations; all pipes together at most
+``MAX_CHECK_PIPE_TOTAL_M`` long and ``MAX_CHECK_PIPE_VERTICES_TOTAL`` vertices; at most ``MAX_CHECK_TREE_PAIRS`` tree and object pairs for the tree zone encroachment.
 """
 from __future__ import annotations
 
@@ -24,6 +28,18 @@ MAX_GRID_CELLS = 600_000
 MAX_PROFILE_SPAN_M = MAX_CENTRELINE_M + 10.0
 
 TOO_LARGE, OUTSIDE_TERRAIN = "ENGINE_INPUT_TOO_LARGE", "GEOMETRY_OUTSIDE_TERRAIN"
+
+# ---- stage 7: the whole design check (sanity limits, not engineering values)
+CHECK_TOO_LARGE = "CHECK_INPUT_TOO_LARGE"
+MAX_CHECK_OBJECTS = 2000
+MAX_CHECK_PIPE_M = 300.0
+MAX_CHECK_PIPE_TOTAL_M = 2000.0
+MAX_CHECK_PIPE_VERTICES = 200
+MAX_CHECK_PIPE_VERTICES_TOTAL = 2000
+MAX_CHECK_PIPE_STATIONS = 1000
+MAX_CHECK_TREE_PAIRS = 250_000
+#: pipe cover is sampled every this many metres along a pipe (a resolution, not a requirement); ``object_checks.COVER_STEP_M`` is this value
+PIPE_STATION_STEP_M = 1.0
 
 
 class EngineLimitError(Exception):
@@ -86,3 +102,33 @@ def check_grid(region: Any, grid_m: float) -> None:
     cells = ((x1 - x0 + 2.0) / grid_m) * ((y1 - y0 + 2.0) / grid_m)
     if not cells <= MAX_GRID_CELLS:
         raise EngineLimitError(TOO_LARGE, f"THE CUT AND FILL AREA (PLATFORM PLUS BATTERS) IS TOO LARGE TO COMPUTE: {cells:,.0f} GRID CELLS, AT MOST {MAX_GRID_CELLS:,} ARE ACCEPTED")
+
+
+def check_site_design(design: Any) -> None:
+    """The caps of the whole design check (needs no terrain, so it runs before anything is read from disk). Raises ``EngineLimitError`` (422) over a cap."""
+    objs = [o for o in design.objects if o.accepted != "rejected"]
+    if len(design.objects) > MAX_CHECK_OBJECTS:
+        raise EngineLimitError(CHECK_TOO_LARGE, f"THE DESIGN HAS {len(design.objects)} OBJECTS; AT MOST {MAX_CHECK_OBJECTS} CAN BE CHECKED AT ONCE")
+    total_m, total_v = 0.0, 0
+    for o in objs:
+        if o.type != "stormwater_pipe" or o.geometry.kind != "polyline":
+            continue
+        pts = o.geometry.pts
+        if len(pts) > MAX_CHECK_PIPE_VERTICES:
+            raise EngineLimitError(CHECK_TOO_LARGE, f"PIPE {o.id.upper()} HAS {len(pts)} VERTICES; AT MOST {MAX_CHECK_PIPE_VERTICES} ARE ACCEPTED")
+        length = polyline_length(pts)
+        if not length <= MAX_CHECK_PIPE_M:
+            raise EngineLimitError(CHECK_TOO_LARGE, f"PIPE {o.id.upper()} IS {length:,.0f} M LONG; AT MOST {MAX_CHECK_PIPE_M:g} M IS ACCEPTED FOR ONE PIPE")
+        stations = int(length / PIPE_STATION_STEP_M) + len(pts) + 1
+        if stations > MAX_CHECK_PIPE_STATIONS:
+            raise EngineLimitError(CHECK_TOO_LARGE, f"PIPE {o.id.upper()} NEEDS {stations} COVER STATIONS; AT MOST {MAX_CHECK_PIPE_STATIONS} ARE ACCEPTED")
+        total_m += length
+        total_v += len(pts)
+        if total_m > MAX_CHECK_PIPE_TOTAL_M:
+            raise EngineLimitError(CHECK_TOO_LARGE, f"THE PIPES TOGETHER ARE MORE THAN {MAX_CHECK_PIPE_TOTAL_M:,.0f} M LONG; AT MOST {MAX_CHECK_PIPE_TOTAL_M:,.0f} M IN TOTAL IS ACCEPTED")
+        if total_v > MAX_CHECK_PIPE_VERTICES_TOTAL:
+            raise EngineLimitError(CHECK_TOO_LARGE, f"THE PIPES TOGETHER HAVE MORE THAN {MAX_CHECK_PIPE_VERTICES_TOTAL} VERTICES; AT MOST {MAX_CHECK_PIPE_VERTICES_TOTAL} IN TOTAL ARE ACCEPTED")
+    trees = sum(1 for o in objs if o.type == "tree" and o.status == "existing")
+    pairs = trees * len(objs)
+    if pairs > MAX_CHECK_TREE_PAIRS:
+        raise EngineLimitError(CHECK_TOO_LARGE, f"THE TREE ZONE CHECK NEEDS {pairs:,} TREE AND OBJECT PAIRS; AT MOST {MAX_CHECK_TREE_PAIRS:,} ARE ACCEPTED")

@@ -11,6 +11,9 @@ PLACEHOLDER_STAMP = "PLACEHOLDER, NOT A REQUIREMENT"
 # Stamp carried by every platform default value (docs/14-3d-site-design-tools.md section 7.3). A default is shown and printed
 # with this text wherever it appears; it is never an LGA rule.
 PLATFORM_DEFAULT_STAMP = "PLATFORM DEFAULT, LGA RULE NOT LOADED"
+#: units a requirement row may carry for a dimensionless number (a ratio or a count). The ONE set used by the site object keys (``app.design.site_rules``) and
+#: by the SA4 rainwater mass balance (``app.agents.sa4_hydro.rwt``); compare in lower case.
+DIMENSIONLESS_UNITS = frozenset({"", "ratio", "count", "-", "1"})
 # Owner decision D3: until an LGA's own value for a key is loaded the platform default applies, and the stamp says why.
 STAMP_LGA_RULE_NOT_LOADED = PLATFORM_DEFAULT_STAMP                 # no rules loaded for the caller's LGA at all
 STAMP_LGA_VALUE_NOT_FOUND = "PLATFORM DEFAULT, LGA VALUE NOT FOUND"   # the LGA's rules are loaded but hold no row for the key
@@ -72,6 +75,62 @@ DRIVEWAY_KEY_HELP: dict[str, str] = {
     "driveway.crossover_splay_m": "kerb return splay of the crossover footprint (m), measured along the kerb line from each side of the crossover width",
 }
 EXTRA_KEY_HELP.update(DRIVEWAY_KEY_HELP)
+
+# Keys used by the stage 7 site object checks (rainwater tank, retaining wall, infiltration trench, OSD, pits and pipes, pool, footpath, tree, landscape).
+# The canonical unit and value kind of each key are in ``app.design.object_keys`` (a test keeps the two lists in step). NONE of these keys has a platform
+# default except stormwater.osd_required and stormwater.psd_l_s above: each is UNRESOLVED until an LGA row, a state row or a user entry supplies it.
+SITE_OBJECT_KEY_HELP: dict[str, str] = {
+    "rwt.max_height_m": "maximum height of a rainwater tank (m)",
+    "rwt.max_height_m.urban_zones": "maximum height of a rainwater tank in urban zones (m); the zone of the lot is not checked by the tool",
+    "rwt.location_behind_street_setback": "whether a rainwater tank must be located behind the street setback of the existing or proposed dwelling",
+    "rwt.underground_tank_min_clearance_m": "minimum clearance (m) of an underground tank from a water main, sewer main or on-site wastewater system",
+    "rwt.min_boundary_distance_m": "minimum distance (m) from a rainwater tank to a lot boundary",
+    "rwt.runoff_coefficient": "roof runoff coefficient used in the rainwater tank mass balance (ratio)",
+    "rwt.first_flush_mm": "first flush depth taken from each rain day before water enters the tank (mm)",
+    "rwt.demand.occupants": "number of occupants used for the rainwater tank demand",
+    "rwt.demand.toilet_l_pp_day": "toilet demand supplied from the tank (L per person per day)",
+    "rwt.demand.laundry_l_pp_day": "laundry demand supplied from the tank (L per person per day)",
+    "rwt.demand.garden_l_m2_day": "garden irrigation demand supplied from the tank (L per square metre per day)",
+    "rwt.demand.garden_monthly_factor": "twelve monthly factors (January to December, comma separated) applied to the garden demand",
+    "rwt.candidate_sizes_l": "candidate tank volumes tested in the mass balance (L, comma separated)",
+    "rwt.tank_height_m": "tank height used to turn a volume into a diameter in the mass balance sizing (m)",
+    "rwt.wet_day_fraction": "fraction of days in a month on which the monthly rainfall is assumed to fall (ratio)",
+    "retaining.soil_friction_angle_deg": "soil friction angle (degrees) for retaining wall screening",
+    "retaining.soil_unit_weight_kn_m3": "soil unit weight (kN per cubic metre) for retaining wall screening",
+    "retaining.wall_friction_ratio": "wall friction as a ratio of the soil friction angle, for retaining wall screening",
+    "retaining.gravity_wall_width_ratio": "base width of the screening gravity wall as a ratio of its height",
+    "retaining.wall_unit_weight_kn_m3": "unit weight of the screening wall material (kN per cubic metre)",
+    "retaining.min_fs_sliding": "minimum factor of safety against sliding for screening",
+    "retaining.min_fs_overturning": "minimum factor of safety against overturning for screening",
+    "retaining.surcharge_kpa": "surcharge on the retained ground (kPa) for screening; a project value may be entered on the wall instead",
+    "retaining.certification_height_m": "retained height (m) above which engineer certification or approval is required",
+    "retaining.type_max_height_m.sleeper": "maximum retained height (m) for a sleeper wall",
+    "retaining.type_max_height_m.block": "maximum retained height (m) for a block wall",
+    "retaining.type_max_height_m.concrete": "maximum retained height (m) for a concrete wall",
+    "infiltration.min_offset_boundary_m": "minimum offset (m) of an infiltration trench from a lot boundary",
+    "infiltration.min_offset_building_m": "minimum offset (m) of an infiltration trench from a building",
+    "infiltration.min_offset_service_m": "minimum offset (m) of an infiltration trench from a service",
+    "stormwater.orifice_discharge_coefficient": "discharge coefficient Cd of an OSD outlet orifice (ratio)",
+    "stormwater.osd_min_orifice_diameter_mm": "minimum diameter (mm) of an OSD outlet orifice",
+    "stormwater.min_pipe_grade_pct": "minimum stormwater pipe grade (%)",
+    "stormwater.min_cover_m": "minimum cover over stormwater pipes (m)",
+    "stormwater.min_pipe_diameter_mm": "minimum stormwater pipe diameter (mm)",
+    "stormwater.pipe_bends_at_pits_only": "whether a stormwater pipe may change direction only at a pit",
+    "pool.barrier_min_height_m": "minimum height (m) of a pool barrier",
+    "pool.barrier_min_setback_m": "minimum setback (m) of a pool barrier from the lot boundary",
+    "footpath.min_width_m": "minimum footpath width (m)",
+    "footpath.max_crossfall_pct": "maximum footpath crossfall (%)",
+    "footpath.min_crossfall_pct": "minimum footpath crossfall (%)",
+    "tree.tpz_dbh_multiplier": "tree protection zone radius as a multiple of the trunk diameter (DBH), as AS 4970 states it",
+    "tree.tpz_min_radius_m": "minimum tree protection zone radius (m)",
+    "tree.tpz_max_radius_m": "maximum tree protection zone radius (m)",
+    "tree.srz_coefficient": "coefficient c of the structural root zone formula R = c x D^e, with D the trunk diameter (DBH) in metres and R the radius in metres, as the rule states it",
+    "tree.srz_exponent": "exponent e of the structural root zone formula R = c x D^e, with D the trunk diameter (DBH) in metres and R the radius in metres, as the rule states it",
+    "tree.srz_min_radius_m": "minimum structural root zone radius (m)",
+    **{f"landscape.runoff_coefficient.{k}": f"runoff coefficient of a {k.replace('_', ' ')} surface (ratio)"
+       for k in ("turf", "garden_bed", "mulch", "gravel", "permeable_paving", "impervious_paving")},
+}
+EXTRA_KEY_HELP.update(SITE_OBJECT_KEY_HELP)
 
 
 def key_help(key: str) -> str:

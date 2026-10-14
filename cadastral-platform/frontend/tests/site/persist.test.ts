@@ -87,7 +87,7 @@ describe('autosave', () => {
     s.bump();                                                                                  // someone else saved
     store.run('add_object', { type: 'tree', points: [at(1, 1)] }); await vi.advanceTimersByTimeAsync(1100);
     expect(a.state.status).toBe('conflict'); expect(a.state.message).toContain('RELOAD'); expect(s.version).toBe(1);
-    store.run('add_object', { type: 'pit', points: [at(2, 2)] }); await vi.advanceTimersByTimeAsync(5000); expect(s.calls.filter((c) => c === 'PUT')).toHaveLength(1);   // no retry loop
+    store.run('add_object', { type: 'stormwater_pit', points: [at(2, 2)] }); await vi.advanceTimersByTimeAsync(5000); expect(s.calls.filter((c) => c === 'PUT')).toHaveLength(1);   // no retry loop
     await a.keepMine(); expect(s.version).toBe(2); expect(s.stored.objects).toHaveLength(2); expect(a.state.status).toBe('saved');
 
     const s2 = server(), m2 = mk(s2); s2.bump();

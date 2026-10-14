@@ -22,6 +22,9 @@ import {
   type GradingResult, type Kerb, type ProfileView, type RuleInfo,
 } from './driveway';
 import { LiveEngine, objectSig, type LiveStatus } from './liveEngine';
+import { EngineHttpError, postRwtSize, type RwtSizeResult } from './engineApi';
+import { LiveChecks, type ChecksState } from './serverChecks';
+import { zonesOf } from './checkList';
 import type { Endpoint } from './persist';
 import { OBJECT_KINDS, dimOf, levelOf, minVertices, verticesOf, type GeometryKind, type ObjectType, type Pos, type SiteDesign, type SiteObject, type Status } from './types';
 
@@ -64,7 +67,11 @@ export interface DesignState {
   hoverText: string;
   /** one line about the handle being dragged (crossover chainage along the kerb line, width) */
   dragInfo: string;
+  /** stage 7: the rule based checks of the whole design (server answer) and the state of the optional tank sizing for the selected tank */
+  checks: ChecksState;
+  rwtSize: RwtSizePanel | null;
 }
+export interface RwtSizePanel { id: string; status: 'idle' | 'pending' | 'ok' | 'error'; error: string; result: RwtSizeResult | null }
 export interface EnginePanel { status: LiveStatus; error: string; /** the result on show is a PREVIEW or stale */ stale: boolean }
 export interface DrivewayPanel extends EnginePanel { id: string; view: ProfileView | null; gaps: string[]; kerbAvailable: boolean; linkedBuilding: string | null }
 export interface GradingPanel extends EnginePanel { id: string; result: GradingResult | null }
@@ -90,6 +97,8 @@ export interface DesignHooks {
   /** where the engines are (POST driveway-profile and grading); null / absent = no server on this page */
   engine?: Endpoint | null;
   engineDebounceMs?: number;
+  /** debounce of the whole design check (stage 7), milliseconds */
+  checksDebounceMs?: number;
   /** terrain status text of the bundle, shown on the preview */
   terrainStatus?: string;
 }
@@ -123,6 +132,10 @@ export class DesignController {
   /** height field of the EXISTING ground only (survey / DEM parts), or null; the driveway preview and cut / fill colours use it, never the design surface */
   readonly existingHf: HeightField | null;
   readonly live: LiveEngine;
+  /** stage 7: the server checks of the whole design, asked for after every document change */
+  readonly checks: LiveChecks;
+  private sizing = new Map<string, RwtSizePanel>();
+  private sizeAbort: AbortController | null = null;
   readonly terrain: SceneTerrain;
   active = false;
   listener: (s: DesignState) => void = () => {};
@@ -164,6 +177,8 @@ export class DesignController {
     const ex = this.existingHf, existing = ex && ex.triangleCount > 0 ? (e: number, n: number) => ex.sample(e - O[0], n - O[1]) : undefined;
     this.live = new LiveEngine({ ep: h.engine ?? null, debounceMs: h.engineDebounceMs });
     this.live.listener = (kind, id) => this.onLive(kind, id);
+    this.checks = new LiveChecks({ ep: h.engine ?? null, debounceMs: h.checksDebounceMs });
+    this.checks.listener = (st) => { this.scene.setZones(st.result ? zonesOf(st.result) : {}); this.emit(); };
     this.scene = new SiteScene({ origin: O, terrain: this.terrain, makeLabel: h.makeLabel, existing });
     h.built.root.add(this.scene.group, this.handles);
     this.marker = new THREE.Mesh(new THREE.RingGeometry(0.7, 1, 28), new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, side: THREE.DoubleSide }));
@@ -172,7 +187,7 @@ export class DesignController {
     this.selRing.renderOrder = 20; this.selRing.visible = false; h.built.root.add(this.selRing);
     this.store.setEnv({ lot: h.lot, terrain: this.terrain });
     this.scene.syncAll(this.store.doc);
-    this.refreshAll();
+    this.refreshAll(); this.requestChecks();
     this.off.push(this.store.on('change', (ev) => {
       this.scene.apply(ev); this.afterChange(ev);
       if (this.selected && !ev.doc.objects.some((o) => o.id === this.selected)) { this.selected = null; this.selVertex = null; }
@@ -209,7 +224,37 @@ export class DesignController {
       pendingBuilding: this.pending ? { source_file: this.pending.payload.source_file, warnings: this.pending.payload.warnings, glb: this.pending.glb?.name ?? null } : null,
       furnitureItem: this.furniture, footprintUse: this.footprintUse,
       driveway: this.drivewayPanel(), grading: this.gradingPanel(), hoverText: this.hoverText, dragInfo: this.dragInfo,
+      checks: this.checks.state, rwtSize: this.selected ? this.sizing.get(this.selected) ?? null : null,
     };
+  }
+
+  // ---- stage 7: server checks and the optional tank sizing -------------------------------------------------------------------------------
+  /** Ask the server for the checks of the document as it is now (no request for an empty design: there is nothing to check). */
+  requestChecks(force = false) {
+    if (!this.store.doc.objects.length) { this.checks.reset(); return; }
+    this.checks.request(this.store.doc, { force, debounce: !force });
+  }
+  /**
+   * Run the optional "size this tank" action for a tank. The server runs the SA4 mass balance ONLY when every input resolves (entered on the tank, or a
+   * requirement key); otherwise the answer lists what is UNRESOLVED and nothing is sized. The rainfall is entered by the user (no rainfall data source yet).
+   */
+  async sizeTank(id: string, input: { rainfall: number[] | null; station: string; candidates?: number[] | null; gardenFactor?: number[] | null }) {
+    const o = this.store.doc.objects.find((x) => x.id === id);
+    if (!o || o.type !== 'rwt') return;
+    const ep = this.h.engine ?? null;
+    if (!ep) { this.sizing.set(id, { id, status: 'error', error: 'NO SERVER: THIS VIEW HAS NO CONNECTION TO THE ENGINES', result: null }); this.emit(); return; }
+    this.sizeAbort?.abort(); const ac = this.sizeAbort = new AbortController();
+    this.sizing.set(id, { id, status: 'pending', error: '', result: this.sizing.get(id)?.result ?? null }); this.emit();
+    const linkId = o.params.roof_building_id?.value, building = typeof linkId === 'string' ? this.store.doc.objects.find((x) => x.id === linkId && x.type === 'building') ?? null : null;
+    try {
+      const res = await postRwtSize(ep, { rwt: o, building, rainfall_monthly_mm: input.rainfall, rainfall_station: input.station, candidate_sizes_l: input.candidates ?? null, garden_monthly_factor: input.gardenFactor ?? null }, ac.signal);
+      if (ac.signal.aborted) return;
+      this.sizing.set(id, { id, status: 'ok', error: '', result: res });
+    } catch (err) {
+      if ((err as { name?: string })?.name === 'AbortError') return;
+      this.sizing.set(id, { id, status: 'error', error: err instanceof EngineHttpError ? err.message : String(err), result: null });
+    }
+    this.emit();
   }
 
   // ---- stage 6: engine results for driveways and grading areas -------------------------------------------------------------------------
@@ -261,6 +306,8 @@ export class DesignController {
   }
   private refreshAll() { for (const o of this.store.doc.objects) this.refresh(o); }
   private afterChange(ev: { kind: string; doc: SiteDesign; changed: string[]; added: string[]; removed: string[] }) {
+    if (ev.kind !== 'saved' && ev.kind !== 'checks') this.requestChecks();       // 'checks' only changed derived issues; 'saved' only the version
+    for (const id of ev.removed) this.sizing.delete(id);
     if (ev.kind === 'saved') {
       // the server resolves a building link from the SAVED design: an answer that said the linked building was not saved yet is asked for again now it is
       for (const o of ev.doc.objects) {
@@ -829,7 +876,7 @@ export class DesignController {
   yawDeg() { return normDeg(this.yaw); }
 
   dispose() {
-    this.cancelAll(); this.live.dispose(); this.off.forEach((f) => f()); this.off = [];
+    this.cancelAll(); this.live.dispose(); this.checks.dispose(); this.sizeAbort?.abort(); this.off.forEach((f) => f()); this.off = [];
     this.h.built.root.remove(this.scene.group, this.handles, this.marker, this.selRing); this.scene.dispose();
     this.marker.geometry.dispose(); (this.marker.material as THREE.Material).dispose(); this.selRing.geometry.dispose(); (this.selRing.material as THREE.Material).dispose();
   }

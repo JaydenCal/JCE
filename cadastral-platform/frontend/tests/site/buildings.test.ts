@@ -220,10 +220,12 @@ describe('pool, footpath, garden and furniture', () => {
   it('a pool starts with depth, coping width and barrier requirements UNRESOLVED', () => {
     const o = applyOp(doc0(), 'add_object', { type: 'pool', points: rect(0, 0, 8, 4) }, ctx()).doc.objects[0];
     expect(o.geometry.kind).toBe('polygon');
-    for (const k of ['depth_m', 'coping_width_m', 'barrier_requirements']) expect(o.params[k]).toEqual({ value: null, basis: 'unresolved' });
+    for (const k of ['depth_m', 'coping_width_m', 'water_level_rl', 'barrier_requirements']) expect(o.params[k]).toEqual({ value: null, basis: 'unresolved' });
     expect(dimensionsSet(o)).toBe(false);
     const set = applyOp(doc0(), 'add_object', { type: 'pool', points: rect(0, 0, 8, 4), params: { depth_m: { value: 1.4, basis: 'user' } } }, ctx()).doc.objects[0];
-    expect(dimensionsSet(set)).toBe(true);
+    expect(dimensionsSet(set)).toBe(false);                                                                  // coping width and water level are still NOT SET
+    const full = applyOp(doc0(), 'add_object', { type: 'pool', points: rect(0, 0, 8, 4), params: { depth_m: { value: 1.4, basis: 'user' }, coping_width_m: { value: 0.3, basis: 'user' }, water_level_rl: { value: 100.2, basis: 'user' } } }, ctx()).doc.objects[0];
+    expect(dimensionsSet(full)).toBe(true);
     expect(() => applyOp(doc0(), 'add_object', { type: 'pool', points: rect(0, 0, 8, 4), params: { depth_m: { value: 'deep', basis: 'user' } } }, ctx())).toThrow(/must be a number/);
   });
   it('a footpath is a line with a width, or an area; the surface kind is NOT SET by default', () => {

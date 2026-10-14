@@ -30,6 +30,10 @@
         "species": {
           "value": "Eucalyptus",
           "basis": "user"
+        },
+        "trunk_diameter_mm": {
+          "value": 450,
+          "basis": "user"
         }
       },
       "issues": []
@@ -48,12 +52,53 @@
         ],
         "yaw_deg": 45
       },
-      "params": {},
+      "params": {
+        "shape": {
+          "value": "slimline",
+          "basis": "user"
+        },
+        "length_m": {
+          "value": 2.4,
+          "basis": "user"
+        },
+        "width_m": {
+          "value": 0.6,
+          "basis": "user"
+        },
+        "height_m": {
+          "value": 1.9,
+          "basis": "user"
+        },
+        "capacity_l": {
+          "value": 2000,
+          "basis": "user"
+        },
+        "inlet_rl": {
+          "value": 100.4,
+          "basis": "user"
+        },
+        "connected_roof_area_m2": {
+          "value": 60,
+          "basis": "user"
+        },
+        "reuse_toilet": {
+          "value": true,
+          "basis": "user"
+        },
+        "reuse_garden": {
+          "value": false,
+          "basis": "user"
+        },
+        "roof_building_id": {
+          "value": "building_13",
+          "basis": "user"
+        }
+      },
       "issues": []
     },
     {
-      "id": "pit_3",
-      "type": "pit",
+      "id": "stormwater_pit_3",
+      "type": "stormwater_pit",
       "status": "proposed",
       "origin": "ai_proposal",
       "accepted": "rejected",
@@ -86,7 +131,12 @@
           6650004.75
         ]
       },
-      "params": {},
+      "params": {
+        "form": {
+          "value": "below_ground",
+          "basis": "user"
+        }
+      },
       "issues": []
     },
     {
@@ -118,9 +168,25 @@
           "value": 0.6,
           "basis": "lga_rule",
           "ref": "retaining_wall.max_height_m"
+        },
+        "wall_type": {
+          "value": "block",
+          "basis": "user"
         }
       },
-      "issues": []
+      "issues": [],
+      "vertex_rls": {
+        "top": [
+          101.5,
+          null,
+          101
+        ],
+        "bottom": [
+          100.2,
+          null,
+          null
+        ]
+      }
     },
     {
       "id": "infiltration_trench_6",
@@ -149,7 +215,20 @@
           ]
         ]
       },
-      "params": {},
+      "params": {
+        "infiltration_basis": {
+          "value": "site_test",
+          "basis": "user"
+        },
+        "test_date": {
+          "value": "2026-03-04",
+          "basis": "user"
+        },
+        "void_ratio": {
+          "value": 0.35,
+          "basis": "user"
+        }
+      },
       "issues": [
         {
           "code": "DEGENERATE_GEOMETRY",
@@ -177,7 +256,16 @@
           ]
         ]
       },
-      "params": {},
+      "params": {
+        "diameter_mm": {
+          "value": 225,
+          "basis": "user"
+        },
+        "upstream_invert_rl": {
+          "value": 99.2,
+          "basis": "user"
+        }
+      },
       "issues": []
     },
     {
@@ -596,6 +684,10 @@
           "value": null,
           "basis": "unresolved"
         },
+        "water_level_rl": {
+          "value": null,
+          "basis": "unresolved"
+        },
         "barrier_requirements": {
           "value": null,
           "basis": "unresolved"
@@ -633,6 +725,14 @@
         },
         "surface_kind": {
           "value": "permeable_pavers",
+          "basis": "user"
+        },
+        "impervious": {
+          "value": false,
+          "basis": "user"
+        },
+        "crossfall_pct": {
+          "value": 2,
           "basis": "user"
         }
       },
@@ -759,6 +859,76 @@
           "value": "building_13",
           "basis": "user",
           "ref": "END SNAPPED TO THE BUILDING; END LEVEL IS ITS FFL"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "pool_barrier_20",
+      "type": "pool_barrier",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496019,
+            6650001
+          ],
+          [
+            496027,
+            6650001
+          ],
+          [
+            496027,
+            6650007
+          ],
+          [
+            496019,
+            6650007
+          ]
+        ]
+      },
+      "params": {
+        "height_m": {
+          "value": 1.2,
+          "basis": "user"
+        },
+        "pool_id": {
+          "value": "pool_15",
+          "basis": "user"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "overflow_route_21",
+      "type": "overflow_route",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496009,
+            6650005
+          ],
+          [
+            496009,
+            6650012
+          ],
+          [
+            496012,
+            6650020
+          ]
+        ]
+      },
+      "params": {
+        "osd_id": {
+          "value": "osd_4",
+          "basis": "user"
         }
       },
       "issues": []

@@ -23,11 +23,15 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from . import object_keys as OK
+
 SCHEMA = "site_design.v1"
 
-ObjectType = Literal["tree", "rwt", "pit", "osd", "retaining_wall", "infiltration_trench", "stormwater_pipe",
+ObjectType = Literal["tree", "rwt", "stormwater_pit", "osd", "retaining_wall", "infiltration_trench", "stormwater_pipe",
                      "service_trace", "landscape_area", "grading_area", "osd_basin",
-                     "building", "pool", "footpath", "furniture", "driveway"]
+                     "building", "pool", "footpath", "furniture", "driveway", "pool_barrier", "overflow_route"]
+#: stage 7 renamed the stormwater pit from ``pit``; a stored document that still says ``pit`` is read as ``stormwater_pit``
+LEGACY_TYPES = {"pit": "stormwater_pit"}
 GeometryKind = Literal["point", "polyline", "polygon"]
 Status = Literal["existing", "proposed", "to_be_removed"]
 Origin = Literal["user", "ai_proposal", "imported", "dbyd"]
@@ -37,10 +41,11 @@ Severity = Literal["blocking", "warning", "info"]
 
 #: geometry kind required by each object type (docs/14 section 6.5)
 GEOMETRY_OF: dict[str, GeometryKind] = {
-    "tree": "point", "rwt": "point", "pit": "point", "osd": "point",
+    "tree": "point", "rwt": "point", "stormwater_pit": "point", "osd": "point",
     "retaining_wall": "polyline", "infiltration_trench": "polyline", "stormwater_pipe": "polyline", "service_trace": "polyline",
     "landscape_area": "polygon", "grading_area": "polygon", "osd_basin": "polygon",
     "building": "polygon", "pool": "polygon", "footpath": "polyline", "furniture": "point", "driveway": "polyline",
+    "pool_barrier": "polyline", "overflow_route": "polyline",
 }
 #: a second geometry kind an object type may also use (a footpath is a line with a width param, or an area)
 ALT_GEOMETRY_OF: dict[str, GeometryKind] = {"footpath": "polygon"}
@@ -52,7 +57,13 @@ ROOF_AREA_BASES = ("SOURCE VALUE", "APPROXIMATE (PLAN STUDIO RASTER)", "NOT SET"
 SURFACE_KINDS = ("turf", "garden_bed", "mulch", "gravel", "permeable_paving", "impervious_paving")
 FOOTPATH_SURFACES = ("concrete", "pavers", "gravel", "permeable_pavers")
 DRIVEWAY_SURFACES = ("concrete", "asphalt", "pavers", "gravel", "permeable_pavers")
+RWT_SHAPES = ("round", "slimline", "underground")
+WALL_TYPES = ("sleeper", "block", "concrete", "other")
+INFILTRATION_BASES = ("site_test", "indicative")
+OSD_FORMS = ("tank", "basin", "below_ground")
 PARAM_ENUMS: dict[tuple[str, str], tuple[str, ...]] = {
+    ("rwt", "shape"): RWT_SHAPES, ("retaining_wall", "wall_type"): WALL_TYPES, ("infiltration_trench", "infiltration_basis"): INFILTRATION_BASES,
+    ("osd", "form"): OSD_FORMS, ("osd_basin", "form"): OSD_FORMS,
     ("building", "building_use"): BUILDING_USES, ("building", "source"): BUILDING_SOURCES,
     ("building", "roof_area_basis"): ROOF_AREA_BASES,
     ("landscape_area", "surface_kind"): SURFACE_KINDS, ("footpath", "surface_kind"): FOOTPATH_SURFACES,
@@ -61,11 +72,41 @@ PARAM_ENUMS: dict[tuple[str, str], tuple[str, ...]] = {
 #: parameters that must be numbers when they carry a value
 PARAM_NUMBERS: dict[str, tuple[str, ...]] = {
     "building": ("ffl_rl", "height_m", "roof_plan_area_m2"),
-    "pool": ("depth_m", "coping_width_m"), "footpath": ("width_m",), "furniture": ("width_m", "depth_m", "height_m"),
+    "pool": ("depth_m", "coping_width_m", "water_level_rl"), "footpath": ("width_m", "crossfall_pct"), "furniture": ("width_m", "depth_m", "height_m"),
     # stage 6. Batter slopes are H per V (a 1 in 3 batter is 3). A grade is a percentage; a fall direction is a grid bearing in degrees.
     "driveway": ("width_m", "end_level_rl", "crossover_chainage_m", "batter_cut_h_per_v", "batter_fill_h_per_v"),
     "grading_area": ("target_level_m", "target_grade_pct", "fall_direction_deg", "pivot_level_m", "batter_cut_h_per_v", "batter_fill_h_per_v"),
+    # stage 7. Levels (``_rl``) are RLs in metres and may be negative; a quantity that must be above zero is checked by the engines, not here.
+    "rwt": ("capacity_l", "diameter_m", "length_m", "width_m", "height_m", "base_rl", "inlet_rl", "overflow_rl", "outlet_rl", "connected_roof_area_m2", "garden_area_m2",
+            "runoff_coefficient", "first_flush_mm", "occupants", "toilet_l_pp_day", "laundry_l_pp_day", "garden_l_m2_day", "wet_day_fraction", "water_target_pct", "tank_height_m"),
+    "retaining_wall": ("height_m", "thickness_m", "surcharge_kpa", "soil_friction_angle_deg", "soil_unit_weight_kn_m3", "wall_friction_ratio", "gravity_wall_width_ratio",
+                       "wall_unit_weight_kn_m3", "min_fs_sliding", "min_fs_overturning"),
+    "infiltration_trench": ("width_m", "depth_m", "void_ratio", "infiltration_rate_mm_h"),
+    "osd": ("width_m", "length_m", "height_m", "storage_volume_m3", "orifice_diameter_mm", "orifice_invert_rl", "top_water_level_rl", "discharge_coefficient", "psd_l_s"),
+    "osd_basin": ("depth_m", "storage_volume_m3", "orifice_diameter_mm", "orifice_invert_rl", "top_water_level_rl", "discharge_coefficient", "psd_l_s"),
+    "stormwater_pit": ("width_m", "length_m", "invert_rl"), "stormwater_pipe": ("diameter_mm", "upstream_invert_rl", "downstream_invert_rl"),
+    "pool_barrier": ("height_m",), "tree": ("height_m", "canopy_diameter_m", "trunk_diameter_mm"),
 }
+#: parameters that must be true or false when they carry a value
+PARAM_BOOLS: dict[str, tuple[str, ...]] = {"rwt": ("reuse_toilet", "reuse_laundry", "reuse_garden"), "footpath": ("impervious",)}
+#: parameters that must be an ISO date (YYYY-MM-DD) when they carry a value
+PARAM_DATES: dict[str, tuple[str, ...]] = {"infiltration_trench": ("test_date",)}
+#: object links: (type, parameter) -> the object types the linked id must have (checked by the engines against the document, not by this model)
+PARAM_LINKS: dict[tuple[str, str], tuple[str, ...]] = {("rwt", "roof_building_id"): ("building",), ("overflow_route", "osd_id"): ("osd", "osd_basin"), ("pool_barrier", "pool_id"): ("pool",)}
+
+#: object types whose parameters are stage 7 engineering inputs. On them a parameter may NOT have basis ``platform_default`` (the only platform defaults are the
+#: requirement values of the two keys in ``object_keys.PLATFORM_DEFAULT_KEYS``, which the checks resolve themselves). Two exceptions: a parameter mapped to one of those
+#: two keys (the OSD ``psd_l_s``; the checks still verify its value against the resolver), and the Plan Studio size ESTIMATE the importer stamps on a tank diameter or height
+#: (its ref starts with ``PS_ESTIMATE_REF``; the checks do NOT use such a value).
+STAGE7_TYPES = frozenset({"rwt", "retaining_wall", "infiltration_trench", "osd", "osd_basin", "stormwater_pit", "stormwater_pipe", "pool_barrier", "overflow_route", "tree"})
+PS_ESTIMATE_REF = "PLAN STUDIO ESTIMATE"
+
+
+def platform_default_refused(type_: str, key: str, ref: str | None) -> bool:
+    """True when a parameter with basis ``platform_default`` is not allowed on this object type (see ``STAGE7_TYPES``)."""
+    return (type_ in STAGE7_TYPES and not (ref or "").startswith(PS_ESTIMATE_REF)
+            and OK.PARAM_RULE_KEYS.get((type_, key)) not in OK.PLATFORM_DEFAULT_KEYS)
+
 
 # Sanity limits that protect the server from abusive payloads. They are not engineering values.
 MAX_OBJECTS = 5000
@@ -113,7 +154,7 @@ class Param(_Strict):
                 raise ValueError("an UNRESOLVED parameter carries no value")
         elif self.value is None:
             raise ValueError(f"basis {self.basis} needs a value")
-        if self.basis == "lga_rule" and not self.ref:
+        if self.basis == "lga_rule" and not (self.ref and self.ref.strip()):
             raise ValueError("an LGA RULE parameter needs its requirement reference")
         return self
 
@@ -244,6 +285,19 @@ class Building(_Strict):
         return n + len(self.exits.sewer) + len(self.exits.water) + len(self.exits.downpipes)
 
 
+class VertexRls(_Strict):
+    """Retaining wall levels per vertex: the RL of the top and of the bottom of the wall at each vertex of the polyline. ``None`` = NOT SET at that vertex."""
+    top: list[StrictNum | None] = Field(max_length=MAX_VERTICES)
+    bottom: list[StrictNum | None] = Field(max_length=MAX_VERTICES)
+
+    @field_validator("top", "bottom")
+    @classmethod
+    def _finite(cls, v: list[float | None]) -> list[float | None]:
+        if not all(x is None or math.isfinite(x) for x in v):
+            raise ValueError("levels must be finite numbers or null")
+        return v
+
+
 class SiteObject(_Strict):
     id: str
     type: ObjectType
@@ -257,6 +311,14 @@ class SiteObject(_Strict):
     params: dict[str, Param] = Field(default_factory=dict, max_length=MAX_PARAMS)
     issues: list[Issue] = Field(default_factory=list, max_length=100)
     building: Building | None = None            # buildings only (stage 5)
+    vertex_rls: VertexRls | None = None         # retaining walls only (stage 7): top and bottom RL per vertex
+
+    @model_validator(mode="before")
+    @classmethod
+    def _legacy_type(cls, data):
+        if isinstance(data, dict) and data.get("type") in LEGACY_TYPES:
+            return {**data, "type": LEGACY_TYPES[data["type"]]}
+        return data
 
     @field_validator("id")
     @classmethod
@@ -287,6 +349,9 @@ class SiteObject(_Strict):
             raise ValueError(f"{self.type} needs {GEOMETRY_OF[self.type]} geometry, not {self.geometry.kind}")
         if (self.type == "building") != (self.building is not None):
             raise ValueError("a building object carries a building block, and no other type does")
+        for k, p in self.params.items():
+            if p.basis == "platform_default" and platform_default_refused(self.type, k, p.ref):
+                raise ValueError(f"{k}: a platform default is not accepted for a {self.type} parameter; enter a value (USER) or cite a requirement (LGA RULE with its key)")
         for (t, k), allowed in PARAM_ENUMS.items():
             p = self.params.get(k) if t == self.type else None
             if p is not None and p.value is not None and p.value not in allowed:
@@ -295,6 +360,20 @@ class SiteObject(_Strict):
             p = self.params.get(k)
             if p is not None and p.value is not None and (isinstance(p.value, bool) or not isinstance(p.value, (int, float))):
                 raise ValueError(f"{k} must be a number")
+        for k in PARAM_BOOLS.get(self.type, ()):
+            p = self.params.get(k)
+            if p is not None and p.value is not None and not isinstance(p.value, bool):
+                raise ValueError(f"{k} must be true or false")
+        for k in PARAM_DATES.get(self.type, ()):
+            p = self.params.get(k)
+            if p is not None and p.value is not None and not (isinstance(p.value, str) and _ISO_DATE.match(p.value)):
+                raise ValueError(f"{k} must be an ISO date (YYYY-MM-DD)")
+        if self.vertex_rls is not None:
+            n = len(self.geometry.pts) if self.geometry.kind == "polyline" else 0
+            if self.type != "retaining_wall":
+                raise ValueError("vertex_rls applies to a retaining_wall only")
+            if len(self.vertex_rls.top) != n or len(self.vertex_rls.bottom) != n:
+                raise ValueError("vertex_rls needs one top and one bottom entry for each vertex")
         if self.origin == "ai_proposal":
             if self.accepted is None:
                 self.accepted = "pending"

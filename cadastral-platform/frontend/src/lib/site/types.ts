@@ -3,11 +3,15 @@
 export const SITE_DESIGN_SCHEMA = 'site_design.v1' as const;
 
 export type ObjectType =
-  | 'tree' | 'rwt' | 'pit' | 'osd'
+  | 'tree' | 'rwt' | 'stormwater_pit' | 'osd'
   | 'retaining_wall' | 'infiltration_trench' | 'stormwater_pipe' | 'service_trace'
   | 'landscape_area' | 'grading_area' | 'osd_basin'
   | 'building' | 'pool' | 'footpath' | 'furniture'
-  | 'driveway';
+  | 'driveway'
+  | 'pool_barrier' | 'overflow_route';
+/** Stage 7 renamed the stormwater pit from `pit`. A stored document or a caller that still says `pit` is read as `stormwater_pit` (the backend does the same). */
+export const LEGACY_TYPES: Record<string, ObjectType> = { pit: 'stormwater_pit' };
+export const canonicalType = (t: unknown): unknown => (typeof t === 'string' && Object.prototype.hasOwnProperty.call(LEGACY_TYPES, t) ? LEGACY_TYPES[t] : t);
 export type GeometryKind = 'point' | 'polyline' | 'polygon';
 export type Status = 'existing' | 'proposed' | 'to_be_removed';
 export type Origin = 'user' | 'ai_proposal' | 'imported' | 'dbyd';
@@ -48,7 +52,10 @@ export interface SiteObject {
   issues: Issue[];
   /** buildings only (stage 5): imported, read only geometry; only placement (move, rotate) changes it */
   building?: Building;
+  /** retaining walls only (stage 7): the RL of the top and of the bottom of the wall at each vertex; null = NOT SET at that vertex. One entry per vertex. */
+  vertex_rls?: VertexRls;
 }
+export interface VertexRls { top: (number | null)[]; bottom: (number | null)[] }
 
 /** One level of an imported building. `elevation_m` is relative to the datum level (the ground floor) and comes from the source. */
 export interface BuildingLevel { name: string; elevation_m?: number; /** outer rings in MGA, largest first */ rings: Pos[][] }
@@ -94,11 +101,13 @@ export interface ObjectKind {
 }
 export const OBJECT_KINDS: Record<ObjectType, ObjectKind> = {
   tree: { geometry: 'point', label: 'TREE', dims: ['height_m', 'canopy_diameter_m'], colour: '#3f8f4a' },
+  // stage 7: the dimensions depend on the shape (round: diameter and height; slimline and underground: length, width and height), see dimKeys
   rwt: { geometry: 'point', label: 'RAINWATER TANK', dims: ['diameter_m', 'height_m'], colour: '#2d6cdf' },
-  pit: { geometry: 'point', label: 'STORMWATER PIT', dims: ['width_m', 'length_m'], colour: '#4a4f55' },
+  stormwater_pit: { geometry: 'point', label: 'STORMWATER PIT', dims: ['width_m', 'length_m'], colour: '#4a4f55' },
   osd: { geometry: 'point', label: 'OSD TANK', dims: ['width_m', 'length_m', 'height_m'], colour: '#7a4fc4' },
-  retaining_wall: { geometry: 'polyline', label: 'RETAINING WALL', dims: ['height_m', 'thickness_m'], colour: '#8c6a43' },
-  infiltration_trench: { geometry: 'polyline', label: 'INFILTRATION TRENCH', dims: ['width_m'], colour: '#2a9d8f' },
+  // stage 7: the wall height is per vertex (vertex_rls) or one height_m, so `dims` lists only the thickness; see dimensionsSet
+  retaining_wall: { geometry: 'polyline', label: 'RETAINING WALL', dims: ['thickness_m'], colour: '#8c6a43' },
+  infiltration_trench: { geometry: 'polyline', label: 'INFILTRATION TRENCH', dims: ['width_m', 'depth_m'], colour: '#2a9d8f' },
   stormwater_pipe: { geometry: 'polyline', label: 'STORMWATER PIPE', dims: ['diameter_mm'], colour: '#1f5fd1' },
   service_trace: { geometry: 'polyline', label: 'SERVICE TRACE', dims: [], colour: '#d9822b' },
   landscape_area: { geometry: 'polygon', label: 'LANDSCAPE AREA', dims: [], colour: '#6aa84f' },
@@ -107,11 +116,14 @@ export const OBJECT_KINDS: Record<ObjectType, ObjectKind> = {
   osd_basin: { geometry: 'polygon', label: 'OSD BASIN', dims: ['depth_m'], colour: '#5b6fd6' },
   // stage 5. A building is imported (never designed here): its footprint is its dimension, so it has no dimension parameters.
   building: { geometry: 'polygon', label: 'BUILDING', dims: [], colour: '#8d7b68' },
-  pool: { geometry: 'polygon', label: 'POOL', dims: ['depth_m'], colour: '#29a3c7' },
+  pool: { geometry: 'polygon', label: 'POOL', dims: ['depth_m', 'coping_width_m'], colour: '#29a3c7' },
   footpath: { geometry: 'polyline', alt: 'polygon', label: 'FOOTPATH', dims: ['width_m'], colour: '#b3a58f' },
   furniture: { geometry: 'point', label: 'OUTDOOR FURNITURE', dims: ['width_m', 'depth_m', 'height_m'], colour: '#a0642d' },
   // stage 6. The centreline's FIRST point is the crossover on the assumed kerb line; the last is the garage end. The width is never defaulted.
   driveway: { geometry: 'polyline', label: 'DRIVEWAY', dims: [], colour: '#6b7280' },
+  // stage 7. A pool barrier is a fence line with a height; an overflow route is an OSD overflow path (no dimension).
+  pool_barrier: { geometry: 'polyline', label: 'POOL BARRIER', dims: ['height_m'], colour: '#c0392b' },
+  overflow_route: { geometry: 'polyline', label: 'OVERFLOW ROUTE', dims: [], colour: '#e67e22' },
 };
 
 // ---- stage 5 enumerations (the same lists are in backend/app/design/site_design.py; a value outside a list is refused) ------------
@@ -123,18 +135,51 @@ export const SURFACE_KINDS = ['turf', 'garden_bed', 'mulch', 'gravel', 'permeabl
 export const SURFACE_LABEL: Record<(typeof SURFACE_KINDS)[number], string> = { turf: 'TURF', garden_bed: 'GARDEN BED', mulch: 'MULCH', gravel: 'GRAVEL', permeable_paving: 'PERMEABLE PAVING', impervious_paving: 'IMPERVIOUS PAVING' };
 export const FOOTPATH_SURFACES = ['concrete', 'pavers', 'gravel', 'permeable_pavers'] as const;
 export const DRIVEWAY_SURFACES = ['concrete', 'asphalt', 'pavers', 'gravel', 'permeable_pavers'] as const;
+// ---- stage 7 enumerations (the same lists are in the backend model)
+export const RWT_SHAPES = ['round', 'slimline', 'underground'] as const;
+export const WALL_TYPES = ['sleeper', 'block', 'concrete', 'other'] as const;
+export const INFILTRATION_BASES = ['site_test', 'indicative'] as const;
+export const OSD_FORMS = ['tank', 'basin', 'below_ground'] as const;
 /** Text parameters limited to a list, by [object type, key]. */
 export const PARAM_ENUMS: Record<string, readonly string[]> = {
+  'rwt.shape': RWT_SHAPES, 'retaining_wall.wall_type': WALL_TYPES, 'infiltration_trench.infiltration_basis': INFILTRATION_BASES, 'osd.form': OSD_FORMS, 'osd_basin.form': OSD_FORMS,
   'building.building_use': BUILDING_USES, 'building.source': BUILDING_SOURCES, 'building.roof_area_basis': ROOF_AREA_BASES,
   'landscape_area.surface_kind': SURFACE_KINDS, 'footpath.surface_kind': FOOTPATH_SURFACES, 'driveway.surface_kind': DRIVEWAY_SURFACES,
 };
 /** Parameters that must be numbers when they carry a value. */
 export const PARAM_NUMBERS: Record<string, readonly string[]> = {
-  building: ['ffl_rl', 'height_m', 'roof_plan_area_m2'], pool: ['depth_m', 'coping_width_m'], footpath: ['width_m'], furniture: ['width_m', 'depth_m', 'height_m'],
+  building: ['ffl_rl', 'height_m', 'roof_plan_area_m2'], pool: ['depth_m', 'coping_width_m', 'water_level_rl'], footpath: ['width_m', 'crossfall_pct'], furniture: ['width_m', 'depth_m', 'height_m'],
   // stage 6. Batter slopes are H per V (a 1 in 3 batter is 3); a grade is a percentage; a fall direction is a grid bearing in degrees.
   driveway: ['width_m', 'end_level_rl', 'crossover_chainage_m', 'batter_cut_h_per_v', 'batter_fill_h_per_v'],
   grading_area: ['target_level_m', 'target_grade_pct', 'fall_direction_deg', 'pivot_level_m', 'batter_cut_h_per_v', 'batter_fill_h_per_v'],
+  // stage 7. Levels (`_rl`) are RLs in metres and may be negative.
+  rwt: ['capacity_l', 'diameter_m', 'length_m', 'width_m', 'height_m', 'base_rl', 'inlet_rl', 'overflow_rl', 'outlet_rl', 'connected_roof_area_m2', 'garden_area_m2', 'runoff_coefficient', 'first_flush_mm', 'occupants',
+    'toilet_l_pp_day', 'laundry_l_pp_day', 'garden_l_m2_day', 'wet_day_fraction', 'water_target_pct', 'tank_height_m'],
+  retaining_wall: ['height_m', 'thickness_m', 'surcharge_kpa', 'soil_friction_angle_deg', 'soil_unit_weight_kn_m3', 'wall_friction_ratio', 'gravity_wall_width_ratio', 'wall_unit_weight_kn_m3', 'min_fs_sliding', 'min_fs_overturning'],
+  infiltration_trench: ['width_m', 'depth_m', 'void_ratio', 'infiltration_rate_mm_h'],
+  osd: ['width_m', 'length_m', 'height_m', 'storage_volume_m3', 'orifice_diameter_mm', 'orifice_invert_rl', 'top_water_level_rl', 'discharge_coefficient', 'psd_l_s'],
+  osd_basin: ['depth_m', 'storage_volume_m3', 'orifice_diameter_mm', 'orifice_invert_rl', 'top_water_level_rl', 'discharge_coefficient', 'psd_l_s'],
+  stormwater_pit: ['width_m', 'length_m', 'invert_rl'], stormwater_pipe: ['diameter_mm', 'upstream_invert_rl', 'downstream_invert_rl'],
+  pool_barrier: ['height_m'], tree: ['height_m', 'canopy_diameter_m', 'trunk_diameter_mm'],
 };
+/** Parameters that must be true or false when they carry a value. */
+export const PARAM_BOOLS: Record<string, readonly string[]> = { rwt: ['reuse_toilet', 'reuse_laundry', 'reuse_garden'], footpath: ['impervious'] };
+/** Parameters that must be an ISO date (YYYY-MM-DD) when they carry a value. */
+export const PARAM_DATES: Record<string, readonly string[]> = { infiltration_trench: ['test_date'] };
+/** Object links: [type, key] -> the object types the linked id must have. */
+export const PARAM_LINKS: Record<string, readonly ObjectType[]> = { 'rwt.roof_building_id': ['building'], 'overflow_route.osd_id': ['osd', 'osd_basin'], 'pool_barrier.pool_id': ['pool'] };
+/**
+ * Object types whose parameters are stage 7 engineering inputs (the same list is in the backend model). On them a parameter may not have basis platform_default:
+ * the only platform defaults are the requirement values of stormwater.osd_required and stormwater.psd_l_s, which the SERVER resolves. Two exceptions, as in the
+ * backend: the OSD psd_l_s (the server verifies its value) and the Plan Studio size ESTIMATE the importer stamps on a tank diameter or height.
+ */
+export const STAGE7_TYPES: readonly ObjectType[] = ['rwt', 'retaining_wall', 'infiltration_trench', 'osd', 'osd_basin', 'stormwater_pit', 'stormwater_pipe', 'pool_barrier', 'overflow_route', 'tree'];
+export const PS_ESTIMATE_REF = 'PLAN STUDIO ESTIMATE';
+export function platformDefaultRefused(type: ObjectType, key: string, ref: string | undefined): boolean {
+  if (!STAGE7_TYPES.includes(type) || (ref ?? '').startsWith(PS_ESTIMATE_REF)) return false;
+  return !((type === 'osd' || type === 'osd_basin') && key === 'psd_l_s');
+}
+export const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 export const WIDTH_NOT_SET = 'WIDTH NOT SET', END_LEVEL_NOT_SET = 'END LEVEL NOT SET', TARGET_NOT_SET = 'TARGET NOT SET';
 /** Parameter keys the panel always lists for a type (shown NOT SET until a value is entered), besides the keys the object already has. */
 export const PANEL_KEYS: Partial<Record<ObjectType, string[]>> = {
@@ -162,16 +207,49 @@ export function dimOf(o: SiteObject, key: string): number | null {
   const p = o.params[key];
   return p && p.basis !== 'unresolved' && typeof p.value === 'number' && Number.isFinite(p.value) && p.value > 0 ? p.value : null;
 }
-/** Dimension parameters that apply to this object (a footpath drawn as an area has no width). */
+/** The shape of a rainwater tank when it is set, else null (a tank with no shape is a marker: its dimensions depend on the shape). */
+export function rwtShape(o: SiteObject): (typeof RWT_SHAPES)[number] | null {
+  const v = o.params.shape;
+  return v && v.basis !== 'unresolved' && (RWT_SHAPES as readonly unknown[]).includes(v.value) ? (v.value as (typeof RWT_SHAPES)[number]) : null;
+}
+/** A text parameter that is set (non empty), else null. */
+export function textOf(o: SiteObject, key: string): string | null {
+  const p = o.params[key];
+  return p && p.basis !== 'unresolved' && typeof p.value === 'string' && p.value.trim() !== '' ? p.value : null;
+}
+/** A true or false parameter that is set, else null. */
+export function flagOf(o: SiteObject, key: string): boolean | null {
+  const p = o.params[key];
+  return p && p.basis !== 'unresolved' && typeof p.value === 'boolean' ? p.value : null;
+}
+/** Dimension parameters that apply to this object (a footpath drawn as an area has no width; a tank's depend on its shape). */
 export function dimKeys(o: SiteObject): string[] {
   const k = OBJECT_KINDS[o.type];
+  if (o.type === 'rwt') { const sh = rwtShape(o); return sh === 'slimline' || sh === 'underground' ? ['length_m', 'width_m', 'height_m'] : ['diameter_m', 'height_m']; }
   return k.alt && o.geometry.kind === k.alt ? [] : k.dims;
+}
+/**
+ * The retained height of a wall at vertex `i`: the top RL minus the bottom RL when both are set (and the top is above the bottom), else the uniform
+ * `height_m` when it is set, else null (NOT SET). Nothing is defaulted.
+ */
+export function wallHeightAt(o: SiteObject, i: number): number | null {
+  const r = o.vertex_rls;
+  if (r && r.top[i] != null && r.bottom[i] != null) { const h = (r.top[i] as number) - (r.bottom[i] as number); return h > 0 ? h : null; }
+  return dimOf(o, 'height_m');
 }
 export function dimensionsSet(o: SiteObject): boolean {
   if (o.type === 'grading_area') return gradingTargetSet(o);
   if (o.type === 'driveway') return dimOf(o, 'width_m') !== null;
   const k = dimKeys(o);
-  return k.length === 0 || k.every((key) => dimOf(o, key) !== null);
+  if (!(k.length === 0 || k.every((key) => dimOf(o, key) !== null))) return false;
+  switch (o.type) {
+    case 'rwt': return rwtShape(o) !== null;
+    case 'osd': case 'osd_basin': return textOf(o, 'form') !== null;
+    case 'pool': return levelOf(o, 'water_level_rl') !== null;
+    case 'stormwater_pipe': return levelOf(o, 'upstream_invert_rl') !== null && levelOf(o, 'downstream_invert_rl') !== null;
+    case 'retaining_wall': return o.geometry.kind === 'polyline' && o.geometry.pts.every((_, i) => wallHeightAt(o, i) !== null);
+    default: return true;
+  }
 }
 /** A grading area has a target when it has a level, or a grade together with its fall direction. Anything else is "not set". */
 export function gradingTargetSet(o: SiteObject): boolean {
@@ -193,9 +271,11 @@ export function parseDesign(raw: unknown): SiteDesign {
   if (!j || typeof j !== 'object' || j.schema !== SITE_DESIGN_SCHEMA || !Array.isArray(j.objects)) throw new Error('Not a site_design.v1 document');
   const objects = j.objects.map((o): SiteObject => {
     const src = o as unknown as Record<string, unknown>;
-    if (typeof src.id !== 'string' || !(src.type as string in OBJECT_KINDS) || !src.geometry) throw new Error('Invalid site design object');
+    const type = canonicalType(src.type);
+    if (typeof src.id !== 'string' || typeof type !== 'string' || !(type in OBJECT_KINDS) || !src.geometry) throw new Error('Invalid site design object');
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(src)) if (v !== null && v !== undefined) out[k] = v;
+    out.type = type;
     out.verified = !!src.verified; out.params = src.params ?? {}; out.issues = src.issues ?? [];
     out.status = src.status ?? 'proposed'; out.origin = src.origin ?? 'user';
     return out as unknown as SiteObject;

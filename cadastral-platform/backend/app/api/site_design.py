@@ -65,6 +65,8 @@ from app.design import engine_limits as EL
 from app.design.driveway_engine import driveway_profile
 from app.design.driveway_link import link_id
 from app.design.grading_engine import grading
+from app.design.object_checks import check_design
+from app.design.rwt_size import size_tank
 from app.design.site_design import SiteDesign, SiteObject, empty_design
 from app.design.site_rules import SiteRules, project_rules
 from app.design.terrain_source import TerrainUnavailable, load_terrain
@@ -387,3 +389,46 @@ async def post_grading(project_id: UUID, body: GradingRequest, request: Request,
     _limit_422(EL.check_grading, body.grading_area)
     base = site_design_base(request)
     return _engine_json(await _run_engine(project_id, lambda: grading(body.grading_area, _terrain_at(base, project_id), rules)))
+
+
+# ---- stage 7: rule based checks of the whole design, and the optional rainwater tank sizing -------------------------------------------
+def _terrain_or_none(base: Path, project_id: UUID):
+    """The project's terrain, or None when it has none (the checks that need ground levels or the lot are then NOT EVALUATED)."""
+    try:
+        return load_terrain(base / str(project_id) / SCENE_BUNDLE_FILE)
+    except TerrainUnavailable:
+        return None
+
+
+@router.post("/projects/{project_id}/site-design/check")
+async def post_site_check(project_id: UUID, request: Request, _user: UUID = Depends(site_design_access), rules: SiteRules = Depends(site_rules_dep),
+                          raw: bytes = Depends(limited_body)) -> JSONResponse:
+    """Evaluate every rule based check for the design in the body (the browser's current document). The server is authoritative; the document is not saved."""
+    try:
+        doc = SiteDesign.model_validate_json(raw)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=e.errors(include_url=False, include_context=False, include_input=False)) from None
+    _limit_422(EL.check_site_design, doc)                              # cheap caps first: nothing is read from disk for an oversized design
+    base = site_design_base(request)
+    return _engine_json(await _run_engine(project_id, lambda: check_design(doc, rules, _terrain_or_none(base, project_id))))      # an EngineLimitError is 422 in _run_engine
+
+
+class RwtSizeRequest(_Body):
+    rwt: SiteObject
+    building: SiteObject | None = None
+    rainfall_monthly_mm: list[float] | None = None
+    rainfall_station: str | None = None
+    candidate_sizes_l: list[int] | None = None
+    garden_monthly_factor: list[float] | None = None
+
+
+@router.post("/projects/{project_id}/site-design/rwt-size")
+async def post_rwt_size(project_id: UUID, body: RwtSizeRequest, _user: UUID = Depends(site_design_access), rules: SiteRules = Depends(site_rules_dep)) -> JSONResponse:
+    if body.rwt.type != "rwt":
+        raise ApiError(422, "NOT_A_RWT", "the object is not a rainwater tank")
+    if body.building is not None and body.building.type != "building":
+        raise ApiError(422, "NOT_A_BUILDING", "the linked object is not a building")
+    if body.candidate_sizes_l is not None and len(body.candidate_sizes_l) > 20:
+        raise ApiError(422, "ENGINE_INPUT_TOO_LARGE", "AT MOST 20 CANDIDATE SIZES ARE ACCEPTED")
+    return _engine_json(await _run_engine(project_id, lambda: size_tank(body.rwt, body.building, rules, body.rainfall_monthly_mm, body.rainfall_station,
+                                                                        body.candidate_sizes_l, body.garden_monthly_factor)))

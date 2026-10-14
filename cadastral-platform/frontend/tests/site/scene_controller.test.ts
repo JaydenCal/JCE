@@ -113,7 +113,7 @@ describe('DesignController: tools', () => {
     r.key('KeyZ', { ctrlKey: true, shiftKey: true } as never); expect(r.doc().objects).toHaveLength(1);
   });
   it('continues placing until Escape; the new status comes from the panel choice', () => {
-    const r = rig(); r.ctl.setNewStatus('existing'); r.ctl.startFor('pit'); r.click(1, 1); r.click(3, 3);
+    const r = rig(); r.ctl.setNewStatus('existing'); r.ctl.startFor('stormwater_pit'); r.click(1, 1); r.click(3, 3);
     expect(r.doc().objects.map((o) => o.status)).toEqual(['existing', 'existing']); expect(r.last().tool).toBe('place');
     r.key('Escape'); expect(r.last().tool).toBe('select');
   });
@@ -216,11 +216,11 @@ describe('DesignController: select, handles, drag, delete', () => {
     expect(r.ctl.store.history().undoCount).toBe(n);
   });
   it('a body drag of a point object, then incremental rebuild touches only that object', () => {
-    const r = rig(); r.ctl.startFor('tree'); r.click(5, 5); r.ctl.startFor('pit'); r.click(20, 20); r.ctl.setTool('select'); r.root.updateMatrixWorld(true);
-    const pitGroup = r.ctl.scene.groupOf('pit_2');
+    const r = rig(); r.ctl.startFor('tree'); r.click(5, 5); r.ctl.startFor('stormwater_pit'); r.click(20, 20); r.ctl.setTool('select'); r.root.updateMatrixWorld(true);
+    const pitGroup = r.ctl.scene.groupOf('stormwater_pit_2');
     r.ctl.pointerDown(r.info(5, 5)); r.ctl.pointerMove(r.info(7, 5, { x: 90, y: 90 })); r.ctl.pointerUp(r.info(7, 5, { x: 90, y: 90 }), true);
     expect(r.doc().objects[0].geometry).toMatchObject({ p: [O[0] + 7, O[1] + 5] });
-    expect(r.ctl.scene.lastRebuilt).toEqual(['tree_1']); expect(r.ctl.scene.groupOf('pit_2')).toBe(pitGroup);
+    expect(r.ctl.scene.lastRebuilt).toEqual(['tree_1']); expect(r.ctl.scene.groupOf('stormwater_pit_2')).toBe(pitGroup);
   });
   it('R rotates the selected object 15 degrees; Escape cancels a drag and leaves the document alone', () => {
     const r = rig(); r.ctl.startFor('tree'); r.click(5, 5); r.ctl.setTool('select'); r.ctl.select('tree_1'); r.key('KeyR');

@@ -16,6 +16,8 @@ from typing import Any
 
 from app.agents.requirements.models import RequirementSet, UnresolvedRequirement
 
+from . import object_keys as OK
+
 #: how a rule was resolved, as shown on a check and on the object
 LGA, STATE, DEFAULT, USER, UNRESOLVED = "LGA RULE", "STATE RULE", "PLATFORM DEFAULT", "USER", "UNRESOLVED"
 
@@ -32,6 +34,9 @@ KEY_BATTER_FILL = "earthworks.batter.fill_max_slope"
 KEY_BATTER_ANY = "earthworks.batter.max_slope"
 KEYS = (KEY_MAX_GRADE, KEY_MAX_CHANGE, KEY_MIN_WIDTH, KEY_MAX_WIDTH, KEY_MIN_SEPARATION, KEY_SPLAY, KEY_BATTER_CUT, KEY_BATTER_FILL, KEY_BATTER_ANY)
 
+#: canonical units that are not in the conversion table (``app.jurisdiction.units``): a requirement row must carry exactly this unit
+OK_STRICT_UNITS = frozenset({"deg", "kN/m3", "L/person/day", "L/m2/day"})
+
 #: units a batter requirement may be stated in, and how each converts to H per V (horizontal metres per vertical metre)
 _HV_UNITS = {None, "", "h:v", "h_per_v", "h per v", "hv", "ratio", "1 in n", "1_in_n", "1:n"}
 
@@ -40,7 +45,7 @@ _HV_UNITS = {None, "", "h:v", "h_per_v", "h per v", "hv", "ratio", "1 in n", "1_
 class Rule:
     """One resolved (or unresolved) requirement. ``value`` is in the unit the engine uses for that key (see ``unit``)."""
     key: str
-    value: float | None
+    value: Any                      # a number, a bool (kind bool) or a list of numbers (kind list); None when UNRESOLVED
     unit: str
     basis: str                      # LGA RULE, STATE RULE, PLATFORM DEFAULT, USER or UNRESOLVED
     ref: str                        # citation text, or why it is unresolved
@@ -51,7 +56,10 @@ class Rule:
         return self.value is not None
 
     def public(self) -> dict[str, Any]:
-        return {"key": self.key, "value": self.value, "unit": self.unit, "basis": self.basis, "ref": self.ref}
+        d = {"key": self.key, "value": self.value, "unit": self.unit, "basis": self.basis, "ref": self.ref}
+        if self.stamp:
+            d["stamp"] = self.stamp
+        return d
 
 
 def _unresolved(key: str, unit: str, why: str) -> Rule:
@@ -87,9 +95,11 @@ class SiteRules:
         return f"{self.lga} ({self.jurisdiction})" if self.lga and self.jurisdiction else (self.lga or "LGA NOT KNOWN")
 
     def get(self, key: str) -> Rule:
+        """The rule for a key, as a number in the canonical unit of the key (bool and list keys are read with ``get_flag`` and ``get_list``)."""
         if key in self._cache:
             return self._cache[key]
-        unit = "%" if key.endswith("_pct") else "m" if key.endswith("_m") else "H per V" if key.startswith("earthworks.batter") else ""
+        spec = OK.spec_for(key)          # a zone qualified key (rwt.max_height_m.rural) takes the unit and kind of its family, never a guess from the key ending
+        unit = spec.unit if spec else "%" if key.endswith("_pct") else "m" if key.endswith("_m") else "H per V" if key.startswith("earthworks.batter") else ""
         if self.requirements is None:
             r = _unresolved(key, unit, self.note or "NO LOT OR LGA IS KNOWN FOR THIS PROJECT, SO NO REQUIREMENT CAN BE RESOLVED")
         else:
@@ -98,9 +108,59 @@ class SiteRules:
             except UnresolvedRequirement as e:
                 r = _unresolved(key, unit, e.prompt or "NO REQUIREMENT FOUND")
             else:
-                r = self._from_requirement(key, req, unit)
+                r = self._from_spec(key, req, spec) if spec is not None and spec.kind != "number" else self._from_requirement(key, req, unit)
         self._cache[key] = r
         return r
+
+    def get_flag(self, key: str) -> Rule:
+        """A true or false rule (kind bool). A number or text value is UNRESOLVED."""
+        return self.get(key)
+
+    def get_list(self, key: str) -> Rule:
+        """A list rule (kind list): the value is a list of numbers, or None when UNRESOLVED."""
+        return self.get(key)
+
+    def keys_under(self, prefix: str) -> list[str]:
+        """Keys with this prefix that hold a usable row in the requirement set (sorted). Used for zone qualified families such as ``rwt.max_height_m.*``."""
+        if self.requirements is None:
+            return []
+        return sorted({r.key for r in self.requirements.requirements if r.key.startswith(prefix) and r.status in ("resolved", "user_confirmed") and r.value is not None})
+
+    def all_keys_under(self, prefix: str) -> list[str]:
+        """Every key with this prefix that has a row in the requirement set, whatever its status (sorted). The keys that do not resolve are named by the checks."""
+        if self.requirements is None:
+            return []
+        return sorted({r.key for r in self.requirements.requirements if r.key.startswith(prefix)})
+
+    def _from_spec(self, key: str, req: Any, spec: "OK.KeySpec") -> Rule:
+        """Boolean, ratio, count and list keys. A value of the wrong kind or an unconvertible unit is UNRESOLVED (never coerced)."""
+        v = req.value
+        if spec.kind == "bool":
+            if not isinstance(v, bool):
+                return _unresolved(key, "", f"THE VALUE FOR {key} IS NOT TRUE OR FALSE")
+            return self._wrap(key, req, v, "")
+        if spec.kind == "list":
+            if isinstance(v, (bool, type(None))):
+                return _unresolved(key, "", f"THE VALUE FOR {key} IS NOT A LIST OF NUMBERS")
+            try:
+                items = [float(x) for x in ([v] if isinstance(v, (int, float)) else str(v).split(","))]
+            except ValueError:
+                return _unresolved(key, "", f"THE VALUE FOR {key} IS NOT A COMMA SEPARATED LIST OF NUMBERS")
+            if not items or not all(math.isfinite(x) for x in items) or (spec.length is not None and len(items) != spec.length):
+                return _unresolved(key, "", f"THE LIST FOR {key} " + (f"NEEDS EXACTLY {spec.length} NUMBERS" if spec.length else "IS EMPTY"))
+            return self._wrap(key, req, items, "")
+        # ratio and count: dimensionless; any other unit on the row is not guessed
+        if isinstance(v, (bool, str)) or v is None or not math.isfinite(float(v)):
+            return _unresolved(key, spec.unit, f"THE VALUE FOR {key} IS NOT A NUMBER")
+        if (req.unit or "").strip().lower() not in OK.DIMENSIONLESS_UNITS:
+            return _unresolved(key, spec.unit, f"THE UNIT {req.unit!r} OF {key} IS NOT DIMENSIONLESS")
+        return self._wrap(key, req, float(v), spec.unit)
+
+    def _wrap(self, key: str, req: Any, value: Any, unit: str) -> Rule:
+        if req.is_platform_default:
+            return Rule(key, value, unit, DEFAULT, req.citation(), req.stamp)
+        basis = USER if req.status == "user_confirmed" else LGA if req.applies_to.lga else STATE
+        return Rule(key, value, unit, basis, req.citation())
 
     def _from_requirement(self, key: str, req: Any, unit: str) -> Rule:
         if isinstance(req.value, (bool, str)) or req.value is None:
@@ -112,6 +172,8 @@ class SiteRules:
                 return _unresolved(key, unit, f"THE UNIT {req.unit!r} OF {key} IS NOT A BATTER SLOPE UNIT (H PER V, PERCENT OR DEGREES)")
             v = hv
         elif req.unit and req.unit != unit:
+            if unit in OK_STRICT_UNITS:                      # a unit the conversion table does not know: only an exact match is accepted, never a guess
+                return _unresolved(key, unit, f"THE UNIT {req.unit!r} OF {key} IS NOT {unit}")
             try:
                 v = req.value_in(unit)
             except Exception:  # noqa: BLE001  (unit error: report it, never guess)

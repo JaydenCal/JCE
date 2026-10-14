@@ -6,6 +6,8 @@ import type { ImportEndpoint, LotInfo } from '@/lib/site/buildingImport';
 import { READ_ONLY_BUILDING_PARAMS } from '@/lib/site/buildings';
 import { BuildingImportBox, BuildingInfo, FeatureTools } from './BuildingTools';
 import { DrivewaySection, GradingSection } from './EngineSections';
+import { ChecksSection, ObjectFields, RwtSizeSection, ScreeningBox, ValuesBox, WallLevels } from './ObjectSections';
+import { fieldsFor } from '@/lib/site/siteObjects';
 import { FFL_NOT_SET, HEIGHT_NOT_SET, POOL_BARRIER_LABEL, dimOf, levelOf } from '@/lib/site/types';
 import { OpError } from '@/lib/site/ops';
 import { LOADING_NOTE, type AutosaveState, type LoadState } from '@/lib/site/persist';
@@ -32,8 +34,8 @@ export interface DesignPanelProps {
   catalogue?: CatalogueItem[];
 }
 const GROUPS: { title: string; types: ObjectType[] }[] = [
-  { title: 'Points', types: ['tree', 'rwt', 'pit', 'osd'] },
-  { title: 'Lines', types: ['retaining_wall', 'infiltration_trench', 'stormwater_pipe', 'service_trace', 'driveway'] },
+  { title: 'Points', types: ['tree', 'rwt', 'stormwater_pit', 'osd'] },
+  { title: 'Lines', types: ['retaining_wall', 'infiltration_trench', 'stormwater_pipe', 'service_trace', 'driveway', 'pool_barrier', 'overflow_route'] },
   { title: 'Areas', types: ['landscape_area', 'grading_area', 'osd_basin'] },
 ];
 const GRIDS = [0, 0.1, 0.25, 0.5, 1, 2, 5];
@@ -46,10 +48,12 @@ function Issues({ o }: { o: SiteObject }) {
   return <>{o.issues.map((i) => <span key={i.code + i.message} className={'badge sev-' + i.severity} title={i.message}>{i.severity === 'blocking' ? 'BLOCKING' : i.severity === 'warning' ? 'WARNING' : 'INFO'}: {i.message}</span>)}</>;
 }
 
-function Props({ o, ctl, locked }: { o: SiteObject; ctl: DesignController; locked: boolean }) {
+function Props({ o, doc, ds, ctl, locked }: { o: SiteObject; doc: SiteDesign; ds: DesignState; ctl: DesignController; locked: boolean }) {
   const [err, setErr] = useState(''), [k, setK] = useState(''), [v, setV] = useState('');
   const run = (name: string, args: Record<string, unknown>, label?: string) => { try { ctl.store.run(name, { id: o.id, ...args }, label); setErr(''); } catch (e) { setErr(e instanceof OpError ? e.message : String(e)); } };
-  const keys = [...new Set([...dimKeys(o), ...(PANEL_KEYS[o.type] ?? []), ...(o.type === 'building' ? ['building_use', 'ffl_rl', 'height_m'] : []), ...Object.keys(o.params)])];
+  const typed = fieldsFor(o).length > 0, typedKeys = new Set(fieldsFor(o).map((f) => f.key));
+  const keys = [...new Set([...(typed ? [] : dimKeys(o)), ...(PANEL_KEYS[o.type] ?? []), ...(o.type === 'building' ? ['building_use', 'ffl_rl', 'height_m'] : []), ...Object.keys(o.params)])].filter((k) => !typedKeys.has(k));
+  const values = ds.checks.result?.values[o.id] ?? [], wall = ds.checks.result?.checks.find((c) => c.object_id === o.id && c.code === 'WALL_SCREENING');
   const parse = (s: string): unknown => (s.trim() === '' ? null : Number.isFinite(Number(s)) && s.trim() !== '' ? Number(s) : s.trim());
   const set = (key: string, s: string) => run('set_param', { key, value: parse(s) }, 'Set parameter');
   return (
@@ -58,6 +62,8 @@ function Props({ o, ctl, locked }: { o: SiteObject; ctl: DesignController; locke
       <div className="note">ID {o.id} · {ORIGIN_LABEL[o.origin]}{o.accepted ? ` · ${o.accepted.toUpperCase()}` : ''}{o.verified ? ` · VERIFIED ${fmtDate(o.verified_on)}` : ' · UNVERIFIED'}</div>
       <div className="row dz-row"><label htmlFor="dz-status">Status</label>
         <select id="dz-status" className="search" value={o.status} onChange={(e) => run('set_status', { status: e.target.value })}>{STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}</select></div>
+      {typed && <ObjectFields o={o} doc={doc} run={run} />}
+      <WallLevels o={o} run={run} />
       <div className="dz-params">
         {keys.map((key) => {
           const p = o.params[key], options = PARAM_ENUMS[`${o.type}.${key}`], ro = o.type === 'building' && READ_ONLY_BUILDING_PARAMS.has(key);
@@ -87,8 +93,10 @@ function Props({ o, ctl, locked }: { o: SiteObject; ctl: DesignController; locke
           <input className="search" aria-label="New parameter value" placeholder="value" value={v} onChange={(e) => setV(e.target.value)} />
           <button className="view" disabled={!k} onClick={() => { set(k, v); setK(''); setV(''); }}>Add</button></div>
       </div>
-      {!keys.length && <div className="note">No parameters set. Dimensions are never defaulted.</div>}
-      {o.type === 'pool' && <div className="note" role="note"><b>{POOL_BARRIER_LABEL}</b> <span className="badge basis-unresolved">UNRESOLVED</span></div>}
+      {!keys.length && !typed && <div className="note">No parameters set. Dimensions are never defaulted.</div>}
+      {(o.type === 'pool' || o.type === 'pool_barrier') && <div className="note" role="note"><b>{POOL_BARRIER_LABEL}</b> <span className="badge basis-unresolved">UNRESOLVED</span></div>}
+      <ValuesBox o={o} values={values} ctl={ctl} />
+      <ScreeningBox check={wall} />
       {o.building && <BuildingInfo o={o} ctl={ctl} />}
       <div style={{ marginTop: 6 }}><Issues o={o} /></div>
       {err && <div className="note" style={{ color: 'var(--bad)' }} role="alert">{err}</div>}
@@ -211,7 +219,9 @@ export function DesignPanel({ ds, doc, ctl, save, onResolve, gate, onRetryLoad, 
           </tbody></table>
         )}
       </section>
-      {sel && <section><h2>Properties</h2><Props o={sel} ctl={ctl} key={sel.id} locked={locked} /></section>}
+      <ChecksSection doc={doc} ds={ds} ctl={ctl} />
+      {sel && <section><h2>Properties</h2><Props o={sel} doc={doc} ds={ds} ctl={ctl} key={sel.id} locked={locked} /></section>}
+      {sel && sel.type === 'rwt' && <RwtSizeSection o={sel} ds={ds} ctl={ctl} locked={locked} key={'rs' + sel.id} />}
       {sel && ds.driveway && ds.driveway.id === sel.id && <DrivewaySection p={ds.driveway} o={sel} doc={doc} ctl={ctl} locked={locked} key={'dv' + sel.id} />}
       {sel && ds.grading && ds.grading.id === sel.id && <GradingSection p={ds.grading} o={sel} locked={locked} key={'gr' + sel.id} />}
     </>

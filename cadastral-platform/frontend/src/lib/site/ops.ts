@@ -11,7 +11,7 @@ import { READ_ONLY_BUILDING_PARAMS, IMPORT_PARAM_KEYS, IMPORT_ID_RE, levelsToMga
 import { applyPatch, ptr, type Patch } from './patch';
 import { normDeg } from './snap';
 import {
-  BASES, OBJECT_KINDS, OBJECT_TYPES, ORIGINS, PARAM_ENUMS, PARAM_NUMBERS, STATUSES, minVertices, verticesOf,
+  BASES, ISO_DATE_RE, OBJECT_KINDS, OBJECT_TYPES, ORIGINS, PARAM_BOOLS, PARAM_DATES, PARAM_ENUMS, PARAM_LINKS, PARAM_NUMBERS, STATUSES, canonicalType, minVertices, platformDefaultRefused, verticesOf,
   type Basis, type Building, type Geometry, type GeometryKind, type ObjectType, type Origin, type Param, type Pos, type SiteDesign, type SiteObject, type Status,
 } from './types';
 
@@ -103,7 +103,7 @@ export function parseParam(key: string, raw: unknown): Param {
   const r = raw as Record<string, unknown>;
   const basis = oneOf<Basis>(r.basis, BASES, `${key}.basis`);
   const value = r.value === undefined ? null : r.value;
-  const ref = r.ref === undefined || r.ref === null || r.ref === '' ? undefined : String(r.ref).slice(0, 200);
+  const ref = r.ref === undefined || r.ref === null || String(r.ref).trim() === '' ? undefined : String(r.ref).trim().slice(0, 200);
   if (basis === 'unresolved') {
     if (value !== null) fail(`${key} is UNRESOLVED and cannot carry a value`);
     return { value: null, basis };
@@ -120,6 +120,9 @@ export function checkTypedParam(type: ObjectType, key: string, p: Param): Param 
   const allowed = PARAM_ENUMS[`${type}.${key}`];
   if (allowed && p.value !== null && !allowed.includes(p.value as string)) fail(`${key} must be one of: ${allowed.join(', ')}`);
   if ((PARAM_NUMBERS[type] ?? []).includes(key) && p.value !== null && typeof p.value !== 'number') fail(`${key} must be a number`);
+  if ((PARAM_BOOLS[type] ?? []).includes(key) && p.value !== null && typeof p.value !== 'boolean') fail(`${key} must be true or false`);
+  if ((PARAM_DATES[type] ?? []).includes(key) && p.value !== null && !(typeof p.value === 'string' && ISO_DATE_RE.test(p.value))) fail(`${key} must be a date written YYYY-MM-DD`);
+  if (p.basis === 'platform_default' && platformDefaultRefused(type, key, p.ref)) fail(`${key}: a platform default is not accepted for a ${type.replace(/_/g, ' ')} parameter; enter a value (basis user) or cite the requirement key (basis lga_rule with its key as ref)`);
   return p;
 }
 function parseParams(v: unknown, type?: ObjectType): Record<string, Param> {
@@ -136,7 +139,7 @@ const UNRESOLVED: Param = { value: null, basis: 'unresolved' };
  * Stage 4 types start with no parameters.
  */
 function startingParams(type: ObjectType, shape: GeometryKind): Record<string, Param> {
-  const keys: string[] = type === 'pool' ? ['depth_m', 'coping_width_m', 'barrier_requirements']
+  const keys: string[] = type === 'pool' ? ['depth_m', 'coping_width_m', 'water_level_rl', 'barrier_requirements']
     : type === 'footpath' ? (shape === 'polyline' ? ['width_m', 'surface_kind'] : ['surface_kind'])
     : type === 'furniture' ? ['catalogue_item', 'width_m', 'depth_m', 'height_m']
     // stage 6: a driveway starts with no width, end level, surface or batter slope (all NOT SET). A grading area keeps starting with NO parameters
@@ -171,7 +174,7 @@ const BUILDING_FOOTPRINT = 'a building footprint is read only: it comes from the
 export const OPS: Record<string, OpDef> = {
   add_object: {
     label: 'Add object',
-    description: 'Add a site object. Point objects (tree, rwt, pit, osd, furniture) take one point; polyline objects (retaining_wall, infiltration_trench, stormwater_pipe, service_trace, footpath) take two or more; polygon objects (landscape_area, grading_area, osd_basin, pool) take three or more; a footpath may be drawn as an area with shape polygon. A building cannot be added here: it is imported (place_building). Points are MGA metres. No dimension is defaulted: an object without dimensions is shown as a marker labelled DIMENSIONS NOT SET.',
+    description: 'Add a site object. Point objects (tree, rwt, stormwater_pit, osd, furniture) take one point; polyline objects (retaining_wall, infiltration_trench, stormwater_pipe, service_trace, footpath, driveway, pool_barrier, overflow_route) take two or more; polygon objects (landscape_area, grading_area, osd_basin, pool) take three or more; a footpath may be drawn as an area with shape polygon. A building cannot be added here: it is imported (place_building). Points are MGA metres. No dimension is defaulted: an object without dimensions is shown as a marker labelled DIMENSIONS NOT SET.',
     params: {
       type: P.enm(OBJECT_TYPES.filter((t) => t !== 'building'), 'Object type'),
       shape: P.enm(['polyline', 'polygon'], 'Footpath only: polyline (a line with a width, default) or polygon (an area)'),
@@ -185,7 +188,7 @@ export const OPS: Record<string, OpDef> = {
     },
     required: ['type', 'points'],
     run(doc, a, ctx) {
-      const type = oneOf<ObjectType>(a.type, OBJECT_TYPES, 'type');
+      const type = oneOf<ObjectType>(canonicalType(a.type), OBJECT_TYPES, 'type');
       if (type === 'building') fail('a building cannot be added here: it is imported from Plan Studio, a PDF, a DXF or a footprint (place_building)');
       const shape = oneOf<GeometryKind>(a.shape ?? OBJECT_KINDS[type].geometry, [OBJECT_KINDS[type].geometry, ...(OBJECT_KINDS[type].alt ? [OBJECT_KINDS[type].alt!] : [])], 'shape');
       const kind = shape;
@@ -250,27 +253,36 @@ export const OPS: Record<string, OpDef> = {
       const action = oneOf(a.action, ['insert', 'move', 'delete'] as const, 'action');
       const key = g.kind === 'polyline' ? 'pts' : 'ring', n = verticesOf(g).length, idx = num(a.index, 'index', { min: 0, max: n });
       if (!Number.isInteger(idx)) fail('index must be a whole number');
-      const at = objPath(i, 'geometry', key, idx);
+      const at = objPath(i, 'geometry', key, idx), rls = o.vertex_rls;
       if (action === 'insert') {
         if (n >= MAX_VERTICES) fail('too many vertices');
-        return { patch: [{ op: 'add', path: at, value: parsePos(a.point, 'point') }], result: { id: o.id, index: idx } };
+        // a wall's levels stay one per vertex: the new vertex starts with NOT SET levels (never interpolated)
+        const sync: Patch = rls ? [{ op: 'add', path: objPath(i, 'vertex_rls', 'top', idx), value: null }, { op: 'add', path: objPath(i, 'vertex_rls', 'bottom', idx), value: null }] : [];
+        return { patch: [{ op: 'add', path: at, value: parsePos(a.point, 'point') }, ...sync], result: { id: o.id, index: idx } };
       }
       if (idx >= n) return fail(`index ${idx} is out of range (the object has ${n} vertices)`);
       if (action === 'move') return { patch: [{ op: 'replace', path: at, value: parsePos(a.point, 'point') }], result: { id: o.id, index: idx } };
       if (n - 1 < minVertices(g.kind)) return fail(`a ${g.kind} needs at least ${minVertices(g.kind)} vertices; delete the object instead`);
-      return { patch: [{ op: 'remove', path: at }], result: { id: o.id, index: idx } };
+      const drop: Patch = rls ? [{ op: 'remove', path: objPath(i, 'vertex_rls', 'top', idx) }, { op: 'remove', path: objPath(i, 'vertex_rls', 'bottom', idx) }] : [];
+      return { patch: [{ op: 'remove', path: at }, ...drop], result: { id: o.id, index: idx } };
     },
   },
   set_param: {
     label: 'Set parameter',
-    description: 'Set one parameter with its basis: user (entered by the user), lga_rule (needs ref), platform_default (needs ref stamp) or unresolved (no value). Dimension parameters are never defaulted.',
-    params: { id: ID, key: P.str('Parameter key, e.g. height_m'), value: { description: 'number, text or true/false; omit or null for UNRESOLVED' }, basis: P.enm(BASES, 'Default user, or unresolved when value is empty'), ref: P.str('Requirement key or stamp') },
+    description: 'Set one parameter with its basis: user (entered by the user), lga_rule (needs the requirement key as ref; the server checks it resolves to this value, otherwise the value is not used) or unresolved (no value). A platform default cannot be set. Dimension parameters are never defaulted.',
+    params: { id: ID, key: P.str('Parameter key, e.g. height_m'), value: { description: 'number, text or true/false; omit or null for UNRESOLVED' }, basis: P.enm(BASES.filter((b) => b !== 'platform_default'), 'Default user, or unresolved when value is empty'), ref: P.str('Requirement key or stamp') },
     required: ['id', 'key'],
     run(doc, a) {
       const { o, i } = find(doc, a.id), key = String(a.key ?? '');
       if (o.type === 'building' && READ_ONLY_BUILDING_PARAMS.has(key)) fail(`${key} is a fact from the import and cannot be edited; import the building again`);
+      if (a.basis === 'platform_default') fail(`${key}: a platform default cannot be set. Enter a value (basis user), cite the requirement key (basis lga_rule with its key as ref) or leave it unresolved`);
       const empty = a.value === undefined || a.value === null || a.value === '';
       const param = checkTypedParam(o.type, key, parseParam(key, { value: empty ? null : a.value, basis: a.basis ?? (empty ? 'unresolved' : 'user'), ref: a.ref }));
+      const links = PARAM_LINKS[`${o.type}.${key}`];
+      if (links && param.value !== null) {
+        const t = doc.objects.find((x) => x.id === param.value);
+        if (!t || !links.includes(t.type)) fail(`${key} must be the id of an object in this design of type ${links.join(' or ')}`);
+      }
       const exists = hasOwn(o.params, key);
       if (!exists && Object.keys(o.params).length >= MAX_PARAMS) fail(`an object can have at most ${MAX_PARAMS} parameters`);
       return { patch: [{ op: exists ? 'replace' : 'add', path: objPath(i, 'params', key), value: param }], result: { id: o.id, key } };
@@ -465,6 +477,39 @@ export const OPS: Record<string, OpDef> = {
       const param: Param = { value: bid, basis: 'user', ref: 'END SNAPPED TO THE BUILDING; END LEVEL IS ITS FFL' };
       if (has && o.params.end_building_id.value === bid) return { patch: [], result: { id: o.id } };
       return { patch: [{ op: has ? 'replace' : 'add', path: objPath(i, 'params', 'end_building_id'), value: param }], result: { id: o.id } };
+    },
+  },
+  set_vertex_rl: {
+    label: 'Set wall levels',
+    description: 'Set the RL of the top and/or the bottom of a retaining wall at one vertex (index is zero based). A value of null makes that level NOT SET again. The retained height at a vertex is the top RL minus the bottom RL. Levels are never interpolated or defaulted.',
+    params: { id: ID, index: P.int('Vertex index (whole number, zero based)'), top: { description: 'RL of the top of the wall in metres, or null for NOT SET. Omit to leave unchanged.' }, bottom: { description: 'RL of the bottom of the wall in metres, or null for NOT SET. Omit to leave unchanged.' } },
+    required: ['id', 'index'],
+    run(doc, a) {
+      const { o, i } = find(doc, a.id);
+      if (o.type !== 'retaining_wall' || o.geometry.kind !== 'polyline') return fail(`${o.id} is not a retaining wall`);
+      const n = o.geometry.pts.length, idx = num(a.index, 'index', { min: 0, max: n - 1 });
+      if (!Number.isInteger(idx)) fail('index must be a whole number');
+      const lvl = (v: unknown, name: string): number | null | undefined => (v === undefined ? undefined : v === null || v === '' ? null : num(v, name));
+      const top = lvl(a.top, 'top'), bottom = lvl(a.bottom, 'bottom');
+      if (top === undefined && bottom === undefined) fail('give top, bottom or both');
+      const cur = o.vertex_rls ?? { top: Array<number | null>(n).fill(null), bottom: Array<number | null>(n).fill(null) };
+      const next = { top: [...cur.top], bottom: [...cur.bottom] };
+      if (top !== undefined) next.top[idx] = top;
+      if (bottom !== undefined) next.bottom[idx] = bottom;
+      if (next.top.every((x) => x === null) && next.bottom.every((x) => x === null)) {
+        return { patch: o.vertex_rls ? [{ op: 'remove', path: objPath(i, 'vertex_rls') }] : [], result: { id: o.id } };       // nothing set: the field is absent (NOT SET)
+      }
+      return { patch: [{ op: o.vertex_rls ? 'replace' : 'add', path: objPath(i, 'vertex_rls'), value: next }], result: { id: o.id, index: idx } };
+    },
+  },
+  clear_vertex_rls: {
+    label: 'Clear wall levels',
+    description: 'Remove the per vertex levels of a retaining wall. The retained height then comes from the uniform height_m parameter, or is NOT SET.',
+    params: { id: ID },
+    required: ['id'],
+    run(doc, a) {
+      const { o, i } = find(doc, a.id);
+      return { patch: o.vertex_rls ? [{ op: 'remove', path: objPath(i, 'vertex_rls') }] : [], result: { id: o.id } };
     },
   },
   accept_proposal: {
