@@ -11,7 +11,7 @@ import { READ_ONLY_BUILDING_PARAMS, IMPORT_PARAM_KEYS, IMPORT_ID_RE, levelsToMga
 import { applyPatch, ptr, type Patch } from './patch';
 import { normDeg } from './snap';
 import {
-  BASES, ISO_DATE_RE, OBJECT_KINDS, OBJECT_TYPES, ORIGINS, PARAM_BOOLS, PARAM_DATES, PARAM_ENUMS, PARAM_LINKS, PARAM_NUMBERS, STATUSES, canonicalType, minVertices, platformDefaultRefused, verticesOf,
+  BASES, DERIVED_PARAMS, ISO_DATE_RE, OBJECT_KINDS, PANEL_KEYS, OBJECT_TYPES, ORIGINS, PARAM_BOOLS, PARAM_DATES, PARAM_ENUMS, PARAM_LINKS, PARAM_NUMBERS, PLAN_INDICATED_PARAMS, STATUSES, SYSTEM_BASES, VERIFICATION_CLEARED_CODE, canonicalType, minVertices, platformDefaultRefused, verticesOf,
   type Basis, type Building, type Geometry, type GeometryKind, type ObjectType, type Origin, type Param, type Pos, type SiteDesign, type SiteObject, type Status,
 } from './types';
 
@@ -113,6 +113,7 @@ export function parseParam(key: string, raw: unknown): Param {
   else if (typeof value === 'string') { if (value.length > 200) fail(`${key} text is too long`); }
   else if (typeof value !== 'boolean') fail(`${key} must be a number, text or true/false`);
   if (basis === 'lga_rule' && !ref) fail(`${key}: an LGA RULE value needs its requirement reference (ref)`);
+  if (basis === 'derived' && !ref) fail(`${key}: a DERIVED value needs the requirement key it was derived from (ref)`);
   return { value: value as Param['value'], basis, ...(ref ? { ref } : {}) };
 }
 /** The stage 5 typed parameters: text limited to a list, numbers that must be numbers (the backend model refuses the same). */
@@ -122,6 +123,8 @@ export function checkTypedParam(type: ObjectType, key: string, p: Param): Param 
   if ((PARAM_NUMBERS[type] ?? []).includes(key) && p.value !== null && typeof p.value !== 'number') fail(`${key} must be a number`);
   if ((PARAM_BOOLS[type] ?? []).includes(key) && p.value !== null && typeof p.value !== 'boolean') fail(`${key} must be true or false`);
   if ((PARAM_DATES[type] ?? []).includes(key) && p.value !== null && !(typeof p.value === 'string' && ISO_DATE_RE.test(p.value))) fail(`${key} must be a date written YYYY-MM-DD`);
+  if (p.basis === 'plan_indicated' && !PLAN_INDICATED_PARAMS.includes(`${type}.${key}`)) fail(`${key}: a PLAN INDICATED value is not accepted for a ${type.replace(/_/g, ' ')} parameter`);
+  if (p.basis === 'derived' && !DERIVED_PARAMS.includes(`${type}.${key}`)) fail(`${key}: a DERIVED value is not accepted for a ${type.replace(/_/g, ' ')} parameter`);
   if (p.basis === 'platform_default' && platformDefaultRefused(type, key, p.ref)) fail(`${key}: a platform default is not accepted for a ${type.replace(/_/g, ' ')} parameter; enter a value (basis user) or cite the requirement key (basis lga_rule with its key as ref)`);
   return p;
 }
@@ -144,7 +147,12 @@ function startingParams(type: ObjectType, shape: GeometryKind): Record<string, P
     : type === 'furniture' ? ['catalogue_item', 'width_m', 'depth_m', 'height_m']
     // stage 6: a driveway starts with no width, end level, surface or batter slope (all NOT SET). A grading area keeps starting with NO parameters
     // (stage 4 contract): an absent target or batter slope is NOT SET, and the panel lists the keys it can take (PANEL_KEYS).
-    : type === 'driveway' ? ['width_m', 'end_level_rl', 'surface_kind', 'batter_cut_h_per_v', 'batter_fill_h_per_v'] : [];
+    : type === 'driveway' ? ['width_m', 'end_level_rl', 'surface_kind', 'batter_cut_h_per_v', 'batter_fill_h_per_v']
+    // stage 8: an existing service starts with every field NOT SET. No owner, depth, depth basis, tolerance or expiry is ever defaulted.
+    : type === 'service_existing' ? shape === 'point' ? ['service_kind', 'asset_owner', 'depth_m', 'depth_basis', 'depth_reference', 'position_tolerance_m'] : (PANEL_KEYS.service_existing ?? [])
+    : type === 'sewer_drain' ? ['diameter_mm', 'upstream_invert_rl', 'downstream_invert_rl']
+    : type === 'water_service' ? ['diameter_mm', 'cover_m']
+    : type === 'service_node' ? ['node_kind', 'invert_rl'] : [];
   return Object.fromEntries(keys.map((k) => [k, { ...UNRESOLVED }]));
 }
 
@@ -168,13 +176,31 @@ function withVertices(g: Geometry, v: Pos[]): Geometry {
   return g.kind === 'point' ? { ...g, p: v[0] } : g.kind === 'polyline' ? { kind: 'polyline', pts: v } : { kind: 'polygon', ring: v };
 }
 const shift = (p: Pos, dx: number, dy: number): Pos => (p.length === 3 ? [p[0] + dx, p[1] + dy, p[2]] : [p[0] + dx, p[1] + dy]);
+const SERVICE_ADD_TYPES = ['service_existing', 'sewer_drain', 'service_node', 'water_service'] as const;
+const SERVICE_VERIFIED_BY = 'verified_by cannot be edited while the service is verified: remove the verification first';
+/** The parameters a verification vouches for (with the geometry): changing one clears the verification. The same list is in the backend (service_model.VERIFICATION_PARAMS). */
+export const VERIFICATION_PARAMS: readonly string[] = ['depth_m', 'depth_reference', 'asset_owner', 'service_kind', 'diameter_mm', 'material'];
+/**
+ * The patch that removes the verification of a verified existing service (verified, verified_on and verified_by) and adds the issue VERIFICATION CLEARED BY EDIT; empty
+ * for anything else. A verification states that the position and the facts were checked, so an edit to them voids it. The server applies the same rule on every save.
+ */
+function clearVerification(o: SiteObject, i: number, changed: string[]): Patch {
+  if (o.type !== 'service_existing' || !o.verified) return [];
+  const p: Patch = [{ op: 'replace', path: objPath(i, 'verified'), value: false }];
+  if (o.verified_on !== undefined) p.push({ op: 'remove', path: objPath(i, 'verified_on') });
+  if (hasOwn(o.params, 'verified_by')) p.push({ op: 'remove', path: objPath(i, 'params', 'verified_by') });
+  const issues = [...(o.issues ?? []).filter((x) => x.code !== VERIFICATION_CLEARED_CODE), { code: VERIFICATION_CLEARED_CODE, severity: 'warning' as const, message: `VERIFICATION CLEARED BY EDIT: ${changed.join(', ')} CHANGED, SO THE SERVICE MUST BE VERIFIED AGAIN` }];
+  p.push({ op: 'replace', path: objPath(i, 'issues'), value: issues });
+  return p;
+}
+const paramValue = (o: SiteObject, key: string): Param['value'] => (hasOwn(o.params, key) && o.params[key].basis !== 'unresolved' ? o.params[key].value : null);
 const BUILDING_FOOTPRINT = 'a building footprint is read only: it comes from the import. Move or rotate the building, or import it again.';
 
 // ---- registry -----------------------------------------------------------------------------------------------------------------
 export const OPS: Record<string, OpDef> = {
   add_object: {
     label: 'Add object',
-    description: 'Add a site object. Point objects (tree, rwt, stormwater_pit, osd, furniture) take one point; polyline objects (retaining_wall, infiltration_trench, stormwater_pipe, service_trace, footpath, driveway, pool_barrier, overflow_route) take two or more; polygon objects (landscape_area, grading_area, osd_basin, pool) take three or more; a footpath may be drawn as an area with shape polygon. A building cannot be added here: it is imported (place_building). Points are MGA metres. No dimension is defaulted: an object without dimensions is shown as a marker labelled DIMENSIONS NOT SET.',
+    description: 'Add a site object. Point objects (tree, rwt, stormwater_pit, osd, furniture) take one point; polyline objects (retaining_wall, infiltration_trench, stormwater_pipe, service_trace, footpath, driveway, pool_barrier, overflow_route, service_existing, sewer_drain, water_service) take two or more; a service_existing may also be a point (shape point: a pit, valve or pole) and a service_node is a point; polygon objects (landscape_area, grading_area, osd_basin, pool) take three or more; a footpath may be drawn as an area with shape polygon. A building cannot be added here: it is imported (place_building). Points are MGA metres. No dimension is defaulted: an object without dimensions is shown as a marker labelled DIMENSIONS NOT SET.',
     params: {
       type: P.enm(OBJECT_TYPES.filter((t) => t !== 'building'), 'Object type'),
       shape: P.enm(['polyline', 'polygon'], 'Footpath only: polyline (a line with a width, default) or polygon (an area)'),
@@ -218,6 +244,7 @@ export const OPS: Record<string, OpDef> = {
       if (dx === 0 && dy === 0) return { patch: [], result: { id: o.id } };
       const mv: Patch = [{ op: 'replace', path: objPath(i, 'geometry'), value: withVertices(o.geometry, verticesOf(o.geometry).map((p) => shift(p, dx, dy))) }];
       if (o.building) mv.push({ op: 'replace', path: objPath(i, 'building'), value: moveBuilding(o.building, dx, dy) });
+      mv.push(...clearVerification(o, i, ['GEOMETRY']));
       return { patch: mv, result: { id: o.id } };
     },
   },
@@ -233,11 +260,12 @@ export const OPS: Record<string, OpDef> = {
       if (g.kind === 'point') {
         const yaw = normDeg((g.yaw_deg ?? 0) + ang);
         const p = about ? rotateClockwise(g.p, about[0], about[1], ang) : g.p;
-        return { patch: [{ op: 'replace', path: objPath(i, 'geometry'), value: { ...g, p, yaw_deg: yaw } }], result: { id: o.id, yaw_deg: yaw } };
+        return { patch: [{ op: 'replace', path: objPath(i, 'geometry'), value: { ...g, p, yaw_deg: yaw } }, ...clearVerification(o, i, ['GEOMETRY'])], result: { id: o.id, yaw_deg: yaw } };
       }
       const v = verticesOf(g), c = about ? [about[0], about[1]] : g.kind === 'polygon' ? ringCentroid(v) : centroid(v);
       const rt: Patch = [{ op: 'replace', path: objPath(i, 'geometry'), value: withVertices(g, v.map((p) => rotateClockwise(p, c[0], c[1], ang))) }];
       if (o.building) rt.push({ op: 'replace', path: objPath(i, 'building'), value: rotateBuilding(o.building, c[0], c[1], ang) });
+      rt.push(...clearVerification(o, i, ['GEOMETRY']));
       return { patch: rt, result: { id: o.id } };
     },
   },
@@ -253,29 +281,31 @@ export const OPS: Record<string, OpDef> = {
       const action = oneOf(a.action, ['insert', 'move', 'delete'] as const, 'action');
       const key = g.kind === 'polyline' ? 'pts' : 'ring', n = verticesOf(g).length, idx = num(a.index, 'index', { min: 0, max: n });
       if (!Number.isInteger(idx)) fail('index must be a whole number');
-      const at = objPath(i, 'geometry', key, idx), rls = o.vertex_rls;
+      const at = objPath(i, 'geometry', key, idx), rls = o.vertex_rls, clr = clearVerification(o, i, ['GEOMETRY']);
       if (action === 'insert') {
         if (n >= MAX_VERTICES) fail('too many vertices');
         // a wall's levels stay one per vertex: the new vertex starts with NOT SET levels (never interpolated)
         const sync: Patch = rls ? [{ op: 'add', path: objPath(i, 'vertex_rls', 'top', idx), value: null }, { op: 'add', path: objPath(i, 'vertex_rls', 'bottom', idx), value: null }] : [];
-        return { patch: [{ op: 'add', path: at, value: parsePos(a.point, 'point') }, ...sync], result: { id: o.id, index: idx } };
+        return { patch: [{ op: 'add', path: at, value: parsePos(a.point, 'point') }, ...sync, ...clr], result: { id: o.id, index: idx } };
       }
       if (idx >= n) return fail(`index ${idx} is out of range (the object has ${n} vertices)`);
-      if (action === 'move') return { patch: [{ op: 'replace', path: at, value: parsePos(a.point, 'point') }], result: { id: o.id, index: idx } };
+      if (action === 'move') return { patch: [{ op: 'replace', path: at, value: parsePos(a.point, 'point') }, ...clr], result: { id: o.id, index: idx } };
       if (n - 1 < minVertices(g.kind)) return fail(`a ${g.kind} needs at least ${minVertices(g.kind)} vertices; delete the object instead`);
       const drop: Patch = rls ? [{ op: 'remove', path: objPath(i, 'vertex_rls', 'top', idx) }, { op: 'remove', path: objPath(i, 'vertex_rls', 'bottom', idx) }] : [];
-      return { patch: [{ op: 'remove', path: at }, ...drop], result: { id: o.id, index: idx } };
+      return { patch: [{ op: 'remove', path: at }, ...drop, ...clr], result: { id: o.id, index: idx } };
     },
   },
   set_param: {
     label: 'Set parameter',
     description: 'Set one parameter with its basis: user (entered by the user), lga_rule (needs the requirement key as ref; the server checks it resolves to this value, otherwise the value is not used) or unresolved (no value). A platform default cannot be set. Dimension parameters are never defaulted.',
-    params: { id: ID, key: P.str('Parameter key, e.g. height_m'), value: { description: 'number, text or true/false; omit or null for UNRESOLVED' }, basis: P.enm(BASES.filter((b) => b !== 'platform_default'), 'Default user, or unresolved when value is empty'), ref: P.str('Requirement key or stamp') },
+    params: { id: ID, key: P.str('Parameter key, e.g. height_m'), value: { description: 'number, text or true/false; omit or null for UNRESOLVED' }, basis: P.enm(BASES.filter((b) => !SYSTEM_BASES.includes(b)), 'Default user, or unresolved when value is empty'), ref: P.str('Requirement key or stamp') },
     required: ['id', 'key'],
     run(doc, a) {
       const { o, i } = find(doc, a.id), key = String(a.key ?? '');
       if (o.type === 'building' && READ_ONLY_BUILDING_PARAMS.has(key)) fail(`${key} is a fact from the import and cannot be edited; import the building again`);
+      if (o.type === 'service_existing' && o.verified && key === 'verified_by') fail(SERVICE_VERIFIED_BY);
       if (a.basis === 'platform_default') fail(`${key}: a platform default cannot be set. Enter a value (basis user), cite the requirement key (basis lga_rule with its key as ref) or leave it unresolved`);
+      if (a.basis === 'plan_indicated' || a.basis === 'derived') fail(`${key}: the basis ${String(a.basis).toUpperCase().replace('_', ' ')} is set by the system (a value read from a DBYD plan, or computed from a requirement) and cannot be chosen by hand. Enter a value (basis user)`);
       const empty = a.value === undefined || a.value === null || a.value === '';
       const param = checkTypedParam(o.type, key, parseParam(key, { value: empty ? null : a.value, basis: a.basis ?? (empty ? 'unresolved' : 'user'), ref: a.ref }));
       const links = PARAM_LINKS[`${o.type}.${key}`];
@@ -285,7 +315,8 @@ export const OPS: Record<string, OpDef> = {
       }
       const exists = hasOwn(o.params, key);
       if (!exists && Object.keys(o.params).length >= MAX_PARAMS) fail(`an object can have at most ${MAX_PARAMS} parameters`);
-      return { patch: [{ op: exists ? 'replace' : 'add', path: objPath(i, 'params', key), value: param }], result: { id: o.id, key } };
+      const voided = VERIFICATION_PARAMS.includes(key) && paramValue(o, key) !== param.value ? clearVerification(o, i, [key.toUpperCase()]) : [];
+      return { patch: [{ op: exists ? 'replace' : 'add', path: objPath(i, 'params', key), value: param }, ...voided], result: { id: o.id, key } };
     },
   },
   remove_param: {
@@ -297,7 +328,9 @@ export const OPS: Record<string, OpDef> = {
       const { o, i } = find(doc, a.id), key = String(a.key ?? '');
       if (FORBIDDEN_KEYS.has(key) || !hasOwn(o.params, key)) return fail(`${o.id} has no parameter ${key}`);
       if (o.type === 'building' && READ_ONLY_BUILDING_PARAMS.has(key)) fail(`${key} is a fact from the import and cannot be removed`);
-      return { patch: [{ op: 'remove', path: objPath(i, 'params', key) }], result: { id: o.id, key } };
+      if (o.type === 'service_existing' && o.verified && key === 'verified_by') fail(SERVICE_VERIFIED_BY);
+      const voided = VERIFICATION_PARAMS.includes(key) && paramValue(o, key) !== null ? clearVerification(o, i, [key.toUpperCase()]) : [];
+      return { patch: [{ op: 'remove', path: objPath(i, 'params', key) }, ...voided], result: { id: o.id, key } };
     },
   },
   set_status: {
@@ -399,6 +432,73 @@ export const OPS: Record<string, OpDef> = {
         tanks.push(tid);
       }
       return { patch, result: { id: bid, tanks } };
+    },
+  },
+  set_service_verified: {
+    label: 'Verify service',
+    description: 'Mark an existing service verified by a named person on a date, or remove the verification. Verification is the user\'s statement that the position and depth were checked against the plan, a pothole or a survey; it is never set automatically. A verified service needs verified_by and the date (YYYY-MM-DD). Not offered to the AI.',
+    ai: false,
+    params: { id: ID, verified: { type: 'boolean', description: 'true to verify, false to remove the verification' }, verified_by: P.str('Who verified the service'), date: P.str('Verification date, YYYY-MM-DD') },
+    required: ['id', 'verified'],
+    run(doc, a) {
+      const { o, i } = find(doc, a.id);
+      if (o.type !== 'service_existing') fail(`${o.id} is not an existing service`);
+      if (typeof a.verified !== 'boolean') fail('verified must be true or false');
+      const has = hasOwn(o.params, 'verified_by');
+      if (a.verified && o.verified) fail('the service is already verified: remove the verification first to verify it again (verified_by cannot be edited while verified)');
+      if (!a.verified) {
+        const p: Patch = [];
+        if (o.verified) p.push({ op: 'replace', path: objPath(i, 'verified'), value: false });
+        if (o.verified_on !== undefined) p.push({ op: 'remove', path: objPath(i, 'verified_on') });
+        return { patch: p, result: { id: o.id } };
+      }
+      const by = String(a.verified_by ?? '').trim(), date = String(a.date ?? '');
+      if (!by) fail('verified_by is required: who verified this service');
+      if (by.length > 120) fail('verified_by is too long');
+      if (!ISO_DATE_RE.test(date) || Number.isNaN(Date.parse(date))) fail('date must be a date written YYYY-MM-DD');
+      const p: Patch = [{ op: has ? 'replace' : 'add', path: objPath(i, 'params', 'verified_by'), value: { value: by, basis: 'user' } satisfies Param }];
+      p.push({ op: 'replace', path: objPath(i, 'verified'), value: true });
+      p.push({ op: o.verified_on !== undefined ? 'replace' : 'add', path: objPath(i, 'verified_on'), value: date });
+      if ((o.issues ?? []).some((x) => x.code === VERIFICATION_CLEARED_CODE)) p.push({ op: 'replace', path: objPath(i, 'issues'), value: o.issues.filter((x) => x.code !== VERIFICATION_CLEARED_CODE) });      // verified again: the note is spent
+      return { patch: p, result: { id: o.id } };
+    },
+  },
+  add_service_objects: {
+    label: 'Add services',
+    description: 'Add the objects of a sewer or water route proposal, or the draft services read from a DBYD plan, in one step. Only the types service_existing, sewer_drain, service_node and water_service are accepted; the origin is user or dbyd; every object is added unverified; every id must be unused. Nothing is defaulted or invented: parameters are taken as sent. Not offered to the AI.',
+    ai: false,
+    params: { objects: { type: 'array', description: 'Objects as returned by the server: {id, type, status, origin, label?, geometry, params}', items: { type: 'object' } } },
+    required: ['objects'],
+    run(doc, a) {
+      if (!Array.isArray(a.objects) || a.objects.length === 0) return fail('objects must be a list with at least one object');
+      if (a.objects.length > 500) fail('too many objects in one step');
+      const taken = new Set(doc.objects.map((o) => o.id)), patch: Patch = [], ids: string[] = [];
+      for (const [n, raw] of (a.objects as unknown[]).entries()) {
+        if (!raw || typeof raw !== 'object') return fail(`objects[${n}] must be an object`);
+        const r = raw as Record<string, unknown>;
+        const type = oneOf<ObjectType>(r.type, SERVICE_ADD_TYPES, `objects[${n}].type`);
+        const id = String(r.id ?? '');
+        if (!ID_RE.test(id)) fail(`objects[${n}].id must be 1 to 64 letters, digits, underscores or hyphens`);
+        if (taken.has(id)) fail(`id ${id} is already in use`);
+        taken.add(id);
+        const g = r.geometry as Record<string, unknown> | undefined;
+        if (!g || typeof g !== 'object') return fail(`objects[${n}].geometry is missing`);
+        const kinds: GeometryKind[] = [OBJECT_KINDS[type].geometry, ...(OBJECT_KINDS[type].alt ? [OBJECT_KINDS[type].alt!] : [])];
+        const kind = oneOf<GeometryKind>(g.kind, kinds, `objects[${n}].geometry.kind`);
+        const arr = (v: unknown, name: string): Pos => {
+          if (!Array.isArray(v) || v.length < 2 || v.length > 3) return fail(`${name} must be [E, N] or [E, N, z]`);
+          const q = v.map((x, k) => num(x, `${name}[${k}]`)); return (q.length === 3 ? [q[0], q[1], q[2]] : [q[0], q[1]]) as Pos;
+        };
+        const geometry = kind === 'point' ? buildGeometry('point', [arr(g.p, `objects[${n}].geometry.p`)])
+          : buildGeometry('polyline', (Array.isArray(g.pts) ? g.pts : fail(`objects[${n}].geometry.pts must be a list`) as never).map((p: unknown, k: number) => arr(p, `objects[${n}].geometry.pts[${k}]`)));
+        const origin = oneOf<Origin>(r.origin ?? 'user', ['user', 'dbyd'], `objects[${n}].origin`);
+        const status = oneOf<Status>(r.status ?? 'proposed', STATUSES, `objects[${n}].status`);
+        const params = parseParams(r.params, type);
+        const obj: SiteObject = { id, type, status, origin, verified: false, ...(r.label ? { label: String(r.label).slice(0, 120) } : {}), geometry, params: { ...startingParams(type, kind), ...params }, issues: [] };
+        patch.push({ op: 'add', path: ptr('objects', '-'), value: obj });
+        ids.push(id);
+      }
+      return { patch, result: { ids } };
     },
   },
   set_catalogue_item: {

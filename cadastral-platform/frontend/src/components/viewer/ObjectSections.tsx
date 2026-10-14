@@ -72,7 +72,7 @@ function FieldRow({ o, spec, doc, run }: { o: SiteObject; spec: FieldSpec; doc: 
   const p = o.params[spec.key], cur = p && p.value !== null ? String(p.value) : '', id = `dz-p-${spec.key}`;
   const set = (value: unknown) => run('set_param', { key: spec.key, value }, 'Set parameter');
   const badge = <span className={'badge basis-' + (p ? p.basis : 'unresolved')} title={p?.ref}>{BASIS_LABEL[p ? p.basis : 'unresolved']}</span>;
-  const ro = !!p && (p.basis === 'lga_rule' || p.basis === 'platform_default');
+  const ro = (!!p && (p.basis === 'lga_rule' || p.basis === 'platform_default')) || (o.type === 'service_existing' && o.verified && spec.key === 'verified_by');
   const lab = <label htmlFor={id} title={spec.help}>{spec.label}{spec.unit ? ` (${spec.unit})` : ''}</label>;
   if (spec.kind === 'enum') {
     const options = PARAM_ENUMS[`${o.type}.${spec.key}`] ?? [];

@@ -29,14 +29,20 @@ SCHEMA = "site_design.v1"
 
 ObjectType = Literal["tree", "rwt", "stormwater_pit", "osd", "retaining_wall", "infiltration_trench", "stormwater_pipe",
                      "service_trace", "landscape_area", "grading_area", "osd_basin",
-                     "building", "pool", "footpath", "furniture", "driveway", "pool_barrier", "overflow_route"]
+                     "building", "pool", "footpath", "furniture", "driveway", "pool_barrier", "overflow_route",
+                     "service_existing", "sewer_drain", "service_node", "water_service"]
 #: stage 7 renamed the stormwater pit from ``pit``; a stored document that still says ``pit`` is read as ``stormwater_pit``
 LEGACY_TYPES = {"pit": "stormwater_pit"}
 GeometryKind = Literal["point", "polyline", "polygon"]
 Status = Literal["existing", "proposed", "to_be_removed"]
 Origin = Literal["user", "ai_proposal", "imported", "dbyd"]
 Accepted = Literal["pending", "accepted", "rejected"]
-Basis = Literal["user", "lga_rule", "platform_default", "unresolved"]
+Basis = Literal["user", "lga_rule", "platform_default", "unresolved", "plan_indicated", "derived"]
+#: ``plan_indicated``: read from a DBYD plan (parsed, not measured and not entered by the user); accepted only for these (type, parameter) pairs, and the checks show it as such.
+#: ``derived``: computed by the server from a requirement (a proposal invert from the minimum grade rule); accepted only for these pairs and only when its ``ref`` names a
+#: requirement key that resolves. Neither basis may be set by hand: the operations refuse them.
+PLAN_INDICATED_PARAMS: frozenset[tuple[str, str]] = frozenset({("service_existing", k) for k in ("service_kind", "diameter_mm", "material", "depth_m", "depth_basis", "source_file")})
+DERIVED_PARAMS: frozenset[tuple[str, str]] = frozenset({("sewer_drain", "upstream_invert_rl"), ("sewer_drain", "downstream_invert_rl"), ("service_node", "invert_rl")})
 Severity = Literal["blocking", "warning", "info"]
 
 #: geometry kind required by each object type (docs/14 section 6.5)
@@ -46,9 +52,11 @@ GEOMETRY_OF: dict[str, GeometryKind] = {
     "landscape_area": "polygon", "grading_area": "polygon", "osd_basin": "polygon",
     "building": "polygon", "pool": "polygon", "footpath": "polyline", "furniture": "point", "driveway": "polyline",
     "pool_barrier": "polyline", "overflow_route": "polyline",
+    # stage 8: an existing service (a line, or a point for a pit, valve or pole), a sewer drain link, a node of a drain or water service, a water service line
+    "service_existing": "polyline", "sewer_drain": "polyline", "service_node": "point", "water_service": "polyline",
 }
-#: a second geometry kind an object type may also use (a footpath is a line with a width param, or an area)
-ALT_GEOMETRY_OF: dict[str, GeometryKind] = {"footpath": "polygon"}
+#: a second geometry kind an object type may also use (a footpath is a line with a width param, or an area; an existing service may be a point)
+ALT_GEOMETRY_OF: dict[str, GeometryKind] = {"footpath": "polygon", "service_existing": "point"}
 
 # Enumerated text parameters (stage 5). The same lists are in frontend/src/lib/site/types.ts. A value outside a list is refused.
 BUILDING_USES = ("house", "granny_flat", "unit", "shed", "other")
@@ -61,6 +69,11 @@ RWT_SHAPES = ("round", "slimline", "underground")
 WALL_TYPES = ("sleeper", "block", "concrete", "other")
 INFILTRATION_BASES = ("site_test", "indicative")
 OSD_FORMS = ("tank", "basin", "below_ground")
+# stage 8 (the same lists are in frontend/src/lib/site/types.ts)
+SERVICE_KINDS = ("water", "sewer", "stormwater", "gas", "electricity", "telecommunications", "other")
+DEPTH_BASES = ("plan_indicated", "potholed", "surveyed", "unknown")
+DEPTH_REFERENCES = ("top", "invert")
+NODE_KINDS = ("inspection_opening", "inspection_pit", "sewer_connection", "water_connection", "water_meter")
 PARAM_ENUMS: dict[tuple[str, str], tuple[str, ...]] = {
     ("rwt", "shape"): RWT_SHAPES, ("retaining_wall", "wall_type"): WALL_TYPES, ("infiltration_trench", "infiltration_basis"): INFILTRATION_BASES,
     ("osd", "form"): OSD_FORMS, ("osd_basin", "form"): OSD_FORMS,
@@ -68,6 +81,8 @@ PARAM_ENUMS: dict[tuple[str, str], tuple[str, ...]] = {
     ("building", "roof_area_basis"): ROOF_AREA_BASES,
     ("landscape_area", "surface_kind"): SURFACE_KINDS, ("footpath", "surface_kind"): FOOTPATH_SURFACES,
     ("driveway", "surface_kind"): DRIVEWAY_SURFACES,
+    ("service_existing", "service_kind"): SERVICE_KINDS, ("service_existing", "depth_basis"): DEPTH_BASES, ("service_existing", "depth_reference"): DEPTH_REFERENCES,
+    ("service_node", "node_kind"): NODE_KINDS,
 }
 #: parameters that must be numbers when they carry a value
 PARAM_NUMBERS: dict[str, tuple[str, ...]] = {
@@ -86,19 +101,31 @@ PARAM_NUMBERS: dict[str, tuple[str, ...]] = {
     "osd_basin": ("depth_m", "storage_volume_m3", "orifice_diameter_mm", "orifice_invert_rl", "top_water_level_rl", "discharge_coefficient", "psd_l_s"),
     "stormwater_pit": ("width_m", "length_m", "invert_rl"), "stormwater_pipe": ("diameter_mm", "upstream_invert_rl", "downstream_invert_rl"),
     "pool_barrier": ("height_m",), "tree": ("height_m", "canopy_diameter_m", "trunk_diameter_mm"),
+    # stage 8. Depths are metres below the ground at the service; levels are RLs in metres.
+    "service_existing": ("diameter_mm", "depth_m", "position_tolerance_m"), "sewer_drain": ("diameter_mm", "upstream_invert_rl", "downstream_invert_rl"),
+    "water_service": ("diameter_mm", "cover_m"), "service_node": ("invert_rl",),
 }
+#: the optional founding (footing) depth below ground, entered by the user on the objects the zone of influence of a sewer main is checked for
+FOOTING_TYPES = ("building", "retaining_wall", "rwt", "osd", "osd_basin", "pool", "tree")
+PARAM_NUMBERS = {**PARAM_NUMBERS, **{t: tuple(dict.fromkeys((*PARAM_NUMBERS.get(t, ()), "footing_depth_m"))) for t in FOOTING_TYPES}}
 #: parameters that must be true or false when they carry a value
 PARAM_BOOLS: dict[str, tuple[str, ...]] = {"rwt": ("reuse_toilet", "reuse_laundry", "reuse_garden"), "footpath": ("impervious",)}
 #: parameters that must be an ISO date (YYYY-MM-DD) when they carry a value
-PARAM_DATES: dict[str, tuple[str, ...]] = {"infiltration_trench": ("test_date",)}
+PARAM_DATES: dict[str, tuple[str, ...]] = {"infiltration_trench": ("test_date",), "service_existing": ("plan_date", "plan_expiry_date")}
 #: object links: (type, parameter) -> the object types the linked id must have (checked by the engines against the document, not by this model)
-PARAM_LINKS: dict[tuple[str, str], tuple[str, ...]] = {("rwt", "roof_building_id"): ("building",), ("overflow_route", "osd_id"): ("osd", "osd_basin"), ("pool_barrier", "pool_id"): ("pool",)}
+PARAM_LINKS: dict[tuple[str, str], tuple[str, ...]] = {
+    ("rwt", "roof_building_id"): ("building",), ("overflow_route", "osd_id"): ("osd", "osd_basin"), ("pool_barrier", "pool_id"): ("pool",),
+    # stage 8: the main a node or service connects to, the building a sewer drain leaves, the tank a water service tops up
+    ("service_node", "main_id"): ("service_existing",), ("sewer_drain", "building_id"): ("building",), ("water_service", "main_id"): ("service_existing",),
+    ("water_service", "rwt_id"): ("rwt",),
+}
 
 #: object types whose parameters are stage 7 engineering inputs. On them a parameter may NOT have basis ``platform_default`` (the only platform defaults are the
 #: requirement values of the two keys in ``object_keys.PLATFORM_DEFAULT_KEYS``, which the checks resolve themselves). Two exceptions: a parameter mapped to one of those
 #: two keys (the OSD ``psd_l_s``; the checks still verify its value against the resolver), and the Plan Studio size ESTIMATE the importer stamps on a tank diameter or height
 #: (its ref starts with ``PS_ESTIMATE_REF``; the checks do NOT use such a value).
-STAGE7_TYPES = frozenset({"rwt", "retaining_wall", "infiltration_trench", "osd", "osd_basin", "stormwater_pit", "stormwater_pipe", "pool_barrier", "overflow_route", "tree"})
+STAGE7_TYPES = frozenset({"rwt", "retaining_wall", "infiltration_trench", "osd", "osd_basin", "stormwater_pit", "stormwater_pipe", "pool_barrier", "overflow_route", "tree",
+                          "service_existing", "sewer_drain", "service_node", "water_service"})
 PS_ESTIMATE_REF = "PLAN STUDIO ESTIMATE"
 
 
@@ -156,6 +183,8 @@ class Param(_Strict):
             raise ValueError(f"basis {self.basis} needs a value")
         if self.basis == "lga_rule" and not (self.ref and self.ref.strip()):
             raise ValueError("an LGA RULE parameter needs its requirement reference")
+        if self.basis == "derived" and not (self.ref and self.ref.strip()):
+            raise ValueError("a DERIVED parameter needs the requirement key it was derived from (ref)")
         return self
 
 
@@ -352,6 +381,10 @@ class SiteObject(_Strict):
         for k, p in self.params.items():
             if p.basis == "platform_default" and platform_default_refused(self.type, k, p.ref):
                 raise ValueError(f"{k}: a platform default is not accepted for a {self.type} parameter; enter a value (USER) or cite a requirement (LGA RULE with its key)")
+            if p.basis == "plan_indicated" and (self.type, k) not in PLAN_INDICATED_PARAMS:
+                raise ValueError(f"{k}: a PLAN INDICATED value is not accepted for a {self.type} parameter")
+            if p.basis == "derived" and (self.type, k) not in DERIVED_PARAMS:
+                raise ValueError(f"{k}: a DERIVED value is not accepted for a {self.type} parameter")
         for (t, k), allowed in PARAM_ENUMS.items():
             p = self.params.get(k) if t == self.type else None
             if p is not None and p.value is not None and p.value not in allowed:
@@ -381,6 +414,10 @@ class SiteObject(_Strict):
             raise ValueError("accepted applies to AI proposals only")
         if self.verified_on is not None and not self.verified:
             raise ValueError("verified_on needs verified")
+        if self.type == "service_existing" and self.verified:
+            by = self.params.get("verified_by")
+            if self.verified_on is None or by is None or not isinstance(by.value, str) or not by.value.strip():
+                raise ValueError("a verified existing service needs verified_by (who verified it) and verified_on (the date)")
         return self
 
 

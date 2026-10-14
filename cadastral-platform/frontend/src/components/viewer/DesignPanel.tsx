@@ -6,6 +6,10 @@ import type { ImportEndpoint, LotInfo } from '@/lib/site/buildingImport';
 import { READ_ONLY_BUILDING_PARAMS } from '@/lib/site/buildings';
 import { BuildingImportBox, BuildingInfo, FeatureTools } from './BuildingTools';
 import { DrivewaySection, GradingSection } from './EngineSections';
+import { DbydSection } from './DbydTools';
+import { SewerSection, WaterSection } from './RouteTools';
+import { ServiceVerifyBox, TraceServiceSection } from './ServiceTools';
+import type { PlanRecord } from '@/lib/site/dbydApi';
 import { ChecksSection, ObjectFields, RwtSizeSection, ScreeningBox, ValuesBox, WallLevels } from './ObjectSections';
 import { fieldsFor } from '@/lib/site/siteObjects';
 import { FFL_NOT_SET, HEIGHT_NOT_SET, POOL_BARRIER_LABEL, dimOf, levelOf } from '@/lib/site/types';
@@ -37,6 +41,7 @@ const GROUPS: { title: string; types: ObjectType[] }[] = [
   { title: 'Points', types: ['tree', 'rwt', 'stormwater_pit', 'osd'] },
   { title: 'Lines', types: ['retaining_wall', 'infiltration_trench', 'stormwater_pipe', 'service_trace', 'driveway', 'pool_barrier', 'overflow_route'] },
   { title: 'Areas', types: ['landscape_area', 'grading_area', 'osd_basin'] },
+  { title: 'Services', types: ['service_existing', 'sewer_drain', 'water_service', 'service_node'] },
 ];
 const GRIDS = [0, 0.1, 0.25, 0.5, 1, 2, 5];
 export const SURFACE_LENGTH_UNAVAILABLE = 'SURFACE LENGTH: DATA NOT AVAILABLE';
@@ -63,10 +68,11 @@ function Props({ o, doc, ds, ctl, locked }: { o: SiteObject; doc: SiteDesign; ds
       <div className="row dz-row"><label htmlFor="dz-status">Status</label>
         <select id="dz-status" className="search" value={o.status} onChange={(e) => run('set_status', { status: e.target.value })}>{STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}</select></div>
       {typed && <ObjectFields o={o} doc={doc} run={run} />}
+      <ServiceVerifyBox o={o} run={run} locked={locked} />
       <WallLevels o={o} run={run} />
       <div className="dz-params">
         {keys.map((key) => {
-          const p = o.params[key], options = PARAM_ENUMS[`${o.type}.${key}`], ro = o.type === 'building' && READ_ONLY_BUILDING_PARAMS.has(key);
+          const p = o.params[key], options = PARAM_ENUMS[`${o.type}.${key}`], ro = (o.type === 'building' && READ_ONLY_BUILDING_PARAMS.has(key)) || (o.type === 'service_existing' && o.verified && key === 'verified_by');
           const cur = p && p.value !== null ? String(p.value) : '';
           if (options) return (
             <div className="dz-param" key={key}>
@@ -124,7 +130,7 @@ export function statusLine(save: AutosaveState | null, gate: LoadState | null | 
 
 export function DesignPanel({ ds, doc, ctl, save, onResolve, gate, onRetryLoad, onConfirmLocal, importer, catalogue }: DesignPanelProps) {
   const sel = doc.objects.find((o) => o.id === ds.selectedId) ?? null, h = ds.history, r = ds.readout, locked = ds.locked !== null;
-  const [resolveErr, setResolveErr] = useState(''), [busy, setBusy] = useState(false), [confirming, setConfirming] = useState(false);
+  const [resolveErr, setResolveErr] = useState(''), [busy, setBusy] = useState(false), [confirming, setConfirming] = useState(false), [plans, setPlans] = useState<PlanRecord[]>([]);
   const resolve = async (how: 'reload' | 'keep') => {
     setBusy(true); setResolveErr('');
     try { const e = await onResolve?.(how); if (typeof e === 'string' && e) setResolveErr(e); }
@@ -224,6 +230,10 @@ export function DesignPanel({ ds, doc, ctl, save, onResolve, gate, onRetryLoad, 
       {sel && sel.type === 'rwt' && <RwtSizeSection o={sel} ds={ds} ctl={ctl} locked={locked} key={'rs' + sel.id} />}
       {sel && ds.driveway && ds.driveway.id === sel.id && <DrivewaySection p={ds.driveway} o={sel} doc={doc} ctl={ctl} locked={locked} key={'dv' + sel.id} />}
       {sel && ds.grading && ds.grading.id === sel.id && <GradingSection p={ds.grading} o={sel} locked={locked} key={'gr' + sel.id} />}
+      <TraceServiceSection ds={ds} ctl={ctl} plans={plans} locked={locked} />
+      <SewerSection ds={ds} doc={doc} ctl={ctl} locked={locked} />
+      <WaterSection ds={ds} doc={doc} ctl={ctl} locked={locked} />
+      <DbydSection ctl={ctl} locked={locked} plans={plans} setPlans={setPlans} />
     </>
   );
 }

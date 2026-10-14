@@ -43,7 +43,7 @@ def test_document_produced_by_the_frontend_operations_validates():
     """Drift check, backend side: a document built only through the TypeScript operation registry must be accepted by the model."""
     raw = json.loads(FRONTEND_FIXTURE.read_text())
     d = SiteDesign.model_validate(raw)
-    assert {o.type for o in d.objects} == set(GEOMETRY_OF)                                   # all sixteen types
+    assert {o.type for o in d.objects} == set(GEOMETRY_OF)                                   # every type
     assert any(len(p) == 3 for o in d.objects if o.geometry.kind == "polyline" for p in o.geometry.pts)       # a vertex RL survives
     again = d.dump()
     assert [o["id"] for o in again["objects"]] == [o["id"] for o in raw["objects"]]
@@ -53,9 +53,10 @@ def test_document_produced_by_the_frontend_operations_validates():
     assert tree["params"]["canopy_diameter_m"] == {"value": None, "basis": "unresolved"}
 
 
-def test_defaults_and_types_cover_the_eighteen_object_types():
+def test_defaults_and_types_cover_the_twenty_two_object_types():
     assert set(GEOMETRY_OF) == {"tree", "rwt", "stormwater_pit", "osd", "retaining_wall", "infiltration_trench", "stormwater_pipe",
-                                "service_trace", "landscape_area", "grading_area", "osd_basin", "building", "pool", "footpath", "furniture", "driveway", "pool_barrier", "overflow_route"}
+                                "service_trace", "landscape_area", "grading_area", "osd_basin", "building", "pool", "footpath", "furniture", "driveway", "pool_barrier", "overflow_route",
+                                "service_existing", "sewer_drain", "service_node", "water_service"}
     o = SiteObject.model_validate(obj())
     assert o.status == "proposed" and o.origin == "user" and o.accepted is None and o.verified is False and o.params == {} and o.issues == []
     d = empty_design("p")

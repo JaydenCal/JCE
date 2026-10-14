@@ -111,6 +111,8 @@
 .v3d .badge.basis-user{background:var(--accent)}
 .v3d .badge.basis-lga_rule{background:#2d6cdf}
 .v3d .badge.basis-platform_default{background:#b8860b}
+.v3d .badge.basis-plan_indicated{background:#8a5a00}
+.v3d .badge.basis-derived{background:#5b4bb7}
 .v3d .badge.basis-unresolved{background:var(--bad)}
 .v3d .dz-row{grid-template-columns:90px 1fr}
 .v3d .dz-params{display:flex;flex-direction:column;gap:6px;margin-top:8px}

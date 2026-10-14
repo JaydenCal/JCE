@@ -19,6 +19,8 @@ import type { ChangeEvent } from './store';
 import { drivewayParts, gradingParts } from './earthworksScene';
 import type { GradingResult, ProfileView } from './driveway';
 import { SRZ_LABEL, TPZ_LABEL, extraLabelLines } from './siteObjects';
+import { dashSegments, isUnverified, serviceColour } from './services';
+import { underlayMesh, setUnderlayOpacity, type Calibration, imageCorners } from './underlay';
 import {
   BUILDING_USE_LABEL, DIMENSIONS_NOT_SET, END_LEVEL_NOT_SET, FFL_NOT_SET, HEIGHT_NOT_SET, TARGET_NOT_SET, WIDTH_NOT_SET, OBJECT_KINDS, POOL_BARRIER_LABEL, STATUS_LABEL, SURFACE_LABEL, dimOf, dimensionsSet, levelOf, rwtShape, textOf, verticesOf, wallHeightAt,
   type Pos, type SiteDesign, type SiteObject,
@@ -55,6 +57,8 @@ type V3 = [number, number, number];
 
 const mix = (a: string, b: string, k: number) => new THREE.Color(a).lerp(new THREE.Color(b), k);
 function baseColour(o: SiteObject): THREE.Color {
+  // stage 8: a service is coloured by its kind (an existing service keeps that colour; it is told apart by being dashed while unverified)
+  if (o.type === 'service_existing' || o.type === 'sewer_drain' || o.type === 'water_service') return o.status === 'to_be_removed' ? new THREE.Color(RED) : new THREE.Color(serviceColour(o));
   const c = OBJECT_KINDS[o.type].colour;
   return o.status === 'proposed' ? new THREE.Color(c) : o.status === 'existing' ? mix(c, GREY, 0.55) : new THREE.Color(RED);
 }
@@ -98,6 +102,17 @@ function outline(path: V3[], col: THREE.Color, op: number, c: Ctx): THREE.Mesh {
   strip(left, right, pos);
   const m = meshOf(pos, new THREE.MeshBasicMaterial({ color: col, transparent: op < 1, opacity: op, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
   m.userData.baseColour = col.getHex(); return m;
+}
+/** An unverified service line: dashes of a fixed length with gaps, each draped on the terrain, merged into one ribbon mesh. */
+function dashedOutline(ps: readonly Pos[], col: THREE.Color, op: number, c: Ctx): THREE.Mesh {
+  const pos: number[] = [];
+  for (const seg of dashSegments(ps)) {
+    if (seg.length < 2) continue;
+    const path = drapedPath(seg as Pos[], false, c), { left, right } = offsets(path, OUTLINE_WIDTH / 2, c);
+    strip(left, right, pos);
+  }
+  const m = meshOf(pos, new THREE.MeshBasicMaterial({ color: col, transparent: op < 1, opacity: op, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+  m.userData.baseColour = col.getHex(); m.userData.dashed = true; return m;
 }
 /** Left and right offset paths of a draped path, half a width either side (plan offset, heights re-sampled from the terrain). */
 function offsets(path: V3[], half: number, c: Ctx): { left: V3[]; right: V3[] } {
@@ -386,6 +401,10 @@ export function buildObject(o: SiteObject, c: Ctx): THREE.Group {
       own.add(pick(lineObj([[-hw, -hl, LIFT], [hw, -hl, LIFT], [hw, hl, LIFT], [-hw, hl, LIFT], [-hw, -hl, LIFT]], oc, op)));
       const inv = levelOf(o, 'invert_rl'), surface = c.sample(geom.p[0], geom.p[1]);          // the depth is drawn only when the invert is set and the terrain reaches the pit
       if (inv !== null && surface !== null && surface - inv > 0) { const dep = surface - inv, bg = new THREE.BoxGeometry(w, l, dep); bg.translate(0, 0, -dep / 2); add(new THREE.Mesh(bg, solidMat(col, 0.35 * op))); }
+    } else if (o.type === 'service_node' || o.type === 'service_existing') {
+      // a node or a point asset: a small marker and a pole, no heading tick (a position only; no size is implied)
+      add(new THREE.Mesh(new THREE.SphereGeometry(MARKER_RADIUS * 0.7, 14, 10), new THREE.MeshBasicMaterial({ color: o.type === 'service_existing' ? col : oc, transparent: op < 1, opacity: op }))).position.z = MARKER_RADIUS * 0.7;
+      own.add(pick(lineObj([[0, 0, 0], [0, 0, 1.6]], oc, op))); labelRise = 2.0;
     } else {
       // marker: no dimensions are known, so no size is implied. Pole and heading tick show position and rotation only.
       add(new THREE.Mesh(new THREE.SphereGeometry(MARKER_RADIUS, 14, 10), new THREE.MeshBasicMaterial({ color: oc, transparent: op < 1, opacity: op }))).position.z = MARKER_RADIUS;
@@ -398,7 +417,7 @@ export function buildObject(o: SiteObject, c: Ctx): THREE.Group {
     }
   } else {
     const ps = verticesOf(geom), closed = geom.kind === 'polygon', path = drapedPath(ps, closed, c);
-    g.add(outline(path, oc, op, c));
+    g.add(isUnverified(o) && !closed ? dashedOutline(ps, oc, op, c) : outline(path, oc, op, c));
     const lifted = lift(ps, c);
     if (!set && o.type !== 'building' && o.type !== 'grading_area') lifted.forEach((p) => g.add(dot([p[0], p[1], p[2] + LIFT], oc)));
     labelAt = closed ? (() => { const m = ringCentroid(ps); const z = c.sample(m[0], m[1]); return [m[0] - c.O[0], m[1] - c.O[1], z ?? lifted[0][2]] as V3; })() : lifted[Math.floor((lifted.length - 1) / 2)];
@@ -428,8 +447,12 @@ export function buildObject(o: SiteObject, c: Ctx): THREE.Group {
       const dn = (a: V3[]): V3[] => a.map((p) => [p[0], p[1], p[2] - D]);
       strip(left, right, pos); g.add(meshOf(pos, flatMat(col, op)));
       const body: number[] = []; strip(dn(left), dn(right), body); strip(left, dn(left), body); strip(right, dn(right), body); g.add(meshOf(body, solidMat(col, 0.35 * op)));
-    } else if (set && o.type === 'stormwater_pipe') {
+    } else if (set && (o.type === 'stormwater_pipe' || o.type === 'sewer_drain')) {
       g.add(pipeMesh(o, ps, c, col, op));
+    } else if (o.type === 'service_existing') {
+      // the stated positional tolerance, as a faint band either side of the line. Drawn only when the tolerance is set; never assumed.
+      const tol = dimOf(o, 'position_tolerance_m');
+      if (tol !== null) { const { left, right } = offsets(path, tol, c), pos: number[] = []; strip(left, right, pos); g.add(meshOf(pos, flatMat(col, 0.5 * op))); }
     } else if (set && o.type === 'pool_barrier') {
       const h = dimOf(o, 'height_m')!, pos: number[] = [], up = path.map((p): V3 => [p[0], p[1], p[2] + h]);
       strip(path, up, pos); g.add(meshOf(pos, solidMat(col, 0.6 * op))); labelRise = h + 0.8;
@@ -484,6 +507,18 @@ export class SiteScene {
     const o = this.doc?.objects.find((x) => x.id === id); if (o) { this.lastRebuilt = []; this.put(o); }
   }
   setTerrain(t: SceneTerrain | null) { this.opts.terrain = t; }
+
+  // ---- stage 8: the plan underlay of the Trace service tool (outside the document, never saved, never pickable)
+  private underlay: THREE.Mesh | null = null;
+  hasUnderlay() { return this.underlay !== null; }
+  /** Show a plan image placed by a calibration, draped on the terrain. Null removes it. */
+  setUnderlay(u: { texture: THREE.Texture | null; width: number; height: number; calibration: Calibration; opacity: number } | null) {
+    if (this.underlay) { this.group.remove(this.underlay); this.underlay.geometry.dispose(); (this.underlay.material as THREE.Material).dispose(); this.underlay = null; }
+    if (!u) return;
+    const m = underlayMesh(imageCorners(u.calibration, u.width, u.height), u.texture, u.opacity, (e, n) => (this.opts.terrain ? this.opts.terrain.sample(e, n) : null), this.opts.origin);
+    this.underlay = m; this.group.add(m);
+  }
+  setUnderlayOpacity(v: number) { if (this.underlay) setUnderlayOpacity(this.underlay, v); }
 
   // ---- stage 7: tree protection zones from the server check (outside the document; shown only when the rule keys resolved)
   private zones = new Map<string, { tpz: number | null; srz: number | null }>();
@@ -570,5 +605,5 @@ export class SiteScene {
   }
   /** The object id a hit object belongs to. */
   static idOf(o: THREE.Object3D | null): string | null { let x = o; while (x) { if (x.userData?.siteId) return x.userData.siteId as string; x = x.parent; } return null; }
-  dispose() { for (const id of [...this.groups.keys()]) this.drop(id); for (const id of [...this.glbs.keys()]) { const o = this.glbs.get(id)!; this.glbs.delete(id); o.traverse((x) => { const m = x as THREE.Mesh; m.geometry?.dispose?.(); for (const k of Array.isArray(m.material) ? m.material : m.material ? [m.material] : []) k.dispose(); }); } }
+  dispose() { this.setUnderlay(null); for (const id of [...this.groups.keys()]) this.drop(id); for (const id of [...this.glbs.keys()]) { const o = this.glbs.get(id)!; this.glbs.delete(id); o.traverse((x) => { const m = x as THREE.Mesh; m.geometry?.dispose?.(); for (const k of Array.isArray(m.material) ? m.material : m.material ? [m.material] : []) k.dispose(); }); } }
 }

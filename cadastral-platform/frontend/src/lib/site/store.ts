@@ -15,7 +15,7 @@
 import { checkObject, NO_ENV, sameIssues, type CheckEnv } from './checks';
 import { applyPatch, type Patch } from './patch';
 import { applyOp, defaultCtx, OpError, OPS, runBatch, type BatchStep, type OpCtx } from './ops';
-import { emptyDesign, type SiteDesign, type SiteObject } from './types';
+import { emptyDesign, VERIFICATION_CLEARED_CODE, type SiteDesign, type SiteObject } from './types';
 
 export const HISTORY_LIMIT = 200;
 
@@ -82,7 +82,7 @@ export class SiteDesignStore {
     let changedAny = false;
     const objects = doc.objects.map((o): SiteObject => {
       if (!want.has(o.id)) return o;
-      const issues = checkObject(o, this._env);
+      const issues = [...checkObject(o, this._env), ...o.issues.filter((i) => i.code === VERIFICATION_CLEARED_CODE)];       // the geometry issues are recomputed; the note that an edit voided a verification is kept
       if (sameIssues(issues, o.issues)) return o;
       changedAny = true; return { ...o, issues };
     });

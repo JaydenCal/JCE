@@ -108,6 +108,8 @@ def _footprint(o: SiteObject, rd: Reader | None = None) -> BaseGeometry | None:
             return ring_polygon(o)
         ln, w = line_of(o), pos(o, "width_m", rd)
         return None if ln is None or w is None else ln.buffer(w / 2, cap_style=2)
+    if t == "service_existing" and g.kind == "point":
+        return Point(g.p[0], g.p[1])
     ln = line_of(o)
     if ln is None:
         return None
@@ -123,7 +125,7 @@ def _footprint(o: SiteObject, rd: Reader | None = None) -> BaseGeometry | None:
     if t == "stormwater_pipe":
         d = pos(o, "diameter_mm", rd)
         return None if d is None else ln.buffer(d / 2000.0, cap_style=2)
-    if t in ("pool_barrier", "service_trace", "overflow_route"):
+    if t in ("pool_barrier", "service_trace", "overflow_route", "service_existing", "sewer_drain", "water_service"):
         return ln
     return None
 

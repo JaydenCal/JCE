@@ -22,7 +22,8 @@ import {
   type GradingResult, type Kerb, type ProfileView, type RuleInfo,
 } from './driveway';
 import { LiveEngine, objectSig, type LiveStatus } from './liveEngine';
-import { EngineHttpError, postRwtSize, type RwtSizeResult } from './engineApi';
+import { EngineHttpError, postRwtSize, postSewerRoute, postWaterRoute, type RouteProposal, type RwtSizeResult, type SewerRouteRequest, type WaterRouteRequest } from './engineApi';
+import { CalibrationError, calibrate, calibrationLabel, clampOpacity, MAX_UNDERLAY_PX, type Calibration } from './underlay';
 import { LiveChecks, type ChecksState } from './serverChecks';
 import { zonesOf } from './checkList';
 import type { Endpoint } from './persist';
@@ -44,7 +45,13 @@ function disposeObject(o: THREE.Object3D) {
 const HANDLE_PX = 6, DRAG_PX = 4, MIN_SPACING = 0.01;
 
 export interface PointerInfo { ray: THREE.Ray; x: number; y: number; alt: boolean; shift: boolean; button: number }
-export type ToolMode = 'select' | 'place' | 'draw';
+/** `pick` (stage 8): one click returns a snapped model point to a caller (the calibration points of a plan underlay); it changes nothing in the design. */
+export type ToolMode = 'select' | 'place' | 'draw' | 'pick';
+/** The plan underlay of the Trace service tool (a session aid, not saved with the design). */
+export interface UnderlayInfo { name: string; width: number; height: number; opacity: number; calibrated: boolean; label: string }
+/** A sewer or water route proposal from the server, waiting to be applied (one undo step) or discarded. */
+export interface RoutePanel { kind: 'sewer' | 'water'; status: 'pending' | 'ok' | 'error'; error: string; result: RouteProposal | null; applied: boolean }
+export type ServiceFields = Record<string, { value: string | number | boolean; basis: 'user' }>;
 export interface Readout { kind: 'polyline' | 'polygon'; vertices: number; planLength: number; surfaceLength: number | null; perimeter: number | null; area: number | null; live: boolean }
 export interface DesignState {
   active: boolean; tool: ToolMode; objectType: ObjectType | null;
@@ -70,6 +77,10 @@ export interface DesignState {
   /** stage 7: the rule based checks of the whole design (server answer) and the state of the optional tank sizing for the selected tank */
   checks: ChecksState;
   rwtSize: RwtSizePanel | null;
+  /** stage 8: the plan underlay, the route proposal and the prompt of a point pick in progress */
+  underlay: UnderlayInfo | null;
+  route: RoutePanel | null;
+  pickPrompt: string | null;
 }
 export interface RwtSizePanel { id: string; status: 'idle' | 'pending' | 'ok' | 'error'; error: string; result: RwtSizeResult | null }
 export interface EnginePanel { status: LiveStatus; error: string; /** the result on show is a PREVIEW or stale */ stale: boolean }
@@ -158,9 +169,13 @@ export class DesignController {
   private pending: PendingBuilding | null = null; private pendingAt: Pt2 | null = null;
   private furniture: FurnitureChoice | null = null;
   /** a footpath drawn as an area, and parameters/label a preset tool (garden) gives the new object */
-  private shape: 'polyline' | 'polygon' | null = null; private preset: { params?: Record<string, { value: string; basis: 'user' }>; label?: string } | null = null;
+  private shape: 'polyline' | 'polygon' | 'point' | null = null; private preset: { params?: ServiceFields; label?: string } | null = null;
   private footprintUse: string | null = null; private footprintHandler: FootprintHandler | null = null;
   private hoverText = ''; private dragInfo = '';
+  /** stage 8 */
+  private underlayData: { name: string; width: number; height: number; opacity: number; texture: THREE.Texture | null; calib: Calibration | null } | null = null;
+  private pickHandler: ((p: Pt2) => void) | null = null; private pickText = ''; private pickLot = false;
+  private routePanel: RoutePanel | null = null; private routeAbort: AbortController | null = null; private routeLine: THREE.Line | null = null;
   /** the limits of the last server answer (the same resolved requirements), used by the browser preview */
   private lastRules: Record<string, RuleInfo> | null = null; private lastRulesFor = '';
   /** the object being dragged as the preview shows it, and the signature of the server request made for it */
@@ -200,6 +215,7 @@ export class DesignController {
   // ---- state
   private selObj(): SiteObject | null { return this.selected ? this.store.doc.objects.find((o) => o.id === this.selected) ?? null : null; }
   private hint(): string {
+    if (this.tool === 'pick') return `${this.pickText} · Esc cancel`;
     if (this.tool === 'place' && this.pending) return 'Click to place the building · R or Q/E rotate 15° · Alt turns snapping off · Esc cancel';
     if (this.tool === 'draw' && this.footprintUse) return 'Click the corners of the footprint · double click or Enter to finish · Backspace removes the last point · Esc cancel';
     if (this.tool === 'place') return 'Click to place · R or Q/E rotate 15° · Alt turns snapping off · Esc cancel';
@@ -225,6 +241,7 @@ export class DesignController {
       furnitureItem: this.furniture, footprintUse: this.footprintUse,
       driveway: this.drivewayPanel(), grading: this.gradingPanel(), hoverText: this.hoverText, dragInfo: this.dragInfo,
       checks: this.checks.state, rwtSize: this.selected ? this.sizing.get(this.selected) ?? null : null,
+      underlay: this.underlayInfo(), route: this.routePanel, pickPrompt: this.tool === 'pick' ? this.pickText : null,
     };
   }
 
@@ -349,17 +366,17 @@ export class DesignController {
     else { this.handles.visible = true; this.syncHandles(); }
     this.emit();
   }
-  setTool(mode: ToolMode, type: ObjectType | null = null) {
+  setTool(mode: ToolMode, type: ObjectType | null = null, shape: GeometryKind | null = null) {
     if (mode !== 'select' && this.store.locked) { this.cancelAll(); this.tool = 'select'; this.type = null; this.syncHandles(); this.say(this.store.locked); return; }       // read only: no drawing or placing tools
     this.cancelAll(); this.tool = mode; this.type = mode === 'select' ? null : type; this.message = '';
-    if (this.type && mode !== 'select' && OBJECT_KINDS[this.type].geometry === 'point' !== (mode === 'place')) { this.tool = 'select'; this.type = null; }   // place for points, draw for lines and areas
+    if (this.type && mode !== 'select' && (shape ?? OBJECT_KINDS[this.type].geometry) === 'point' !== (mode === 'place')) { this.tool = 'select'; this.type = null; }   // place for points, draw for lines and areas
     if (this.tool === 'place' && this.type) this.makeGhost(this.type);
     this.syncHandles(); this.emit();
   }
   /** Start the right tool for an object type. */
-  startFor(type: ObjectType, opts: { shape?: 'polyline' | 'polygon'; params?: Record<string, { value: string; basis: 'user' }>; label?: string } = {}) {
+  startFor(type: ObjectType, opts: { shape?: 'polyline' | 'polygon' | 'point'; params?: ServiceFields; label?: string } = {}) {
     const geometry = opts.shape ?? OBJECT_KINDS[type].geometry;
-    this.setTool(geometry === 'point' ? 'place' : 'draw', type);
+    this.setTool(geometry === 'point' ? 'place' : 'draw', type, opts.shape ?? null);
     if (this.type === type) { this.shape = opts.shape && opts.shape !== OBJECT_KINDS[type].geometry ? opts.shape : null; this.preset = opts.params || opts.label ? { params: opts.params, label: opts.label } : null; this.emit(); }
   }
   /** Geometry kind being drawn: the type's own, or the area shape of a footpath. */
@@ -440,7 +457,7 @@ export class DesignController {
     if (this.drag) this.cancelDrag();
     this.verts = []; this.cursor = null; this.clearPreview();
     if (this.ghost) { this.h.built.root.remove(this.ghost); disposeObject(this.ghost); this.ghost = null; }
-    this.ghostAt = null; this.marker.visible = false; this.snapLabel = '';
+    this.ghostAt = null; this.marker.visible = false; this.snapLabel = ''; this.pickHandler = null;
     this.pendingAt = null; this.footprintUse = null; this.footprintHandler = null; this.shape = null; this.preset = null;
     if (this.pending?.glb) disposeObject(this.pending.glb.object);
     this.pending = null;
@@ -599,6 +616,10 @@ export class DesignController {
       if (!a) { this.ghost.visible = false; this.ghostAt = null; this.showSnap(null, null); this.emit(); return; }
       this.ghost.position.copy(a.local); this.ghost.rotation.z = -(this.yaw * Math.PI) / 180; this.ghost.visible = true; this.ghostAt = { local: a.local };
       this.showSnap(a.local, a.snap); this.cursor = [a.mga[0], a.mga[1]]; this.emit();
+    } else if (this.tool === 'pick') {
+      const a = this.aim(info, null);
+      if (!a) { this.showSnap(null, null); this.emit(); return; }
+      this.showSnap(a.local, a.snap); this.emit();
     } else if (this.tool === 'draw') {
       const a = this.aim(info, null);
       if (!a) { this.cursor = null; this.showSnap(null, null); this.updatePreview(); this.emit(); return; }
@@ -746,7 +767,8 @@ export class DesignController {
     if (moved || info.button === 1) return;
     if (info.button === 2) { if (this.tool !== 'select') { if (this.verts.length) { this.verts = []; this.updatePreview(); this.emit(); } else this.setTool('select'); } return; }
     if (info.button !== 0) return;
-    if (this.tool === 'place' && this.type) this.placeAt(info);
+    if (this.tool === 'pick') this.pickAt(info);
+    else if (this.tool === 'place' && this.type) this.placeAt(info);
     else if (this.tool === 'draw' && this.type) this.addVertex(info);
     else if (this.tool === 'select') {
       const t = this.hitTerrain(info.ray), id = this.pickObject(info.ray, t?.world ?? null);
@@ -793,7 +815,10 @@ export class DesignController {
       this.emit(); return;
     }
     try {
-      const r = this.store.run('add_object', { type: this.type, points: [{ e: a.mga[0], n: a.mga[1] }], yaw_deg: this.yaw, status: this.newStatus }, `Place ${OBJECT_KINDS[this.type].label.toLowerCase()}`);
+      const r = this.store.run('add_object', {
+        type: this.type, points: [{ e: a.mga[0], n: a.mga[1] }], status: this.newStatus, ...(this.shape === 'point' ? { shape: 'point' } : {}), ...(this.type === 'service_existing' || this.type === 'service_node' ? {} : { yaw_deg: this.yaw }),
+        ...(this.preset?.params ? { params: this.preset.params } : {}), ...(this.preset?.label ? { label: this.preset.label } : {}),
+      }, `Place ${(this.preset?.label ?? OBJECT_KINDS[this.type].label).toLowerCase()}`);
       this.selected = r.id as string; this.scene.setSelected(this.selected); this.message = '';
     } catch (e) { this.message = e instanceof OpError ? e.message : String(e); }
     this.emit();
@@ -823,6 +848,112 @@ export class DesignController {
       this.verts = []; this.cursor = null; this.clearPreview(); this.selected = r.id as string; this.scene.setSelected(this.selected); this.message = '';
     } catch (e) { this.message = e instanceof OpError ? e.message : String(e); }
     this.emit();
+  }
+
+  // ---- stage 8: point pick, plan underlay, route proposals, DBYD drafts ------------------------------------------------------------------
+  /** The server endpoint of this view (the engines and the DBYD routes), or null on a page with no server. */
+  get endpoint(): Endpoint | null { return this.h.engine ?? null; }
+  /** The corners of the lot boundary (MGA), without the closing repeat; empty when the model has no lot. */
+  lotCorners(): Pt2[] {
+    const l = this.h.lot ? this.h.lot.map((p) => [p[0], p[1]] as Pt2) : [];
+    return l.length > 1 && samePt(l[0], l[l.length - 1]) ? l.slice(0, -1) : l;
+  }
+  /** Ask for one click in the model: `handler` receives the snapped MGA point. With `lotCorner` only a click near a lot corner is accepted and the corner itself is returned. Changes nothing in the design. */
+  pickPoint(prompt: string, handler: (p: Pt2) => void, opts: { lotCorner?: boolean } = {}) {
+    this.cancelAll(); this.tool = 'pick'; this.type = null; this.message = ''; this.pickHandler = handler; this.pickText = prompt; this.pickLot = !!opts.lotCorner;
+    this.syncHandles(); this.emit();
+  }
+  private pickAt(info: PointerInfo) {
+    const a = this.aim(info, null), h = this.pickHandler; if (!a || !h) return;
+    let p: Pt2 = a.mga;
+    if (this.pickLot) {
+      const corners = this.lotCorners(), hit = this.hitTerrain(info.ray);
+      const tol = SNAP_PIXELS * 2 * this.h.mpp(hit ? hit.world : new THREE.Vector3());
+      let best = Infinity, at: Pt2 | null = null;
+      for (const c of corners) { const d = dist2(c, a.mga); if (d < best) { best = d; at = c; } }
+      if (!at || best > tol) { this.say(corners.length ? 'CLICK NEARER A LOT CORNER' : 'THIS MODEL HAS NO LOT BOUNDARY: ENTER THE POINT AS E AND N'); return; }
+      p = at;
+    }
+    this.pickHandler = null; this.setTool('select'); h([p[0], p[1]]);
+  }
+
+  private underlayInfo(): UnderlayInfo | null {
+    const u = this.underlayData; if (!u) return null;
+    return { name: u.name, width: u.width, height: u.height, opacity: u.opacity, calibrated: u.calib !== null, label: u.calib ? calibrationLabel(u.calib) : 'NOT CALIBRATED: THE PLAN IS NOT SHOWN IN THE MODEL' };
+  }
+  underlayCalibration(): Calibration | null { return this.underlayData?.calib ?? null; }
+  /** Load a plan page image as the underlay (replaces any earlier one). It is not shown in the model until it is calibrated. Returns an error text or null. */
+  loadUnderlay(src: { name: string; width: number; height: number; texture: THREE.Texture | null }): string | null {
+    if (!(src.width > 0 && src.height > 0) || src.width > MAX_UNDERLAY_PX || src.height > MAX_UNDERLAY_PX) return `THE PLAN IMAGE MUST BE BETWEEN 1 AND ${MAX_UNDERLAY_PX} PIXELS ON EACH SIDE`;
+    this.clearUnderlay(false);
+    this.underlayData = { name: src.name.slice(0, 200), width: src.width, height: src.height, opacity: 0.6, texture: src.texture, calib: null };
+    this.emit(); return null;
+  }
+  /** Place the loaded plan from two image points (pixels) and the two model points (MGA) they stand for. Returns an error text or null. */
+  calibrateUnderlay(img: readonly [Pt2, Pt2], mga: readonly [Pt2, Pt2]): string | null {
+    const u = this.underlayData; if (!u) return 'LOAD A PLAN IMAGE FIRST';
+    try { u.calib = calibrate(img, mga); } catch (e) { if (e instanceof CalibrationError) return e.message; throw e; }
+    this.scene.setUnderlay({ texture: u.texture, width: u.width, height: u.height, calibration: u.calib, opacity: u.opacity });
+    this.emit(); return null;
+  }
+  setUnderlayOpacity(v: number) { const u = this.underlayData; if (!u) return; u.opacity = clampOpacity(v); this.scene.setUnderlayOpacity(u.opacity); this.emit(); }
+  clearUnderlay(emit = true) {
+    this.scene.setUnderlay(null);
+    this.underlayData?.texture?.dispose();
+    this.underlayData = null;
+    if (emit) this.emit();
+  }
+  /** Start drawing an existing service (a traced line, or a point for a pit, valve or pole) with the fields the user entered. Every field is the user's entry; nothing is defaulted. */
+  traceService(fields: ServiceFields, opts: { point?: boolean; label?: string } = {}) {
+    this.startFor('service_existing', { shape: opts.point ? 'point' : 'polyline', params: fields, label: opts.label });
+  }
+
+  /** Ask the server for a sewer drain route. Nothing is added until `applyRoute`. */
+  proposeSewer(input: Omit<SewerRouteRequest, 'design'>) { return this.propose('sewer', (ep, sig) => postSewerRoute(ep, { ...input, design: this.store.doc }, sig)); }
+  proposeWater(input: Omit<WaterRouteRequest, 'design'>) { return this.propose('water', (ep, sig) => postWaterRoute(ep, { ...input, design: this.store.doc }, sig)); }
+  private async propose(kind: 'sewer' | 'water', call: (ep: Endpoint, sig: AbortSignal) => Promise<RouteProposal>) {
+    this.clearRoute(false);
+    const ep = this.h.engine ?? null;
+    if (!ep) { this.routePanel = { kind, status: 'error', error: 'NO SERVER: THIS VIEW HAS NO CONNECTION TO THE ENGINES', result: null, applied: false }; this.emit(); return; }
+    const ac = this.routeAbort = new AbortController();
+    this.routePanel = { kind, status: 'pending', error: '', result: null, applied: false }; this.emit();
+    try {
+      const res = await call(ep, ac.signal);
+      if (ac.signal.aborted) return;
+      this.routePanel = { kind, status: 'ok', error: '', result: res, applied: false };
+      this.showRoute(res.route.pts);
+    } catch (err) {
+      if ((err as { name?: string })?.name === 'AbortError') return;
+      this.routePanel = { kind, status: 'error', error: err instanceof EngineHttpError ? err.message : String(err), result: null, applied: false };
+    }
+    this.emit();
+  }
+  private showRoute(pts: readonly (readonly number[])[]) {
+    this.removeRouteLine();
+    const O = this.h.origin, d = drapePolyline(pts as Pos[], this.terrain.sample, 1, false);
+    let last = d.map((x) => x.p[2]).find((z): z is number => z !== null) ?? 0;
+    const v = d.map((x) => { if (x.p[2] !== null) last = x.p[2]; return new THREE.Vector3(x.p[0] - O[0], x.p[1] - O[1], last + 0.1); });
+    if (v.length < 2) return;
+    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(v), new THREE.LineBasicMaterial({ color: 0xffffff, depthTest: false }));
+    line.renderOrder = 16; this.routeLine = line; this.h.built.root.add(line);
+  }
+  private removeRouteLine() { if (this.routeLine) { this.h.built.root.remove(this.routeLine); this.routeLine.geometry.dispose(); (this.routeLine.material as THREE.Material).dispose(); this.routeLine = null; } }
+  /** Add the objects of the proposal to the design: ONE undo step. An id that is no longer free (the design changed) refuses the whole step. */
+  applyRoute(): string | null {
+    const r = this.routePanel;
+    if (!r || r.status !== 'ok' || !r.result || r.applied) return 'THERE IS NO PROPOSAL TO APPLY';
+    try {
+      const out = this.store.run('add_service_objects', { objects: r.result.objects }, r.kind === 'sewer' ? 'Add sewer route' : 'Add water service');
+      this.routePanel = { ...r, applied: true }; this.removeRouteLine();
+      const first = (out.ids as string[])[0]; if (first) this.select(first);
+      this.requestChecks(true); this.emit(); return null;
+    } catch (e) { const m = e instanceof OpError ? e.message : String(e); this.say(m); return m; }
+  }
+  clearRoute(emit = true) { this.routeAbort?.abort(); this.routeAbort = null; this.routePanel = null; this.removeRouteLine(); if (emit) this.emit(); }
+  /** Add the draft services read from a DBYD plan (origin dbyd, UNVERIFIED): ONE undo step. */
+  addDbydDrafts(objects: SiteObject[]): string | null {
+    try { this.store.run('add_service_objects', { objects }, 'Add DBYD services'); this.message = ''; this.requestChecks(true); this.emit(); return null; }
+    catch (e) { const m = e instanceof OpError ? e.message : String(e); this.say(m); return m; }
   }
 
   // ---- keys (called by the engine; returns true when handled)
@@ -876,7 +1007,7 @@ export class DesignController {
   yawDeg() { return normDeg(this.yaw); }
 
   dispose() {
-    this.cancelAll(); this.live.dispose(); this.checks.dispose(); this.sizeAbort?.abort(); this.off.forEach((f) => f()); this.off = [];
+    this.cancelAll(); this.live.dispose(); this.checks.dispose(); this.sizeAbort?.abort(); this.clearRoute(false); this.clearUnderlay(false); this.off.forEach((f) => f()); this.off = [];
     this.h.built.root.remove(this.scene.group, this.handles, this.marker, this.selRing); this.scene.dispose();
     this.marker.geometry.dispose(); (this.marker.material as THREE.Material).dispose(); this.selRing.geometry.dispose(); (this.selRing.material as THREE.Material).dispose();
   }

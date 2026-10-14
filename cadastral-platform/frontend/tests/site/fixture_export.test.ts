@@ -91,17 +91,32 @@ function build() {
   const fp = s.doc.objects.find((o) => o.type === 'footpath' && o.geometry.kind === 'polyline')!;
   s.run('set_param', { id: fp.id, key: 'impervious', value: false });
   s.run('set_param', { id: fp.id, key: 'crossfall_pct', value: 2 });
+  // stage 8: a traced and verified sewer main, a DBYD draft (origin dbyd, unverified), a water main as a point, a drain with inspection openings, a water service, and a footing depth
+  const sm = s.run('add_object', { type: 'service_existing', points: [at(2, 15), at(28, 15)], status: 'existing', label: 'Sewer main', params: {
+    service_kind: { value: 'sewer', basis: 'user' }, asset_owner: { value: 'Water Corp', basis: 'user' }, diameter_mm: { value: 225, basis: 'user' }, material: { value: 'VC', basis: 'user' },
+    depth_m: { value: 2.4, basis: 'user' }, depth_basis: { value: 'potholed', basis: 'user' }, depth_reference: { value: 'invert', basis: 'user' }, position_tolerance_m: { value: 0.3, basis: 'user' },
+    dbyd_job_number: { value: 'DBYD-TEST-1', basis: 'user' }, plan_date: { value: '2026-01-05', basis: 'user' }, plan_expiry_date: { value: '2026-03-05', basis: 'user' }, source_file: { value: 'plan.pdf', basis: 'user' } } });
+  s.run('set_service_verified', { id: sm.id, verified: true, verified_by: 'J Surveyor', date: '2026-02-01' });
+  s.run('add_service_objects', { objects: [
+    { id: 'dbyd_a1', type: 'service_existing', status: 'existing', origin: 'dbyd', label: 'GAS (DBYD DRAFT)', geometry: { kind: 'polyline', pts: [[496002, 6650005], [496028, 6650005]] },
+      params: { service_kind: { value: 'gas', basis: 'plan_indicated', ref: 'DBYD PLAN PARSE, UNVERIFIED DRAFT' }, depth_m: { value: 0.6, basis: 'plan_indicated' }, depth_basis: { value: 'plan_indicated', basis: 'plan_indicated' }, source_file: { value: 'plan.pdf', basis: 'plan_indicated' } } },
+    { id: 'dbyd_a2', type: 'service_existing', status: 'existing', origin: 'dbyd', geometry: { kind: 'point', p: [496010, 6650020] }, params: { service_kind: { value: 'water', basis: 'plan_indicated' } } },
+    { id: 'drain_a', type: 'sewer_drain', status: 'proposed', geometry: { kind: 'polyline', pts: [[496012, 6650012], [496016, 6650015]] }, params: { diameter_mm: { value: 100, basis: 'user' }, upstream_invert_rl: { value: 98.6, basis: 'user' }, downstream_invert_rl: { value: 98.5, basis: 'derived', ref: 'sewer.min_grade_pct' }, building_id: { value: placed.id, basis: 'user' } } },
+    { id: 'node_a', type: 'service_node', status: 'proposed', geometry: { kind: 'point', p: [496016, 6650015] }, params: { node_kind: { value: 'sewer_connection', basis: 'user' }, main_id: { value: sm.id, basis: 'user' }, invert_rl: { value: 98.5, basis: 'user' } } },
+    { id: 'water_a', type: 'water_service', status: 'proposed', geometry: { kind: 'polyline', pts: [[496010, 6650020], [496012, 6650014]] }, params: { diameter_mm: { value: 20, basis: 'user' }, cover_m: { value: 0.5, basis: 'user' }, main_id: { value: 'dbyd_a1', basis: 'user' }, rwt_id: { value: 'rwt_2', basis: 'user' } } },
+  ] });
+  s.run('set_param', { id: 'tree_1', key: 'footing_depth_m', value: 0.8 });
   return s.doc;
 }
 
 describe('frontend output vs the Pydantic model (golden file)', () => {
-  it('covers all eighteen object types, a vertex z, every basis and an issue', () => {
+  it('covers all twenty two object types, a vertex z, every basis and an issue', () => {
     const d = build();
-    expect(OBJECT_TYPES).toHaveLength(18);
+    expect(OBJECT_TYPES).toHaveLength(22);
     expect(new Set(d.objects.map((o) => o.type))).toEqual(new Set(OBJECT_TYPES));
     expect(d.objects.some((o) => o.type === 'footpath' && o.geometry.kind === 'polygon')).toBe(true);
     expect(d.objects.some((o) => o.geometry.kind === 'polyline' && o.geometry.pts.some((p) => p.length === 3))).toBe(true);
-    expect(new Set(d.objects.flatMap((o) => Object.values(o.params).map((p) => p.basis)))).toEqual(new Set(['user', 'lga_rule', 'platform_default', 'unresolved']));
+    expect(new Set(d.objects.flatMap((o) => Object.values(o.params).map((p) => p.basis)))).toEqual(new Set(['user', 'lga_rule', 'platform_default', 'unresolved', 'plan_indicated', 'derived']));
     expect(d.objects.some((o) => o.issues.length > 0)).toBe(true);
   });
   it('matches the committed golden file the backend test validates (UPDATE_SITE_FIXTURE=1 regenerates it)', () => {

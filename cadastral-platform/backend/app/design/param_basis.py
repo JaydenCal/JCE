@@ -1,6 +1,6 @@
 """Basis-aware reading of an object parameter (stage 7 review fix).
 
-A parameter on a site object carries a value AND a basis (``user``, ``lga_rule``, ``platform_default`` or ``unresolved``). A check, the wall screening and the
+A parameter on a site object carries a value AND a basis (``user``, ``lga_rule``, ``platform_default``, ``unresolved``, ``plan_indicated`` or ``derived``). A check, the wall screening and the
 tank sizing read their engineering inputs ONLY through this module, and a value is accepted by its basis:
 
 * ``user``: accepted. The value was entered by the user.
@@ -9,6 +9,11 @@ tank sizing read their engineering inputs ONLY through this module, and a value 
   UNRESOLVED and the reason is ``LGA RULE REFERENCE NOT VERIFIED``. The stored basis is a claim made by the client; the server never takes it on trust.
 * ``platform_default``: refused for every stage 7 parameter, except a parameter of one of the two registered platform default keys
   (``object_keys.PLATFORM_DEFAULT_KEYS``) when the resolver gives that default for this project and the value is the same.
+* ``plan_indicated``: a value parsed from a DBYD plan. Accepted ONLY for the (type, parameter) pairs in ``site_design.PLAN_INDICATED_PARAMS`` (the checks that read other
+  parameters never take a plan indicated value) and reported with the basis PLAN INDICATED, never as USER. It is a plan's statement, not a measurement.
+* ``derived``: a value the server computed from a requirement (a sewer proposal invert from the minimum grade rule). Accepted ONLY for the pairs in
+  ``site_design.DERIVED_PARAMS`` and only when its reference is the requirement key it was derived from AND that key has a usable row for this project's LGA. It is
+  reported with the basis DERIVED and the key as reference.
 * ``unresolved`` or no value: not set.
 
 The basis of what is read is the TRUE basis (the resolver's own basis for a verified rule, ``USER`` only for a user entry): it is never relabelled.
@@ -22,8 +27,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from . import object_keys as OK
-from .site_design import SiteObject
-from .site_rules import DEFAULT, UNRESOLVED, USER, SiteRules
+from .site_design import DERIVED_PARAMS, PLAN_INDICATED_PARAMS, SiteObject
+from .site_rules import DEFAULT, DERIVED, PLAN_INDICATED, UNRESOLVED, USER, SiteRules
 
 LGA_NOT_VERIFIED = "LGA RULE REFERENCE NOT VERIFIED"
 MAX_ABS = 1.0e9
@@ -84,6 +89,18 @@ def read(o: SiteObject, key: str, rules: SiteRules | None = None) -> Read:
         if not _same(v, rule.value):
             return Read(why=f"{why} (THE SERVER RESOLVES {ref.upper()} TO A DIFFERENT VALUE)")
         return Read(v, rule.basis, rule.ref or ref)
+    if p.basis == "plan_indicated":
+        if (o.type, key) not in PLAN_INDICATED_PARAMS:
+            return Read(why=f"{name}: A PLAN INDICATED VALUE IS NOT ACCEPTED FOR THIS PARAMETER")
+        return Read(v, PLAN_INDICATED, (p.ref or "").strip() or "DBYD PLAN")
+    if p.basis == "derived":
+        ref = (p.ref or "").strip()
+        why = f"{name}: DERIVED VALUE NOT ACCEPTED"
+        if (o.type, key) not in DERIVED_PARAMS:
+            return Read(why=f"{why} (NOT A DERIVABLE PARAMETER)")
+        if not ref or rules is None or ref not in rules.keys_under(ref):
+            return Read(why=f"{why} (THE REQUIREMENT {ref.upper() or 'KEY'} IT WAS DERIVED FROM IS NOT RESOLVED FOR THIS LGA)")
+        return Read(v, DERIVED, ref)
     if p.basis == "platform_default":
         if expected in OK.PLATFORM_DEFAULT_KEYS and rules is not None:
             rule = rules.get(expected)

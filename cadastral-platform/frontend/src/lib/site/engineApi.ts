@@ -6,7 +6,7 @@
 import type { Endpoint } from './persist';
 import type { DrivewayProfile, GradingResult } from './driveway';
 import type { SiteDesign, SiteObject } from './types';
-import type { CheckResult } from './serverChecks';
+import type { CheckEntry, CheckResult } from './serverChecks';
 
 export class EngineHttpError extends Error {
   constructor(public status: number, public code: string, message: string) { super(message); this.name = 'EngineHttpError'; }
@@ -53,3 +53,33 @@ export interface RwtSizeResult {
 }
 /** Run the optional mass balance sizing of a rainwater tank. It runs only when every input resolves; otherwise the answer lists what is UNRESOLVED. */
 export const postRwtSize = (e: Endpoint, body: RwtSizeRequest, signal?: AbortSignal) => post<RwtSizeResult>(e, 'rwt-size', body, signal);
+
+// ---- stage 8: sewer and water route proposals
+export interface ConnectionInput {
+  /** the id of a service_existing in the design (its depth must be known for an invert to be derived) */
+  main_id?: string;
+  /** a point entered by the user (MGA E, N). It is labelled NOT VERIFIED in the answer. */
+  p?: [number, number];
+  /** the invert level at the connection, when known (entered by the user) */
+  invert_rl?: number;
+}
+export interface SewerRouteRequest {
+  design: SiteDesign; building_id: string; exit_index?: number; start_invert_rl: number; diameter_mm: number;
+  /** percent. Left out, the server uses the minimum grade of the requirement key for that diameter, or reports it UNRESOLVED. */
+  grade_pct?: number | null; connection: ConnectionInput;
+}
+export interface WaterRouteRequest {
+  design: SiteDesign; building_id: string; exit_index?: number; meter_p: [number, number]; diameter_mm: number; cover_m: number; rwt_id?: string | null; connection: ConnectionInput;
+}
+export interface RouteProposal {
+  schema: 'sewer_proposal.v1' | 'water_proposal.v1'; label: string;
+  /** ready to apply with the add_service_objects operation */
+  objects: SiteObject[];
+  route: { pts: [number, number][]; length_m: number };
+  grade_pct?: number | null; grade_basis?: string | null; inspection_chainages_m?: number[];
+  connection: { p: [number, number]; label: string; main_id: string | null; invert_rl?: number | null; arrival_invert_rl?: number | null; status?: string; message?: string };
+  profile?: { chainage_m: number; x: number; y: number; ground_rl: number | null; invert_rl: number; crown_rl: number; cover_m: number | null; location: string }[];
+  checks: CheckEntry[]; summary: Record<string, number> | string; notes: string[];
+}
+export const postSewerRoute = (e: Endpoint, body: SewerRouteRequest, signal?: AbortSignal) => post<RouteProposal>(e, 'sewer-route', body, signal);
+export const postWaterRoute = (e: Endpoint, body: WaterRouteRequest, signal?: AbortSignal) => post<RouteProposal>(e, 'water-route', body, signal);

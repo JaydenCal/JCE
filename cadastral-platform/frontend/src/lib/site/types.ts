@@ -8,7 +8,8 @@ export type ObjectType =
   | 'landscape_area' | 'grading_area' | 'osd_basin'
   | 'building' | 'pool' | 'footpath' | 'furniture'
   | 'driveway'
-  | 'pool_barrier' | 'overflow_route';
+  | 'pool_barrier' | 'overflow_route'
+  | 'service_existing' | 'sewer_drain' | 'service_node' | 'water_service';
 /** Stage 7 renamed the stormwater pit from `pit`. A stored document or a caller that still says `pit` is read as `stormwater_pit` (the backend does the same). */
 export const LEGACY_TYPES: Record<string, ObjectType> = { pit: 'stormwater_pit' };
 export const canonicalType = (t: unknown): unknown => (typeof t === 'string' && Object.prototype.hasOwnProperty.call(LEGACY_TYPES, t) ? LEGACY_TYPES[t] : t);
@@ -16,7 +17,7 @@ export type GeometryKind = 'point' | 'polyline' | 'polygon';
 export type Status = 'existing' | 'proposed' | 'to_be_removed';
 export type Origin = 'user' | 'ai_proposal' | 'imported' | 'dbyd';
 export type Accepted = 'pending' | 'accepted' | 'rejected';
-export type Basis = 'user' | 'lga_rule' | 'platform_default' | 'unresolved';
+export type Basis = 'user' | 'lga_rule' | 'platform_default' | 'unresolved' | 'plan_indicated' | 'derived';
 export type Severity = 'blocking' | 'warning' | 'info';
 
 /** MGA metres: [E, N] or [E, N, z]. A missing z means the point is draped on the terrain. */
@@ -124,7 +125,25 @@ export const OBJECT_KINDS: Record<ObjectType, ObjectKind> = {
   // stage 7. A pool barrier is a fence line with a height; an overflow route is an OSD overflow path (no dimension).
   pool_barrier: { geometry: 'polyline', label: 'POOL BARRIER', dims: ['height_m'], colour: '#c0392b' },
   overflow_route: { geometry: 'polyline', label: 'OVERFLOW ROUTE', dims: [], colour: '#e67e22' },
+  // stage 8. An existing service (from a DBYD plan or traced): a line, or a point for a pit, valve or pole. Its colour follows the service kind (see SERVICE_COLOUR).
+  service_existing: { geometry: 'polyline', alt: 'point', label: 'EXISTING SERVICE', dims: [], colour: '#d9822b' },
+  sewer_drain: { geometry: 'polyline', label: 'SEWER DRAIN', dims: ['diameter_mm'], colour: '#7b5e3b' },
+  service_node: { geometry: 'point', label: 'SERVICE NODE', dims: [], colour: '#444444' },
+  water_service: { geometry: 'polyline', label: 'WATER SERVICE', dims: ['diameter_mm'], colour: '#1d8fe0' },
 };
+// ---- stage 8 enumerations (the same lists are in the backend model)
+export const SERVICE_KINDS = ['water', 'sewer', 'stormwater', 'gas', 'electricity', 'telecommunications', 'other'] as const;
+export type ServiceKind = (typeof SERVICE_KINDS)[number];
+export const SERVICE_KIND_LABEL: Record<ServiceKind, string> = { water: 'WATER', sewer: 'SEWER', stormwater: 'STORMWATER', gas: 'GAS', electricity: 'ELECTRICITY', telecommunications: 'TELECOMMUNICATIONS', other: 'OTHER' };
+/** Colours by service kind (a display convention, not a rule). */
+export const SERVICE_COLOUR: Record<ServiceKind, string> = { water: '#1d6fe0', sewer: '#2f8f4a', stormwater: '#10a0a0', gas: '#d4b000', electricity: '#d12a2a', telecommunications: '#e07b00', other: '#777777' };
+export const DEPTH_BASES = ['plan_indicated', 'potholed', 'surveyed', 'unknown'] as const;
+export const DEPTH_BASIS_LABEL: Record<(typeof DEPTH_BASES)[number], string> = { plan_indicated: 'PLAN INDICATED', potholed: 'POTHOLED', surveyed: 'SURVEYED', unknown: 'UNKNOWN' };
+export const DEPTH_REFERENCES = ['top', 'invert'] as const;
+export const DEPTH_REFERENCE_LABEL: Record<(typeof DEPTH_REFERENCES)[number], string> = { top: 'TOP OF THE ASSET', invert: 'INVERT' };
+export const NODE_KINDS = ['inspection_opening', 'inspection_pit', 'sewer_connection', 'water_connection', 'water_meter'] as const;
+export const NODE_KIND_LABEL: Record<(typeof NODE_KINDS)[number], string> = { inspection_opening: 'INSPECTION OPENING', inspection_pit: 'INSPECTION PIT', sewer_connection: 'SEWER CONNECTION', water_connection: 'WATER CONNECTION', water_meter: 'WATER METER' };
+export const PLAN_EXPIRED = 'PLAN EXPIRED', UNVERIFIED_LABEL = 'UNVERIFIED, INDICATIVE ONLY', UNRESOLVED_LABEL = 'UNRESOLVED';
 
 // ---- stage 5 enumerations (the same lists are in backend/app/design/site_design.py; a value outside a list is refused) ------------
 export const BUILDING_USES = ['house', 'granny_flat', 'unit', 'shed', 'other'] as const;
@@ -145,6 +164,7 @@ export const PARAM_ENUMS: Record<string, readonly string[]> = {
   'rwt.shape': RWT_SHAPES, 'retaining_wall.wall_type': WALL_TYPES, 'infiltration_trench.infiltration_basis': INFILTRATION_BASES, 'osd.form': OSD_FORMS, 'osd_basin.form': OSD_FORMS,
   'building.building_use': BUILDING_USES, 'building.source': BUILDING_SOURCES, 'building.roof_area_basis': ROOF_AREA_BASES,
   'landscape_area.surface_kind': SURFACE_KINDS, 'footpath.surface_kind': FOOTPATH_SURFACES, 'driveway.surface_kind': DRIVEWAY_SURFACES,
+  'service_existing.service_kind': SERVICE_KINDS, 'service_existing.depth_basis': DEPTH_BASES, 'service_existing.depth_reference': DEPTH_REFERENCES, 'service_node.node_kind': NODE_KINDS,
 };
 /** Parameters that must be numbers when they carry a value. */
 export const PARAM_NUMBERS: Record<string, readonly string[]> = {
@@ -161,39 +181,61 @@ export const PARAM_NUMBERS: Record<string, readonly string[]> = {
   osd_basin: ['depth_m', 'storage_volume_m3', 'orifice_diameter_mm', 'orifice_invert_rl', 'top_water_level_rl', 'discharge_coefficient', 'psd_l_s'],
   stormwater_pit: ['width_m', 'length_m', 'invert_rl'], stormwater_pipe: ['diameter_mm', 'upstream_invert_rl', 'downstream_invert_rl'],
   pool_barrier: ['height_m'], tree: ['height_m', 'canopy_diameter_m', 'trunk_diameter_mm'],
+  // stage 8. Depths are metres below ground at the service; levels are RLs.
+  service_existing: ['diameter_mm', 'depth_m', 'position_tolerance_m'], sewer_drain: ['diameter_mm', 'upstream_invert_rl', 'downstream_invert_rl'], water_service: ['diameter_mm', 'cover_m'], service_node: ['invert_rl'],
 };
+/** The optional founding depth (m below ground) the user enters on the objects a sewer main's zone of influence is checked for. */
+export const FOOTING_TYPES: readonly ObjectType[] = ['building', 'retaining_wall', 'rwt', 'osd', 'osd_basin', 'pool', 'tree'];
+for (const t of FOOTING_TYPES) PARAM_NUMBERS[t] = Array.from(new Set([...(PARAM_NUMBERS[t] ?? []), 'footing_depth_m']));
 /** Parameters that must be true or false when they carry a value. */
 export const PARAM_BOOLS: Record<string, readonly string[]> = { rwt: ['reuse_toilet', 'reuse_laundry', 'reuse_garden'], footpath: ['impervious'] };
 /** Parameters that must be an ISO date (YYYY-MM-DD) when they carry a value. */
-export const PARAM_DATES: Record<string, readonly string[]> = { infiltration_trench: ['test_date'] };
+export const PARAM_DATES: Record<string, readonly string[]> = { infiltration_trench: ['test_date'], service_existing: ['plan_date', 'plan_expiry_date'] };
 /** Object links: [type, key] -> the object types the linked id must have. */
-export const PARAM_LINKS: Record<string, readonly ObjectType[]> = { 'rwt.roof_building_id': ['building'], 'overflow_route.osd_id': ['osd', 'osd_basin'], 'pool_barrier.pool_id': ['pool'] };
+export const PARAM_LINKS: Record<string, readonly ObjectType[]> = {
+  'rwt.roof_building_id': ['building'], 'overflow_route.osd_id': ['osd', 'osd_basin'], 'pool_barrier.pool_id': ['pool'],
+  'service_node.main_id': ['service_existing'], 'sewer_drain.building_id': ['building'], 'water_service.main_id': ['service_existing'], 'water_service.rwt_id': ['rwt'],
+};
 /**
  * Object types whose parameters are stage 7 engineering inputs (the same list is in the backend model). On them a parameter may not have basis platform_default:
  * the only platform defaults are the requirement values of stormwater.osd_required and stormwater.psd_l_s, which the SERVER resolves. Two exceptions, as in the
  * backend: the OSD psd_l_s (the server verifies its value) and the Plan Studio size ESTIMATE the importer stamps on a tank diameter or height.
  */
-export const STAGE7_TYPES: readonly ObjectType[] = ['rwt', 'retaining_wall', 'infiltration_trench', 'osd', 'osd_basin', 'stormwater_pit', 'stormwater_pipe', 'pool_barrier', 'overflow_route', 'tree'];
+export const STAGE7_TYPES: readonly ObjectType[] = ['rwt', 'retaining_wall', 'infiltration_trench', 'osd', 'osd_basin', 'stormwater_pit', 'stormwater_pipe', 'pool_barrier', 'overflow_route', 'tree', 'service_existing', 'sewer_drain', 'service_node', 'water_service'];
 export const PS_ESTIMATE_REF = 'PLAN STUDIO ESTIMATE';
 export function platformDefaultRefused(type: ObjectType, key: string, ref: string | undefined): boolean {
   if (!STAGE7_TYPES.includes(type) || (ref ?? '').startsWith(PS_ESTIMATE_REF)) return false;
   return !((type === 'osd' || type === 'osd_basin') && key === 'psd_l_s');
 }
+/**
+ * (type, parameter) pairs that may carry basis plan_indicated (read from a DBYD plan: a plan's statement, not a measurement) and basis derived (computed by the server from a
+ * requirement key given as the ref). The same lists are in the backend model, which refuses the basis anywhere else.
+ */
+export const PLAN_INDICATED_PARAMS: readonly string[] = ['service_kind', 'diameter_mm', 'material', 'depth_m', 'depth_basis', 'source_file'].map((k) => `service_existing.${k}`);
+export const DERIVED_PARAMS: readonly string[] = ['sewer_drain.upstream_invert_rl', 'sewer_drain.downstream_invert_rl', 'service_node.invert_rl'];
+/** The issue added when an edit voids a service's verification. Unlike the geometry issues it is not recomputed: it stays until the service is verified again. */
+export const VERIFICATION_CLEARED_CODE = 'VERIFICATION_CLEARED_BY_EDIT';
 export const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 export const WIDTH_NOT_SET = 'WIDTH NOT SET', END_LEVEL_NOT_SET = 'END LEVEL NOT SET', TARGET_NOT_SET = 'TARGET NOT SET';
 /** Parameter keys the panel always lists for a type (shown NOT SET until a value is entered), besides the keys the object already has. */
 export const PANEL_KEYS: Partial<Record<ObjectType, string[]>> = {
   driveway: ['width_m', 'end_level_rl', 'surface_kind', 'batter_cut_h_per_v', 'batter_fill_h_per_v'],
   grading_area: ['target_level_m', 'target_grade_pct', 'fall_direction_deg', 'pivot_level_m', 'batter_cut_h_per_v', 'batter_fill_h_per_v'],
+  service_existing: ['service_kind', 'asset_owner', 'dbyd_job_number', 'plan_reference', 'plan_date', 'plan_expiry_date', 'source_file', 'diameter_mm', 'material', 'depth_m', 'depth_basis', 'depth_reference', 'position_tolerance_m', 'verified_by'],
+  sewer_drain: ['diameter_mm', 'upstream_invert_rl', 'downstream_invert_rl'],
+  water_service: ['diameter_mm', 'cover_m'],
+  service_node: ['node_kind', 'invert_rl'],
 };
 export const FFL_NOT_SET = 'FFL NOT SET', HEIGHT_NOT_SET = 'HEIGHT NOT SET', NOT_SET = 'NOT SET';
 export const POOL_BARRIER_LABEL = 'POOL BARRIER REQUIREMENTS: SEE RULES';
 export const OBJECT_TYPES = Object.keys(OBJECT_KINDS) as ObjectType[];
 export const STATUSES: Status[] = ['existing', 'proposed', 'to_be_removed'];
 export const ORIGINS: Origin[] = ['user', 'ai_proposal', 'imported', 'dbyd'];
-export const BASES: Basis[] = ['user', 'lga_rule', 'platform_default', 'unresolved'];
+export const BASES: Basis[] = ['user', 'lga_rule', 'platform_default', 'unresolved', 'plan_indicated', 'derived'];
+/** Bases the system sets and a person cannot choose by hand (set_param refuses them): a platform default, a value read from a DBYD plan, a value derived from a requirement. */
+export const SYSTEM_BASES: readonly Basis[] = ['platform_default', 'plan_indicated', 'derived'];
 
-export const BASIS_LABEL: Record<Basis, string> = { user: 'USER', lga_rule: 'LGA RULE', platform_default: 'PLATFORM DEFAULT', unresolved: 'UNRESOLVED' };
+export const BASIS_LABEL: Record<Basis, string> = { user: 'USER', lga_rule: 'LGA RULE', platform_default: 'PLATFORM DEFAULT', unresolved: 'UNRESOLVED', plan_indicated: 'PLAN INDICATED', derived: 'DERIVED' };
 export const STATUS_LABEL: Record<Status, string> = { existing: 'EXISTING', proposed: 'PROPOSED', to_be_removed: 'TO BE REMOVED' };
 export const ORIGIN_LABEL: Record<Origin, string> = { user: 'USER', ai_proposal: 'AI PROPOSAL', imported: 'IMPORTED', dbyd: 'DBYD' };
 export const DIMENSIONS_NOT_SET = 'DIMENSIONS NOT SET';
@@ -246,7 +288,7 @@ export function dimensionsSet(o: SiteObject): boolean {
     case 'rwt': return rwtShape(o) !== null;
     case 'osd': case 'osd_basin': return textOf(o, 'form') !== null;
     case 'pool': return levelOf(o, 'water_level_rl') !== null;
-    case 'stormwater_pipe': return levelOf(o, 'upstream_invert_rl') !== null && levelOf(o, 'downstream_invert_rl') !== null;
+    case 'stormwater_pipe': case 'sewer_drain': return levelOf(o, 'upstream_invert_rl') !== null && levelOf(o, 'downstream_invert_rl') !== null;
     case 'retaining_wall': return o.geometry.kind === 'polyline' && o.geometry.pts.every((_, i) => wallHeightAt(o, i) !== null);
     default: return true;
   }

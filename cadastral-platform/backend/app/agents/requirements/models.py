@@ -132,6 +132,26 @@ SITE_OBJECT_KEY_HELP: dict[str, str] = {
 }
 EXTRA_KEY_HELP.update(SITE_OBJECT_KEY_HELP)
 
+# Keys used by the stage 8 service tools (existing services, sewer drain, water service, clashes). NONE has a platform default: each is UNRESOLVED until an LGA row,
+# a state row, an authority row or a user entry supplies it. util.clearance_m, util.build_over_allowed, sewer.min_grade_pct and water.min_cover_m already exist (above)
+# and are read with their selectors (service, diameter, authority = the asset owner).
+SERVICE_KEY_HELP: dict[str, str] = {
+    "sewer.min_cover_m.open_ground": "minimum cover (m) to the crown of a property sewer drain under open ground (lawn, garden, unpaved)",
+    "sewer.min_cover_m.footpath": "minimum cover (m) to the crown of a property sewer drain under a footpath or paved area",
+    "sewer.min_cover_m.driveway": "minimum cover (m) to the crown of a property sewer drain under a driveway or trafficable area",
+    "sewer.max_connection_depth_m": "maximum depth (m) of the property sewer drain invert below ground at the connection to the main",
+    "sewer.min_clearance_to_building_m": "minimum horizontal clearance (m) from a property sewer drain to a building",
+    "sewer.inspection_opening_max_spacing_m": "maximum spacing (m) between inspection openings or pits along a property sewer drain",
+    "sewer.inspection_opening_max_deflection_deg": "largest change of direction (degrees) of a property sewer drain before an inspection opening or pit is required",
+    "sewer.zone_of_influence.angle_deg": "angle (degrees from horizontal) of the zone of influence line of a sewer main, rising from the offset at the pipe invert to the surface",
+    "sewer.zone_of_influence.offset_m": "horizontal offset (m) from the centreline of a sewer main to the zone of influence line at the level of the pipe invert",
+    "util.min_vertical_clearance_m": "minimum vertical clearance (m) between a service and another service where they cross",
+    "util.build_over_allowed": "whether building over this service is permitted by the asset owner (read with the service kind and the asset owner)",
+    "rwt.mains_backup_required": "whether a rainwater tank that supplies indoor reuse must have a mains water backup connection",
+    "dbyd.plan_validity_days": "number of days a DBYD response plan stays valid from its plan date, as the asset owner or BYDA states it",
+}
+EXTRA_KEY_HELP.update(SERVICE_KEY_HELP)
+
 
 def key_help(key: str) -> str:
     try:

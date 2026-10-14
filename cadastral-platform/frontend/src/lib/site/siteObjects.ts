@@ -6,7 +6,8 @@
  * shown by the Checks list from the server answer. A computed value is shown only when everything it needs is set (the calculation is shown with it).
  */
 import { polygonArea, polylineLength } from './geom';
-import { dimOf, flagOf, levelOf, rwtShape, textOf, wallHeightAt, type ObjectType, type Pos, type SiteObject } from './types';
+import { serviceLabelLines } from './services';
+import { FOOTING_TYPES, dimOf, flagOf, levelOf, rwtShape, textOf, wallHeightAt, type ObjectType, type Pos, type SiteObject } from './types';
 
 export type FieldKind = 'number' | 'enum' | 'bool' | 'date' | 'text' | 'link';
 export interface FieldSpec {
@@ -16,6 +17,8 @@ export interface FieldSpec {
 }
 const N = (key: string, label: string, unit: string, group?: string, help?: string): FieldSpec => ({ key, label, kind: 'number', unit, group, help });
 const E = (key: string, label: string, group?: string, help?: string): FieldSpec => ({ key, label, kind: 'enum', group, help });
+const T = (key: string, label: string, group?: string, help?: string): FieldSpec => ({ key, label, kind: 'text', group, help });
+const D = (key: string, label: string, group?: string, help?: string): FieldSpec => ({ key, label, kind: 'date', group, help });
 const B = (key: string, label: string, group?: string, help?: string): FieldSpec => ({ key, label, kind: 'bool', group, help });
 
 const SIZING_INPUTS: FieldSpec[] = [
@@ -33,6 +36,10 @@ const SIZING_INPUTS: FieldSpec[] = [
 
 /** The fields the panel always lists for an object, in order (shown NOT SET until a value is entered). Parameters the object already has are listed after these. */
 export function fieldsFor(o: SiteObject): FieldSpec[] {
+  const base = fieldsForType(o);
+  return (FOOTING_TYPES as readonly string[]).includes(o.type) ? [...base, N('footing_depth_m', 'Footing depth (optional)', 'm', 'Foundation', 'Metres below ground. Used only by the sewer zone of influence check. Left empty, that check is NOT EVALUATED.')] : base;
+}
+function fieldsForType(o: SiteObject): FieldSpec[] {
   switch (o.type) {
     case 'rwt': {
       const sh = rwtShape(o);
@@ -83,6 +90,23 @@ export function fieldsFor(o: SiteObject): FieldSpec[] {
       return [N('height_m', 'Height', 'm', 'Tree'), N('canopy_diameter_m', 'Canopy diameter', 'm', 'Tree'), N('trunk_diameter_mm', 'Trunk diameter (DBH)', 'mm', 'Tree', 'Used for the protection zones of an existing tree. The multipliers are requirement keys.')];
     case 'landscape_area':
       return [E('surface_kind', 'Surface', 'Surface')];
+    case 'service_existing':
+      return [E('service_kind', 'Service kind', 'Service'), T('asset_owner', 'Asset owner', 'Service', 'The owner decides which clearance rules apply. Enter it exactly as the plan gives it.'),
+        N('diameter_mm', 'Diameter', 'mm', 'Service'), T('material', 'Material', 'Service'),
+        N('depth_m', 'Depth', 'm', 'Depth', 'Metres below ground. Enter only a depth the plan, a pothole or a survey gives. Left empty it is DATA NOT AVAILABLE and the vertical checks are NOT EVALUATED.'),
+        E('depth_basis', 'Depth basis', 'Depth'), E('depth_reference', 'Depth is to', 'Depth', 'The top of the asset or its invert. The two differ by the diameter.'),
+        N('position_tolerance_m', 'Positional tolerance', 'm', 'Depth', 'The plus or minus the plan or survey states. Left empty, the clearance checks cannot claim a PASS.'),
+        T('dbyd_job_number', 'DBYD job number', 'Plan'), T('plan_reference', 'Plan reference', 'Plan'),
+        D('plan_date', 'Plan date', 'Plan'), D('plan_expiry_date', 'Plan expiry date', 'Plan', 'Enter the date the plan states. It is never worked out here.'), T('source_file', 'Source file', 'Plan'),
+        T('verified_by', 'Verified by', 'Verification', 'Who verified this service (needed to mark it verified).')];
+    case 'sewer_drain':
+      return [N('diameter_mm', 'Diameter', 'mm', 'Drain'), N('upstream_invert_rl', 'Upstream invert', 'm RL', 'Drain'), N('downstream_invert_rl', 'Downstream invert', 'm RL', 'Drain'),
+        { key: 'building_id', label: 'Linked building', kind: 'link', group: 'Drain' }];
+    case 'water_service':
+      return [N('diameter_mm', 'Diameter', 'mm', 'Service'), N('cover_m', 'Cover (entered)', 'm', 'Service', 'An entered cover. The minimum cover is a requirement key, shown in the Checks list.'),
+        { key: 'main_id', label: 'Linked main', kind: 'link', group: 'Service' }, { key: 'rwt_id', label: 'Linked rainwater tank', kind: 'link', group: 'Service' }];
+    case 'service_node':
+      return [E('node_kind', 'Node kind', 'Node'), N('invert_rl', 'Invert level', 'm RL', 'Node'), { key: 'main_id', label: 'Linked main', kind: 'link', group: 'Node' }];
     default:
       return [];
   }
@@ -224,6 +248,8 @@ export function extraLabelLines(o: SiteObject): string[] {
     const im = flagOf(o, 'impervious'); L.push(im === null ? 'IMPERVIOUS OR PERMEABLE NOT SET' : im ? 'IMPERVIOUS' : 'PERMEABLE');
   } else if (t === 'landscape_area') {
     const a = polygonAreaOf(o); if (a !== null) L.push(`AREA ${f(a, 1)} M2`);
+  } else if (t === 'service_existing' || t === 'sewer_drain' || t === 'service_node' || t === 'water_service') {
+    L.push(...serviceLabelLines(o));
   }
   return L;
 }

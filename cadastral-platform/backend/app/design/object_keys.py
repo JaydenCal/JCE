@@ -88,6 +88,21 @@ SPECS: tuple[KeySpec, ...] = (
     KeySpec("tree.srz_coefficient", "ratio", "ratio", "tree"),
     KeySpec("tree.srz_exponent", "ratio", "ratio", "tree"),
     _n("tree.srz_min_radius_m", "m", "tree"),
+    # stage 8: sewer drain, zone of influence, vertical crossings, water backup and the DBYD plan validity. The existing keys util.clearance_m, util.build_over_allowed,
+    # sewer.min_grade_pct and water.min_cover_m (registered with the SA4 requirement set) are read with their selectors (service, diameter, owner) and are not repeated here.
+    _n("sewer.min_cover_m.open_ground", "m", "sewer"),
+    _n("sewer.min_cover_m.footpath", "m", "sewer"),
+    _n("sewer.min_cover_m.driveway", "m", "sewer"),
+    _n("sewer.max_connection_depth_m", "m", "sewer"),
+    _n("sewer.min_clearance_to_building_m", "m", "sewer"),
+    _n("sewer.inspection_opening_max_spacing_m", "m", "sewer"),
+    _n("sewer.inspection_opening_max_deflection_deg", "deg", "sewer"),
+    _n("sewer.zone_of_influence.angle_deg", "deg", "sewer"),
+    _n("sewer.zone_of_influence.offset_m", "m", "sewer"),
+    _n("util.min_vertical_clearance_m", "m", "util"),
+    KeySpec("rwt.mains_backup_required", "", "bool", "rwt"),
+    KeySpec("util.build_over_allowed", "", "bool", "util"),
+    _n("dbyd.plan_validity_days", "days", "dbyd"),
     # landscape runoff behaviour, one key per surface kind (the runoff coefficient of the surface)
     *(KeySpec(f"landscape.runoff_coefficient.{k}", "ratio", "ratio", "landscape")
       for k in ("turf", "garden_bed", "mulch", "gravel", "permeable_paving", "impervious_paving")),

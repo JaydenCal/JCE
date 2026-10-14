@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any
 
 import numpy as np
@@ -22,6 +23,7 @@ from shapely.geometry.base import BaseGeometry
 from . import engine_limits as EL
 from . import object_geometry as G
 from . import object_keys as OK
+from . import service_checks as SC
 from .driveway_engine import chainage_on_kerb, kerb_geometry
 from .param_basis import Reader
 from .site_design import SiteDesign, SiteObject
@@ -43,7 +45,7 @@ G_MS2 = 9.81                      # gravitational acceleration, a physical const
 MAX_ENCROACHMENTS = 200           # most tree zone encroachment entries one run returns
 MAX_CHECK_OBJECTS = EL.MAX_CHECK_OBJECTS    # a design larger than this is refused (422) rather than checked (the caps are in ``engine_limits``)
 
-_RANK = {UNRESOLVED: 3, DEFAULT: 2, "USER": 1, "LGA RULE": 0, "STATE RULE": 0}
+_RANK = {UNRESOLVED: 3, DEFAULT: 2, "PLAN INDICATED": 2, "DERIVED": 1, "USER": 1, "LGA RULE": 0, "STATE RULE": 0}
 
 
 class CheckLimitError(EL.EngineLimitError):
@@ -88,12 +90,15 @@ class Site:
 
 
 class Checker:
-    def __init__(self, design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | None) -> None:
+    def __init__(self, design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | None, today: date | None = None) -> None:
         try:
             EL.check_site_design(design)
         except EL.EngineLimitError as e:
             raise CheckLimitError(e.message) from None
         self.design, self.rules = design, rules
+        #: the date existing service plans are compared with (injected in tests; otherwise today in Australia/Sydney, see service_model.today_local)
+        self.today = today or SC.SM.today_local()
+        self._buried: list[SC.Buried] = []
         lot = terrain.lot if terrain is not None else None
         self.site = Site(terrain, lot, kerb_geometry(terrain) if terrain is not None else None, list(design.objects), {o.id: o for o in design.objects})
         self.checks: list[dict[str, Any]] = []
@@ -150,7 +155,10 @@ class Checker:
         self.site.objs = live
         handlers = {"rwt": self.rwt, "retaining_wall": self.wall, "infiltration_trench": self.trench, "osd": self.osd, "osd_basin": self.osd, "stormwater_pit": self.pit,
                     "stormwater_pipe": self.pipe, "pool": self.pool, "pool_barrier": self.barrier, "footpath": self.footpath, "tree": self.tree,
-                    "landscape_area": self.landscape, "overflow_route": self.overflow}
+                    "landscape_area": self.landscape, "overflow_route": self.overflow,
+                    "service_existing": lambda o: SC.svc_existing(self, o), "sewer_drain": lambda o: SC.sewer_drain(self, o),
+                    "service_node": lambda o: SC.service_node(self, o), "water_service": lambda o: SC.water_service(self, o)}
+        self._buried = SC.buried_assets(self)
         for o in live:
             h = handlers.get(o.type)
             if h:
@@ -158,6 +166,7 @@ class Checker:
         if live:
             self.design_level(live)
         self.tree_encroachment(live)
+        SC.design_level(self)
         counts: dict[str, int] = {"blocking": 0, "warning": 0, "info": 0}
         by_status: dict[str, int] = {}
         for c in self.checks:
@@ -213,7 +222,7 @@ class Checker:
             self.add(o, code, title, PASS if ok else FAIL, f"{_fmt(d)} M FROM {target_word}; THE RULE REQUIRES AT LEAST {_fmt(r.value)} M", rules=[r], value=round(d, 3), limit=r.value, unit="m")
 
     def services(self) -> list[BaseGeometry]:
-        return [g for g in (G.footprint(s, self.rd) for s in self.site.of("service_trace") if s.status != "to_be_removed") if g is not None]
+        return [g for g in (G.footprint(s, self.rd) for s in self.site.of("service_trace", "service_existing") if s.status != "to_be_removed") if g is not None]
 
     def buildings(self) -> list[SiteObject]:
         return [b for b in self.site.of("building") if b.status != "to_be_removed"]
@@ -736,7 +745,7 @@ class Checker:
         trees = [o for o in live if o.type == "tree" and o.status == "existing"]
         if not trees:
             return
-        others = [o for o in live if o.type not in ("tree", "landscape_area", "service_trace", "overflow_route") and o.status != "to_be_removed"]
+        others = [o for o in live if o.type not in ("tree", "landscape_area", "service_trace", "overflow_route", "service_existing", "sewer_drain", "service_node", "water_service") and o.status != "to_be_removed"]
         n = 0
         for tr in trees:
             tpz, srz, _ = self.tree_zones(tr)
@@ -827,6 +836,7 @@ def _coords(g: BaseGeometry) -> list[tuple[float, float]]:
     return [(x, y) for part in g.geoms for x, y in _coords(part)]
 
 
-def check_design(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | None) -> dict[str, Any]:
-    """All rule based checks of a design. ``terrain`` None means the project has no usable terrain (checks that need it are NOT EVALUATED)."""
-    return Checker(design, rules, terrain).run()
+def check_design(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | None, today: date | None = None) -> dict[str, Any]:
+    """All rule based checks of a design. ``terrain`` None means the project has no usable terrain (checks that need it are NOT EVALUATED). ``today`` is the date the
+    plans of existing services are compared with (the server date when omitted)."""
+    return Checker(design, rules, terrain, today).run()

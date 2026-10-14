@@ -40,6 +40,12 @@ MAX_CHECK_PIPE_STATIONS = 1000
 MAX_CHECK_TREE_PAIRS = 250_000
 #: pipe cover is sampled every this many metres along a pipe (a resolution, not a requirement); ``object_checks.COVER_STEP_M`` is this value
 PIPE_STATION_STEP_M = 1.0
+# ---- stage 8: services in the design check and the sewer and water route proposals (sanity limits, not engineering values)
+MAX_CHECK_SERVICE_VERTICES_TOTAL = 20_000        # vertices of all existing service, sewer drain and water service lines together
+MAX_CHECK_SERVICE_PAIRS = 250_000                # service lines times the objects and services they are compared with (clash and zone checks)
+ROUTE_TOO_LARGE = "ROUTE_INPUT_TOO_LARGE"
+MAX_ROUTE_OBJECTS = 400                          # objects a route proposal goes around
+MAX_ROUTE_LENGTH_M = 300.0                       # straight line distance from the start to the end of a proposed route
 
 
 class EngineLimitError(Exception):
@@ -111,7 +117,7 @@ def check_site_design(design: Any) -> None:
         raise EngineLimitError(CHECK_TOO_LARGE, f"THE DESIGN HAS {len(design.objects)} OBJECTS; AT MOST {MAX_CHECK_OBJECTS} CAN BE CHECKED AT ONCE")
     total_m, total_v = 0.0, 0
     for o in objs:
-        if o.type != "stormwater_pipe" or o.geometry.kind != "polyline":
+        if o.type not in ("stormwater_pipe", "sewer_drain") or o.geometry.kind != "polyline":
             continue
         pts = o.geometry.pts
         if len(pts) > MAX_CHECK_PIPE_VERTICES:
@@ -128,6 +134,16 @@ def check_site_design(design: Any) -> None:
             raise EngineLimitError(CHECK_TOO_LARGE, f"THE PIPES TOGETHER ARE MORE THAN {MAX_CHECK_PIPE_TOTAL_M:,.0f} M LONG; AT MOST {MAX_CHECK_PIPE_TOTAL_M:,.0f} M IN TOTAL IS ACCEPTED")
         if total_v > MAX_CHECK_PIPE_VERTICES_TOTAL:
             raise EngineLimitError(CHECK_TOO_LARGE, f"THE PIPES TOGETHER HAVE MORE THAN {MAX_CHECK_PIPE_VERTICES_TOTAL} VERTICES; AT MOST {MAX_CHECK_PIPE_VERTICES_TOTAL} IN TOTAL ARE ACCEPTED")
+    lines = [o for o in objs if o.type in ("service_existing", "sewer_drain", "water_service", "stormwater_pipe") and o.geometry.kind == "polyline"]
+    sv = sum(len(o.geometry.pts) for o in lines)
+    if sv > MAX_CHECK_SERVICE_VERTICES_TOTAL:
+        raise EngineLimitError(CHECK_TOO_LARGE, f"THE SERVICE LINES TOGETHER HAVE {sv:,} VERTICES; AT MOST {MAX_CHECK_SERVICE_VERTICES_TOTAL:,} IN TOTAL ARE ACCEPTED")
+    for o in lines:
+        if o.type in ("service_existing", "water_service") and polyline_length(o.geometry.pts) > 10 * MAX_CHECK_PIPE_TOTAL_M:
+            raise EngineLimitError(CHECK_TOO_LARGE, f"{o.id.upper()} IS MORE THAN {10 * MAX_CHECK_PIPE_TOTAL_M:,.0f} M LONG")
+    spairs = len(lines) * len(objs)
+    if spairs > MAX_CHECK_SERVICE_PAIRS:
+        raise EngineLimitError(CHECK_TOO_LARGE, f"THE SERVICE CLASH CHECK NEEDS {spairs:,} SERVICE AND OBJECT PAIRS; AT MOST {MAX_CHECK_SERVICE_PAIRS:,} ARE ACCEPTED")
     trees = sum(1 for o in objs if o.type == "tree" and o.status == "existing")
     pairs = trees * len(objs)
     if pairs > MAX_CHECK_TREE_PAIRS:

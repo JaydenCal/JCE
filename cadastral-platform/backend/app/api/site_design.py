@@ -56,17 +56,20 @@ from psycopg import Connection
 from pydantic import ValidationError
 
 from app.api.deps import ApiError, get_conn, require_project, require_terms
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Literal
 
 from app.design import building_import as bi
+from app.common.filestore import atomic_write_text, file_lock
 from app.design import import_store as istore
+from app.design import service_model as SM
 from app.design import engine_limits as EL
 from app.design.driveway_engine import driveway_profile
 from app.design.driveway_link import link_id
 from app.design.grading_engine import grading
 from app.design.object_checks import check_design
 from app.design.rwt_size import size_tank
+from app.design.service_route import RouteError, propose_sewer, propose_water
 from app.design.site_design import SiteDesign, SiteObject, empty_design
 from app.design.site_rules import SiteRules, project_rules
 from app.design.terrain_source import TerrainUnavailable, load_terrain
@@ -137,18 +140,19 @@ def put_site_design(project_id: UUID, request: Request, _user: UUID = Depends(si
         istore.check_design(body, folder)
     except istore.ImportMismatch as e:
         raise ApiError(422, e.code, e.message) from None
-    with _LOCK:
+    with _LOCK, file_lock(path):          # one writer at a time in this process AND across worker processes (the read, the compare and the write are one step)
         current = _read(path, project_id)
         if body.version != current.version:
             return JSONResponse(status_code=409, headers={"Cache-Control": "no-store"}, content={
                 "code": "VERSION_CONFLICT", "current_version": current.version,
                 "message": "The site design was saved from somewhere else since it was loaded. Reload it before saving again."})
+        try:
+            body, _cleared = SM.enforce_verification(body, current)       # a verified service whose position or facts changed is no longer verified; verified_by is locked
+        except SM.VerifiedByLocked as e:
+            raise ApiError(422, "VERIFIED_BY_LOCKED", f"verified_by of {e.object_id} cannot be edited while the service is verified; remove the verification first") from None
         saved = body.model_copy(update={"version": current.version + 1, "project_id": str(project_id),
                                         "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds")})
-        folder.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_suffix(".json.tmp")
-        tmp.write_text(json.dumps(saved.dump(), separators=(",", ":")), encoding="utf-8")
-        os.replace(tmp, path)
+        atomic_write_text(path, json.dumps(saved.dump(), separators=(",", ":")))
         istore.prune(folder, istore.used_import_ids(saved))
     return _json(saved)
 
@@ -161,12 +165,17 @@ class CappedUploadRoute(APIRoute):
     """Refuses an upload over the cap WHILE IT STREAMS: the declared length is checked first, and a chunked body (no length) is cut off with 413
     as soon as the bytes received pass the cap, before the multipart parser has spooled the rest to disk."""
 
+    #: the file cap in bytes and what the message calls it; a subclass sets its own (the DBYD plan upload uses 25 MB)
+    max_file_bytes: int = MAX_IMPORT_BYTES
+    what: str = "the import"
+
     def get_route_handler(self):
         original = super().get_route_handler()
+        max_file, what = self.max_file_bytes, self.what
 
         async def handler(request: Request) -> Response:
-            cap = MAX_IMPORT_BYTES + 64 * 1024                      # the file cap plus the multipart framing and the small form fields
-            too_big = JSONResponse(status_code=413, content={"code": "FILE_TOO_LARGE", "message": f"the import is larger than the {MAX_IMPORT_BYTES // (1024 * 1024)} MB limit"},
+            cap = max_file + 64 * 1024                              # the file cap plus the multipart framing and the small form fields
+            too_big = JSONResponse(status_code=413, content={"code": "FILE_TOO_LARGE", "message": f"{what} is larger than the {max_file // (1024 * 1024)} MB limit"},
                                    headers={"Cache-Control": "no-store"})
             declared = request.headers.get("content-length")
             if declared is not None and declared.isdigit() and int(declared) > cap:
@@ -432,3 +441,72 @@ async def post_rwt_size(project_id: UUID, body: RwtSizeRequest, _user: UUID = De
         raise ApiError(422, "ENGINE_INPUT_TOO_LARGE", "AT MOST 20 CANDIDATE SIZES ARE ACCEPTED")
     return _engine_json(await _run_engine(project_id, lambda: size_tank(body.rwt, body.building, rules, body.rainfall_monthly_mm, body.rainfall_station,
                                                                         body.candidate_sizes_l, body.garden_monthly_factor)))
+
+
+# ---- stage 8: sewer and water route proposals --------------------------------------------------------------------------------------------
+class SewerProposeRequest(_Body):
+    design: SiteDesign
+    building_id: str = Field(min_length=1, max_length=64)
+    exit_index: int = Field(default=0, ge=0, le=63)
+    start_invert_rl: float = Field(allow_inf_nan=False, ge=-1000, le=10000)
+    diameter_mm: float = Field(gt=0, le=2000, allow_inf_nan=False)
+    grade_pct: float | None = Field(default=None, ge=0, le=100, allow_inf_nan=False)
+    connection: "ConnectionIn"
+
+
+class ConnectionIn(_Body):
+    main_id: str | None = Field(default=None, max_length=64)
+    p: list[float] | None = Field(default=None, min_length=2, max_length=2)
+    invert_rl: float | None = Field(default=None, ge=-1000, le=10000, allow_inf_nan=False)
+
+
+class WaterProposeRequest(_Body):
+    design: SiteDesign
+    building_id: str = Field(min_length=1, max_length=64)
+    exit_index: int = Field(default=0, ge=0, le=63)
+    meter_p: list[float] = Field(min_length=2, max_length=2)
+    diameter_mm: float = Field(gt=0, le=1000, allow_inf_nan=False)
+    cover_m: float = Field(gt=0, le=20, allow_inf_nan=False)
+    rwt_id: str | None = Field(default=None, max_length=64)
+    connection: ConnectionIn
+
+
+SewerProposeRequest.model_rebuild()
+
+
+def _route_422(fn):
+    def run():
+        try:
+            return fn()
+        except RouteError as e:
+            raise ApiError(422, e.code, e.message) from None
+    return run
+
+
+@router.post("/projects/{project_id}/site-design/sewer-route")
+async def post_sewer_route(project_id: UUID, body: SewerProposeRequest, request: Request, _user: UUID = Depends(site_design_access),
+                           rules: SiteRules = Depends(site_rules_dep)) -> JSONResponse:
+    """Propose a sewer drain from a building sewer exit to a connection (an existing sewer in the design, or a user entered point labelled NOT VERIFIED). Returns the
+    objects to apply, the cover profile and every check. Nothing is saved: the page applies the objects through its operations (one undo step)."""
+    _limit_422(EL.check_site_design, body.design)
+    base = site_design_base(request)
+    conn = body.connection.model_dump(exclude_none=True)
+
+    def work():
+        return propose_sewer(body.design, rules, _terrain_or_none(base, project_id), building_id=body.building_id, exit_index=body.exit_index, start_invert_rl=body.start_invert_rl,
+                             diameter_mm=body.diameter_mm, connection=conn, grade_pct=body.grade_pct)
+    return _engine_json(await _run_engine(project_id, _route_422(work)))
+
+
+@router.post("/projects/{project_id}/site-design/water-route")
+async def post_water_route(project_id: UUID, body: WaterProposeRequest, request: Request, _user: UUID = Depends(site_design_access),
+                           rules: SiteRules = Depends(site_rules_dep)) -> JSONResponse:
+    """Propose a water service from a main connection through the meter position to the building water exit, with size and cover as given and every check."""
+    _limit_422(EL.check_site_design, body.design)
+    base = site_design_base(request)
+    conn = body.connection.model_dump(exclude_none=True)
+
+    def work():
+        return propose_water(body.design, rules, _terrain_or_none(base, project_id), building_id=body.building_id, exit_index=body.exit_index, meter_p=body.meter_p,
+                             diameter_mm=body.diameter_mm, cover_m=body.cover_m, connection=conn, rwt_id=body.rwt_id)
+    return _engine_json(await _run_engine(project_id, _route_422(work)))

@@ -20,6 +20,8 @@ from . import object_keys as OK
 
 #: how a rule was resolved, as shown on a check and on the object
 LGA, STATE, DEFAULT, USER, UNRESOLVED = "LGA RULE", "STATE RULE", "PLATFORM DEFAULT", "USER", "UNRESOLVED"
+#: bases of a parameter read from a DBYD plan (parsed, not measured) and of a value the server computed from a requirement
+PLAN_INDICATED, DERIVED = "PLAN INDICATED", "DERIVED"
 
 KEY_MAX_GRADE = "driveway.max_grade_pct"
 KEY_MAX_CHANGE = "driveway.max_grade_change_pct"
@@ -35,7 +37,7 @@ KEY_BATTER_ANY = "earthworks.batter.max_slope"
 KEYS = (KEY_MAX_GRADE, KEY_MAX_CHANGE, KEY_MIN_WIDTH, KEY_MAX_WIDTH, KEY_MIN_SEPARATION, KEY_SPLAY, KEY_BATTER_CUT, KEY_BATTER_FILL, KEY_BATTER_ANY)
 
 #: canonical units that are not in the conversion table (``app.jurisdiction.units``): a requirement row must carry exactly this unit
-OK_STRICT_UNITS = frozenset({"deg", "kN/m3", "L/person/day", "L/m2/day"})
+OK_STRICT_UNITS = frozenset({"deg", "kN/m3", "L/person/day", "L/m2/day", "days"})
 
 #: units a batter requirement may be stated in, and how each converts to H per V (horizontal metres per vertical metre)
 _HV_UNITS = {None, "", "h:v", "h_per_v", "h per v", "hv", "ratio", "1 in n", "1_in_n", "1:n"}
@@ -96,20 +98,27 @@ class SiteRules:
 
     def get(self, key: str) -> Rule:
         """The rule for a key, as a number in the canonical unit of the key (bool and list keys are read with ``get_flag`` and ``get_list``)."""
-        if key in self._cache:
-            return self._cache[key]
+        return self.get_for(key)
+
+    def get_for(self, key: str, **sel: Any) -> Rule:
+        """The rule for a key resolved with extra selectors (``service``, ``dia_mm`` and ``authority`` = the asset owner), on top of the project's LGA and
+        jurisdiction. A selector given as None is left out. The answer is cached per key and selectors."""
+        sel = {k: v for k, v in sel.items() if v is not None}
+        ck = key if not sel else key + "|" + "|".join(f"{k}={sel[k]}" for k in sorted(sel))
+        if ck in self._cache:
+            return self._cache[ck]
         spec = OK.spec_for(key)          # a zone qualified key (rwt.max_height_m.rural) takes the unit and kind of its family, never a guess from the key ending
         unit = spec.unit if spec else "%" if key.endswith("_pct") else "m" if key.endswith("_m") else "H per V" if key.startswith("earthworks.batter") else ""
         if self.requirements is None:
             r = _unresolved(key, unit, self.note or "NO LOT OR LGA IS KNOWN FOR THIS PROJECT, SO NO REQUIREMENT CAN BE RESOLVED")
         else:
             try:
-                req = self.requirements.get_requirement(key, **self.selectors)
+                req = self.requirements.get_requirement(key, **{**self.selectors, **sel})
             except UnresolvedRequirement as e:
                 r = _unresolved(key, unit, e.prompt or "NO REQUIREMENT FOUND")
             else:
                 r = self._from_spec(key, req, spec) if spec is not None and spec.kind != "number" else self._from_requirement(key, req, unit)
-        self._cache[key] = r
+        self._cache[ck] = r
         return r
 
     def get_flag(self, key: str) -> Rule:

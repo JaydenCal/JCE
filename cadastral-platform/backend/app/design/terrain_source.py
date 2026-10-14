@@ -153,6 +153,7 @@ class SiteTerrain:
     lot: Polygon | None                             # lot boundary in MGA (from the bundle boundary lines)
     source: str = "scene bundle existing ground"
     notes: list[str] = field(default_factory=list)
+    srid: int | None = None                         # EPSG code of the MGA coordinates (info.srid of the bundle), None when the bundle does not state it
 
 
 def _soup(part: dict, origin: tuple[float, float]) -> np.ndarray:
@@ -205,7 +206,9 @@ def terrain_from_bundle(bundle: dict[str, Any]) -> SiteTerrain:
     V, F = _indexed(soups)
     tp = info.get("terrain") or {}
     status = str(tp.get("status") or "").strip().upper() or "TERRAIN SOURCE NOT STATED"
-    return SiteTerrain(TriSurface(V, F), origin, status, dict(tp), _kerb_line(parts, origin), _lot_polygon(parts, origin))
+    srid = info.get("srid")
+    return SiteTerrain(TriSurface(V, F), origin, status, dict(tp), _kerb_line(parts, origin), _lot_polygon(parts, origin),
+                       srid=int(srid) if isinstance(srid, int) and not isinstance(srid, bool) else None)
 
 
 _CACHE: "OrderedDict[tuple, SiteTerrain]" = OrderedDict()

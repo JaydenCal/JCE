@@ -71,8 +71,8 @@ describe('types of the stage 7 parameters', () => {
     const d = parseDesign({ schema: 'site_design.v1', version: 1, objects: [{ id: 'a', type: 'pit', geometry: { kind: 'point', p: [1, 2] } }] });
     expect(d.objects[0].type).toBe('stormwater_pit');
   });
-  it('there are eighteen types and every typed field has a label and a kind', () => {
-    expect(Object.keys(OBJECT_KINDS)).toHaveLength(18);
+  it('there are twenty two types and every typed field has a label and a kind', () => {
+    expect(Object.keys(OBJECT_KINDS)).toHaveLength(22);
     const r = rig();
     for (const t of Object.keys(OBJECT_KINDS)) {
       if (t === 'building') continue;

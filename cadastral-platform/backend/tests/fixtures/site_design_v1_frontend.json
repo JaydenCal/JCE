@@ -34,6 +34,10 @@
         "trunk_diameter_mm": {
           "value": 450,
           "basis": "user"
+        },
+        "footing_depth_m": {
+          "value": 0.8,
+          "basis": "user"
         }
       },
       "issues": []
@@ -928,6 +932,317 @@
       "params": {
         "osd_id": {
           "value": "osd_4",
+          "basis": "user"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "service_existing_22",
+      "type": "service_existing",
+      "status": "existing",
+      "origin": "user",
+      "verified": true,
+      "label": "Sewer main",
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496002,
+            6650015
+          ],
+          [
+            496028,
+            6650015
+          ]
+        ]
+      },
+      "params": {
+        "service_kind": {
+          "value": "sewer",
+          "basis": "user"
+        },
+        "asset_owner": {
+          "value": "Water Corp",
+          "basis": "user"
+        },
+        "dbyd_job_number": {
+          "value": "DBYD-TEST-1",
+          "basis": "user"
+        },
+        "plan_reference": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "plan_date": {
+          "value": "2026-01-05",
+          "basis": "user"
+        },
+        "plan_expiry_date": {
+          "value": "2026-03-05",
+          "basis": "user"
+        },
+        "source_file": {
+          "value": "plan.pdf",
+          "basis": "user"
+        },
+        "diameter_mm": {
+          "value": 225,
+          "basis": "user"
+        },
+        "material": {
+          "value": "VC",
+          "basis": "user"
+        },
+        "depth_m": {
+          "value": 2.4,
+          "basis": "user"
+        },
+        "depth_basis": {
+          "value": "potholed",
+          "basis": "user"
+        },
+        "depth_reference": {
+          "value": "invert",
+          "basis": "user"
+        },
+        "position_tolerance_m": {
+          "value": 0.3,
+          "basis": "user"
+        },
+        "verified_by": {
+          "value": "J Surveyor",
+          "basis": "user"
+        }
+      },
+      "issues": [],
+      "verified_on": "2026-02-01"
+    },
+    {
+      "id": "dbyd_a1",
+      "type": "service_existing",
+      "status": "existing",
+      "origin": "dbyd",
+      "verified": false,
+      "label": "GAS (DBYD DRAFT)",
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496002,
+            6650005
+          ],
+          [
+            496028,
+            6650005
+          ]
+        ]
+      },
+      "params": {
+        "service_kind": {
+          "value": "gas",
+          "basis": "plan_indicated",
+          "ref": "DBYD PLAN PARSE, UNVERIFIED DRAFT"
+        },
+        "asset_owner": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "dbyd_job_number": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "plan_reference": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "plan_date": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "plan_expiry_date": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "source_file": {
+          "value": "plan.pdf",
+          "basis": "plan_indicated"
+        },
+        "diameter_mm": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "material": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "depth_m": {
+          "value": 0.6,
+          "basis": "plan_indicated"
+        },
+        "depth_basis": {
+          "value": "plan_indicated",
+          "basis": "plan_indicated"
+        },
+        "depth_reference": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "position_tolerance_m": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "verified_by": {
+          "value": null,
+          "basis": "unresolved"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "dbyd_a2",
+      "type": "service_existing",
+      "status": "existing",
+      "origin": "dbyd",
+      "verified": false,
+      "geometry": {
+        "kind": "point",
+        "p": [
+          496010,
+          6650020
+        ]
+      },
+      "params": {
+        "service_kind": {
+          "value": "water",
+          "basis": "plan_indicated"
+        },
+        "asset_owner": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "depth_m": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "depth_basis": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "depth_reference": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "position_tolerance_m": {
+          "value": null,
+          "basis": "unresolved"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "drain_a",
+      "type": "sewer_drain",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496012,
+            6650012
+          ],
+          [
+            496016,
+            6650015
+          ]
+        ]
+      },
+      "params": {
+        "diameter_mm": {
+          "value": 100,
+          "basis": "user"
+        },
+        "upstream_invert_rl": {
+          "value": 98.6,
+          "basis": "user"
+        },
+        "downstream_invert_rl": {
+          "value": 98.5,
+          "basis": "derived",
+          "ref": "sewer.min_grade_pct"
+        },
+        "building_id": {
+          "value": "building_13",
+          "basis": "user"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "node_a",
+      "type": "service_node",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "point",
+        "p": [
+          496016,
+          6650015
+        ]
+      },
+      "params": {
+        "node_kind": {
+          "value": "sewer_connection",
+          "basis": "user"
+        },
+        "invert_rl": {
+          "value": 98.5,
+          "basis": "user"
+        },
+        "main_id": {
+          "value": "service_existing_22",
+          "basis": "user"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "water_a",
+      "type": "water_service",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496010,
+            6650020
+          ],
+          [
+            496012,
+            6650014
+          ]
+        ]
+      },
+      "params": {
+        "diameter_mm": {
+          "value": 20,
+          "basis": "user"
+        },
+        "cover_m": {
+          "value": 0.5,
+          "basis": "user"
+        },
+        "main_id": {
+          "value": "dbyd_a1",
+          "basis": "user"
+        },
+        "rwt_id": {
+          "value": "rwt_2",
           "basis": "user"
         }
       },
