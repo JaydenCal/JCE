@@ -166,3 +166,4 @@ h1 em,h2 em{font-style:italic;font-weight:700;color:var(--accent);font-family:Ge
 .card{transition:transform .2s,border-color .2s,box-shadow .2s}.card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 16px 36px -20px rgba(28,48,37,.4)}
 .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}.js .reveal.in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none}}
+html,body{overflow-x:clip}
