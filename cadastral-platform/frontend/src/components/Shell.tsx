@@ -19,7 +19,7 @@ function ThemeToggle() {
   useEffect(() => { try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; setD(document.documentElement.dataset.theme === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)); } catch { /* */ } }, []);
   return <button aria-label="Toggle theme" className="rounded-md border border-line px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-wider text-muted hover:border-ink hover:text-ink" onClick={() => { const n = d ? "light" : "dark"; document.documentElement.dataset.theme = n; try { localStorage.setItem("theme", n); } catch { /* */ } setD(!d); }}>{d ? "Paper" : "Night"}</button>;
 }
-const links: [string, string][] = [["The package", "/#how"], ["Civil plans", "/#plans"], ["Councils", "/#councils"], ["Honest by design", "/#honest"], ["Pricing", "/#pricing"], ["FAQ", "/#faq"]];
+const links: [string, string][] = [["How it works", "/how-it-works"], ["Example output", "/example-output"], ["What it does not know", "/limits"], ["Pricing", "/pricing"], ["FAQ", "/faq"]];
 export function Header() {
   const [open, setOpen] = useState(false);
   return (
@@ -31,12 +31,12 @@ export function Header() {
         </nav>
         <div className="hidden items-center gap-4 md:flex">
           <ThemeToggle /><EngineerEnquiryButton className={ENGINEER_BTN + " !py-[7px]"}>Talk to an engineer</EngineerEnquiryButton><Link href="/projects" className="text-sm font-medium hover:text-gold">Log in</Link>
-          <Link href="/projects" className="btn-primary !py-2">Start free trial</Link>
+          <Link href="/projects/new" className="btn-primary !py-2">Start free trial</Link>
         </div>
         <button className="btn-ghost !px-3 !py-1.5 md:hidden" aria-expanded={open} aria-label="Menu" onClick={() => setOpen(!open)}>{open ? "Close" : "Menu"}</button>
       </div>
       {open && <div className="flex flex-col gap-3 border-t border-line px-4 py-4 md:hidden">{[...links, ["Projects", "/projects"] as [string, string], ["Terms", "/legal/terms"] as [string, string]].map(([t, h]) => <Link key={h} href={h} onClick={() => setOpen(false)} className="py-1">{t}</Link>)}
-        <div className="flex flex-wrap items-center gap-3 pt-2"><ThemeToggle /><EngineerEnquiryButton className={ENGINEER_BTN}>Talk to an engineer</EngineerEnquiryButton><Link href="/projects" className="btn-primary">Start free trial</Link></div></div>}
+        <div className="flex flex-wrap items-center gap-3 pt-2"><ThemeToggle /><EngineerEnquiryButton className={ENGINEER_BTN}>Talk to an engineer</EngineerEnquiryButton><Link href="/projects/new" className="btn-primary">Start free trial</Link></div></div>}
     </header>
   );
 }
@@ -44,17 +44,19 @@ export const Footer = () => (
   <footer className="mt-24 border-t border-ink/15">
     <div className="mx-auto max-w-7xl px-4 sm:px-8"><div className="ticks" aria-hidden /></div>
     <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 text-sm text-muted sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
-      <div><Logo /><p className="mt-4 max-w-sm leading-relaxed">Civil plans + DA/CDC applications, one package, for NSW and QLD builders, designers and civil consultants.</p></div>
+      <div><Logo /><p className="mt-4 max-w-sm leading-relaxed">Civil plans and DA/CDC application material from the lot, for builders, designers and owners. NSW first, with every value cited or marked unresolved.</p></div>
       <nav aria-label="Product" className="flex flex-col gap-2"><span className="h-eyebrow">Product</span>{links.map(([t, h]) => <Link key={h} href={h} className="hover:text-ink">{t}</Link>)}</nav>
-      <nav aria-label="Legal" className="flex flex-col gap-2"><span className="h-eyebrow">Legal</span><Link href="/legal/terms" className="hover:text-ink">Terms of Use</Link><EngineerEnquiryButton className="text-left hover:text-ink">Talk to an engineer</EngineerEnquiryButton><Link href="/projects" className="hover:text-ink">Projects</Link></nav>
+      <nav aria-label="Legal" className="flex flex-col gap-2"><span className="h-eyebrow">Legal</span><Link href="/legal/terms" className="hover:text-ink">Terms of Use</Link><Link href="/privacy" className="hover:text-ink">Privacy</Link><Link href="/custom-municipality" className="hover:text-ink">Custom municipality</Link><EngineerEnquiryButton className="text-left hover:text-ink">Talk to an engineer</EngineerEnquiryButton><Link href="/projects" className="hover:text-ink">Projects</Link></nav>
     </div>
-    <div className="border-t border-line"><p className="mx-auto max-w-7xl px-4 py-5 font-mono text-[11px] leading-relaxed text-muted sm:px-8">Outputs are indicative only and are not survey, engineering or planning advice. Verify BYDA plans and locate services before excavation. Approval pathways must be verified with the council or a certifier. Features marked In development are not yet available. JCE Site Planner, with JCE Infrastructure.</p></div>
+    <div className="border-t border-line"><p className="mx-auto max-w-7xl px-4 py-5 font-mono text-[11px] leading-relaxed text-muted sm:px-8">Outputs are indicative drafts only and are not survey, engineering or planning advice. A registered surveyor, engineer and planner must check them on a real job. Verify BYDA plans and locate services before excavation. Approval pathways must be verified with the council or a certifier. Features marked In development are not yet available. JCE Site Planner, with JCE Infrastructure.</p></div>
   </footer>
 );
+/** Application routes sit in a centred column. Public pages lay out their own full-width sections. */
+const APP_ROUTE = /^\/(projects|legal|engineer)(\/|$)/;
 /** Viewer routes are full-bleed (the 3D viewer has its own top bar); the home page lays out its own sections. */
 export function AppChrome({ children }: { children: React.ReactNode }) {
   const p = usePathname() || "/";
   if (p === "/viewer-demo" || /^\/projects\/[^/]+\/viewer/.test(p)) return <>{children}</>;
   return (<><a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-surface focus:p-3">Skip to content</a><Header />
-    {p === "/" ? <main id="main">{children}</main> : <main id="main" className="mx-auto max-w-6xl px-4 sm:px-6">{children}</main>}<Footer /></>);
+    {APP_ROUTE.test(p) ? <main id="main" className="mx-auto max-w-6xl px-4 sm:px-6">{children}</main> : <main id="main">{children}</main>}<Footer /></>);
 }

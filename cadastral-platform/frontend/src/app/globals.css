@@ -27,6 +27,11 @@ body{@apply bg-bg font-sans text-ink antialiased;background-color:rgb(var(--bg))
  .ticks{height:9px;background:repeating-linear-gradient(90deg,rgb(var(--ink)/.45) 0 1px,transparent 1px 12px) bottom/100% 5px no-repeat,repeating-linear-gradient(90deg,rgb(var(--ink)/.7) 0 1px,transparent 1px 60px) bottom/100% 9px no-repeat;border-bottom:1px solid rgb(var(--ink)/.5)}
  .titleblock{@apply grid border border-ink/40 bg-surface;} .titleblock>div{@apply border-ink/25 p-4}
  .pill{@apply inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-[10.5px] font-medium uppercase tracking-wider}
+ /* Designed states. UNRESOLVED = amber outline; NOT CHECKED = hatched neutral (never green); both are carried by words and a glyph as well as colour. */
+ .hatch{background-image:repeating-linear-gradient(135deg,rgb(var(--ink)/.09) 0 2px,transparent 2px 7px)}
+ .st{@apply inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm border px-2 py-0.5 font-mono text-[10.5px] font-medium uppercase tracking-wider}
+ .st-ok{@apply st border-ok/60 text-ok} .st-bad{@apply st border-danger/60 bg-danger/5 text-danger} .st-warn{@apply st border-warn/70 bg-warn/5 text-warn}
+ .st-muted{@apply st border-line text-muted} .st-nc{@apply st hatch border-ink/30 text-muted} .st-info{@apply st border-brand text-gold}
  .prose-terms h1,.prose-terms h2{@apply mt-8 mb-3 font-display text-xl font-semibold} .prose-terms h3{@apply mt-5 mb-2 font-semibold}
  .prose-terms p{@apply my-3 text-sm leading-relaxed text-ink} .prose-terms ul{@apply my-3 list-disc pl-6 text-sm space-y-1}
  .prose-terms blockquote{@apply my-4 border-l-4 border-brand pl-4 text-sm} .prose-terms table{@apply my-4 w-full text-xs} .prose-terms td,.prose-terms th{@apply border border-line p-2 align-top}

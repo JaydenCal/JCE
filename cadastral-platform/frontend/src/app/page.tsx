@@ -7,19 +7,11 @@ import { CAPTION } from "@/components/home/data";
 import { PlanShowcase } from "@/components/home/PlanShowcase";
 import { EngineerEnquiryButton } from "@/components/enquiry/EngineerEnquiryButton";
 import { ENGINEER_BTN } from "@/components/styles";
+import { FAQS } from "@/components/home/faqs";
 
 const W = "mx-auto max-w-7xl px-4 sm:px-8";
 const Eyebrow = ({ children }: { children: ReactNode }) => <p className="h-eyebrow">{children}</p>;
 const Rule = () => <div className={W}><div className="ticks" aria-hidden /></div>;
-const faqs: [string, string][] = [
-  ["What is in the package?", "Site assessment and constraints, the approval pathway, a civil plan set, a 3D design and walk-through, a compliance table and a lodgement-ready application pack, plus access to an engineer through JCE Infrastructure. The features marked In development are not yet available."],
-  ["Which states does it cover?", "New South Wales and Queensland. Layers and controls are drawn from each state's public sources and council instruments."],
-  ["Is this survey, engineering or planning advice?", "No. Outputs are indicative only. Boundaries are not a survey, civil quantities are not engineering design, and approval pathways need to be confirmed with the council or a certifier."],
-  ["What can I upload?", "An architect's plan as PDF or DXF, up to 200 MB. It is aligned to the lot with a stated error, and you are asked to confirm the scale if it cannot be read with confidence."],
-  ["What development types are supported?", "Dwelling house, secondary dwelling (granny flat) and shed or outbuilding. Dual occupancy is selectable but not yet supported, so its requirements are reported as unresolved."],
-  ["Why nine acknowledgements before export?", "Each one covers a limit that matters on site, from BYDA and physical service location to the indicative nature of cut and fill. Export unlocks only when all are given."],
-  ["What happens when a value cannot be found?", "It is shown as unresolved with the next step to take. The tool does not guess a setback, height or pathway."],
-];
 export default function Home() {
   return (<>
     {/* HERO */}
@@ -27,12 +19,12 @@ export default function Home() {
       <div className="grid-paper absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_85%)]" aria-hidden />
       <div className={`${W} relative grid items-center gap-12 pb-16 pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:pb-20 lg:pt-20`}>
         <div className="rise">
-          <Eyebrow>The full package &middot; NSW &amp; QLD</Eyebrow>
+          <Eyebrow>The full package &middot; NSW first</Eyebrow>
           <h1 className="h-display mt-5 text-[clamp(2.4rem,4.6vw,4.4rem)]">Civil plans and DA/CDC applications, in <span className="accent">one</span> package.</h1>
           <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted">Start from the lot. JCE Site Planner assesses the site and its constraints, works out the approval pathway, draws the civil plans, checks the controls with cited sources and assembles the application pack, for dwellings, granny flats and sheds. Some parts are still in development and are labelled that way.</p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
-            <Link href="/projects" className="btn-primary !px-6 !py-3">Start free trial</Link>
-            <Link href="#plans" className="btn-ghost !px-6 !py-3">See example output</Link>
+            <Link href="/projects/new" className="btn-primary !px-6 !py-3">Start free trial</Link>
+            <Link href="/example-output" className="btn-ghost !px-6 !py-3">See example output</Link>
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted"><span>Indicative outputs, every value cited.</span>
             <EngineerEnquiryButton className="font-medium text-gold underline decoration-brand/50 underline-offset-4 hover:decoration-brand">Talk to an engineer &rarr;</EngineerEnquiryButton></div>
@@ -54,7 +46,7 @@ export default function Home() {
     {/* FACTS */}
     <section className={`${W} py-6`} aria-label="At a glance">
       <dl className="titleblock grid-cols-2 lg:grid-cols-4 [&>div]:border-b lg:[&>div]:border-b-0 lg:[&>div:not(:last-child)]:border-r [&>div:nth-child(odd)]:border-r lg:[&>div:nth-child(odd)]:border-r">
-        {[["Package", "Civil plans + DA/CDC"], ["Jurisdictions", "NSW + QLD"], ["Export", "DXF + PDF"], ["Every value", "Cited or unresolved"]].map(([k, v]) => <div key={k}><dt className="font-mono text-[10.5px] uppercase tracking-[.18em] text-muted">{k}</dt><dd className="mt-1.5 break-words font-display text-lg font-medium sm:text-2xl">{v}</dd></div>)}
+        {[["Package", "Civil plans + DA/CDC"], ["Coverage", "NSW first"], ["Export", "DXF + PDF"], ["Every value", "Cited or unresolved"]].map(([k, v]) => <div key={k}><dt className="font-mono text-[10.5px] uppercase tracking-[.18em] text-muted">{k}</dt><dd className="mt-1.5 break-words font-display text-lg font-medium sm:text-2xl">{v}</dd></div>)}
       </dl>
     </section>
 
@@ -122,19 +114,19 @@ export default function Home() {
       <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
         <div><Eyebrow>Pricing</Eyebrow><h2 className="h-display mt-4 text-[clamp(2.2rem,4.2vw,3.4rem)]">Pricing <span className="accent">coming soon</span>.</h2>
           <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-muted">We are finalising plans. Start a free trial now and run your first lot end to end. No prices are published yet.</p></div>
-        <div className="titleblock"><div className="flex flex-wrap items-center justify-between gap-4 !p-8"><div><p className="font-mono text-[10.5px] uppercase tracking-[.18em] text-muted">Plans</p><p className="mt-1 font-display text-3xl font-medium">Coming soon</p></div><Link href="/projects" className="btn-primary">Start free trial</Link></div></div>
+        <div className="titleblock"><div className="flex flex-wrap items-center justify-between gap-4 !p-8"><div><p className="font-mono text-[10.5px] uppercase tracking-[.18em] text-muted">Plans</p><p className="mt-1 font-display text-3xl font-medium">Coming soon</p></div><Link href="/projects/new" className="btn-primary">Start free trial</Link></div></div>
       </div>
     </section>
 
     {/* FAQ */}
     <section id="faq" className={`${W} pb-20 lg:pb-28`}>
       <div className="grid gap-10 lg:grid-cols-[.8fr_1.4fr]"><div><Eyebrow>FAQ</Eyebrow><h2 className="h-display mt-4 text-[clamp(2.2rem,4.2vw,3.4rem)]">Questions, <span className="accent">answered</span>.</h2></div>
-        <div className="border-t border-ink/30">{faqs.map(([q, a]) => <details key={q} className="group border-b border-ink/20 py-5"><summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-display text-xl font-medium [&::-webkit-details-marker]:hidden">{q}<span aria-hidden className="font-mono text-lg text-gold transition-transform group-open:rotate-45">+</span></summary><p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted">{a}</p></details>)}</div></div>
+        <div className="border-t border-ink/30">{FAQS.slice(0, 6).map(([q, a]) => <details key={q} className="group border-b border-ink/20 py-5"><summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-display text-xl font-medium [&::-webkit-details-marker]:hidden">{q}<span aria-hidden className="font-mono text-lg text-gold transition-transform group-open:rotate-45">+</span></summary><p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted">{a}</p></details>)}</div></div>
     </section>
 
     {/* CTA */}
     <section className={`${W}`}><div className="grid-paper flex flex-col items-start justify-between gap-6 border border-ink/40 bg-surface p-8 sm:flex-row sm:items-center sm:p-12">
       <h2 className="h-display max-w-xl text-[clamp(2rem,3.8vw,3rem)]">Take your next lot from site to <span className="accent">lodgement</span>.</h2>
-      <div className="flex flex-wrap gap-3"><Link href="/projects" className="btn-primary !px-6 !py-3">Start free trial</Link><EngineerEnquiryButton className={`${ENGINEER_BTN} !px-6 !py-3`}>Talk to an engineer</EngineerEnquiryButton></div></div></section>
+      <div className="flex flex-wrap gap-3"><Link href="/projects/new" className="btn-primary !px-6 !py-3">Start free trial</Link><EngineerEnquiryButton className={`${ENGINEER_BTN} !px-6 !py-3`}>Talk to an engineer</EngineerEnquiryButton></div></div></section>
   </>);
 }

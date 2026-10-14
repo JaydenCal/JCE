@@ -15,5 +15,6 @@ export const mockResults: ProjectResults = {
     { service: "sewer", label: "DN150 sewer main", conflict: false, detail: "Clear of proposed footprint" },
     { service: "water", label: "DN100 water main", conflict: true, detail: "Crossover passes within 0.4 m of main (buffer 1.0 m)" },
   ],
+  dbyd_responses: 2,
   rwt: { tank_volume_l: 5000, diameter_m: 2.2, regime: "BASIX NSW", note: "Indicative sizing only." },
 };
