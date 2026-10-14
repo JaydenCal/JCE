@@ -4,7 +4,6 @@ Drop-in files for the live site root (hosted static, cPanel). Existing pages, as
 
 - `index.html` new home: hero, two product cards, workflow, services strip, FAQ. Replace the `#enquire` placeholder with the existing form.
 - `plan-studio/index.html` product 1, 2D plan output, worked example: farm shed.
-- `subdivision/index.html` product 2, subdivision modelling, worked example: 12-lot subdivision.
 - `framework.css`, `framework.js`, `site.config.js` shared tokens, behaviour, prices and links (edit prices only in `site.config.js`).
 - `_partials.html` header/footer to copy into new pages.
 

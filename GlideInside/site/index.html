@@ -2,8 +2,8 @@
 <html lang="en-AU">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Glide Inside | Pocket Architect and Subdivision Modelling</title>
-<meta name="description" content="Two tools for builders, developers and owners in regional Australia: 2D floor plan outputs and 3D subdivision modelling. Concept stage, led by a licensed civil engineer.">
+<title>Pocket Architect | Glide Inside</title>
+<meta name="description" content="Pocket Architect: draw a house, apartment, granny flat, shed or extension in your browser, see it in 3D, furnish it and export the plans. Concept stage, from Glide Inside.">
 <link rel="canonical" href="https://glideinside.com.au/">
 <link rel="icon" href="assets/Glideinside_Favicon_v4.svg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap">
@@ -16,7 +16,6 @@
   <a class="logo" href="index.html" aria-label="Glide Inside home"><img src="assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
   <nav class="site-nav" aria-label="Main">
     <a href="plan-studio/index.html">Pocket Architect</a>
-    <a href="subdivision/index.html">Subdivision</a>
     <a href="#how">How it works</a>
     <a href="#services">Add-ons</a>
     <a href="#faq">FAQ</a>
@@ -39,7 +38,6 @@
     <div class="demo-bar" data-tabs role="tablist" aria-label="Choose a product"><button class="toggle vp-fs" type="button" id="vp-fs" aria-label="Full screen">⛶ Full screen</button>
       <button class="tab" data-tab="plans" aria-selected="true">Pocket Architect</button>
       <button class="tab" data-tab="to3d" aria-selected="false">2D plan to 3D</button>
-      <button class="tab" data-tab="subdivision" aria-selected="false">Subdivision modelling</button>
     </div>
     <div class="vp-split" data-panel="plans"><div class="vp-col"><div class="vp-tile"><span class="num">01</span><h3>Modelling</h3><p>Draw rooms, doors and furniture. The 3D model builds as you draw.</p></div><div class="vp-tile"><span class="num">02</span><h3>Plans</h3><p>Dimensioned PDF plan set and DXF for your CAD.</p></div></div><div class="vp-mid">
     <div class="viewport-stage" id="vp-plans">
@@ -51,9 +49,7 @@
     </div><div class="vp-col"><div class="vp-tile"><span class="num">03</span><h3>Fly-through</h3><p>A furnished walk-through video of your plan.</p><b class="pill">+ A$<span data-cfg="addonFlyThroughPrice">5</span></b></div><div class="vp-tile"><span class="num">04</span><h3>Renders</h3><p>Detailed still renderings of the finished design.</p><b class="pill">+ A$<span data-cfg="addonRendersPrice">10</span></b></div></div></div>
     <div class="viewport-stage" data-panel="to3d" id="vp-3d" hidden></div>
     <div class="viewport-foot" data-panel="to3d" hidden><label class="rangewrap" style="display:flex;gap:12px;align-items:center;flex:1;min-width:240px"><span class="chip">2D PLAN</span><input type="range" id="vp-range" min="0" max="100" value="0" style="flex:1;accent-color:#a3532d" aria-label="Plan to 3D"><span class="chip">3D MODEL</span></label><a class="link" href="plan-studio/index.html">See how Pocket Architect works →</a></div>
-    <div class="viewport-stage" data-panel="subdivision" id="vp-sub" hidden></div>
-    <div class="viewport-foot" data-panel="plans"><span>Pocket Architect: draw the plan, see it in 3D, furnish and render it, export PDF and DXF.</span><a class="link" href="plan-studio/index.html">See the shed example →</a></div>
-    <div class="viewport-foot" data-panel="subdivision" hidden><span>Subdivision modelling is by quote. <a class="link" href="subdivision/index.html">See the plan-to-model example →</a></span><a class="btn btn-sm" data-cfg-href="subdivisionOrderUrl" href="mailto:hello@glideinside.com.au">Request a quote →</a></div>
+    <div class="viewport-foot" data-panel="plans"><span>Pocket Architect: draw the plan, see it in 3D, furnish and render it, export PDF and DXF.</span><a class="link" href="plan-studio/index.html">How Pocket Architect works →</a></div>
   </div>
 </section>
 <script>
@@ -63,24 +59,21 @@
   if(cfg.heroVideoPlans){var bg=document.getElementById('vp-bg');bg.innerHTML='<video autoplay muted loop playsinline preload="auto" src="'+cfg.heroVideoPlans+'"'+(cfg.heroPoster?' poster="'+cfg.heroPoster+'"':'')+'></video>';}
   var s3=document.getElementById('vp-3d'),rg=document.getElementById('vp-range');
   document.querySelector('[data-tab=to3d]').addEventListener('click',function(){
-    if(!s3.firstChild){s3.innerHTML='<iframe title="Plan to 3D model" src="subdivision/ptm/models/warehouse.html?embed=1"></iframe>';s3.firstChild.addEventListener('load',function(){send()});}
+    if(!s3.firstChild){s3.innerHTML='<iframe title="Plan to 3D model" src="demo/models/warehouse.html?embed=1"></iframe>';s3.firstChild.addEventListener('load',function(){send()});}
   });
   function send(){var f=s3.firstChild;if(f&&f.contentWindow)f.contentWindow.postMessage({type:'morph',t:rg.value/100},'*')}
   rg.addEventListener('input',send);
-  document.querySelector('[data-tab=subdivision]').addEventListener('click',function(){
-    if(!s.firstChild){s.innerHTML='<iframe title="Interactive subdivision site model" loading="lazy" src="subdivision/ptm/model/index.html"></iframe>';}
-  });
 })();
 </script>
 
 
 <section class="shell section" id="how">
-  <div class="section-head"><div><p class="eyebrow">How it works</p><h2>One workflow, <em>two</em> outputs.</h2></div><p>Both products start the same way: tell us what you are planning. Pick the output that fits the stage you are at.</p></div>
+  <div class="section-head"><div><p class="eyebrow">How it works</p><h2>From idea to <em>plan set.</em></h2></div><p>Draw it yourself in Pocket Architect, or send us the brief and we build it for you.</p></div>
   <ol class="steps">
-    <li><h3>Share the brief</h3><p>Site details, sketches or an existing plan. A PDF, JPG or PNG is enough.</p></li>
-    <li><h3>Choose the output</h3><p>Pocket Architect, a subdivision concept, or both.</p></li>
-    <li><h3>We build it</h3><p>Plans drafted, lots laid out, staging shown, then a 3D model if you want it.</p></li>
-    <li><h3>Present it</h3><p>Take it to partners, buyers, funders or your certifier.</p></li>
+    <li><h3>Share the brief</h3><p>Sketches, notes or an existing plan. A PDF, JPG or PNG is enough.</p></li>
+    <li><h3>Choose the output</h3><p>Plans, a 3D fly-through, renderings, or all three.</p></li>
+    <li><h3>We build it</h3><p>Plans drafted, a 3D model built, then a fly-through or renderings if you want them.</p></li>
+    <li><h3>Present it</h3><p>Take it to your builder, designer or certifier.</p></li>
   </ol>
 </section>
 
@@ -88,16 +81,14 @@
   <div class="section-head"><div><p class="eyebrow">Products</p><h2>Pick the tool for <em>the job.</em></h2></div></div>
   <div class="grid-2">
     <article class="card"><span class="num">01 · PLAN STUDIO</span><h3>Draw it. Furnish it. See it in 3D.</h3><p>Draw floor plans for sheds, homes and extensions, see them as 3D models, add furniture and renderings, then export PDF and DXF. The self-serve Pocket Architect tool is <span data-cfg="planPackPrice">A$35</span> per plan, with an account.</p><p style="margin-top:16px"><a class="btn btn-sm" href="plan-studio/index.html">Open Pocket Architect</a></p></article>
-    <article class="card"><span class="num">02 · SUBDIVISION</span><h3>Concept lots, access and staging</h3><p>Preliminary feasibility from a licensed civil engineer, shown as a clear layout and a 3D site model.</p><p style="margin-top:16px"><a class="btn btn-sm" href="subdivision/index.html">Open subdivision modelling</a></p></article>
   </div>
 </div></section>
 
 <section class="shell section" id="services">
-  <div class="section-head"><div><p class="eyebrow">Add to any plan</p><h2>Extras for your <em>plans.</em></h2></div><p>Add a 3D fly-through or complex renderings to a plan. Pay by card through Stripe. Subdivision work is by quote.</p></div>
+  <div class="section-head"><div><p class="eyebrow">Add to any plan</p><h2>Extras for your <em>plans.</em></h2></div><p>Add a 3D fly-through or complex renderings to a plan. Pay by card through Stripe.</p></div>
   <div class="grid-3">
     <article class="card"><span class="num">+ A$<span data-cfg="addonFlyThroughPrice">5</span></span><h3>3D fly-through</h3><p>A furnished walk-through video of your plan.</p></article>
     <article class="card"><span class="num">+ A$<span data-cfg="addonRendersPrice">10</span></span><h3>Complex renderings</h3><p>Detailed still renderings of your design.</p></article>
-    <article class="card"><span class="num">BY QUOTE</span><h3>Subdivision modelling</h3><p>Concept layouts, staging and 3D site models, priced to your site.</p></article>
   </div>
   <p style="margin-top:24px"><a class="btn" href="plan-studio/index.html#addons">Choose add-ons</a></p>
 </section>
@@ -105,15 +96,14 @@
 <section class="shell section faq" id="faq">
   <div class="section-head"><div><p class="eyebrow">FAQ</p><h2>Before you start.</h2></div></div>
   <details><summary>Are these plans approved?</summary><p>No. Outputs are concept designs. They are not construction drawings or development application documents, and are not checked against planning controls or the National Construction Code.</p></details>
-  <details><summary>Who is behind the subdivision work?</summary><p>Glide Inside's director is a licensed civil engineer and can assist with preliminary subdivision feasibility.</p></details>
-  <details><summary>Can I use both products on one project?</summary><p>Yes. A common path is a subdivision concept first, then Pocket Architect for the buildings on each lot.</p></details>
+  <details><summary>Who is behind Pocket Architect?</summary><p>Glide Inside's director is a licensed civil engineer. Pocket Architect produces concept designs only.</p></details>
 </section>
 
 </main>
 
 <footer class="site-footer"><div class="shell">
   <div><img src="assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside" style="height:30px;width:auto;margin-bottom:12px"><p>Glide Inside · ABN 11 549 431 925<br><a href="mailto:hello@glideinside.com.au">hello@glideinside.com.au</a> · 0477 207 027</p></div>
-  <nav aria-label="Products"><a href="plan-studio/index.html">Pocket Architect</a><a href="subdivision/index.html">Subdivision modelling</a><a href="plan-studio/index.html#addons">Plan add-ons</a></nav>
+  <nav aria-label="Products"><a href="plan-studio/index.html">Pocket Architect</a><a href="plan-studio/index.html#addons">Plan add-ons</a></nav>
   <nav aria-label="Legal"><a href="terms.html">Order terms</a><a href="privacy.html">Privacy</a></nav>
 </div></footer>
 </body></html>
