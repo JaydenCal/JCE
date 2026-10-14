@@ -168,6 +168,18 @@ h1 em,h2 em{font-style:italic;font-weight:700;color:var(--accent);font-family:Ge
 @media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none}}
 html,body{overflow-x:clip}
 
+/* v4.9 split viewport, launch page */
+.viewport{max-width:1240px}.viewport .demo-bar{position:relative}.vp-fs{position:absolute;left:14px}
+.vp-split{display:grid;grid-template-columns:210px 1fr 210px;background:var(--deep)}
+.vp-col{display:flex;flex-direction:column;gap:1px;background:#3a5543}.vp-mid{position:relative}.vp-mid .viewport-stage{height:100%;min-height:360px;aspect-ratio:auto}
+.vp-tile{background:var(--deep-2);color:#eef1ea;padding:18px;flex:1}.vp-tile .num{font:600 11px var(--mono);letter-spacing:.14em;color:var(--accent-soft)}.vp-tile h3{margin:6px 0;font-size:18px}.vp-tile p{margin:0 0 8px;font-size:13px;color:#b9c4bb;line-height:1.45}
+.pill{display:inline-block;background:var(--accent);color:#fff;font-size:12px;padding:3px 10px;border-radius:99px}
+@media(max-width:900px){.vp-split{grid-template-columns:1fr}.vp-mid{order:-1}.vp-col{flex-direction:row;flex-wrap:wrap}.vp-tile{flex:1 1 45%}.vp-fs{display:none}}
+.viewport:fullscreen{max-width:none;border-radius:0;display:flex;flex-direction:column;background:var(--paper)}.viewport:fullscreen .vp-split{flex:1}.viewport:fullscreen .viewport-stage{min-height:0}
+.launch-stage{position:fixed;inset:0;z-index:80;background:#000;display:none;flex-direction:column}.launch-stage.on{display:flex}
+.launch-bar{display:flex;gap:10px;align-items:center;padding:8px 14px;background:var(--deep);color:#fff}.launch-bar strong{margin-right:auto}
+.launch-stage iframe{flex:1;border:0;width:100%;background:#fff}
+
 .demo-stage>.tab-panel{width:100%}
 .svg-text{font-size:14px}.svg-dim{font-size:12px}
 .sl{fill:#dadcd3;stroke:var(--sage);stroke-width:1}.wl{fill:var(--ink)}
@@ -218,17 +230,19 @@ html,body{overflow-x:clip}
 
 <section class="shell" id="viewport-section">
   <div class="demo viewport" data-demo>
-    <div class="demo-bar" data-tabs role="tablist" aria-label="Choose a product">
+    <div class="demo-bar" data-tabs role="tablist" aria-label="Choose a product"><button class="toggle vp-fs" type="button" id="vp-fs" aria-label="Full screen">⛶ Full screen</button>
       <button class="tab" data-tab="plans" aria-selected="true">Pocket Architect</button>
       <button class="tab" data-tab="to3d" aria-selected="false">2D plan to 3D</button>
       <button class="tab" data-tab="subdivision" aria-selected="false">Subdivision modelling</button>
     </div>
-    <div class="viewport-stage" data-panel="plans" id="vp-plans">
+    <div class="vp-split" data-panel="plans"><div class="vp-col"><div class="vp-tile"><span class="num">01</span><h3>Modelling</h3><p>Draw rooms, doors and furniture. The 3D model builds as you draw.</p></div><div class="vp-tile"><span class="num">02</span><h3>Plans</h3><p>Dimensioned PDF plan set and DXF for your CAD.</p></div></div><div class="vp-mid">
+    <div class="viewport-stage" id="vp-plans">
       <div class="vp-bg" id="vp-bg" aria-hidden="true">
         <svg viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" class="draw"><g fill="none" stroke="#e6b58e" stroke-width="3" stroke-linecap="square"><path pathLength="1" d="M200 110H600V300H200Z"/><path pathLength="1" d="M200 205H330M455 300V205H600"/><path pathLength="1" d="M300 110H380M200 250V290"/><circle pathLength="1" cx="650" cy="290" r="26"/></g><g fill="none" stroke="#87968a" stroke-width="1.5"><path pathLength="1" d="M200 78H600M200 70V86M600 70V86M640 110V300M632 110H648M632 300H648"/></g></svg>
       </div>
-      <div class="vp-cta"><a class="vp-btn" id="vp-launch" data-cfg-href="toolUrl" href="#example"><span aria-hidden="true">▶</span> Use the tool</a><span class="vp-cap">Free to draw · No account · Concept plans</span></div>
+      <div class="vp-cta"><a class="vp-btn" id="vp-launch" data-cfg-href="toolUrl" href="#/plan"><span aria-hidden="true">▶</span> Use the tool</a><span class="vp-cap">Free to draw · No account · Concept plans</span></div>
     </div>
+    </div><div class="vp-col"><div class="vp-tile"><span class="num">03</span><h3>Fly-through</h3><p>A furnished walk-through video of your plan.</p><b class="pill">+ A$<span data-cfg="addonFlyThroughPrice">5</span></b></div><div class="vp-tile"><span class="num">04</span><h3>Renders</h3><p>Detailed still renderings of the finished design.</p><b class="pill">+ A$<span data-cfg="addonRendersPrice">10</span></b></div></div></div>
     <div class="viewport-stage" data-panel="to3d" id="vp-3d" hidden></div>
     <div class="viewport-foot" data-panel="to3d" hidden><label class="rangewrap" style="display:flex;gap:12px;align-items:center;flex:1;min-width:240px"><span class="chip">2D PLAN</span><input type="range" id="vp-range" min="0" max="100" value="0" style="flex:1;accent-color:#a3532d" aria-label="Plan to 3D"><span class="chip">3D MODEL</span></label><a class="link" href="#/plan">See how Pocket Architect works →</a></div>
     <div class="viewport-stage" data-panel="subdivision" id="vp-sub" hidden></div>
@@ -238,6 +252,7 @@ html,body{overflow-x:clip}
 </section>
 <script>
 (function(){
+  var fsb=document.getElementById('vp-fs');fsb.addEventListener('click',function(){var v=document.querySelector('.viewport');if(document.fullscreenElement)document.exitFullscreen();else if(v.requestFullscreen)v.requestFullscreen()});
   var cfg=window.GI_CONFIG||{},p=document.getElementById('vp-plans'),s=document.getElementById('vp-sub');
   if(cfg.heroVideoPlans){var bg=document.getElementById('vp-bg');bg.innerHTML='<video autoplay muted loop playsinline preload="auto" src="'+cfg.heroVideoPlans+'"'+(cfg.heroPoster?' poster="'+cfg.heroPoster+'"':'')+'></video>';}
   var s3=document.getElementById('vp-3d'),rg=document.getElementById('vp-range');
@@ -901,6 +916,7 @@ window.GI_CONFIG = {
 
 
 (function(){
+  var fsb=document.getElementById('vp-fs');fsb.addEventListener('click',function(){var v=document.querySelector('.viewport');if(document.fullscreenElement)document.exitFullscreen();else if(v.requestFullscreen)v.requestFullscreen()});
   var cfg=window.GI_CONFIG||{},p=document.getElementById('vp-plans'),s=document.getElementById('vp-sub');
   if(cfg.heroVideoPlans){var bg=document.getElementById('vp-bg');bg.innerHTML='<video autoplay muted loop playsinline preload="auto" src="'+cfg.heroVideoPlans+'"'+(cfg.heroPoster?' poster="'+cfg.heroPoster+'"':'')+'></video>';}
   var s3=document.getElementById('vp-3d'),rg=document.getElementById('vp-range');

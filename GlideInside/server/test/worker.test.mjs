@@ -25,4 +25,11 @@ assert.equal(db.prepare("SELECT pdf_used FROM entitlements").get().pdf_used, 1);
 db.prepare("UPDATE entitlements SET pdf_file=NULL").run(); assert.equal((await call("/export/pdf", { method: "POST", body: JSON.stringify({ project: {} }), headers: A })).status, 403);
 await hook({ id: "evt_2", type: "charge.refunded", data: { object: { payment_intent: "pi_1" } } });
 assert.equal((await call("/credits", { headers: A })).status, 401);                                             // refunded: access stops
+env.TEST_CODES = "PA-FRIENDS-TEST"; env.TEST_CODE_MAX_USES = "2";
+const bad = await call("/entitlement/restore", { method: "POST", body: JSON.stringify({ email: "f@x.com", sessionOrReceipt: "WRONG" }) }); assert.equal(bad.status, 404);
+const ok1 = await call("/entitlement/restore", { method: "POST", body: JSON.stringify({ email: "f1@x.com", sessionOrReceipt: "PA-FRIENDS-TEST" }) }); assert.equal(ok1.status, 200);
+const tok = (await ok1.json()).token; assert.equal((await call("/credits?project=anything", { headers: { authorization: "Bearer " + tok } })).status, 200);
+assert.equal((await call("/entitlement/restore", { method: "POST", body: JSON.stringify({ email: "f1@x.com", sessionOrReceipt: "PA-FRIENDS-TEST" }) })).status, 200); // same friend again, no extra use
+assert.equal((await call("/entitlement/restore", { method: "POST", body: JSON.stringify({ email: "f2@x.com", sessionOrReceipt: "PA-FRIENDS-TEST" }) })).status, 200);
+assert.equal((await call("/entitlement/restore", { method: "POST", body: JSON.stringify({ email: "f3@x.com", sessionOrReceipt: "PA-FRIENDS-TEST" }) })).status, 403); // cap of 2 people
 console.log("worker tests passed");

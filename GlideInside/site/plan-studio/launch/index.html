@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Launch Pocket Architect | Glide Inside</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../assets/Glideinside_Favicon_v4.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="../../framework.css">
+<script src="../../site.config.js"></script><script src="../../framework.js" defer></script>
+</head><body>
+<header class="site-header"><div class="shell">
+  <a class="logo" href="../../index.html" aria-label="Glide Inside home"><img src="../../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
+  <nav class="site-nav" aria-label="Main"><a href="../index.html">About Pocket Architect</a><a href="../../subdivision/index.html">Subdivision</a></nav>
+</div></header>
+<main id="main">
+<section class="shell hero-centre" style="padding-bottom:12px">
+  <p class="eyebrow">Before you start</p>
+  <h1>What Pocket Architect <em>does.</em></h1>
+  <p class="lead">Draw your plan on a grid and the 3D model builds as you go. Furnish it, walk through it, then unlock the deliverables below.</p>
+</section>
+<section class="shell" style="padding-bottom:28px">
+  <div class="grid-4">
+    <div class="card"><span class="num">01 · MODELLING</span><h3>Plan to 3D</h3><p>Draw rooms, walls, doors, windows, stairs, decks and tanks. Orbit the 3D model, take the roof off, change finishes and walk through in first person.</p></div>
+    <div class="card"><span class="num">02 · PLANS</span><h3>PDF and DXF</h3><p>Dimensioned plan sheets with schedules and a title block, plus a DXF for your CAD software. One PDF set per job.</p></div>
+    <div class="card"><span class="num">03 · FLY-THROUGH</span><h3>Walk-through video</h3><p>A furnished video tour of your design, made by us. Add it to any plan for <b>A$<span data-cfg="addonFlyThroughPrice">5</span></b>.</p></div>
+    <div class="card"><span class="num">04 · RENDERS</span><h3>Complex renderings</h3><p>Detailed still renderings of the finished design, made by us. Add them to any plan for <b>A$<span data-cfg="addonRendersPrice">10</span></b>.</p></div>
+  </div>
+  <p class="muted" style="margin-top:18px;max-width:80ch">Drawing and viewing are free with no sign-up. Unlocking a job is <b data-cfg="planPackPrice">A$35</b> per job. Concept design only: not for construction and not a development application drawing.</p>
+  <div class="hero-cta" style="margin-top:22px">
+    <button class="btn" id="go">Launch the tool <span aria-hidden="true">→</span></button>
+    <button class="btn btn-ghost" id="go-fs">Launch full screen ⛶</button>
+    <a class="link" href="../index.html">Pricing and FAQ</a>
+  </div>
+</section>
+</main>
+<div class="launch-stage" id="stage" role="dialog" aria-label="Pocket Architect"><div class="launch-bar"><strong>Pocket Architect</strong><button class="btn btn-sm btn-ghost" style="color:#fff;border-color:#fff" id="fs">⛶ Full screen</button><button class="btn btn-sm" id="exit">Close</button></div></div>
+<script>
+(function(){
+  var st=document.getElementById('stage'),fr=null;
+  function open(){
+    if(!fr){fr=document.createElement('iframe');fr.title='Pocket Architect';
+      // allow-top-navigation lets Stripe checkout and the return from checkout replace the page
+      fr.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-pointer-lock allow-top-navigation');
+      fr.setAttribute('allow','fullscreen; pointer-lock; clipboard-write');fr.src='../app/';st.appendChild(fr);}
+    st.classList.add('on');document.body.style.overflow='hidden';
+  }
+  function fs(){var e=st;if(document.fullscreenElement)document.exitFullscreen();else if(e.requestFullscreen)e.requestFullscreen()}
+  document.getElementById('go').onclick=open;
+  document.getElementById('go-fs').onclick=function(){open();fs()};
+  document.getElementById('fs').onclick=fs;
+  document.getElementById('exit').onclick=function(){if(document.fullscreenElement)document.exitFullscreen();st.classList.remove('on');document.body.style.overflow=''};
+  if(location.hash==='#go')open();
+})();
+</script>
+</body></html>

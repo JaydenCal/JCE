@@ -48,3 +48,12 @@ Upload the contents of `site/` to the web root. Updated app builds: `python3 too
 - AI assistant answers "unavailable" until ANTHROPIC_API_KEY and the AI handler are added.
 - Email-based accounts: your checkout email + receipt restores a purchase on any device (no passwords). Zip save/load of projects is an app feature; the current build saves and opens a `.json` project file.
 - GST: the app text says "incl. GST" (`gstInclusive`). Turn that off if you are not GST registered.
+
+## Friends and testing code
+Set a secret on the server (not in the site or this repo):
+`npx wrangler secret put TEST_CODES` and enter one or more codes, comma separated, for example `PA-FRIENDS-XXXXXXXX`.
+Optional vars: `TEST_CODE_MAX_USES` (people per code, default 25) and `TEST_CODE_PDF_SETS` (PDF sets per person, default 20).
+A friend opens the app, clicks Unlock, then "Restore purchase", types their email and the code in the receipt box. Access lasts 30 days and covers any project. Delete the code from the secret to switch it off.
+
+## Dropbox
+Dropbox stores files but cannot run the server. Keep a copy of `server/` in `_GlideInside` for safekeeping; deploy it to Cloudflare Workers (free plan is enough to start).

@@ -8,7 +8,7 @@ window.GI_CONFIG = {
   stripeFlyThrough: "",           // A$5 link
   stripeRenders: "",              // A$10 link
   stripeBoth: "",                 // A$15 link (both add-ons)
-  toolUrl: "plan-studio/app/",   // change to the Pocket Architect app route when built
+  toolUrl: "plan-studio/launch/",   // change to the Pocket Architect app route when built
   heroVideoPlans: "",             // e.g. "assets/plan-creation.mp4": plays muted on loop behind the button
   heroPoster: "",
   premiumEnabled: true,

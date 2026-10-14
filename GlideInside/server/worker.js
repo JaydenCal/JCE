@@ -21,7 +21,7 @@ async function auth(req, env) { // token grants nothing alone: the row is re-che
   if (!p || !s || b64u(await hmac(env.ENTITLEMENT_SECRET, p)) !== s) return null;
   let d; try { d = JSON.parse(atob(p.replace(/-/g, "+").replace(/_/g, "/"))); } catch { return null; }
   if (d.exp < Date.now()) return null;
-  const row = await env.DB.prepare("SELECT * FROM entitlements WHERE id=? AND project_id=? AND status='active'").bind(d.eid, d.pid).first();
+  const row = await env.DB.prepare("SELECT * FROM entitlements WHERE id=? AND project_id=? AND status='active' AND (expires_at IS NULL OR expires_at>?)").bind(d.eid, d.pid, new Date().toISOString()).first();
   return row || null;
 }
 const credits = (e) => ({ total: e.credits_total, used: e.credits_used, remaining: e.credits_total - e.credits_used });
@@ -80,6 +80,22 @@ export default {
 
       if (path === "/entitlement/restore" && req.method === "POST") { // email + Stripe session id or receipt (payment intent) must both match
         const { email, sessionOrReceipt } = await req.json().catch(() => ({}));
+        const code = String(sessionOrReceipt || "").trim();
+        const codes = (env.TEST_CODES || "").split(",").map((c) => c.trim()).filter(Boolean);
+        if (code && codes.includes(code)) { // friends/testing code: works from the same Restore box, project-agnostic ('*')
+          const mail = (email || "").toLowerCase().trim(); if (!/^\S+@\S+\.\S+$/.test(mail)) return err(400, "BAD_REQUEST", "Enter a valid email.");
+          const key = `code:${code}:${mail}`;
+          let r = await env.DB.prepare("SELECT * FROM entitlements WHERE stripe_session_id=?").bind(key).first();
+          if (!r) {
+            const used = await env.DB.prepare("SELECT COUNT(*) AS n FROM entitlements WHERE stripe_session_id LIKE ?").bind(`code:${code}:%`).first();
+            if (used.n >= (+env.TEST_CODE_MAX_USES || 25)) return err(403, "CODE_EXHAUSTED", "That code has been used too many times.");
+            const id = "t_" + crypto.randomUUID().slice(0, 12);
+            await env.DB.prepare("INSERT INTO entitlements(id,project_id,email,stripe_session_id,amount_cents,currency,credits_total,pdf_used,pdf_allowed,status,created_at,expires_at) VALUES(?,?,?,?,0,'aud',?,0,?,'active',?,?)")
+              .bind(id, "*", mail, key, +env.PLAN_PACK_CREDITS || 500, +env.TEST_CODE_PDF_SETS || 20, new Date().toISOString(), new Date(Date.now() + 30 * 864e5).toISOString()).run();
+            r = await env.DB.prepare("SELECT * FROM entitlements WHERE id=?").bind(id).first();
+          }
+          return J({ token: await signToken(env, r.id, "*"), project: null, credits: credits(r) });
+        }
         const e = await env.DB.prepare("SELECT * FROM entitlements WHERE email=? AND (stripe_session_id=? OR payment_intent=?) AND status='active'").bind((email || "").toLowerCase().trim(), sessionOrReceipt || "", sessionOrReceipt || "").first();
         if (!e) return err(404, "NOT_ENTITLED", "We could not find a matching purchase.");
         return J({ token: await signToken(env, e.id, e.project_id), project: e.project_id, credits: credits(e) });
