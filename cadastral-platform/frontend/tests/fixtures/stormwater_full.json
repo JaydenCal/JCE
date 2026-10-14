@@ -1,0 +1,2709 @@
+{
+ "_synthetic": "SYNTHETIC TEST FIXTURE: written by the stage 9 backend from a synthetic design, a synthetic rainfall table and fake rule values. Not an engineering result.",
+ "schema": "stormwater.v1",
+ "generated_at": "2026-10-15T09:00:00+00:00",
+ "terrain_status": "INDICATIVE 5 M DEM, LIDAR PENDING, NOT SURVEY",
+ "lot_area_m2": 612.0,
+ "catchment": {
+  "rows": [
+   {
+    "object_id": "b1",
+    "object_type": "building",
+    "label": "B1",
+    "status": "proposed",
+    "phases": [
+     "post"
+    ],
+    "surface": "roof",
+    "surface_label": "ROOF",
+    "area_basis": "FOOTPRINT AREA; THE ROOF AREA IS NOT SET",
+    "area_note": "THE ROOF PLAN AREA IS NOT SET, SO THE FOOTPRINT IS USED (EAVES NOT INCLUDED)",
+    "drains_to_id": "osd1",
+    "id": "b1",
+    "area_m2": 360.0,
+    "split": null,
+    "runoff": {
+     "value": 1.0,
+     "unit": "",
+     "basis": "USER",
+     "ref": "ENTERED IN THE STORMWATER PANEL",
+     "key": "stormwater.runoff_coefficient.roof"
+    },
+    "ca_m2": 360.0
+   },
+   {
+    "object_id": "old",
+    "object_type": "landscape_area",
+    "label": "OLD",
+    "status": "existing",
+    "phases": [
+     "pre",
+     "post"
+    ],
+    "surface": "landscape_turf",
+    "surface_label": "TURF",
+    "area_basis": "PLAN AREA OF THE DRAWN OUTLINE",
+    "area_note": "",
+    "drains_to_id": null,
+    "id": "old",
+    "area_m2": 90.0,
+    "split": null,
+    "runoff": {
+     "value": 0.3,
+     "unit": "",
+     "basis": "USER",
+     "ref": "ENTERED IN THE STORMWATER PANEL",
+     "key": "landscape.runoff_coefficient.turf"
+    },
+    "ca_m2": 27.0
+   }
+  ],
+  "post_rows": [
+   {
+    "object_id": "b1",
+    "object_type": "building",
+    "label": "B1",
+    "status": "proposed",
+    "phases": [
+     "post"
+    ],
+    "surface": "roof",
+    "surface_label": "ROOF",
+    "area_basis": "FOOTPRINT AREA; THE ROOF AREA IS NOT SET",
+    "area_note": "THE ROOF PLAN AREA IS NOT SET, SO THE FOOTPRINT IS USED (EAVES NOT INCLUDED)",
+    "drains_to_id": "osd1",
+    "id": "b1",
+    "area_m2": 360.0,
+    "split": null,
+    "runoff": {
+     "value": 1.0,
+     "unit": "",
+     "basis": "USER",
+     "ref": "ENTERED IN THE STORMWATER PANEL",
+     "key": "stormwater.runoff_coefficient.roof"
+    },
+    "ca_m2": 360.0,
+    "route": {
+     "to": "osd1",
+     "path": [
+      "osd1",
+      "dp1"
+     ],
+     "basis": "LINKED",
+     "reason": ""
+    }
+   },
+   {
+    "object_id": "old",
+    "object_type": "landscape_area",
+    "label": "OLD",
+    "status": "existing",
+    "phases": [
+     "pre",
+     "post"
+    ],
+    "surface": "landscape_turf",
+    "surface_label": "TURF",
+    "area_basis": "PLAN AREA OF THE DRAWN OUTLINE",
+    "area_note": "",
+    "drains_to_id": null,
+    "id": "old",
+    "area_m2": 90.0,
+    "split": null,
+    "runoff": {
+     "value": 0.3,
+     "unit": "",
+     "basis": "USER",
+     "ref": "ENTERED IN THE STORMWATER PANEL",
+     "key": "landscape.runoff_coefficient.turf"
+    },
+    "ca_m2": 27.0,
+    "route": {
+     "to": "dp1",
+     "path": [
+      "dp1"
+     ],
+     "basis": "DEFAULT: LEGAL POINT OF DISCHARGE (NO LINK SET)",
+     "reason": ""
+    }
+   }
+  ],
+  "comparison": {
+   "pre": {
+    "phase": "pre",
+    "by_surface": [
+     {
+      "surface": "landscape_turf",
+      "label": "TURF",
+      "area_m2": 90.0,
+      "ca_m2": 27.0,
+      "area_unknown": 0,
+      "coeff_unknown": 0,
+      "objects": 1
+     }
+    ],
+    "area_m2": 90.0,
+    "ca_m2": 27.0,
+    "complete": true,
+    "weighted_c": 0.3,
+    "objects": 1
+   },
+   "post": {
+    "phase": "post",
+    "by_surface": [
+     {
+      "surface": "roof",
+      "label": "ROOF",
+      "area_m2": 360.0,
+      "ca_m2": 360.0,
+      "area_unknown": 0,
+      "coeff_unknown": 0,
+      "objects": 1
+     },
+     {
+      "surface": "landscape_turf",
+      "label": "TURF",
+      "area_m2": 90.0,
+      "ca_m2": 27.0,
+      "area_unknown": 0,
+      "coeff_unknown": 0,
+      "objects": 1
+     }
+    ],
+    "area_m2": 450.0,
+    "ca_m2": 387.0,
+    "complete": true,
+    "weighted_c": 0.86,
+    "objects": 2
+   },
+   "pre_status": "OK",
+   "pre_message": "",
+   "pre_unclassified": {
+    "status": "OK",
+    "message": "",
+    "lot_area_m2": 612.0,
+    "covered_m2": 90.0,
+    "unclassified_m2": 522.0
+   },
+   "post_unclassified": {
+    "status": "OK",
+    "message": "",
+    "lot_area_m2": 612.0,
+    "covered_m2": 450.0,
+    "unclassified_m2": 162.0
+   },
+   "pre_overlaps": {
+    "overlap_m2": 0.0,
+    "pairs": []
+   },
+   "post_overlaps": {
+    "overlap_m2": 0.0,
+    "pairs": []
+   }
+  },
+  "routing": [
+   {
+    "destination": "dp1",
+    "type": "discharge_point",
+    "area_m2": 450.0,
+    "ca_m2": 387.0,
+    "ca_unknown": 0,
+    "rows": [
+     {
+      "id": "b1",
+      "object_id": "b1",
+      "surface": "ROOF",
+      "area_m2": 360.0,
+      "split": null,
+      "path": [
+       "osd1",
+       "dp1"
+      ],
+      "basis": "LINKED",
+      "reason": ""
+     },
+     {
+      "id": "old",
+      "object_id": "old",
+      "surface": "TURF",
+      "area_m2": 90.0,
+      "split": null,
+      "path": [
+       "dp1"
+      ],
+      "basis": "DEFAULT: LEGAL POINT OF DISCHARGE (NO LINK SET)",
+      "reason": ""
+     }
+    ]
+   }
+  ],
+  "discharge_points": [
+   {
+    "id": "dp1",
+    "label": "DP1",
+    "kind": "kerb_outlet",
+    "basis": "SYNTHETIC TEST FIXTURE"
+   }
+  ]
+ },
+ "rainfall": {
+  "status": "OK",
+  "message": "",
+  "source": "UPLOAD",
+  "site": {
+   "lat": -33.751912,
+   "lon": 151.21325
+  },
+  "table": {
+   "kind": "intensity_mm_h",
+   "durations": 5,
+   "aeps_pct": [
+    50.0,
+    20.0,
+    10.0,
+    1.0
+   ],
+   "first_duration_min": 5.0,
+   "last_duration_min": 60.0,
+   "provenance": {
+    "source": "BOM 2016 IFD DESIGN RAINFALL TABLE, USER UPLOAD",
+    "file_name": "synthetic_ifd.csv",
+    "sha256": "340fc6246ce9c3d08fb1184a0a6882351711e44022aad7c57969a10be17ed73d",
+    "uploaded_at": "2026-10-15T09:00:00+00:00",
+    "issued": "2016-01-01",
+    "location_label": "Synthetic Test Point",
+    "requested": {
+     "lat": -33.5,
+     "lon": 151.2
+    },
+    "grid_cell": {
+     "lat": -33.5,
+     "lon": 151.2
+    },
+    "units": "intensity_mm_h",
+    "units_declared_by_user": false,
+    "parser": "bom_ifd_csv.v1",
+    "assumptions": [
+     "LAYOUT OF THE BOM EXPORT NOT CONFIRMED FROM A LIVE DOWNLOAD; THE PARSER READS THE HEADER AS AEP OR EY COLUMNS AND EACH ROW AS A DURATION WITH A UNIT",
+     "AN EY COLUMN IS CONVERTED WITH AEP = 1 - EXP(-EY)"
+    ]
+   },
+   "warnings": []
+  },
+  "location": {
+   "status": "WARNING",
+   "message": "THE TABLE IS FOR A LOCATION 28.0 KM FROM THE SITE (WARNING LIMIT OF THIS TOOL 5 KM, NOT A REQUIREMENT)",
+   "km": 28.04
+  },
+  "arr": null
+ },
+ "peak_flows": {
+  "formula": "Q = sum(C x A) x I / 3.6e6   (Q m3/s, C x A m2, I mm/h, I at the duration Tc)",
+  "phases": [
+   {
+    "phase": "pre",
+    "label": "PRE DEVELOPMENT",
+    "status": "EVALUATED",
+    "tc": {
+     "value": 10.0,
+     "unit": "min",
+     "basis": "USER",
+     "ref": "ENTERED IN THE STORMWATER PANEL",
+     "key": "stormwater.tc_pre_min"
+    },
+    "ca_m2": 27.0,
+    "q_l_s": 0.75,
+    "text": "Q = 27.0000 x 100.000 / 3.6e6 = 0.000750 m3/s = 0.750 L/s",
+    "why": [],
+    "intensity_mm_h": 100.0,
+    "intensity_method": "TABLE"
+   },
+   {
+    "phase": "post",
+    "label": "POST DEVELOPMENT",
+    "status": "EVALUATED",
+    "tc": {
+     "value": 5.0,
+     "unit": "min",
+     "basis": "USER",
+     "ref": "ENTERED IN THE STORMWATER PANEL",
+     "key": "stormwater.tc_post_min"
+    },
+    "ca_m2": 387.0,
+    "q_l_s": 16.125,
+    "text": "Q = 387.0000 x 150.000 / 3.6e6 = 0.016125 m3/s = 16.125 L/s",
+    "why": [],
+    "intensity_mm_h": 150.0,
+    "intensity_method": "TABLE"
+   }
+  ],
+  "missing": [],
+  "status": "EVALUATED",
+  "message": ""
+ },
+ "osd": {
+  "schema": "osd_sizing.v1",
+  "osd_required": {
+   "value": true,
+   "unit": "",
+   "basis": "PLATFORM DEFAULT",
+   "ref": "PLATFORM DEFAULT, LGA VALUE NOT FOUND: Owner decision D3, docs/14-3d-site-design-tools.md, 14/10/2026",
+   "stamp": "PLATFORM DEFAULT, LGA VALUE NOT FOUND",
+   "key": "stormwater.osd_required"
+  },
+  "method": {
+   "value": "mass_balance_modified_rational",
+   "unit": "",
+   "basis": "USER",
+   "ref": "ENTERED IN THE STORMWATER PANEL",
+   "key": "stormwater.osd_method",
+   "recognised": true,
+   "implemented": [
+    "mass_balance_modified_rational",
+    "user_ssr"
+   ],
+   "name": "mass_balance_modified_rational"
+  },
+  "inputs": [
+   {
+    "name": "Permissible site discharge",
+    "symbol": "PSD",
+    "value": 2.0,
+    "unit": "L/s",
+    "basis": "PLATFORM DEFAULT",
+    "ref": "PLATFORM DEFAULT, LGA VALUE NOT FOUND: Owner decision D3, docs/14-3d-site-design-tools.md, 14/10/2026",
+    "stamp": "PLATFORM DEFAULT, LGA VALUE NOT FOUND",
+    "key": "stormwater.psd_l_s"
+   },
+   {
+    "name": "Design AEP",
+    "symbol": "AEP",
+    "value": 10.0,
+    "unit": "%",
+    "basis": "USER",
+    "ref": "ENTERED IN THE STORMWATER PANEL",
+    "key": "stormwater.design_aep_pct"
+   },
+   {
+    "name": "Time of concentration, post development",
+    "symbol": "Tc",
+    "value": 5.0,
+    "unit": "min",
+    "basis": "USER",
+    "ref": "ENTERED IN THE STORMWATER PANEL",
+    "key": "stormwater.tc_post_min"
+   },
+   {
+    "name": "Sum of C x A draining to the OSD",
+    "symbol": "sum(C x A)",
+    "value": 360.0,
+    "unit": "m2",
+    "basis": "CALCULATED",
+    "ref": "SUM OF C x A OVER 1 ROW(S), 360.0 M2 OF SURFACE"
+   },
+   {
+    "name": "Longest duration searched",
+    "symbol": "td max",
+    "value": 1440.0,
+    "unit": "min",
+    "basis": "SEARCH RANGE",
+    "ref": "DEFAULT OF THIS TOOL: A COMPUTATION RANGE, NOT A REQUIREMENT. Enter a different limit in the panel."
+   }
+  ],
+  "catchment": {
+   "basis": "SURFACES ROUTED TO A PLACED OSD",
+   "area_m2": 360.0,
+   "ca_m2": 360.0,
+   "rows": [
+    "b1"
+   ],
+   "bypass": [
+    {
+     "id": "old",
+     "object_id": "old",
+     "area_m2": 90.0,
+     "ca_m2": 27.0,
+     "reason": "DEFAULT: LEGAL POINT OF DISCHARGE (NO LINK SET)"
+    }
+   ],
+   "bypass_note": "BYPASS AREAS DO NOT REACH A PLACED OSD. THEIR FLOW IS NOT DEDUCTED FROM THE PSD",
+   "complete": false,
+   "unclassified_m2": 162.0
+  },
+  "ifd": {
+   "status": "OK",
+   "message": "",
+   "source": "UPLOAD"
+  },
+  "steps": [
+   {
+    "id": "inflow",
+    "title": "Peak inflow for each duration searched",
+    "formula": "Qp = sum(C x A) x I / 3.6e6   (Qp m3/s, C x A m2, I mm/h)",
+    "inputs": [
+     {
+      "name": "Sum of C x A",
+      "symbol": "sum(C x A)",
+      "value": 360.0,
+      "unit": "m2",
+      "basis": "CALCULATED",
+      "ref": "SUM OF C x A OVER 1 ROW(S), 360.0 M2 OF SURFACE"
+     },
+     {
+      "name": "Design AEP",
+      "symbol": "AEP",
+      "value": 10.0,
+      "unit": "%",
+      "basis": "USER",
+      "ref": "ENTERED IN THE STORMWATER PANEL",
+      "key": "stormwater.design_aep_pct"
+     },
+     {
+      "name": "Rainfall table",
+      "symbol": "IFD",
+      "value": "synthetic_ifd.csv",
+      "unit": "",
+      "basis": "DATA SOURCE",
+      "ref": "BOM 2016 IFD DESIGN RAINFALL TABLE, USER UPLOAD; ISSUED 2016-01-01; LOCATION Synthetic Test Point; SHA256 340fc6246ce9"
+     }
+    ],
+    "result": {
+     "value": 6.0,
+     "unit": "L/s",
+     "text": "Qp at the critical duration 20 min: 360.0000 x 60.000 / 3.6e6 = 0.006000 m3/s"
+    }
+   },
+   {
+    "id": "storage",
+    "title": "Storage for each duration (mass balance against the PSD)",
+    "formula": "S = (Qp - PSD) x (td - Tc x PSD / Qp)   (S m3, times in seconds, 0 when Qp <= PSD)",
+    "inputs": [
+     {
+      "name": "Permissible site discharge",
+      "symbol": "PSD",
+      "value": 2.0,
+      "unit": "L/s",
+      "basis": "PLATFORM DEFAULT",
+      "ref": "PLATFORM DEFAULT, LGA VALUE NOT FOUND: Owner decision D3, docs/14-3d-site-design-tools.md, 14/10/2026",
+      "stamp": "PLATFORM DEFAULT, LGA VALUE NOT FOUND",
+      "key": "stormwater.psd_l_s"
+     },
+     {
+      "name": "Time of concentration",
+      "symbol": "Tc",
+      "value": 5.0,
+      "unit": "min",
+      "basis": "USER",
+      "ref": "ENTERED IN THE STORMWATER PANEL",
+      "key": "stormwater.tc_post_min"
+     },
+     {
+      "name": "Longest duration searched",
+      "symbol": "td max",
+      "value": 1440.0,
+      "unit": "min",
+      "basis": "SEARCH RANGE",
+      "ref": "DEFAULT OF THIS TOOL: A COMPUTATION RANGE, NOT A REQUIREMENT. Enter a different limit in the panel."
+     }
+    ],
+    "result": {
+     "value": 4.4,
+     "unit": "m3",
+     "text": "At 20 min: S = (0.006000 - 0.002000) x (1200 - 300 x 0.002000 / 0.006000) = 4.400 m3"
+    },
+    "table": [
+     {
+      "duration_min": 5.0,
+      "intensity_mm_h": 150.0,
+      "intensity_method": "TABLE",
+      "qp_l_s": 15.0,
+      "inflow_volume_m3": 4.5,
+      "storage_m3": 3.38
+     },
+     {
+      "duration_min": 10.0,
+      "intensity_mm_h": 100.0,
+      "intensity_method": "TABLE",
+      "qp_l_s": 10.0,
+      "inflow_volume_m3": 6.0,
+      "storage_m3": 4.32
+     },
+     {
+      "duration_min": 20.0,
+      "intensity_mm_h": 60.0,
+      "intensity_method": "TABLE",
+      "qp_l_s": 6.0,
+      "inflow_volume_m3": 7.2,
+      "storage_m3": 4.4
+     },
+     {
+      "duration_min": 30.0,
+      "intensity_mm_h": 45.0,
+      "intensity_method": "TABLE",
+      "qp_l_s": 4.5,
+      "inflow_volume_m3": 8.1,
+      "storage_m3": 4.1667
+     },
+     {
+      "duration_min": 60.0,
+      "intensity_mm_h": 30.0,
+      "intensity_method": "TABLE",
+      "qp_l_s": 3.0,
+      "inflow_volume_m3": 10.8,
+      "storage_m3": 3.4
+     }
+    ]
+   },
+   {
+    "id": "critical",
+    "title": "Critical duration and required storage",
+    "formula": "Required storage = largest S over the durations searched",
+    "inputs": [],
+    "result": {
+     "value": 4.4,
+     "unit": "m3",
+     "text": "Critical duration 20 min, required storage 4.400 m3"
+    }
+   }
+  ],
+  "required_storage_m3": 4.4,
+  "critical": {
+   "duration_min": 20.0,
+   "intensity_mm_h": 60.0,
+   "intensity_method": "TABLE",
+   "qp_l_s": 6.0,
+   "inflow_volume_m3": 7.2,
+   "storage_m3": 4.4
+  },
+  "search": {
+   "rows": [
+    {
+     "duration_min": 5.0,
+     "intensity_mm_h": 150.0,
+     "intensity_method": "TABLE",
+     "qp_l_s": 15.0,
+     "inflow_volume_m3": 4.5,
+     "storage_m3": 3.38
+    },
+    {
+     "duration_min": 10.0,
+     "intensity_mm_h": 100.0,
+     "intensity_method": "TABLE",
+     "qp_l_s": 10.0,
+     "inflow_volume_m3": 6.0,
+     "storage_m3": 4.32
+    },
+    {
+     "duration_min": 20.0,
+     "intensity_mm_h": 60.0,
+     "intensity_method": "TABLE",
+     "qp_l_s": 6.0,
+     "inflow_volume_m3": 7.2,
+     "storage_m3": 4.4
+    },
+    {
+     "duration_min": 30.0,
+     "intensity_mm_h": 45.0,
+     "intensity_method": "TABLE",
+     "qp_l_s": 4.5,
+     "inflow_volume_m3": 8.1,
+     "storage_m3": 4.1667
+    },
+    {
+     "duration_min": 60.0,
+     "intensity_mm_h": 30.0,
+     "intensity_method": "TABLE",
+     "qp_l_s": 3.0,
+     "inflow_volume_m3": 10.8,
+     "storage_m3": 3.4
+    }
+   ],
+   "critical": {
+    "duration_min": 20.0,
+    "intensity_mm_h": 60.0,
+    "intensity_method": "TABLE",
+    "qp_l_s": 6.0,
+    "inflow_volume_m3": 7.2,
+    "storage_m3": 4.4
+   },
+   "at_range_end": false,
+   "error": null
+  },
+  "notes": [
+   "METHOD ASSUMPTIONS: THE RUNOFF COEFFICIENTS ARE USED AS SUPPLIED FOR THE DESIGN EVENT; THE OUTFLOW IS A CONSTANT PSD; A TANK IS TAKEN AS FULL (NO REUSE CREDIT)"
+  ],
+  "missing": [],
+  "orifice": {
+   "inputs": [
+    {
+     "name": "Permissible site discharge",
+     "symbol": "Q",
+     "value": 2.0,
+     "unit": "L/s",
+     "basis": "PLATFORM DEFAULT",
+     "ref": "PLATFORM DEFAULT, LGA VALUE NOT FOUND: Owner decision D3, docs/14-3d-site-design-tools.md, 14/10/2026",
+     "stamp": "PLATFORM DEFAULT, LGA VALUE NOT FOUND",
+     "key": "stormwater.psd_l_s"
+    },
+    {
+     "name": "Discharge coefficient",
+     "symbol": "Cd",
+     "value": 0.6,
+     "unit": "",
+     "basis": "USER",
+     "ref": "ENTERED IN THE STORMWATER PANEL",
+     "key": "stormwater.orifice_discharge_coefficient"
+    },
+    {
+     "name": "Head",
+     "symbol": "h",
+     "value": 1.0,
+     "unit": "m",
+     "basis": "USER",
+     "ref": "ENTERED IN THE STORMWATER PANEL"
+    }
+   ],
+   "formula": "Q = Cd x A x SQRT(2 x g x h), A = pi x d^2 / 4, so d = SQRT(4 x Q / (pi x Cd x SQRT(2 x g x h)))",
+   "status": "EVALUATED",
+   "diameter_mm": 30.95,
+   "head_used_m": 1.0,
+   "text": "d = SQRT(4 x 0.002000 / (pi x 0.6 x SQRT(2 x 9.81 x 1.0000))) = 0.03095 m = 31.0 mm",
+   "missing": []
+  },
+  "provided": {
+   "osd": [
+    {
+     "object_id": "osd1",
+     "m3": 4.0,
+     "basis": "USER"
+    }
+   ],
+   "osd_total_m3": 4.0,
+   "osd_unset": [],
+   "tanks": [],
+   "tank_detention_m3": 0,
+   "tank_exclusion": {
+    "value": null,
+    "unit": "",
+    "basis": "UNRESOLVED",
+    "ref": "Not found in the governing documents: please supply whether the detention portion of a rainwater tank is excluded from the on site detention volume with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+    "how": "Enter in the panel whether the tank detention is excluded, or load the requirement key stormwater.rainwater_tank_excluded_from_detention_volume.",
+    "key": "stormwater.rainwater_tank_excluded_from_detention_volume"
+   },
+   "tank_counted": false,
+   "total_m3": 4.0,
+   "tank_note": ""
+  },
+  "comparison": {
+   "status": "PROVIDED STORAGE IS SHORT",
+   "required_m3": 4.4,
+   "provided_m3": 4.0,
+   "difference_m3": -0.4,
+   "message": "PROVIDED 4.000 M3 AGAINST REQUIRED 4.400 M3 (-0.400 M3)"
+  },
+  "status": "EVALUATED"
+ },
+ "infiltration": {
+  "schema": "infiltration.v1",
+  "label": "",
+  "rate": null,
+  "limit": {
+   "value": 24.0,
+   "unit": "h",
+   "basis": "LGA RULE",
+   "ref": "Test Engineering Standard (Testshire Council) p.3 s.2.1: \"infiltration.max_emptying_time_h 24.0\"",
+   "key": "infiltration.max_emptying_time_h"
+  },
+  "trenches": [
+   {
+    "object_id": "t1",
+    "label": "T1",
+    "rate": {
+     "value": 36.0,
+     "unit": "mm/h",
+     "basis": "USER",
+     "ref": "SITE TEST DATED 30/09/2026, METHOD: SYNTHETIC TEST FIXTURE, ENTERED ON T1",
+     "kind": "site_test",
+     "label": ""
+    },
+    "steps": [
+     {
+      "id": "volume",
+      "title": "Trench storage",
+      "formula": "V = L x W x D x n",
+      "inputs": [
+       {
+        "name": "Length",
+        "symbol": "L",
+        "value": 6.0,
+        "unit": "m",
+        "basis": "MODEL",
+        "ref": "CENTRELINE LENGTH OF THE TRENCH"
+       },
+       {
+        "name": "Width",
+        "symbol": "W",
+        "value": 1.0,
+        "unit": "m",
+        "basis": "USER",
+        "ref": "ENTERED ON T1"
+       },
+       {
+        "name": "Depth",
+        "symbol": "D",
+        "value": 1.0,
+        "unit": "m",
+        "basis": "USER",
+        "ref": "ENTERED ON T1"
+       },
+       {
+        "name": "Void ratio",
+        "symbol": "n",
+        "value": 0.4,
+        "unit": "",
+        "basis": "USER",
+        "ref": "ENTERED ON T1"
+       }
+      ],
+      "result": {
+       "value": 2.4,
+       "unit": "m3",
+       "text": "V = 6.000 x 1 x 1 x 0.4 = 2.400 m3"
+      }
+     },
+     {
+      "id": "emptying",
+      "title": "Emptying time",
+      "formula": "t = V / (q x A), A = L x W, q in m/h",
+      "inputs": [
+       {
+        "name": "Storage volume",
+        "symbol": "V",
+        "value": 2.4,
+        "unit": "m3",
+        "basis": "CALCULATED",
+        "ref": "STEP ABOVE"
+       },
+       {
+        "name": "Base area",
+        "symbol": "A",
+        "value": 6.0,
+        "unit": "m2",
+        "basis": "CALCULATED",
+        "ref": "L x W"
+       },
+       {
+        "name": "Infiltration rate",
+        "symbol": "q",
+        "value": 36.0,
+        "unit": "mm/h",
+        "basis": "USER",
+        "ref": "SITE TEST DATED 30/09/2026, METHOD: SYNTHETIC TEST FIXTURE, ENTERED ON T1"
+       }
+      ],
+      "result": {
+       "value": 11.1111,
+       "unit": "h",
+       "text": "t = 2.400 / (0.036000 x 6.000) = 11.11 h"
+      }
+     }
+    ],
+    "volume_m3": 2.4,
+    "emptying_time_h": 11.1111,
+    "status": "EVALUATED",
+    "missing": [],
+    "check": {
+     "status": "PASS",
+     "message": "EMPTYING TIME 11.11 H DOES NOT EXCEED THE LIMIT 24 H (LGA RULE)"
+    },
+    "rate_label": ""
+   }
+  ],
+  "missing": [],
+  "notes": [
+   "THE RATE ACTS ON THE BASE ONLY (NO SIDE WALL INFILTRATION), IS USED AS SUPPLIED (NO FACTOR OF SAFETY IS ASSUMED) AND THE TRENCH STARTS FULL"
+  ],
+  "status": "EVALUATED"
+ },
+ "overland": {
+  "schema": "overland_flow.v1",
+  "label": "FLOW PATHS INDICATIVE, NOT A FLOOD STUDY",
+  "status": "EVALUATED",
+  "message": "",
+  "terrain_status": "INDICATIVE 5 M DEM, LIDAR PENDING, NOT SURVEY",
+  "labels": [
+   "INDICATIVE 5 M DEM, LIDAR PENDING, NOT SURVEY",
+   "FLOW PATHS INDICATIVE, NOT A FLOOD STUDY"
+  ],
+  "parameters": {
+   "cell_m": 0.5,
+   "threshold_m2": 10.0,
+   "surface": "design",
+   "depression_min_depth_m": 0.01,
+   "margin_m": 5.0,
+   "notes": {
+    "cell_m": "COMPUTATION RESOLUTION OF THE RASTER (A PARAMETER OF THIS TOOL)",
+    "threshold_m2": "DISPLAY PARAMETER: THE CONTRIBUTING AREA AT WHICH A CELL IS DRAWN AS A FLOW PATH. IT DOES NOT CHANGE THE ACCUMULATION",
+    "depression_min_depth_m": "NOISE TOLERANCE ON GROUND LEVELS: A DEPRESSION SHALLOWER THAN THIS IS NOT REPORTED",
+    "margin_m": "RASTER MARGIN AROUND THE LOT SO WATER FROM AND TO THE NEIGHBOURS IS ROUTED"
+   }
+  },
+  "grid": {
+   "cell_m": 0.5,
+   "nx": 57,
+   "ny": 89,
+   "cells": 5073,
+   "valid_cells": 3633,
+   "origin": [
+    334495.0,
+    6263895.0
+   ],
+   "obstacle_cells": 1440,
+   "no_data_cells": 0
+  },
+  "depressions": [],
+  "paths": [
+   {
+    "max_area_m2": 197.25,
+    "points": [
+     [
+      334508.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334507.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334507.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334506.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334506.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334505.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334505.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334504.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334504.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334503.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334503.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334502.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334502.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334501.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334501.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334500.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334500.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334499.75,
+      6263924.75,
+      101.237
+     ],
+     [
+      334499.75,
+      6263924.25,
+      101.213
+     ],
+     [
+      334499.75,
+      6263923.75,
+      101.188
+     ],
+     [
+      334499.75,
+      6263923.25,
+      101.163
+     ],
+     [
+      334499.75,
+      6263922.75,
+      101.138
+     ],
+     [
+      334499.75,
+      6263922.25,
+      101.113
+     ],
+     [
+      334499.75,
+      6263921.75,
+      101.088
+     ],
+     [
+      334499.75,
+      6263921.25,
+      101.063
+     ],
+     [
+      334499.75,
+      6263920.75,
+      101.038
+     ],
+     [
+      334499.75,
+      6263920.25,
+      101.013
+     ],
+     [
+      334499.75,
+      6263919.75,
+      100.987
+     ],
+     [
+      334499.75,
+      6263919.25,
+      100.962
+     ],
+     [
+      334499.75,
+      6263918.75,
+      100.938
+     ],
+     [
+      334499.75,
+      6263918.25,
+      100.912
+     ],
+     [
+      334499.75,
+      6263917.75,
+      100.888
+     ],
+     [
+      334499.75,
+      6263917.25,
+      100.862
+     ],
+     [
+      334499.75,
+      6263916.75,
+      100.837
+     ],
+     [
+      334499.75,
+      6263916.25,
+      100.812
+     ],
+     [
+      334499.75,
+      6263915.75,
+      100.788
+     ],
+     [
+      334499.75,
+      6263915.25,
+      100.763
+     ],
+     [
+      334499.75,
+      6263914.75,
+      100.737
+     ],
+     [
+      334499.75,
+      6263914.25,
+      100.713
+     ],
+     [
+      334499.75,
+      6263913.75,
+      100.688
+     ],
+     [
+      334499.75,
+      6263913.25,
+      100.663
+     ],
+     [
+      334499.75,
+      6263912.75,
+      100.638
+     ],
+     [
+      334499.75,
+      6263912.25,
+      100.613
+     ],
+     [
+      334499.75,
+      6263911.75,
+      100.588
+     ],
+     [
+      334499.75,
+      6263911.25,
+      100.563
+     ],
+     [
+      334499.75,
+      6263910.75,
+      100.538
+     ],
+     [
+      334499.75,
+      6263910.25,
+      100.513
+     ],
+     [
+      334499.75,
+      6263909.75,
+      100.487
+     ],
+     [
+      334499.75,
+      6263909.25,
+      100.462
+     ],
+     [
+      334499.75,
+      6263908.75,
+      100.438
+     ],
+     [
+      334499.75,
+      6263908.25,
+      100.412
+     ],
+     [
+      334499.75,
+      6263907.75,
+      100.388
+     ],
+     [
+      334499.75,
+      6263907.25,
+      100.362
+     ],
+     [
+      334499.75,
+      6263906.75,
+      100.337
+     ],
+     [
+      334499.75,
+      6263906.25,
+      100.312
+     ],
+     [
+      334499.75,
+      6263905.75,
+      100.288
+     ],
+     [
+      334499.75,
+      6263905.25,
+      100.263
+     ],
+     [
+      334499.75,
+      6263904.75,
+      100.237
+     ],
+     [
+      334499.75,
+      6263904.25,
+      100.213
+     ],
+     [
+      334499.75,
+      6263903.75,
+      100.188
+     ],
+     [
+      334499.75,
+      6263903.25,
+      100.163
+     ],
+     [
+      334499.75,
+      6263902.75,
+      100.138
+     ],
+     [
+      334499.75,
+      6263902.25,
+      100.113
+     ],
+     [
+      334499.75,
+      6263901.75,
+      100.088
+     ],
+     [
+      334499.75,
+      6263901.25,
+      100.063
+     ],
+     [
+      334499.75,
+      6263900.75,
+      100.038
+     ],
+     [
+      334499.75,
+      6263900.25,
+      100.013
+     ],
+     [
+      334499.75,
+      6263899.75,
+      99.987
+     ],
+     [
+      334499.75,
+      6263899.25,
+      99.962
+     ],
+     [
+      334499.75,
+      6263898.75,
+      99.938
+     ],
+     [
+      334499.75,
+      6263898.25,
+      99.912
+     ],
+     [
+      334499.75,
+      6263897.75,
+      99.888
+     ],
+     [
+      334499.75,
+      6263897.25,
+      99.862
+     ],
+     [
+      334499.75,
+      6263896.75,
+      99.837
+     ],
+     [
+      334499.75,
+      6263896.25,
+      99.812
+     ],
+     [
+      334499.75,
+      6263895.75,
+      99.788
+     ],
+     [
+      334499.75,
+      6263895.25,
+      99.763
+     ],
+     [
+      334499.25,
+      6263895.25,
+      99.762
+     ]
+    ]
+   },
+   {
+    "max_area_m2": 197.25,
+    "points": [
+     [
+      334498.75,
+      6263919.75,
+      100.987
+     ],
+     [
+      334498.75,
+      6263919.25,
+      100.962
+     ],
+     [
+      334498.75,
+      6263918.75,
+      100.938
+     ],
+     [
+      334498.75,
+      6263918.25,
+      100.912
+     ],
+     [
+      334498.75,
+      6263917.75,
+      100.887
+     ],
+     [
+      334498.75,
+      6263917.25,
+      100.862
+     ],
+     [
+      334498.75,
+      6263916.75,
+      100.837
+     ],
+     [
+      334498.75,
+      6263916.25,
+      100.812
+     ],
+     [
+      334498.75,
+      6263915.75,
+      100.787
+     ],
+     [
+      334498.75,
+      6263915.25,
+      100.763
+     ],
+     [
+      334498.75,
+      6263914.75,
+      100.737
+     ],
+     [
+      334498.75,
+      6263914.25,
+      100.713
+     ],
+     [
+      334498.75,
+      6263913.75,
+      100.688
+     ],
+     [
+      334498.75,
+      6263913.25,
+      100.663
+     ],
+     [
+      334498.75,
+      6263912.75,
+      100.638
+     ],
+     [
+      334498.75,
+      6263912.25,
+      100.613
+     ],
+     [
+      334498.75,
+      6263911.75,
+      100.588
+     ],
+     [
+      334498.75,
+      6263911.25,
+      100.562
+     ],
+     [
+      334498.75,
+      6263910.75,
+      100.538
+     ],
+     [
+      334498.75,
+      6263910.25,
+      100.513
+     ],
+     [
+      334498.75,
+      6263909.75,
+      100.487
+     ],
+     [
+      334498.75,
+      6263909.25,
+      100.462
+     ],
+     [
+      334498.75,
+      6263908.75,
+      100.438
+     ],
+     [
+      334498.75,
+      6263908.25,
+      100.412
+     ],
+     [
+      334498.75,
+      6263907.75,
+      100.387
+     ],
+     [
+      334498.75,
+      6263907.25,
+      100.362
+     ],
+     [
+      334498.75,
+      6263906.75,
+      100.337
+     ],
+     [
+      334498.75,
+      6263906.25,
+      100.312
+     ],
+     [
+      334498.75,
+      6263905.75,
+      100.287
+     ],
+     [
+      334498.75,
+      6263905.25,
+      100.263
+     ],
+     [
+      334498.75,
+      6263904.75,
+      100.237
+     ],
+     [
+      334498.75,
+      6263904.25,
+      100.213
+     ],
+     [
+      334498.75,
+      6263903.75,
+      100.188
+     ],
+     [
+      334498.75,
+      6263903.25,
+      100.163
+     ],
+     [
+      334498.75,
+      6263902.75,
+      100.138
+     ],
+     [
+      334498.75,
+      6263902.25,
+      100.113
+     ],
+     [
+      334498.75,
+      6263901.75,
+      100.088
+     ],
+     [
+      334498.75,
+      6263901.25,
+      100.062
+     ],
+     [
+      334498.75,
+      6263900.75,
+      100.038
+     ],
+     [
+      334498.75,
+      6263900.25,
+      100.013
+     ],
+     [
+      334498.75,
+      6263899.75,
+      99.987
+     ],
+     [
+      334498.75,
+      6263899.25,
+      99.962
+     ],
+     [
+      334498.75,
+      6263898.75,
+      99.938
+     ],
+     [
+      334498.75,
+      6263898.25,
+      99.912
+     ],
+     [
+      334498.75,
+      6263897.75,
+      99.887
+     ],
+     [
+      334498.75,
+      6263897.25,
+      99.862
+     ],
+     [
+      334498.75,
+      6263896.75,
+      99.837
+     ],
+     [
+      334498.75,
+      6263896.25,
+      99.812
+     ],
+     [
+      334498.75,
+      6263895.75,
+      99.787
+     ],
+     [
+      334498.75,
+      6263895.25,
+      99.763
+     ],
+     [
+      334499.25,
+      6263895.25,
+      99.762
+     ]
+    ]
+   },
+   {
+    "max_area_m2": 197.25,
+    "points": [
+     [
+      334499.25,
+      6263919.75,
+      100.987
+     ],
+     [
+      334499.25,
+      6263919.25,
+      100.963
+     ],
+     [
+      334499.25,
+      6263918.75,
+      100.938
+     ],
+     [
+      334499.25,
+      6263918.25,
+      100.912
+     ],
+     [
+      334499.25,
+      6263917.75,
+      100.887
+     ],
+     [
+      334499.25,
+      6263917.25,
+      100.862
+     ],
+     [
+      334499.25,
+      6263916.75,
+      100.837
+     ],
+     [
+      334499.25,
+      6263916.25,
+      100.812
+     ],
+     [
+      334499.25,
+      6263915.75,
+      100.787
+     ],
+     [
+      334499.25,
+      6263915.25,
+      100.762
+     ],
+     [
+      334499.25,
+      6263914.75,
+      100.737
+     ],
+     [
+      334499.25,
+      6263914.25,
+      100.713
+     ],
+     [
+      334499.25,
+      6263913.75,
+      100.688
+     ],
+     [
+      334499.25,
+      6263913.25,
+      100.662
+     ],
+     [
+      334499.25,
+      6263912.75,
+      100.638
+     ],
+     [
+      334499.25,
+      6263912.25,
+      100.613
+     ],
+     [
+      334499.25,
+      6263911.75,
+      100.588
+     ],
+     [
+      334499.25,
+      6263911.25,
+      100.563
+     ],
+     [
+      334499.25,
+      6263910.75,
+      100.538
+     ],
+     [
+      334499.25,
+      6263910.25,
+      100.513
+     ],
+     [
+      334499.25,
+      6263909.75,
+      100.487
+     ],
+     [
+      334499.25,
+      6263909.25,
+      100.463
+     ],
+     [
+      334499.25,
+      6263908.75,
+      100.438
+     ],
+     [
+      334499.25,
+      6263908.25,
+      100.412
+     ],
+     [
+      334499.25,
+      6263907.75,
+      100.387
+     ],
+     [
+      334499.25,
+      6263907.25,
+      100.362
+     ],
+     [
+      334499.25,
+      6263906.75,
+      100.337
+     ],
+     [
+      334499.25,
+      6263906.25,
+      100.312
+     ],
+     [
+      334499.25,
+      6263905.75,
+      100.287
+     ],
+     [
+      334499.25,
+      6263905.25,
+      100.262
+     ],
+     [
+      334499.25,
+      6263904.75,
+      100.237
+     ],
+     [
+      334499.25,
+      6263904.25,
+      100.213
+     ],
+     [
+      334499.25,
+      6263903.75,
+      100.188
+     ],
+     [
+      334499.25,
+      6263903.25,
+      100.162
+     ],
+     [
+      334499.25,
+      6263902.75,
+      100.138
+     ],
+     [
+      334499.25,
+      6263902.25,
+      100.113
+     ],
+     [
+      334499.25,
+      6263901.75,
+      100.088
+     ],
+     [
+      334499.25,
+      6263901.25,
+      100.063
+     ],
+     [
+      334499.25,
+      6263900.75,
+      100.038
+     ],
+     [
+      334499.25,
+      6263900.25,
+      100.013
+     ],
+     [
+      334499.25,
+      6263899.75,
+      99.987
+     ],
+     [
+      334499.25,
+      6263899.25,
+      99.963
+     ],
+     [
+      334499.25,
+      6263898.75,
+      99.938
+     ],
+     [
+      334499.25,
+      6263898.25,
+      99.912
+     ],
+     [
+      334499.25,
+      6263897.75,
+      99.887
+     ],
+     [
+      334499.25,
+      6263897.25,
+      99.862
+     ],
+     [
+      334499.25,
+      6263896.75,
+      99.837
+     ],
+     [
+      334499.25,
+      6263896.25,
+      99.812
+     ],
+     [
+      334499.25,
+      6263895.75,
+      99.787
+     ],
+     [
+      334499.25,
+      6263895.25,
+      99.762
+     ]
+    ]
+   },
+   {
+    "max_area_m2": 152.75,
+    "points": [
+     [
+      334509.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334510.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334510.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334511.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334511.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334512.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334512.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334513.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334513.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334514.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334514.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334515.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334515.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334516.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334516.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334517.25,
+      6263925.25,
+      101.263
+     ],
+     [
+      334517.75,
+      6263925.25,
+      101.263
+     ],
+     [
+      334518.25,
+      6263924.75,
+      101.237
+     ],
+     [
+      334518.25,
+      6263924.25,
+      101.213
+     ],
+     [
+      334518.25,
+      6263923.75,
+      101.188
+     ],
+     [
+      334518.25,
+      6263923.25,
+      101.163
+     ],
+     [
+      334518.25,
+      6263922.75,
+      101.138
+     ],
+     [
+      334518.25,
+      6263922.25,
+      101.113
+     ],
+     [
+      334518.25,
+      6263921.75,
+      101.088
+     ],
+     [
+      334518.25,
+      6263921.25,
+      101.062
+     ],
+     [
+      334518.25,
+      6263920.75,
+      101.038
+     ],
+     [
+      334518.25,
+      6263920.25,
+      101.013
+     ],
+     [
+      334518.25,
+      6263919.75,
+      100.987
+     ],
+     [
+      334518.25,
+      6263919.25,
+      100.962
+     ],
+     [
+      334518.25,
+      6263918.75,
+      100.938
+     ],
+     [
+      334518.25,
+      6263918.25,
+      100.912
+     ],
+     [
+      334518.25,
+      6263917.75,
+      100.887
+     ],
+     [
+      334518.25,
+      6263917.25,
+      100.862
+     ],
+     [
+      334518.25,
+      6263916.75,
+      100.837
+     ],
+     [
+      334518.25,
+      6263916.25,
+      100.812
+     ],
+     [
+      334518.25,
+      6263915.75,
+      100.787
+     ],
+     [
+      334518.25,
+      6263915.25,
+      100.763
+     ],
+     [
+      334518.25,
+      6263914.75,
+      100.737
+     ],
+     [
+      334518.25,
+      6263914.25,
+      100.713
+     ],
+     [
+      334518.25,
+      6263913.75,
+      100.688
+     ],
+     [
+      334518.25,
+      6263913.25,
+      100.663
+     ],
+     [
+      334518.25,
+      6263912.75,
+      100.638
+     ],
+     [
+      334518.25,
+      6263912.25,
+      100.613
+     ],
+     [
+      334518.25,
+      6263911.75,
+      100.588
+     ],
+     [
+      334518.25,
+      6263911.25,
+      100.562
+     ],
+     [
+      334518.25,
+      6263910.75,
+      100.538
+     ],
+     [
+      334518.25,
+      6263910.25,
+      100.513
+     ],
+     [
+      334518.25,
+      6263909.75,
+      100.487
+     ],
+     [
+      334518.25,
+      6263909.25,
+      100.462
+     ],
+     [
+      334518.25,
+      6263908.75,
+      100.438
+     ],
+     [
+      334518.25,
+      6263908.25,
+      100.412
+     ],
+     [
+      334518.25,
+      6263907.75,
+      100.387
+     ],
+     [
+      334518.25,
+      6263907.25,
+      100.362
+     ],
+     [
+      334518.25,
+      6263906.75,
+      100.337
+     ],
+     [
+      334518.25,
+      6263906.25,
+      100.312
+     ],
+     [
+      334518.25,
+      6263905.75,
+      100.287
+     ],
+     [
+      334518.25,
+      6263905.25,
+      100.263
+     ],
+     [
+      334518.25,
+      6263904.75,
+      100.237
+     ],
+     [
+      334518.25,
+      6263904.25,
+      100.213
+     ],
+     [
+      334518.25,
+      6263903.75,
+      100.188
+     ],
+     [
+      334518.25,
+      6263903.25,
+      100.163
+     ],
+     [
+      334518.25,
+      6263902.75,
+      100.138
+     ],
+     [
+      334518.25,
+      6263902.25,
+      100.113
+     ],
+     [
+      334518.25,
+      6263901.75,
+      100.088
+     ],
+     [
+      334518.25,
+      6263901.25,
+      100.062
+     ],
+     [
+      334518.25,
+      6263900.75,
+      100.038
+     ],
+     [
+      334518.25,
+      6263900.25,
+      100.013
+     ],
+     [
+      334518.25,
+      6263899.75,
+      99.987
+     ],
+     [
+      334518.25,
+      6263899.25,
+      99.962
+     ],
+     [
+      334518.25,
+      6263898.75,
+      99.938
+     ],
+     [
+      334518.25,
+      6263898.25,
+      99.912
+     ],
+     [
+      334518.25,
+      6263897.75,
+      99.887
+     ],
+     [
+      334518.25,
+      6263897.25,
+      99.862
+     ],
+     [
+      334518.25,
+      6263896.75,
+      99.837
+     ],
+     [
+      334518.25,
+      6263896.25,
+      99.812
+     ],
+     [
+      334518.25,
+      6263895.75,
+      99.787
+     ],
+     [
+      334518.25,
+      6263895.25,
+      99.763
+     ]
+    ]
+   },
+   {
+    "max_area_m2": 66.75,
+    "points": [
+     [
+      334496.75,
+      6263919.75,
+      100.987
+     ],
+     [
+      334496.75,
+      6263919.25,
+      100.962
+     ],
+     [
+      334496.75,
+      6263918.75,
+      100.938
+     ],
+     [
+      334496.75,
+      6263918.25,
+      100.912
+     ],
+     [
+      334496.75,
+      6263917.75,
+      100.887
+     ],
+     [
+      334496.75,
+      6263917.25,
+      100.862
+     ],
+     [
+      334496.75,
+      6263916.75,
+      100.837
+     ],
+     [
+      334496.75,
+      6263916.25,
+      100.812
+     ],
+     [
+      334496.75,
+      6263915.75,
+      100.787
+     ],
+     [
+      334496.75,
+      6263915.25,
+      100.763
+     ],
+     [
+      334496.75,
+      6263914.75,
+      100.737
+     ],
+     [
+      334496.75,
+      6263914.25,
+      100.713
+     ],
+     [
+      334496.75,
+      6263913.75,
+      100.688
+     ],
+     [
+      334496.75,
+      6263913.25,
+      100.663
+     ],
+     [
+      334496.75,
+      6263912.75,
+      100.638
+     ],
+     [
+      334496.75,
+      6263912.25,
+      100.613
+     ],
+     [
+      334496.75,
+      6263911.75,
+      100.588
+     ],
+     [
+      334496.75,
+      6263911.25,
+      100.562
+     ],
+     [
+      334496.75,
+      6263910.75,
+      100.538
+     ],
+     [
+      334496.75,
+      6263910.25,
+      100.513
+     ],
+     [
+      334496.75,
+      6263909.75,
+      100.487
+     ],
+     [
+      334496.75,
+      6263909.25,
+      100.462
+     ],
+     [
+      334496.75,
+      6263908.75,
+      100.438
+     ],
+     [
+      334496.75,
+      6263908.25,
+      100.412
+     ],
+     [
+      334496.75,
+      6263907.75,
+      100.387
+     ],
+     [
+      334496.75,
+      6263907.25,
+      100.362
+     ],
+     [
+      334496.75,
+      6263906.75,
+      100.337
+     ],
+     [
+      334496.75,
+      6263906.25,
+      100.312
+     ],
+     [
+      334496.75,
+      6263905.75,
+      100.287
+     ],
+     [
+      334496.75,
+      6263905.25,
+      100.263
+     ],
+     [
+      334496.75,
+      6263904.75,
+      100.237
+     ],
+     [
+      334496.75,
+      6263904.25,
+      100.213
+     ],
+     [
+      334496.75,
+      6263903.75,
+      100.188
+     ],
+     [
+      334496.75,
+      6263903.25,
+      100.163
+     ],
+     [
+      334496.75,
+      6263902.75,
+      100.138
+     ],
+     [
+      334496.75,
+      6263902.25,
+      100.113
+     ],
+     [
+      334496.75,
+      6263901.75,
+      100.088
+     ],
+     [
+      334496.75,
+      6263901.25,
+      100.062
+     ],
+     [
+      334496.75,
+      6263900.75,
+      100.038
+     ],
+     [
+      334496.75,
+      6263900.25,
+      100.013
+     ],
+     [
+      334496.75,
+      6263899.75,
+      99.987
+     ],
+     [
+      334496.75,
+      6263899.25,
+      99.962
+     ],
+     [
+      334496.75,
+      6263898.75,
+      99.938
+     ],
+     [
+      334496.75,
+      6263898.25,
+      99.912
+     ],
+     [
+      334496.75,
+      6263897.75,
+      99.887
+     ],
+     [
+      334496.75,
+      6263897.25,
+      99.862
+     ],
+     [
+      334496.75,
+      6263896.75,
+      99.837
+     ],
+     [
+      334496.75,
+      6263896.25,
+      99.812
+     ],
+     [
+      334496.75,
+      6263895.75,
+      99.787
+     ],
+     [
+      334496.75,
+      6263895.25,
+      99.763
+     ],
+     [
+      334497.25,
+      6263895.25,
+      99.762
+     ]
+    ]
+   },
+   {
+    "max_area_m2": 66.75,
+    "points": [
+     [
+      334497.25,
+      6263919.75,
+      100.987
+     ],
+     [
+      334497.25,
+      6263919.25,
+      100.963
+     ],
+     [
+      334497.25,
+      6263918.75,
+      100.938
+     ],
+     [
+      334497.25,
+      6263918.25,
+      100.912
+     ],
+     [
+      334497.25,
+      6263917.75,
+      100.887
+     ],
+     [
+      334497.25,
+      6263917.25,
+      100.862
+     ],
+     [
+      334497.25,
+      6263916.75,
+      100.837
+     ],
+     [
+      334497.25,
+      6263916.25,
+      100.812
+     ],
+     [
+      334497.25,
+      6263915.75,
+      100.787
+     ],
+     [
+      334497.25,
+      6263915.25,
+      100.762
+     ],
+     [
+      334497.25,
+      6263914.75,
+      100.737
+     ],
+     [
+      334497.25,
+      6263914.25,
+      100.713
+     ],
+     [
+      334497.25,
+      6263913.75,
+      100.688
+     ],
+     [
+      334497.25,
+      6263913.25,
+      100.662
+     ],
+     [
+      334497.25,
+      6263912.75,
+      100.638
+     ],
+     [
+      334497.25,
+      6263912.25,
+      100.613
+     ],
+     [
+      334497.25,
+      6263911.75,
+      100.588
+     ],
+     [
+      334497.25,
+      6263911.25,
+      100.563
+     ],
+     [
+      334497.25,
+      6263910.75,
+      100.538
+     ],
+     [
+      334497.25,
+      6263910.25,
+      100.513
+     ],
+     [
+      334497.25,
+      6263909.75,
+      100.487
+     ],
+     [
+      334497.25,
+      6263909.25,
+      100.463
+     ],
+     [
+      334497.25,
+      6263908.75,
+      100.438
+     ],
+     [
+      334497.25,
+      6263908.25,
+      100.412
+     ],
+     [
+      334497.25,
+      6263907.75,
+      100.387
+     ],
+     [
+      334497.25,
+      6263907.25,
+      100.362
+     ],
+     [
+      334497.25,
+      6263906.75,
+      100.337
+     ],
+     [
+      334497.25,
+      6263906.25,
+      100.312
+     ],
+     [
+      334497.25,
+      6263905.75,
+      100.287
+     ],
+     [
+      334497.25,
+      6263905.25,
+      100.262
+     ],
+     [
+      334497.25,
+      6263904.75,
+      100.237
+     ],
+     [
+      334497.25,
+      6263904.25,
+      100.213
+     ],
+     [
+      334497.25,
+      6263903.75,
+      100.188
+     ],
+     [
+      334497.25,
+      6263903.25,
+      100.162
+     ],
+     [
+      334497.25,
+      6263902.75,
+      100.138
+     ],
+     [
+      334497.25,
+      6263902.25,
+      100.113
+     ],
+     [
+      334497.25,
+      6263901.75,
+      100.088
+     ],
+     [
+      334497.25,
+      6263901.25,
+      100.063
+     ],
+     [
+      334497.25,
+      6263900.75,
+      100.038
+     ],
+     [
+      334497.25,
+      6263900.25,
+      100.013
+     ],
+     [
+      334497.25,
+      6263899.75,
+      99.987
+     ],
+     [
+      334497.25,
+      6263899.25,
+      99.963
+     ],
+     [
+      334497.25,
+      6263898.75,
+      99.938
+     ],
+     [
+      334497.25,
+      6263898.25,
+      99.912
+     ],
+     [
+      334497.25,
+      6263897.75,
+      99.887
+     ],
+     [
+      334497.25,
+      6263897.25,
+      99.862
+     ],
+     [
+      334497.25,
+      6263896.75,
+      99.837
+     ],
+     [
+      334497.25,
+      6263896.25,
+      99.812
+     ],
+     [
+      334497.25,
+      6263895.75,
+      99.787
+     ],
+     [
+      334497.25,
+      6263895.25,
+      99.762
+     ]
+    ]
+   }
+  ],
+  "obstacles": [
+   {
+    "object_id": "b1",
+    "kind": "BUILDING",
+    "cells": 1440
+   }
+  ],
+  "graded": [],
+  "notes": [
+   "TERRAIN SOURCE RESOLUTION: NOT STATED. A RASTER CELL OF 0.5 M DOES NOT ADD DETAIL THE TERRAIN DOES NOT HAVE",
+   "CONTRIBUTING AREA IS THE AREA OF GROUND THAT DRAINS THROUGH A CELL. NO RAINFALL, RUNOFF COEFFICIENT, ROUGHNESS, DEPTH OR VELOCITY IS USED",
+   "DEPRESSIONS ARE REPORTED AND DRAWN AS PONDING. THE FLOW PATHS CONTINUE ACROSS THEM ON THE CONDITIONED SURFACE"
+  ],
+  "timing_ms": 14.9,
+  "missing": [],
+  "depressions_total": 0,
+  "paths_truncated": false,
+  "path_cells": 1113,
+  "max_contributing_area_m2": 197.25,
+  "enclosed_cells": 0
+ },
+ "missing": [],
+ "notes": [
+  "162.0 M2 OF THE LOT HAS NO SURFACE OBJECT AND IS NOT IN THE CATCHMENT TOTALS",
+  "A TANK IS TAKEN AS FULL AT THE START OF THE DESIGN STORM, SO THE CONNECTED ROOF IS PASSED TO THE OVERFLOW TARGET (NO REUSE CREDIT)",
+  "METHOD ASSUMPTIONS: THE RUNOFF COEFFICIENTS ARE USED AS SUPPLIED FOR THE DESIGN EVENT; THE OUTFLOW IS A CONSTANT PSD; A TANK IS TAKEN AS FULL (NO REUSE CREDIT)"
+ ]
+}

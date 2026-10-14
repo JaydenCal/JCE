@@ -145,3 +145,7 @@
 .v3d .dz-wide{grid-template-columns:minmax(90px,1fr) 1.2fr auto}
 .v3d .dz-groups details{margin:6px 0}
 .v3d .screen-box{border:1px dashed var(--bad);border-radius:6px;padding:6px;margin-top:8px;font-size:12px}
+.v3d .sw-steps{margin:6px 0;padding-left:18px;display:flex;flex-direction:column;gap:8px}
+.v3d .sw-dest ul{margin:2px 0 6px;padding-left:18px}
+.v3d .sw-trench{margin:6px 0;border-top:1px solid var(--line, #d0d4da);padding-top:6px}
+.v3d .sw-toggle{display:flex;gap:6px;align-items:center;font-size:12px;margin:4px 0}

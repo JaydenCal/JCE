@@ -26,6 +26,7 @@ import { EngineHttpError, postRwtSize, postSewerRoute, postWaterRoute, type Rout
 import { CalibrationError, calibrate, calibrationLabel, clampOpacity, MAX_UNDERLAY_PX, type Calibration } from './underlay';
 import { LiveChecks, type ChecksState } from './serverChecks';
 import { zonesOf } from './checkList';
+import { StormwaterSession, type SwState } from './stormwaterSession';
 import type { Endpoint } from './persist';
 import { OBJECT_KINDS, dimOf, levelOf, minVertices, verticesOf, type GeometryKind, type ObjectType, type Pos, type SiteDesign, type SiteObject, type Status } from './types';
 
@@ -81,6 +82,8 @@ export interface DesignState {
   underlay: UnderlayInfo | null;
   route: RoutePanel | null;
   pickPrompt: string | null;
+  /** stage 9: the stormwater helper (entries, the last server answer, uploads, the overland flow toggle) */
+  stormwater: SwState;
 }
 export interface RwtSizePanel { id: string; status: 'idle' | 'pending' | 'ok' | 'error'; error: string; result: RwtSizeResult | null }
 export interface EnginePanel { status: LiveStatus; error: string; /** the result on show is a PREVIEW or stale */ stale: boolean }
@@ -145,6 +148,8 @@ export class DesignController {
   readonly live: LiveEngine;
   /** stage 7: the server checks of the whole design, asked for after every document change */
   readonly checks: LiveChecks;
+  /** stage 9: the stormwater helper. The server computes; the overland flow layer of its answer is drawn by `scene` while the toggle is on. */
+  readonly stormwater: StormwaterSession;
   private sizing = new Map<string, RwtSizePanel>();
   private sizeAbort: AbortController | null = null;
   readonly terrain: SceneTerrain;
@@ -195,6 +200,8 @@ export class DesignController {
     this.checks = new LiveChecks({ ep: h.engine ?? null, debounceMs: h.checksDebounceMs });
     this.checks.listener = (st) => { this.scene.setZones(st.result ? zonesOf(st.result) : {}); this.emit(); };
     this.scene = new SiteScene({ origin: O, terrain: this.terrain, makeLabel: h.makeLabel, existing });
+    this.stormwater = new StormwaterSession(h.engine ?? null, () => this.store.doc);
+    this.stormwater.listener = (st) => { this.scene.setOverland(st.overland.on && st.result ? st.result.overland : null); this.emit(); };
     h.built.root.add(this.scene.group, this.handles);
     this.marker = new THREE.Mesh(new THREE.RingGeometry(0.7, 1, 28), new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, side: THREE.DoubleSide }));
     this.marker.renderOrder = 20; this.marker.visible = false; h.built.root.add(this.marker);
@@ -204,7 +211,7 @@ export class DesignController {
     this.scene.syncAll(this.store.doc);
     this.refreshAll(); this.requestChecks();
     this.off.push(this.store.on('change', (ev) => {
-      this.scene.apply(ev); this.afterChange(ev);
+      this.scene.apply(ev); this.afterChange(ev); this.stormwater.documentChanged();
       if (this.selected && !ev.doc.objects.some((o) => o.id === this.selected)) { this.selected = null; this.selVertex = null; }
       if (this.selVertex !== null) { const o = this.selObj(); if (!o || this.selVertex >= verticesOf(o.geometry).length) this.selVertex = null; }
       this.scene.setSelected(this.selected); this.syncHandles(); this.emit();
@@ -242,6 +249,7 @@ export class DesignController {
       driveway: this.drivewayPanel(), grading: this.gradingPanel(), hoverText: this.hoverText, dragInfo: this.dragInfo,
       checks: this.checks.state, rwtSize: this.selected ? this.sizing.get(this.selected) ?? null : null,
       underlay: this.underlayInfo(), route: this.routePanel, pickPrompt: this.tool === 'pick' ? this.pickText : null,
+      stormwater: this.stormwater.state,
     };
   }
 
@@ -1007,7 +1015,7 @@ export class DesignController {
   yawDeg() { return normDeg(this.yaw); }
 
   dispose() {
-    this.cancelAll(); this.live.dispose(); this.checks.dispose(); this.sizeAbort?.abort(); this.clearRoute(false); this.clearUnderlay(false); this.off.forEach((f) => f()); this.off = [];
+    this.cancelAll(); this.live.dispose(); this.checks.dispose(); this.stormwater.dispose(); this.sizeAbort?.abort(); this.clearRoute(false); this.clearUnderlay(false); this.off.forEach((f) => f()); this.off = [];
     this.h.built.root.remove(this.scene.group, this.handles, this.marker, this.selRing); this.scene.dispose();
     this.marker.geometry.dispose(); (this.marker.material as THREE.Material).dispose(); this.selRing.geometry.dispose(); (this.selRing.material as THREE.Material).dispose();
   }

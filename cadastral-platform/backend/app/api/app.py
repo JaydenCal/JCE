@@ -235,4 +235,6 @@ def create_app(settings: Settings | None = None, pool=None, orchestrator: Orches
     app.include_router(site_design_router)
     from app.api.dbyd import router as dbyd_router
     app.include_router(dbyd_router)
+    from app.api.stormwater import router as stormwater_router
+    app.include_router(stormwater_router)
     return app

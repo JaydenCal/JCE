@@ -148,3 +148,25 @@ def check_site_design(design: Any) -> None:
     pairs = trees * len(objs)
     if pairs > MAX_CHECK_TREE_PAIRS:
         raise EngineLimitError(CHECK_TOO_LARGE, f"THE TREE ZONE CHECK NEEDS {pairs:,} TREE AND OBJECT PAIRS; AT MOST {MAX_CHECK_TREE_PAIRS:,} ARE ACCEPTED")
+
+
+# ---- stage 9: the overland flow raster (sanity limits, not engineering values)
+OVERLAND_TOO_LARGE = "OVERLAND_INPUT_TOO_LARGE"
+OVERLAND_TIMEOUT = "OVERLAND_TIMEOUT"
+MAX_OVERLAND_SECONDS = 8.0                       # wall clock limit of one overland flow calculation (a sanity limit of this tool); over it the request is stopped with 422 OVERLAND_TIMEOUT
+MAX_OVERLAND_CELLS = 400_000                     # cells of the overland flow raster (60 m x 60 m at 0.5 m is 14,400; the whole limit allows about 316 m x 316 m at 0.5 m)
+MIN_OVERLAND_CELL_M = 0.25                       # the finest cell size accepted
+MAX_OVERLAND_CELL_M = 5.0                        # the coarsest cell size accepted
+MAX_OVERLAND_PATHS = 200                         # flow path lines drawn
+MAX_OVERLAND_PATH_POINTS = 4000                  # points of all flow path lines together
+MAX_OVERLAND_PONDS = 100                         # ponding polygons reported
+
+
+def check_overland(width_m: float, height_m: float, cell_m: float) -> tuple[int, int]:
+    """The raster of the lot plus a margin: refuse a cell size outside the accepted range and a raster over ``MAX_OVERLAND_CELLS``. Returns (columns, rows)."""
+    if not (MIN_OVERLAND_CELL_M <= cell_m <= MAX_OVERLAND_CELL_M):
+        raise EngineLimitError(OVERLAND_TOO_LARGE, f"THE CELL SIZE {cell_m:g} M IS OUTSIDE {MIN_OVERLAND_CELL_M:g} TO {MAX_OVERLAND_CELL_M:g} M")
+    nx, ny = int(math.ceil(width_m / cell_m)) + 1, int(math.ceil(height_m / cell_m)) + 1
+    if nx * ny > MAX_OVERLAND_CELLS:
+        raise EngineLimitError(OVERLAND_TOO_LARGE, f"THE OVERLAND FLOW RASTER WOULD HAVE {nx * ny:,} CELLS ({nx} x {ny} AT {cell_m:g} M); AT MOST {MAX_OVERLAND_CELLS:,} ARE ACCEPTED. USE A LARGER CELL SIZE")
+    return nx, ny

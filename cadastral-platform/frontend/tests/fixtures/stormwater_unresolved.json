@@ -1,0 +1,694 @@
+{
+ "_synthetic": "SYNTHETIC TEST FIXTURE: written by the stage 9 backend from a synthetic design, a synthetic rainfall table and fake rule values. Not an engineering result.",
+ "schema": "stormwater.v1",
+ "generated_at": "2026-10-15T09:00:00+00:00",
+ "terrain_status": "INDICATIVE 5 M DEM, LIDAR PENDING, NOT SURVEY",
+ "lot_area_m2": 612.0,
+ "catchment": {
+  "rows": [
+   {
+    "object_id": "b1",
+    "object_type": "building",
+    "label": "B1",
+    "status": "proposed",
+    "phases": [
+     "post"
+    ],
+    "surface": "roof",
+    "surface_label": "ROOF",
+    "area_basis": "FOOTPRINT AREA; THE ROOF AREA IS NOT SET",
+    "area_note": "THE ROOF PLAN AREA IS NOT SET, SO THE FOOTPRINT IS USED (EAVES NOT INCLUDED)",
+    "drains_to_id": "osd1",
+    "id": "b1",
+    "area_m2": 360.0,
+    "split": null,
+    "runoff": {
+     "value": null,
+     "unit": "",
+     "basis": "UNRESOLVED",
+     "ref": "Not found in the governing documents: please supply runoff coefficient of a roof surface for the design event (ratio) with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+     "key": "stormwater.runoff_coefficient.roof",
+     "how": "Enter the runoff coefficient of roof in the panel, or load the requirement key stormwater.runoff_coefficient.roof for the LGA."
+    },
+    "ca_m2": null
+   },
+   {
+    "object_id": "old",
+    "object_type": "landscape_area",
+    "label": "OLD",
+    "status": "existing",
+    "phases": [
+     "pre",
+     "post"
+    ],
+    "surface": "landscape_turf",
+    "surface_label": "TURF",
+    "area_basis": "PLAN AREA OF THE DRAWN OUTLINE",
+    "area_note": "",
+    "drains_to_id": null,
+    "id": "old",
+    "area_m2": 90.0,
+    "split": null,
+    "runoff": {
+     "value": null,
+     "unit": "",
+     "basis": "UNRESOLVED",
+     "ref": "Not found in the governing documents: please supply runoff coefficient of a turf surface (ratio) with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+     "key": "landscape.runoff_coefficient.turf",
+     "how": "Enter the runoff coefficient of turf in the panel, or load the requirement key landscape.runoff_coefficient.turf for the LGA."
+    },
+    "ca_m2": null
+   }
+  ],
+  "post_rows": [
+   {
+    "object_id": "b1",
+    "object_type": "building",
+    "label": "B1",
+    "status": "proposed",
+    "phases": [
+     "post"
+    ],
+    "surface": "roof",
+    "surface_label": "ROOF",
+    "area_basis": "FOOTPRINT AREA; THE ROOF AREA IS NOT SET",
+    "area_note": "THE ROOF PLAN AREA IS NOT SET, SO THE FOOTPRINT IS USED (EAVES NOT INCLUDED)",
+    "drains_to_id": "osd1",
+    "id": "b1",
+    "area_m2": 360.0,
+    "split": null,
+    "runoff": {
+     "value": null,
+     "unit": "",
+     "basis": "UNRESOLVED",
+     "ref": "Not found in the governing documents: please supply runoff coefficient of a roof surface for the design event (ratio) with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+     "key": "stormwater.runoff_coefficient.roof",
+     "how": "Enter the runoff coefficient of roof in the panel, or load the requirement key stormwater.runoff_coefficient.roof for the LGA."
+    },
+    "ca_m2": null,
+    "route": {
+     "to": "osd1",
+     "path": [
+      "osd1",
+      "dp1"
+     ],
+     "basis": "LINKED",
+     "reason": ""
+    }
+   },
+   {
+    "object_id": "old",
+    "object_type": "landscape_area",
+    "label": "OLD",
+    "status": "existing",
+    "phases": [
+     "pre",
+     "post"
+    ],
+    "surface": "landscape_turf",
+    "surface_label": "TURF",
+    "area_basis": "PLAN AREA OF THE DRAWN OUTLINE",
+    "area_note": "",
+    "drains_to_id": null,
+    "id": "old",
+    "area_m2": 90.0,
+    "split": null,
+    "runoff": {
+     "value": null,
+     "unit": "",
+     "basis": "UNRESOLVED",
+     "ref": "Not found in the governing documents: please supply runoff coefficient of a turf surface (ratio) with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+     "key": "landscape.runoff_coefficient.turf",
+     "how": "Enter the runoff coefficient of turf in the panel, or load the requirement key landscape.runoff_coefficient.turf for the LGA."
+    },
+    "ca_m2": null,
+    "route": {
+     "to": "dp1",
+     "path": [
+      "dp1"
+     ],
+     "basis": "DEFAULT: LEGAL POINT OF DISCHARGE (NO LINK SET)",
+     "reason": ""
+    }
+   }
+  ],
+  "comparison": {
+   "pre": {
+    "phase": "pre",
+    "by_surface": [
+     {
+      "surface": "landscape_turf",
+      "label": "TURF",
+      "area_m2": 90.0,
+      "ca_m2": 0.0,
+      "area_unknown": 0,
+      "coeff_unknown": 1,
+      "objects": 1
+     }
+    ],
+    "area_m2": 90.0,
+    "ca_m2": 0,
+    "complete": false,
+    "weighted_c": null,
+    "objects": 1
+   },
+   "post": {
+    "phase": "post",
+    "by_surface": [
+     {
+      "surface": "roof",
+      "label": "ROOF",
+      "area_m2": 360.0,
+      "ca_m2": 0.0,
+      "area_unknown": 0,
+      "coeff_unknown": 1,
+      "objects": 1
+     },
+     {
+      "surface": "landscape_turf",
+      "label": "TURF",
+      "area_m2": 90.0,
+      "ca_m2": 0.0,
+      "area_unknown": 0,
+      "coeff_unknown": 1,
+      "objects": 1
+     }
+    ],
+    "area_m2": 450.0,
+    "ca_m2": 0,
+    "complete": false,
+    "weighted_c": null,
+    "objects": 2
+   },
+   "pre_status": "OK",
+   "pre_message": "",
+   "pre_unclassified": {
+    "status": "OK",
+    "message": "",
+    "lot_area_m2": 612.0,
+    "covered_m2": 90.0,
+    "unclassified_m2": 522.0
+   },
+   "post_unclassified": {
+    "status": "OK",
+    "message": "",
+    "lot_area_m2": 612.0,
+    "covered_m2": 450.0,
+    "unclassified_m2": 162.0
+   },
+   "pre_overlaps": {
+    "overlap_m2": 0.0,
+    "pairs": []
+   },
+   "post_overlaps": {
+    "overlap_m2": 0.0,
+    "pairs": []
+   }
+  },
+  "routing": [
+   {
+    "destination": "dp1",
+    "type": "discharge_point",
+    "area_m2": 450.0,
+    "ca_m2": 0.0,
+    "ca_unknown": 2,
+    "rows": [
+     {
+      "id": "b1",
+      "object_id": "b1",
+      "surface": "ROOF",
+      "area_m2": 360.0,
+      "split": null,
+      "path": [
+       "osd1",
+       "dp1"
+      ],
+      "basis": "LINKED",
+      "reason": ""
+     },
+     {
+      "id": "old",
+      "object_id": "old",
+      "surface": "TURF",
+      "area_m2": 90.0,
+      "split": null,
+      "path": [
+       "dp1"
+      ],
+      "basis": "DEFAULT: LEGAL POINT OF DISCHARGE (NO LINK SET)",
+      "reason": ""
+     }
+    ]
+   }
+  ],
+  "discharge_points": [
+   {
+    "id": "dp1",
+    "label": "DP1",
+    "kind": "kerb_outlet",
+    "basis": "SYNTHETIC TEST FIXTURE"
+   }
+  ]
+ },
+ "rainfall": {
+  "status": "NOT AVAILABLE",
+  "message": "NO IFD TABLE HAS BEEN UPLOADED FOR THIS PROJECT",
+  "source": "UPLOAD",
+  "site": {
+   "lat": -33.751912,
+   "lon": 151.21325
+  },
+  "table": null,
+  "location": null,
+  "arr": null
+ },
+ "peak_flows": {
+  "formula": "Q = sum(C x A) x I / 3.6e6   (Q m3/s, C x A m2, I mm/h, I at the duration Tc)",
+  "phases": [
+   {
+    "phase": "pre",
+    "label": "PRE DEVELOPMENT",
+    "status": "NOT EVALUATED",
+    "tc": {
+     "value": null,
+     "unit": "min",
+     "basis": "UNRESOLVED",
+     "ref": "Not found in the governing documents: please supply time of concentration (minutes) of the pre development site, where the rule states one with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+     "how": "Enter the pre development time of concentration in the panel, or load the requirement key stormwater.tc_pre_min.",
+     "key": "stormwater.tc_pre_min"
+    },
+    "ca_m2": null,
+    "q_l_s": null,
+    "text": "",
+    "why": [
+     "THE CATCHMENT IS INCOMPLETE (A SURFACE HAS NO AREA OR NO RUNOFF COEFFICIENT)",
+     "THE PRE DEVELOPMENT TIME OF CONCENTRATION IS UNRESOLVED"
+    ]
+   },
+   {
+    "phase": "post",
+    "label": "POST DEVELOPMENT",
+    "status": "NOT EVALUATED",
+    "tc": {
+     "value": null,
+     "unit": "min",
+     "basis": "UNRESOLVED",
+     "ref": "Not found in the governing documents: please supply time of concentration (minutes) of the post development site, where the rule states one with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+     "how": "Enter the post development time of concentration in the panel, or load the requirement key stormwater.tc_post_min.",
+     "key": "stormwater.tc_post_min"
+    },
+    "ca_m2": null,
+    "q_l_s": null,
+    "text": "",
+    "why": [
+     "THE CATCHMENT IS INCOMPLETE (A SURFACE HAS NO AREA OR NO RUNOFF COEFFICIENT)",
+     "THE POST DEVELOPMENT TIME OF CONCENTRATION IS UNRESOLVED"
+    ]
+   }
+  ],
+  "missing": [
+   {
+    "id": "aep",
+    "area": "PEAK FLOW",
+    "what": "THE DESIGN AEP IS UNRESOLVED",
+    "key": "stormwater.design_aep_pct",
+    "how": "Enter the design AEP in the panel, or load the requirement key stormwater.design_aep_pct for the LGA."
+   },
+   {
+    "id": "ifd",
+    "area": "PEAK FLOW",
+    "what": "DESIGN RAINFALL IS NOT AVAILABLE: NO IFD TABLE HAS BEEN UPLOADED FOR THIS PROJECT",
+    "key": null,
+    "how": "Upload the IFD table CSV exported from the BoM IFD page."
+   },
+   {
+    "id": "tc_pre",
+    "area": "PEAK FLOW",
+    "what": "THE PRE DEVELOPMENT TIME OF CONCENTRATION IS UNRESOLVED",
+    "key": "stormwater.tc_pre_min",
+    "how": "Enter the pre development time of concentration in the panel, or load the requirement key stormwater.tc_pre_min."
+   },
+   {
+    "id": "tc_post",
+    "area": "PEAK FLOW",
+    "what": "THE POST DEVELOPMENT TIME OF CONCENTRATION IS UNRESOLVED",
+    "key": "stormwater.tc_post_min",
+    "how": "Enter the post development time of concentration in the panel, or load the requirement key stormwater.tc_post_min."
+   }
+  ],
+  "status": "NOT EVALUATED",
+  "message": "NOT EVALUATED FOR PRE DEVELOPMENT, POST DEVELOPMENT: THE CATCHMENT IS INCOMPLETE (A SURFACE HAS NO AREA OR NO RUNOFF COEFFICIENT); THE PRE DEVELOPMENT TIME OF CONCENTRATION IS UNRESOLVED; THE CATCHMENT IS INCOMPLETE (A SURFACE HAS NO AREA OR NO RUNOFF COEFFICIENT); THE POST DEVELOPMENT TIME OF CONCENTRATION IS UNRESOLVED"
+ },
+ "osd": {
+  "schema": "osd_sizing.v1",
+  "osd_required": {
+   "value": null,
+   "unit": "",
+   "basis": "UNRESOLVED",
+   "ref": "Not found in the governing documents: please supply whether on-site detention (OSD) is required for this LGA with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+   "how": "Load the requirement key stormwater.osd_required for the LGA.",
+   "key": "stormwater.osd_required"
+  },
+  "method": {
+   "value": null,
+   "unit": "",
+   "basis": "UNRESOLVED",
+   "ref": "Not found in the governing documents: please supply the OSD sizing method the LGA prescribes (e.g. a named procedure or table) with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+   "how": "Load the requirement key stormwater.osd_method for the LGA, or enter the method in the panel. The methods this tool can run are: mass_balance_modified_rational, user_ssr.",
+   "key": "stormwater.osd_method",
+   "recognised": false,
+   "implemented": [
+    "mass_balance_modified_rational",
+    "user_ssr"
+   ],
+   "name": null
+  },
+  "inputs": [
+   {
+    "name": "Permissible site discharge",
+    "symbol": "PSD",
+    "value": null,
+    "unit": "L/s",
+    "basis": "UNRESOLVED",
+    "ref": "Not found in the governing documents: please supply permissible site discharge (PSD), litres per second with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+    "how": "Load the requirement key stormwater.psd_l_s for the LGA, or enter the PSD in the panel.",
+    "key": "stormwater.psd_l_s"
+   },
+   {
+    "name": "Design AEP",
+    "symbol": "AEP",
+    "value": null,
+    "unit": "%",
+    "basis": "UNRESOLVED",
+    "ref": "Not found in the governing documents: please supply annual exceedance probability (percent) of the design storm for on site detention sizing with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+    "how": "Enter the design AEP in the panel, or load the requirement key stormwater.design_aep_pct for the LGA.",
+    "key": "stormwater.design_aep_pct"
+   },
+   {
+    "name": "Time of concentration, post development",
+    "symbol": "Tc",
+    "value": null,
+    "unit": "min",
+    "basis": "UNRESOLVED",
+    "ref": "Not found in the governing documents: please supply time of concentration (minutes) of the post development site, where the rule states one with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+    "how": "Enter the post development time of concentration in the panel (state how you found it), or load the requirement key stormwater.tc_post_min.",
+    "key": "stormwater.tc_post_min"
+   },
+   {
+    "name": "Sum of C x A draining to the OSD",
+    "symbol": "sum(C x A)",
+    "value": null,
+    "unit": "m2",
+    "basis": "UNRESOLVED",
+    "ref": "1 SURFACE(S) HAVE NO AREA OR NO RUNOFF COEFFICIENT",
+    "how": "Complete the catchment table: every row needs an area and a runoff coefficient."
+   },
+   {
+    "name": "Longest duration searched",
+    "symbol": "td max",
+    "value": 1440.0,
+    "unit": "min",
+    "basis": "SEARCH RANGE",
+    "ref": "DEFAULT OF THIS TOOL: A COMPUTATION RANGE, NOT A REQUIREMENT. Enter a different limit in the panel."
+   }
+  ],
+  "catchment": {
+   "basis": "SURFACES ROUTED TO A PLACED OSD",
+   "area_m2": 360.0,
+   "ca_m2": null,
+   "rows": [
+    "b1"
+   ],
+   "bypass": [
+    {
+     "id": "old",
+     "object_id": "old",
+     "area_m2": 90.0,
+     "ca_m2": null,
+     "reason": "DEFAULT: LEGAL POINT OF DISCHARGE (NO LINK SET)"
+    }
+   ],
+   "bypass_note": "BYPASS AREAS DO NOT REACH A PLACED OSD. THEIR FLOW IS NOT DEDUCTED FROM THE PSD",
+   "complete": false,
+   "unclassified_m2": 162.0
+  },
+  "ifd": {
+   "status": "NOT AVAILABLE",
+   "message": "NO IFD TABLE HAS BEEN UPLOADED FOR THIS PROJECT",
+   "source": "UPLOAD"
+  },
+  "steps": [],
+  "required_storage_m3": null,
+  "critical": null,
+  "search": null,
+  "notes": [
+   "METHOD ASSUMPTIONS: THE RUNOFF COEFFICIENTS ARE USED AS SUPPLIED FOR THE DESIGN EVENT; THE OUTFLOW IS A CONSTANT PSD; A TANK IS TAKEN AS FULL (NO REUSE CREDIT)"
+  ],
+  "missing": [
+   {
+    "id": "osd_required",
+    "area": "OSD",
+    "what": "WHETHER ON SITE DETENTION IS REQUIRED IS UNRESOLVED",
+    "key": "stormwater.osd_required",
+    "how": "Load the requirement key stormwater.osd_required for the LGA."
+   },
+   {
+    "id": "osd_method",
+    "area": "OSD",
+    "what": "THE OSD SIZING METHOD IS UNRESOLVED",
+    "key": "stormwater.osd_method",
+    "how": "Load the requirement key stormwater.osd_method for the LGA, or enter the method in the panel. The methods this tool can run are: mass_balance_modified_rational, user_ssr."
+   }
+  ],
+  "orifice": null,
+  "provided": {
+   "osd": [
+    {
+     "object_id": "osd1",
+     "m3": 4.0,
+     "basis": "USER"
+    }
+   ],
+   "osd_total_m3": 4.0,
+   "osd_unset": [],
+   "tanks": [],
+   "tank_detention_m3": 0,
+   "tank_exclusion": {
+    "value": null,
+    "unit": "",
+    "basis": "UNRESOLVED",
+    "ref": "Not found in the governing documents: please supply whether the detention portion of a rainwater tank is excluded from the on site detention volume with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+    "how": "Enter in the panel whether the tank detention is excluded, or load the requirement key stormwater.rainwater_tank_excluded_from_detention_volume.",
+    "key": "stormwater.rainwater_tank_excluded_from_detention_volume"
+   },
+   "tank_counted": false,
+   "total_m3": 4.0,
+   "tank_note": ""
+  },
+  "comparison": null,
+  "status": "NOT EVALUATED",
+  "message": "NOT EVALUATED: THE SIZING METHOD IS NOT RESOLVED. THE INPUTS BELOW ARE THE ONES THAT DID RESOLVE"
+ },
+ "infiltration": {
+  "schema": "infiltration.v1",
+  "label": "",
+  "rate": null,
+  "limit": {
+   "value": null,
+   "unit": "h",
+   "basis": "UNRESOLVED",
+   "ref": "Not found in the governing documents: please supply longest time (hours) an infiltration trench may take to empty with its source, for {'jurisdiction': 'NSW', 'lga': 'Testshire'}.",
+   "key": "infiltration.max_emptying_time_h",
+   "how": "Load the requirement key infiltration.max_emptying_time_h for the LGA."
+  },
+  "trenches": [
+   {
+    "object_id": "t1",
+    "label": "T1",
+    "rate": {
+     "value": 36.0,
+     "unit": "mm/h",
+     "basis": "USER",
+     "ref": "SITE TEST DATED 30/09/2026, METHOD: SYNTHETIC TEST FIXTURE, ENTERED ON T1",
+     "kind": "site_test",
+     "label": ""
+    },
+    "steps": [
+     {
+      "id": "volume",
+      "title": "Trench storage",
+      "formula": "V = L x W x D x n",
+      "inputs": [
+       {
+        "name": "Length",
+        "symbol": "L",
+        "value": 6.0,
+        "unit": "m",
+        "basis": "MODEL",
+        "ref": "CENTRELINE LENGTH OF THE TRENCH"
+       },
+       {
+        "name": "Width",
+        "symbol": "W",
+        "value": 1.0,
+        "unit": "m",
+        "basis": "USER",
+        "ref": "ENTERED ON T1"
+       },
+       {
+        "name": "Depth",
+        "symbol": "D",
+        "value": 1.0,
+        "unit": "m",
+        "basis": "USER",
+        "ref": "ENTERED ON T1"
+       },
+       {
+        "name": "Void ratio",
+        "symbol": "n",
+        "value": 0.4,
+        "unit": "",
+        "basis": "USER",
+        "ref": "ENTERED ON T1"
+       }
+      ],
+      "result": {
+       "value": 2.4,
+       "unit": "m3",
+       "text": "V = 6.000 x 1 x 1 x 0.4 = 2.400 m3"
+      }
+     },
+     {
+      "id": "emptying",
+      "title": "Emptying time",
+      "formula": "t = V / (q x A), A = L x W, q in m/h",
+      "inputs": [
+       {
+        "name": "Storage volume",
+        "symbol": "V",
+        "value": 2.4,
+        "unit": "m3",
+        "basis": "CALCULATED",
+        "ref": "STEP ABOVE"
+       },
+       {
+        "name": "Base area",
+        "symbol": "A",
+        "value": 6.0,
+        "unit": "m2",
+        "basis": "CALCULATED",
+        "ref": "L x W"
+       },
+       {
+        "name": "Infiltration rate",
+        "symbol": "q",
+        "value": 36.0,
+        "unit": "mm/h",
+        "basis": "USER",
+        "ref": "SITE TEST DATED 30/09/2026, METHOD: SYNTHETIC TEST FIXTURE, ENTERED ON T1"
+       }
+      ],
+      "result": {
+       "value": 11.1111,
+       "unit": "h",
+       "text": "t = 2.400 / (0.036000 x 6.000) = 11.11 h"
+      }
+     }
+    ],
+    "volume_m3": 2.4,
+    "emptying_time_h": 11.1111,
+    "status": "EVALUATED",
+    "missing": [],
+    "check": {
+     "status": "NOT EVALUATED",
+     "message": "THE LIMIT ON THE EMPTYING TIME (infiltration.max_emptying_time_h) IS UNRESOLVED, SO THE TIME IS REPORTED WITHOUT A COMPARISON"
+    },
+    "rate_label": ""
+   }
+  ],
+  "missing": [
+   {
+    "id": "max_empty",
+    "area": "INFILTRATION",
+    "what": "THE LIMIT ON THE EMPTYING TIME IS UNRESOLVED",
+    "key": "infiltration.max_emptying_time_h",
+    "how": "Load the requirement key infiltration.max_emptying_time_h for the LGA."
+   }
+  ],
+  "notes": [
+   "THE RATE ACTS ON THE BASE ONLY (NO SIDE WALL INFILTRATION), IS USED AS SUPPLIED (NO FACTOR OF SAFETY IS ASSUMED) AND THE TRENCH STARTS FULL"
+  ],
+  "status": "EVALUATED"
+ },
+ "overland": null,
+ "missing": [
+  {
+   "id": "runoff:roof",
+   "area": "RUNOFF",
+   "what": "RUNOFF COEFFICIENT OF ROOF IS UNRESOLVED",
+   "key": "stormwater.runoff_coefficient.roof",
+   "how": "Enter the runoff coefficient of roof in the panel, or load the requirement key stormwater.runoff_coefficient.roof for the LGA."
+  },
+  {
+   "id": "runoff:landscape_turf",
+   "area": "RUNOFF",
+   "what": "RUNOFF COEFFICIENT OF TURF IS UNRESOLVED",
+   "key": "landscape.runoff_coefficient.turf",
+   "how": "Enter the runoff coefficient of turf in the panel, or load the requirement key landscape.runoff_coefficient.turf for the LGA."
+  },
+  {
+   "id": "aep",
+   "area": "PEAK FLOW",
+   "what": "THE DESIGN AEP IS UNRESOLVED",
+   "key": "stormwater.design_aep_pct",
+   "how": "Enter the design AEP in the panel, or load the requirement key stormwater.design_aep_pct for the LGA."
+  },
+  {
+   "id": "ifd",
+   "area": "PEAK FLOW",
+   "what": "DESIGN RAINFALL IS NOT AVAILABLE: NO IFD TABLE HAS BEEN UPLOADED FOR THIS PROJECT",
+   "key": null,
+   "how": "Upload the IFD table CSV exported from the BoM IFD page."
+  },
+  {
+   "id": "tc_pre",
+   "area": "PEAK FLOW",
+   "what": "THE PRE DEVELOPMENT TIME OF CONCENTRATION IS UNRESOLVED",
+   "key": "stormwater.tc_pre_min",
+   "how": "Enter the pre development time of concentration in the panel, or load the requirement key stormwater.tc_pre_min."
+  },
+  {
+   "id": "tc_post",
+   "area": "PEAK FLOW",
+   "what": "THE POST DEVELOPMENT TIME OF CONCENTRATION IS UNRESOLVED",
+   "key": "stormwater.tc_post_min",
+   "how": "Enter the post development time of concentration in the panel, or load the requirement key stormwater.tc_post_min."
+  },
+  {
+   "id": "osd_required",
+   "area": "OSD",
+   "what": "WHETHER ON SITE DETENTION IS REQUIRED IS UNRESOLVED",
+   "key": "stormwater.osd_required",
+   "how": "Load the requirement key stormwater.osd_required for the LGA."
+  },
+  {
+   "id": "osd_method",
+   "area": "OSD",
+   "what": "THE OSD SIZING METHOD IS UNRESOLVED",
+   "key": "stormwater.osd_method",
+   "how": "Load the requirement key stormwater.osd_method for the LGA, or enter the method in the panel. The methods this tool can run are: mass_balance_modified_rational, user_ssr."
+  },
+  {
+   "id": "max_empty",
+   "area": "INFILTRATION",
+   "what": "THE LIMIT ON THE EMPTYING TIME IS UNRESOLVED",
+   "key": "infiltration.max_emptying_time_h",
+   "how": "Load the requirement key infiltration.max_emptying_time_h for the LGA."
+  }
+ ],
+ "notes": [
+  "162.0 M2 OF THE LOT HAS NO SURFACE OBJECT AND IS NOT IN THE CATCHMENT TOTALS",
+  "A TANK IS TAKEN AS FULL AT THE START OF THE DESIGN STORM, SO THE CONNECTED ROOF IS PASSED TO THE OVERFLOW TARGET (NO REUSE CREDIT)",
+  "METHOD ASSUMPTIONS: THE RUNOFF COEFFICIENTS ARE USED AS SUPPLIED FOR THE DESIGN EVENT; THE OUTFLOW IS A CONSTANT PSD; A TANK IS TAKEN AS FULL (NO REUSE CREDIT)"
+ ]
+}

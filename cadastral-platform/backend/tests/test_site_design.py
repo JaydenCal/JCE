@@ -53,10 +53,10 @@ def test_document_produced_by_the_frontend_operations_validates():
     assert tree["params"]["canopy_diameter_m"] == {"value": None, "basis": "unresolved"}
 
 
-def test_defaults_and_types_cover_the_twenty_two_object_types():
+def test_defaults_and_types_cover_the_twenty_three_object_types():
     assert set(GEOMETRY_OF) == {"tree", "rwt", "stormwater_pit", "osd", "retaining_wall", "infiltration_trench", "stormwater_pipe",
                                 "service_trace", "landscape_area", "grading_area", "osd_basin", "building", "pool", "footpath", "furniture", "driveway", "pool_barrier", "overflow_route",
-                                "service_existing", "sewer_drain", "service_node", "water_service"}
+                                "service_existing", "sewer_drain", "service_node", "water_service", "discharge_point"}
     o = SiteObject.model_validate(obj())
     assert o.status == "proposed" and o.origin == "user" and o.accepted is None and o.verified is False and o.params == {} and o.issues == []
     d = empty_design("p")

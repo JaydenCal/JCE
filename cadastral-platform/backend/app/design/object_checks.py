@@ -508,7 +508,7 @@ class Checker:
                 else:
                     self.add(o, "OSD_ORIFICE", t, NOT_EVALUATED, f"{calc}. NOT EVALUATED AGAINST THE PSD: UNRESOLVED REQUIREMENT: {psd.key}", rules=[cd, psd], value=round(q, 3), unit="L/s")
         self.min_limit(o, "OSD_MIN_ORIFICE", "ORIFICE DIAMETER AGAINST THE RULE", "stormwater.osd_min_orifice_diameter_mm", d_mm, "ORIFICE DIAMETER", "mm", digits=0, missing_msg="ORIFICE DIAMETER NOT SET")
-        routes = [r for r in self.site.of("overflow_route") if G.text(r, "osd_id", self.rd) == o.id]
+        routes = [r for r in self.site.of("overflow_route") if G.text(r, "osd_id", self.rd) == o.id and G.text(r, "rwt_id", self.rd) is None]       # a tank overflow route feeds the OSD; it is not the OSD's own overflow
         if routes:
             self.add(o, "OSD_OVERFLOW_ROUTE", "OVERFLOW ROUTE", PASS, f"{len(routes)} OVERFLOW ROUTE(S) DRAWN FOR THIS OSD")
         else:
@@ -784,11 +784,17 @@ class Checker:
             self.add(o, "LANDSCAPE_RUNOFF", t, NOT_EVALUATED, f"NOT EVALUATED: RUNOFF BEHAVIOUR OF {kind.replace('_', ' ').upper()} IS UNRESOLVED ({r.key})", rules=[r], severity="info")
 
     def overflow(self, o: SiteObject) -> None:
-        link = G.text(o, "osd_id", self.rd)
-        if link is None:
-            self.add(o, "OVERFLOW_LINK", "OVERFLOW ROUTE LINK", FAIL, "THE ROUTE IS NOT LINKED TO AN OSD", severity="warning")
-        elif link not in self.site.by_id or self.site.by_id[link].type not in ("osd", "osd_basin"):
-            self.add(o, "OVERFLOW_LINK", "OVERFLOW ROUTE LINK", FAIL, f"THE LINKED OSD {link.upper()} IS NOT IN THE DESIGN", severity="blocking")
+        """An overflow route ends at an OSD (``osd_id``) or, for a tank overflow (``rwt_id``), at an infiltration trench (``trench_id``)."""
+        link, trench, tank = G.text(o, "osd_id", self.rd), G.text(o, "trench_id", self.rd), G.text(o, "rwt_id", self.rd)
+        t = "OVERFLOW ROUTE LINK"
+        if link is None and trench is None:
+            self.add(o, "OVERFLOW_LINK", t, FAIL, "THE ROUTE IS NOT LINKED TO AN OSD" + (" OR AN INFILTRATION TRENCH" if tank else ""), severity="warning")
+        elif link is not None and (link not in self.site.by_id or self.site.by_id[link].type not in ("osd", "osd_basin")):
+            self.add(o, "OVERFLOW_LINK", t, FAIL, f"THE LINKED OSD {link.upper()} IS NOT IN THE DESIGN", severity="blocking")
+        elif trench is not None and (trench not in self.site.by_id or self.site.by_id[trench].type != "infiltration_trench"):
+            self.add(o, "OVERFLOW_LINK", t, FAIL, f"THE LINKED INFILTRATION TRENCH {trench.upper()} IS NOT IN THE DESIGN", severity="blocking")
+        if tank is not None and (tank not in self.site.by_id or self.site.by_id[tank].type != "rwt"):
+            self.add(o, "OVERFLOW_TANK_LINK", "OVERFLOW ROUTE TANK LINK", FAIL, f"THE LINKED RAINWATER TANK {tank.upper()} IS NOT IN THE DESIGN", severity="blocking")
 
     # ---- the design as a whole
     def design_level(self, live: list[SiteObject]) -> None:

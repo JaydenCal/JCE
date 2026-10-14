@@ -20,6 +20,8 @@ import { drivewayParts, gradingParts } from './earthworksScene';
 import type { GradingResult, ProfileView } from './driveway';
 import { SRZ_LABEL, TPZ_LABEL, extraLabelLines } from './siteObjects';
 import { dashSegments, isUnverified, serviceColour } from './services';
+import { buildOverlandLayer } from './overlandScene';
+import type { SwOverland } from './stormwater';
 import { underlayMesh, setUnderlayOpacity, type Calibration, imageCorners } from './underlay';
 import {
   BUILDING_USE_LABEL, DIMENSIONS_NOT_SET, END_LEVEL_NOT_SET, FFL_NOT_SET, HEIGHT_NOT_SET, TARGET_NOT_SET, WIDTH_NOT_SET, OBJECT_KINDS, POOL_BARRIER_LABEL, STATUS_LABEL, SURFACE_LABEL, dimOf, dimensionsSet, levelOf, rwtShape, textOf, verticesOf, wallHeightAt,
@@ -536,6 +538,20 @@ export class SiteScene {
     }
   }
 
+  // ---- stage 9: the overland flow layer of the stormwater helper (outside the document, never saved, never pickable)
+  private overlandGroup: THREE.Group | null = null;
+  private overlandSrc: SwOverland | null = null;
+  hasOverland() { return this.overlandGroup !== null; }
+  /** Draw the flow paths and ponding of a server answer, or remove the layer with null. The layer carries the terrain status and FLOW PATHS INDICATIVE, NOT A FLOOD STUDY. */
+  setOverland(o: SwOverland | null) {
+    if (o === this.overlandSrc) return;                                      // the same answer is already drawn (the panel state changes on every keystroke)
+    this.overlandSrc = o;
+    if (this.overlandGroup) { this.group.remove(this.overlandGroup); disposeGroup(this.overlandGroup); this.overlandGroup = null; }
+    if (!o || o.status !== 'EVALUATED') return;
+    this.overlandGroup = buildOverlandLayer(o, this.opts.origin, this.opts.makeLabel ?? makeSprite);
+    this.group.add(this.overlandGroup);
+  }
+
   // ---- stage 6 engine results (outside the document): a long section for a driveway, volumes for a grading area
   private drives = new Map<string, ProfileView>();
   private gradings = new Map<string, GradingResult>();
@@ -605,5 +621,5 @@ export class SiteScene {
   }
   /** The object id a hit object belongs to. */
   static idOf(o: THREE.Object3D | null): string | null { let x = o; while (x) { if (x.userData?.siteId) return x.userData.siteId as string; x = x.parent; } return null; }
-  dispose() { this.setUnderlay(null); for (const id of [...this.groups.keys()]) this.drop(id); for (const id of [...this.glbs.keys()]) { const o = this.glbs.get(id)!; this.glbs.delete(id); o.traverse((x) => { const m = x as THREE.Mesh; m.geometry?.dispose?.(); for (const k of Array.isArray(m.material) ? m.material : m.material ? [m.material] : []) k.dispose(); }); } }
+  dispose() { this.setUnderlay(null); this.setOverland(null); for (const id of [...this.groups.keys()]) this.drop(id); for (const id of [...this.glbs.keys()]) { const o = this.glbs.get(id)!; this.glbs.delete(id); o.traverse((x) => { const m = x as THREE.Mesh; m.geometry?.dispose?.(); for (const k of Array.isArray(m.material) ? m.material : m.material ? [m.material] : []) k.dispose(); }); } }
 }

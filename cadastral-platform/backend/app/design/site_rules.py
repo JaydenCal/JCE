@@ -37,7 +37,7 @@ KEY_BATTER_ANY = "earthworks.batter.max_slope"
 KEYS = (KEY_MAX_GRADE, KEY_MAX_CHANGE, KEY_MIN_WIDTH, KEY_MAX_WIDTH, KEY_MIN_SEPARATION, KEY_SPLAY, KEY_BATTER_CUT, KEY_BATTER_FILL, KEY_BATTER_ANY)
 
 #: canonical units that are not in the conversion table (``app.jurisdiction.units``): a requirement row must carry exactly this unit
-OK_STRICT_UNITS = frozenset({"deg", "kN/m3", "L/person/day", "L/m2/day", "days"})
+OK_STRICT_UNITS = frozenset({"deg", "kN/m3", "L/person/day", "L/m2/day", "days", "min", "h", "m3/ha"})
 
 #: units a batter requirement may be stated in, and how each converts to H per V (horizontal metres per vertical metre)
 _HV_UNITS = {None, "", "h:v", "h_per_v", "h per v", "hv", "ratio", "1 in n", "1_in_n", "1:n"}
@@ -120,6 +120,19 @@ class SiteRules:
                 r = self._from_spec(key, req, spec) if spec is not None and spec.kind != "number" else self._from_requirement(key, req, unit)
         self._cache[ck] = r
         return r
+
+    def get_text(self, key: str) -> Rule:
+        """A text rule (for example ``stormwater.osd_method``): the value is the trimmed text, or None when UNRESOLVED (a number or a true or false value is not text)."""
+        if self.requirements is None:
+            return _unresolved(key, "", self.note or "NO LOT OR LGA IS KNOWN FOR THIS PROJECT, SO NO REQUIREMENT CAN BE RESOLVED")
+        try:
+            req = self.requirements.get_requirement(key, **self.selectors)
+        except UnresolvedRequirement as e:
+            return _unresolved(key, "", e.prompt or "NO REQUIREMENT FOUND")
+        v = req.value
+        if not isinstance(v, str) or not v.strip():
+            return _unresolved(key, "", f"THE VALUE FOR {key} IS NOT TEXT")
+        return self._wrap(key, req, v.strip(), "")
 
     def get_flag(self, key: str) -> Rule:
         """A true or false rule (kind bool). A number or text value is UNRESOLVED."""

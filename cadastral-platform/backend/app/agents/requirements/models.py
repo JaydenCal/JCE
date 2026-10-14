@@ -152,6 +152,20 @@ SERVICE_KEY_HELP: dict[str, str] = {
 }
 EXTRA_KEY_HELP.update(SERVICE_KEY_HELP)
 
+# Keys used by the stage 9 stormwater helper. NONE has a platform default (the only two are stormwater.osd_required and stormwater.psd_l_s). Each is UNRESOLVED until an
+# LGA row, a state row or a user entry supplies it. stormwater.osd_method is a text key: the name of the sizing method the LGA prescribes (see ``app.stormwater.osd``).
+STORMWATER_HELPER_KEY_HELP: dict[str, str] = {
+    "stormwater.design_aep_pct": "annual exceedance probability (percent) of the design storm for on site detention sizing",
+    "stormwater.tc_pre_min": "time of concentration (minutes) of the pre development site, where the rule states one",
+    "stormwater.tc_post_min": "time of concentration (minutes) of the post development site, where the rule states one",
+    "stormwater.ssr_m3_per_ha": "site storage requirement (SSR) per hectare, cubic metres per hectare",
+    "stormwater.rainwater_tank_excluded_from_detention_volume": "whether the detention portion of a rainwater tank is excluded from the on site detention volume",
+    **{f"stormwater.runoff_coefficient.{k}": f"runoff coefficient of a {k.replace('_', ' ')} surface for the design event (ratio)"
+       for k in ("roof", "pool", "concrete", "asphalt", "pavers", "gravel", "permeable_pavers")},
+    "infiltration.max_emptying_time_h": "longest time (hours) an infiltration trench may take to empty",
+}
+EXTRA_KEY_HELP.update(STORMWATER_HELPER_KEY_HELP)
+
 
 def key_help(key: str) -> str:
     try:

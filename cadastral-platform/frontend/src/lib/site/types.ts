@@ -9,7 +9,8 @@ export type ObjectType =
   | 'building' | 'pool' | 'footpath' | 'furniture'
   | 'driveway'
   | 'pool_barrier' | 'overflow_route'
-  | 'service_existing' | 'sewer_drain' | 'service_node' | 'water_service';
+  | 'service_existing' | 'sewer_drain' | 'service_node' | 'water_service'
+  | 'discharge_point';
 /** Stage 7 renamed the stormwater pit from `pit`. A stored document or a caller that still says `pit` is read as `stormwater_pit` (the backend does the same). */
 export const LEGACY_TYPES: Record<string, ObjectType> = { pit: 'stormwater_pit' };
 export const canonicalType = (t: unknown): unknown => (typeof t === 'string' && Object.prototype.hasOwnProperty.call(LEGACY_TYPES, t) ? LEGACY_TYPES[t] : t);
@@ -130,6 +131,8 @@ export const OBJECT_KINDS: Record<ObjectType, ObjectKind> = {
   sewer_drain: { geometry: 'polyline', label: 'SEWER DRAIN', dims: ['diameter_mm'], colour: '#7b5e3b' },
   service_node: { geometry: 'point', label: 'SERVICE NODE', dims: [], colour: '#444444' },
   water_service: { geometry: 'polyline', label: 'WATER SERVICE', dims: ['diameter_mm'], colour: '#1d8fe0' },
+  // stage 9. The legal point of discharge: a point the user places. Its kind and the basis of the point are the user's statements; nothing is assumed.
+  discharge_point: { geometry: 'point', label: 'LEGAL POINT OF DISCHARGE', dims: [], colour: '#c2185b' },
 };
 // ---- stage 8 enumerations (the same lists are in the backend model)
 export const SERVICE_KINDS = ['water', 'sewer', 'stormwater', 'gas', 'electricity', 'telecommunications', 'other'] as const;
@@ -143,6 +146,9 @@ export const DEPTH_REFERENCES = ['top', 'invert'] as const;
 export const DEPTH_REFERENCE_LABEL: Record<(typeof DEPTH_REFERENCES)[number], string> = { top: 'TOP OF THE ASSET', invert: 'INVERT' };
 export const NODE_KINDS = ['inspection_opening', 'inspection_pit', 'sewer_connection', 'water_connection', 'water_meter'] as const;
 export const NODE_KIND_LABEL: Record<(typeof NODE_KINDS)[number], string> = { inspection_opening: 'INSPECTION OPENING', inspection_pit: 'INSPECTION PIT', sewer_connection: 'SEWER CONNECTION', water_connection: 'WATER CONNECTION', water_meter: 'WATER METER' };
+// ---- stage 9 enumerations (the same lists are in the backend model)
+export const DISCHARGE_KINDS = ['kerb_outlet', 'interallotment_drainage', 'other'] as const;
+export const DISCHARGE_KIND_LABEL: Record<(typeof DISCHARGE_KINDS)[number], string> = { kerb_outlet: 'KERB OUTLET', interallotment_drainage: 'INTERALLOTMENT DRAINAGE', other: 'OTHER' };
 export const PLAN_EXPIRED = 'PLAN EXPIRED', UNVERIFIED_LABEL = 'UNVERIFIED, INDICATIVE ONLY', UNRESOLVED_LABEL = 'UNRESOLVED';
 
 // ---- stage 5 enumerations (the same lists are in backend/app/design/site_design.py; a value outside a list is refused) ------------
@@ -164,6 +170,7 @@ export const PARAM_ENUMS: Record<string, readonly string[]> = {
   'rwt.shape': RWT_SHAPES, 'retaining_wall.wall_type': WALL_TYPES, 'infiltration_trench.infiltration_basis': INFILTRATION_BASES, 'osd.form': OSD_FORMS, 'osd_basin.form': OSD_FORMS,
   'building.building_use': BUILDING_USES, 'building.source': BUILDING_SOURCES, 'building.roof_area_basis': ROOF_AREA_BASES,
   'landscape_area.surface_kind': SURFACE_KINDS, 'footpath.surface_kind': FOOTPATH_SURFACES, 'driveway.surface_kind': DRIVEWAY_SURFACES,
+  'discharge_point.discharge_kind': DISCHARGE_KINDS, 'grading_area.surface_kind': SURFACE_KINDS,
   'service_existing.service_kind': SERVICE_KINDS, 'service_existing.depth_basis': DEPTH_BASES, 'service_existing.depth_reference': DEPTH_REFERENCES, 'service_node.node_kind': NODE_KINDS,
 };
 /** Parameters that must be numbers when they carry a value. */
@@ -173,7 +180,7 @@ export const PARAM_NUMBERS: Record<string, readonly string[]> = {
   driveway: ['width_m', 'end_level_rl', 'crossover_chainage_m', 'batter_cut_h_per_v', 'batter_fill_h_per_v'],
   grading_area: ['target_level_m', 'target_grade_pct', 'fall_direction_deg', 'pivot_level_m', 'batter_cut_h_per_v', 'batter_fill_h_per_v'],
   // stage 7. Levels (`_rl`) are RLs in metres and may be negative.
-  rwt: ['capacity_l', 'diameter_m', 'length_m', 'width_m', 'height_m', 'base_rl', 'inlet_rl', 'overflow_rl', 'outlet_rl', 'connected_roof_area_m2', 'garden_area_m2', 'runoff_coefficient', 'first_flush_mm', 'occupants',
+  rwt: ['capacity_l', 'diameter_m', 'length_m', 'width_m', 'height_m', 'base_rl', 'inlet_rl', 'overflow_rl', 'outlet_rl', 'connected_roof_area_m2', 'garden_area_m2', 'detention_volume_l', 'runoff_coefficient', 'first_flush_mm', 'occupants',
     'toilet_l_pp_day', 'laundry_l_pp_day', 'garden_l_m2_day', 'wet_day_fraction', 'water_target_pct', 'tank_height_m'],
   retaining_wall: ['height_m', 'thickness_m', 'surcharge_kpa', 'soil_friction_angle_deg', 'soil_unit_weight_kn_m3', 'wall_friction_ratio', 'gravity_wall_width_ratio', 'wall_unit_weight_kn_m3', 'min_fs_sliding', 'min_fs_overturning'],
   infiltration_trench: ['width_m', 'depth_m', 'void_ratio', 'infiltration_rate_mm_h'],
@@ -191,17 +198,25 @@ for (const t of FOOTING_TYPES) PARAM_NUMBERS[t] = Array.from(new Set([...(PARAM_
 export const PARAM_BOOLS: Record<string, readonly string[]> = { rwt: ['reuse_toilet', 'reuse_laundry', 'reuse_garden'], footpath: ['impervious'] };
 /** Parameters that must be an ISO date (YYYY-MM-DD) when they carry a value. */
 export const PARAM_DATES: Record<string, readonly string[]> = { infiltration_trench: ['test_date'], service_existing: ['plan_date', 'plan_expiry_date'] };
+/** Stage 9: where the runoff of an object goes (the same lists are in the backend model). */
+export const DRAINS_TO_SURFACE_TYPES: readonly ObjectType[] = ['osd', 'osd_basin', 'infiltration_trench', 'discharge_point'];
+export const DRAINS_TO_SURFACES: readonly ObjectType[] = ['building', 'driveway', 'footpath', 'pool', 'landscape_area', 'grading_area'];
+export const DRAINS_TO_STORAGE: readonly ObjectType[] = ['osd', 'osd_basin', 'infiltration_trench', 'rwt'];
 /** Object links: [type, key] -> the object types the linked id must have. */
 export const PARAM_LINKS: Record<string, readonly ObjectType[]> = {
   'rwt.roof_building_id': ['building'], 'overflow_route.osd_id': ['osd', 'osd_basin'], 'pool_barrier.pool_id': ['pool'],
   'service_node.main_id': ['service_existing'], 'sewer_drain.building_id': ['building'], 'water_service.main_id': ['service_existing'], 'water_service.rwt_id': ['rwt'],
+  // stage 9: an overflow route may start at a tank and end at an OSD or a trench; the runoff of an object goes to the object its drains_to_id names
+  'overflow_route.rwt_id': ['rwt'], 'overflow_route.trench_id': ['infiltration_trench'],
+  ...Object.fromEntries(DRAINS_TO_SURFACES.map((t) => [`${t}.drains_to_id`, DRAINS_TO_SURFACE_TYPES])),
+  ...Object.fromEntries(DRAINS_TO_STORAGE.map((t) => [`${t}.drains_to_id`, ['discharge_point'] as readonly ObjectType[]])),
 };
 /**
  * Object types whose parameters are stage 7 engineering inputs (the same list is in the backend model). On them a parameter may not have basis platform_default:
  * the only platform defaults are the requirement values of stormwater.osd_required and stormwater.psd_l_s, which the SERVER resolves. Two exceptions, as in the
  * backend: the OSD psd_l_s (the server verifies its value) and the Plan Studio size ESTIMATE the importer stamps on a tank diameter or height.
  */
-export const STAGE7_TYPES: readonly ObjectType[] = ['rwt', 'retaining_wall', 'infiltration_trench', 'osd', 'osd_basin', 'stormwater_pit', 'stormwater_pipe', 'pool_barrier', 'overflow_route', 'tree', 'service_existing', 'sewer_drain', 'service_node', 'water_service'];
+export const STAGE7_TYPES: readonly ObjectType[] = ['rwt', 'retaining_wall', 'infiltration_trench', 'osd', 'osd_basin', 'stormwater_pit', 'stormwater_pipe', 'pool_barrier', 'overflow_route', 'tree', 'service_existing', 'sewer_drain', 'service_node', 'water_service', 'discharge_point'];
 export const PS_ESTIMATE_REF = 'PLAN STUDIO ESTIMATE';
 export function platformDefaultRefused(type: ObjectType, key: string, ref: string | undefined): boolean {
   if (!STAGE7_TYPES.includes(type) || (ref ?? '').startsWith(PS_ESTIMATE_REF)) return false;

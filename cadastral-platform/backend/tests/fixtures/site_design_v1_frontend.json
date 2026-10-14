@@ -96,6 +96,10 @@
         "roof_building_id": {
           "value": "building_13",
           "basis": "user"
+        },
+        "detention_volume_l": {
+          "value": 500,
+          "basis": "user"
         }
       },
       "issues": []
@@ -138,6 +142,10 @@
       "params": {
         "form": {
           "value": "below_ground",
+          "basis": "user"
+        },
+        "drains_to_id": {
+          "value": "discharge_point_23",
           "basis": "user"
         }
       },
@@ -230,6 +238,10 @@
         },
         "void_ratio": {
           "value": 0.35,
+          "basis": "user"
+        },
+        "test_method": {
+          "value": "SYNTHETIC TEST FIXTURE",
           "basis": "user"
         }
       },
@@ -371,6 +383,10 @@
         },
         "batter_cut_h_per_v": {
           "value": 2,
+          "basis": "user"
+        },
+        "surface_kind": {
+          "value": "turf",
           "basis": "user"
         }
       },
@@ -863,6 +879,10 @@
           "value": "building_13",
           "basis": "user",
           "ref": "END SNAPPED TO THE BUILDING; END LEVEL IS ITS FFL"
+        },
+        "drains_to_id": {
+          "value": "discharge_point_23",
+          "basis": "user"
         }
       },
       "issues": []
@@ -932,6 +952,10 @@
       "params": {
         "osd_id": {
           "value": "osd_4",
+          "basis": "user"
+        },
+        "rwt_id": {
+          "value": "rwt_2",
           "basis": "user"
         }
       },
@@ -1247,6 +1271,37 @@
         }
       },
       "issues": []
+    },
+    {
+      "id": "discharge_point_23",
+      "type": "discharge_point",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "point",
+        "p": [
+          496009,
+          6649999
+        ]
+      },
+      "params": {
+        "discharge_kind": {
+          "value": "kerb_outlet",
+          "basis": "user"
+        },
+        "discharge_basis": {
+          "value": "SYNTHETIC TEST FIXTURE",
+          "basis": "user"
+        }
+      },
+      "issues": [
+        {
+          "code": "OUTSIDE_LOT",
+          "severity": "warning",
+          "message": "OUTSIDE LOT: 1 OF 1 POINT LIES OUTSIDE THE LOT BOUNDARY"
+        }
+      ]
     }
   ]
 }

@@ -7,6 +7,7 @@ import { READ_ONLY_BUILDING_PARAMS } from '@/lib/site/buildings';
 import { BuildingImportBox, BuildingInfo, FeatureTools } from './BuildingTools';
 import { DrivewaySection, GradingSection } from './EngineSections';
 import { DbydSection } from './DbydTools';
+import { StormwaterSection } from './StormwaterPanel';
 import { SewerSection, WaterSection } from './RouteTools';
 import { ServiceVerifyBox, TraceServiceSection } from './ServiceTools';
 import type { PlanRecord } from '@/lib/site/dbydApi';
@@ -38,7 +39,7 @@ export interface DesignPanelProps {
   catalogue?: CatalogueItem[];
 }
 const GROUPS: { title: string; types: ObjectType[] }[] = [
-  { title: 'Points', types: ['tree', 'rwt', 'stormwater_pit', 'osd'] },
+  { title: 'Points', types: ['tree', 'rwt', 'stormwater_pit', 'osd', 'discharge_point'] },
   { title: 'Lines', types: ['retaining_wall', 'infiltration_trench', 'stormwater_pipe', 'service_trace', 'driveway', 'pool_barrier', 'overflow_route'] },
   { title: 'Areas', types: ['landscape_area', 'grading_area', 'osd_basin'] },
   { title: 'Services', types: ['service_existing', 'sewer_drain', 'water_service', 'service_node'] },
@@ -226,6 +227,7 @@ export function DesignPanel({ ds, doc, ctl, save, onResolve, gate, onRetryLoad, 
         )}
       </section>
       <ChecksSection doc={doc} ds={ds} ctl={ctl} />
+      <StormwaterSection sw={ds.stormwater} ctl={ctl} locked={locked} />
       {sel && <section><h2>Properties</h2><Props o={sel} doc={doc} ds={ds} ctl={ctl} key={sel.id} locked={locked} /></section>}
       {sel && sel.type === 'rwt' && <RwtSizeSection o={sel} ds={ds} ctl={ctl} locked={locked} key={'rs' + sel.id} />}
       {sel && ds.driveway && ds.driveway.id === sel.id && <DrivewaySection p={ds.driveway} o={sel} doc={doc} ctl={ctl} locked={locked} key={'dv' + sel.id} />}

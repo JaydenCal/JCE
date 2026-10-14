@@ -68,6 +68,15 @@ SPECS: tuple[KeySpec, ...] = (
     _n("stormwater.ssr_m3", "m3", "stormwater"),
     KeySpec("stormwater.orifice_discharge_coefficient", "ratio", "ratio", "stormwater"),
     _n("stormwater.osd_min_orifice_diameter_mm", "mm", "stormwater"),
+    # stage 9: the stormwater helper (design event, time of concentration, per area storage, tank detention, runoff of the non landscape surfaces, trench emptying time).
+    # stormwater.osd_method is a TEXT key (the name of the sizing method) and is read with ``SiteRules.get_text``; it is registered in ``models.STORMWATER_KEY_HELP``.
+    _n("stormwater.design_aep_pct", "%", "stormwater"),
+    _n("stormwater.tc_pre_min", "min", "stormwater"),
+    _n("stormwater.tc_post_min", "min", "stormwater"),
+    _n("stormwater.ssr_m3_per_ha", "m3/ha", "stormwater"),
+    KeySpec("stormwater.rainwater_tank_excluded_from_detention_volume", "", "bool", "stormwater"),
+    *(KeySpec(f"stormwater.runoff_coefficient.{k}", "ratio", "ratio", "stormwater") for k in ("roof", "pool", "concrete", "asphalt", "pavers", "gravel", "permeable_pavers")),
+    _n("infiltration.max_emptying_time_h", "h", "infiltration"),
     # stormwater pits and pipes
     _n("stormwater.min_pipe_grade_pct", "%", "stormwater"),
     _n("stormwater.min_cover_m", "m", "stormwater"),
@@ -149,3 +158,11 @@ def spec_for(key: str) -> KeySpec | None:
 
 def landscape_key(kind: str) -> str:
     return f"landscape.runoff_coefficient.{kind}"
+
+
+#: surface kinds of the non landscape catchments (roof, pool, and the driveway and footpath surfaces) and the runoff coefficient key of each (stage 9)
+CATCHMENT_SURFACES = ("roof", "pool", "concrete", "asphalt", "pavers", "gravel", "permeable_pavers")
+
+
+def runoff_key(surface: str) -> str:
+    return f"stormwater.runoff_coefficient.{surface}"

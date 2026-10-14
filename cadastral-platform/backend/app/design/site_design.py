@@ -30,7 +30,7 @@ SCHEMA = "site_design.v1"
 ObjectType = Literal["tree", "rwt", "stormwater_pit", "osd", "retaining_wall", "infiltration_trench", "stormwater_pipe",
                      "service_trace", "landscape_area", "grading_area", "osd_basin",
                      "building", "pool", "footpath", "furniture", "driveway", "pool_barrier", "overflow_route",
-                     "service_existing", "sewer_drain", "service_node", "water_service"]
+                     "service_existing", "sewer_drain", "service_node", "water_service", "discharge_point"]
 #: stage 7 renamed the stormwater pit from ``pit``; a stored document that still says ``pit`` is read as ``stormwater_pit``
 LEGACY_TYPES = {"pit": "stormwater_pit"}
 GeometryKind = Literal["point", "polyline", "polygon"]
@@ -54,6 +54,8 @@ GEOMETRY_OF: dict[str, GeometryKind] = {
     "pool_barrier": "polyline", "overflow_route": "polyline",
     # stage 8: an existing service (a line, or a point for a pit, valve or pole), a sewer drain link, a node of a drain or water service, a water service line
     "service_existing": "polyline", "sewer_drain": "polyline", "service_node": "point", "water_service": "polyline",
+    # stage 9: the legal point of discharge (a point the user places; its kind and the basis of the point are the user's statements)
+    "discharge_point": "point",
 }
 #: a second geometry kind an object type may also use (a footpath is a line with a width param, or an area; an existing service may be a point)
 ALT_GEOMETRY_OF: dict[str, GeometryKind] = {"footpath": "polygon", "service_existing": "point"}
@@ -74,6 +76,8 @@ SERVICE_KINDS = ("water", "sewer", "stormwater", "gas", "electricity", "telecomm
 DEPTH_BASES = ("plan_indicated", "potholed", "surveyed", "unknown")
 DEPTH_REFERENCES = ("top", "invert")
 NODE_KINDS = ("inspection_opening", "inspection_pit", "sewer_connection", "water_connection", "water_meter")
+# stage 9 (the same lists are in frontend/src/lib/site/types.ts)
+DISCHARGE_KINDS = ("kerb_outlet", "interallotment_drainage", "other")
 PARAM_ENUMS: dict[tuple[str, str], tuple[str, ...]] = {
     ("rwt", "shape"): RWT_SHAPES, ("retaining_wall", "wall_type"): WALL_TYPES, ("infiltration_trench", "infiltration_basis"): INFILTRATION_BASES,
     ("osd", "form"): OSD_FORMS, ("osd_basin", "form"): OSD_FORMS,
@@ -83,6 +87,7 @@ PARAM_ENUMS: dict[tuple[str, str], tuple[str, ...]] = {
     ("driveway", "surface_kind"): DRIVEWAY_SURFACES,
     ("service_existing", "service_kind"): SERVICE_KINDS, ("service_existing", "depth_basis"): DEPTH_BASES, ("service_existing", "depth_reference"): DEPTH_REFERENCES,
     ("service_node", "node_kind"): NODE_KINDS,
+    ("discharge_point", "discharge_kind"): DISCHARGE_KINDS, ("grading_area", "surface_kind"): SURFACE_KINDS,
 }
 #: parameters that must be numbers when they carry a value
 PARAM_NUMBERS: dict[str, tuple[str, ...]] = {
@@ -92,7 +97,7 @@ PARAM_NUMBERS: dict[str, tuple[str, ...]] = {
     "driveway": ("width_m", "end_level_rl", "crossover_chainage_m", "batter_cut_h_per_v", "batter_fill_h_per_v"),
     "grading_area": ("target_level_m", "target_grade_pct", "fall_direction_deg", "pivot_level_m", "batter_cut_h_per_v", "batter_fill_h_per_v"),
     # stage 7. Levels (``_rl``) are RLs in metres and may be negative; a quantity that must be above zero is checked by the engines, not here.
-    "rwt": ("capacity_l", "diameter_m", "length_m", "width_m", "height_m", "base_rl", "inlet_rl", "overflow_rl", "outlet_rl", "connected_roof_area_m2", "garden_area_m2",
+    "rwt": ("capacity_l", "diameter_m", "length_m", "width_m", "height_m", "base_rl", "inlet_rl", "overflow_rl", "outlet_rl", "connected_roof_area_m2", "garden_area_m2", "detention_volume_l",
             "runoff_coefficient", "first_flush_mm", "occupants", "toilet_l_pp_day", "laundry_l_pp_day", "garden_l_m2_day", "wet_day_fraction", "water_target_pct", "tank_height_m"),
     "retaining_wall": ("height_m", "thickness_m", "surcharge_kpa", "soil_friction_angle_deg", "soil_unit_weight_kn_m3", "wall_friction_ratio", "gravity_wall_width_ratio",
                        "wall_unit_weight_kn_m3", "min_fs_sliding", "min_fs_overturning"),
@@ -112,12 +117,21 @@ PARAM_NUMBERS = {**PARAM_NUMBERS, **{t: tuple(dict.fromkeys((*PARAM_NUMBERS.get(
 PARAM_BOOLS: dict[str, tuple[str, ...]] = {"rwt": ("reuse_toilet", "reuse_laundry", "reuse_garden"), "footpath": ("impervious",)}
 #: parameters that must be an ISO date (YYYY-MM-DD) when they carry a value
 PARAM_DATES: dict[str, tuple[str, ...]] = {"infiltration_trench": ("test_date",), "service_existing": ("plan_date", "plan_expiry_date")}
+#: stage 9: where the runoff of an object goes. ``drains_to_id`` names an OSD, an OSD basin, an infiltration trench or a discharge point (a surface), or a discharge point
+#: (an OSD, a trench or a tank overflow). An object without the link drains to the legal point of discharge (the stormwater helper says so).
+DRAINS_TO_SURFACE_TYPES = ("osd", "osd_basin", "infiltration_trench", "discharge_point")
+DRAINS_TO_SURFACES = ("building", "driveway", "footpath", "pool", "landscape_area", "grading_area")
+DRAINS_TO_STORAGE = ("osd", "osd_basin", "infiltration_trench", "rwt")
 #: object links: (type, parameter) -> the object types the linked id must have (checked by the engines against the document, not by this model)
 PARAM_LINKS: dict[tuple[str, str], tuple[str, ...]] = {
     ("rwt", "roof_building_id"): ("building",), ("overflow_route", "osd_id"): ("osd", "osd_basin"), ("pool_barrier", "pool_id"): ("pool",),
     # stage 8: the main a node or service connects to, the building a sewer drain leaves, the tank a water service tops up
     ("service_node", "main_id"): ("service_existing",), ("sewer_drain", "building_id"): ("building",), ("water_service", "main_id"): ("service_existing",),
     ("water_service", "rwt_id"): ("rwt",),
+    # stage 9: an overflow route may start at a tank (rwt_id) and end at an OSD (osd_id) or an infiltration trench (trench_id)
+    ("overflow_route", "rwt_id"): ("rwt",), ("overflow_route", "trench_id"): ("infiltration_trench",),
+    **{(t, "drains_to_id"): DRAINS_TO_SURFACE_TYPES for t in DRAINS_TO_SURFACES},
+    **{(t, "drains_to_id"): ("discharge_point",) for t in DRAINS_TO_STORAGE},
 }
 
 #: object types whose parameters are stage 7 engineering inputs. On them a parameter may NOT have basis ``platform_default`` (the only platform defaults are the
@@ -125,7 +139,7 @@ PARAM_LINKS: dict[tuple[str, str], tuple[str, ...]] = {
 #: two keys (the OSD ``psd_l_s``; the checks still verify its value against the resolver), and the Plan Studio size ESTIMATE the importer stamps on a tank diameter or height
 #: (its ref starts with ``PS_ESTIMATE_REF``; the checks do NOT use such a value).
 STAGE7_TYPES = frozenset({"rwt", "retaining_wall", "infiltration_trench", "osd", "osd_basin", "stormwater_pit", "stormwater_pipe", "pool_barrier", "overflow_route", "tree",
-                          "service_existing", "sewer_drain", "service_node", "water_service"})
+                          "service_existing", "sewer_drain", "service_node", "water_service", "discharge_point"})
 PS_ESTIMATE_REF = "PLAN STUDIO ESTIMATE"
 
 

@@ -106,13 +106,21 @@ function build() {
     { id: 'water_a', type: 'water_service', status: 'proposed', geometry: { kind: 'polyline', pts: [[496010, 6650020], [496012, 6650014]] }, params: { diameter_mm: { value: 20, basis: 'user' }, cover_m: { value: 0.5, basis: 'user' }, main_id: { value: 'dbyd_a1', basis: 'user' }, rwt_id: { value: 'rwt_2', basis: 'user' } } },
   ] });
   s.run('set_param', { id: 'tree_1', key: 'footing_depth_m', value: 0.8 });
+  // stage 9: a legal point of discharge, surfaces and storage that drain to it, a tank detention volume, a trench test method, a grading surface and a tank overflow route
+  const dp = s.run('add_object', { type: 'discharge_point', points: [at(9, -1)], params: { discharge_kind: { value: 'kerb_outlet', basis: 'user' }, discharge_basis: { value: 'SYNTHETIC TEST FIXTURE', basis: 'user' } } });
+  s.run('set_param', { id: dv.id, key: 'drains_to_id', value: dp.id });
+  s.run('set_param', { id: 'osd_4', key: 'drains_to_id', value: dp.id });
+  s.run('set_param', { id: 'rwt_2', key: 'detention_volume_l', value: 500 });
+  s.run('set_param', { id: 'infiltration_trench_6', key: 'test_method', value: 'SYNTHETIC TEST FIXTURE' });
+  s.run('set_param', { id: 'grading_area_10', key: 'surface_kind', value: 'turf' });
+  s.run('set_param', { id: ov.id, key: 'rwt_id', value: 'rwt_2' });
   return s.doc;
 }
 
 describe('frontend output vs the Pydantic model (golden file)', () => {
-  it('covers all twenty two object types, a vertex z, every basis and an issue', () => {
+  it('covers all twenty three object types, a vertex z, every basis and an issue', () => {
     const d = build();
-    expect(OBJECT_TYPES).toHaveLength(22);
+    expect(OBJECT_TYPES).toHaveLength(23);
     expect(new Set(d.objects.map((o) => o.type))).toEqual(new Set(OBJECT_TYPES));
     expect(d.objects.some((o) => o.type === 'footpath' && o.geometry.kind === 'polygon')).toBe(true);
     expect(d.objects.some((o) => o.geometry.kind === 'polyline' && o.geometry.pts.some((p) => p.length === 3))).toBe(true);

@@ -7,7 +7,7 @@
  */
 import { polygonArea, polylineLength } from './geom';
 import { serviceLabelLines } from './services';
-import { FOOTING_TYPES, dimOf, flagOf, levelOf, rwtShape, textOf, wallHeightAt, type ObjectType, type Pos, type SiteObject } from './types';
+import { DRAINS_TO_STORAGE, DRAINS_TO_SURFACES, FOOTING_TYPES, dimOf, flagOf, levelOf, rwtShape, textOf, wallHeightAt, type ObjectType, type Pos, type SiteObject } from './types';
 
 export type FieldKind = 'number' | 'enum' | 'bool' | 'date' | 'text' | 'link';
 export interface FieldSpec {
@@ -36,8 +36,15 @@ const SIZING_INPUTS: FieldSpec[] = [
 
 /** The fields the panel always lists for an object, in order (shown NOT SET until a value is entered). Parameters the object already has are listed after these. */
 export function fieldsFor(o: SiteObject): FieldSpec[] {
-  const base = fieldsForType(o);
+  const base = [...fieldsForType(o), ...drainage(o)];
   return (FOOTING_TYPES as readonly string[]).includes(o.type) ? [...base, N('footing_depth_m', 'Footing depth (optional)', 'm', 'Foundation', 'Metres below ground. Used only by the sewer zone of influence check. Left empty, that check is NOT EVALUATED.')] : base;
+}
+/** Stage 9: where the runoff or the outlet of an object goes. Left empty, the object goes to the legal point of discharge (the stormwater panel says so). */
+function drainage(o: SiteObject): FieldSpec[] {
+  const surface = (DRAINS_TO_SURFACES as readonly string[]).includes(o.type), storage = (DRAINS_TO_STORAGE as readonly string[]).includes(o.type);
+  if (!surface && !storage) return [];
+  return [{ key: 'drains_to_id', label: surface ? 'Drains to' : o.type === 'rwt' ? 'Overflow drains to' : 'Outlet drains to', kind: 'link', group: 'Drainage',
+    help: 'Not linked: the stormwater panel sends it to the single legal point of discharge and says that it did so.' }];
 }
 function fieldsForType(o: SiteObject): FieldSpec[] {
   switch (o.type) {
@@ -48,6 +55,7 @@ function fieldsForType(o: SiteObject): FieldSpec[] {
       return [E('shape', 'Shape', 'Dimensions'), ...dims, N('capacity_l', 'Volume', 'L', 'Dimensions'),
         N('base_rl', 'Tank base level', 'm RL', 'Levels', 'Used with the height to check the inlet, overflow and outlet levels are inside the tank body.'), N('inlet_rl', 'Inlet level', 'm RL', 'Levels'), N('overflow_rl', 'Overflow level', 'm RL', 'Levels'), N('outlet_rl', 'Outlet level', 'm RL', 'Levels'),
         { key: 'roof_building_id', label: 'Linked building (roof)', kind: 'link', group: 'Roof and reuse' }, N('connected_roof_area_m2', 'Connected roof area', 'm2', 'Roof and reuse'),
+        N('detention_volume_l', 'Detention volume (optional)', 'L', 'Roof and reuse', 'The volume of the tank set aside for detention. Counted against the OSD storage only when the requirement stormwater.rainwater_tank_excluded_from_detention_volume resolves to false.'),
         B('reuse_toilet', 'Supplies toilets', 'Roof and reuse'), B('reuse_laundry', 'Supplies laundry', 'Roof and reuse'), B('reuse_garden', 'Supplies garden', 'Roof and reuse'), ...SIZING_INPUTS];
     }
     case 'retaining_wall':
@@ -61,7 +69,8 @@ function fieldsForType(o: SiteObject): FieldSpec[] {
     case 'infiltration_trench':
       return [N('width_m', 'Width', 'm', 'Trench'), N('depth_m', 'Depth', 'm', 'Trench'), N('void_ratio', 'Media void ratio', '', 'Trench', 'Pore volume as a fraction of the media volume, above 0 and at most 1.'),
         N('infiltration_rate_mm_h', 'Design infiltration rate', 'mm/h', 'Infiltration'), E('infiltration_basis', 'Basis of the rate', 'Infiltration'),
-        { key: 'test_date', label: 'Site test date', kind: 'date', group: 'Infiltration', help: 'Required when the basis is a site test. Enter YYYY-MM-DD.' }];
+        { key: 'test_date', label: 'Site test date', kind: 'date', group: 'Infiltration', help: 'Required when the basis is a site test. Enter YYYY-MM-DD.' },
+        T('test_method', 'Site test method', 'Infiltration', 'Required by the stormwater panel when the basis is a site test.')];
     case 'osd':
       return [E('form', 'Form', 'Storage'), N('width_m', 'Width', 'm', 'Storage'), N('length_m', 'Length', 'm', 'Storage'), N('height_m', 'Height', 'm', 'Storage'), N('storage_volume_m3', 'Storage volume', 'm3', 'Storage'),
         N('orifice_diameter_mm', 'Outlet orifice diameter', 'mm', 'Outlet'), N('orifice_invert_rl', 'Orifice invert', 'm RL', 'Outlet'), N('top_water_level_rl', 'Top water level', 'm RL', 'Outlet'),
@@ -72,7 +81,10 @@ function fieldsForType(o: SiteObject): FieldSpec[] {
         N('orifice_diameter_mm', 'Outlet orifice diameter', 'mm', 'Outlet'), N('orifice_invert_rl', 'Orifice invert', 'm RL', 'Outlet'), N('top_water_level_rl', 'Top water level', 'm RL', 'Outlet'),
         N('discharge_coefficient', 'Discharge coefficient Cd (optional)', '', 'Outlet'), N('psd_l_s', 'Permissible site discharge (optional)', 'L/s', 'Outlet')];
     case 'overflow_route':
-      return [{ key: 'osd_id', label: 'Linked OSD', kind: 'link', group: 'Route' }];
+      return [{ key: 'rwt_id', label: 'Starts at tank (optional)', kind: 'link', group: 'Route' }, { key: 'osd_id', label: 'Ends at OSD', kind: 'link', group: 'Route' },
+        { key: 'trench_id', label: 'Ends at infiltration trench', kind: 'link', group: 'Route', help: 'A tank overflow may end at an OSD or at a trench. Link one of them.' }];
+    case 'discharge_point':
+      return [E('discharge_kind', 'Kind of discharge', 'Discharge point'), T('discharge_basis', 'Basis of the point', 'Discharge point', 'State where the point comes from, for example a council letter, a plan or a survey. It is not assumed.')];
     case 'stormwater_pit':
       return [N('width_m', 'Width', 'm', 'Pit'), N('length_m', 'Length', 'm', 'Pit'), N('invert_rl', 'Invert level', 'm RL', 'Pit')];
     case 'stormwater_pipe':
@@ -90,6 +102,8 @@ function fieldsForType(o: SiteObject): FieldSpec[] {
       return [N('height_m', 'Height', 'm', 'Tree'), N('canopy_diameter_m', 'Canopy diameter', 'm', 'Tree'), N('trunk_diameter_mm', 'Trunk diameter (DBH)', 'mm', 'Tree', 'Used for the protection zones of an existing tree. The multipliers are requirement keys.')];
     case 'landscape_area':
       return [E('surface_kind', 'Surface', 'Surface')];
+    case 'grading_area':
+      return [E('surface_kind', 'Surface after grading (for the stormwater panel)', 'Surface', 'Chosen by you. It is not guessed from the target level.')];
     case 'service_existing':
       return [E('service_kind', 'Service kind', 'Service'), T('asset_owner', 'Asset owner', 'Service', 'The owner decides which clearance rules apply. Enter it exactly as the plan gives it.'),
         N('diameter_mm', 'Diameter', 'mm', 'Service'), T('material', 'Material', 'Service'),
@@ -246,6 +260,9 @@ export function extraLabelLines(o: SiteObject): string[] {
     L.push(TREE_STATUS_LABEL[o.status] ?? o.status.toUpperCase());
   } else if (t === 'footpath') {
     const im = flagOf(o, 'impervious'); L.push(im === null ? 'IMPERVIOUS OR PERMEABLE NOT SET' : im ? 'IMPERVIOUS' : 'PERMEABLE');
+  } else if (t === 'discharge_point') {
+    const k = textOf(o, 'discharge_kind'); L.push(k ? k.replace(/_/g, ' ').toUpperCase() : 'KIND NOT SET');
+    const b = textOf(o, 'discharge_basis'); L.push(b ? `BASIS: ${b.toUpperCase()}` : 'BASIS NOT STATED');
   } else if (t === 'landscape_area') {
     const a = polygonAreaOf(o); if (a !== null) L.push(`AREA ${f(a, 1)} M2`);
   } else if (t === 'service_existing' || t === 'sewer_drain' || t === 'service_node' || t === 'water_service') {
