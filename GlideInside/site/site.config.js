@@ -9,8 +9,8 @@ window.GI_CONFIG = {
   stripeRenders: "",              // A$10 link
   stripeBoth: "",                 // A$15 link (both add-ons)
   toolUrl: "plan-studio/launch/",   // change to the Pocket Architect app route when built
-  heroVideoPlans: "",             // e.g. "assets/plan-creation.mp4": plays muted on loop behind the button
-  heroPoster: "",
+  heroVideoPlans: "assets/plan-creation.mp4",             // e.g. "assets/plan-creation.mp4": plays muted on loop behind the button
+  heroPoster: "assets/plan-creation-poster.webp",
   premiumEnabled: true,
   orderUrl: "mailto:hello@glideinside.com.au?subject=Glide%20Inside%20enquiry",
   planOrderUrl: "mailto:hello@glideinside.com.au?subject=Pocket%20Architect%20enquiry",
