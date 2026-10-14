@@ -41,8 +41,9 @@ export function Header() {
   );
 }
 export const Footer = () => (
-  <footer className="mt-24 border-t border-ink/15">
-    <div className="mx-auto max-w-7xl px-4 sm:px-8"><div className="ticks" aria-hidden /></div>
+  <footer className="mt-12 border-t border-ink/15">
+    <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-8"><dl className="titleblock grid-cols-2 font-mono text-[10.5px] uppercase tracking-wider md:grid-cols-6 [&>div]:border-b md:[&>div]:border-b-0 md:[&>div:not(:last-child)]:border-r [&>div:nth-child(odd)]:border-r md:[&>div:nth-child(odd)]:border-r">
+      {[["Project", "JCE Site Planner"], ["Drawn", "Automatically"], ["Checked", ""], ["Approved", ""], ["Scale", "NTS"], ["Status", "Preliminary"]].map(([k, v]) => <div key={k}><dt className="text-[9px] tracking-[.16em] text-muted">{k}</dt><dd className="mt-1 min-h-[1.25rem]">{v}</dd></div>)}</dl></div>
     <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 text-sm text-muted sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
       <div><Logo /><p className="mt-4 max-w-sm leading-relaxed">Civil plans and DA/CDC application material from the lot, for builders, designers and owners. NSW first, with every value cited or marked unresolved.</p></div>
       <nav aria-label="Product" className="flex flex-col gap-2"><span className="h-eyebrow">Product</span>{links.map(([t, h]) => <Link key={h} href={h} className="hover:text-ink">{t}</Link>)}</nav>
