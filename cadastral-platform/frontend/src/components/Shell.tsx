@@ -19,7 +19,7 @@ function ThemeToggle() {
   useEffect(() => { try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; setD(document.documentElement.dataset.theme === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)); } catch { /* */ } }, []);
   return <button aria-label="Toggle theme" className="rounded-md border border-line px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-wider text-muted hover:border-ink hover:text-ink" onClick={() => { const n = d ? "light" : "dark"; document.documentElement.dataset.theme = n; try { localStorage.setItem("theme", n); } catch { /* */ } setD(!d); }}>{d ? "Paper" : "Night"}</button>;
 }
-const links: [string, string][] = [["How it works", "/#how"], ["Who it is for", "/#roles"], ["Civil plans", "/#plans"], ["Pricing", "/#pricing"], ["FAQ", "/#faq"], ["Contact", "/#contact"]];
+const links: [string, string][] = [["How it works", "/#process"], ["Who it is for", "/#roles"], ["Civil plans", "/#plans"], ["Pricing", "/#pricing"], ["FAQ", "/#faq"], ["Contact", "/#contact"]];
 export function Header() {
   const [open, setOpen] = useState(false);
   return (
