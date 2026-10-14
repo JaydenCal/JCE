@@ -208,6 +208,15 @@ def _json(m) -> dict:
     return m.model_dump(mode="json")
 
 
+def _default_title(args) -> str:
+    """Project name when --title is not given: the address or "LOT n DPnnnnnn" followed by SITE WORKS (never a raw "Test run: 2//DP..." label)."""
+    import re as _re
+    if getattr(args, "address", None):
+        return f"{args.address} site works"
+    m = _re.match(r"^\s*(\w+)\s*(?://|/)\s*(\S+)\s*$", getattr(args, "lotplan", None) or "")
+    return f"Lot {m.group(1)} {m.group(2)} site works" if m else "Site works"
+
+
 def _err(ex: Exception) -> str:
     return f"{getattr(ex, 'error_code', type(ex).__name__)}: {getattr(ex, 'detail', ex)}"
 
@@ -283,7 +292,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         return _finish(rep, out)
 
     rr = RunRequest(project_id=uuid5(NAMESPACE_URL, "run_site:" + json.dumps(params, sort_keys=True)), params=params,
-                    development_type=dev, project_title=args.title or f"Test run: {args.address or args.lotplan or 'random lot'}")
+                    development_type=dev, project_title=args.title or _default_title(args))
     ctx = BuildContext(run_id=rr.project_id, project_id=rr.project_id, user_id=rr.project_id, request=rr, conn=None,  # type: ignore[arg-type]
                        export_dir=str(out))
     R: dict[str, Any] = {}
@@ -303,7 +312,15 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         return R[key]
 
     # ---- SA1
-    if custom_req is not None:
+    OFF = None
+    if getattr(args, "offline", None):
+        import app.offline.lot2 as OFF           # noqa: N812 - saved-run fixture; the NSW hosts are not reachable
+        os.environ["IMAGERY_PROVIDER"] = "offline_lot2"
+        rep.add("offline fixture", UNRESOLVED, OFF.provenance_note())
+    if OFF is not None:
+        R["SA1"] = sa1 = OFF.sa1_result()
+        ctx.upstream["SA1"] = _json(sa1)
+    elif custom_req is not None:
         from app.jurisdiction.parcel import Sa1CustomParcel
         try:
             R["SA1"] = sa1 = Sa1CustomParcel(profile).run(custom_req)
@@ -328,7 +345,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     if getattr(args, "levels", None) == "nsw":
         try:
             from app.agents.sa3_terrain.live_levels import fetch_levels
-            lv = fetch_levels(sa1.lot.boundary_wkt, sa1.lot.mga_srid, accuracy_m=getattr(args, "levels_accuracy_m", None))
+            lv = fetch_levels(sa1.lot.boundary_wkt, sa1.lot.mga_srid, accuracy_m=getattr(args, "levels_accuracy_m", None), **({"export": OFF.export_tiff} if OFF else {}))
             for tgt in (params, rr.params):
                 tgt.setdefault("terrain", {})["survey"] = lv.survey
             rep.facts.update(levels_provenance=lv.provenance, levels_warnings=lv.warnings)
@@ -339,6 +356,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
 
     # ---- SA2
     sa2 = None
+    raw_rules = None
     if getattr(args, "rules_json", None):
         try:
             raw_rules = json.loads(Path(args.rules_json).read_text())
@@ -444,8 +462,19 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                 dem = None
                 if getattr(args, "levels", None) == "nsw":
                     from app.agents.sa3_terrain.live_levels import fetch_levels
-                    dem = lambda poly: fetch_levels(poly.wkt, lot.mga_srid, buffer_m=5.0, max_points=3000, accuracy_m=getattr(args, "levels_accuracy_m", None)).survey  # noqa: E731
+                    dem = lambda poly: fetch_levels(poly.wkt, lot.mga_srid, buffer_m=5.0, max_points=3000, accuracy_m=getattr(args, "levels_accuracy_m", None), **({"export": OFF.export_tiff} if OFF else {})).survey  # noqa: E731
                 lot_pl = lot_with_envelope(sa1, env_out)
+                if OFF is not None:
+                    cad_fetch = OFF.cadastre_window                                  # the saved-run fixture only holds the 3 adjoining lots
+                else:
+                    from shapely import wkt as _swkt
+                    from app.agents.sa1_cadastre.agent import Sa1Cadastre
+                    from app.agents.sa5_cad_dxf.planset.data import CadastreWindow
+                    _sa1a, _lot_mga = Sa1Cadastre(cfg, client), _swkt.loads(lot.boundary_wkt)
+
+                    def cad_fetch(window):                                           # viewport window -> every lot and road reserve in it (SA1 query)
+                        lots_, ok_, note_ = _sa1a.window_lots(lot.jurisdiction, lot.mga_srid, _lot_mga, window)
+                        return CadastreWindow(lots_, ok_, note_)
                 council = getattr(args, "council", None) or args.lga or lot.lga_name or ""
                 if not council and getattr(args, "rules_json", None):
                     council = "Gunnedah" if "Gunnedah" in Path(args.rules_json).read_text() else ""
@@ -457,16 +486,19 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                     if hasattr(m, "Sa10Esc"):
                         from app.agents.sa10_esc.models import Sa10EscInput
                         def esc_run(site):  # noqa: E306
-                            return m.Sa10Esc().run(Sa10EscInput(lot=lot_pl, development_type=dev, footprint_wkt=site.footprint.wkt if site.footprint is not None else None,
-                                                                 driveway=env_out.driveway, services=sa4.to_cad_services(), output_dir=str(out)))
+                            tpts = [tuple(float(c) for c in q) for q in (site.spots or (site.tin.vertices.tolist() if site.tin is not None else []))]       # the DEM points the plans use: SA10 fits the fall direction to them
+                            return m.Sa10Esc().run(Sa10EscInput(lot=lot_pl, development_type=dev, footprint_wkt=site.footprint.wkt if (site.footprint is not None and getattr(site.inp, "show_dwelling", False)) else None,        # the preset footprint is illustrative and is not drawn: the ESC layout must not depend on it
+                                                                 driveway=env_out.driveway, services=sa4.to_cad_services(), terrain_points=tpts, output_dir=str(out)))
                 except Exception:  # noqa: BLE001
                     esc_run = None
-                pin = PlansetInput(lot=lot_pl, development_type=dev, project_title=rr.project_title, drawn_by="JCE", council_name=council, driveway=env_out.driveway,
+                pin = PlansetInput(lot=lot_pl, development_type=dev, project_title=rr.project_title, drawn_by="JCESITE", council_name=council, driveway=env_out.driveway,
                                    driveway_checks=list(env_out.checks), services=sa4.to_cad_services(), rwt=sa4.to_cad_rwt(), terrain=R.get("SA3"), survey_points=pts, dem_fetch=dem,
                                    levels_accuracy_m=getattr(args, "levels_accuracy_m", None), ffl_value=ffl_value if ffl_lab else None, ffl_label=ffl_lab,
                                    imagery=provider_from_env("NSW"), esc_runner=esc_run, unresolved=list(env_out.envelope.unresolved_elements),
-                                   address=args.address or "")
-                res = build_planset(pin, out, "planset")
+                                   address=args.address or "", cadastre_fetch=cad_fetch,
+                                   rules=list((raw_rules.get("rules", []) if isinstance(raw_rules, dict) else raw_rules) or []))
+                res = build_planset(pin, out, "planset", style=getattr(args, "planset_style", "legacy"),
+                                    only=[x for x in (getattr(args, "planset_sheets", None) or "").split(",") if x.strip()] or None)
                 rep.add("SA5 plan set", OK, f"{len(res['sheets'])} sheets; font {res['font']}; DXF audit errors {res['dxf_stats'].get('audit_errors')}", [res["pdf"], res["dxf"]])
             except Exception as ex:  # noqa: BLE001
                 import traceback
@@ -589,6 +621,7 @@ def _finish(rep: Report, out: Path) -> Report:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--check-network", action="store_true", help="probe each configured host and exit")
+    p.add_argument("--offline", choices=["lot2"], help="use the saved Lot 2 DP227508 fixture (app/offline/lot2.py) instead of the NSW services: SA1 lot, 5 m DEM and aerials come from the saved run; use with --lotplan 2//DP227508 --levels nsw")
     p.add_argument("--lga", help="council name (random-lot filter / centre lookup), e.g. Gunnedah")
     p.add_argument("--address", help='e.g. "756 Quia Road, Gunnedah"')
     p.add_argument("--lotplan", help="NSW lot identifier, e.g. 12//DP345678")
@@ -612,6 +645,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--scale", type=int, default=200)
     p.add_argument("--planset", action="store_true", help="also write the multi-sheet civil plan set planset.pdf / planset.dxf")
     p.add_argument("--planset-only", action="store_true", help="with --planset: stop after the plan set (skip SA6 scene and SA9 constraints)")
+    p.add_argument("--planset-style", choices=["legacy", "ref"], default="legacy", help="plan set style: legacy A3 (12 sheets) or ref (A1 reference style; stage 1 builds C101 only)")
+    p.add_argument("--planset-sheets", help="comma list of sheet numbers to build, e.g. C101 (ref style default C101)")
     p.add_argument("--council", help="council name for cited-requirement lookup in the plan set (default --lga / SA1 / rules file)")
     p.add_argument("--base-rl", type=float, default=0.0, help="placeholder floor RL for the scene when no survey exists")
     p.add_argument("--flood-level-ahd", type=float, help="design flood level, RL m AHD (council certificate / flood study); FFL = level + freeboard")

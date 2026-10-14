@@ -31,7 +31,7 @@ def test_report_pure_and_readable():
 
 
 def test_formats():
-    assert fmt.hdate("2024-12-13") == "13 Dec 2024"
+    assert fmt.hdate("2024-12-13") == "13/12/2024"
     assert fmt.parse_currency("source currency 2024-12-13; fetched 2026-10-12")["source"].year == 2024
 
 

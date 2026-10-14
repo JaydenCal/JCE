@@ -76,6 +76,7 @@ def nsw_roads_layer() -> LayerConfig:
 class QueryResult:
     features: list
     snapshot: Snapshot
+    truncated: bool = False          # the last page still reported exceededTransferLimit (the service had more records than max_pages x page_size)
 
 
 class ArcGISClient:
@@ -114,17 +115,18 @@ class ArcGISClient:
                   "returnGeometry": "true", "spatialRel": "esriSpatialRelIntersects"}
         if geometry is not None:
             params.update(geometry=json.dumps(geometry), geometryType=geometry_type, inSR=7844)
-        feats, h, etag = [], hashlib.sha256(), None
+        feats, h, etag, more = [], hashlib.sha256(), None, False
         for page in range(layer.max_pages):
             p = dict(params, resultOffset=page * layer.page_size, resultRecordCount=layer.page_size)
             body, e, js = self._get(layer.url + "/query", p)
             h.update(body)
             etag = etag or e
             feats += js.get("features", [])
-            if not (js.get("exceededTransferLimit") or js.get("properties", {}).get("exceededTransferLimit")):
+            more = bool(js.get("exceededTransferLimit") or js.get("properties", {}).get("exceededTransferLimit"))
+            if not more:
                 break
         snap = make_snapshot(layer, params, h.digest(), etag)
-        return QueryResult(feats, snap)
+        return QueryResult(feats, snap, more)
 
     def geocode(self, url: str, address: str) -> tuple[float, float]:
         if "NSW_Property" in url:

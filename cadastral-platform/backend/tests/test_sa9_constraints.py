@@ -53,7 +53,7 @@ def test_end_to_end(tmp_path):
     assert r.overlays and all(o.geometry_wkt for o in r.overlays)
     doc = pymupdf.open(r.pdf_path)
     txt = "".join(p.get_text() for p in doc)
-    for s in ("Planning Constraints", "Constraint summary", "Not checked", "What matters for this site", "s10.7", "Acknowledgements", "To be confirmed"):
+    for s in ("Planning Constraints", "Constraint summary", "Not checked", "What matters for this site", "s10.7", "Acknowledgements", "UNRESOLVED"):
         assert s in txt
     gj = json.load(open(r.geojson_path))
     assert gj["type"] == "FeatureCollection" and any(x["properties"].get("layer") == "nsw_flood" for x in gj["features"])

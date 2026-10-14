@@ -30,6 +30,7 @@ class Proj:
     datum: list[str] = field(default_factory=list)
     revisions: list[tuple[str, str, str, str]] = field(default_factory=list)
     client: str = ""
+    job: str = ""                       # job number for the A1 reference-style drawing number; empty shows JCE-XXX-CV-1xxx
 
 
 def _box(v: View, x0, y0, x1, y1, lw=0.25, layer="C-ANNO-TTLB") -> None:

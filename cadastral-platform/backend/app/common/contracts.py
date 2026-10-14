@@ -197,6 +197,7 @@ class DrivewayDesign(Model):
     turning_circle_centre_xy: tuple[float, float] | None = None
     turning_circle_radius_m: float | None = None
     dimensions: list[tuple[str, tuple[float, float], tuple[float, float]]] = []  # label, p1, p2
+    kerb_to_boundary_user_supplied: bool | None = None   # True = verge depth supplied by the user; False/None = platform default (unknown means default)
 
 
 class ServiceLine(Model):

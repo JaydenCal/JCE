@@ -21,8 +21,8 @@ LAYERS: dict[str, dict] = {
               "vegetation Category 1, 2 and 3 (higher to lower fire risk) and a buffer around that vegetation. When land is bush fire "
               "prone, new habitable buildings must be designed and built for the assessed Bushfire Attack Level (BAL) and Planning for "
               "Bush Fire Protection applies."),
-        caveat=("This report screens the lot against mapped vegetation out to 100 m. Whether the land is formally designated bush fire "
-                "prone is confirmed on the s10.7 planning certificate."),
+        caveat=("This report screens the lot against mapped vegetation within the screening distance stated on the constraint page. Whether the land is "
+                "formally designated bush fire prone is confirmed on the s10.7 planning certificate."),
         nc_action="Check the s10.7 planning certificate or the RFS Check and Plan map for bush fire prone land status."),
     "nsw_heritage_item": dict(
         short="Heritage item", rank=3,
@@ -71,7 +71,7 @@ LAYERS: dict[str, dict] = {
         nc_action="Check height and noise controls with council or the airport operator."),
     "nsw_mine_subsidence": dict(
         short="Mine subsidence district", rank=5,
-        what="A proclaimed district where buildings need approval from Subsidence Advisory NSW as well as council.",
+        what="A declared district where buildings need approval from Subsidence Advisory NSW as well as council.",
         caveat="", nc_action="Check the Subsidence Advisory NSW district map."),
     "nsw_contamination": dict(
         short="Contaminated land", rank=4,
@@ -120,18 +120,18 @@ ZONES = {
 
 # consequence item -> (plain label, who to ask)
 ITEMS: dict[str, tuple[str, str]] = {
-    "flood_planning_level": ("Flood planning level (the level floors must be at or above)", "Council flood information / flood certificate"),
+    "flood_planning_level": ("Flood planning level (the design flood level used by council)", "Council flood information / flood certificate"),
     "freeboard": ("Freeboard added to the flood level", "Council (DCP flood section)"),
     "floor_level": ("Minimum habitable floor level", "Council, with a flood engineer if required"),
     "fill": ("Whether filling of the land is allowed", "Council"),
     "materials": ("Flood-compatible building materials", "Council / certifier"),
     "evacuation": ("Evacuation and flood-free access requirements", "Council / SES"),
     "da_requirement": ("Whether a development application is required", "Council"),
-    "bal_assessment_as3959": ("Bushfire Attack Level (BAL) assessment to AS 3959", "Accredited bushfire consultant"),
-    "pbp_compliance": ("Compliance with Planning for Bush Fire Protection", "Bushfire consultant / council"),
+    "bal_assessment_as3959": ("Bushfire Attack Level (BAL) assessment", "Accredited bushfire consultant"),
+    "pbp_compliance": ("Compliance with state bushfire planning guidance", "Bushfire consultant / council"),
     "spp_bushfire_hazard": ("State planning policy bushfire hazard assessment", "Council"),
-    "asset_protection_zone": ("Asset protection zone width around the building", "Bushfire consultant / NSW RFS"),
-    "rfs_referral": ("Referral to the NSW Rural Fire Service (bush fire safety authority)", "Council / NSW RFS"),
+    "asset_protection_zone": ("Asset protection zone width (if any)", "Bushfire consultant / NSW RFS"),
+    "rfs_referral": ("Referral to the state fire authority", "Council / NSW RFS"),
     "class10a_bushfire_applicability": ("Whether bushfire construction rules apply to a Class 10a shed", "Certifier / bushfire consultant"),
     "separation_from_dwelling": ("Separation distance from a dwelling or boundary", "Certifier"),
     "heritage_impact_statement": ("Heritage impact statement", "Council heritage adviser"),

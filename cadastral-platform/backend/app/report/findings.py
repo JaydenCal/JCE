@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -13,16 +14,27 @@ from app.agents.sa9_constraints.layers import REGISTRY, get_layer
 from app.agents.sa9_constraints.triggers import TriggerResult
 from app.report import catalogue as C
 from app.report import fmt
+from app.report.explain import LOAD_MARGIN_M
 
 ENDPOINTS = Path(__file__).parents[1] / "agents" / "sa9_constraints" / "endpoints_nsw.json"
 _EP: dict | None = None
+
+
+def endpoint_host() -> str:
+    endpoint_meta("")                     # loads the file
+    return str(_META.get("host", "")).replace("https://", "").split("/")[0]
+
+
+_META: dict = {}
 
 
 def endpoint_meta(key: str) -> dict:
     global _EP
     if _EP is None:
         try:
-            _EP = json.loads(ENDPOINTS.read_text(encoding="utf-8")).get("layers", {})
+            _all = json.loads(ENDPOINTS.read_text(encoding="utf-8"))
+            _EP = _all.get("layers", {})
+            _META.update(_all.get("_meta", {}))
         except (OSError, ValueError):
             _EP = {}
     return _EP.get(key, {})
@@ -64,6 +76,8 @@ class Finding:
     buffer_m: float = 0.0
     has_page: bool = False
     result: LayerResult | None = None
+    meta: dict = field(default_factory=dict)          # the layer's own endpoint metadata (service, layer name, copyright)
+    host: str = ""
 
     @property
     def active(self) -> bool:
@@ -127,12 +141,15 @@ def _headline(key: str, status: str, short: str, rows: list[FeatureRow], r: Laye
         d = min(x.distance_m for x in veg) if veg else (r.nearest_distance_m or 0)
         what = {"nsw_bushfire": "bush fire prone vegetation"}.get(key, f"mapped {low}")
         nm = f" ({veg[0].name})" if key == "nsw_bushfire" and veg else ""
-        return (f"The lot is {d:.0f} m from the nearest {what}{nm}. It is not inside the mapped area, but it is within the "
-                f"{buffer_m:.0f} m buffer used to screen this constraint, so the buffer applies.")
+        return (f"The lot is {d:.0f} m from the nearest {what}{nm}. No mapped area overlaps the lot, but this feature is within the "
+                f"{buffer_m:.0f} m screening distance (a platform screening setting), so the result is WITHIN BUFFER.")
     if status == "clear":
         if r.nearest_distance_m is None:
-            return f"No {low} is mapped on the lot or within about 150 m of it."
-        return f"The lot is not within a mapped {low}; the nearest mapped feature is {r.nearest_distance_m:.0f} m away."
+            return (f"NOT INTERSECTED BY THE DATA LOADED: no {low} feature was found on the lot or within about {LOAD_MARGIN_M} m of it in the data loaded. "
+                    "This describes the data only.")
+        return (f"NOT INTERSECTED BY THE DATA LOADED: no {low} feature overlaps the lot"
+                + (f" or lies inside the {buffer_m:.0f} m screening distance" if buffer_m else "")
+                + f". The nearest feature in the data loaded is {r.nearest_distance_m:.0f} m away.")
     return ""
 
 
@@ -154,26 +171,31 @@ def build_findings(results: list[LayerResult], triggers: list[TriggerResult], lo
             if is_info:
                 status, chip = "mapped", "Mapped"
             elif r.overlap_area_m2 > 0:
-                status, chip = "affected", "Affected"
+                status, chip = "affected", "Intersects"
             else:
-                status, chip = "nearby", "Nearby"
+                status, chip = "nearby", "Within buffer"
         else:
-            status, chip = ("notmapped", "Not mapped") if r.key in C.CONTROL_KEYS else ("clear", "Not affected")
+            status, chip = ("notmapped", "Not mapped") if r.key in C.CONTROL_KEYS else ("clear", "Not intersected")
         why = ""
         if status == "unchecked":
             e = r.error or ""
-            why = ("No public data service for this layer is connected to the platform yet." if "no endpoint" in e
-                   else f"The data service could not be queried ({fmt.clean(e)[:140]}).")
+            if "no endpoint" in e:
+                why = "No public data service for this layer is connected to the platform yet."
+            elif re.search(r"ProxyError|ConnectionError|HTTPSConnectionPool|Max retries|timed out|Timeout|getaddrinfo|Name or service", e, re.I):
+                why = "The data service could not be reached from this run (network error). The layer was not queried."
+            else:
+                why = "The data service could not be queried (" + fmt.shorten_quote(e, 120).rstrip(".") + ")."
         f = Finding(key=r.key, label=r.label, short=short, status=status, chip=chip,
                     headline=_headline(r.key, status, short, rows, r, buffer_m, lot), rank=cat.get("rank", 8), rows=rows,
-                    source_name=("NSW Government planning spatial services" + (f": {em['service']} / {em['layer_name']}" if em.get("service") else "")) if r.key.startswith("nsw_") else "State spatial services",
+                    source_name=(f"{em['service']} / {em['layer_name']}" if em.get("service") else "Source not recorded"),
+                    meta=em, host=endpoint_host(),
                     source_url=em.get("endpoint", ""), currency=fmt.currency_phrase(r.data_currency), currency_raw=r.data_currency,
                     copyright=cur["copyright"] or em.get("copyright"), caveat=cat.get("caveat", ""), what=cat.get("what", ""),
                     trigger=by_layer.get(r.key), why_unchecked=why, action=cat.get("nc_action", "") or "Check with council.", buffer_m=buffer_m, result=r)
         if status in ("affected", "nearby"):
             f.has_page = not is_info and bool(lt.significant if lt else True)
         if status == "notmapped":
-            f.headline = f"No {short.lower()} control is mapped on the lot in the LEP map layer."
+            f.headline = f"NOT INTERSECTED BY THE DATA LOADED: no {short.lower()} control is mapped on the lot in the map layer loaded."
         if status == "mapped" and r.key in C.CONTROL_KEYS:
             f.headline = control_text(r.key, f)
         if status == "mapped" and r.key == "nsw_sepp_area":

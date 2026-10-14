@@ -8,11 +8,19 @@ from xml.sax.saxutils import escape
 _SUB = {"≥": "at least ", "≤": "at most ", "→": "to", "−": "-", "‑": "-", " ": " ", " ": " ", " ": " ", "’": "'", "‘": "'"}
 
 
+_RANGE_DASH = re.compile(r"(\d)\s*[\u2013\u2014\u2012\u2015]\s*(\d)")
+_SPACED_DASH = re.compile(r"\s+[\u2013\u2014\u2012\u2015]\s+|\s*\u2014\s*")
+_ANY_DASH = re.compile(r"[\u2013\u2014\u2012\u2015]")
+
+
 def clean(s) -> str:
+    """Normalise text for the report. Em and en dashes never reach the PDF: numeric ranges become 'a to b', a spaced dash becomes a comma."""
     s = "" if s is None else str(s)
     for k, v in _SUB.items():
         s = s.replace(k, v)
-    return s
+    s = _RANGE_DASH.sub(r"\1 to \2", s)
+    s = _SPACED_DASH.sub(", ", s)
+    return _ANY_DASH.sub("-", s)
 
 
 def esc(s) -> str:
@@ -36,13 +44,14 @@ def parse_date(s) -> date | None:
 
 
 def hdate(s, default: str = "date not stated") -> str:
+    """DD/MM/YYYY (report style rule)."""
     d = parse_date(s)
-    return f"{d.day} {d:%b %Y}" if d else default
+    return f"{d:%d/%m/%Y}" if d else default
 
 
 def hdate_long(s) -> str:
-    d = parse_date(s)
-    return f"{d.day} {d:%B %Y}" if d else ""
+    """Same DD/MM/YYYY form; kept as a separate name for the cover and page furniture."""
+    return hdate(s, "")
 
 
 def parse_currency(text: str | None) -> dict:
@@ -58,6 +67,19 @@ def parse_currency(text: str | None) -> dict:
     rest = [p for p in parts if not (p.startswith("source currency") or p.startswith("fetched") or p.startswith("currency field"))]
     out["copyright"] = "; ".join(rest) or None
     return out
+
+
+def shorten_quote(q: str, limit: int = 240) -> str:
+    """A quotation shown in full when short; otherwise cut at the last sentence end (or, failing that, the last word) within
+    ``limit`` characters and closed with an ellipsis. Never cuts mid-word."""
+    q = clean(q).strip()
+    if len(q) <= limit:
+        return q
+    cut = q[:limit]
+    ends = [m.end() for m in re.finditer(r"[.;:!?](?=\s)", cut)]
+    if ends and ends[-1] >= 0.55 * limit:
+        return cut[:ends[-1]].rstrip().rstrip(".;:") + "\u2026"
+    return cut.rsplit(" ", 1)[0].rstrip(" ,;:.") + "\u2026"
 
 
 def currency_phrase(text: str | None) -> str:

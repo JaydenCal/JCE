@@ -234,6 +234,9 @@ class QldImageryProvider(NswImageryProvider):
 def provider_from_env(jurisdiction: str = "NSW") -> ImageryProvider | None:
     """Opt-in default: IMAGERY_PROVIDER=nsw|auto enables aerials (off by default so offline runs never hit the network)."""
     mode = os.environ.get("IMAGERY_PROVIDER", "").lower()
+    if mode == "offline_lot2":                    # saved aerials of the Lot 2 DP227508 test run (app/offline/lot2.py); no network
+        from app.offline.lot2 import CachedImagery
+        return CachedImagery()
     if mode in ("nsw", "auto") and jurisdiction.upper() == "NSW":
         return NswImageryProvider()
     if mode in ("qld", "auto") and jurisdiction.upper() == "QLD" and os.environ.get("QLD_IMAGERY_URL"):

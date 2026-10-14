@@ -252,3 +252,88 @@ def contour_segments(V: np.ndarray, F: np.ndarray, level: float) -> np.ndarray:
         t = (level - V[i, 2]) / (V[j, 2] - V[i, 2])
         return V[i] + (V[j] - V[i]) * t[:, None]
     return np.stack([cross(a, b), cross(a, c)], 1)
+
+
+# ---- TIN clipping and draping (exact: every piece keeps the plane of its parent triangle) -------------------------------
+def _plane_z(tri3: np.ndarray):
+    """z(x, y) of the plane through one triangle (3,3); None when the triangle is vertical or degenerate in plan."""
+    (x0, y0, z0), (x1, y1, z1), (x2, y2, z2) = tri3
+    det = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0)
+    if abs(det) < 1e-12:
+        return None
+    gx = ((z1 - z0) * (y2 - y0) - (z2 - z0) * (y1 - y0)) / det
+    gy = ((z2 - z0) * (x1 - x0) - (z1 - z0) * (x2 - x0)) / det
+    return lambda x, y: z0 + gx * (np.asarray(x) - x0) + gy * (np.asarray(y) - y0)
+
+
+def _lift(pieces2d: np.ndarray, tri3: np.ndarray) -> np.ndarray:
+    """(T,3,2) plan triangles -> (T,3,3) on the plane of ``tri3``."""
+    f = _plane_z(tri3)
+    if f is None or not len(pieces2d):
+        return EMPTY.copy()
+    z = f(pieces2d[..., 0], pieces2d[..., 1])
+    return np.concatenate([pieces2d, z[..., None]], axis=2)
+
+
+def split_tin(V, F, poly, min_area: float = 1e-6) -> tuple[np.ndarray, np.ndarray]:
+    """Split an indexed TIN by a polygon: returns (inside, outside) triangle soups (T,3,3), faces up.
+
+    Triangles wholly on one side are kept as they are; triangles crossing the polygon boundary are cut, so the two soups tile
+    the TIN exactly (no gaps, no overlap) and every piece lies in the plane of its parent triangle."""
+    V, F = np.asarray(V, float), np.asarray(F, np.int64)
+    if not len(F):
+        return EMPTY.copy(), EMPTY.copy()
+    tri = V[F]
+    rings = np.concatenate([tri[:, :, :2], tri[:, :1, :2]], axis=1)
+    tp = shapely.polygons(rings)
+    shapely.prepare(poly)
+    within = shapely.within(tp, poly)
+    apart = shapely.disjoint(tp, poly) | shapely.touches(tp, poly)
+    cross = ~(within | apart)
+    ins, out = [tri[within]], [tri[apart & ~within]]
+    for k in np.where(cross)[0]:
+        t = tp[k]
+        for geom, bucket in ((t.intersection(poly), ins), (t.difference(poly), out)):
+            for p in polys(geom):
+                if p.area >= min_area:
+                    bucket.append(_lift(tri_polygon(p), tri[k]))
+    return _up(cat(ins)) if len(cat(ins)) else EMPTY.copy(), _up(cat(out)) if len(cat(out)) else EMPTY.copy()
+
+
+def drape_tin(V, F, poly, dz: float = 0.0) -> np.ndarray:
+    """Part of the TIN lying under ``poly`` as a triangle soup raised by ``dz`` (a decal that follows the ground exactly)."""
+    ins, _ = split_tin(V, F, poly)
+    if not len(ins):
+        return ins
+    ins = ins.copy()
+    ins[..., 2] += dz
+    return ins
+
+
+def ring_wall(ring_xy, zbase, ztop, step: float = 1.0) -> np.ndarray:
+    """Vertical wall (faces outward for a counter-clockwise ring) on a closed ring: the base follows ``zbase(x, y)``, the top is the
+    constant ``ztop``. The ring is subdivided every ``step`` metres so the base hugs the ground."""
+    pts = np.asarray(ring_xy, float)
+    if np.allclose(pts[0], pts[-1]):
+        pts = pts[:-1]
+    out = []
+    for a, b in zip(pts, np.roll(pts, -1, axis=0)):
+        n = max(1, int(math.ceil(float(np.linalg.norm(b - a)) / step)))
+        t = np.linspace(0.0, 1.0, n + 1)[:, None]
+        P = a + (b - a) * t
+        z0 = np.asarray(zbase(P[:, 0], P[:, 1]), float)
+        for i in range(n):
+            A0, B0 = (*P[i], z0[i]), (*P[i + 1], z0[i + 1])
+            A1, B1 = (*P[i], ztop), (*P[i + 1], ztop)
+            out.append(np.array([[A0, B0, B1], [A0, B1, A1]]))
+    return np.concatenate(out) if out else EMPTY.copy()
+
+
+def post_boxes(xy_list, zbase, height: float, size: float) -> np.ndarray:
+    """Square posts of side ``size`` standing on ``zbase(x, y)`` (one closed prism each, merged into one soup)."""
+    out = []
+    h = size / 2.0
+    for x, y in xy_list:
+        z0 = float(np.asarray(zbase(np.array([x]), np.array([y])))[0]) - 0.05
+        out.append(prism(box(x - h, y - h, x + h, y + h), z0, z0 + height + 0.05))
+    return cat(out)

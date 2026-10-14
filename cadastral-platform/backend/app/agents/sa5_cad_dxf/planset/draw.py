@@ -31,6 +31,30 @@ def paper_circle(v: View, cx, cy, r_mm, layer="C-ANNO-NOTE", lw=0.18, color=None
     v.line(pts, layer, True, lw, color=color, anno=True)
 
 
+AERIAL_OPACITY = 0.30       # faded aerial underlay: 25 to 35 percent, desaturated, so linework reads clearly over it
+
+
+def _grey_copy(path: str) -> str:
+    """Desaturated copy of an aerial image (written beside it once); the faded underlay is greyscale so coloured linework stays legible."""
+    from pathlib import Path
+    from PIL import Image
+    p = Path(path)
+    g = p.with_name(p.stem + "_grey.png")
+    if not g.exists() or g.stat().st_mtime < p.stat().st_mtime:
+        Image.open(p).convert("L").convert("RGB").save(g)
+    return str(g)
+
+
+def aerial_underlay(v: View, s: Site, opacity: float = AERIAL_OPACITY) -> bool:
+    """Faded, desaturated aerial behind the plan when imagery was supplied (``s.aerial_site``); returns True when drawn.  No imagery: nothing."""
+    from pathlib import Path
+    a = s.aerial_site
+    if a is None or not Path(a.path).exists():
+        return False
+    v.image(_grey_copy(a.path), a.extent, 1.0 - min(max(opacity, 0.05), 1.0), layer="C-IMAG-AERL")
+    return True
+
+
 def aerial(v: View, s: Site, fade: float = 0.5) -> None:
     if s.aerial_site:
         v.image(s.aerial_site.path, s.aerial_site.extent, fade)
@@ -161,6 +185,32 @@ def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = Fa
     return n
 
 
+def spot_levels_sparse(v: View, s: Site, near, gap_mm: float = 22.0, maxn: int = 8, avoid=None) -> int:
+    """Design-sheet spot levels: a few DEM posts near ``near`` (driveway), at least ``gap_mm`` of paper apart, each label kept clear of everything
+    already reserved (call-outs, panels, other labels).  Contours stay on the existing-site sheet; spot levels are NOT drawn on C100."""
+    from shapely.geometry import Point as _P, box as _box
+    n, taken = 0, []
+    block = None
+    if avoid:                                                                       # model geometry the labels must not sit on (kerb and gutter lines, boundary, driveway edge)
+        from shapely.ops import unary_union as _uu
+        block = v.to_paper_geom(_uu([g for g in avoid if g is not None and not g.is_empty])).buffer(0.8)
+    for x, y, z in sorted(s.spots, key=lambda t: (round(t[1], 0), t[0])):
+        if n >= maxn or not v.inside(x, y, 10) or not near.buffer(8.0).contains(_P(x, y)):
+            continue
+        px, py = v.tp(x, y)
+        if any(math.hypot(px - a, py - b) < gap_mm for a, b in taken):
+            continue
+        if block is not None and _box(*v._box(px, py - 1.6, f"{z:.2f}", 2.4, "TOP_CENTER", 0.0, False)).union(_P(px, py).buffer(1.0)).intersects(block):
+            continue
+        lx, ly = v.tm(px, py - 1.6)                                                      # 1.6 mm below the post on the PAPER
+        if v.label(lx, ly, f"{z:.2f}", 2.4, -v.twist, anchor="TOP_CENTER", color=(0.2, 0.2, 0.2), layer="C-TOPO-SPOT", halo=True, nudges=False):       # upright on the paper whatever the view twist
+            v.line([v.tm(px - 0.8, py), v.tm(px + 0.8, py)], "C-TOPO-SPOT", lw=0.1, color=LGREY, anno=True)
+            v.line([v.tm(px, py - 0.8), v.tm(px, py + 0.8)], "C-TOPO-SPOT", lw=0.1, color=LGREY, anno=True)
+            taken.append((px, py))
+            n += 1
+    return n
+
+
 def spot_levels(v: View, s: Site, maxn: int = 120) -> int:
     """DEM posts inside the view as small crosses with RL (indicative)."""
     n = 0
@@ -170,7 +220,7 @@ def spot_levels(v: View, s: Site, maxn: int = 120) -> int:
         px, py = v.tp(x, y)
         v.line([v.tm(px - 0.8, py), v.tm(px + 0.8, py)], "C-TOPO-SPOT", lw=0.1, color=LGREY, anno=True)
         v.line([v.tm(px, py - 0.8), v.tm(px, py + 0.8)], "C-TOPO-SPOT", lw=0.1, color=LGREY, anno=True)
-        if v.label(x, y - 1.2 / v.k * 1.0, f"{z:.1f}", 1.8, 0, anchor="TOP_CENTER", color=LGREY, layer="C-TOPO-SPOT", halo=True, nudges=False):
+        if v.label(*v.tm(px, py - 1.2), f"{z:.1f}", 1.8, -v.twist, anchor="TOP_CENTER", color=LGREY, layer="C-TOPO-SPOT", halo=True, nudges=False):
             n += 1
     return n
 
@@ -213,35 +263,46 @@ def _dim_text(fp: Polygon) -> str:
     return f"{max(a, b):.1f} x {min(a, b):.1f} m"
 
 
-def building_setbacks(v: View, s: Site) -> None:
-    """Distance from each side of the structure to the nearest lot boundary, along the side's outward normal."""
+def building_setbacks(v: View, s: Site, text_h: float = 2.0, off_mm: float = 2.2, color=None, mask: bool = False, avoid=None) -> None:
+    """Distance from each side of the structure to the nearest lot boundary, along the side's outward normal.
+
+    ``avoid`` (optional shapely geometry, e.g. the driveway): a side whose dimension would cross it is dimensioned from another point along that side."""
     fp = s.footprint
     if fp is None:
         return
     mrr = list(fp.minimum_rotated_rectangle.exterior.coords)[:4]
     cen = fp.centroid
     reach = max(s.lot.bounds[2] - s.lot.bounds[0], s.lot.bounds[3] - s.lot.bounds[1]) * 2
+    fracs = (0.5,) if avoid is None else (0.5, 0.25, 0.75, 0.12, 0.88)
     for i in range(4):
         p, q = mrr[i], mrr[(i + 1) % 4]
-        mx, my = (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
         dx, dy = q[0] - p[0], q[1] - p[1]
         L = math.hypot(dx, dy)
         nx, ny = dy / L, -dx / L
-        if (mx - cen.x) * nx + (my - cen.y) * ny < 0:
+        mx0, my0 = (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
+        if (mx0 - cen.x) * nx + (my0 - cen.y) * ny < 0:
             nx, ny = -nx, -ny
-        ray = LineString([(mx, my), (mx + nx * reach, my + ny * reach)])
-        hit = ray.intersection(s.lot.exterior)
-        pts = [g for g in getattr(hit, "geoms", [hit]) if g.geom_type == "Point"]
-        if not pts:
-            continue
-        h = min(pts, key=lambda g: g.distance(Point(mx, my)))
-        d = h.distance(Point(mx, my))
-        if d < 0.3:
-            continue
-        # the dimension runs mx,my -> boundary: draw as leader-style dim with ticks
-        if not (v.inside(mx, my, 3) and v.inside(h.x, h.y, 3)):
-            continue
-        v.dim((mx, my), (h.x, h.y), f"{d:.1f} m", side=(-ny, nx), off_mm=2.2, h=2.0)
+        chosen = None
+        for f in fracs:
+            mx, my = (mx0, my0) if f == 0.5 else (p[0] + dx * f, p[1] + dy * f)
+            ray = LineString([(mx, my), (mx + nx * reach, my + ny * reach)])
+            hit = ray.intersection(s.lot.exterior)
+            pts = [g for g in getattr(hit, "geoms", [hit]) if g.geom_type == "Point"]
+            if not pts:
+                continue
+            h = min(pts, key=lambda g: g.distance(Point(mx, my)))
+            d = h.distance(Point(mx, my))
+            if d < 0.3 or not (v.inside(mx, my, 3) and v.inside(h.x, h.y, 3)):
+                continue
+            cand = (mx, my, h, d)
+            if chosen is None:
+                chosen = cand                     # fall back to the first valid point when every point crosses ``avoid``
+            if avoid is None or LineString([(mx, my), (h.x, h.y)]).distance(avoid) > 0.8:
+                chosen = cand
+                break
+        if chosen is not None:
+            mx, my, h, d = chosen
+            v.dim((mx, my), (h.x, h.y), f"{d:.1f} m", side=(-ny, nx), off_mm=off_mm, h=text_h, color=color, mask=mask)
 
 
 def drive(v: View, s: Site, label: bool = True) -> None:
@@ -287,14 +348,15 @@ def panel(v: View, x0, y0, x1, y1, title: str, lines: list[str], h: float = 2.2,
         from shapely.geometry import Polygon
         v.fill(Polygon([T(x0, y0), T(x1, y0), T(x1, y1), T(x0, y1)]), layer, (1, 1, 1), 0.9, anno=True)
     v.line([T(x0, y0), T(x1, y0), T(x1, y1), T(x0, y1)], "C-DATA-NONE" if warn else "C-ANNO-TABL", True, 0.35 if warn else 0.25, color=col if warn else None, anno=True)
-    v.text(*T(x0 + 2, y1 - 1.2), title, 2.8, "TOP_LEFT", bold=True, color=col, layer=layer)
+    rot = 0.0 if v.paper else -v.twist                                      # text stays horizontal on the sheet whatever the view twist
+    v.text(*T(x0 + 2, y1 - 1.2), title, 2.8, "TOP_LEFT", rot, True, color=col, layer=layer)
     yy = y1 - 6.4
     for ln in lines:
         bullet = ln.startswith("- ")
         for k, w in enumerate(fonts.wrap(ln, h, x1 - x0 - 5 - (3 if bullet else 0))):
             if yy < y0 + 1.2:
                 return yy
-            v.text(*T(x0 + 2 + (3 if bullet and k else 0), yy), w, h, "TOP_LEFT", layer=layer, color=col if warn else None)
+            v.text(*T(x0 + 2 + (3 if bullet and k else 0), yy), w, h, "TOP_LEFT", rot, layer=layer, color=col if warn else None)
             yy -= h + 1.0
         yy -= 0.8
     return yy

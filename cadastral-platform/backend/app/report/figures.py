@@ -20,6 +20,7 @@ from app.report import theme as T
 from app.report.fmt import clean, hdate
 
 YELLOW = "#ffd400"
+STAMP: str | None = None          # set by build_site_report for synthetic demo reports: stamped on every figure
 
 
 @dataclass
@@ -50,6 +51,11 @@ class MapFigure:
     measure: tuple[tuple[float, float], tuple[float, float], str] | None = None
     show_labels: bool = True
     compact: bool = False
+
+    @property
+    def extent_text(self) -> str:
+        x0, y0, x1, y1 = self.window
+        return f"about {x1 - x0:.0f} m wide by {y1 - y0:.0f} m high"
 
     @property
     def imagery_line(self) -> str:
@@ -224,6 +230,12 @@ def draw_map(c, f: MapFigure, ox: float, oy: float) -> None:
         c.setStrokeColor(colors.HexColor("#ffffff" if aerial else "#1e2024")); c.setLineWidth(1.1); c.setDash(2.5, 2)
         c.line(px(ax), py(ay), px(bx), py(by)); c.setDash()
         mx, my = px((ax + bx) / 2), py((ay + by) / 2)
+        dx_, dy_ = px(bx) - px(ax), py(by) - py(ay)
+        ln = math.hypot(dx_, dy_) or 1.0
+        nxv, nyv = -dy_ / ln, dx_ / ln                      # unit normal: the label sits clear of the line, not on it
+        if nyv < 0:
+            nxv, nyv = -nxv, -nyv
+        mx, my = mx + nxv * 13, my + nyv * 13
         tw = c.stringWidth(txt, "Mono-Medium", 7) + 8
         c.setFillColor(T.INK); c.roundRect(mx - tw / 2, my - 5, tw, 11, 2, stroke=0, fill=1)
         c.setFillColor(colors.white); c.setFont("Mono-Medium", 7); c.drawCentredString(mx, my - 2.2, txt)
@@ -235,14 +247,14 @@ def draw_map(c, f: MapFigure, ox: float, oy: float) -> None:
     L = nice_length((x1 - x0) * 0.22)
     bw = L * sx
     bx0, by0 = ox + 8, oy + 8
-    c.setFillColor(colors.Color(1, 1, 1, alpha=0.88)); c.rect(bx0 - 4, by0 - 4, bw + 36, 20, stroke=0, fill=1)
-    c.setStrokeColor(T.INK); c.setLineWidth(0.6)
+    c.setFillColor(colors.Color(0.12, 0.125, 0.14, alpha=0.78)); c.rect(bx0 - 4, by0 - 4, bw + 62, 20, stroke=0, fill=1)
+    c.setStrokeColor(colors.white); c.setLineWidth(0.6)
     for i in range(4):
-        c.setFillColor(T.INK if i % 2 == 0 else colors.white)
+        c.setFillColor(colors.HexColor("#c9a24a") if i % 2 == 0 else colors.white)
         c.rect(bx0 + i * bw / 4, by0 + 6, bw / 4, 3.2, stroke=1, fill=1)
-    c.setFillColor(T.INK); c.setFont("Mono", 5.6)
+    c.setFillColor(colors.white); c.setFont("Mono", 5.6)
     c.drawString(bx0, by0, "0"); c.drawCentredString(bx0 + bw, by0, f"{L:g} m")
-    c.setFont("Mono", 5); c.setFillColor(T.MUTED)
+    c.setFont("Mono", 5); c.setFillColor(colors.Color(1, 1, 1, alpha=0.8))
     c.drawString(bx0 + bw + 10, by0 + 6.5, "GDA2020 / MGA")
     # north arrow
     nx, ny = ox + W - 15, oy + H - 15
@@ -273,10 +285,43 @@ def draw_map(c, f: MapFigure, ox: float, oy: float) -> None:
             c.setDash(2, 1.5) if dash else c.setDash()
             c.rect(lx + 4, yy, 14, 5.5, stroke=1, fill=0); c.setDash()
             c.setFillColor(T.INK); c.drawString(lx + 22, yy + 0.8, clean(lab))
+    if STAMP:
+        c.setFillColor(colors.Color(0.65, 0.23, 0.17, alpha=0.88)); c.rect(ox, oy + H - 24 if f.note else oy + H - 12, W - 28, 12, stroke=0, fill=1)
+        c.setFillColor(colors.white); c.setFont("Mono-Medium", 6.6)
+        c.drawString(ox + 5, (oy + H - 20.6) if f.note else (oy + H - 8.6), STAMP)
     if f.note:
         c.setFillColor(colors.Color(1, 1, 1, alpha=0.92)); c.rect(ox, oy + H - 12, W - 28, 12, stroke=0, fill=1)
         c.setFillColor(T.MUTED); c.setFont("Plex-Italic", 6.2); c.drawString(ox + 5, oy + H - 8.5, clean(f.note)[:150])
     c.restoreState()
+
+
+def _fit_window_to_coverage(img: bytes, win, aspect: float, lot: BaseGeometry, extra=None):
+    """If the fetched aerial has blank (white) bands because the imagery does not cover the whole window, return a smaller window of the same
+    aspect that lies inside the covered part and still contains the lot ('partial' if that is impossible; None if the image is fully covered)."""
+    import numpy as np
+    a = np.asarray(Image.open(io.BytesIO(img)).convert("RGB"))
+    white = (a >= 250).all(axis=2)
+    H, W = white.shape
+    rows = np.where(white.mean(axis=1) < 0.98)[0]
+    cols = np.where(white.mean(axis=0) < 0.98)[0]
+    if not len(rows) or not len(cols):
+        return "partial"
+    r0, r1, c0, c1 = rows[0], rows[-1] + 1, cols[0], cols[-1] + 1
+    if r0 <= 2 and c0 <= 2 and r1 >= H - 2 and c1 >= W - 2:
+        return None
+    x0, y0, x1, y1 = win
+    vx0, vx1 = x0 + c0 / W * (x1 - x0), x0 + c1 / W * (x1 - x0)
+    vy1, vy0 = y1 - r0 / H * (y1 - y0), y1 - r1 / H * (y1 - y0)
+    vw, vh = vx1 - vx0, vy1 - vy0
+    w = min(vw, vh * aspect)
+    h = w / aspect
+    lb = lot.bounds
+    cx = min(max(lot.centroid.x, vx0 + w / 2), vx1 - w / 2)
+    cy = min(max(lot.centroid.y, vy0 + h / 2), vy1 - h / 2)
+    new = (cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2)
+    if new[0] > lb[0] - 1 or new[1] > lb[1] - 1 or new[2] < lb[2] + 1 or new[3] < lb[3] + 1:
+        return "partial"
+    return new
 
 
 def make_map(lot, *, ctx_m: float, width: float, height: float, srid: int, imagery, layers: list[Layer] | None = None,
@@ -285,6 +330,13 @@ def make_map(lot, *, ctx_m: float, width: float, height: float, srid: int, image
     lot_g = _g(lot)
     win = window_for(lot_g, ctx_m, width / height, extra=extra_extent)
     img, cap, attr, note = fetch_aerial(imagery, win, srid, width, height, max_px)
+    if img:
+        win2 = _fit_window_to_coverage(img, win, width / height, lot_g, extra_extent)
+        if win2 == "partial":
+            note = "Aerial imagery covers only part of this figure."
+        elif win2 is not None:
+            win = win2
+            img, cap, attr, note = fetch_aerial(imagery, win, srid, width, height, max_px)
     nb = []
     for n in neighbours:
         try:

@@ -24,8 +24,23 @@ PLANSET_LAYERS: tuple[LayerDef, ...] = (
     _L("C-DETL-LINE", 7, "CONTINUOUS", 0.25, "Typical details linework", extra=True),
     _L("C-ESCP-GENL", 3, "CONTINUOUS", 0.25, "ESC elements (SA10)", extra=True),
     _L("C-DATA-NONE", 1, "CONTINUOUS", 0.25, "DATA NOT AVAILABLE panels", extra=True),
+    # ---- reference drafting style (planset.style / sheets_ref) ---------------------------------------------------------
+    _L("C-PROP-BDYD", 2, "CONTINUOUS", 0.80, "Boundary yellow dash overlay", extra=True),
+    _L("C-ROAD-PAVE", 9, "CONTINUOUS", 0.13, "Road pavement (fill; assumed unless surveyed)", extra=True),
+    _L("C-ROAD-KERB", 7, "CONTINUOUS", 0.25, "Kerb and gutter lines (assumed unless surveyed)", extra=True),
+    _L("C-ROAD-CONC", 8, "CONTINUOUS", 0.25, "Crossover and kerb and gutter concrete (stipple)", extra=True),
+    _L("A-BLDG-PROP", 7, "CONTINUOUS", 0.25, "Proposed works hatch and outline", extra=True),
+    _L("A-BLDG-EXST", 7, "CONTINUOUS", 0.25, "Existing building hatch and outline", extra=True),
+    _L("C-LAND-LAWN", 3, "CONTINUOUS", 0.13, "Landscape area fill", extra=True),
+    _L("C-SITE-SYMB", 8, "CONTINUOUS", 0.18, "Site symbols: HYD, T, WM, grate, tree canopy", extra=True),
+    _L("C-ANNO-CALL", 7, "CONTINUOUS", 0.25, "Call-out boxes and leaders", extra=True),
+    _L("C-ANNO-GRID", 8, "CONTINUOUS", 0.11, "Zone grid reference ticks and labels", extra=True),
 )
-BY_NAME: dict[str, LayerDef] = {**LAYER_BY_NAME, **{l.name: l for l in PLANSET_LAYERS}}
+from app.agents.sa5_cad_dxf.planset.codes import all_jcs_layers  # noqa: E402
+
+_JCS = all_jcs_layers()                                                  # JCESITE scheme (ref style only): codes.py is the single mapping table
+REF_LAYER_NAMES = frozenset(l.name for l in PLANSET_LAYERS[-10:]) | frozenset(l.name for l in _JCS)      # registered in a DXF only when used
+BY_NAME: dict[str, LayerDef] = {**LAYER_BY_NAME, **{l.name: l for l in PLANSET_LAYERS}, **{l.name: l for l in _JCS}}
 
 
 def layer(name: str) -> LayerDef:

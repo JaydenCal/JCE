@@ -235,7 +235,9 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
     width = max(w_min.value if w_min else 0.0, drive_w if inp.driveway else 0.0, 0.0) or 3.0
     # available length along the axis before the building / far boundary
     ray = LineString([(bp[0] + axis[0] * 0.1, bp[1] + axis[1] * 0.1), (bp[0] + axis[0] * 300, bp[1] + axis[1] * 300)])
-    hits = [ray.intersection(fp.buffer(1.0)), ray.intersection(lot.exterior)]
+    # with no building footprint supplied the works area is only an envelope or an inset of the lot: it is not a building, so it does not shorten the
+    # access (the access runs to the far boundary or the cited length, whichever is shorter)
+    hits = [ray.intersection(lot.exterior)] + ([ray.intersection(fp.buffer(1.0))] if inp.footprint_wkt else [])
     avail = min((h.distance(Point(bp)) for h in hits if not h.is_empty), default=0.0)
     want = len_bb.value if len_bb else (len_bs.value if len_bs else 3.0)
     alen = min(want, avail) if avail > 0 else 0.0

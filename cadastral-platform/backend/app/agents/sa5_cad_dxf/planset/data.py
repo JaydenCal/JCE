@@ -60,6 +60,19 @@ class PlansetInput:
     client: str = ""
     address: str = ""
     zone_code_override: str | None = None
+    show_dwelling: bool = False                                  # ref style only: draw the dwelling footprint, hatch, call-out, setbacks and FFL (house design is another tool)
+    job: str = ""                                                # job number for the reference-style drawing number (JCE-{job}-CV-1xxx); empty shows XXX
+    cadastre_fetch: Callable[[Polygon], Any] | None = None       # window (MGA polygon) -> CadastreWindow: lots in and around the viewport, so the DCDB fills it edge to edge
+    rules: list = field(default_factory=list)                    # requirements-resolver / --rules-json entries (setbacks etc.) cited on the general notes sheet
+
+
+@dataclass
+class CadastreWindow:
+    """Result of a cadastre window query: lots (and road reserves) in and around a viewport.  ``complete`` is False when the source could not
+    supply the whole window (offline fixture, query limit, service error), so the sheet says the DCDB does not reach the viewport edges."""
+    lots: list                      # NeighbourLot (label, wkt, is_road) or (label, Polygon, is_road)
+    complete: bool = True
+    note: str = ""
 
 
 @dataclass
@@ -106,7 +119,13 @@ class Site:
     ex_cont: list = field(default_factory=list)
     pr_cont: list = field(default_factory=list)
     esc: Any = None
+    esc_error: str = ""                                   # why the SA10 layout is absent when its runner failed
     profile: dict | None = None
+    window_lots: list = field(default_factory=list)      # cadastre lots fetched for the plan viewports: [(label, Polygon, is_road)] (beyond the adjoining lots)
+    cad_cache: list = field(default_factory=list)        # [(window Polygon, complete, note)] of the cadastre windows already fetched
+    cad_complete: bool | None = None                     # None = no window fetch hook, True = every window fetched in full, False = a window came back partial or failed
+    cad_note: str = ""
+    view_twist: float | None = None                      # set-wide plan view twist (degrees counter-clockwise), decided once from the lot
 
     @property
     def zone(self) -> str:

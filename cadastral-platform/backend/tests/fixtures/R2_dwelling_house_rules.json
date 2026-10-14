@@ -1,0 +1,67 @@
+{
+ "zone": "R2",
+ "dwelling_type": "dwelling_house",
+ "rules": [
+  {
+   "element": "front",
+   "value_numeric": 6.5,
+   "unit": "m",
+   "dwelling_type": "dwelling_house",
+   "requirement_key": "setback.dwelling_house.front_m",
+   "zone": "R2",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 37,
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "quote": "Primary Frontage 6.5m or the average of the adjoining dwellings whichever is less",
+   "confidence": 0.85,
+   "rule_text": "6.5 m or the average of the adjoining dwellings, whichever is less"
+  },
+  {
+   "element": "side",
+   "value_numeric": 0.9,
+   "unit": "m",
+   "dwelling_type": "dwelling_house",
+   "requirement_key": "setback.dwelling_house.side_m",
+   "zone": "R2",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 37,
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "quote": "Side and rear 0.9m or compliance with the BCA^",
+   "confidence": 0.85,
+   "rule_text": "0.9 m or compliance with the BCA (less than 900 mm considered where BCA fire rating satisfied)"
+  },
+  {
+   "element": "rear",
+   "value_numeric": 0.9,
+   "unit": "m",
+   "dwelling_type": "dwelling_house",
+   "requirement_key": "setback.dwelling_house.rear_m",
+   "zone": "R2",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 37,
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "quote": "Side and rear 0.9m or compliance with the BCA^",
+   "confidence": 0.85,
+   "rule_text": "0.9 m or compliance with the BCA"
+  },
+  {
+   "element": "secondary_frontage",
+   "value_numeric": 3.0,
+   "unit": "m",
+   "dwelling_type": "dwelling_house",
+   "requirement_key": "setback.dwelling_house.secondary_frontage_m",
+   "zone": "R2",
+   "source_doc": "Gunnedah Shire Council Development Control Plan 2025",
+   "source_page": 37,
+   "section_ref": "C.1.1 Setbacks, Table 2 - Building Setbacks",
+   "quote": "3m for a building wall and 5.5m for a garage or carport that is attached to the building wall",
+   "confidence": 0.85,
+   "rule_text": null
+  }
+ ],
+ "skipped": [
+  "setback.dwelling_house.secondary_frontage_garage_m",
+  "setback.dwelling_house.garage_behind_front_building_line_m",
+  "setback.dwelling_house.articulation_encroachment_m"
+ ]
+}

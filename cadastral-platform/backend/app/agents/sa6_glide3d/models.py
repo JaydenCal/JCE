@@ -33,6 +33,21 @@ class TinArrays(M):
         v = np.asarray(vertices, float).reshape(-1, 3) + np.asarray(origin, float)
         return cls(vertices=[tuple(map(float, r)) for r in v], triangles=[tuple(indices[i:i + 3]) for i in range(0, len(indices), 3)])
 
+    @classmethod
+    def from_points(cls, points: list[tuple[float, float, float]], max_edge_m: float | None = None) -> "TinArrays":
+        """Delaunay TIN of survey points (absolute MGA x, y and AHD z). Triangles with an edge longer than ``max_edge_m`` are dropped
+        (use it to avoid bridging gaps in sparse data). No height is invented: the surface is linear between the supplied points."""
+        from scipy.spatial import Delaunay
+        P = np.unique(np.round(np.asarray(points, float).reshape(-1, 3), 4), axis=0)
+        if len(P) < 3:
+            raise ValueError("a TIN needs at least three survey points")
+        T = Delaunay(P[:, :2]).simplices
+        if max_edge_m is not None:
+            v = P[T][:, :, :2]
+            e = np.max([np.hypot(*(v[:, i] - v[:, (i + 1) % 3]).T) for i in range(3)], axis=0)
+            T = T[e <= max_edge_m]
+        return cls(vertices=[tuple(map(float, r)) for r in P], triangles=[tuple(int(i) for i in t) for t in T])
+
 
 class CutFillIn(M):
     cut_volume_m3: float
@@ -83,6 +98,8 @@ class BuildingIn(M):
     use: DevelopmentType = DevelopmentType.dwelling_house
     habitable: bool = True                        # False: no habitable rooms (Class 10a shed)
     roller_door: RollerDoorIn | None = None
+    label: str | None = None                      # replaces the default label (use it to state that a building is illustrative)
+    door_label: str | None = None                 # label for the roller / garage door, if any
 
 
 class PlacedItem(M):
@@ -102,13 +119,33 @@ class PlacedItem(M):
     level: str | None = None
 
 
+class AerialIn(M):
+    """Aerial image draped on the ground as an optional texture. ``extent`` is (E min, N min, E max, N max) in the scene CRS (north up)."""
+    path: str                                     # file name or URL of the image, relative to the bundle
+    extent: tuple[float, float, float, float]
+    attribution: str = ""
+    capture_date: str | None = None
+
+
 class SceneOptions(M):
     contour_interval_m: float = 0.5
     major_every: int = 5
     max_triangles_per_mesh: int = 20000
     max_total_triangles: int = 50000
     tube_sides: int = 8
-    road_width_m: float = 8.0
+    road_width_m: float = 8.0                     # ASSUMED carriageway width (kerb to far edge); no road survey is available
+    verge_depth_m: float | None = None            # ASSUMED kerb to front boundary depth; None = from the SA3 crossover (kerb point), else 0
+    gutter_width_m: float = 0.45                  # matches the SA3 longitudinal profile station spacing
+    kerb_height_m: float = 0.15
+    kerb_width_m: float = 0.15
+    road_run_m: float = 30.0                      # road and verge length drawn beyond each end of the lot frontage
+    boundary_posts: bool = True
+    post_height_m: float = 1.5
+    post_size_m: float = 0.15
+    envelope_height_m: float | None = None        # display height of the envelope volume; None = highest roof plus 1.0 m (no limit is known)
+    surface_colour: str = "#cfd0cb"
+    surface_texture: str | None = "conc"
+    context_colour: str = "#b3ad9f"
     eye_height_m: float = 1.6
     default_depth_m: dict[str, float] = {"water": 0.6, "sewer": 1.2, "stormwater": 0.9, "electricity": 0.6,
                                          "gas": 0.5, "telecom": 0.5, "other": 0.6}
@@ -123,6 +160,8 @@ class SceneRequest(M):
     ffl: float | None = None
     ffl_label: str | None = None   # e.g. "FFL RL 100.50 (flood level RL 100.00 + 0.50 freeboard)"
     existing_tin: TinArrays | None = None
+    survey_points: list[tuple[float, float, float]] = []   # absolute MGA x, y and AHD z; triangulated when no existing_tin is given
+    terrain_note: str | None = None               # where the levels came from (shown in the summary), e.g. "NSW 5 m DEM, accuracy not stated"
     design_tin: TinArrays | None = None
     cut_fill: CutFillIn | None = None
     walls: list[WallIn] = []
@@ -137,6 +176,10 @@ class SceneRequest(M):
     buildings: list[BuildingIn] = []
     council_overlays: list[OverlayPolygon] = []
     items: list[PlacedItem] = []
+    aerial: AerialIn | None = None
+    envelope_note: str | None = None              # one line stating the rules behind lot.envelope_wkt (shown on the envelope label)
+    data_status: str | None = None                # e.g. "Test data: offline fixture, not a survey" (shown by the standalone viewer)
+    extra_notes: list[str] = []
     development_type: DevelopmentType = DevelopmentType.dwelling_house
     terms_version_id: UUID | None = None
     options: SceneOptions = SceneOptions()
@@ -161,6 +204,7 @@ class Part(M):
     vc: list[float] | None = None       # per-vertex rgb (0-1), 3 per vertex
     cf: list[float] | None = None       # per-vertex fill(+)/cut(-) depth in metres (surface/cutfill parts)
     lines: list[float] | None = None    # segment pairs, 6 numbers per segment
+    uv: list[float] | None = None       # per-vertex texture coordinates (2 per vertex); set on ground parts when an aerial is supplied
     lw: float | None = None
     tex: str | None = None
     cs: int | None = None
@@ -184,6 +228,8 @@ class Info(M):
     ground_texture: str | None = None   # optional aerial ground-texture URL/path (north-up in `srid`)
     ground_texture_extent: tuple[float, float, float, float] | None = None
     ground_texture_attribution: str | None = None
+    ground_texture_date: str | None = None
+    data_status: str | None = None      # provenance statement, e.g. test data
 
 
 class Floor(M):
@@ -215,7 +261,7 @@ class Link(M):
 
 class Spawn(M):
     pos: tuple[float, float, float]
-    yaw_deg: float
+    yaw_deg: float                      # counter-clockwise from +X (east), as atan2(dy, dx); the viewers convert to a compass heading
     eye_height_m: float
 
 

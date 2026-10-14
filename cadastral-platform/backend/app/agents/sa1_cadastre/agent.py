@@ -134,20 +134,25 @@ class Sa1Cadastre:
 
     def _neighbours(self, layer, lot_gda, mga, srid, snaps, f, jur) -> list:
         """Adjoining parcels (lot layer, 30 m buffer). Best-effort: a failed query yields [] and never fails SA1."""
-        from app.common.contracts import NeighbourLot
         try:
             minx, miny, maxx, maxy = lot_gda.buffer(0.0003).bounds
             r = self.client.query(layer, geometry={"xmin": minx, "ymin": miny, "xmax": maxx, "ymax": maxy,
                                                    "spatialReference": {"wkid": 7844}}, geometry_type="esriGeometryEnvelope")
         except Exception:  # noqa: BLE001
             return []
+        return self._lots_from(r.features, mga, srid, f, jur, adjoining_only=True)
+
+    def _lots_from(self, features, mga, srid, f, jur, adjoining_only: bool, unreadable: list | None = None) -> list:
+        from app.common.contracts import NeighbourLot
         out, own = [], mga.buffer(0.01)
-        for ft in r.features:
+        for ft in features:
             try:
                 g = to_mga(parse_polygonal(ft.get("geometry")), srid)
             except Exception:  # noqa: BLE001
+                if unreadable is not None:
+                    unreadable.append(ft)              # a parcel the service returned but the platform could not read: the caller must say so
                 continue
-            if g.is_empty or g.buffer(0.05).intersection(own).area > 0.5 * min(g.area, own.area) or not g.buffer(0.5).intersects(mga):
+            if g.is_empty or g.buffer(0.05).intersection(own).area > 0.5 * min(g.area, own.area) or (adjoining_only and not g.buffer(0.5).intersects(mga)):
                 continue            # the lot itself / not adjoining
             p = ft.get("properties") or {}
             key = p.get(f.get("lotidstring" if jur == "NSW" else "lotplan"))
@@ -162,6 +167,26 @@ class Sa1Cadastre:
                 label = f"LOT {lot_no} {plan}" if plan else str(key)
             out.append(NeighbourLot(label=label.strip(), wkt=as_multi(g).wkt, is_road=road))
         return out
+
+    def window_lots(self, jur: str, srid: int, lot_mga, window_mga):
+        """Every parcel (lots and road reserves, adjoining or not) intersecting ``window_mga`` (MGA metres), for padding the plan viewport.
+        Returns (NeighbourLot list, complete, note).  ``complete`` is False when the query failed or hit the record limit; nothing is invented."""
+        from app.agents.sa1_cadastre.geometry import from_mga
+        layer = self.cfg.lot_layers[jur]
+        try:
+            minx, miny, maxx, maxy = from_mga(window_mga, srid).bounds
+            r = self.client.query(layer, geometry={"xmin": minx, "ymin": miny, "xmax": maxx, "ymax": maxy, "spatialReference": {"wkid": 7844}},
+                                  geometry_type="esriGeometryEnvelope")
+        except Exception as ex:  # noqa: BLE001
+            return [], False, f"WINDOW QUERY FAILED: {type(ex).__name__}"
+        bad: list = []
+        lots = self._lots_from(r.features, as_multi(lot_mga), srid, layer.fields, jur, adjoining_only=False, unreadable=bad)
+        notes = []
+        if getattr(r, "truncated", False):                      # the last page still reported exceededTransferLimit: records are missing
+            notes.append("WINDOW QUERY HIT THE SERVICE RECORD LIMIT")
+        if bad:                                                 # invalid or empty geometry is never repaired: the gap is stated, not hidden
+            notes.append(f"{len(bad)} PARCEL(S) IN THE WINDOW HAD NO READABLE GEOMETRY AND ARE NOT SHOWN")
+        return lots, not notes, "; ".join(notes)
 
     @staticmethod
     def _ident_from_props(jur, props, f) -> LotIdentifier:

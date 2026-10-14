@@ -28,6 +28,44 @@ def P(text: str, style: str = "body", raw: bool = False) -> Paragraph:
     return Paragraph(text if raw else esc(text), st()[style])
 
 
+def KS(h: float) -> Spacer:
+    """Spacer that stays with the next flowable (so a heading is never left alone at the foot of a page)."""
+    sp = Spacer(1, h)
+    sp.keepWithNext = 1
+    return sp
+
+
+class Bookmark(Flowable):
+    """Zero height flowable that adds a PDF outline (bookmark) entry at its position."""
+    _n = 0
+
+    def __init__(self, title: str, level: int = 0):
+        super().__init__()
+        Bookmark._n += 1
+        self.title, self.level, self.key = title, level, f"bm{Bookmark._n}"
+        self.keepWithNext = 1
+
+    def wrap(self, aw, ah):
+        return 0, 0
+
+    def draw(self):
+        # recorded now, replayed on the right page by the two-pass canvas (build._Numbered.save)
+        c = self.canv
+        c.__dict__.setdefault("_bm_log", []).append((c._pageNumber, self.key, self.title, self.level))
+
+
+class CheckBox(Flowable):
+    """Empty tick box drawn as a vector square (the bundled fonts have no box glyph)."""
+
+    def wrap(self, aw, ah):
+        return 9, 9
+
+    def draw(self):
+        c = self.canv
+        c.setStrokeColor(T.INK); c.setLineWidth(0.7)
+        c.rect(1, 1.5, 6, 6, stroke=1, fill=0)
+
+
 class Chip(Flowable):
     """Rounded status chip (mono caps)."""
 
@@ -53,6 +91,7 @@ class Rule(Flowable):
     def __init__(self, width=None, color=T.RULE, thickness=0.6, gold: int = 0):
         super().__init__()
         self.w, self.color, self.t, self.gold = width, color, thickness, gold
+        self.keepWithNext = 1
 
     def wrap(self, aw, ah):
         self.width = self.w or aw
@@ -66,9 +105,11 @@ class Rule(Flowable):
 
 
 def section_head(num: str, title: str, sub: str | None = None) -> list:
-    out = [P(f"{num}  /  SECTION", "label"), Spacer(1, 1.5), P(title, "h1"), Rule(CW_, gold=26 * mm), Spacer(1, 4)]
+    out = [Bookmark(f"{num}  {title}", 0), P(f"{num}  /  SECTION", "label"), KS(1.5), P(title, "h1"), Rule(CW_, gold=26 * mm), KS(4)]
     if sub:
-        out += [P(sub, "lead"), Spacer(1, 1)]
+        lead = P(sub, "lead")
+        lead.style = lead.style.clone("leadk", keepWithNext=1)
+        out += [lead, KS(1)]
     return out
 
 

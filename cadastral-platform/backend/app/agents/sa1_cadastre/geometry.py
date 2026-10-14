@@ -24,8 +24,17 @@ def mga_srid_for_lon(lon: float) -> int:
 _T: dict = {}
 
 
+_TI: dict = {}
+
+
 def to_mga(geom, srid: int):
     t = _T.setdefault(srid, Transformer.from_crs(7844, srid, always_xy=True))
+    return transform(t.transform, geom)
+
+
+def from_mga(geom, srid: int):
+    """MGA metres -> GDA2020 geographic (inverse of ``to_mga``)."""
+    t = _TI.setdefault(srid, Transformer.from_crs(srid, 7844, always_xy=True))
     return transform(t.transform, geom)
 
 
