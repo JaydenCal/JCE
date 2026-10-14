@@ -8,7 +8,8 @@ window.GI_CONFIG = {
   stripeFlyThrough: "",           // A$5 link
   stripeRenders: "",              // A$10 link
   stripeBoth: "",                 // A$15 link (both add-ons)
-  heroVideoPlans: "",             // e.g. "assets/plan-creation.mp4" once the video exists
+  toolUrl: "plan-studio/index.html#example",   // change to the Plan Studio app route when built
+  heroVideoPlans: "",             // e.g. "assets/plan-creation.mp4": plays muted on loop behind the button
   heroPoster: "",
   premiumEnabled: false,          // Phase 1: Plan Pack shows "Coming soon"
   orderUrl: "../index.html#enquire",         // existing live enquiry form
