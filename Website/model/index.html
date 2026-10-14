@@ -361,7 +361,7 @@ const MODEL = {"parts":[{"n":"FS_accessway_concrete","c":"surface","col":"#c4c3b
   var grid=new THREE_.GridHelper(Math.max(X.size.x,X.size.y)*1.6,48,0xc7a256,0xc7a256); grid.rotation.x=Math.PI/2;
   grid.position.set(X.centre.x,X.centre.y,Z0-0.15); grid.material.transparent=true; grid.material.depthWrite=false; X.scene.add(grid);
   var asp=function(){return cam.aspect||1.5};
-  var lastT=0;
+  var lastT=0,oc=null,viewed=false;
   function apply(t){
     t=clamp(+t||0,0,1);lastT=t;V.setCamera(cam);
     var u=sm(t), zk=lerp(0.001,1,sm((t-0.12)/0.7)), fk=sm((t-0.08)/0.75), lk=sm((t-0.82)/0.18);
@@ -386,7 +386,9 @@ const MODEL = {"parts":[{"n":"FS_accessway_concrete","c":"surface","col":"#c4c3b
   }
   window.addEventListener('message',function(e){ var d=e.data; if(!d) return;
     if(d.type==='morph'){ apply(d.t); return; }
-    if(d.type==='control'){ var c=V.controls(); if(c) c.enabled=!!d.on; if(!d.on){ var b=document.querySelector('#views button[data-v="iso-sw"]'); if(b) b.click(); apply(lastT); } }
+    if(d.type==='orbit'){ if(d.on&&!oc){ oc=new THREE_.OrbitControls(cam,X.renderer.domElement); oc.target.copy(T); oc.enableDamping=false; } if(oc){ oc.enabled=!!d.on&&!viewed; oc.enableZoom=!!d.zoom; } return; }
+    if(d.type==='view'){ viewed=true; if(oc) oc.enabled=false; return; }
+    if(d.type==='control'){ if(!d.on){ viewed=false; var b=document.querySelector('#views button[data-v="iso-sw"]'); if(b) b.click(); var c=V.controls(); if(c) c.enabled=false; apply(lastT); } }
   });
   apply(0);
   try{ window.parent.postMessage({type:'morph-ready'},'*'); }catch(_){}

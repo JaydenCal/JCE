@@ -259,6 +259,7 @@ const MODEL = {"parts":[{"n":"FS_dish","c":"surface","col":"#cfd0cb","a":1.0,"ro
   window.addEventListener('message',function(e){
     var d=e.data||{}; if(e.source!==window.parent) return;
     if(d.type==='morph'){ window.__scrubMode=true; window.__scrubT=Math.max(0,Math.min(1,+d.t||0)); if(!anim) startBuild(); else if(anim.step) anim.step(performance.now()); return; }
+    if(d.type==='orbit'){ var oc0=V.getControls(); if(oc0){ oc0.enabled=!!d.on; oc0.enableZoom=!!d.zoom; } return; }
     if(d.type==='control'){ var cc=V.getControls(); if(cc) cc.enabled=!!d.on; if(!d.on&&window.__scrubMode){ stopBuild(); startBuild(); } return; }
     if(d.jceStep) apply(d.jceStep);
     if(d.jceReset){ if(current==='build') stopBuild(); apply(current==='build'?'design':current); }

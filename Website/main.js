@@ -140,11 +140,22 @@ function readout(p){
   if(range&&+range.value!==pct)range.value=pct;
 }
 function ui(){
-  card.hidden=!(webgl&&ready[cur]&&(control||clicked||mapT(prog)>=0.92));
+  card.hidden=!(webgl&&ready[cur]&&(control||clicked||mapT(prog)>=0.6));
+  card.classList.toggle('on',control);
+  syncOrbit();
   card.querySelector('.label').textContent=control?'Model controls on':'Take control of the model';
   ctlBtn.textContent=control?'Release':'Take control';
   vcol.hidden=!(control&&views[cur]);
   wrap.classList.toggle('ctl',control);
+}
+var fine=window.matchMedia('(hover:hover) and (pointer:fine)').matches,orb={};
+function syncOrbit(){
+  ['seniors','industrial'].forEach(function(m){
+    var want=m===cur&&webgl&&ready[m]&&(control||(fine&&mapT(prog)>=0.6)),zoom=m===cur&&control,o=orb[m]||{};
+    if(o.on!==want||o.zoom!==zoom){orb[m]={on:want,zoom:zoom};post(m,{type:'orbit',on:want,zoom:zoom})}
+  });
+  var any=ready[cur]&&webgl&&(control||(fine&&mapT(prog)>=0.6));
+  wrap.classList.toggle('drag',!!any);
 }
 function buildViews(){
   vcol.textContent='';
@@ -159,9 +170,9 @@ function setControl(on){
   control=on;
   var f=frameOf(cur);
   if(on){send(cur,1);if(f)f.style.opacity=1;activeView=''}
-  post(cur,{type:'control',on:on});
+  post(cur,{type:'control',on:on});orb={};
   if(on)buildViews();
-  else{activeView='';paint(cur);send(cur,mapT(prog))}
+  else{activeView='';orb={};paint(cur);send(cur,mapT(prog))}
   ui();
 }
 var pend=false;
@@ -184,6 +195,7 @@ window.addEventListener('message',function(e){
     var f=frameOf(m);if(!f||e.source!==f.contentWindow)return;
     if(dta.type==='ready'&&dta.views)views[m]=dta.views;
     if(dta.type==='release'&&m===cur)setControl(false);
+    if(dta.type==='wheel'&&m===cur)window.scrollBy({top:dta.dy,left:0,behavior:'instant'});
     if(dta.type==='morph-ready'||dta.jceModelReady||dta.type==='ready')markReady(m);
   });
 });
@@ -242,6 +254,8 @@ function start(){
       gsap.to(o,{v:end,duration:1.2,ease:'power2.out',onUpdate:function(){e.textContent=pre+Math.round(o.v)+suf},onComplete:function(){e.textContent=pre+end+suf}});
     }});
   });
+  gsap.from('.who-img',{opacity:0,y:36,duration:1.1,ease:'power3.out',delay:.3,clearProps:'transform,opacity'});
+  gsap.from('.who figcaption',{opacity:0,duration:.8,delay:.9});
   var fl=$('#flow');
   if(fl){
     root.classList.add('js-flow');flowAt(0);

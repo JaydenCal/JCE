@@ -279,3 +279,24 @@ h1,h2,h3{font-family:var(--disp);font-weight:500;letter-spacing:-.02em;line-heig
 .fc .tok{fill:var(--gold);filter:drop-shadow(0 0 6px rgba(199,162,86,.9));display:none}
 .js-flow .fc .tok{display:block}
 @media (max-width:700px){.fc-h{display:none}.fc-v{display:block}}
+
+/* hero headshot: cut-out on the page, drafting treatment */
+.who{margin:0;display:flex;align-items:center;gap:16px}
+.who-stage{position:relative;width:120px;flex:none}
+.who-stage::before{content:"";position:absolute;inset:-14%;background-image:linear-gradient(var(--grid2) 1px,transparent 1px),linear-gradient(90deg,var(--grid2) 1px,transparent 1px);background-size:22px 22px;-webkit-mask-image:radial-gradient(closest-side,#000 45%,transparent 100%);mask-image:radial-gradient(closest-side,#000 45%,transparent 100%)}
+.who-img{position:relative;width:100%;height:auto;-webkit-mask-image:linear-gradient(180deg,#000 72%,transparent 100%);mask-image:linear-gradient(180deg,#000 72%,transparent 100%)}
+.who-x{position:absolute;right:4%;top:6%;width:64px;height:64px;border:1px solid rgba(199,162,86,.45);border-radius:50%;opacity:.55;background:linear-gradient(var(--gold),var(--gold)) center/1px 150% no-repeat,linear-gradient(var(--gold),var(--gold)) center/150% 1px no-repeat}
+.who figcaption{margin:0;display:grid;gap:3px;padding-top:10px;border-top:1px solid var(--gold);font-size:10px;line-height:1.5}
+.who figcaption span:first-child{color:var(--gold2)}
+@media (min-width:900px){
+  .hero-grid{grid-template-columns:1.2fr .8fr;align-items:center}
+  .who{flex-direction:column;align-items:stretch;gap:0;justify-self:center;max-width:430px;width:100%}
+  .who-stage{width:100%}
+  .who figcaption{margin-top:-2px}
+}
+/* drag cursor and take-control pulse */
+.stagewrap.drag .slot iframe{pointer-events:auto}
+@keyframes ctlpulse{0%{box-shadow:0 0 0 0 rgba(199,162,86,.75)}70%{box-shadow:0 0 0 16px rgba(199,162,86,0)}100%{box-shadow:0 0 0 0 rgba(199,162,86,0)}}
+.ctl-card:not(.on){animation:ctlpulse 1.6s ease-out infinite}
+.ctl-card:not(.on) .btn{animation:ctlpulse 1.6s ease-out infinite}
+@media (prefers-reduced-motion:reduce){.ctl-card:not(.on){box-shadow:0 0 0 3px rgba(199,162,86,.55)!important}}
