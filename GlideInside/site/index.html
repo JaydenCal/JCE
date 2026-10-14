@@ -18,7 +18,7 @@
     <a href="plan-studio/index.html">2D Plans</a>
     <a href="subdivision/index.html">Subdivision</a>
     <a href="#how">How it works</a>
-    <a href="#services">3D &amp; fly-throughs</a>
+    <a href="#services">Add-ons</a>
     <a href="#faq">FAQ</a>
     <a href="#enquire">Contact</a>
   </nav>
@@ -27,30 +27,36 @@
 </div></header>
 
 <main id="main">
-<section class="shell hero" id="top">
-  <div>
-    <p class="eyebrow">Concept planning tools · Regional Australia</p>
-    <h1>From site to proposal in a fraction of the <em>time</em></h1>
-    <p class="lead">Draw a shed, house or extension as a clean 2D plan set, or test how a site could subdivide into lots, roads and stages. Two tools, one workflow, built for the concept stage.</p>
-    <div class="hero-cta">
-      <a class="btn" href="plan-studio/index.html">Explore 2D plans <span aria-hidden="true">→</span></a>
-      <a class="link" href="subdivision/index.html">Explore subdivision modelling <span aria-hidden="true">→</span></a>
-    </div>
-    <p class="fineprint">Concept design only. Quotes within one business day.</p>
-  </div>
-  <div class="product-stack">
-    <a class="product-card" href="plan-studio/index.html">
-      <div class="thumb" aria-hidden="true"><svg viewBox="0 0 120 120" width="120" height="120"><rect x="14" y="30" width="92" height="60" fill="none" stroke="#232a28" stroke-width="4"/><rect x="44" y="26" width="32" height="8" fill="#a3532d"/><line x1="14" y1="60" x2="40" y2="60" stroke="#232a28" stroke-width="2"/><circle cx="96" cy="100" r="8" fill="#87968a"/></svg></div>
-      <div><span class="tag">Product 01</span><h3>2D plan outputs</h3><p>Shed and building plans with schedules, dimensions and PDF or DXF output.</p><span class="link">See the shed example →</span></div>
-    </a>
-    <a class="product-card" href="subdivision/index.html">
-      <div class="thumb" aria-hidden="true"><svg viewBox="0 0 120 120" width="120" height="120"><rect x="10" y="10" width="100" height="100" fill="none" stroke="#232a28" stroke-width="2" stroke-dasharray="4 3"/><path d="M60 110V62" stroke="#87968a" stroke-width="8"/><g fill="#e6b58e" stroke="#a3532d"><rect x="16" y="16" width="30" height="22"/><rect x="74" y="16" width="30" height="22"/><rect x="16" y="44" width="30" height="22"/><rect x="74" y="44" width="30" height="22"/></g></svg></div>
-      <div><span class="tag">Product 02</span><h3>Subdivision modelling</h3><p>Lots, access, staging and a 3D site model to explain the concept.</p><span class="link">See the 12-lot example →</span></div>
-    </a>
-  </div>
+<section class="shell hero-centre" id="top">
+  <p class="eyebrow">Concept planning tools · Regional Australia</p>
+  <h1>From site to proposal in a fraction of the <em>time</em></h1>
+  <p class="lead">Draw a shed, house or extension as a clean 2D plan set, or test how a site could subdivide into lots, roads and stages. Two tools, one workflow, built for the concept stage.</p>
 </section>
 
-<div class="shell"><div class="timeline" aria-label="Workflow"><div class="node"><span>Site</span></div><div class="node"><span>Brief</span></div><div class="node"><span>Plan</span></div><div class="node"><span>Model</span></div><div class="node"><span>Present</span></div></div></div>
+<section class="shell" id="viewport-section">
+  <div class="demo viewport" data-demo>
+    <div class="demo-bar" data-tabs role="tablist" aria-label="Choose a product">
+      <button class="tab" data-tab="plans" aria-selected="true">2D plan output</button>
+      <button class="tab" data-tab="subdivision" aria-selected="false">Subdivision modelling</button>
+    </div>
+    <div class="viewport-stage" data-panel="plans" id="vp-plans">
+      <div class="vp-placeholder"><div class="play" aria-hidden="true">▶</div><strong>Plan creation video</strong><p>A short walkthrough of drawing a shed and exporting the plan set. Coming soon.</p></div>
+    </div>
+    <div class="viewport-stage" data-panel="subdivision" id="vp-sub" hidden></div>
+    <div class="viewport-foot" data-panel="plans"><span>2D plan outputs: dimensioned plans, schedules, PDF and DXF.</span><a class="link" href="plan-studio/index.html">See the shed example →</a></div>
+    <div class="viewport-foot" data-panel="subdivision" hidden><span>Subdivision modelling is by quote. Interactive 3D site model shown.</span><a class="link" href="subdivision/index.html">See the plans and 12-lot example →</a></div>
+  </div>
+</section>
+<script>
+(function(){
+  var cfg=window.GI_CONFIG||{},p=document.getElementById('vp-plans'),s=document.getElementById('vp-sub');
+  if(cfg.heroVideoPlans){p.innerHTML='<video controls playsinline preload="none" src="'+cfg.heroVideoPlans+'"'+(cfg.heroPoster?' poster="'+cfg.heroPoster+'"':'')+'></video>';}
+  document.querySelector('[data-tab=subdivision]').addEventListener('click',function(){
+    if(!s.firstChild){s.innerHTML='<iframe title="Interactive subdivision site model" loading="lazy" src="subdivision/site-model.html"></iframe>';}
+  });
+})();
+</script>
+
 
 <section class="shell section" id="how">
   <div class="section-head"><div><p class="eyebrow">How it works</p><h2>One workflow, <em>two</em> outputs.</h2></div><p>Both products start the same way: tell us what you are planning. Pick the output that fits the stage you are at.</p></div>
@@ -71,12 +77,13 @@
 </div></section>
 
 <section class="shell section" id="services">
-  <div class="section-head"><div><p class="eyebrow">Also from Glide Inside</p><h2>3D fly-throughs and site models.</h2></div><p>Our existing services carry on as before and sit alongside the two products above.</p></div>
+  <div class="section-head"><div><p class="eyebrow">Add to any plan</p><h2>Extras for your <em>plans.</em></h2></div><p>Add a 3D fly-through or complex renderings to a 2D plan. Pay by card through Stripe. Subdivision work is by quote.</p></div>
   <div class="grid-3">
-    <a class="card" href="services/residential-fly-throughs.html" style="text-decoration:none"><span class="num">FROM <span data-cfg="flyThroughPrice">$249</span></span><h3>Floor plan fly-throughs</h3><p>A furnished 3D walk-through from your plan, in 5 business days.</p></a>
-    <a class="card" href="services/display-home-virtual-tours.html" style="text-decoration:none"><span class="num">BUILDERS</span><h3>Display home tours</h3><p>One video per design, with volume pricing.</p></a>
-    <a class="card" href="services/commercial-rural-models.html" style="text-decoration:none"><span class="num">SITES</span><h3>Commercial and rural models</h3><p>Interactive 3D models of the whole site.</p></a>
+    <article class="card"><span class="num">+ A$<span data-cfg="addonFlyThroughPrice">5</span></span><h3>3D fly-through</h3><p>A furnished walk-through video of your plan.</p></article>
+    <article class="card"><span class="num">+ A$<span data-cfg="addonRendersPrice">10</span></span><h3>Complex renderings</h3><p>Detailed still renderings of your design.</p></article>
+    <article class="card"><span class="num">BY QUOTE</span><h3>Subdivision modelling</h3><p>Concept layouts, staging and 3D site models, priced to your site.</p></article>
   </div>
+  <p style="margin-top:24px"><a class="btn" href="plan-studio/index.html#addons">Choose add-ons</a></p>
 </section>
 
 <section class="shell section faq" id="faq">
@@ -96,7 +103,7 @@
 
 <footer class="site-footer"><div class="shell">
   <div><img src="assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside" style="height:30px;width:auto;margin-bottom:12px"><p>Glide Inside · ABN 11 549 431 925<br><a href="mailto:hello@glideinside.com.au">hello@glideinside.com.au</a> · 0477 207 027</p></div>
-  <nav aria-label="Products"><a href="plan-studio/index.html">2D plan outputs</a><a href="subdivision/index.html">Subdivision modelling</a><a href="services/residential-fly-throughs.html">3D fly-throughs</a></nav>
+  <nav aria-label="Products"><a href="plan-studio/index.html">2D plan outputs</a><a href="subdivision/index.html">Subdivision modelling</a><a href="plan-studio/index.html#addons">Plan add-ons</a></nav>
   <nav aria-label="Legal"><a href="terms.html">Order terms</a><a href="privacy.html">Privacy</a></nav>
 </div></footer>
 </body></html>

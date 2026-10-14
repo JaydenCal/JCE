@@ -41,4 +41,19 @@
       demo.querySelectorAll("[data-kv]").forEach(function (k) { var v = el.dataset[k.dataset.kv]; if (v != null) k.textContent = v; });
     });
   });
+  // add-ons: [data-addons] with input[data-addon=fly|renders], [data-total], a.btn[data-pay], [data-pay-note]
+  document.querySelectorAll("[data-addons]").forEach(function (root) {
+    var prices = { fly: cfg.addonFlyThroughPrice || 0, renders: cfg.addonRendersPrice || 0 };
+    var links = { fly: cfg.stripeFlyThrough, renders: cfg.stripeRenders, both: cfg.stripeBoth };
+    var total = root.querySelector("[data-total]"), pay = root.querySelector("[data-pay]"), note = root.querySelector("[data-pay-note]");
+    function upd() {
+      var f = root.querySelector('[data-addon=fly]').checked, r = root.querySelector('[data-addon=renders]').checked;
+      var sum = (f ? prices.fly : 0) + (r ? prices.renders : 0);
+      total.textContent = "A$" + sum;
+      var url = f && r ? links.both : f ? links.fly : r ? links.renders : "";
+      if (url) { pay.href = url; pay.setAttribute("aria-disabled", "false"); note.textContent = "Secure card payment by Stripe."; }
+      else { pay.removeAttribute("href"); pay.setAttribute("aria-disabled", "true"); note.textContent = !f && !r ? "Choose an add-on." : "Payment link not set up yet."; }
+    }
+    root.addEventListener("change", upd); upd();
+  });
 })();
