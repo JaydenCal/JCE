@@ -1,0 +1,936 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Glide Inside | Pocket Architect and Subdivision Modelling</title><link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4NCA4MCI+PHJlY3Qgd2lkdGg9Ijg0IiBoZWlnaHQ9IjgwIiByeD0iMTAiIGZpbGw9IiMyMzJBMjgiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjQgOCkgc2NhbGUoLjgpIiBmaWxsPSIjRkZGRkZGIj48cGF0aCBjbGFzcz0iZy1zaGFwZSIgZD0iTTU4IDlIMjRMOSAyNFY1NkwyNCA3MUg1OFY0MEgzNlY1MUg0NlY1OUgyOUwyMSA1MVYyOUwyOSAyMUg1OFoiLz48cGF0aCBjbGFzcz0iaW5zaWRlLXBsYW5lIiBkPSJNNjQgMTJMNzUgMThWNjJMNjQgNjhaIi8+PC9nPjwvc3ZnPg=="><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"><style>/* Glide Inside v4 framework. Brand tokens match the live site (style.css / home-v4.css). */
+:root{
+  --paper:#f3f4ef; --scene:#e8ebe5; --ink:#232a28; --muted:#59645d; --line:#cbd0c9;
+  --accent:#a3532d; --accent-ink:#fff; --accent-soft:#e6b58e; --deep:#1c3025; --deep-2:#26402f; --sage:#87968a;
+  --card:#fbfbf8; --ok:#3d7a52;
+  --font:Manrope,Arial,sans-serif; --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --r:14px; --gut:clamp(16px,4vw,48px); --max:1280px;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--font);-webkit-font-smoothing:antialiased}
+img,svg{max-width:100%;display:block}a{color:inherit}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#fff;padding:8px 12px;z-index:99}
+.shell{width:100%;max-width:var(--max);margin:0 auto;padding-inline:var(--gut)}
+.section{padding-block:clamp(56px,8vw,104px)}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 18px}
+h1,h2,h3{line-height:1.05;letter-spacing:-.02em;margin:0}
+h1{font-size:clamp(40px,6vw,78px);font-weight:700}
+h2{font-size:clamp(30px,4vw,52px);font-weight:700}
+h3{font-size:20px;letter-spacing:-.01em}
+h1 em,h2 em{font-style:italic;font-weight:700;color:var(--accent);font-family:Georgia,"Times New Roman",serif}
+.lead{font-size:clamp(17px,1.6vw,20px);color:var(--muted);max-width:60ch}
+.muted{color:var(--muted)}
+/* header */
+.site-header{position:sticky;top:0;z-index:50;background:rgba(243,244,239,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.site-header .shell{display:flex;align-items:center;gap:32px;height:72px}
+.site-header .logo img{height:34px;width:auto}
+.site-nav{display:flex;gap:26px;flex:1}
+.site-nav a{text-decoration:none;font-weight:600;font-size:15px;color:var(--ink);padding:6px 0;border-bottom:2px solid transparent}
+.site-nav a:hover,.site-nav a[aria-current=page]{border-color:var(--accent)}
+.nav-toggle{display:none;margin-left:auto;background:none;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:600 14px var(--font)}
+@media(max-width:860px){
+  .nav-toggle{display:block}
+  .site-nav{display:none;position:absolute;top:72px;left:0;right:0;flex-direction:column;gap:0;background:var(--paper);border-bottom:1px solid var(--line);padding:8px var(--gut) 16px}
+  .site-nav.open{display:flex}.site-nav a{padding:12px 0}
+  .site-header .btn{display:none}
+}
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:700;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:16px;font-family:var(--font)}
+.btn:hover{background:#8d4524}.btn:focus-visible,a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--deep);outline-offset:2px}
+.btn-sm{padding:10px 18px;font-size:14px}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}.btn-ghost:hover{background:var(--ink);color:var(--paper)}
+.link{color:var(--accent);font-weight:700;text-decoration:none}.link:hover{text-decoration:underline}
+.btn[aria-disabled=true]{opacity:.55;pointer-events:none}
+.fineprint{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center;margin-top:14px}
+.fineprint::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok)}
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(32px,5vw,72px);align-items:center;padding-block:clamp(48px,7vw,96px)}
+.hero p.lead{margin:24px 0 32px}.hero-cta{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+@media(max-width:960px){.hero{grid-template-columns:1fr}}
+/* product cards */
+.product-stack{display:grid;gap:18px}
+.product-card{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;text-decoration:none;transition:border-color .2s,transform .2s}
+.product-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.product-card .thumb{background:var(--scene);border-radius:10px;aspect-ratio:1;display:grid;place-items:center;overflow:hidden}
+.product-card .tag{font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.product-card h3{margin:6px 0 6px;font-size:22px}.product-card p{margin:0 0 10px;color:var(--muted);font-size:15px}
+@media(max-width:520px){.product-card{grid-template-columns:1fr}.product-card .thumb{aspect-ratio:16/9}}
+/* timeline strip (borrowed from the reference hero) */
+.timeline{display:flex;align-items:center;padding-block:28px}
+.timeline .node{display:flex;flex-direction:column;gap:8px;flex:1;position:relative;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.timeline .node::before{content:"";width:14px;height:14px;border:2px solid var(--accent);border-radius:50%;background:var(--paper)}
+.timeline .node::after{content:"";position:absolute;top:6px;left:22px;right:8px;height:2px;background:var(--accent);opacity:.5}
+.timeline .node:last-child::after{display:none}
+@media(max-width:640px){.timeline .node span{display:none}}
+/* generic grids */
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;margin-bottom:40px;flex-wrap:wrap}
+.section-head p{max-width:46ch;color:var(--muted);margin:0}
+.grid-2,.grid-3,.grid-4{display:grid;gap:20px}
+.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.grid-3,.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px}
+.card .num{font:600 12px var(--mono);color:var(--accent);letter-spacing:.12em}
+.card h3{margin:10px 0 8px}.card p{margin:0;color:var(--muted);font-size:15px}
+.band{background:var(--deep);color:#eef1ea}.band .eyebrow{color:var(--accent-soft)}.band .lead,.band .muted,.band .section-head p{color:#b9c4bb}
+.band .card{background:var(--deep-2);border-color:#3a5543}.band .card p{color:#b9c4bb}.band .card .num{color:var(--accent-soft)}
+.band h1 em,.band h2 em{color:var(--accent-soft)}
+.checks{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.checks li{padding-left:28px;position:relative}.checks li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
+.chip{display:inline-block;font:600 12px var(--mono);border:1px solid var(--line);border-radius:99px;padding:5px 12px;background:var(--card);color:var(--muted)}
+.chip.soon{border-color:var(--accent);color:var(--accent)}
+/* product page hero */
+.product-hero{display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(28px,4vw,64px);align-items:center;padding-block:clamp(40px,6vw,80px)}
+@media(max-width:960px){.product-hero{grid-template-columns:1fr}}
+.breadcrumbs{font-size:14px;color:var(--muted);padding-top:20px}.breadcrumbs a{text-decoration:none}.breadcrumbs span{margin:0 8px}
+/* interactive demo frame (shared by both product pages) */
+.demo{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.demo-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--paper)}
+.demo-bar .label{font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-right:auto}
+.tab,.toggle{font:600 13px var(--font);border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer}
+.tab[aria-selected=true],.toggle[aria-pressed=true]{background:var(--deep);color:#fff;border-color:var(--deep)}
+.demo-body{display:grid;grid-template-columns:1fr 260px}
+@media(max-width:760px){.demo-body{grid-template-columns:1fr}}
+.demo-stage{background:var(--scene);padding:16px;min-height:320px;display:grid;place-items:center}
+.demo-stage svg{width:100%;height:auto;max-height:560px}
+.demo-side{padding:18px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:14px;font-size:14px}
+@media(max-width:760px){.demo-side{border-left:0;border-top:1px solid var(--line)}}
+.info-card h4{margin:0 0 4px;font-size:16px}.info-card p{margin:0;color:var(--muted)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0}.kv dt{color:var(--muted)}.kv dd{margin:0;font-weight:700;text-align:right}
+.demo-note{font-size:12px;color:var(--muted);padding:10px 14px;border-top:1px solid var(--line);background:var(--paper)}
+/* svg drawing helpers (use classes, not inline colours) */
+.is-off{display:none}
+[data-info]{cursor:pointer}[data-info]:hover,[data-info].is-active{filter:brightness(.93);stroke:var(--accent);stroke-width:2}
+.svg-text{font:600 11px var(--font);fill:var(--ink)}.svg-dim{font:500 10px var(--mono);fill:var(--muted)}
+/* tables, steps, faq, cta */
+.spec{width:100%;border-collapse:collapse;font-size:15px}.spec th,.spec td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left}
+.spec th{font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tab-panel[hidden]{display:none}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;list-style:none;padding:0;margin:0;counter-reset:s}
+.steps li{counter-increment:s;border-top:2px solid var(--accent);padding-top:16px}
+.steps li::before{content:"0" counter(s);font:600 12px var(--mono);color:var(--accent)}
+.steps h3{margin:8px 0}.steps p{margin:0;color:var(--muted);font-size:15px}
+@media(max-width:900px){.steps{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.steps{grid-template-columns:1fr}}
+.faq details{border-bottom:1px solid var(--line);padding:18px 0}.faq summary{cursor:pointer;font-weight:700;font-size:18px;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary::after{content:"+";color:var(--accent)}.faq details[open] summary::after{content:"–"}.faq p{color:var(--muted);margin:12px 0 0;max-width:70ch}
+.cta-band{text-align:center}.cta-band h2{max-width:20ch;margin:0 auto 20px}.cta-band .hero-cta{justify-content:center;margin-top:28px}
+.disclaimer{font-size:13px;color:var(--muted);border-left:3px solid var(--accent);padding-left:14px;max-width:80ch}
+/* footer */
+.site-footer{border-top:1px solid var(--line);padding-block:40px;font-size:14px;color:var(--muted)}
+.site-footer .shell{display:flex;gap:32px;justify-content:space-between;flex-wrap:wrap}
+.site-footer a{color:var(--ink)}.site-footer nav{display:flex;flex-direction:column;gap:6px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* v4.1 centred hero + two-tab viewport + add-ons */
+.hero-centre{text-align:center;padding-block:clamp(40px,6vw,80px) 28px}
+.hero-centre h1{max-width:18ch;margin:0 auto}.hero-centre .lead{margin:22px auto 0;max-width:62ch}
+.viewport{max-width:1100px;margin:0 auto 24px}
+.viewport .demo-bar{justify-content:center;gap:10px;padding:14px}
+.viewport .tab{font-size:15px;padding:10px 20px}
+.viewport-stage{aspect-ratio:16/9;background:var(--deep);position:relative;display:grid;place-items:center;color:#eef1ea}
+.viewport-stage iframe,.viewport-stage video{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--deep)}
+.vp-placeholder{text-align:center;padding:24px;max-width:46ch}.vp-placeholder .play{width:72px;height:72px;border:2px solid var(--accent-soft);border-radius:50%;display:grid;place-items:center;margin:0 auto 18px;font-size:26px;color:var(--accent-soft)}
+.vp-placeholder p{color:#b9c4bb;margin:8px 0 0}
+.viewport-foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;padding:14px 18px;border-top:1px solid var(--line);background:var(--paper);font-size:14px}
+.addons{display:grid;gap:14px}.addon{display:flex;gap:14px;align-items:flex-start;padding:18px;border:1px solid var(--line);border-radius:var(--r);background:var(--card);cursor:pointer}
+.addon input{margin-top:5px;width:18px;height:18px;accent-color:var(--accent)}.addon strong{display:block}.addon span{color:var(--muted);font-size:14px}.addon .price{margin-left:auto;font-weight:800;color:var(--accent);white-space:nowrap}
+.addon-total{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:18px}
+[hidden]{display:none!important}
+
+.vp-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#2c4a38,var(--deep))}
+.vp-bg video,.vp-bg svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vp-bg svg path,.vp-bg svg circle{stroke-dasharray:1;stroke-dashoffset:1;animation:vpdraw 7s ease-in-out infinite}
+@keyframes vpdraw{0%{stroke-dashoffset:1}55%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:-1}}
+.vp-cta{position:absolute;left:0;right:0;bottom:clamp(16px,4vw,36px);display:flex;flex-direction:column;align-items:center;gap:12px;padding-inline:16px;text-align:center}
+.vp-btn{display:inline-flex;gap:12px;align-items:center;background:var(--accent);color:#fff;text-decoration:none;font-weight:800;font-size:clamp(16px,2.2vw,22px);padding:16px 34px;border-radius:99px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.vp-btn:hover{background:#8d4524}
+.vp-cap{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;background:rgba(0,0,0,.45);color:#dfe6dc;padding:6px 14px;border-radius:99px}
+@media(prefers-reduced-motion:reduce){.vp-bg svg path,.vp-bg svg circle{animation:none;stroke-dashoffset:0}}
+
+.quote-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--deep);color:#eef1ea;border-top:2px solid var(--accent);box-shadow:0 -8px 24px rgba(0,0,0,.2)}
+.quote-bar .shell{display:flex;gap:20px;align-items:center;justify-content:space-between;padding-block:12px}
+.quote-bar .muted{color:#b9c4bb}.quote-bar .btn{white-space:nowrap}
+@media(max-width:700px){.quote-bar .shell>span{font-size:13px}.quote-bar .shell>span .muted{display:none}}
+.has-quote-bar{padding-bottom:76px}
+
+/* v4.3 polish */
+.ptm .toggle{background:rgba(0,0,0,.25);border:1px solid var(--line);padding:4px;border-radius:0;color:var(--text);font:inherit}
+.hero-centre{position:relative;isolation:isolate}
+.hero-centre::before{content:"";position:absolute;inset:-40px -10vw 0;z-index:-1;background:radial-gradient(ellipse 60% 70% at 50% 0%,rgba(163,83,45,.16),transparent 70%),linear-gradient(rgba(35,42,40,.05) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(35,42,40,.05) 1px,transparent 1px) 0 0/48px 48px;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+.hero-centre h1{font-size:clamp(44px,7vw,92px)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px}
+.chips .chip{background:#fff;color:var(--ink);font-family:var(--font);font-weight:600;font-size:13px;padding:8px 16px;box-shadow:0 1px 0 var(--line)}
+.chips .chip::before{content:"✓ ";color:var(--ok)}
+.viewport{box-shadow:0 30px 80px -30px rgba(28,48,37,.45);border-radius:20px}
+.btn{transition:transform .15s,box-shadow .15s}.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px -8px rgba(163,83,45,.6)}
+.card{transition:transform .2s,border-color .2s,box-shadow .2s}.card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 16px 36px -20px rgba(28,48,37,.4)}
+.js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}.js .reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none}}
+html,body{overflow-x:clip}
+
+.demo-stage>.tab-panel{width:100%}
+.svg-text{font-size:14px}.svg-dim{font-size:12px}
+.sl{fill:#dadcd3;stroke:var(--sage);stroke-width:1}.wl{fill:var(--ink)}
+.op{fill:#fff;stroke:var(--ink);stroke-width:1}.rd{fill:var(--accent-soft);stroke:var(--ink);stroke-width:1}
+.sw{fill:none;stroke:var(--ink);stroke-width:1}.eq{fill:var(--card);stroke:var(--sage);stroke-width:1.5}
+.tk{fill:#cfe0e6;stroke:var(--deep);stroke-width:1.5}.dl{stroke:var(--muted);stroke-width:1;fill:none}
+.ov{pointer-events:none}.st-new{fill:var(--accent)}.st-ex{fill:none;stroke:var(--sage);stroke-width:4;stroke-dasharray:7 4}
+.rf{fill:var(--card);stroke:var(--ink);stroke-width:2}.gnd{stroke:var(--ink);stroke-width:2}
+.sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:800px){.sub-grid{grid-template-columns:1fr}}
+.type-list{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding:0;margin:0}
+.table-wrap{overflow-x:auto}
+
+.demo-bar [data-tabs]{display:contents}.demo-stage[hidden]{display:none}
+.demo-body{grid-template-columns:1fr}.demo-body>div:first-child{min-width:0}.demo-side{border-left:0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));align-items:start}
+.product-hero{grid-template-columns:1fr}
+.demo .site-bg{fill:var(--card)}.demo .boundary{fill:none;stroke:var(--ink);stroke-width:2;stroke-dasharray:10 4 2 4}
+.demo .exroad{fill:#d9ddd6;stroke:var(--line)}.demo .road{fill:#fff;stroke:var(--sage);stroke-width:1.5}
+.demo .lot{fill:#fff;stroke:var(--ink);stroke-width:1}.demo .basin{fill:#cfe0e6;stroke:#5d8594;stroke-width:1.5}
+.demo [data-view=staging] .s1,.demo svg[data-view=staging] .s1{fill:#9fc3aa}.demo svg[data-view=staging] .s2{fill:var(--accent-soft)}.demo svg[data-view=staging] .s3{fill:#c9d0e0}
+.demo .ct{fill:none;stroke:var(--sage);stroke-width:1;opacity:.8}.demo .ease{fill:rgba(163,83,45,.18);stroke:var(--accent);stroke-dasharray:4 3}
+.demo .svc{fill:none;stroke-width:3;stroke-dasharray:9 5}.demo .sv-w{stroke:#2f6f9a}.demo .sv-s{stroke:#7a4a2a}.demo .sv-d{stroke:#3d7a52}.demo .sv-e{stroke:#c08a12}
+.demo .lbl text{pointer-events:none}.demo .lt{font:800 17px var(--font);fill:var(--ink)}.demo .la{font:600 14px var(--mono);fill:var(--ink)}
+.demo .access{stroke:var(--accent);stroke-width:4;marker-end:none}.demo .sb{stroke:var(--ink);stroke-width:2;fill:none}
+.demo .na-c{fill:var(--card);stroke:var(--ink)}.demo .na-p{fill:var(--ink)}.demo .svg-dim{font-size:12px}
+.demo svg [hidden]{display:none}.legend{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13px}.legend i{display:inline-block;width:22px;height:0;border-top:3px dashed;vertical-align:middle;margin-right:8px}
+.demo-sw{display:inline-block;width:12px;height:12px;border:1px solid var(--ink);margin-right:8px;vertical-align:-1px}
+.model-frame{width:100%;height:min(70vh,520px);border:1px solid var(--line);border-radius:var(--r);background:var(--scene)}
+.demo tr[data-info]{cursor:pointer}.demo .tab-panel{padding:8px 12px 14px;overflow-x:auto}
+</style></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="shell">
+  <a class="logo" href="#/" aria-label="Glide Inside home"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MzcuOTMgOTAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iR2xpZGVpbnNpZGUiPjxnIGZpbGw9IiMyMzJBMjgiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgNCkiPjxwYXRoIGNsYXNzPSJnLXNoYXBlIiBkPSJNNTggOUgyNEw5IDI0VjU2TDI0IDcxSDU4VjQwSDM2VjUxSDQ2VjU5SDI5TDIxIDUxVjI5TDI5IDIxSDU4WiIvPjxwYXRoIGNsYXNzPSJpbnNpZGUtcGxhbmUiIGZpbGw9IiNBMzUzMkQiIGQ9Ik02NCAxMkw3NSAxOFY2Mkw2NCA2OFoiLz48L2c+PGcgZmlsbD0iIzIzMkEyOCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAwIDY0KSI+PGcgdHJhbnNmb3JtPSJzY2FsZSgwLjAzMyAtMC4wMzMpIj48cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIDApIiBkPSJNNTg5LjUgLTUxMFE1MDEgLTUxMCA0MTkuMCAtNDgyLjM3NVEzMzcgLTQ1NC43NSAyNzAuNSAtNDAyLjI1UTIwNCAtMzQ5Ljc1IDE2MSAtMjc0LjVMMzY4LjUgLTE3MC41UTQwMS41IC0yMzQuMjUgNDYyLjM3NSAtMjY0LjYyNVE1MjMuMjUgLTI5NSA1OTEgLTI5NVE2NzMgLTI5NSA3MzMuODc1IC0yNjYuMFE3OTQuNzUgLTIzNyA4MjcuMzc1IC0xNzkuNzVRODYwIC0xMjIuNSA4NTguNSAtMzcuNVYyNjdIODg2VjEwODBIMTA4NFYtNDAuNVExMDg0IC04Mi43NSAxMDgwLjg3NSAtMTIwLjg3NVExMDc3Ljc1IC0xNTkgMTA2OS41IC0xOTYuNVExMDQ2IC0zMDMuNSA5NzkuNzUgLTM3Mi43NVE5MTMuNSAtNDQyIDgxMy41IC00NzYuMFE3MTMuNSAtNTEwIDU4OS41IC01MTBaTTU3MSAtMzBRNDIxIC0zMCAzMTAuODc1IDQ1LjEyNVEyMDAuNzUgMTIwLjI1IDE0MC4zNzUgMjQ5LjM3NVE4MCAzNzguNSA4MCA1NDAuNVE4MCA3MDQgMTQwLjg3NSA4MzIuNjI1UTIwMS43NSA5NjEuMjUgMzEzLjM3NSAxMDM1LjYyNVE0MjUgMTExMCA1NzcuNSAxMTEwUTczMC43NSAxMTEwIDgzNS4zNzUgMTAzNS4zNzVROTQwIDk2MC43NSA5OTMuNzUgODMxLjg3NVExMDQ3LjUgNzAzIDEwNDcuNSA1NDAuNVExMDQ3LjUgMzc4Ljc1IDk5My41IDI0OS42MjVROTM5LjUgMTIwLjUgODMzLjUgNDUuMjVRNzI3LjUgLTMwIDU3MSAtMzBaTTYwNCAxNzIuNVE3MDQgMTcyLjUgNzY2LjI1IDIxOS4yNVE4MjguNSAyNjYgODU3LjI1IDM0OS4xMjVRODg2IDQzMi4yNSA4ODYgNTQwLjVRODg2IDY0OS4yNSA4NTcuMTI1IDczMi4xMjVRODI4LjI1IDgxNSA3NjcuNSA4NjEuMjVRNzA2Ljc1IDkwNy41IDYxMS41IDkwNy41UTUxMSA5MDcuNSA0NDYuMCA4NTguMjVRMzgxIDgwOSAzNDkuNzUgNzI1Ljc1UTMxOC41IDY0Mi41IDMxOC41IDU0MC41UTMxOC41IDQzNy41IDM0OS41IDM1NC4wUTM4MC41IDI3MC41IDQ0My42MjUgMjIxLjVRNTA2Ljc1IDE3Mi41IDYwNCAxNzIuNVoiLz48cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMTcyLjAgMCkiIGQ9Ik0xNjAgMFYxNDcwSDM4NVYwWiIvPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE2NjUuMCAwKSIgZD0iTTE2MCAxMjUwLjVWMTQ2Mi41SDM4NVYxMjUwLjVaTTE2MCAwVjEwODBIMzg1VjBaIi8+PHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjE1OC4wIDApIiBkPSJNNTcxIC0zMFE0MjEgLTMwIDMxMC44NzUgNDUuMTI1UTIwMC43NSAxMjAuMjUgMTQwLjM3NSAyNDkuMzc1UTgwIDM3OC41IDgwIDU0MC41UTgwIDcwNCAxNDAuODc1IDgzMi42MjVRMjAxLjc1IDk2MS4yNSAzMTMuMzc1IDEwMzUuNjI1UTQyNSAxMTEwIDU3Ny41IDExMTBRNzMwLjc1IDExMTAgODM1LjM3NSAxMDM1LjM3NVE5NDAgOTYwLjc1IDk5My43NSA4MzEuODc1UTEwNDcuNSA3MDMgMTA0Ny41IDU0MC41UTEwNDcuNSAzNzguNzUgOTkzLjUgMjQ5LjYyNVE5MzkuNSAxMjAuNSA4MzMuNSA0NS4yNVE3MjcuNSAtMzAgNTcxIC0zMFpNNjA0IDE3Mi41UTcwNCAxNzIuNSA3NjYuMjUgMjE5LjI1UTgyOC41IDI2NiA4NTcuMjUgMzQ5LjEyNVE4ODYgNDMyLjI1IDg4NiA1NDAuNVE4ODYgNjQ5LjI1IDg1Ny4xMjUgNzMyLjEyNVE4MjguMjUgODE1IDc2Ny41IDg2MS4yNVE3MDYuNzUgOTA3LjUgNjExLjUgOTA3LjVRNTExIDkwNy41IDQ0Ni4wIDg1OC4yNVEzODEgODA5IDM0OS43NSA3MjUuNzVRMzE4LjUgNjQyLjUgMzE4LjUgNTQwLjVRMzE4LjUgNDM3LjUgMzQ5LjUgMzU0LjBRMzgwLjUgMjcwLjUgNDQzLjYyNSAyMjEuNVE1MDYuNzUgMTcyLjUgNjA0IDE3Mi41Wk04ODYgMFY3NjcuNUg4NTlWMTQ0MEgxMDg1LjVWMFoiLz48cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMzMxLjUgMCkiIGQ9Ik02MjUgLTMwUTQ2Mi4yNSAtMzAgMzM5Ljc1IDQwLjg3NVEyMTcuMjUgMTExLjc1IDE0OC42MjUgMjM3Ljg3NVE4MCAzNjQgODAgNTI5LjVRODAgNzA2LjUgMTQ3LjM3NSA4MzYuNzVRMjE0Ljc1IDk2NyAzMzQuNjI1IDEwMzguNVE0NTQuNSAxMTEwIDYxMyAxMTEwUTc3OS4yNSAxMTEwIDg5Ni4wIDEwMzIuNVExMDEyLjc1IDk1NSAxMDcwLjEyNSA4MTMuMFExMTI3LjUgNjcxIDExMTQuNzUgNDc3SDg5MC41VjU1OVE4ODkgNzQxIDgyMy43NSA4MjYuNVE3NTguNSA5MTIgNjIyIDkxMlE0NjkuNzUgOTEyIDM5NC4xMjUgODE2Ljc1UTMxOC41IDcyMS41IDMxOC41IDU0MFEzMTguNSAzNjkgMzk0LjEyNSAyNzUuMjVRNDY5Ljc1IDE4MS41IDYxMyAxODEuNVE3MDYuNSAxODEuNSA3NzQuNSAyMjMuNVE4NDIuNSAyNjUuNSA4ODAgMzQ0LjVMMTEwMS41IDI3NlExMDM5LjI1IDEzMC41IDkxMC4zNzUgNTAuMjVRNzgxLjUgLTMwIDYyNSAtMzBaTTI0Ni41IDQ3N1Y2NDkuNUgxMDAzLjVWNDc3WiIvPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ0NzguMCAwKSIgZD0iTTE2MCAxMjUwLjVWMTQ2Mi41SDM4NVYxMjUwLjVaTTE2MCAwVjEwODBIMzg1VjBaIi8+PHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDk3MS4wIDApIiBkPSJNODkyLjUgMFY1MjUuNVE4OTIuNSA1ODIuMjUgODgzLjYyNSA2NDYuNVE4NzQuNzUgNzEwLjc1IDg0Ny41IDc2OC4xMjVRODIwLjI1IDgyNS41IDc2OC4yNSA4NjEuNVE3MTYuMjUgODk3LjUgNjMwIDg5Ny41UTU3OSA4OTcuNSA1MzEuNjI1IDg4MC42MjVRNDg0LjI1IDg2My43NSA0NDcuMjUgODI1LjEyNVE0MTAuMjUgNzg2LjUgMzg4LjM3NSA3MjEuMjVRMzY2LjUgNjU2IDM2Ni41IDU1OC41TDIzMCA2MTMuNVEyMzAgNzU1Ljc1IDI4NC4yNSA4NjguMTI1UTMzOC41IDk4MC41IDQ0Mi4wIDEwNDUuMjVRNTQ1LjUgMTExMCA2OTQuNSAxMTEwUTgxMC4yNSAxMTEwIDg4Ny4zNzUgMTA3Mi4wUTk2NC41IDEwMzQgMTAxMS4yNSA5NzMuNjI1UTEwNTggOTEzLjI1IDEwODEuNSA4NDMuODc1UTExMDUgNzc0LjUgMTExMi43NSA3MTAuMTI1UTExMjAuNSA2NDUuNzUgMTEyMC41IDYwMS41VjBaTTEzOC41IDBWMTA4MEgzMzkuNVY3NTYuNUgzNjYuNVYwWiIvPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYxNTkuNSAwKSIgZD0iTTU1NSAtMjkuNVEzNTYuMjUgLTI5LjUgMjMxLjg3NSA1OS4wUTEwNy41IDE0Ny41IDgwIDMwOEwzMTAgMzQzLjVRMzI5LjUgMjYxLjUgMzk4LjI1IDIxNC4yNVE0NjcgMTY3IDU3MC41IDE2N1E2NjIuNzUgMTY3IDcxNC4zNzUgMjA0LjEyNVE3NjYgMjQxLjI1IDc2NiAzMDYuNVE3NjYgMzQ1LjI1IDc0Ny41IDM2OS4yNVE3MjkgMzkzLjI1IDY2OC41IDQxNS4yNVE2MDggNDM3LjI1IDQ4My41IDQ3MC41UTM0NiA1MDYuNSAyNjUuMzc1IDU0Ny44NzVRMTg0Ljc1IDU4OS4yNSAxNDkuODc1IDY0NS41UTExNSA3MDEuNzUgMTE1IDc4MlExMTUgODgxLjUgMTY3LjUgOTU1LjM3NVEyMjAgMTAyOS4yNSAzMTQuODc1IDEwNjkuNjI1UTQwOS43NSAxMTEwIDUzNy41IDExMTBRNjYyLjUgMTExMCA3NTkuODc1IDEwNzAuODc1UTg1Ny4yNSAxMDMxLjc1IDkxNy4yNSA5NjAuMTI1UTk3Ny4yNSA4ODguNSA5OTAgNzkyTDc2MCA3NTAuNVE3NTAgODIzLjc1IDY5Mi4xMjUgODY2LjM3NVE2MzQuMjUgOTA5IDU0MC41IDkxMy41UTQ1MC41IDkxNy43NSAzOTUuMCA4ODQuNzVRMzM5LjUgODUxLjc1IDMzOS41IDc5My41UTMzOS41IDc1OS43NSAzNjEuMzc1IDczNi4zNzVRMzgzLjI1IDcxMyA0NDcuMzc1IDY5MC41UTUxMS41IDY2OCA2MzggNjM2UTc3MC43NSA2MDEuNzUgODQ5LjI1IDU1OS4zNzVROTI3Ljc1IDUxNyA5NjIuMzc1IDQ1OC4zNzVROTk3IDM5OS43NSA5OTcgMzE2UTk5NyAxNTQuNzUgODc5LjUgNjIuNjI1UTc2MiAtMjkuNSA1NTUgLTI5LjVaIi8+PHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzE4NS4wIDApIiBkPSJNMTYwIDEyNTAuNVYxNDYyLjVIMzg1VjEyNTAuNVpNMTYwIDBWMTA4MEgzODVWMFoiLz48cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3Njc4LjAgMCkiIGQ9Ik01NzEgLTMwUTQyMSAtMzAgMzEwLjg3NSA0NS4xMjVRMjAwLjc1IDEyMC4yNSAxNDAuMzc1IDI0OS4zNzVRODAgMzc4LjUgODAgNTQwLjVRODAgNzA0IDE0MC44NzUgODMyLjYyNVEyMDEuNzUgOTYxLjI1IDMxMy4zNzUgMTAzNS42MjVRNDI1IDExMTAgNTc3LjUgMTExMFE3MzAuNzUgMTExMCA4MzUuMzc1IDEwMzUuMzc1UTk0MCA5NjAuNzUgOTkzLjc1IDgzMS44NzVRMTA0Ny41IDcwMyAxMDQ3LjUgNTQwLjVRMTA0Ny41IDM3OC43NSA5OTMuNSAyNDkuNjI1UTkzOS41IDEyMC41IDgzMy41IDQ1LjI1UTcyNy41IC0zMCA1NzEgLTMwWk02MDQgMTcyLjVRNzA0IDE3Mi41IDc2Ni4yNSAyMTkuMjVRODI4LjUgMjY2IDg1Ny4yNSAzNDkuMTI1UTg4NiA0MzIuMjUgODg2IDU0MC41UTg4NiA2NDkuMjUgODU3LjEyNSA3MzIuMTI1UTgyOC4yNSA4MTUgNzY3LjUgODYxLjI1UTcwNi43NSA5MDcuNSA2MTEuNSA5MDcuNVE1MTEgOTA3LjUgNDQ2LjAgODU4LjI1UTM4MSA4MDkgMzQ5Ljc1IDcyNS43NVEzMTguNSA2NDIuNSAzMTguNSA1NDAuNVEzMTguNSA0MzcuNSAzNDkuNSAzNTQuMFEzODAuNSAyNzAuNSA0NDMuNjI1IDIyMS41UTUwNi43NSAxNzIuNSA2MDQgMTcyLjVaTTg4NiAwVjc2Ny41SDg1OVYxNDQwSDEwODUuNVYwWiIvPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg4NTEuNSAwKSIgZD0iTTYyNSAtMzBRNDYyLjI1IC0zMCAzMzkuNzUgNDAuODc1UTIxNy4yNSAxMTEuNzUgMTQ4LjYyNSAyMzcuODc1UTgwIDM2NCA4MCA1MjkuNVE4MCA3MDYuNSAxNDcuMzc1IDgzNi43NVEyMTQuNzUgOTY3IDMzNC42MjUgMTAzOC41UTQ1NC41IDExMTAgNjEzIDExMTBRNzc5LjI1IDExMTAgODk2LjAgMTAzMi41UTEwMTIuNzUgOTU1IDEwNzAuMTI1IDgxMy4wUTExMjcuNSA2NzEgMTExNC43NSA0NzdIODkwLjVWNTU5UTg4OSA3NDEgODIzLjc1IDgyNi41UTc1OC41IDkxMiA2MjIgOTEyUTQ2OS43NSA5MTIgMzk0LjEyNSA4MTYuNzVRMzE4LjUgNzIxLjUgMzE4LjUgNTQwUTMxOC41IDM2OSAzOTQuMTI1IDI3NS4yNVE0NjkuNzUgMTgxLjUgNjEzIDE4MS41UTcwNi41IDE4MS41IDc3NC41IDIyMy41UTg0Mi41IDI2NS41IDg4MCAzNDQuNUwxMTAxLjUgMjc2UTEwMzkuMjUgMTMwLjUgOTEwLjM3NSA1MC4yNVE3ODEuNSAtMzAgNjI1IC0zMFpNMjQ2LjUgNDc3VjY0OS41SDEwMDMuNVY0NzdaIi8+PC9nPjwvZz48L3N2Zz4=" width="438" height="90" alt="Glide Inside"></a>
+  <nav class="site-nav" aria-label="Main">
+    <a href="#/plan">Pocket Architect</a>
+    <a href="#/subdivision">Subdivision</a>
+    <a href="#how">How it works</a>
+    <a href="#services">Add-ons</a>
+    <a href="#faq">FAQ</a>
+    <a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au">Contact</a>
+  </nav>
+  <a class="btn btn-sm" data-cfg-href="toolUrl" href="#/plan">Start designing</a>
+  <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
+</div></header><main id="main"><div data-view id="v-home">
+<section class="shell hero-centre" id="top">
+  <p class="eyebrow">Concept planning tools · Regional Australia</p>
+  <h1>From site to proposal in a fraction of the <em>time</em></h1>
+  <p class="lead">Draw a shed, house or extension, see it in 3D, furnish it and render it, or test how a site could subdivide into lots, roads and stages. Two tools, one workflow, built for the concept stage.</p>
+  <div class="chips"><span class="chip">No account needed</span><span class="chip">Concept plans in minutes</span><span class="chip">Led by a licensed civil engineer</span></div>
+</section>
+
+<section class="shell" id="viewport-section">
+  <div class="demo viewport" data-demo>
+    <div class="demo-bar" data-tabs role="tablist" aria-label="Choose a product">
+      <button class="tab" data-tab="plans" aria-selected="true">Pocket Architect</button>
+      <button class="tab" data-tab="to3d" aria-selected="false">2D plan to 3D</button>
+      <button class="tab" data-tab="subdivision" aria-selected="false">Subdivision modelling</button>
+    </div>
+    <div class="viewport-stage" data-panel="plans" id="vp-plans">
+      <div class="vp-bg" id="vp-bg" aria-hidden="true">
+        <svg viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" class="draw"><g fill="none" stroke="#e6b58e" stroke-width="3" stroke-linecap="square"><path pathLength="1" d="M200 110H600V300H200Z"/><path pathLength="1" d="M200 205H330M455 300V205H600"/><path pathLength="1" d="M300 110H380M200 250V290"/><circle pathLength="1" cx="650" cy="290" r="26"/></g><g fill="none" stroke="#87968a" stroke-width="1.5"><path pathLength="1" d="M200 78H600M200 70V86M600 70V86M640 110V300M632 110H648M632 300H648"/></g></svg>
+      </div>
+      <div class="vp-cta"><a class="vp-btn" id="vp-launch" data-cfg-href="toolUrl" href="#example"><span aria-hidden="true">▶</span> Use the tool</a><span class="vp-cap">Free to draw · No account · Concept plans</span></div>
+    </div>
+    <div class="viewport-stage" data-panel="to3d" id="vp-3d" hidden></div>
+    <div class="viewport-foot" data-panel="to3d" hidden><label class="rangewrap" style="display:flex;gap:12px;align-items:center;flex:1;min-width:240px"><span class="chip">2D PLAN</span><input type="range" id="vp-range" min="0" max="100" value="0" style="flex:1;accent-color:#a3532d" aria-label="Plan to 3D"><span class="chip">3D MODEL</span></label><a class="link" href="#/plan">See how Pocket Architect works →</a></div>
+    <div class="viewport-stage" data-panel="subdivision" id="vp-sub" hidden></div>
+    <div class="viewport-foot" data-panel="plans"><span>Pocket Architect: draw the plan, see it in 3D, furnish and render it, export PDF and DXF.</span><a class="link" href="#/plan">See the shed example →</a></div>
+    <div class="viewport-foot" data-panel="subdivision" hidden><span>Subdivision modelling is by quote. <a class="link" href="#/subdivision">See the plan-to-model example →</a></span><a class="btn btn-sm" data-cfg-href="subdivisionOrderUrl" href="mailto:hello@glideinside.com.au">Request a quote →</a></div>
+  </div>
+</section>
+<script>
+(function(){
+  var cfg=window.GI_CONFIG||{},p=document.getElementById('vp-plans'),s=document.getElementById('vp-sub');
+  if(cfg.heroVideoPlans){var bg=document.getElementById('vp-bg');bg.innerHTML='<video autoplay muted loop playsinline preload="auto" src="'+cfg.heroVideoPlans+'"'+(cfg.heroPoster?' poster="'+cfg.heroPoster+'"':'')+'></video>';}
+  var s3=document.getElementById('vp-3d'),rg=document.getElementById('vp-range');
+  document.querySelector('[data-tab=to3d]').addEventListener('click',function(){
+    if(!s3.firstChild){s3.innerHTML='<div class="card" style="margin:16px">3D model loads in the full site package.</div>';s3.firstChild.addEventListener('load',function(){send()});}
+  });
+  function send(){var f=s3.firstChild;if(f&&f.contentWindow)f.contentWindow.postMessage({type:'morph',t:rg.value/100},'*')}
+  rg.addEventListener('input',send);
+  document.querySelector('[data-tab=subdivision]').addEventListener('click',function(){
+    if(!s.firstChild){s.innerHTML='<div class="card" style="margin:16px">3D model loads in the full site package.</div>';}
+  });
+})();
+</script>
+
+
+<section class="shell section" id="how">
+  <div class="section-head"><div><p class="eyebrow">How it works</p><h2>One workflow, <em>two</em> outputs.</h2></div><p>Both products start the same way: tell us what you are planning. Pick the output that fits the stage you are at.</p></div>
+  <ol class="steps">
+    <li><h3>Share the brief</h3><p>Site details, sketches or an existing plan. A PDF, JPG or PNG is enough.</p></li>
+    <li><h3>Choose the output</h3><p>Pocket Architect, a subdivision concept, or both.</p></li>
+    <li><h3>We build it</h3><p>Plans drafted, lots laid out, staging shown, then a 3D model if you want it.</p></li>
+    <li><h3>Present it</h3><p>Take it to partners, buyers, funders or your certifier.</p></li>
+  </ol>
+</section>
+
+<section class="band section" id="products"><div class="shell">
+  <div class="section-head"><div><p class="eyebrow">Products</p><h2>Pick the tool for <em>the job.</em></h2></div></div>
+  <div class="grid-2">
+    <article class="card"><span class="num">01 · PLAN STUDIO</span><h3>Draw it. Furnish it. See it in 3D.</h3><p>Draw floor plans for sheds, homes and extensions, see them as 3D models, add furniture and renderings, then export PDF and DXF. The self-serve Pocket Architect tool is <span data-cfg="planPackPrice">A$35</span> per plan, with an account.</p><p style="margin-top:16px"><a class="btn btn-sm" href="#/plan">Open Pocket Architect</a></p></article>
+    <article class="card"><span class="num">02 · SUBDIVISION</span><h3>Concept lots, access and staging</h3><p>Preliminary feasibility from a licensed civil engineer, shown as a clear layout and a 3D site model.</p><p style="margin-top:16px"><a class="btn btn-sm" href="#/subdivision">Open subdivision modelling</a></p></article>
+  </div>
+</div></section>
+
+<section class="shell section" id="services">
+  <div class="section-head"><div><p class="eyebrow">Add to any plan</p><h2>Extras for your <em>plans.</em></h2></div><p>Add a 3D fly-through or complex renderings to a plan. Pay by card through Stripe. Subdivision work is by quote.</p></div>
+  <div class="grid-3">
+    <article class="card"><span class="num">+ A$<span data-cfg="addonFlyThroughPrice">5</span></span><h3>3D fly-through</h3><p>A furnished walk-through video of your plan.</p></article>
+    <article class="card"><span class="num">+ A$<span data-cfg="addonRendersPrice">10</span></span><h3>Complex renderings</h3><p>Detailed still renderings of your design.</p></article>
+    <article class="card"><span class="num">BY QUOTE</span><h3>Subdivision modelling</h3><p>Concept layouts, staging and 3D site models, priced to your site.</p></article>
+  </div>
+  <p style="margin-top:24px"><a class="btn" href="#addons">Choose add-ons</a></p>
+</section>
+
+<section class="shell section faq" id="faq">
+  <div class="section-head"><div><p class="eyebrow">FAQ</p><h2>Before you start.</h2></div></div>
+  <details><summary>Are these plans approved?</summary><p>No. Outputs are concept designs. They are not construction drawings or development application documents, and are not checked against planning controls or the National Construction Code.</p></details>
+  <details><summary>Who is behind the subdivision work?</summary><p>Glide Inside's director is a licensed civil engineer and can assist with preliminary subdivision feasibility.</p></details>
+  <details><summary>Can I use both products on one project?</summary><p>Yes. A common path is a subdivision concept first, then Pocket Architect for the buildings on each lot.</p></details>
+</section>
+
+</div><div data-view id="v-plan" hidden>
+<div class="shell">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#/">Home</a><span>/</span>Pocket Architect</nav>
+
+  <section class="product-hero">
+    <div>
+      <p class="eyebrow">PLAN STUDIO · DRAW, FURNISH, 3D, RENDER</p>
+      <h1>Draw the floor plan. <em>Walk</em> through it before you build.</h1>
+      <p class="lead" style="margin:24px 0 32px">Pocket Architect is a floor plan designer for houses, granny flats, duplexes, sheds, extensions, decks and rainwater tanks. Draw on a snapping grid, check the result in 3D, then export plans, CAD files and a 3D model.</p>
+      <div class="hero-cta">
+        <a class="btn" href="#" aria-disabled="true" tabindex="-1">Start designing</a>
+        <span class="chip soon">Coming soon</span>
+        <a class="btn btn-ghost" href="#pricing">Order a plan from us</a>
+      </div>
+      <p class="fineprint">Concept designs only. Not for construction or council lodgement.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow" style="margin-bottom:12px">Worked example below</p>
+      <h3>A 12 m x 9 m farm shed</h3>
+      <p class="muted" style="margin:8px 0 16px">Portal frame, 3,000 x 3,000 roller door, personal access door, two windows, a 5,000 L rainwater tank and a concrete slab. Click any part of the plan to inspect it.</p>
+      <a class="link" href="#example">Open the example</a>
+    </div>
+  </section>
+</div>
+
+<section class="section" id="example" style="padding-top:0">
+<div class="shell">
+  <div class="demo" data-demo>
+    <div class="demo-bar">
+      <span class="label">Example: farm shed</span>
+      <div data-tabs style="display:flex;gap:8px" role="tablist" aria-label="Views">
+        <button class="tab" data-tab="plan" aria-selected="true">Plan</button>
+        <button class="tab" data-tab="elev" aria-selected="false">Elevation</button>
+        <button class="tab" data-tab="sched" aria-selected="false">Schedule</button>
+      </div>
+      <span style="display:flex;gap:8px;flex-wrap:wrap" role="group" aria-label="Layers">
+        <button class="toggle" data-layer-toggle="dims">Dimensions</button>
+        <button class="toggle" data-layer-toggle="equip">Furniture and equipment</button>
+        <button class="toggle" data-layer-toggle="tank">Tank</button>
+        <button class="toggle" data-layer-toggle="status">Existing / new status</button>
+      </span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-stage">
+
+        <div class="tab-panel" data-panel="plan">
+<svg viewBox="0 0 900 640" role="img" aria-label="Floor plan of a 12 by 9 metre shed with a roller door on the front wall, a personal access door, two windows and a rainwater tank outside">
+  <text class="svg-text" x="100" y="28" font-weight="700">FARM SHED, GROUND FLOOR PLAN</text>
+  <!-- slab -->
+  <rect class="sl" x="100" y="70" width="640" height="490" data-info data-title="Concrete slab" data-body="Existing slab, extends about 400 mm beyond the walls in this example. Shown as existing when status colouring is on." data-area="125.44 m² slab" data-wall="n/a" data-roof="Gable 11°, 150 mm overhang"/>
+  <!-- walls -->
+  <g id="walls">
+    <rect class="wl" x="120" y="90" width="600" height="6" data-info data-title="North wall" data-body="Shed wall, 100 mm thick, 12,000 mm long. Contains window W1." data-area="103.84 m² internal" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+    <rect class="wl" x="120" y="90" width="6" height="450" data-info data-title="West wall" data-body="Shed wall, 100 mm thick, 9,000 mm long. Contains window W2." data-area="103.84 m² internal" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+    <rect class="wl" x="714" y="90" width="6" height="450" data-info data-title="East wall" data-body="Shed wall, 100 mm thick, 9,000 mm long. The rainwater tank sits outside this wall." data-area="103.84 m² internal" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+    <rect class="wl" x="120" y="534" width="150" height="6" data-info data-title="Front wall (west of roller door)" data-body="Shed wall, 100 mm thick, 3,000 mm long." data-area="103.84 m² internal" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+    <rect class="wl" x="420" y="534" width="140" height="6" data-info data-title="Front wall (between doors)" data-body="Shed wall, 100 mm thick, 2,800 mm long." data-area="103.84 m² internal" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+    <rect class="wl" x="601" y="534" width="119" height="6" data-info data-title="Front wall (east of access door)" data-body="Shed wall, 100 mm thick, 2,380 mm long." data-area="103.84 m² internal" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+  </g>
+  <!-- status colouring -->
+  <g data-layer="status" class="ov">
+    <rect class="st-new" x="120" y="90" width="600" height="6"/><rect class="st-new" x="120" y="90" width="6" height="450"/><rect class="st-new" x="714" y="90" width="6" height="450"/>
+    <rect class="st-new" x="120" y="534" width="150" height="6"/><rect class="st-new" x="420" y="534" width="140" height="6"/><rect class="st-new" x="601" y="534" width="119" height="6"/>
+    <rect class="st-ex" x="100" y="70" width="640" height="490"/>
+    <rect class="st-new" x="480" y="16" width="14" height="14"/><text class="svg-dim" x="500" y="28">New</text>
+    <rect class="st-ex" x="550" y="16" width="14" height="14"/><text class="svg-dim" x="570" y="28">Existing</text>
+  </g>
+  <!-- openings -->
+  <rect class="rd" x="270" y="533" width="150" height="8" data-info data-title="Roller door R1" data-body="Roller door 3,000 wide x 3,000 high on the front wall. Opening 9.00 m². New." data-area="9.00 m² opening" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+  <rect class="op" x="560" y="533" width="41" height="8" data-info data-title="Personal access door D1" data-body="820 x 2,040 mm single door beside the roller door. Swings outward. New." data-area="1.67 m² opening" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+  <line class="sw" x1="560" y1="534" x2="560" y2="493"/><path class="sw" d="M560 493 A41 41 0 0 1 601 534" stroke-dasharray="3 3"/>
+  <rect class="op" x="300" y="88" width="90" height="10" data-info data-title="Window W1 (north)" data-body="1,800 x 1,200 mm window, sill 900 mm, head 2,100 mm. New." data-area="2.16 m² opening" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+  <rect class="op" x="118" y="250" width="10" height="90" data-info data-title="Window W2 (west)" data-body="1,800 x 1,200 mm window, sill 900 mm, head 2,100 mm. New." data-area="2.16 m² opening" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+  <text class="svg-text" x="270" y="528" font-size="12">R1</text><text class="svg-text" x="548" y="486" font-size="12">D1</text>
+  <text class="svg-text" x="330" y="120" text-anchor="middle" font-size="12">W1</text><text class="svg-text" x="138" y="300" font-size="12">W2</text>
+  <text class="svg-text" x="420" y="330" text-anchor="middle" font-weight="700">WORKSHOP / MACHINERY</text>
+  <text class="svg-dim" x="420" y="350" text-anchor="middle">103.84 m²</text>
+  <!-- equipment -->
+  <g data-layer="equip">
+    <rect class="eq" x="430" y="100" width="240" height="30" data-info data-title="Workbench" data-body="Fixed bench, 4,800 x 600 mm along the north wall. Furniture and equipment layer." data-area="2.88 m² footprint" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+    <text class="svg-dim" x="550" y="120" text-anchor="middle">Bench</text>
+    <rect class="eq" x="160" y="210" width="95" height="250" rx="12" data-info data-title="Vehicle bay" data-body="Space for a ute or small tractor, about 1,900 x 5,000 mm, parked clear of the roller door swing path." data-area="9.50 m² footprint" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+    <text class="svg-dim" x="207" y="340" text-anchor="middle">Vehicle</text>
+    <rect class="eq" x="680" y="160" width="30" height="240" data-info data-title="Racking" data-body="Storage racking, 600 x 4,800 mm, along the east wall." data-area="2.88 m² footprint" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+    <text class="svg-dim" x="650" y="285" text-anchor="end">Racking</text>
+  </g>
+  <!-- tank -->
+  <g data-layer="tank">
+    <circle class="tk" cx="810" cy="250" r="46" data-info data-title="Rainwater tank, 5,000 L" data-body="Round tank, 1,850 mm diameter x 2,000 mm high, placed outside the east wall. Existing in this example. The shed roof drains to it, catchment about 114 m² including the 150 mm overhang." data-area="2.69 m² footprint" data-wall="n/a" data-roof="Catchment about 114 m²"/>
+    <text class="svg-dim" x="810" y="254" text-anchor="middle">5,000 L</text>
+    <g data-layer="status" class="ov"><circle class="st-ex" cx="810" cy="250" r="50"/></g>
+  </g>
+  <!-- dimensions -->
+  <g data-layer="dims" class="ov">
+    <path class="dl" d="M120 62V76M720 62V76M120 69H720"/><text class="svg-dim" x="420" y="63" text-anchor="middle">12,000</text>
+    <path class="dl" d="M62 90H76M62 540H76M69 90V540"/><text class="svg-dim" transform="translate(58 315) rotate(-90)" text-anchor="middle">9,000</text>
+    <path class="dl" d="M120 575V589M270 575V589M420 575V589M560 575V589M601 575V589M720 575V589M120 582H720"/>
+    <text class="svg-dim" x="195" y="606" text-anchor="middle">3,000</text><text class="svg-dim" x="345" y="606" text-anchor="middle">3,000</text><text class="svg-dim" x="490" y="606" text-anchor="middle">2,800</text><text class="svg-dim" x="580" y="620" text-anchor="middle">820</text><text class="svg-dim" x="660" y="606" text-anchor="middle">2,380</text>
+  </g>
+  <!-- north arrow -->
+  <g transform="translate(850 70)"><circle r="22" fill="none" stroke="currentColor" class="sw"/><path d="M0 -18L7 8L0 3L-7 8Z" class="wl"/><text class="svg-text" y="-27" text-anchor="middle">N</text></g>
+  <text class="svg-dim" x="100" y="630">Exports at 1:100 on A3. Dimensions in mm.</text>
+</svg>
+        </div>
+
+        <div class="tab-panel" data-panel="elev" hidden>
+<svg viewBox="0 0 900 400" role="img" aria-label="Front elevation of the shed showing the roller door, personal access door and an 11 degree gable roof">
+  <text class="svg-text" x="100" y="28" font-weight="700">FRONT ELEVATION (SOUTH)</text>
+  <path class="rf" d="M112 152L420 92L728 152Z" data-info data-title="Gable roof" data-body="Gable roof, pitch 11°, 150 mm overhang each side. Eave height of 3,600 mm is an example value." data-area="114 m² plan catchment" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+  <rect class="sl" x="120" y="150" width="600" height="180" data-info data-title="Front wall" data-body="Shed wall, 100 mm thick, 12,000 mm long, eave height 3,600 mm in this example." data-area="103.84 m² internal" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+  <rect class="rd" x="270" y="180" width="150" height="150" data-info data-title="Roller door R1" data-body="Roller door 3,000 wide x 3,000 high. New." data-area="9.00 m² opening" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+  <path class="sw" d="M270 195H420M270 210H420M270 225H420M270 240H420M270 255H420M270 270H420M270 285H420M270 300H420M270 315H420"/>
+  <rect class="op" x="560" y="228" width="41" height="102" data-info data-title="Personal access door D1" data-body="820 x 2,040 mm single door. New." data-area="1.67 m² opening" data-wall="100 mm" data-roof="Gable 11°, 150 mm overhang"/>
+  <line class="gnd" x1="60" y1="330" x2="840" y2="330"/>
+  <g data-layer="dims" class="ov">
+    <path class="dl" d="M270 350V364M420 350V364M270 357H420"/><text class="svg-dim" x="345" y="378" text-anchor="middle">3,000</text>
+    <path class="dl" d="M250 180H262M250 330H262M256 180V330"/><text class="svg-dim" transform="translate(246 255) rotate(-90)" text-anchor="middle">3,000</text>
+    <path class="dl" d="M765 150H777M765 330H777M771 150V330"/><text class="svg-dim" transform="translate(790 240) rotate(-90)" text-anchor="middle">3,600 eave</text>
+  </g>
+</svg>
+        </div>
+
+        <div class="tab-panel" data-panel="sched" hidden>
+<div class="table-wrap">
+<table class="spec">
+  <caption class="svg-dim" style="text-align:left;padding:0 0 8px">Door and window schedule</caption>
+  <thead><tr><th>Mark</th><th>Type</th><th>Size (mm)</th><th>Wall</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>R1</td><td>Roller door</td><td>3,000 x 3,000</td><td>Front</td><td>New</td></tr>
+    <tr><td>D1</td><td>Personal access door</td><td>820 x 2,040</td><td>Front</td><td>New</td></tr>
+    <tr><td>W1</td><td>Window, sill 900</td><td>1,800 x 1,200</td><td>North</td><td>New</td></tr>
+    <tr><td>W2</td><td>Window, sill 900</td><td>1,800 x 1,200</td><td>West</td><td>New</td></tr>
+  </tbody>
+</table>
+<table class="spec" style="margin-top:20px">
+  <caption class="svg-dim" style="text-align:left;padding:0 0 8px">Area schedule</caption>
+  <thead><tr><th>Item</th><th>Basis</th><th>Area</th></tr></thead>
+  <tbody>
+    <tr><td>Shed, internal floor</td><td>11,800 x 8,800</td><td>103.84 m²</td></tr>
+    <tr><td>Concrete slab</td><td>12,800 x 9,800</td><td>125.44 m²</td></tr>
+    <tr><td>Rainwater tank, 5,000 L</td><td>Ø1,850 footprint</td><td>2.69 m²</td></tr>
+  </tbody>
+</table>
+</div>
+        </div>
+
+      </div>
+      <aside class="demo-side">
+        <dl class="kv">
+          <dt>Area</dt><dd data-kv="area">103.84 m² internal</dd>
+          <dt>Wall thickness</dt><dd data-kv="wall">100 mm</dd>
+          <dt>Roof</dt><dd data-kv="roof">Gable 11°, 150 mm overhang</dd>
+        </dl>
+        <div class="info-card" aria-live="polite">
+          <h4>Click a part of the plan</h4>
+          <p>Select a wall, door, window, slab or the tank to see its details here.</p>
+        </div>
+      </aside>
+    </div>
+    <p class="demo-note">Worked example only. Sizes follow Pocket Architect default dimensions and are editable. Eave height, slab margin and equipment are example values. Concept design only.</p>
+  </div>
+</div>
+</section>
+
+<section class="section" style="padding-top:0">
+<div class="shell">
+  <div class="section-head"><h2>What you <em>get</em></h2><p>The plan pack outputs below are generated on the server from your project. The Plan Pack is not on sale yet.</p></div>
+  <div class="sub-grid">
+    <div class="card"><span class="num">PDF</span><h3>A3 plan set</h3><p>A3 landscape vector sheets at 1:100 (or 1:50 or 1:200 to fit), with dimension strings, north arrow, scale bar, door and window schedule, area schedule and a cover sheet with a 3D snapshot.</p></div>
+    <div class="card"><span class="num">DXF</span><h3>CAD file</h3><p>ASCII DXF (R12) in millimetres, with plan items on separate named layers. Opens in AutoCAD, BricsCAD, DraftSight and LibreCAD.</p></div>
+    <div class="card"><span class="num">3D</span><h3>3D model</h3><p>GLB as the main format, plus OBJ with MTL in a zip. Opens in Windows 3D Viewer, Blender and most 3D tools.</p></div>
+  </div>
+  <p class="muted" style="margin-top:24px">These are Plan Pack outputs: <strong><span data-cfg="planPackPrice">A$35</span> per project</strong>, including <strong><span data-cfg="planPackCredits">500</span> AI credits</strong> for the plain-English design assistant.</p>
+</div>
+</section>
+
+<section class="section" id="pricing" style="padding-top:0">
+<div class="shell"><div class="card" style="max-width:860px;margin:0 auto;text-align:center;padding:clamp(28px,5vw,56px)">
+  <p class="eyebrow">Simple pricing</p>
+  <h2><span data-cfg="planPackPrice">A$35</span> <em>per plan.</em></h2>
+  <p class="lead" style="margin:16px auto 24px">Sign up with your email, pay once per job and download your files as a zip. Each job includes one set of PDF plans. Every job after your first is the same A$35.</p>
+  <ol class="steps" style="grid-template-columns:repeat(3,1fr);text-align:left;margin-bottom:32px"><li><h3>Sign up with your email</h3><p>Your account holds your jobs.</p></li><li><h3>Pay A$35 per job</h3><p>Secure Stripe checkout. One set of PDF plans per job.</p></li><li><h3>Download your zip</h3><p>All your files in one zip. Load it back into the site any time to pick up where you left off.</p></li></ol>
+  <div class="hero-cta" style="justify-content:center"><a class="btn" data-cfg-href="signupUrl" id="pa-signup" aria-disabled="true">Sign up &amp; order <span aria-hidden="true">→</span></a><a class="btn btn-ghost" data-cfg-href="stripePlan" id="pa-pay" aria-disabled="true">Already registered? Pay A$35</a></div>
+  <p class="fineprint" style="justify-content:center">Add a fly-through (A$5) or complex renderings (A$10) to any plan below.</p>
+</div></div>
+</section>
+
+<section class="section" id="addons" style="padding-top:0">
+<div class="shell">
+  <div class="section-head"><h2>Add-ons for your <em>plan</em></h2><p>Extras on top of your plan. Pay by card through Stripe.</p></div>
+  <div class="addons" data-addons>
+    <label class="addon"><input type="checkbox" data-addon="fly"><div><strong>3D fly-through</strong><span>A furnished walk-through video of your plan.</span></div><b class="price">A$<span data-cfg="addonFlyThroughPrice">5</span></b></label>
+    <label class="addon"><input type="checkbox" data-addon="renders"><div><strong>Complex renderings</strong><span>Detailed still renderings of your design.</span></div><b class="price">A$<span data-cfg="addonRendersPrice">10</span></b></label>
+    <div class="addon-total"><div><strong>Total <span data-total>A$0</span></strong><br><span class="muted" data-pay-note>Choose an add-on.</span></div><a class="btn" data-pay aria-disabled="true">Pay with Stripe</a></div>
+  </div>
+</div>
+</section>
+
+<section class="section band">
+<div class="shell">
+  <div class="section-head"><h2>Free versus <em>Plan Pack</em></h2><p>Drawing and viewing are free. Exports and the AI assistant need a Plan Pack.</p></div>
+  <div class="table-wrap">
+  <table class="spec">
+    <thead><tr><th>Feature</th><th>Free</th><th>Plan Pack</th></tr></thead>
+    <tbody>
+      <tr><td>2D editor, all building types and templates</td><td>Included</td><td>Included</td></tr>
+      <tr><td>Furniture, doors, windows, stairs, decks, rainwater tanks</td><td>Included</td><td>Included</td></tr>
+      <tr><td>Extension mode and tracing underlay</td><td>Included</td><td>Included</td></tr>
+      <tr><td>3D view, finishes, roof toggle, walk-through</td><td>Included</td><td>Included</td></tr>
+      <tr><td>Autosave in browser, save and open project file</td><td>Included</td><td>Included</td></tr>
+      <tr><td>Room area schedule on screen</td><td>Included</td><td>Included</td></tr>
+      <tr><td>AI design assistant (<span data-cfg="planPackCredits">500</span> credits)</td><td>Locked</td><td>Included</td></tr>
+      <tr><td>PDF plan set (A3, 1:100)</td><td>Locked</td><td>Included</td></tr>
+      <tr><td>DXF file</td><td>Locked</td><td>Included</td></tr>
+      <tr><td>3D model (GLB and OBJ)</td><td>Locked</td><td>Included</td></tr>
+      <tr><td>Price</td><td>Free</td><td><span data-cfg="planPackPrice">A$35</span> per project</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<section class="section">
+<div class="shell">
+  <div class="section-head"><h2>How it <em>works</em></h2></div>
+  <ol class="steps">
+    <li><h3>Draw</h3><p>Draw rooms and walls on a snapping grid, then place doors, windows, stairs, decks and tanks.</p></li>
+    <li><h3>See in 3D and walk through</h3><p>Switch to 3D at any time, take the roof off, then walk through the model in first person.</p></li>
+    <li><h3>Furnish and finish</h3><p>Add furniture and pick materials and colours for walls, floors and roofs.</p></li>
+    <li><h3>Export</h3><p>With a Plan Pack, export a PDF plan set, a DXF and a 3D model.</p></li>
+  </ol>
+</div>
+</section>
+
+<section class="section" style="padding-top:0">
+<div class="shell">
+  <div class="section-head"><h2>What you can <em>design</em></h2></div>
+  <ul class="type-list">
+    <li class="chip">Single storey houses</li><li class="chip">Double storey houses</li><li class="chip">Granny flats</li><li class="chip">Duplexes and villa units</li><li class="chip">Sheds and workshops</li><li class="chip">Extensions</li><li class="chip">Decks and patios</li><li class="chip">Rainwater tanks</li>
+  </ul>
+</div>
+</section>
+
+<section class="section band">
+<div class="shell">
+  <div class="section-head"><h2>Common <em>questions</em></h2></div>
+  <div class="faq">
+    <details><summary>Is this approved?</summary><p>No. Pocket Architect produces concept designs only. They have not been checked against planning controls, the National Construction Code, BASIX or any standard.</p></details>
+    <details><summary>Can I lodge the plans with council?</summary><p>No. A qualified designer or certifier must prepare development application or complying development documentation. You can use your concept plan as a starting brief for them.</p></details>
+    <details><summary>Do I need an account?</summary><p>No account is planned for launch. Projects autosave in your browser, and you can save the project file to your computer.</p></details>
+    <details><summary>Can I print the PDF plans more than once?</summary><p>Each job includes one set of PDF plans. The set is generated once, on our server, when you export it, and is locked to that job. Keep the zip file safe: it holds your plans and files, and you can load it back into the site to carry on with the job.</p></details>
+    <details><summary>What is a credit?</summary><p>A credit measures how much of the AI assistant a request uses. A Plan Pack includes <span data-cfg="planPackCredits">500</span> AI credits for one project. Credits have no cash value and expire with the Plan Pack. When they run out you can keep editing and exporting by hand.</p></details>
+    <details><summary>What is the refund policy?</summary><p>Placeholder wording, to be confirmed in the order terms: refund on request within 14 days if no paid export has been downloaded. Your rights under the Australian Consumer Law are not affected.</p></details>
+  </div>
+</div>
+</section>
+
+<section class="section">
+<div class="shell">
+  <p class="disclaimer">Pocket Architect produces concept designs only. They are not construction drawings, not development application or complying development documentation, and have not been checked against planning controls, the National Construction Code, BASIX or any standard. Engage a qualified designer, engineer or certifier before building.</p>
+</div>
+</section>
+
+<section class="section cta-band band">
+<div class="shell">
+  <h2>Ready to plan your <em>build</em>?</h2>
+  <p class="lead" style="margin-inline:auto">Pocket Architect is coming soon. If you want a plan drawn now, we can prepare one for you.</p>
+  <div class="hero-cta">
+    <a class="btn" href="#" aria-disabled="true" tabindex="-1">Start designing</a>
+    <span class="chip soon" style="background:transparent">Coming soon</span>
+    <a class="btn btn-ghost" style="color:#fff;border-color:#fff" data-cfg-href="planOrderUrl" href="mailto:hello@glideinside.com.au">Order a plan from us</a>
+  </div>
+</div>
+</section>
+</div><div data-view id="v-sub" hidden>
+<div class="shell">
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#/">Home</a><span>/</span>Subdivision modelling</nav>
+
+<section class="product-hero">
+  <div>
+    <p class="eyebrow">SUBDIVISION MODELLING · REGIONAL NSW</p>
+    <h1>See the lots before you <em>commit</em> to them.</h1>
+    <p class="lead">Concept lot layouts, staging and a 3D site model for developers in regional NSW, prepared with input from a licensed civil engineer. Use them to test an idea early and explain it to partners, buyers and funders.</p>
+    <div class="hero-cta">
+      <a class="btn" href="mailto:hello@glideinside.com.au" data-cfg-href="subdivisionOrderUrl">Request a concept</a>
+      <a class="btn btn-ghost" href="#sub-example">See the example</a>
+    </div>
+    <p class="fineprint">Preliminary feasibility and concept presentation only</p>
+  </div>
+
+  <div class="demo" id="sub-example" data-demo>
+    <div class="demo-bar">
+      <span class="label">Example · 12 lots</span>
+      <div data-tabs role="tablist" aria-label="Example views">
+        <button type="button" class="tab" data-tab="layout" aria-selected="true">Layout</button>
+        <button type="button" class="tab" data-tab="staging" aria-selected="false">Staging</button>
+        <button type="button" class="tab" data-tab="services" aria-selected="false">Services</button>
+        <button type="button" class="tab" data-tab="summary" aria-selected="false">Summary</button>
+      </div>
+    </div>
+    <div class="demo-body">
+      <div>
+        <div class="demo-stage" data-stage>
+<svg viewBox="12 36 756 506" role="img" aria-labelledby="plan-t plan-d" data-view="layout">
+<title id="plan-t">Illustrative 12 lot subdivision concept</title><desc id="plan-d">Plan of a 12 lot subdivision on a 2.4 hectare site with one access road, a turning head, a detention basin and a drainage easement.</desc>
+<rect class="site-bg" x="70" y="90" width="680" height="408"/>
+<rect class="exroad" x="29.2" y="62.8" width="40.8" height="462.4"/>
+<text class="svg-dim" transform="translate(53.6 294) rotate(-90)" text-anchor="middle">EXISTING ROAD</text>
+<clipPath id="siteclip"><rect x="70" y="90" width="680" height="408"/></clipPath><g data-layer="contours" clip-path="url(#siteclip)">
+<path class="ct" d="M267.2 90 C240 209 151.6 362 110.8 498"/>
+<path class="ct" d="M403.2 90 C376 209 287.6 362 246.8 498"/>
+<path class="ct" d="M539.2 90 C512 209 423.6 362 382.8 498"/>
+<path class="ct" d="M675.2 90 C648 209 559.6 362 518.8 498"/>
+<path class="ct" d="M811.2 90 C784 209 695.6 362 654.8 498"/>
+<text class="svg-dim ctl" x="211.4" y="290.0">116 m</text>
+<text class="svg-dim ctl" x="347.4" y="290.0">115 m</text>
+<text class="svg-dim ctl" x="483.4" y="290.0">114 m</text>
+<text class="svg-dim ctl" x="619.4" y="290.0">113 m</text>
+<text class="svg-dim ctl" x="755.4" y="290.0">112 m</text>
+</g>
+<g data-layer="easements"><rect class="ease" x="70" y="448.7" width="639.1999999999999" height="13.6" data-info data-title="Drainage easement" data-body="Indicative 4 m wide drainage easement along the rear of the south lots, carrying overland flow to the basin. Location and width to be confirmed." data-area="about 752 m²" data-frontage="n/a" data-stage="Stage 1"/><text class="svg-dim" x="206" y="469.6">4 m DRAINAGE EASEMENT</text></g>
+<g data-info data-title="New road and turning head" data-body="Single access from the existing road, a 15 m wide road reserve and a turning head at the end. Alignment and width are indicative." data-area="about 2,390 m²" data-frontage="n/a" data-stage="Stage 1" class="roadg"><rect class="road" x="70" y="268.5" width="462.4" height="51"/><circle class="road" cx="532.4" cy="294" r="44.199999999999996"/></g>
+<ellipse class="basin" cx="648" cy="402.8" rx="57.8" ry="44.199999999999996" data-info data-title="Detention basin" data-body="Indicative stormwater detention basin at the low corner. Size and outlet are not designed at this stage." data-area="about 690 m²" data-frontage="n/a" data-stage="Stage 1"/>
+<text class="svg-dim" x="648" y="406.8" text-anchor="middle">BASIN</text>
+<text class="svg-dim" x="580" y="113.8" text-anchor="middle">BALANCE LAND (retained)</text>
+<rect class="lot s1" x="70" y="139.3" width="88.4" height="129.2" data-info data-title="Lot 1" data-body="Corner lot with frontage to the existing road and the new road. Frontage to the new road is 26 m. Illustrative only." data-area="988 m²" data-frontage="26 m" data-stage="Stage 1"/>
+<rect class="lot s1" x="70" y="319.5" width="88.4" height="129.2" data-info data-title="Lot 2" data-body="Corner lot with frontage to the existing road and the new road. Frontage to the new road is 26 m. Illustrative only." data-area="988 m²" data-frontage="26 m" data-stage="Stage 1"/>
+<rect class="lot s1" x="158.4" y="139.3" width="54.4" height="129.2" data-info data-title="Lot 3" data-body="North side of the new road, 16 m frontage by 38 m depth. Illustrative only." data-area="608 m²" data-frontage="16 m" data-stage="Stage 1"/>
+<rect class="lot s1" x="158.4" y="319.5" width="57.8" height="129.2" data-info data-title="Lot 4" data-body="South side of the new road, 17 m frontage by 38 m depth. Illustrative only." data-area="646 m²" data-frontage="17 m" data-stage="Stage 1"/>
+<rect class="lot s1" x="212.8" y="139.3" width="61.2" height="129.2" data-info data-title="Lot 5" data-body="North side of the new road, 18 m frontage by 38 m depth. Illustrative only." data-area="684 m²" data-frontage="18 m" data-stage="Stage 1"/>
+<rect class="lot s1" x="216.2" y="319.5" width="64.6" height="129.2" data-info data-title="Lot 6" data-body="South side of the new road, 19 m frontage by 38 m depth. Illustrative only." data-area="722 m²" data-frontage="19 m" data-stage="Stage 1"/>
+<rect class="lot s2" x="274" y="139.3" width="68.0" height="129.2" data-info data-title="Lot 7" data-body="North side of the new road, 20 m frontage by 38 m depth. Illustrative only." data-area="760 m²" data-frontage="20 m" data-stage="Stage 2"/>
+<rect class="lot s2" x="280.8" y="319.5" width="68.0" height="129.2" data-info data-title="Lot 8" data-body="South side of the new road, 20 m frontage by 38 m depth. Illustrative only." data-area="760 m²" data-frontage="20 m" data-stage="Stage 2"/>
+<rect class="lot s2" x="342" y="139.3" width="71.4" height="129.2" data-info data-title="Lot 9" data-body="North side of the new road, 21 m frontage by 38 m depth. Illustrative only." data-area="798 m²" data-frontage="21 m" data-stage="Stage 2"/>
+<rect class="lot s2" x="348.8" y="319.5" width="74.8" height="129.2" data-info data-title="Lot 10" data-body="South side of the new road, 22 m frontage by 38 m depth. Illustrative only." data-area="836 m²" data-frontage="22 m" data-stage="Stage 2"/>
+<rect class="lot s3" x="413.4" y="139.3" width="74.8" height="129.2" data-info data-title="Lot 11" data-body="North side of the new road, 22 m frontage by 38 m depth. Illustrative only." data-area="836 m²" data-frontage="22 m" data-stage="Stage 3"/>
+<rect class="lot s3" x="423.6" y="319.5" width="64.6" height="129.2" data-info data-title="Lot 12" data-body="South side of the new road, 19 m frontage by 38 m depth. Illustrative only." data-area="722 m²" data-frontage="19 m" data-stage="Stage 3"/>
+
+<g data-layer="lotnums" class="lbl"><text class="lt" x="114.2" y="200.9" text-anchor="middle">1</text>
+<text class="lt" x="114.2" y="381.1" text-anchor="middle">2</text>
+<text class="lt" x="185.6" y="200.9" text-anchor="middle">3</text>
+<text class="lt" x="187.3" y="381.1" text-anchor="middle">4</text>
+<text class="lt" x="243.4" y="200.9" text-anchor="middle">5</text>
+<text class="lt" x="248.5" y="381.1" text-anchor="middle">6</text>
+<text class="lt" x="308" y="200.9" text-anchor="middle">7</text>
+<text class="lt" x="314.8" y="381.1" text-anchor="middle">8</text>
+<text class="lt" x="377.7" y="200.9" text-anchor="middle">9</text>
+<text class="lt" x="386.2" y="381.1" text-anchor="middle">10</text>
+<text class="lt" x="450.8" y="200.9" text-anchor="middle">11</text>
+<text class="lt" x="455.9" y="381.1" text-anchor="middle">12</text>
+</g>
+<g class="lbl"><text class="la" x="114.2" y="217.9" text-anchor="middle">988 m²</text>
+<text class="la" x="114.2" y="398.1" text-anchor="middle">988 m²</text>
+<text class="la" x="185.6" y="217.9" text-anchor="middle">608 m²</text>
+<text class="la" x="187.3" y="398.1" text-anchor="middle">646 m²</text>
+<text class="la" x="243.4" y="217.9" text-anchor="middle">684 m²</text>
+<text class="la" x="248.5" y="398.1" text-anchor="middle">722 m²</text>
+<text class="la" x="308" y="217.9" text-anchor="middle">760 m²</text>
+<text class="la" x="314.8" y="398.1" text-anchor="middle">760 m²</text>
+<text class="la" x="377.7" y="217.9" text-anchor="middle">798 m²</text>
+<text class="la" x="386.2" y="398.1" text-anchor="middle">836 m²</text>
+<text class="la" x="450.8" y="217.9" text-anchor="middle">836 m²</text>
+<text class="la" x="455.9" y="398.1" text-anchor="middle">722 m²</text>
+</g>
+<g data-layer="services" class="is-off">
+<polyline class="svc sv-w" points="49.6,261.7 70,261.7 501.8,261.7 532.4,252.5" data-info data-title="Water main (indicative)" data-body="Indicative alignment along the north verge, connecting to the existing road. Connection point and sizing to be confirmed with the water authority." data-area="n/a" data-frontage="n/a" data-stage="All stages"/>
+<polyline class="svc sv-s" points="49.6,294 70,294 512,294 532.4,294" data-info data-title="Sewer (indicative)" data-body="Indicative gravity line on the road centreline. Connection, levels and any pumping need to be confirmed with the water authority." data-area="n/a" data-frontage="n/a" data-stage="All stages"/>
+<polyline class="svc sv-d" points="80.2,311 495,311 580,355.2 614,396" data-info data-title="Stormwater (indicative)" data-body="Indicative pipe along the south verge draining to the detention basin. Sizing needs engineering design." data-area="n/a" data-frontage="n/a" data-stage="All stages"/>
+<polyline class="svc sv-e" points="49.6,326.3 70,326.3 501.8,326.3 532.4,335.5" data-info data-title="Electricity (indicative)" data-body="Indicative line along the south verge from the existing road. Supply arrangements are confirmed with the network operator." data-area="n/a" data-frontage="n/a" data-stage="All stages"/>
+</g>
+<path class="access" d="M53 294 L76.8 294" />
+<text class="svg-dim" x="73.4" y="262.5">ACCESS</text>
+<rect class="boundary" x="70" y="90" width="680" height="408"/>
+<g transform="translate(716 79.8)"><circle r="17" class="na-c"/><path d="M0 -13 L5 6 L0 2 L-5 6 Z" class="na-p"/><text class="svg-text" y="-19" text-anchor="middle">N</text></g>
+<g transform="translate(70 511.6)"><path class="sb" d="M0 0 H68"/><path class="sb" d="M0 -4 V4 M34 -3 V3 M68 -4 V4"/><text class="svg-dim" x="0" y="16">0</text><text class="svg-dim" x="68" y="16" text-anchor="end">20 m</text></g>
+<text class="svg-dim" x="750" y="527.6" text-anchor="end">Site about 24,000 m² (2.4 ha)</text>
+</svg>
+        </div>
+        <div class="tab-panel" data-panel="summary" hidden>
+          <table class="spec">
+            <thead><tr><th scope="col">Lot</th><th scope="col">Area m²</th><th scope="col">Frontage m</th><th scope="col">Stage</th></tr></thead>
+            <tbody>
+<tr data-info data-title="Lot 1" data-body="Corner lot with frontage to the existing road and the new road. Frontage to the new road is 26 m. Illustrative only." data-area="988 m²" data-frontage="26 m" data-stage="Stage 1"><td>1 (corner)</td><td>988</td><td>26</td><td>Stage 1</td></tr>
+<tr data-info data-title="Lot 2" data-body="Corner lot with frontage to the existing road and the new road. Frontage to the new road is 26 m. Illustrative only." data-area="988 m²" data-frontage="26 m" data-stage="Stage 1"><td>2 (corner)</td><td>988</td><td>26</td><td>Stage 1</td></tr>
+<tr data-info data-title="Lot 3" data-body="North side of the new road, 16 m frontage by 38 m depth. Illustrative only." data-area="608 m²" data-frontage="16 m" data-stage="Stage 1"><td>3</td><td>608</td><td>16</td><td>Stage 1</td></tr>
+<tr data-info data-title="Lot 4" data-body="South side of the new road, 17 m frontage by 38 m depth. Illustrative only." data-area="646 m²" data-frontage="17 m" data-stage="Stage 1"><td>4</td><td>646</td><td>17</td><td>Stage 1</td></tr>
+<tr data-info data-title="Lot 5" data-body="North side of the new road, 18 m frontage by 38 m depth. Illustrative only." data-area="684 m²" data-frontage="18 m" data-stage="Stage 1"><td>5</td><td>684</td><td>18</td><td>Stage 1</td></tr>
+<tr data-info data-title="Lot 6" data-body="South side of the new road, 19 m frontage by 38 m depth. Illustrative only." data-area="722 m²" data-frontage="19 m" data-stage="Stage 1"><td>6</td><td>722</td><td>19</td><td>Stage 1</td></tr>
+<tr data-info data-title="Lot 7" data-body="North side of the new road, 20 m frontage by 38 m depth. Illustrative only." data-area="760 m²" data-frontage="20 m" data-stage="Stage 2"><td>7</td><td>760</td><td>20</td><td>Stage 2</td></tr>
+<tr data-info data-title="Lot 8" data-body="South side of the new road, 20 m frontage by 38 m depth. Illustrative only." data-area="760 m²" data-frontage="20 m" data-stage="Stage 2"><td>8</td><td>760</td><td>20</td><td>Stage 2</td></tr>
+<tr data-info data-title="Lot 9" data-body="North side of the new road, 21 m frontage by 38 m depth. Illustrative only." data-area="798 m²" data-frontage="21 m" data-stage="Stage 2"><td>9</td><td>798</td><td>21</td><td>Stage 2</td></tr>
+<tr data-info data-title="Lot 10" data-body="South side of the new road, 22 m frontage by 38 m depth. Illustrative only." data-area="836 m²" data-frontage="22 m" data-stage="Stage 2"><td>10</td><td>836</td><td>22</td><td>Stage 2</td></tr>
+<tr data-info data-title="Lot 11" data-body="North side of the new road, 22 m frontage by 38 m depth. Illustrative only." data-area="836 m²" data-frontage="22 m" data-stage="Stage 3"><td>11</td><td>836</td><td>22</td><td>Stage 3</td></tr>
+<tr data-info data-title="Lot 12" data-body="South side of the new road, 19 m frontage by 38 m depth. Illustrative only." data-area="722 m²" data-frontage="19 m" data-stage="Stage 3"><td>12</td><td>722</td><td>19</td><td>Stage 3</td></tr>
+</tbody>
+            <tfoot><tr><th scope="row">12 lots</th><th>9,348</th><th></th><th></th></tr></tfoot>
+          </table>
+          <table class="spec" style="margin-top:14px">
+            <thead><tr><th scope="col">Site allowance (approx.)</th><th scope="col">Area m²</th></tr></thead>
+            <tbody>
+              <tr><td>Residential lots (12)</td><td>9,348</td></tr>
+              <tr><td>Road reserve and turning head</td><td>2,390</td></tr>
+              <tr><td>Detention basin</td><td>690</td></tr>
+              <tr><td>Drainage easement</td><td>752</td></tr>
+              <tr><td>Retained balance land</td><td>10,820</td></tr>
+            </tbody>
+            <tfoot><tr><th scope="row">Site</th><th>24,000</th></tr></tfoot>
+          </table>
+          <p class="muted" style="font-size:13px;margin:10px 0 0">Stage 1: 6 lots, 4,636 m². Stage 2: 4 lots, 3,154 m². Stage 3: 2 lots, 1,558 m².</p>
+        </div>
+      </div>
+      <aside class="demo-side" aria-label="Layers and details">
+        <div>
+          <strong>Layers</strong>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
+            <button type="button" class="toggle" data-layer-toggle="contours" aria-pressed="true">Contours</button>
+            <button type="button" class="toggle" data-layer-toggle="easements" aria-pressed="true">Easements</button>
+            <button type="button" class="toggle" data-layer-toggle="services" aria-pressed="false">Services</button>
+            <button type="button" class="toggle" data-layer-toggle="lotnums" aria-pressed="true">Lot numbers</button>
+          </div>
+        </div>
+        <div class="info-card" aria-live="polite">
+          <h4>Select a lot</h4>
+          <p>Click any lot, the road, the basin or a service line to see its details.</p>
+        </div>
+        <dl class="kv">
+          <dt>Area</dt><dd data-kv="area">,</dd>
+          <dt>Frontage</dt><dd data-kv="frontage">,</dd>
+          <dt>Stage</dt><dd data-kv="stage">,</dd>
+        </dl>
+        <ul class="legend" data-legend hidden>
+          <li><i style="border-color:#2f6f9a"></i>Water</li><li><i style="border-color:#7a4a2a"></i>Sewer</li><li><i style="border-color:#3d7a52"></i>Stormwater</li><li><i style="border-color:#c08a12"></i>Electricity</li>
+        </ul>
+        <ul class="legend" data-stagekey hidden>
+          <li><span class="demo-sw" style="background:#9fc3aa"></span>Stage 1 (6 lots)</li><li><span class="demo-sw" style="background:var(--accent-soft)"></span>Stage 2 (4 lots)</li><li><span class="demo-sw" style="background:#c9d0e0"></span>Stage 3 (2 lots)</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="demo-note">Illustrative example, not a real site. Areas, levels and services are indicative and not survey data.</div>
+  </div>
+</section>
+<section class="section"><div class="shell"><div class="card" style="text-align:center"><p class="eyebrow">Plan to model</p><h3>Interactive plan-to-3D showcase</h3><p>A scroll-driven showcase where the issued plan sheet becomes a live 3D model. It is in the full site package (subdivision/ptm), not in this single review file.</p></div></div></section>
+
+
+
+</div>
+
+<section class="section" style="padding-top:clamp(24px,4vw,48px)">
+<div class="shell">
+  <div class="section-head"><h2>What we <em>produce</em></h2><p>Three outputs, scoped around your site and brief.</p></div>
+  <div class="grid-3">
+    <div class="card"><span class="num">01</span><h3>Concept layout</h3><p>Proposed lots, an access point, road, basin and easements drawn over your site, so you can test lot mix and yield early.</p></div>
+    <div class="card"><span class="num">02</span><h3>Staging plan</h3><p>The lots grouped into stages, with the road and services extended in a sensible order, ready to discuss with partners.</p></div>
+    <div class="card"><span class="num">03</span><h3>3D site model</h3><p>The concept placed on the terrain so lots, access and surroundings can be seen together. Useful for early marketing and funding conversations.</p></div>
+  </div>
+  <div style="margin-top:28px">
+    <button type="button" class="btn btn-ghost" id="load-model" aria-controls="model-wrap">Load a 3D model example</button>
+    <div id="model-wrap" style="margin-top:16px" hidden>
+      <div class="card" style="margin:16px">3D model loads in the full site package.</div>
+      <p class="muted" style="font-size:13px;margin:8px 0 0">Example model from our commercial and rural work. <a class="link" href="../commercial/index.html">Open it full size</a>.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="section" style="padding-top:0">
+<div class="shell">
+  <div class="section-head"><h2>Who it is <em>for</em></h2><p>Developers, builders and project owners in regional NSW at the early stage of a subdivision.</p></div>
+  <div class="grid-3">
+    <div class="card"><h3>Landowners testing a site</h3><p>Want to see how many lots, what access and which stages might work before spending on detailed design.</p></div>
+    <div class="card"><h3>Developers briefing partners</h3><p>Need a clear picture to explain the concept to co-investors, agents and funders at preliminary discussions.</p></div>
+    <div class="card"><h3>Builders and project owners</h3><p>Planning a staged release and need a shared view of lots, access and sequence with the project team.</p></div>
+  </div>
+</div>
+</section>
+
+<section class="section" style="padding-top:0">
+<div class="shell">
+  <div class="section-head"><h2>How it <em>works</em></h2></div>
+  <ol class="steps">
+    <li><h3>Share site and brief</h3><p>Send the location, any survey or site plans, and what you are considering.</p></li>
+    <li><h3>Concept layout</h3><p>We draft lots, access and drainage ideas and review them with you.</p></li>
+    <li><h3>3D model and staging</h3><p>The layout is built into a 3D site model, with the stages set out.</p></li>
+    <li><h3>Present to partners and funders</h3><p>Use the plan and model alongside your own project documents.</p></li>
+  </ol>
+</div>
+</section>
+
+<section class="section band">
+<div class="shell">
+  <div class="section-head"><h2>What this is <em>and isn't</em></h2><p>Early, concept level work. Later stages need other people and other documents.</p></div>
+  <div class="grid-2">
+    <div class="card"><h3>What it is</h3><ul class="checks" style="margin-top:14px">
+      <li>Preliminary feasibility support</li><li>Concept lots, access and staging</li><li>3D presentation of the concept</li><li>Prepared with input from a licensed civil engineer</li></ul></div>
+    <div class="card"><h3>What it is not</h3><ul style="margin:14px 0 0;padding-left:20px;color:#b9c4bb;display:grid;gap:10px">
+      <li>A survey</li><li>A development application or approval</li><li>Engineering design</li><li>Planning approval or legal advice</li></ul></div>
+  </div>
+</div>
+</section>
+
+<section class="section">
+<div class="shell">
+  <div class="section-head"><h2>Before we <em>begin</em></h2></div>
+  <div class="faq">
+    <details><summary>Who provides the feasibility support?</summary><p>Glide Inside’s director is a licensed civil engineer and can assist with preliminary subdivision feasibility. The work and the outputs are confirmed around your site and brief.</p></details>
+    <details><summary>What should I send first?</summary><p>The property location, your proposed use or lot concept, and any survey, site plans or existing models you have. Add the questions you want to explore and your project timing.</p></details>
+    <details><summary>What stage is this work for?</summary><p>Preliminary feasibility, concept development and project communication. We discuss how you intend to use the work and what further information or specialist input the project needs as it develops.</p></details>
+    <details><summary>Can I lodge this with council?</summary><p>No. The concept is not a survey plan, a development application or engineering design. It helps you organise the early questions and explain the idea. A registered surveyor and your council remain the source for boundaries, levels and planning requirements.</p></details>
+  </div>
+  <p class="disclaimer" style="margin-top:36px">Concepts are for discussion only. They are not survey or development application documentation and do not replace engineering design, planning advice or legal advice. Verify boundaries, levels, services and requirements with a registered surveyor and your local council before relying on any figure shown.</p>
+</div>
+</section>
+
+<section class="section band cta-band">
+<div class="shell">
+  <h2>Tell us about your <em>site</em>.</h2>
+  <p class="lead" style="margin:0 auto">Share the location, what you have and the questions you want to explore.</p>
+  <div class="hero-cta"><a class="btn" href="mailto:hello@glideinside.com.au" data-cfg-href="subdivisionOrderUrl">Request a concept</a></div>
+</div>
+</section>
+</div></main><footer class="site-footer"><div class="shell">
+  <div><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MzcuOTMgOTAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iR2xpZGVpbnNpZGUiPjxnIGZpbGw9IiMyMzJBMjgiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgNCkiPjxwYXRoIGNsYXNzPSJnLXNoYXBlIiBkPSJNNTggOUgyNEw5IDI0VjU2TDI0IDcxSDU4VjQwSDM2VjUxSDQ2VjU5SDI5TDIxIDUxVjI5TDI5IDIxSDU4WiIvPjxwYXRoIGNsYXNzPSJpbnNpZGUtcGxhbmUiIGZpbGw9IiNBMzUzMkQiIGQ9Ik02NCAxMkw3NSAxOFY2Mkw2NCA2OFoiLz48L2c+PGcgZmlsbD0iIzIzMkEyOCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAwIDY0KSI+PGcgdHJhbnNmb3JtPSJzY2FsZSgwLjAzMyAtMC4wMzMpIj48cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIDApIiBkPSJNNTg5LjUgLTUxMFE1MDEgLTUxMCA0MTkuMCAtNDgyLjM3NVEzMzcgLTQ1NC43NSAyNzAuNSAtNDAyLjI1UTIwNCAtMzQ5Ljc1IDE2MSAtMjc0LjVMMzY4LjUgLTE3MC41UTQwMS41IC0yMzQuMjUgNDYyLjM3NSAtMjY0LjYyNVE1MjMuMjUgLTI5NSA1OTEgLTI5NVE2NzMgLTI5NSA3MzMuODc1IC0yNjYuMFE3OTQuNzUgLTIzNyA4MjcuMzc1IC0xNzkuNzVRODYwIC0xMjIuNSA4NTguNSAtMzcuNVYyNjdIODg2VjEwODBIMTA4NFYtNDAuNVExMDg0IC04Mi43NSAxMDgwLjg3NSAtMTIwLjg3NVExMDc3Ljc1IC0xNTkgMTA2OS41IC0xOTYuNVExMDQ2IC0zMDMuNSA5NzkuNzUgLTM3Mi43NVE5MTMuNSAtNDQyIDgxMy41IC00NzYuMFE3MTMuNSAtNTEwIDU4OS41IC01MTBaTTU3MSAtMzBRNDIxIC0zMCAzMTAuODc1IDQ1LjEyNVEyMDAuNzUgMTIwLjI1IDE0MC4zNzUgMjQ5LjM3NVE4MCAzNzguNSA4MCA1NDAuNVE4MCA3MDQgMTQwLjg3NSA4MzIuNjI1UTIwMS43NSA5NjEuMjUgMzEzLjM3NSAxMDM1LjYyNVE0MjUgMTExMCA1NzcuNSAxMTEwUTczMC43NSAxMTEwIDgzNS4zNzUgMTAzNS4zNzVROTQwIDk2MC43NSA5OTMuNzUgODMxLjg3NVExMDQ3LjUgNzAzIDEwNDcuNSA1NDAuNVExMDQ3LjUgMzc4Ljc1IDk5My41IDI0OS42MjVROTM5LjUgMTIwLjUgODMzLjUgNDUuMjVRNzI3LjUgLTMwIDU3MSAtMzBaTTYwNCAxNzIuNVE3MDQgMTcyLjUgNzY2LjI1IDIxOS4yNVE4MjguNSAyNjYgODU3LjI1IDM0OS4xMjVRODg2IDQzMi4yNSA4ODYgNTQwLjVRODg2IDY0OS4yNSA4NTcuMTI1IDczMi4xMjVRODI4LjI1IDgxNSA3NjcuNSA4NjEuMjVRNzA2Ljc1IDkwNy41IDYxMS41IDkwNy41UTUxMSA5MDcuNSA0NDYuMCA4NTguMjVRMzgxIDgwOSAzNDkuNzUgNzI1Ljc1UTMxOC41IDY0Mi41IDMxOC41IDU0MC41UTMxOC41IDQzNy41IDM0OS41IDM1NC4wUTM4MC41IDI3MC41IDQ0My42MjUgMjIxLjVRNTA2Ljc1IDE3Mi41IDYwNCAxNzIuNVoiLz48cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMTcyLjAgMCkiIGQ9Ik0xNjAgMFYxNDcwSDM4NVYwWiIvPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE2NjUuMCAwKSIgZD0iTTE2MCAxMjUwLjVWMTQ2Mi41SDM4NVYxMjUwLjVaTTE2MCAwVjEwODBIMzg1VjBaIi8+PHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjE1OC4wIDApIiBkPSJNNTcxIC0zMFE0MjEgLTMwIDMxMC44NzUgNDUuMTI1UTIwMC43NSAxMjAuMjUgMTQwLjM3NSAyNDkuMzc1UTgwIDM3OC41IDgwIDU0MC41UTgwIDcwNCAxNDAuODc1IDgzMi42MjVRMjAxLjc1IDk2MS4yNSAzMTMuMzc1IDEwMzUuNjI1UTQyNSAxMTEwIDU3Ny41IDExMTBRNzMwLjc1IDExMTAgODM1LjM3NSAxMDM1LjM3NVE5NDAgOTYwLjc1IDk5My43NSA4MzEuODc1UTEwNDcuNSA3MDMgMTA0Ny41IDU0MC41UTEwNDcuNSAzNzguNzUgOTkzLjUgMjQ5LjYyNVE5MzkuNSAxMjAuNSA4MzMuNSA0NS4yNVE3MjcuNSAtMzAgNTcxIC0zMFpNNjA0IDE3Mi41UTcwNCAxNzIuNSA3NjYuMjUgMjE5LjI1UTgyOC41IDI2NiA4NTcuMjUgMzQ5LjEyNVE4ODYgNDMyLjI1IDg4NiA1NDAuNVE4ODYgNjQ5LjI1IDg1Ny4xMjUgNzMyLjEyNVE4MjguMjUgODE1IDc2Ny41IDg2MS4yNVE3MDYuNzUgOTA3LjUgNjExLjUgOTA3LjVRNTExIDkwNy41IDQ0Ni4wIDg1OC4yNVEzODEgODA5IDM0OS43NSA3MjUuNzVRMzE4LjUgNjQyLjUgMzE4LjUgNTQwLjVRMzE4LjUgNDM3LjUgMzQ5LjUgMzU0LjBRMzgwLjUgMjcwLjUgNDQzLjYyNSAyMjEuNVE1MDYuNzUgMTcyLjUgNjA0IDE3Mi41Wk04ODYgMFY3NjcuNUg4NTlWMTQ0MEgxMDg1LjVWMFoiLz48cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMzMxLjUgMCkiIGQ9Ik02MjUgLTMwUTQ2Mi4yNSAtMzAgMzM5Ljc1IDQwLjg3NVEyMTcuMjUgMTExLjc1IDE0OC42MjUgMjM3Ljg3NVE4MCAzNjQgODAgNTI5LjVRODAgNzA2LjUgMTQ3LjM3NSA4MzYuNzVRMjE0Ljc1IDk2NyAzMzQuNjI1IDEwMzguNVE0NTQuNSAxMTEwIDYxMyAxMTEwUTc3OS4yNSAxMTEwIDg5Ni4wIDEwMzIuNVExMDEyLjc1IDk1NSAxMDcwLjEyNSA4MTMuMFExMTI3LjUgNjcxIDExMTQuNzUgNDc3SDg5MC41VjU1OVE4ODkgNzQxIDgyMy43NSA4MjYuNVE3NTguNSA5MTIgNjIyIDkxMlE0NjkuNzUgOTEyIDM5NC4xMjUgODE2Ljc1UTMxOC41IDcyMS41IDMxOC41IDU0MFEzMTguNSAzNjkgMzk0LjEyNSAyNzUuMjVRNDY5Ljc1IDE4MS41IDYxMyAxODEuNVE3MDYuNSAxODEuNSA3NzQuNSAyMjMuNVE4NDIuNSAyNjUuNSA4ODAgMzQ0LjVMMTEwMS41IDI3NlExMDM5LjI1IDEzMC41IDkxMC4zNzUgNTAuMjVRNzgxLjUgLTMwIDYyNSAtMzBaTTI0Ni41IDQ3N1Y2NDkuNUgxMDAzLjVWNDc3WiIvPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ0NzguMCAwKSIgZD0iTTE2MCAxMjUwLjVWMTQ2Mi41SDM4NVYxMjUwLjVaTTE2MCAwVjEwODBIMzg1VjBaIi8+PHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDk3MS4wIDApIiBkPSJNODkyLjUgMFY1MjUuNVE4OTIuNSA1ODIuMjUgODgzLjYyNSA2NDYuNVE4NzQuNzUgNzEwLjc1IDg0Ny41IDc2OC4xMjVRODIwLjI1IDgyNS41IDc2OC4yNSA4NjEuNVE3MTYuMjUgODk3LjUgNjMwIDg5Ny41UTU3OSA4OTcuNSA1MzEuNjI1IDg4MC42MjVRNDg0LjI1IDg2My43NSA0NDcuMjUgODI1LjEyNVE0MTAuMjUgNzg2LjUgMzg4LjM3NSA3MjEuMjVRMzY2LjUgNjU2IDM2Ni41IDU1OC41TDIzMCA2MTMuNVEyMzAgNzU1Ljc1IDI4NC4yNSA4NjguMTI1UTMzOC41IDk4MC41IDQ0Mi4wIDEwNDUuMjVRNTQ1LjUgMTExMCA2OTQuNSAxMTEwUTgxMC4yNSAxMTEwIDg4Ny4zNzUgMTA3Mi4wUTk2NC41IDEwMzQgMTAxMS4yNSA5NzMuNjI1UTEwNTggOTEzLjI1IDEwODEuNSA4NDMuODc1UTExMDUgNzc0LjUgMTExMi43NSA3MTAuMTI1UTExMjAuNSA2NDUuNzUgMTEyMC41IDYwMS41VjBaTTEzOC41IDBWMTA4MEgzMzkuNVY3NTYuNUgzNjYuNVYwWiIvPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYxNTkuNSAwKSIgZD0iTTU1NSAtMjkuNVEzNTYuMjUgLTI5LjUgMjMxLjg3NSA1OS4wUTEwNy41IDE0Ny41IDgwIDMwOEwzMTAgMzQzLjVRMzI5LjUgMjYxLjUgMzk4LjI1IDIxNC4yNVE0NjcgMTY3IDU3MC41IDE2N1E2NjIuNzUgMTY3IDcxNC4zNzUgMjA0LjEyNVE3NjYgMjQxLjI1IDc2NiAzMDYuNVE3NjYgMzQ1LjI1IDc0Ny41IDM2OS4yNVE3MjkgMzkzLjI1IDY2OC41IDQxNS4yNVE2MDggNDM3LjI1IDQ4My41IDQ3MC41UTM0NiA1MDYuNSAyNjUuMzc1IDU0Ny44NzVRMTg0Ljc1IDU4OS4yNSAxNDkuODc1IDY0NS41UTExNSA3MDEuNzUgMTE1IDc4MlExMTUgODgxLjUgMTY3LjUgOTU1LjM3NVEyMjAgMTAyOS4yNSAzMTQuODc1IDEwNjkuNjI1UTQwOS43NSAxMTEwIDUzNy41IDExMTBRNjYyLjUgMTExMCA3NTkuODc1IDEwNzAuODc1UTg1Ny4yNSAxMDMxLjc1IDkxNy4yNSA5NjAuMTI1UTk3Ny4yNSA4ODguNSA5OTAgNzkyTDc2MCA3NTAuNVE3NTAgODIzLjc1IDY5Mi4xMjUgODY2LjM3NVE2MzQuMjUgOTA5IDU0MC41IDkxMy41UTQ1MC41IDkxNy43NSAzOTUuMCA4ODQuNzVRMzM5LjUgODUxLjc1IDMzOS41IDc5My41UTMzOS41IDc1OS43NSAzNjEuMzc1IDczNi4zNzVRMzgzLjI1IDcxMyA0NDcuMzc1IDY5MC41UTUxMS41IDY2OCA2MzggNjM2UTc3MC43NSA2MDEuNzUgODQ5LjI1IDU1OS4zNzVROTI3Ljc1IDUxNyA5NjIuMzc1IDQ1OC4zNzVROTk3IDM5OS43NSA5OTcgMzE2UTk5NyAxNTQuNzUgODc5LjUgNjIuNjI1UTc2MiAtMjkuNSA1NTUgLTI5LjVaIi8+PHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNzE4NS4wIDApIiBkPSJNMTYwIDEyNTAuNVYxNDYyLjVIMzg1VjEyNTAuNVpNMTYwIDBWMTA4MEgzODVWMFoiLz48cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3Njc4LjAgMCkiIGQ9Ik01NzEgLTMwUTQyMSAtMzAgMzEwLjg3NSA0NS4xMjVRMjAwLjc1IDEyMC4yNSAxNDAuMzc1IDI0OS4zNzVRODAgMzc4LjUgODAgNTQwLjVRODAgNzA0IDE0MC44NzUgODMyLjYyNVEyMDEuNzUgOTYxLjI1IDMxMy4zNzUgMTAzNS42MjVRNDI1IDExMTAgNTc3LjUgMTExMFE3MzAuNzUgMTExMCA4MzUuMzc1IDEwMzUuMzc1UTk0MCA5NjAuNzUgOTkzLjc1IDgzMS44NzVRMTA0Ny41IDcwMyAxMDQ3LjUgNTQwLjVRMTA0Ny41IDM3OC43NSA5OTMuNSAyNDkuNjI1UTkzOS41IDEyMC41IDgzMy41IDQ1LjI1UTcyNy41IC0zMCA1NzEgLTMwWk02MDQgMTcyLjVRNzA0IDE3Mi41IDc2Ni4yNSAyMTkuMjVRODI4LjUgMjY2IDg1Ny4yNSAzNDkuMTI1UTg4NiA0MzIuMjUgODg2IDU0MC41UTg4NiA2NDkuMjUgODU3LjEyNSA3MzIuMTI1UTgyOC4yNSA4MTUgNzY3LjUgODYxLjI1UTcwNi43NSA5MDcuNSA2MTEuNSA5MDcuNVE1MTEgOTA3LjUgNDQ2LjAgODU4LjI1UTM4MSA4MDkgMzQ5Ljc1IDcyNS43NVEzMTguNSA2NDIuNSAzMTguNSA1NDAuNVEzMTguNSA0MzcuNSAzNDkuNSAzNTQuMFEzODAuNSAyNzAuNSA0NDMuNjI1IDIyMS41UTUwNi43NSAxNzIuNSA2MDQgMTcyLjVaTTg4NiAwVjc2Ny41SDg1OVYxNDQwSDEwODUuNVYwWiIvPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg4NTEuNSAwKSIgZD0iTTYyNSAtMzBRNDYyLjI1IC0zMCAzMzkuNzUgNDAuODc1UTIxNy4yNSAxMTEuNzUgMTQ4LjYyNSAyMzcuODc1UTgwIDM2NCA4MCA1MjkuNVE4MCA3MDYuNSAxNDcuMzc1IDgzNi43NVEyMTQuNzUgOTY3IDMzNC42MjUgMTAzOC41UTQ1NC41IDExMTAgNjEzIDExMTBRNzc5LjI1IDExMTAgODk2LjAgMTAzMi41UTEwMTIuNzUgOTU1IDEwNzAuMTI1IDgxMy4wUTExMjcuNSA2NzEgMTExNC43NSA0NzdIODkwLjVWNTU5UTg4OSA3NDEgODIzLjc1IDgyNi41UTc1OC41IDkxMiA2MjIgOTEyUTQ2OS43NSA5MTIgMzk0LjEyNSA4MTYuNzVRMzE4LjUgNzIxLjUgMzE4LjUgNTQwUTMxOC41IDM2OSAzOTQuMTI1IDI3NS4yNVE0NjkuNzUgMTgxLjUgNjEzIDE4MS41UTcwNi41IDE4MS41IDc3NC41IDIyMy41UTg0Mi41IDI2NS41IDg4MCAzNDQuNUwxMTAxLjUgMjc2UTEwMzkuMjUgMTMwLjUgOTEwLjM3NSA1MC4yNVE3ODEuNSAtMzAgNjI1IC0zMFpNMjQ2LjUgNDc3VjY0OS41SDEwMDMuNVY0NzdaIi8+PC9nPjwvZz48L3N2Zz4=" width="438" height="90" alt="Glide Inside" style="height:30px;width:auto;margin-bottom:12px"><p>Glide Inside · ABN 11 549 431 925<br><a href="mailto:hello@glideinside.com.au">hello@glideinside.com.au</a> · 0477 207 027</p></div>
+  <nav aria-label="Products"><a href="#/plan">Pocket Architect</a><a href="#/subdivision">Subdivision modelling</a><a href="#addons">Plan add-ons</a></nav>
+  <nav aria-label="Legal"><a href="terms.html">Order terms</a><a href="privacy.html">Privacy</a></nav>
+</div></footer><div class="quote-bar" hidden role="region" aria-label="Request a quote"><div class="shell"><span><strong>Subdivision modelling is by quote.</strong> <span class="muted">Tell us about your site and we reply within one business day.</span></span><a class="btn" data-cfg-href="subdivisionOrderUrl" href="mailto:hello@glideinside.com.au">Request a quote <span aria-hidden="true">→</span></a></div></div>
+<script>/* Single place for prices, labels and links. Page copy reads these via data-cfg="key". */
+window.GI_CONFIG = {
+  planPackPrice: "A$35",          // PS-SCOPE-001 §4.2, per project. Confirm GST wording (decision 17.3).
+  planPackCredits: "500",
+  addonFlyThroughPrice: 5,        // A$, add-on to a plan
+  addonRendersPrice: 10,          // A$, add-on to a plan
+  // Stripe Payment Links (create in Stripe, paste URLs). Empty = button shows "not set up yet".
+  stripeFlyThrough: "",           // A$5 link
+  stripeRenders: "",              // A$10 link
+  stripeBoth: "",                 // A$15 link (both add-ons)
+  signupUrl: "",                  // account registration in the app
+  stripePlan: "",                 // A$35 Payment Link; enable adjustable quantity in Stripe so people can buy several plans at once
+  toolUrl: "#/plan",   // change to the Pocket Architect app route when built
+  heroVideoPlans: "",             // e.g. "assets/plan-creation.mp4": plays muted on loop behind the button
+  heroPoster: "",
+  premiumEnabled: false,          // Phase 1: Plan Pack shows "Coming soon"
+  orderUrl: "mailto:hello@glideinside.com.au?subject=Glide%20Inside%20enquiry",
+  planOrderUrl: "mailto:hello@glideinside.com.au?subject=Pocket%20Architect%20enquiry",
+  subdivisionOrderUrl: "mailto:hello@glideinside.com.au?subject=Subdivision%20quote%20request", // or a quote form inside the app
+  email: "hello@glideinside.com.au",
+  phone: "0477 207 027"
+};
+
+/* Glide Inside v4 framework behaviour. No dependencies. */
+(function () {
+  var cfg = window.GI_CONFIG || {};
+  // data-cfg="key" fills text; data-cfg-href="key" sets links
+  document.querySelectorAll("[data-cfg]").forEach(function (el) { var v = cfg[el.dataset.cfg]; if (v != null) el.textContent = v; });
+  var fs = document.querySelector('script[src*="framework.js"]'), root = fs ? fs.src.replace(/framework\.js.*$/, "") : "";
+  document.querySelectorAll("[data-cfg-href]").forEach(function (el) { var v = cfg[el.dataset.cfgHref]; if (!v) return; if (!/^(https?:|mailto:|tel:|#)/.test(v)) v = new URL(v, root || location.href).href; el.setAttribute("href", v); el.removeAttribute("aria-disabled"); });
+  // mobile nav
+  var t = document.querySelector(".nav-toggle"), n = document.querySelector(".site-nav");
+  if (t && n) t.addEventListener("click", function () { var o = n.classList.toggle("open"); t.setAttribute("aria-expanded", o); });
+  // tabs: [data-tabs] > [role=tab][data-tab=id]; panels [data-panel=id] anywhere inside the same [data-demo] or [data-tabs] root
+  document.querySelectorAll("[data-tabs]").forEach(function (root) {
+    var scope = root.closest("[data-demo]") || root;
+    root.querySelectorAll("[data-tab]").forEach(function (b) {
+      b.setAttribute("role", "tab");
+      b.addEventListener("click", function () {
+        root.querySelectorAll("[data-tab]").forEach(function (x) { x.setAttribute("aria-selected", x === b); });
+        scope.querySelectorAll("[data-panel]").forEach(function (p) { p.hidden = p.dataset.panel !== b.dataset.tab; });
+        scope.dispatchEvent(new CustomEvent("gi:tab", { detail: b.dataset.tab }));
+      });
+    });
+  });
+  // layer toggles: button[data-layer-toggle=name] shows/hides [data-layer=name] inside the same [data-demo]
+  document.querySelectorAll("[data-layer-toggle]").forEach(function (b) {
+    var demo = b.closest("[data-demo]");
+    b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") || "true");
+    b.addEventListener("click", function () {
+      var on = b.getAttribute("aria-pressed") !== "true";
+      b.setAttribute("aria-pressed", on);
+      demo.querySelectorAll('[data-layer="' + b.dataset.layerToggle + '"]').forEach(function (l) { l.classList.toggle("is-off", !on); });
+    });
+  });
+  // click-to-inspect: any [data-info][data-title][data-body] fills .info-card h4/p inside the same demo
+  document.querySelectorAll("[data-demo]").forEach(function (demo) {
+    var card = demo.querySelector(".info-card"); if (!card) return;
+    demo.addEventListener("click", function (e) {
+      var el = e.target.closest("[data-info]"); if (!el) return;
+      demo.querySelectorAll(".is-active").forEach(function (x) { x.classList.remove("is-active"); });
+      el.classList.add("is-active");
+      card.querySelector("h4").textContent = el.dataset.title || "";
+      card.querySelector("p").textContent = el.dataset.body || "";
+      demo.querySelectorAll("[data-kv]").forEach(function (k) { var v = el.dataset[k.dataset.kv]; if (v != null) k.textContent = v; });
+    });
+  });
+  // add-ons: [data-addons] with input[data-addon=fly|renders], [data-total], a.btn[data-pay], [data-pay-note]
+  document.querySelectorAll("[data-addons]").forEach(function (root) {
+    var prices = { fly: cfg.addonFlyThroughPrice || 0, renders: cfg.addonRendersPrice || 0 };
+    var links = { fly: cfg.stripeFlyThrough, renders: cfg.stripeRenders, both: cfg.stripeBoth };
+    var total = root.querySelector("[data-total]"), pay = root.querySelector("[data-pay]"), note = root.querySelector("[data-pay-note]");
+    function upd() {
+      var f = root.querySelector('[data-addon=fly]').checked, r = root.querySelector('[data-addon=renders]').checked;
+      var sum = (f ? prices.fly : 0) + (r ? prices.renders : 0);
+      total.textContent = "A$" + sum;
+      var url = f && r ? links.both : f ? links.fly : r ? links.renders : "";
+      if (url) { pay.href = url; pay.setAttribute("aria-disabled", "false"); note.textContent = "Secure card payment by Stripe."; }
+      else { pay.removeAttribute("href"); pay.setAttribute("aria-disabled", "true"); note.textContent = !f && !r ? "Choose an add-on." : "Payment link not set up yet."; }
+    }
+    root.addEventListener("change", upd); upd();
+  });
+  // reveal on scroll
+  if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("js");
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: .12 });
+    document.querySelectorAll(".section-head,.card,.steps li,.faq details,.product-card").forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+  }
+})();
+
+
+(function(){
+  var cfg=window.GI_CONFIG||{},p=document.getElementById('vp-plans'),s=document.getElementById('vp-sub');
+  if(cfg.heroVideoPlans){var bg=document.getElementById('vp-bg');bg.innerHTML='<video autoplay muted loop playsinline preload="auto" src="'+cfg.heroVideoPlans+'"'+(cfg.heroPoster?' poster="'+cfg.heroPoster+'"':'')+'></video>';}
+  var s3=document.getElementById('vp-3d'),rg=document.getElementById('vp-range');
+  document.querySelector('[data-tab=to3d]').addEventListener('click',function(){
+    if(!s3.firstChild){s3.innerHTML='<iframe title="Plan to 3D model" src="subdivision/ptm/models/warehouse.html?embed=1"></iframe>';s3.firstChild.addEventListener('load',function(){send()});}
+  });
+  function send(){var f=s3.firstChild;if(f&&f.contentWindow)f.contentWindow.postMessage({type:'morph',t:rg.value/100},'*')}
+  rg.addEventListener('input',send);
+  document.querySelector('[data-tab=subdivision]').addEventListener('click',function(){
+    if(!s.firstChild){s.innerHTML='<iframe title="Interactive subdivision site model" loading="lazy" src="subdivision/ptm/model/index.html"></iframe>';}
+  });
+})();
+
+
+(function(){
+  var demo=document.querySelector('[data-demo]'),svg=demo.querySelector('svg'),stage=demo.querySelector('[data-stage]');
+  var svcBtn=demo.querySelector('[data-layer-toggle="services"]'),lg=demo.querySelector('[data-legend]'),sk=demo.querySelector('[data-stagekey]');
+  demo.addEventListener('gi:tab',function(e){
+    var t=e.detail;svg.setAttribute('data-view',t);stage.hidden=t==='summary';
+    lg.hidden=t!=='services';sk.hidden=t!=='staging';
+    if((t==='services')!==(svcBtn.getAttribute('aria-pressed')==='true'))svcBtn.click();
+  });
+  var b=document.getElementById('load-model'),w=document.getElementById('model-wrap'),f=document.getElementById('model-frame');
+  b.addEventListener('click',function(){if(!f.src||f.src===location.href){f.src=f.dataset.src;}w.hidden=false;b.hidden=true;});
+})();
+</script><script>(function(){var V={"#/":"v-home","#/plan":"v-plan","#/subdivision":"v-sub"},bar=document.querySelector(".quote-bar");
+function show(id){Object.keys(V).forEach(function(k){document.getElementById(V[k]).hidden=V[k]!==id});document.body.classList.toggle("has-quote-bar",id==="v-sub");if(bar)bar.hidden=id!=="v-sub"}
+function route(){var h=location.hash||"#/";if(V[h]){show(V[h]);window.scrollTo(0,0);return}var el=h.length>1&&document.getElementById(h.slice(1));if(el){var v=el.closest("[data-view]");if(v)show(v.id);el.scrollIntoView()}}
+addEventListener("hashchange",route);route()})();</script></body></html>

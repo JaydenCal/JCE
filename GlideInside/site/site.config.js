@@ -1,6 +1,6 @@
 /* Single place for prices, labels and links. Page copy reads these via data-cfg="key". */
 window.GI_CONFIG = {
-  planPackPrice: "A$30",          // PS-SCOPE-001 §4.2, per project. Confirm GST wording (decision 17.3).
+  planPackPrice: "A$35",          // PS-SCOPE-001 §4.2, per project. Confirm GST wording (decision 17.3).
   planPackCredits: "500",
   addonFlyThroughPrice: 5,        // A$, add-on to a plan
   addonRendersPrice: 10,          // A$, add-on to a plan
@@ -9,7 +9,7 @@ window.GI_CONFIG = {
   stripeRenders: "",              // A$10 link
   stripeBoth: "",                 // A$15 link (both add-ons)
   signupUrl: "",                  // account registration in the app
-  stripePlan: "",                 // A$30 Payment Link; enable adjustable quantity in Stripe so people can buy several plans at once
+  stripePlan: "",                 // A$35 Payment Link; enable adjustable quantity in Stripe so people can buy several plans at once
   toolUrl: "plan-studio/index.html#example",   // change to the Pocket Architect app route when built
   heroVideoPlans: "",             // e.g. "assets/plan-creation.mp4": plays muted on loop behind the button
   heroPoster: "",
