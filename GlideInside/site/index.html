@@ -2,7 +2,7 @@
 <html lang="en-AU">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Glide Inside | 2D Plans and Subdivision Modelling</title>
+<title>Glide Inside | Plan Studio and Subdivision Modelling</title>
 <meta name="description" content="Two tools for builders, developers and owners in regional Australia: 2D floor plan outputs and 3D subdivision modelling. Concept stage, led by a licensed civil engineer.">
 <link rel="canonical" href="https://glideinside.com.au/">
 <link rel="icon" href="assets/Glideinside_Favicon_v4.svg">
@@ -15,7 +15,7 @@
 <header class="site-header"><div class="shell">
   <a class="logo" href="index.html" aria-label="Glide Inside home"><img src="assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
   <nav class="site-nav" aria-label="Main">
-    <a href="plan-studio/index.html">2D Plans</a>
+    <a href="plan-studio/index.html">Plan Studio</a>
     <a href="subdivision/index.html">Subdivision</a>
     <a href="#how">How it works</a>
     <a href="#services">Add-ons</a>
@@ -30,14 +30,15 @@
 <section class="shell hero-centre" id="top">
   <p class="eyebrow">Concept planning tools · Regional Australia</p>
   <h1>From site to proposal in a fraction of the <em>time</em></h1>
-  <p class="lead">Draw a shed, house or extension as a clean 2D plan set, or test how a site could subdivide into lots, roads and stages. Two tools, one workflow, built for the concept stage.</p>
+  <p class="lead">Draw a shed, house or extension, see it in 3D, furnish it and render it, or test how a site could subdivide into lots, roads and stages. Two tools, one workflow, built for the concept stage.</p>
   <div class="chips"><span class="chip">No account needed</span><span class="chip">Concept plans in minutes</span><span class="chip">Led by a licensed civil engineer</span></div>
 </section>
 
 <section class="shell" id="viewport-section">
   <div class="demo viewport" data-demo>
     <div class="demo-bar" data-tabs role="tablist" aria-label="Choose a product">
-      <button class="tab" data-tab="plans" aria-selected="true">2D plan output</button>
+      <button class="tab" data-tab="plans" aria-selected="true">Plan Studio</button>
+      <button class="tab" data-tab="to3d" aria-selected="false">2D plan to 3D</button>
       <button class="tab" data-tab="subdivision" aria-selected="false">Subdivision modelling</button>
     </div>
     <div class="viewport-stage" data-panel="plans" id="vp-plans">
@@ -46,8 +47,10 @@
       </div>
       <div class="vp-cta"><a class="vp-btn" id="vp-launch" data-cfg-href="toolUrl" href="plan-studio/index.html#example"><span aria-hidden="true">▶</span> Use the tool</a><span class="vp-cap">Free to draw · No account · Concept plans</span></div>
     </div>
+    <div class="viewport-stage" data-panel="to3d" id="vp-3d" hidden></div>
+    <div class="viewport-foot" data-panel="to3d" hidden><label class="rangewrap" style="display:flex;gap:12px;align-items:center;flex:1;min-width:240px"><span class="chip">2D PLAN</span><input type="range" id="vp-range" min="0" max="100" value="0" style="flex:1;accent-color:#a3532d" aria-label="Plan to 3D"><span class="chip">3D MODEL</span></label><a class="link" href="plan-studio/index.html">See how Plan Studio works →</a></div>
     <div class="viewport-stage" data-panel="subdivision" id="vp-sub" hidden></div>
-    <div class="viewport-foot" data-panel="plans"><span>2D plan outputs: dimensioned plans, schedules, PDF and DXF.</span><a class="link" href="plan-studio/index.html">See the shed example →</a></div>
+    <div class="viewport-foot" data-panel="plans"><span>Plan Studio: draw the plan, see it in 3D, furnish and render it, export PDF and DXF.</span><a class="link" href="plan-studio/index.html">See the shed example →</a></div>
     <div class="viewport-foot" data-panel="subdivision" hidden><span>Subdivision modelling is by quote. <a class="link" href="subdivision/index.html">See the plan-to-model example →</a></span><a class="btn btn-sm" data-cfg-href="subdivisionOrderUrl" href="index.html?project=subdivision#enquire">Request a quote →</a></div>
   </div>
 </section>
@@ -55,6 +58,12 @@
 (function(){
   var cfg=window.GI_CONFIG||{},p=document.getElementById('vp-plans'),s=document.getElementById('vp-sub');
   if(cfg.heroVideoPlans){var bg=document.getElementById('vp-bg');bg.innerHTML='<video autoplay muted loop playsinline preload="auto" src="'+cfg.heroVideoPlans+'"'+(cfg.heroPoster?' poster="'+cfg.heroPoster+'"':'')+'></video>';}
+  var s3=document.getElementById('vp-3d'),rg=document.getElementById('vp-range');
+  document.querySelector('[data-tab=to3d]').addEventListener('click',function(){
+    if(!s3.firstChild){s3.innerHTML='<iframe title="Plan to 3D model" src="subdivision/ptm/models/warehouse.html?embed=1"></iframe>';s3.firstChild.addEventListener('load',function(){send()});}
+  });
+  function send(){var f=s3.firstChild;if(f&&f.contentWindow)f.contentWindow.postMessage({type:'morph',t:rg.value/100},'*')}
+  rg.addEventListener('input',send);
   document.querySelector('[data-tab=subdivision]').addEventListener('click',function(){
     if(!s.firstChild){s.innerHTML='<iframe title="Interactive subdivision site model" loading="lazy" src="subdivision/ptm/model/index.html"></iframe>';}
   });
@@ -66,7 +75,7 @@
   <div class="section-head"><div><p class="eyebrow">How it works</p><h2>One workflow, <em>two</em> outputs.</h2></div><p>Both products start the same way: tell us what you are planning. Pick the output that fits the stage you are at.</p></div>
   <ol class="steps">
     <li><h3>Share the brief</h3><p>Site details, sketches or an existing plan. A PDF, JPG or PNG is enough.</p></li>
-    <li><h3>Choose the output</h3><p>A 2D plan set, a subdivision concept, or both.</p></li>
+    <li><h3>Choose the output</h3><p>Plan Studio, a subdivision concept, or both.</p></li>
     <li><h3>We build it</h3><p>Plans drafted, lots laid out, staging shown, then a 3D model if you want it.</p></li>
     <li><h3>Present it</h3><p>Take it to partners, buyers, funders or your certifier.</p></li>
   </ol>
@@ -75,13 +84,13 @@
 <section class="band section" id="products"><div class="shell">
   <div class="section-head"><div><p class="eyebrow">Products</p><h2>Pick the tool for <em>the job.</em></h2></div></div>
   <div class="grid-2">
-    <article class="card"><span class="num">01 · 2D PLANS</span><h3>Plans for sheds, homes and extensions</h3><p>Dimensioned floor plans, schedules and elevations, delivered as PDF and DXF. The self-serve Plan Studio tool (<span data-cfg="planPackPrice">A$30</span> per project) is coming soon.</p><p style="margin-top:16px"><a class="btn btn-sm" href="plan-studio/index.html">Open 2D plans</a></p></article>
+    <article class="card"><span class="num">01 · PLAN STUDIO</span><h3>Draw it. Furnish it. See it in 3D.</h3><p>Draw floor plans for sheds, homes and extensions, see them as 3D models, add furniture and renderings, then export PDF and DXF. The self-serve Plan Studio tool (<span data-cfg="planPackPrice">A$30</span> per project) is coming soon.</p><p style="margin-top:16px"><a class="btn btn-sm" href="plan-studio/index.html">Open Plan Studio</a></p></article>
     <article class="card"><span class="num">02 · SUBDIVISION</span><h3>Concept lots, access and staging</h3><p>Preliminary feasibility from a licensed civil engineer, shown as a clear layout and a 3D site model.</p><p style="margin-top:16px"><a class="btn btn-sm" href="subdivision/index.html">Open subdivision modelling</a></p></article>
   </div>
 </div></section>
 
 <section class="shell section" id="services">
-  <div class="section-head"><div><p class="eyebrow">Add to any plan</p><h2>Extras for your <em>plans.</em></h2></div><p>Add a 3D fly-through or complex renderings to a 2D plan. Pay by card through Stripe. Subdivision work is by quote.</p></div>
+  <div class="section-head"><div><p class="eyebrow">Add to any plan</p><h2>Extras for your <em>plans.</em></h2></div><p>Add a 3D fly-through or complex renderings to a plan. Pay by card through Stripe. Subdivision work is by quote.</p></div>
   <div class="grid-3">
     <article class="card"><span class="num">+ A$<span data-cfg="addonFlyThroughPrice">5</span></span><h3>3D fly-through</h3><p>A furnished walk-through video of your plan.</p></article>
     <article class="card"><span class="num">+ A$<span data-cfg="addonRendersPrice">10</span></span><h3>Complex renderings</h3><p>Detailed still renderings of your design.</p></article>
@@ -94,7 +103,7 @@
   <div class="section-head"><div><p class="eyebrow">FAQ</p><h2>Before you start.</h2></div></div>
   <details><summary>Are these plans approved?</summary><p>No. Outputs are concept designs. They are not construction drawings or development application documents, and are not checked against planning controls or the National Construction Code.</p></details>
   <details><summary>Who is behind the subdivision work?</summary><p>Glide Inside's director is a licensed civil engineer and can assist with preliminary subdivision feasibility.</p></details>
-  <details><summary>Can I use both products on one project?</summary><p>Yes. A common path is a subdivision concept first, then 2D plans for the buildings on each lot.</p></details>
+  <details><summary>Can I use both products on one project?</summary><p>Yes. A common path is a subdivision concept first, then Plan Studio for the buildings on each lot.</p></details>
 </section>
 
 <section class="band section cta-band" id="enquire"><div class="shell">
@@ -107,7 +116,7 @@
 
 <footer class="site-footer"><div class="shell">
   <div><img src="assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside" style="height:30px;width:auto;margin-bottom:12px"><p>Glide Inside · ABN 11 549 431 925<br><a href="mailto:hello@glideinside.com.au">hello@glideinside.com.au</a> · 0477 207 027</p></div>
-  <nav aria-label="Products"><a href="plan-studio/index.html">2D plan outputs</a><a href="subdivision/index.html">Subdivision modelling</a><a href="plan-studio/index.html#addons">Plan add-ons</a></nav>
+  <nav aria-label="Products"><a href="plan-studio/index.html">Plan Studio</a><a href="subdivision/index.html">Subdivision modelling</a><a href="plan-studio/index.html#addons">Plan add-ons</a></nav>
   <nav aria-label="Legal"><a href="terms.html">Order terms</a><a href="privacy.html">Privacy</a></nav>
 </div></footer>
 </body></html>
