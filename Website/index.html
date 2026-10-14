@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>JCE Infrastructure | Civil, Stormwater and Flood Engineering NSW</title>
-<meta name="description" content="See the engineering before it is built. Stormwater, flood, hydraulic and civil engineering for homes, developments and rural sites across NSW, with fee proposals in 1 to 2 business days.">
+<meta name="description" content="See the engineering before it is built. Stormwater, flood, hydraulic and civil engineering, plus planning and multidisciplinary project delivery, for homes, developments and rural sites across NSW. Fee proposals in 1 to 2 business days.">
 <meta name="theme-color" content="#0a0a09">
 <link rel="canonical" href="https://jceinfrastructure.com.au/">
 <meta property="og:type" content="website">
@@ -24,7 +24,7 @@
 <link rel="stylesheet" href="models.css">
 <script>document.documentElement.classList.add('js');</script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"LocalBusiness","name":"JCE Infrastructure Pty Ltd","legalName":"JCE Infrastructure Pty Ltd","vatID":"ABN 29 699 165 663","url":"https://jceinfrastructure.com.au/","telephone":"+61477207027","email":"jayden@jceinfrastructure.com.au","image":"https://jceinfrastructure.com.au/assets/og-image.jpg","description":"Civil, stormwater, flood and hydraulic engineering for homes, developments and rural sites across New South Wales.","areaServed":{"@type":"AdministrativeArea","name":"New South Wales"}}
+{"@context":"https://schema.org","@type":"LocalBusiness","name":"JCE Infrastructure Pty Ltd","legalName":"JCE Infrastructure Pty Ltd","vatID":"ABN 29 699 165 663","url":"https://jceinfrastructure.com.au/","telephone":"+61477207027","email":"jayden@jceinfrastructure.com.au","image":"https://jceinfrastructure.com.au/assets/og-image.jpg","description":"Civil, stormwater, flood and hydraulic engineering, project planning and multidisciplinary delivery for homes, developments and rural sites across New South Wales.","areaServed":{"@type":"AdministrativeArea","name":"New South Wales"}}
 </script>
 </head>
 <body>
@@ -56,20 +56,12 @@
       <p class="label">SHEET 01 / COVER &nbsp;&middot;&nbsp; CIVIL AND HYDRAULIC ENGINEERING, NSW</p>
       <h1 id="h1" class="h-xl">See the engineering before it is built.</h1>
       <p class="lead">Stormwater, flood, access and infrastructure design for homes, developments and rural sites. Every design is modelled in 3D, so you can check it before it reaches site. Direct access to the principal engineer.</p>
+      <p class="lead lead2">We also plan, and lead multidisciplinary teams through complex project delivery.</p>
       <div class="cta-row">
         <a class="btn" href="#contact" data-quote>Request a quote <span aria-hidden="true">&rarr;</span></a>
         <a class="link" href="#showcase">Watch a plan become a model</a>
       </div>
     </div>
-    <figure class="sheet">
-      <div class="sheet-img"><img src="assets/model-iso.webp" alt="3D model of a seniors living development showing design surface, dwellings and accessways" width="1340" height="837" fetchpriority="high"></div>
-      <figcaption>
-        <table class="tblock" aria-label="Drawing title block">
-          <tr><th scope="row">Project</th><td>Seniors living, regional NSW</td><th scope="row">Sheet</th><td>01</td></tr>
-          <tr><th scope="row">Engineer</th><td>J. Callen, BEng (Hons), MIEAust</td><th scope="row">Scale</th><td>NTS</td></tr>
-        </table>
-      </figcaption>
-    </figure>
   </div>
 
   <div class="wrap">
@@ -124,17 +116,21 @@
         </div>
         <p class="readout mono" aria-hidden="true"><span id="rdStage">PLAN</span> <span class="rdbar"><i id="rdFill"></i></span> <span id="rdPct">000</span>%</p>
       </div>
+      <div class="stagewrap">
       <div class="show-stage" id="showStage">
         <i class="reg tl" aria-hidden="true"></i><i class="reg tr" aria-hidden="true"></i><i class="reg bl" aria-hidden="true"></i><i class="reg br" aria-hidden="true"></i>
         <div class="slot on" data-m="seniors">
-          <img class="poster" src="assets/model-iso.webp" alt="Poster of the seniors living 3D model" width="1340" height="837" loading="lazy">
+          <div class="paper"><img class="poster" src="assets/services-plan-drawing.webp" alt="Issued civil plan sheet for the seniors living development, shown as a PDF" width="3200" height="1860" loading="lazy"><span class="pdftag">PDF &middot; Levels plan, sheet 1 of 1</span></div>
           <iframe data-src="model/index.html?embed=1&amp;morph=1" title="3D model of a seniors living development morphing from plan to solid model" tabindex="-1"></iframe>
         </div>
         <div class="slot" data-m="industrial">
-          <img class="poster" src="assets/mudgee-warehouse-plan.webp" alt="Siteworks and levels plan of the industrial warehouse" width="3600" height="2543" loading="lazy">
+          <div class="paper"><img class="poster" src="assets/mudgee-warehouse-plan.webp" alt="Issued siteworks and levels plan of the industrial warehouse, shown as a PDF" width="3600" height="2543" loading="lazy"><span class="pdftag">PDF &middot; Levels plan, sheet 1 of 1</span></div>
           <iframe data-src="models/mudgee-warehouse.html?embed=1" title="3D model of an industrial warehouse building up from its siteworks plan" tabindex="-1"></iframe>
         </div>
-        <p class="stage-note" id="stageNote" hidden>Interactive view unavailable on this device. Showing the poster image.</p>
+        <p class="stage-note" id="stageNote" hidden>Interactive view unavailable on this device. Showing the plan sheet.</p>
+      </div>
+      <div class="ctl-card" id="ctlCard" hidden><span class="label">Take control of the model</span><button type="button" class="btn btn-sm" id="ctlBtn">Take control</button></div>
+      <div class="vcol" id="vcol" role="group" aria-label="Model views" hidden></div>
       </div>
       <div class="show-foot">
         <label class="rangewrap" for="showRange"><span class="label">PLAN</span><input type="range" id="showRange" min="0" max="100" value="0" aria-label="Plan to model progress"><span class="label">MODEL</span></label>
@@ -161,9 +157,23 @@
   </div>
 </section>
 
+<section class="sec" id="planning" aria-labelledby="plan-h">
+  <div class="wrap">
+    <header class="sh"><p class="label">SHEET 04 / PLANNING</p><h2 id="plan-h" class="h-lg">Planning and multidisciplinary delivery</h2>
+      <p class="lead">Beyond design, we plan the project and lead the team through complex delivery, with one accountable engineer across the specialists.</p></header>
+    <div class="grid-4">
+      <div class="card"><span class="mono idx">P-01</span><h3>Project planning</h3><p>Planning and staging of the engineering, from feasibility through to approval and construction documents.</p></div>
+      <div class="card"><span class="mono idx">P-02</span><h3>Design management</h3><p>Design management across civil, hydraulic, structural, survey, geotechnical and other specialists, as on the Western Sydney Airport sewer rising main.</p></div>
+      <div class="card"><span class="mono idx">P-03</span><h3>Coordination</h3><p>Inputs, programme and approvals coordinated, with the specialist network confirmed in the written scope.</p></div>
+      <div class="card"><span class="mono idx">P-04</span><h3>Independent peer review</h3><p>Independent peer review of major and critical designs before they are issued.</p></div>
+    </div>
+    <div class="cta-row"><a class="btn" href="#contact" data-quote data-need="Planning or multidisciplinary project delivery">Discuss project delivery <span aria-hidden="true">&rarr;</span></a></div>
+  </div>
+</section>
+
 <section class="sec" id="models" aria-labelledby="models-h">
   <div class="wrap">
-    <header class="sh"><p class="label">SHEET 04 / MODEL HUB</p><h2 id="models-h" class="h-lg">Explore the live models</h2>
+    <header class="sh"><p class="label">SHEET 05 / MODEL HUB</p><h2 id="models-h" class="h-lg">Explore the live models</h2>
       <p class="lead">Drag to turn each model, switch layers on and off, and inspect what sits beneath the surface. Illustrative models of typical JCE scopes.</p></header>
     <div class="hub-tabs" role="tablist" aria-label="Model hub">
       <button role="tab" type="button" id="hub-t-residential" aria-controls="hub-residential" aria-selected="true" data-hub="residential">Residential</button>
@@ -359,37 +369,92 @@
 
 <section class="sec" id="process" aria-labelledby="proc-h">
   <div class="wrap">
-    <header class="sh"><p class="label">SHEET 05 / REVISIONS</p><h2 id="proc-h" class="h-lg">How a project runs</h2></header>
-    <div class="revwrap">
-      <table class="rev">
-        <caption class="sr">Project stages, shown as a drawing revision table</caption>
-        <thead><tr><th scope="col">Rev</th><th scope="col">Stage</th><th scope="col">What happens</th><th scope="col">Issued</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">A</th><td>Enquiry</td><td>Send the address and plans.</td><td class="mono">Day 0</td></tr>
-          <tr><th scope="row">B</th><td>Fee proposal</td><td>Written scope, fee and programme.</td><td class="mono">Day 1 to 2</td></tr>
-          <tr><th scope="row">C</th><td>Inputs agreed</td><td>Survey, council requirements and approval stage confirmed.</td><td class="mono">On acceptance</td></tr>
-          <tr><th scope="row">D</th><td>Design and model</td><td>Calculations, drawings and a 3D model checked against the site.</td><td class="mono">Per programme</td></tr>
-          <tr><th scope="row">E</th><td>Peer review</td><td>Independent review of major designs.</td><td class="mono">Before issue</td></tr>
-          <tr><th scope="row">F</th><td>Issue</td><td>Issued to council or your certifier.</td><td class="mono">Final</td></tr>
-        </tbody>
-      </table>
+    <header class="sh"><p class="label">SHEET 06 / PROCESS</p><h2 id="proc-h" class="h-lg">How a project runs</h2></header>
+    <div class="flow" id="flow">
+<svg class="fc fc-h" viewBox="0 0 1200 290" aria-hidden="true" focusable="false" data-orient="h">
+<defs><marker id="ah-h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c7a256"/></marker></defs>
+<path class="cn" d="M140.0 140L180.0 140" data-a="0.0000" data-b="0.1417" marker-end="url(#ah-h)"/>
+<path class="cn" d="M310.0 140L350.0 140" data-a="0.1667" data-b="0.3083" marker-end="url(#ah-h)"/>
+<path class="cn" d="M480.0 140L520.0 140" data-a="0.3333" data-b="0.4750" marker-end="url(#ah-h)"/>
+<path class="cn" d="M650.0 140L690.0 140" data-a="0.5000" data-b="0.6417" marker-end="url(#ah-h)"/>
+<path class="cn" d="M820.0 140L860.0 140" data-a="0.6667" data-b="0.8083" marker-end="url(#ah-h)"/>
+<path class="cn" d="M990.0 140L1030.0 140" data-a="0.8333" data-b="0.9750" marker-end="url(#ah-h)"/>
+<path class="cn loop" d="M585 108.0V52H415V108.0" data-a="0.5000" data-b="0.6500" marker-end="url(#ah-h)"/>
+<path class="cn no" d="M755 172.0V245H1095V172.0" data-a="0.6667" data-b="1.0000" marker-end="url(#ah-h)"/>
+<text class="fl" x="500" y="42" text-anchor="middle">REVISIONS</text><text class="fl" x="840" y="130" text-anchor="middle">YES</text><text class="fl" x="800" y="236">NO</text>
+<g class="fn" data-f="0.0000">
+<rect x="10.0" y="108.0" width="130" height="64"/>
+<text class="fr" x="75" y="126" text-anchor="middle">REV A</text><text class="ft" x="75" y="145" text-anchor="middle">Enquiry</text><text class="fm" x="75" y="162" text-anchor="middle">DAY 0</text>
+</g>
+<g class="fn" data-f="0.1667">
+<rect x="180.0" y="108.0" width="130" height="64"/>
+<text class="fr" x="245" y="126" text-anchor="middle">REV B</text><text class="ft" x="245" y="145" text-anchor="middle">Fee proposal</text><text class="fm" x="245" y="162" text-anchor="middle">DAY 1 TO 2</text>
+</g>
+<g class="fn" data-f="0.3333">
+<rect x="350.0" y="108.0" width="130" height="64"/>
+<text class="fr" x="415" y="126" text-anchor="middle">REV C</text><text class="ft" x="415" y="145" text-anchor="middle">Inputs agreed</text><text class="fm" x="415" y="162" text-anchor="middle">ON ACCEPTANCE</text>
+</g>
+<g class="fn" data-f="0.5000">
+<rect x="520.0" y="108.0" width="130" height="64"/>
+<text class="fr" x="585" y="126" text-anchor="middle">REV D</text><text class="ft" x="585" y="145" text-anchor="middle">Design and model</text><text class="fm" x="585" y="162" text-anchor="middle">PER PROGRAMME</text>
+</g>
+<g class="fn" data-f="0.6667">
+<polygon points="704,108 806,108 820,140 806,172 704,172 690,140"/>
+<text class="ft" x="755" y="137" text-anchor="middle" style="font-size:11.5px">Major or critical</text><text class="ft" x="755" y="153" text-anchor="middle" style="font-size:11.5px">design?</text>
+</g>
+<g class="fn" data-f="0.8333">
+<rect x="860.0" y="108.0" width="130" height="64"/>
+<text class="fr" x="925" y="126" text-anchor="middle">REV E</text><text class="ft" x="925" y="145" text-anchor="middle">Peer review</text><text class="fm" x="925" y="162" text-anchor="middle">BEFORE ISSUE</text>
+</g>
+<g class="fn" data-f="1.0000">
+<rect x="1030.0" y="108.0" width="130" height="64"/>
+<text class="fr" x="1095" y="126" text-anchor="middle">REV F</text><text class="ft" x="1095" y="145" text-anchor="middle">Issue</text><text class="fm" x="1095" y="162" text-anchor="middle">FINAL</text>
+</g>
+<circle class="tok" r="7" cx="75" cy="140" data-x0="75" data-y0="140" data-x1="1095" data-y1="140"/>
+</svg>
+<svg class="fc fc-v" viewBox="0 0 380 770" aria-hidden="true" focusable="false" data-orient="v">
+<defs><marker id="ah-v" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c7a256"/></marker></defs>
+<path class="cn" d="M190 84.0L190 130.0" data-a="0.0000" data-b="0.1417" marker-end="url(#ah-v)"/>
+<path class="cn" d="M190 194.0L190 240.0" data-a="0.1667" data-b="0.3083" marker-end="url(#ah-v)"/>
+<path class="cn" d="M190 304.0L190 350.0" data-a="0.3333" data-b="0.4750" marker-end="url(#ah-v)"/>
+<path class="cn" d="M190 414.0L190 460.0" data-a="0.5000" data-b="0.6417" marker-end="url(#ah-v)"/>
+<path class="cn" d="M190 524.0L190 570.0" data-a="0.6667" data-b="0.8083" marker-end="url(#ah-v)"/>
+<path class="cn" d="M190 634.0L190 680.0" data-a="0.8333" data-b="0.9750" marker-end="url(#ah-v)"/>
+<path class="cn loop" d="M70.0 382H22V272H70.0" data-a="0.5000" data-b="0.6500" marker-end="url(#ah-v)"/>
+<path class="cn no" d="M310.0 492H352V712H310.0" data-a="0.6667" data-b="1.0000" marker-end="url(#ah-v)"/>
+<text class="fl" x="36" y="209" transform="rotate(-90 36 209)" text-anchor="middle" style="display:none"></text><text class="fl" x="30" y="318" transform="rotate(-90 30 318)" text-anchor="middle">REVISIONS</text><text class="fl" x="200" y="522">YES</text><text class="fl" x="326" y="590">NO</text>
+<g class="fn" data-f="0.0000">
+<rect x="70.0" y="20.0" width="240" height="64"/>
+<text class="fr" x="190" y="38" text-anchor="middle">REV A</text><text class="ft" x="190" y="57" text-anchor="middle">Enquiry</text><text class="fm" x="190" y="74" text-anchor="middle">DAY 0</text>
+</g>
+<g class="fn" data-f="0.1667">
+<rect x="70.0" y="130.0" width="240" height="64"/>
+<text class="fr" x="190" y="148" text-anchor="middle">REV B</text><text class="ft" x="190" y="167" text-anchor="middle">Fee proposal</text><text class="fm" x="190" y="184" text-anchor="middle">DAY 1 TO 2</text>
+</g>
+<g class="fn" data-f="0.3333">
+<rect x="70.0" y="240.0" width="240" height="64"/>
+<text class="fr" x="190" y="258" text-anchor="middle">REV C</text><text class="ft" x="190" y="277" text-anchor="middle">Inputs agreed</text><text class="fm" x="190" y="294" text-anchor="middle">ON ACCEPTANCE</text>
+</g>
+<g class="fn" data-f="0.5000">
+<rect x="70.0" y="350.0" width="240" height="64"/>
+<text class="fr" x="190" y="368" text-anchor="middle">REV D</text><text class="ft" x="190" y="387" text-anchor="middle">Design and model</text><text class="fm" x="190" y="404" text-anchor="middle">PER PROGRAMME</text>
+</g>
+<g class="fn" data-f="0.6667">
+<polygon points="84,460 296,460 310,492 296,524 84,524 70,492"/>
+<text class="ft" x="190" y="497" text-anchor="middle">Major or critical design?</text>
+</g>
+<g class="fn" data-f="0.8333">
+<rect x="70.0" y="570.0" width="240" height="64"/>
+<text class="fr" x="190" y="588" text-anchor="middle">REV E</text><text class="ft" x="190" y="607" text-anchor="middle">Peer review</text><text class="fm" x="190" y="624" text-anchor="middle">BEFORE ISSUE</text>
+</g>
+<g class="fn" data-f="1.0000">
+<rect x="70.0" y="680.0" width="240" height="64"/>
+<text class="fr" x="190" y="698" text-anchor="middle">REV F</text><text class="ft" x="190" y="717" text-anchor="middle">Issue</text><text class="fm" x="190" y="734" text-anchor="middle">FINAL</text>
+</g>
+<circle class="tok" r="7" cx="190" cy="52" data-x0="190" data-y0="52" data-x1="190" data-y1="712"/>
+</svg>
+<ol class="sr"><li>Enquiry. Send the address and plans. Day 0.</li><li>Fee proposal. Written scope, fee and programme. Day 1 to 2.</li><li>Inputs agreed. Survey, council requirements and approval stage confirmed. On acceptance. Revisions loop back here from design.</li><li>Design and model. Calculations, drawings and a 3D model checked against the site. Per programme.</li><li>Decision. Is it a major or critical design? If yes, go to peer review. If no, go straight to issue.</li><li>Peer review. Independent review of major designs. Before issue.</li><li>Issue. Issued to council or your certifier. Final.</li></ol>
     </div>
-  </div>
-</section>
-
-<section class="sec" aria-labelledby="cmp-h">
-  <div class="wrap">
-    <header class="sh"><p class="label">SHEET 06 / COMPARISON</p><h2 id="cmp-h" class="h-lg">Traditional consultant or JCE</h2></header>
-    <div class="cmp" role="table" aria-label="Traditional consultant compared with JCE">
-      <div class="cmp-row cmp-head" role="row"><span role="columnheader">&nbsp;</span><span role="columnheader">Generic consultant</span><span role="columnheader" class="gold">JCE Infrastructure</span></div>
-      <div class="cmp-row" role="row"><span role="rowheader">Quote</span><span role="cell" class="bad">Slow to arrive</span><span role="cell" class="good">Fee proposal in 1 to 2 business days</span></div>
-      <div class="cmp-row" role="row"><span role="rowheader">Access</span><span role="cell" class="bad">Gatekept by juniors</span><span role="cell" class="good">Direct access to the engineer delivering the work</span></div>
-      <div class="cmp-row" role="row"><span role="rowheader">Scope</span><span role="cell" class="bad">Unclear until the invoice</span><span role="cell" class="good">Written scope, fee and programme</span></div>
-      <div class="cmp-row" role="row"><span role="rowheader">Council</span><span role="cell" class="bad">Generic details</span><span role="cell" class="good">Designs to your council's DCP</span></div>
-      <div class="cmp-row" role="row"><span role="rowheader">Checking</span><span role="cell" class="bad">Same desk reviews its own work</span><span role="cell" class="good">Independent peer review</span></div>
-      <div class="cmp-row" role="row"><span role="rowheader">Specialists</span><span role="cell" class="bad">Gaps found mid-project</span><span role="cell" class="good">Specialist network confirmed in scope</span></div>
-    </div>
-    <blockquote class="note"><span class="label">CLIENT NOTE</span>&ldquo;Cost effective and innovative designs that have resulted in very positive wins for the client.&rdquo;<cite>Nathan Doust, NDPH Director</cite></blockquote>
   </div>
 </section>
 
@@ -413,6 +478,7 @@
       <div class="prow" role="row"><span role="rowheader">Mudgee warehouse</span><span role="cell">Grading, stormwater and detention, 3D modelling</span></div>
       <div class="prow" role="row"><span role="rowheader">Gunnedah rural flood levee</span><span role="cell">Site inspection and engineering report</span></div>
     </div>
+    <blockquote class="note"><span class="label">CLIENT NOTE</span>&ldquo;Cost effective and innovative designs that have resulted in very positive wins for the client.&rdquo;<cite>Nathan Doust, NDPH Director</cite></blockquote>
   </div>
 </section>
 
@@ -490,7 +556,7 @@
           <select name="project"><option value="">Select if known</option><option>New house or granny flat</option><option>Extension or shed</option><option>Duplex or multi-dwelling</option><option>Commercial or industrial</option><option>Subdivision</option><option>Council or infrastructure work</option><option>Something else</option></select>
         </label>
         <label>What you need
-          <select name="need"><option value="">Select if known</option><option>Stormwater plan</option><option>On-site detention</option><option>Driveway or car park</option><option>Pavement or hardstand design</option><option>Swept path analysis</option><option>Water quality modelling (MUSIC)</option><option>Flood assessment</option><option>Subdivision design</option><option>Slab or retaining wall</option><option>Water or sewer</option><option>Council request for information</option><option>Hydraulic design</option><option>Erosion and sediment control plan</option><option>Site classification and footings</option><option>Not sure yet</option></select>
+          <select name="need"><option value="">Select if known</option><option>Stormwater plan</option><option>On-site detention</option><option>Driveway or car park</option><option>Pavement or hardstand design</option><option>Swept path analysis</option><option>Water quality modelling (MUSIC)</option><option>Flood assessment</option><option>Subdivision design</option><option>Slab or retaining wall</option><option>Water or sewer</option><option>Council request for information</option><option>Hydraulic design</option><option>Erosion and sediment control plan</option><option>Site classification and footings</option><option>Planning or multidisciplinary project delivery</option><option>Not sure yet</option></select>
         </label>
       </div>
       <label>Timeframe

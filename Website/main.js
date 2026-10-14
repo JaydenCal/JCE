@@ -32,8 +32,8 @@ var GUIDE={
 var MODELNAME={subdivision:'Subdivisions',commercial:'Commercial and industrial',house:'Residential'};
 var HUBTAB={subdivision:'subdivision',commercial:'commercial',house:'residential'};
 var ROLES={
-  developer:{label:'Developer',bullets:['Subdivision and multi-dwelling civil packages','Feasibility, OSD and stormwater','Flood and services (water and sewer) coordinated'],guides:['stormwater-management-plans-and-osd','erosion-and-sediment-control-plans'],model:'subdivision',project:'Subdivision',need:'Subdivision design'},
-  council:{label:'Council',bullets:['RFI responses and flood assessments to the NSW Flood Risk Management Manual','Water and sewer designed to your specification','Independent peer review'],guides:['flood-maps-and-1-percent-aep','pump-station-and-pressure-sewer-design'],model:'subdivision',project:'Council or infrastructure work',need:'Council request for information'},
+  developer:{label:'Developer',bullets:['Subdivision and multi-dwelling civil packages','Feasibility, OSD and stormwater','Flood and services (water and sewer) coordinated','Planning and multidisciplinary project delivery'],guides:['stormwater-management-plans-and-osd','erosion-and-sediment-control-plans'],model:'subdivision',project:'Subdivision',need:'Subdivision design'},
+  council:{label:'Council',bullets:['RFI responses and flood assessments to the NSW Flood Risk Management Manual','Water and sewer designed to your specification','Independent peer review','Planning and multidisciplinary project delivery'],guides:['flood-maps-and-1-percent-aep','pump-station-and-pressure-sewer-design'],model:'subdivision',project:'Council or infrastructure work',need:'Council request for information'},
   architect:{label:'Architect',bullets:['Early stormwater and levels advice','Driveways, swept paths and accessible paths','Civil sub-consultant for DA and CC'],guides:['swept-path-analysis','site-classification-footings-and-piers'],model:'commercial',project:'Duplex or multi-dwelling',need:'Stormwater plan'},
   individual:{label:'Individual',bullets:['Stormwater plan for a DA, granny flat or extension','Slab and footings','Driveway design'],guides:['stormwater-management-plans-and-osd','site-classification-footings-and-piers'],model:'house',project:'New house or granny flat',need:'Stormwater plan'}
 };
@@ -67,7 +67,7 @@ function prefill(need){
   setSel('project',state.project);
   setSel('need',need||state.need);
 }
-$$('[data-quote]').forEach(function(a){a.addEventListener('click',function(){prefill()})});
+$$('[data-quote]').forEach(function(a){a.addEventListener('click',function(){prefill(a.getAttribute('data-need'))})});
 $$('.svc[data-need]').forEach(function(a){if(a.getAttribute('href')==='#contact')a.addEventListener('click',function(){prefill(a.getAttribute('data-need'))})});
 
 /* in-page links jump straight to the target: smooth scrolling is cut short by the pinned section */
@@ -113,18 +113,25 @@ if(hub&&'IntersectionObserver' in window){
 }else{hubNear=true;loadModels()}
 
 /* ---------- plan to model showcase ---------- */
-var sec=$('#showcase'),slots=$$('.slot',sec),toggles=$$('.tg',sec);
+var sec=$('#showcase'),slots=$$('.slot',sec),toggles=$$('.tg',sec),wrap=$('.stagewrap',sec);
 var range=$('#showRange'),rdFill=$('#rdFill'),rdPct=$('#rdPct'),rdStage=$('#rdStage'),cap=$('#showCap');
-var CAPS={seniors:'32 single-storey units on a sloping lot. The graded surface, accessways, ramps and services rise out of the issued plan as you scroll.',industrial:'A warehouse development at siteworks stage. The issued levels plan lifts into ground, drainage and buildings as you scroll.'};
-var cur='seniors',prog=0,webgl=false;
+var card=$('#ctlCard'),ctlBtn=$('#ctlBtn'),vcol=$('#vcol'),stageEl=$('#showStage');
+var CAPS={seniors:'32 single-storey units on a sloping lot. The issued plan sheet rises into the graded surface, accessways, ramps and services as you scroll.',industrial:'A warehouse development at siteworks stage. The issued levels plan lifts into ground, drainage and buildings as you scroll.'};
+var cur='seniors',prog=0,webgl=false,control=false,clicked=false,activeView='';
 try{var cv=d.createElement('canvas');webgl=!!(window.WebGLRenderingContext&&(cv.getContext('webgl')||cv.getContext('experimental-webgl')))}catch(e){}
-var ready={seniors:false,industrial:false};
+var ready={seniors:false,industrial:false},views={seniors:null,industrial:null};
 function slot(m){return slots.filter(function(s){return s.getAttribute('data-m')===m})[0]}
 function frameOf(m){var s=slot(m);return s&&$('iframe',s)}
 function mapT(p){return reduce?1:clamp((p-0.06)/0.88,0,1)}
-function send(m,t){
-  var f=frameOf(m);if(!f||!f.contentWindow||!ready[m])return;
-  try{f.contentWindow.postMessage({type:'morph',t:t},'*')}catch(e){}
+function post(m,msg){var f=frameOf(m);if(!f||!f.contentWindow||!ready[m])return;try{f.contentWindow.postMessage(msg,'*')}catch(e){}}
+function send(m,t){post(m,{type:'morph',t:t})}
+function sm(x){x=clamp(x,0,1);return x*x*(3-2*x)}
+/* the issued plan sheet crossfades into the live model, so no frame is ever blank */
+function paint(m){
+  var s=slot(m),paper=$('.paper',s),f=$('iframe',s),t=mapT(prog);
+  var sheet=ready[m]&&webgl?1-sm((t-0.05)/0.3):1;
+  paper.style.opacity=sheet;paper.style.transform='scale('+(1+0.07*(1-sheet))+')';
+  f.style.opacity=ready[m]&&webgl?sm((t-0.12)/0.3):0;
 }
 function readout(p){
   var pct=Math.round(p*100);
@@ -132,40 +139,93 @@ function readout(p){
   rdStage.textContent=p<0.06?'PLAN':p>0.94?'MODEL':'RISING';
   if(range&&+range.value!==pct)range.value=pct;
 }
+function ui(){
+  card.hidden=!(webgl&&ready[cur]&&(control||clicked||mapT(prog)>=0.92));
+  card.querySelector('.label').textContent=control?'Model controls on':'Take control of the model';
+  ctlBtn.textContent=control?'Release':'Take control';
+  vcol.hidden=!(control&&views[cur]);
+  wrap.classList.toggle('ctl',control);
+}
+function buildViews(){
+  vcol.textContent='';
+  (views[cur]||[]).forEach(function(v){
+    var b=el('button','vbtn',v.label);b.type='button';b.setAttribute('data-id',v.id);b.setAttribute('aria-pressed',v.id===activeView?'true':'false');
+    b.addEventListener('click',function(){activeView=v.id;$$('.vbtn',vcol).forEach(function(o){o.setAttribute('aria-pressed',o===b?'true':'false')});post(cur,{type:'view',id:v.id})});
+    vcol.appendChild(b);
+  });
+}
+function setControl(on){
+  if(on===control)return;
+  control=on;
+  var f=frameOf(cur);
+  if(on){send(cur,1);if(f)f.style.opacity=1;activeView=''}
+  post(cur,{type:'control',on:on});
+  if(on)buildViews();
+  else{activeView='';paint(cur);send(cur,mapT(prog))}
+  ui();
+}
 var pend=false;
 function update(p){
   prog=clamp(p,0,1);readout(prog);
-  if(pend)return;pend=true;
-  requestAnimationFrame(function(){pend=false;send(cur,mapT(prog))});
+  if(control&&mapT(prog)<0.85)setControl(false);
+  if(!control)paint(cur);
+  ui();
+  if(control||pend)return;pend=true;
+  requestAnimationFrame(function(){pend=false;if(!control)send(cur,mapT(prog))});
 }
 function loadFrame(m){
   var f=frameOf(m);if(!f||f.getAttribute('src')||!webgl)return;
   f.setAttribute('src',f.getAttribute('data-src'));
 }
-function markReady(m){ready[m]=true;slot(m).classList.add('ready');send(m,mapT(prog))}
+function markReady(m){ready[m]=true;slot(m).classList.add('ready');send(m,mapT(prog));paint(m);ui()}
 window.addEventListener('message',function(e){
   var dta=e.data;if(!dta)return;
   ['seniors','industrial'].forEach(function(m){
     var f=frameOf(m);if(!f||e.source!==f.contentWindow)return;
-    if(dta.type==='morph-ready'||dta.jceModelReady)markReady(m);
+    if(dta.type==='ready'&&dta.views)views[m]=dta.views;
+    if(dta.type==='release'&&m===cur)setControl(false);
+    if(dta.type==='morph-ready'||dta.jceModelReady||dta.type==='ready')markReady(m);
   });
 });
 function pick(m){
-  cur=m;
+  setControl(false);
+  cur=m;clicked=false;
   toggles.forEach(function(b){var on=b.getAttribute('data-m')===m;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});
   slots.forEach(function(s){s.classList.toggle('on',s.getAttribute('data-m')===m)});
   cap.textContent=CAPS[m];
-  loadFrame(m);send(m,mapT(prog));
+  loadFrame(m);send(m,mapT(prog));paint(m);ui();
 }
 toggles.forEach(function(b){b.addEventListener('click',function(){pick(b.getAttribute('data-m'))})});
+ctlBtn.addEventListener('click',function(){setControl(!control)});
+stageEl.addEventListener('click',function(){clicked=true;ui()});
+d.addEventListener('keydown',function(e){if(e.key==='Escape'&&control)setControl(false)});
 if(!webgl){var n=$('#stageNote');if(n)n.hidden=false}
 if(range)range.addEventListener('input',function(){update(range.value/100)});
 if(sec&&'IntersectionObserver' in window){
   var sio=new IntersectionObserver(function(en){if(en[0].isIntersecting){loadFrame(cur);sio.disconnect()}},{rootMargin:'900px 0px'});
   sio.observe(sec);
 }else loadFrame(cur);
-readout(0);
+readout(0);paint('seniors');paint('industrial');
 if(reduce){root.classList.add('rm');update(1)}
+
+/* ---------- process flowchart: draws in, nodes light, a token travels ---------- */
+var flows=$$('.fc');
+function flowAt(p){
+  flows.forEach(function(svg){
+    $$('.cn',svg).forEach(function(c){
+      var L=c._L||(c._L=c.getTotalLength()),a=+c.getAttribute('data-a'),b=+c.getAttribute('data-b');
+      var k=clamp((p-a)/(b-a),0,1);
+      c.style.strokeDasharray=c.classList.contains('cn')&&(c.classList.contains('loop')||c.classList.contains('no'))?'':'';
+      if(!c._dash){c._dash=getComputedStyle(c).strokeDasharray}
+      if(c._dash&&c._dash!=='none'){ /* dashed connectors: reveal with a mask-like clip using opacity ramp */ c.style.opacity=k>0?1:0;c.style.strokeDasharray=c._dash;c.style.strokeDashoffset=0;if(k<1){c.style.strokeDasharray=(L*k)+' '+L;} }
+      else{c.style.strokeDasharray=L;c.style.strokeDashoffset=L*(1-k)}
+      c.style.markerEnd=k>=0.99?'':'none';
+    });
+    $$('.fn',svg).forEach(function(n){n.classList.toggle('lit',p>=+n.getAttribute('data-f')-0.001)});
+    var t=$('.tok',svg),x0=+t.getAttribute('data-x0'),y0=+t.getAttribute('data-y0'),x1=+t.getAttribute('data-x1'),y1=+t.getAttribute('data-y1');
+    t.setAttribute('cx',x0+(x1-x0)*p);t.setAttribute('cy',y0+(y1-y0)*p);
+  });
+}
 
 /* ---------- GSAP: reveals, count-up, pinned scrub ---------- */
 function start(){
@@ -174,18 +234,23 @@ function start(){
   gsap.registerPlugin(ST);
   if(reduce)return;
   root.classList.add('rv');
-  $$('.sh,.card,.cmp,.ptable,.faq,.form,.stat,.rev,.note,.picker,.hub-tabs').forEach(function(e){e.setAttribute('data-reveal','')});
-  ST.batch('[data-reveal]',{start:'top 92%',once:true,onEnter:function(b){gsap.to(b,{opacity:1,y:0,duration:.7,ease:'power3.out',stagger:.07,overwrite:true})}});
+  $$('.sh,.card,.ptable,.faq,.form,.stat,.flow,.note,.picker,.hub-tabs').forEach(function(e){e.setAttribute('data-reveal','')});
+  ST.batch('[data-reveal]',{start:'top 92%',once:true,batchMax:4,onEnter:function(b){gsap.to(b,{opacity:1,y:0,duration:.7,ease:'power3.out',stagger:.07,overwrite:true})}});
   $$('[data-count]').forEach(function(e){
     var end=+e.getAttribute('data-count'),pre=e.getAttribute('data-prefix')||'',suf=e.getAttribute('data-suffix')||'',o={v:0};
     ST.create({trigger:e,start:'top 92%',once:true,onEnter:function(){
       gsap.to(o,{v:end,duration:1.2,ease:'power2.out',onUpdate:function(){e.textContent=pre+Math.round(o.v)+suf},onComplete:function(){e.textContent=pre+end+suf}});
     }});
   });
+  var fl=$('#flow');
+  if(fl){
+    root.classList.add('js-flow');flowAt(0);
+    ST.create({trigger:fl,start:'top 78%',end:'bottom 55%',scrub:0.4,onUpdate:function(self){flowAt(self.progress)}});
+  }
   var pin=$('#showPin');
   if(pin){
     var mobile=window.matchMedia('(max-width:639px)').matches;
-    ST.create({trigger:pin,start:'top top',end:'+='+(mobile?'160%':'220%'),pin:true,anticipatePin:1,onUpdate:function(self){update(self.progress)},onRefresh:function(self){update(self.progress)}});
+    ST.create({trigger:pin,start:'top top',end:'+='+(mobile?'160%':'220%'),pin:true,anticipatePin:1,refreshPriority:1,onUpdate:function(self){update(self.progress)},onRefresh:function(self){update(self.progress)}});
   }
   window.addEventListener('load',function(){ST.refresh()});
 }
