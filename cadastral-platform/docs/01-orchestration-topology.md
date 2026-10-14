@@ -28,7 +28,7 @@ Status: Phase 1 design, awaiting approval. No application code exists yet.
 | SA3 | Geometry & TIN Engine | Service | contours, lot, envelope, overlay footprint | `terrain.*` | No |
 | SA4 | Hydrology & Services Mapper | Service | DBYD PDFs, BOM rainfall, footprint | `utilities.*` | No (CV for DBYD raster) |
 | SA5 | CAD & Annotation Pipeline | Service | all geometry + `annotations.*` | `annotations.*`, DXF in object storage | No |
-| SA6 | GlideInside 3D Sync | Service | TIN, utilities, overlay | glTF/JSON mesh bundle | No |
+| SA6 | JCESITE 3D site scene | Service | TIN, utilities, overlay | glTF/JSON mesh bundle | No |
 | SA7 | Architectural PDF Ingestor & Spatial Aligner | CV + LLM | uploaded PDF, lot, boundary segments | `plans.*` | Yes (title block, scale, slab classification) |
 
 ## 3. System topology
@@ -48,7 +48,7 @@ flowchart TB
     ORCH -->|spawn| SA3[SA3 Geometry & TIN]
     ORCH -->|spawn| SA4[SA4 Hydrology & Services]
     ORCH -->|spawn| SA5[SA5 CAD / DXF]
-    ORCH -->|spawn| SA6[SA6 GlideInside 3D]
+    ORCH -->|spawn| SA6[SA6 JCESITE 3D site]
 
     SA1 --> EXT1[(NSW Spatial Services /<br/>QLD Globe APIs)]
     SA2 --> PGV[(pgvector DCP chunks)]

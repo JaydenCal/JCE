@@ -9,5 +9,5 @@ export default function ViewerDemoPage() {
   const bundle = useMemo(() => buildSampleBundle(), []);
   const provider = useMemo(() => mockProvider(sampleCatalogue(), bundle.items), [bundle]);
   const assistant = useMemo(() => demoAssistant(bundle.parts, [bundle.info.origin[0], bundle.info.origin[1]]), [bundle]);
-  return <ViewerShell bundle={bundle} assistant={assistant} provider={provider} projectId="demo" complianceCheck={sampleComplianceCheck} onItemsChange={(i) => console.debug('items', i.length)} />;
+  return <ViewerShell demo bundle={bundle} assistant={assistant} provider={provider} projectId="demo" complianceCheck={sampleComplianceCheck} onItemsChange={(i) => console.debug('items', i.length)} />;
 }

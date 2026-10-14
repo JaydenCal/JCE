@@ -1,4 +1,4 @@
-"""Sample scene (612 m2 sloping lot) and CLI: python -m app.agents.sa6_glide3d.sample [out.json]"""
+"""Sample scene (612 m2 sloping lot) and CLI: python -m app.agents.sa6_site3d.sample [out.json]"""
 from __future__ import annotations
 
 import sys
@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 from shapely.geometry import LineString, Point, box
 
-from app.common.contracts import BoundarySegment, DrivewayDesign, LotContext, RwtSummary, ServiceLine, OverlayPolygon
+from app.common.contracts import BoundarySegment, DevelopmentType, DrivewayDesign, LotContext, RwtSummary, ServiceLine, OverlayPolygon
 from .models import BuildingIn, PitIn, PlacedItem, SceneOptions, SceneRequest, TinArrays, WallIn, CutFillIn
 from .scene import build_scene, dumps
 
@@ -46,10 +46,10 @@ def sample_request() -> SceneRequest:
            ServiceLine(service="stormwater", label="DN150 stormwater (proposed)", geometry_wkt=LineString([(E0 + 9, N0 + 12), (E0 + 9, N0 + 1)]).wkt, diameter_mm=150, depth_m=0.6, is_proposed=True),
            ServiceLine(service="electricity", label="LV underground", geometry_wkt=LineString([(E0 + 17, N0 - 2), (E0 + 17, N0 + 15), (E0 + 14, N0 + 18)]).wkt, depth_m=None)]
     return SceneRequest(
-        project_title="Sample lot - 612 m2 sloping site", subtitle="Illustrative sample bundle (unverified)", lot=lot, origin=(E0, N0), ffl=pad + 0.15,
+        project_title="Sample lot - 612 m2 sloping site", subtitle="Illustrative sample bundle (unverified)", lot=lot, origin=(E0, N0), ffl=pad + 0.15, development_type=DevelopmentType.dwelling_house,
         existing_tin=ex, design_tin=de, cut_fill=CutFillIn(cut_volume_m3=48.0, fill_volume_m3=21.0, pad_level_m=pad),
         walls=[WallIn(alignment=[(E0 + 3, N0 + 9), (E0 + 15, N0 + 9)], height_m=0.6, mode="fill", label="Retaining wall")],
-        driveway=drive, services=svc, pits=[PitIn(xy=(E0 + 9, N0 + 1), label="Pit P1")],
+        driveway=drive, services=svc, pits=[PitIn(xy=(E0 + 9, N0 + 1), label="Pit P1", depth_m=0.9)],     # SAMPLE DATA: the pit depth is a sample value, not a design or survey figure
         rwt=RwtSummary(tank_volume_l=3000, location_xy=(E0 + 16.5, N0 + 20), diameter_m=1.5, regime="on-site detention + reuse"),
         buildings=[BuildingIn(name="House", footprint_wkt=wkt(house), base_rl=pad + 0.15, wall_height_m=2.7, roof_type="hip", roof_pitch_deg=22.5, door_xy=(E0 + 9, N0 + 12))],
         council_overlays=[OverlayPolygon(label="Bushfire buffer", kind="bushfire", geometry_wkt=box(E0, N0 + 28, E0 + W, N0 + D).wkt)],

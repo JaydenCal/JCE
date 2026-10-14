@@ -1,0 +1,704 @@
+{
+  "schema": "site_design.v1",
+  "version": 0,
+  "project_id": "11111111-1111-4111-8111-111111111111",
+  "objects": [
+    {
+      "id": "tree_1",
+      "type": "tree",
+      "status": "existing",
+      "origin": "user",
+      "verified": false,
+      "label": "Existing tree",
+      "geometry": {
+        "kind": "point",
+        "p": [
+          496005,
+          6650005
+        ],
+        "yaw_deg": 20
+      },
+      "params": {
+        "height_m": {
+          "value": 8.5,
+          "basis": "user"
+        },
+        "canopy_diameter_m": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "species": {
+          "value": "Eucalyptus",
+          "basis": "user"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "rwt_2",
+      "type": "rwt",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "point",
+        "p": [
+          496007,
+          6650005
+        ],
+        "yaw_deg": 45
+      },
+      "params": {},
+      "issues": []
+    },
+    {
+      "id": "pit_3",
+      "type": "pit",
+      "status": "proposed",
+      "origin": "ai_proposal",
+      "accepted": "rejected",
+      "verified": false,
+      "geometry": {
+        "kind": "point",
+        "p": [
+          496008,
+          6650005
+        ]
+      },
+      "params": {
+        "text_at_limit": {
+          "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "basis": "user"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "osd_4",
+      "type": "osd",
+      "status": "to_be_removed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "point",
+        "p": [
+          496009.5,
+          6650004.75
+        ]
+      },
+      "params": {},
+      "issues": []
+    },
+    {
+      "id": "retaining_wall_5",
+      "type": "retaining_wall",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496001,
+            6650020
+          ],
+          [
+            496010,
+            6650020,
+            21.5
+          ],
+          [
+            496010,
+            6650025
+          ]
+        ]
+      },
+      "params": {
+        "height_m": {
+          "value": 0.6,
+          "basis": "lga_rule",
+          "ref": "retaining_wall.max_height_m"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "infiltration_trench_6",
+      "type": "infiltration_trench",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496002,
+            6650002
+          ],
+          [
+            496006,
+            6650006
+          ],
+          [
+            496005,
+            6650006
+          ],
+          [
+            496008,
+            6650002
+          ]
+        ]
+      },
+      "params": {},
+      "issues": [
+        {
+          "code": "DEGENERATE_GEOMETRY",
+          "severity": "blocking",
+          "message": "DEGENERATE GEOMETRY: the line crosses itself"
+        }
+      ]
+    },
+    {
+      "id": "stormwater_pipe_7",
+      "type": "stormwater_pipe",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496002,
+            6650002
+          ],
+          [
+            496005,
+            6650006
+          ]
+        ]
+      },
+      "params": {},
+      "issues": []
+    },
+    {
+      "id": "service_trace_8",
+      "type": "service_trace",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496002,
+            6650002
+          ],
+          [
+            496005,
+            6650006
+          ],
+          [
+            496008,
+            6650002
+          ],
+          [
+            496011,
+            6650006
+          ]
+        ]
+      },
+      "params": {},
+      "issues": []
+    },
+    {
+      "id": "landscape_area_9",
+      "type": "landscape_area",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polygon",
+        "ring": [
+          [
+            496001,
+            6650001
+          ],
+          [
+            496009,
+            6650001
+          ],
+          [
+            496009,
+            6650009
+          ],
+          [
+            496001,
+            6650009
+          ]
+        ]
+      },
+      "params": {
+        "surface_kind": {
+          "value": "garden_bed",
+          "basis": "user"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "grading_area_10",
+      "type": "grading_area",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polygon",
+        "ring": [
+          [
+            496001,
+            6650001
+          ],
+          [
+            496009,
+            6650001
+          ],
+          [
+            496009,
+            6650009
+          ],
+          [
+            496001,
+            6650009
+          ]
+        ]
+      },
+      "params": {},
+      "issues": []
+    },
+    {
+      "id": "osd_basin_11",
+      "type": "osd_basin",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polygon",
+        "ring": [
+          [
+            496040,
+            6650040
+          ],
+          [
+            496050,
+            6650040
+          ],
+          [
+            496050,
+            6650050
+          ]
+        ]
+      },
+      "params": {},
+      "issues": [
+        {
+          "code": "OUTSIDE_LOT",
+          "severity": "warning",
+          "message": "OUTSIDE LOT: 3 OF 3 VERTICES LIE OUTSIDE THE LOT BOUNDARY"
+        }
+      ]
+    },
+    {
+      "id": "tree_12",
+      "type": "tree",
+      "status": "existing",
+      "origin": "user",
+      "verified": false,
+      "label": "Existing tree",
+      "geometry": {
+        "kind": "point",
+        "p": [
+          496006,
+          6650006
+        ],
+        "yaw_deg": 20
+      },
+      "params": {
+        "height_m": {
+          "value": 8.5,
+          "basis": "user"
+        },
+        "canopy_diameter_m": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "species": {
+          "value": "Eucalyptus",
+          "basis": "user"
+        },
+        "protected": {
+          "value": true,
+          "basis": "user"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "building_13",
+      "type": "building",
+      "status": "proposed",
+      "origin": "imported",
+      "verified": false,
+      "geometry": {
+        "kind": "polygon",
+        "ring": [
+          [
+            496012.74416825996,
+            6650017.790726578
+          ],
+          [
+            496012.74416825996,
+            6650009.590726577
+          ],
+          [
+            496015.94416826003,
+            6650009.590726578
+          ],
+          [
+            496015.94416826003,
+            6650012.590726578
+          ],
+          [
+            496018.94416826003,
+            6650012.590726578
+          ],
+          [
+            496018.94416826015,
+            6650017.790726578
+          ]
+        ]
+      },
+      "params": {
+        "ffl_rl": {
+          "value": 101.35,
+          "basis": "user"
+        },
+        "height_m": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "building_use": {
+          "value": "house",
+          "basis": "user",
+          "ref": "IMPORTED FROM PLAN STUDIO: synthetic.planstudio.json"
+        },
+        "source": {
+          "value": "plan_studio",
+          "basis": "user",
+          "ref": "IMPORTED FROM PLAN STUDIO: synthetic.planstudio.json"
+        },
+        "source_file": {
+          "value": "synthetic.planstudio.json",
+          "basis": "user",
+          "ref": "IMPORTED"
+        },
+        "roof_area_basis": {
+          "value": "APPROXIMATE (PLAN STUDIO RASTER)",
+          "basis": "user",
+          "ref": "IMPORTED FROM PLAN STUDIO: synthetic.planstudio.json"
+        },
+        "roof_plan_area_m2": {
+          "value": 54,
+          "basis": "user",
+          "ref": "IMPORTED FROM PLAN STUDIO RASTER: synthetic.planstudio.json"
+        }
+      },
+      "issues": [],
+      "building": {
+        "levels": [
+          {
+            "name": "Ground",
+            "elevation_m": 0,
+            "rings": [
+              [
+                [
+                  496012.74416825996,
+                  6650017.790726578
+                ],
+                [
+                  496012.74416825996,
+                  6650009.590726577
+                ],
+                [
+                  496015.94416826003,
+                  6650009.590726578
+                ],
+                [
+                  496015.94416826003,
+                  6650012.590726578
+                ],
+                [
+                  496018.94416826003,
+                  6650012.590726578
+                ],
+                [
+                  496018.94416826015,
+                  6650017.790726578
+                ]
+              ]
+            ]
+          }
+        ],
+        "datum_index": 0,
+        "roof_outline": [
+          [
+            [
+              496012.34416826,
+              6650018.190726577
+            ],
+            [
+              496012.34416826005,
+              6650009.190726577
+            ],
+            [
+              496016.34416826005,
+              6650009.190726577
+            ],
+            [
+              496016.34416826,
+              6650012.190726577
+            ],
+            [
+              496019.34416826005,
+              6650012.190726577
+            ],
+            [
+              496019.34416826,
+              6650018.190726577
+            ]
+          ]
+        ],
+        "exits": {
+          "sewer": [
+            [
+              496015.84416826,
+              6650009.690726577
+            ]
+          ],
+          "water": [
+            [
+              496012.44416826015,
+              6650015.690726578
+            ]
+          ],
+          "downpipes": [
+            [
+              496018.84416826005,
+              6650017.690726577
+            ]
+          ]
+        },
+        "frame": {
+          "origin": [
+            496012.84416826005,
+            6650017.690726577
+          ],
+          "yaw_deg": 30,
+          "north_deg": 30
+        },
+        "glb_name": "house.glb",
+        "notes": [
+          "Rooms under the roof, dilated by the eave overhang, on a 100 mm raster. Approximate, not a measured roof area.",
+          "Roof plan area is Plan Studio's approximate raster value (100 mm cells, rooms under the roof plus the eave overhang). It is not a measured area.",
+          "Overall height is NOT SET: the file gives the ceiling height of the top level (2.55 m above the ground floor), not the roof ridge. Enter it, or take it from the Plan Studio GLB.",
+          "Finished floor level (ffl_rl) is NOT SET: Plan Studio levels are relative to the ground floor. Enter the absolute RL.",
+          "1 rainwater tank(s) in the file are imported as rwt objects with their capacity. Inlet, overflow and outlet levels are NOT SET."
+        ]
+      }
+    },
+    {
+      "id": "rwt_14",
+      "type": "rwt",
+      "status": "proposed",
+      "origin": "imported",
+      "verified": false,
+      "label": "5000 L tank",
+      "geometry": {
+        "kind": "point",
+        "p": [
+          496019.02799103817,
+          6650016.173195605
+        ],
+        "yaw_deg": 20
+      },
+      "params": {
+        "capacity_l": {
+          "value": 5000,
+          "basis": "user",
+          "ref": "IMPORTED FROM PLAN STUDIO TANK: synthetic.planstudio.json"
+        },
+        "diameter_m": {
+          "value": 2.3,
+          "basis": "user",
+          "ref": "IMPORTED FROM PLAN STUDIO TANK: synthetic.planstudio.json"
+        },
+        "height_m": {
+          "value": 1.9,
+          "basis": "user",
+          "ref": "IMPORTED FROM PLAN STUDIO TANK: synthetic.planstudio.json"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "pool_15",
+      "type": "pool",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polygon",
+        "ring": [
+          [
+            496020,
+            6650002
+          ],
+          [
+            496026,
+            6650002
+          ],
+          [
+            496026,
+            6650006
+          ],
+          [
+            496020,
+            6650006
+          ]
+        ]
+      },
+      "params": {
+        "depth_m": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "coping_width_m": {
+          "value": null,
+          "basis": "unresolved"
+        },
+        "barrier_requirements": {
+          "value": null,
+          "basis": "unresolved"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "footpath_16",
+      "type": "footpath",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polyline",
+        "pts": [
+          [
+            496002,
+            6650028
+          ],
+          [
+            496012,
+            6650028
+          ],
+          [
+            496012,
+            6650026
+          ]
+        ]
+      },
+      "params": {
+        "width_m": {
+          "value": 1.2,
+          "basis": "user"
+        },
+        "surface_kind": {
+          "value": "permeable_pavers",
+          "basis": "user"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "footpath_17",
+      "type": "footpath",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "polygon",
+        "ring": [
+          [
+            496014,
+            6650026
+          ],
+          [
+            496020,
+            6650026
+          ],
+          [
+            496020,
+            6650028
+          ],
+          [
+            496014,
+            6650028
+          ]
+        ]
+      },
+      "params": {
+        "surface_kind": {
+          "value": null,
+          "basis": "unresolved"
+        }
+      },
+      "issues": []
+    },
+    {
+      "id": "furniture_18",
+      "type": "furniture",
+      "status": "proposed",
+      "origin": "user",
+      "verified": false,
+      "geometry": {
+        "kind": "point",
+        "p": [
+          496022,
+          6650010
+        ],
+        "yaw_deg": 15
+      },
+      "params": {
+        "catalogue_item": {
+          "value": "plan_studio:bbq",
+          "basis": "user",
+          "ref": "PLAN STUDIO CATALOGUE"
+        },
+        "width_m": {
+          "value": 1.3,
+          "basis": "platform_default",
+          "ref": "PLAN STUDIO CATALOGUE: plan_studio:bbq"
+        },
+        "depth_m": {
+          "value": 0.56,
+          "basis": "platform_default",
+          "ref": "PLAN STUDIO CATALOGUE: plan_studio:bbq"
+        },
+        "height_m": {
+          "value": 1.15,
+          "basis": "platform_default",
+          "ref": "PLAN STUDIO CATALOGUE: plan_studio:bbq"
+        }
+      },
+      "issues": []
+    }
+  ]
+}

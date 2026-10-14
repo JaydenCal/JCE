@@ -58,7 +58,7 @@ _NODE_LIST: tuple[NodeSpec, ...] = (
     NodeSpec("SA5", AgentCode.SA5_CAD_DXF, "cad_request.v1", "cad_result.v1", "F",
              deps=("SA1", "SA3", "SA4"), after=("SA7",), export_gate=True,
              description="DXF/PDF export (export ack gate)"),
-    NodeSpec("SA6", AgentCode.SA6_GLIDE3D, "scene_request.v1", "scene_bundle.v1", "F",
+    NodeSpec("SA6", AgentCode.SA6_SITE3D, "scene_request.v1", "scene_bundle.v1", "F",
              deps=("SA3", "SA4"), after=("SA7",), export_gate=True,
              description="3D scene bundle (export ack gate)"),
 )

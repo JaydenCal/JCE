@@ -1,4 +1,22 @@
-import type { SceneBundle } from './types';
+import type { PlacedItem, SceneBundle, Vec3 } from './types';
+
+/** Backend (SA6 ItemOut) item: t = base-centre, yaw_deg, catalogue_id. The viewer shape is PlacedItem (id, itemId, p, yaw). */
+export function normalizeItem(raw: any): PlacedItem {
+  if (raw && typeof raw === 'object' && Array.isArray(raw.p) && typeof raw.itemId === 'string') return raw as PlacedItem;   // already the viewer shape
+  const t = raw?.t ?? raw?.p;
+  if (!raw || typeof raw.id !== 'string' || !Array.isArray(t) || t.length < 3) throw new Error('Invalid scene bundle: item needs id and t (x, y, z)');
+  const out: PlacedItem = { id: raw.id, itemId: String(raw.itemId ?? raw.catalogue_id ?? raw.id), p: [t[0], t[1], t[2]] as Vec3, yaw: Number(raw.yaw ?? raw.yaw_deg ?? 0) };
+  if (typeof raw.level === 'string') out.level = raw.level;
+  if (Array.isArray(raw.warnings) && raw.warnings.length) out.warnings = raw.warnings.map(String);
+  if (typeof raw.name === 'string') out.name = raw.name;
+  const dm = raw.dims_m;
+  if (Array.isArray(dm) && dm.length >= 3 && dm.slice(0, 3).every((v: unknown) => typeof v === 'number' && Number.isFinite(v) && v > 0)) out.dims_m = [dm[0], dm[1], dm[2]] as Vec3;
+  if (typeof raw.scale === 'number' && Number.isFinite(raw.scale) && raw.scale > 0) out.scale = raw.scale;
+  if (typeof raw.model_url === 'string' && raw.model_url) out.model_url = raw.model_url;
+  if (raw.surface === 'ground' || raw.surface === 'floor' || raw.surface === 'wall') out.surface = raw.surface;
+  return out;
+}
+function normalizeItems(o: any): void { if (Array.isArray(o?.items)) o.items = o.items.map(normalizeItem); }
 
 /** Accept the backend scene builder's walkable format (SA6) as well as the viewer's native one. */
 function normalizeWalkable(o: any): void {
@@ -21,6 +39,7 @@ function normalizeWalkable(o: any): void {
 /** Validate a MODEL-compatible bundle; throws Error with the first problem found. */
 export function validateBundle(j: unknown): SceneBundle {
   normalizeWalkable(j);
+  normalizeItems(j);
   const b = j as Partial<SceneBundle> | null;
   const bad = (m: string): never => { throw new Error(`Invalid scene bundle: ${m}`); };
   if (!b || typeof b !== 'object') bad('not an object');
@@ -38,7 +57,13 @@ export function validateBundle(j: unknown): SceneBundle {
   return { labels: [], views: {}, summary: [], notes: [], ...o, info: o.info!, layers: o.layers!, parts: o.parts! } as SceneBundle;
 }
 export function loadBundleFromJson(text: string | unknown): SceneBundle { return validateBundle(typeof text === 'string' ? JSON.parse(text) : text); }
-export async function fetchBundle(url: string): Promise<SceneBundle> {
-  const r = await fetch(url, { credentials: 'include' }); if (!r.ok) throw new Error(`bundle ${url}: ${r.status}`);
+/** A bundle request that did not return a bundle; `status` is the HTTP status (0 = network failure). 404 means no bundle exists for the project. */
+export class BundleLoadError extends Error {
+  constructor(public status: number, message: string) { super(message); this.name = 'BundleLoadError'; }
+}
+export async function fetchBundle(url: string, headers: Record<string, string> = {}): Promise<SceneBundle> {
+  let r: Response;
+  try { r = await fetch(url, { headers, credentials: 'include' }); } catch (e) { throw new BundleLoadError(0, `scene bundle request failed: ${String(e)}`); }
+  if (!r.ok) throw new BundleLoadError(r.status, r.status === 404 ? 'DATA NOT AVAILABLE: no scene bundle for this project' : `scene bundle request returned ${r.status}`);
   return validateBundle(await r.json());
 }

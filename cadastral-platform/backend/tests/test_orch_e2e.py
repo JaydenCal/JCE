@@ -124,7 +124,7 @@ def test_registry_wiring():
     assert isinstance(reg.get(AgentCode.SA3_GEOM_TIN), Sa3Dispatch)
     assert not any(reg.is_stub(c) for c in (AgentCode.SA1_CADASTRE, AgentCode.SA2_DCP_RAG, AgentCode.SA3_GEOM_TIN,
                                             AgentCode.SA4_HYDRO, AgentCode.SA5_CAD_DXF, AgentCode.SA7_PDF_ALIGN))
-    assert reg.is_stub(AgentCode.SA6_GLIDE3D)
+    assert reg.is_stub(AgentCode.SA6_SITE3D)
     with pytest.raises(ValueError):
         default_registry(env={"ORCH_STUB_POLICY": "maybe"})
 

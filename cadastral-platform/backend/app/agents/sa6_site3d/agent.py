@@ -1,4 +1,4 @@
-"""Sub-Agent 6: GlideInside 3D Sync. scene_request.v1 -> scene_bundle.v1 (deterministic, no model calls)."""
+"""Sub-Agent 6: JCESITE 3D site scene. scene_request.v1 -> scene_bundle.v1 (deterministic, no model calls)."""
 from __future__ import annotations
 
 from app.agents.base import AgentError
@@ -10,8 +10,8 @@ from .scene import build_scene
 AGENT_VERSION = "0.1.0"
 
 
-class Sa6Glide3d:
-    code = AgentCode.SA6_GLIDE3D
+class Sa6Site3d:
+    code = AgentCode.SA6_SITE3D
     version = AGENT_VERSION
     input_schema = "scene_request.v1"
     output_schema = "scene_bundle.v1"

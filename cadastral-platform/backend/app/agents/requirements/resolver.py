@@ -15,6 +15,7 @@ from app.agents.sa2_dcp_rag.ingest import ingest_pdf
 from app.agents.sa2_dcp_rag.models import Chunk
 from app.agents.sa2_dcp_rag.retrieve import InMemoryRetriever
 
+from .lgacode import same_lga
 from .models import KEY_HELP, key_help, Requirement, RequirementKey, RequirementSet, Selectors, Source
 from .sources import DocRef, DocumentSource
 
@@ -121,8 +122,9 @@ class RequirementsResolver:
             if d.jurisdiction and d.jurisdiction.casefold() != c.jurisdiction.casefold():
                 continue
             role = reg.get("authority_role")
-            if role == "council" and not ({(d.lga or "").casefold(), d.authority.casefold()} & {c.lga.casefold()}):
-                continue
+            if role == "council" and not (same_lga(d.lga, c.lga, d.jurisdiction, c.jurisdiction) or same_lga(d.authority, c.lga, d.jurisdiction, c.jurisdiction)
+                                          or {(d.lga or "").casefold(), d.authority.casefold()} & {c.lga.casefold()}):
+                continue                   # "nsw-gunnedah", "GUNNEDAH" and "Gunnedah Shire Council" are one council
             if role == "utility" and d.authority.casefold() not in auths:
                 continue
             if role in ("water", "sewer", "electricity", "gas") and d.authority.casefold() != c.authorities.get(role, "\0").casefold():

@@ -229,4 +229,8 @@ def create_app(settings: Settings | None = None, pool=None, orchestrator: Orches
     app.include_router(assistant_router)
     from app.api.enquiries import router as enquiries_router
     app.include_router(enquiries_router)
+    from app.api.scene import router as scene_router
+    app.include_router(scene_router)
+    from app.api.site_design import router as site_design_router
+    app.include_router(site_design_router)
     return app

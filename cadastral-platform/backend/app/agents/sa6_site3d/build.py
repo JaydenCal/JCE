@@ -10,10 +10,12 @@ from shapely.affinity import translate
 from shapely.geometry import LineString, MultiPolygon, Point, Polygon
 
 from app.agents.base import AgentError
+from app.common.labels import upper_label
 
 from . import geom as G
+from .contours import contour_plan
 from .models import (BuildingIn, Collider, Floor, ItemOut, Label, Layer, Link, Part, SceneBundle,
-                     SceneRequest, Spawn, Walkable, Info)
+                     SceneRequest, Spawn, TinArrays, Walkable, Info)
 
 LAYERS = [("surface", "Design surface", True), ("contours", "Design contours", True),
           ("existing", "Existing ground (survey TIN, under the works)", False), ("context", "Surrounds (survey)", True),
@@ -21,8 +23,11 @@ LAYERS = [("surface", "Design surface", True), ("contours", "Design contours", T
           ("services", "Underground services (depth below ground)", True), ("buffers", "Service exclusion buffers (ghost)", True),
           ("tanks", "Rainwater tank", True), ("walls", "Retaining walls", True), ("driveway", "Driveway and crossover", True),
           ("sweptpath", "Swept path and turning circle", True), ("boundary", "Boundary", True), ("road", "Road", True),
+          ("adjoining", "Adjoining lots (cadastre, not survey)", True), ("aerial", "Aerial imagery (information only)", True),
           ("overlays", "Council overlays", False), ("items", "Placed items", True), ("gradearrows", "Grade arrows", False),
-          ("lab_gen", "Labels: site / general", True), ("lab_svc", "Labels: services", True), ("lab_lots", "Labels: Lot / DP", True)]
+          ("lab_gen", "Labels: site / general", True), ("lab_svc", "Labels: services", True), ("lab_lots", "Labels: Lot / DP", True),
+          ("lab_cont", "Labels: contours", True)]
+DESIGN_CONTOUR_TAG = "DESIGN SURFACE CONTOUR"
 SVC_COL = {"water": "#2f6fb5", "sewer": "#8a5a2b", "stormwater": "#3f8f5f", "electricity": "#c0392b",
            "gas": "#d4a72c", "telecom": "#e67e22", "other": "#7f8c8d"}
 OVL_COL = {"flood": "#3b82c4", "bushfire": "#d9582b", "heritage": "#8e5ea2", "envelope": "#2e9e6b"}
@@ -32,6 +37,7 @@ MAT = dict(ro=0.9, me=0.0)
 class Ground:
     def __init__(self, V=None, F=None, const: float = 0.0):
         self.const = const
+        self.extrapolated = 0
         self.lin = self.near = None
         if V is not None and len(V) >= 3:
             self.lin = LinearNDInterpolator(V[:, :2], V[:, 2])
@@ -44,6 +50,9 @@ class Ground:
         z = self.lin(x, y)
         bad = np.isnan(z)
         if bad.any():
+            # Outside the terrain hull the nearest terrain level is used so geometry can be drawn; this is
+            # EXTRAPOLATED, NOT SURVEYED and the Builder reports it in the notes.
+            self.extrapolated += int(bad.sum())
             z = np.where(bad, self.near(x, y), z)
         return z
 
@@ -74,12 +83,26 @@ class Builder:
         self.summary: list[tuple[str, str]] = []
         self.walk = dict(floors=[], colliders=[], links=[])
         self.used: set[str] = set()
-        self.tin_e = self._tin(req.existing_tin)
+        existing = req.existing_tin
+        if existing is None and req.survey_points:
+            try:
+                existing = TinArrays.from_points(req.survey_points)
+                self.notes.append(f"Existing ground is a Delaunay triangulation of {len(req.survey_points)} supplied survey points; the surface is linear "
+                                  "between points. Outside the hull of the points no level is surveyed (see the EXTRAPOLATED note where it applies).")
+            except ValueError:
+                self.notes.append("SURVEY POINTS: fewer than three distinct points were supplied, so no ground surface was built. TERRAIN DATA NOT AVAILABLE.")
+        self.tin_e = self._tin(existing)
         self.tin_d = self._tin(req.design_tin)
-        base = req.ffl if req.ffl is not None else (req.cut_fill.pad_level_m if req.cut_fill and req.cut_fill.pad_level_m else 0.0)
-        self.eg = Ground(*(self.tin_e or (None, None)), const=base)
-        self.dg = Ground(*(self.tin_d or self.tin_e or (None, None)), const=base)
+        # No terrain: ground is drawn flat at RL 0.00 and flagged TERRAIN DATA NOT AVAILABLE; neither the FFL nor a pad level is used as ground.
+        self.eg = Ground(*(self.tin_e or (None, None)), const=0.0)
+        self.dg = Ground(*(self.tin_d or self.tin_e or (None, None)), const=0.0)
+        self.no_terrain = self.tin_e is None and self.tin_d is None
         self.ffl = req.ffl
+        tp = req.terrain_provenance
+        self.terrain_status = upper_label(tp.status) if tp is not None else "TERRAIN SOURCE NOT STATED"
+        self.contour_basis = ""
+        self.contour_levels = 0
+        self.contour_tag = DESIGN_CONTOUR_TAG if self.tin_d is not None else self.terrain_status      # design contours never carry the existing terrain status
 
     # ---- helpers
     def loc(self, g):
@@ -132,7 +155,11 @@ class Builder:
         cap_o = min(o.max_triangles_per_mesh, int(0.2 * B))
         te, td = self.tin_e, self.tin_d
         if te is None and td is None:
-            self.notes.append("No survey TIN supplied: ground treated as flat at the FFL.")
+            self.notes.append("TERRAIN DATA NOT AVAILABLE: no survey TIN or survey points supplied. Ground is drawn flat at RL 0.00 as a placeholder only; "
+                              "no level is implied.")
+            c = lot.centroid
+            self.label("TERRAIN DATA NOT AVAILABLE (ground drawn flat at RL 0.00, placeholder only)", (c.x, c.y, 2.0), "lab_lots")
+            self._aerial_drape(None, cap_a=2)
             return
         V, F = td if td is not None else te
         # triangles of the working surface: those touching the lot
@@ -153,18 +180,41 @@ class Builder:
             self.add("FS_cutfill", "surface", "#ffffff", soup, ro=0.95, cf=cfv.tolist(),
                      vc=cutfill_rgb(cfv).reshape(-1).tolist())
             self.parts[-1].c = "cutfill"
-        # contours from the full-resolution design surface
+        # contours from the full-resolution working surface (the design surface when there is one); the interval is chosen from the spacing of the
+        # ground points actually sampled (contours.contour_plan), never from the nominal product resolution alone
         zmin, zmax = Vs[:, 2].min(), Vs[:, 2].max()
-        iv = o.contour_interval_m
-        minor, major = [], []
+        tp = self.r.terrain_provenance
+        res_m, res_basis = None, "data resolution"
+        if tp is not None and tp.effective_spacing_m:
+            res_m, res_basis = max(tp.effective_spacing_m, tp.resolution_m or 0.0), "effective point spacing as sampled"
+        elif tp is not None and tp.resolution_m:
+            res_m = tp.resolution_m
+        if res_m is None:
+            Vx = te[0] if te is not None else Vs                       # spacing of the existing ground points, not of a design surface
+            inside = shapely.contains_xy(lot.buffer(1.0), Vx[:, 0], Vx[:, 1])
+            if inside.sum() >= 3:
+                res_m, res_basis = round(math.sqrt(lot.area / inside.sum()), 2), "mean point spacing inside the lot"
+        plan = contour_plan(res_m, float(zmax - zmin), resolution_basis=res_basis)
+        iv = o.contour_interval_m if o.contour_interval_m is not None else plan.interval_m
+        major_every = o.major_every if o.major_every is not None else (plan.major_every if o.contour_interval_m is None else 5)
+        self.contour_basis = plan.basis if o.contour_interval_m is None else f"Contour interval {iv:g} m was set explicitly for this scene (display choice, not a requirement)."
+        if td is not None:
+            self.contour_basis = "Contours are of the DESIGN SURFACE. " + self.contour_basis
+        minor, major, per_level = [], [], []
         for k in range(math.ceil(zmin / iv), math.floor(zmax / iv) + 1):
-            s = G.contour_segments(Vs, Fs, k * iv)
-            if len(s):
-                (major if k % o.major_every == 0 else minor).append(s + [0, 0, 0.01])
+            s_ = G.contour_segments(Vs, Fs, k * iv)
+            if len(s_):
+                (major if k % major_every == 0 else minor).append(s_ + [0, 0, 0.01])
+                per_level.append((k * iv, k % major_every == 0, s_))
+        self.contour_levels = len(per_level)
         if minor:
             self.add_lines("FS_contours_minor", "contours", "#5b4a2f", np.concatenate(minor))
         if major:
             self.add_lines("FS_contours_major", "contours", "#2e2416", np.concatenate(major), lw=1.5)
+        self._contour_labels(per_level)
+        c = lot.centroid
+        self.label(f"TERRAIN: {self.terrain_status}", (c.x, c.y - 5.0, float(self.eg(c.x, c.y)) + 6.0), "lab_gen")
+        self._aerial_drape(te if te is not None else td, cap_a=max(500, int(0.25 * B)))
         # existing ground inside lot / context outside
         if te is not None:
             Ve, Fe = te
@@ -176,27 +226,99 @@ class Builder:
                     Vp, Fp, _ = G.decimate(Ve, Fe[sel], cap_o)
                     self.add(nm, layer, col, G.soup_from(Vp, Fp), a=a, ro=1.0)
 
+    def _contour_labels(self, per_level, max_labels: int = 6):
+        """RL labels on the major contours (every level when no major contour falls inside the lot), each with the terrain status (existing ground)
+        or DESIGN SURFACE CONTOUR (design surface)."""
+        majors = [t for t in per_level if t[1]] or per_level
+        if len(majors) > max_labels:
+            idx = np.unique(np.round(np.linspace(0, len(majors) - 1, max_labels)).astype(int))
+            majors = [majors[i] for i in idx]
+        for z, _, segs in majors:
+            ln = np.linalg.norm(segs[:, 1, :2] - segs[:, 0, :2], axis=1)
+            seg = segs[int(np.argmax(ln))]
+            m = (seg[0] + seg[1]) / 2
+            self.label(f"CONTOUR RL {z:.2f}, {self.contour_tag}", (m[0], m[1], z + 0.4), "lab_cont", 0.6)
+
+    def _aerial_drape(self, tin, cap_a: int):
+        """Aerial image draped on the terrain (a copy of the TIN raised 0.02 m, with texture coordinates from the image extent)."""
+        a = self.r.aerial
+        if a is None:
+            return
+        ex0, ey0, ex1, ey1 = a.extent[0] - self.E0, a.extent[1] - self.N0, a.extent[2] - self.E0, a.extent[3] - self.N0
+        if tin is None:
+            ring = np.array([[ex0, ey0], [ex1, ey0], [ex1, ey1], [ex0, ey1]], float)
+            V, F = np.c_[ring, np.zeros(4)], np.array([[0, 1, 2], [0, 2, 3]], np.int64)
+        else:
+            V, F = tin
+            cen = V[F].mean(1)
+            keep = (cen[:, 0] >= ex0) & (cen[:, 0] <= ex1) & (cen[:, 1] >= ey0) & (cen[:, 1] <= ey1)
+            if not keep.any():
+                self.notes.append("AERIAL IMAGERY: the image extent does not overlap the terrain, so no aerial layer was draped.")
+                return
+            F = F[keep]
+        Vd, Fd, _ = G.decimate(V, F, cap_a)
+        soup = G.soup_from(Vd, Fd)
+        soup = soup.copy()
+        soup[..., 2] += 0.02
+        uv = np.stack([(soup[..., 0] - ex0) / (ex1 - ex0), (soup[..., 1] - ey0) / (ey1 - ey0)], -1)
+        self.add("AERIAL_drape", "aerial", "#ffffff", soup, ro=1.0, uv=np.round(uv.reshape(-1), 5).tolist())
+
     def boundary_and_road(self):
-        lot, g = self.lot, self.eg
+        lot, g, o = self.lot, self.eg, self.o
         for i, p in enumerate(G.polys(lot)):
             P = self.line3(p.exterior.coords, g, 0.05, 1.0)
             self.add_lines("Property_boundary", "boundary", "#d11d1d", self.polyline_segs(P), lw=2)
+            if o.boundary_posts:        # corner posts (display only): one at each boundary vertex
+                xy = [(x, y) for x, y in list(p.exterior.coords)[:-1]]
+                self.add("Boundary_posts", "boundary", "#d11d1d", G.post_boxes(xy, g, o.post_height_m, o.post_size_m), ro=0.8)
         segs = sorted(self.r.lot.segments, key=lambda s: s.seq)
         front = [s for s in segs if s.is_front]
         self.front = None
+        self.kerb_info = None
         if front:
             a, b = (np.array(front[0].start_xy) - [self.E0, self.N0], np.array(front[0].end_xy) - [self.E0, self.N0])
             d = (b - a) / max(np.linalg.norm(b - a), 1e-9)
             n = np.array([-d[1], d[0]])
             if lot.contains(Point(*(a + b) / 2 + n * 0.5)):
                 n = -n
-            w = self.o.road_width_m
-            road = Polygon([a - d * 6, b + d * 6, b + d * 6 + n * w, a - d * 6 + n * w])
+            w, run = o.road_width_m, o.road_run_m
+            verge = o.verge_depth_m if o.verge_depth_m is not None else 0.0
+            k0, k1 = a - d * run + n * verge, b + d * run + n * verge          # ASSUMED kerb line: parallel to the front boundary, `verge` metres towards the road
+            road = Polygon([k0, k1, k1 + n * w, k0 + n * w])
             self.add("Road_carriageway", "road", "#5c5e5f", G.drape(road, self.eg, 2.0, -0.02), ro=0.95, tex="asphalt")
+            K = self.line3([tuple(k0), tuple(k1)], self.eg, 0.0, 2.0)
+            self.add("Kerb_assumed", "road", "#a9abac", G.strip_extrude(K[:, :2], K[:, 2] - 0.02, K[:, 2] + o.kerb_height_m, o.kerb_width_m), ro=0.9, tex="conc", cs=1)
+            self.add_lines("Kerb_line_assumed", "road", "#f0b400", self.polyline_segs(K + [0, 0, o.kerb_height_m + 0.03]), lw=2)
             self.front = (a, b, d, n)
-            self.label("Road frontage", (*((a + b) / 2 + n * w / 2), self.eg(*((a + b) / 2 + n * w / 2)) + 1.5), "lab_lots")
+            self.kerb_info = (verge, w)
+            self.label(f"Road frontage (ASSUMED ROAD WIDTH {w:g} m, PLATFORM DEFAULT, NOT SURVEYED)", (*((a + b) / 2 + n * (verge + w / 2)), self.eg(*((a + b) / 2 + n * (verge + w / 2))) + 1.5), "lab_lots")
+            mk = (k0 + k1) / 2
+            self.label(f"ASSUMED KERB LINE (PLATFORM DEFAULT, NOT SURVEYED), VERGE DEPTH {verge:g} m ASSUMED, KERB HEIGHT {o.kerb_height_m * 1000:.0f} mm ASSUMED",
+                       (mk[0], mk[1], float(self.eg(*mk)) + 3.0), "lab_lots", 0.7)
         c = lot.centroid
         self.label(f"{self.r.lot.lotplan}  {lot.area:.0f} m2", (c.x, c.y, float(self.eg(c.x, c.y)) + 8), "lab_lots")
+        self.adjoining_lots()
+
+    def adjoining_lots(self, window_m: float = 60.0):
+        """Adjoining parcels from the cadastre (SA1 neighbours): outline, pale fill and the LOT / DP label exactly as the cadastre gave it.
+        A parcel with no label is labelled LOT AND PLAN NOT AVAILABLE; a label is never made up."""
+        win = self.lot.buffer(window_m)
+        for i, nb in enumerate(self.r.lot.neighbours):
+            g = self.lw(nb.wkt).intersection(win)
+            ps = G.polys(g)
+            if not ps:
+                continue
+            col = "#8a8f94" if nb.is_road else "#7d7a6e"
+            for p in ps:
+                self.add_lines(f"Adjoining_{i}", "adjoining", col, self.polyline_segs(self.line3(p.exterior.coords, self.eg, 0.05, 2.0)), lw=1.2)
+                self.add(f"Adjoining_fill_{i}", "adjoining", "#c9bfa2" if not nb.is_road else "#b4b8bb", G.drape(p, self.eg, 4.0, 0.01), a=0.3, ro=1.0)
+            rp = max(ps, key=lambda q: q.area).representative_point()
+            text = (nb.label or "").strip().upper()
+            if nb.is_road:
+                text = f"ROAD RESERVE: {text}" if text else "ROAD RESERVE (LOT AND PLAN NOT AVAILABLE)"
+            elif not text:
+                text = "LOT AND PLAN NOT AVAILABLE"
+            self.label(text, (rp.x, rp.y, float(self.eg(rp.x, rp.y)) + 2.5), "lab_lots", 0.8)
 
     def retaining_walls(self):
         for i, w in enumerate(self.r.walls):
@@ -220,7 +342,7 @@ class Builder:
                                                size=(round(L, 3), round(thick, 3), round(z1 - z0, 3)),
                                                yaw_deg=round(math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])), 2)))
 
-    def _roller_door(self, pre, fp, b):
+    def _roller_door(self, pre, fp, b, base):
         from shapely.geometry import Polygon as _P
         ring = np.array(G.orient(fp, 1.0).exterior.coords)[:-1]
         i = b.roller_door.edge_index % len(ring)
@@ -233,7 +355,7 @@ class Builder:
         a0, a1 = m - t * w / 2, m + t * w / 2
         quad = _P([a0, a1, a1 + n * 0.06, a0 + n * 0.06])
         self.add(pre + "_RollerDoor", "buildings", b.roller_door.colour,
-                 G.prism(quad, b.base_rl, b.base_rl + min(b.roller_door.height_m, b.wall_height_m)), ro=0.4, me=0.5, cs=1)
+                 G.prism(quad, base, base + min(b.roller_door.height_m, b.wall_height_m)), ro=0.4, me=0.5, cs=1)
 
     def buildings(self):
         slab = None
@@ -243,22 +365,25 @@ class Builder:
             slab = self.lw(self.r.overlay.footprint_wkt)
         for b in self.r.buildings:
             fp = G.polys(self.lw(b.footprint_wkt))[0]
-            top = b.base_rl + b.wall_height_m
+            # No terrain: the building sits on the placeholder ground. Its FFL is never drawn against a ground that has no levels.
+            base = float(self.eg(fp.centroid.x, fp.centroid.y)) if self.no_terrain else b.base_rl
+            top = base + b.wall_height_m
             pre = ("EX_" if b.is_existing else "PW_") + b.name.replace(" ", "_")
-            self.add(pre + "_Walls", "buildings", b.wall_colour, G.prism(fp, b.base_rl, top, caps=False), ro=0.6, me=0.2, tex="trimclad", cs=1)
-            self.add(pre + "_Slab", "buildings", "#cfcfc9", G.prism(fp, b.base_rl - 0.2, b.base_rl, sides=True), tex="conc", cs=1)
+            self.add(pre + "_Walls", "buildings", b.wall_colour, G.prism(fp, base, top, caps=False), ro=0.6, me=0.2, tex="trimclad", cs=1)
+            self.add(pre + "_Slab", "buildings", "#cfcfc9", G.prism(fp, base - 0.2, base, sides=True), tex="conc", cs=1)
             if b.roof_type != "none":
                 self.add(pre + "_Roof", "buildings", b.roof_colour, G.roof(fp, top, b.roof_type, b.roof_pitch_deg, b.eaves_m), ro=0.5, me=0.3, cs=1)
             if b.roller_door:
-                self._roller_door(pre, fp, b)
+                self._roller_door(pre, fp, b, base)
             c = fp.centroid
-            self.label(f"{b.name}{'' if b.habitable else ' (non-habitable, Class 10a)'}: FFL {b.base_rl:.2f}, {b.roof_type} roof" + (f" {b.roof_pitch_deg:g} deg" if b.roof_type not in ("flat", "none") else ""),
+            ffl_txt = (f"FFL {b.base_rl:.2f} NOT SHOWN AGAINST GROUND, TERRAIN DATA NOT AVAILABLE" if self.no_terrain else f"FFL {b.base_rl:.2f}")
+            self.label(f"{b.name}{'' if b.habitable else ' (non-habitable, Class 10a)'}: {ffl_txt}, {b.roof_type} roof" + (f" {b.roof_pitch_deg:g} deg" if b.roof_type not in ("flat", "none") else ""),
                        (c.x, c.y, top + 3.0))
             ring = [(round(x, 3), round(y, 3)) for x, y in G.orient(fp, 1.0).exterior.coords][:-1]
-            self.walk["floors"].append(Floor(id=pre, kind="floor", level=b.base_rl, ring=ring))
+            self.walk["floors"].append(Floor(id=pre, kind="floor", level=base, ring=ring))
             for j in range(len(ring)):
-                self._box_collider(f"{pre}_w{j}", ring[j], ring[(j + 1) % len(ring)], 0.2, b.base_rl, top)
-            if b.door_xy:
+                self._box_collider(f"{pre}_w{j}", ring[j], ring[(j + 1) % len(ring)], 0.2, base, top)
+            if b.door_xy and not self.no_terrain:       # a stair needs a real ground level to climb from
                 d = np.array(b.door_xy) - [self.E0, self.N0]
                 gz = float(self.eg(*d))
                 rise = b.base_rl - gz
@@ -267,9 +392,12 @@ class Builder:
                     self.walk["links"].append(Link(kind="stairs", id=pre + "_entry", a=(*map(lambda v: round(float(v), 3), d), round(gz, 3)),
                                                    b=(round(float(d[0]), 3), round(float(d[1]), 3), b.base_rl), width_m=1.0, steps=n))
         if slab is not None and not slab.is_empty and not self.r.buildings:
-            lvl = self.ffl if self.ffl is not None else float(self.dg(slab.centroid.x, slab.centroid.y))
+            lvl = self.ffl if (self.ffl is not None and not self.no_terrain) else float(self.dg(slab.centroid.x, slab.centroid.y))
             self.add("PW_Slab", "buildings", "#cfcfc9", G.prism(slab, lvl - 0.2, lvl), tex="conc", cs=1)
-            self.label((f"Slab footprint (plan overlay), {self.r.ffl_label}" if self.r.ffl_label and self.ffl is not None else f"Slab footprint (plan overlay), FFL {lvl:.2f}"), (slab.centroid.x, slab.centroid.y, lvl + 3))
+            self.label((f"Slab footprint (plan overlay), FFL {self.ffl:.2f} NOT SHOWN AGAINST GROUND, TERRAIN DATA NOT AVAILABLE" if self.ffl is not None and self.no_terrain
+                        else f"Slab footprint (plan overlay), {self.r.ffl_label}" if self.r.ffl_label and self.ffl is not None
+                        else f"Slab footprint (plan overlay), FFL {lvl:.2f}" if self.ffl is not None
+                        else "Slab footprint (plan overlay), FFL DATA NOT AVAILABLE (drawn at ground level)"), (slab.centroid.x, slab.centroid.y, lvl + 3))
             self.walk["floors"].append(Floor(id="slab", kind="floor", level=lvl,
                                              ring=[(round(x, 3), round(y, 3)) for x, y in G.polys(slab)[0].exterior.coords][:-1]))
         if self.ffl is None and self.r.buildings:
@@ -291,13 +419,14 @@ class Builder:
                 return k0 + (k1 - k0) * np.clip(t, 0, 1)
         self.add("Driveway", "driveway", "#8d8f8e", G.drape(shape, zf, 1.5, 0.01), ro=0.95, tex="conc")
         P = self.line3(cl.coords, zf, 0.0, 1.0)
-        g = (P[-1, 2] - P[0, 2]) / max(cl.length, 1e-6) * 100
+        # The grade is real only when the levels come from terrain or from supplied driveway levels; flat placeholder ground gives no grade.
+        g = (P[-1, 2] - P[0, 2]) / max(cl.length, 1e-6) * 100 if (self.r.driveway_levels or not self.no_terrain) else None
         self.dw_grade = g
         self.walk["links"].append(Link(kind="ramp", id="driveway", a=tuple(np.round(P[0], 3)), b=tuple(np.round(P[-1], 3)), width_m=d.width_m))
         ring = [(round(x, 3), round(y, 3)) for x, y in G.polys(shape)[0].exterior.coords][:-1]
         self.walk["floors"].append(Floor(id="driveway", kind="driveway", level=round(float(P[:, 2].mean()), 3), ring=ring))
         m = P[len(P) // 2]
-        self.label(f"Driveway {d.width_m:g} m wide, average grade {g:.1f}%" + (f" (max {d.max_grade_pct:.1f}%)" if d.max_grade_pct else ""), (m[0], m[1], m[2] + 1.5))
+        self.label(f"Driveway {d.width_m:g} m wide, " + (f"average grade {g:.1f}%" if g is not None else "GRADE DATA NOT AVAILABLE") + (f" (max {d.max_grade_pct:.1f}%)" if d.max_grade_pct else ""), (m[0], m[1], m[2] + 1.5))
         for lab, p1, p2 in d.dimensions:
             a, b = np.array(p1) - [self.E0, self.N0], np.array(p2) - [self.E0, self.N0]
             mid = (a + b) / 2
@@ -316,35 +445,38 @@ class Builder:
     def services(self):
         o = self.o
         self.svc_min_cover = None
-        self.assumed_depth = False
+        self.no_depth_count = 0
         for i, s in enumerate(self.r.services):
             ln = self.lw(s.geometry_wkt)
-            depth = s.depth_m
+            depth = s.depth_m                   # None = DEPTH NOT AVAILABLE: never assumed, the service is drawn on the ground surface
             if depth is None:
-                depth, self.assumed_depth = o.default_depth_m.get(s.service, 0.6), True
+                self.no_depth_count += 1
             dia = (s.diameter_mm or 100) / 1000.0
             for part in (ln.geoms if hasattr(ln, "geoms") else [ln]):
                 gz = self.line3(part.coords, self.eg, 0.0, 2.0)
-                gz[:, 2] -= depth + dia / 2     # centre depth: cover = depth to top of pipe
+                gz[:, 2] += dia / 2 if depth is None else -(depth + dia / 2)     # known: centre depth, cover = depth to top of pipe; unknown: pipe sits on the ground
                 layer = "drainage" if s.service == "stormwater" else "services"
                 col = SVC_COL[s.service]
                 self.add(f"{'Proposed' if s.is_proposed else 'Existing'}_{s.service}_{i}", layer, col, G.tube(gz, dia / 2, o.tube_sides),
                          a=1.0, ro=0.6, me=0.1, cs=0)
                 m = gz[len(gz) // 2]
             self.label(f"{s.label}: {s.service}" + (f" DN{s.diameter_mm}" if s.diameter_mm else "") +
-                       f", cover {depth:.2f} m" + (" (assumed)" if s.depth_m is None else "") + (" PROPOSED" if s.is_proposed else ""),
+                       (", DEPTH NOT AVAILABLE" if depth is None else f", cover {depth:.2f} m") + (" PROPOSED" if s.is_proposed else ""),
                        (m[0], m[1], float(self.eg(m[0], m[1])) + 1.0), "lab_svc")
-            self.svc_min_cover = depth if self.svc_min_cover is None else min(self.svc_min_cover, depth)
+            if depth is not None:
+                self.svc_min_cover = depth if self.svc_min_cover is None else min(self.svc_min_cover, depth)
             if s.exclusion_wkt:
                 ex = self.lw(s.exclusion_wkt)
                 zs = self.eg(*np.array(G.polys(ex)[0].exterior.coords).T) if G.polys(ex) else np.array([0.0])
-                self.add(f"Buffer_{s.service}_{i}", "buffers", col, G.prism(ex, float(zs.min()) - depth - dia - 0.3, float(zs.max())),
+                zb = float(zs.min()) - 0.05 if depth is None else float(zs.min()) - depth - dia - 0.3     # no depth: thin ghost on the surface
+                self.add(f"Buffer_{s.service}_{i}", "buffers", col, G.prism(ex, zb, float(zs.max())),
                          a=0.18, ro=1.0, cs=0)
         for i, p in enumerate(self.r.pits):
             x, y = np.array(p.xy) - [self.E0, self.N0]
             gz = float(self.eg(x, y)); h = p.size_m / 2
-            self.add(f"Pit_{i}", "drainage", "#b7b5ac", G.prism(Polygon([(x - h, y - h), (x + h, y - h), (x + h, y + h), (x - h, y + h)]), gz - p.depth_m, gz + 0.02), cs=1)
-            self.label(f"{p.label} (invert {p.depth_m:.2f} m below ground)", (x, y, gz + 1.0), "lab_svc")
+            self.add(f"Pit_{i}", "drainage", "#b7b5ac", G.prism(Polygon([(x - h, y - h), (x + h, y - h), (x + h, y + h), (x - h, y + h)]),
+                                                                  gz - p.depth_m if p.depth_m is not None else gz - 0.02, gz + 0.02), cs=1)     # no depth: a lid on the surface
+            self.label(f"{p.label} (" + (f"invert {p.depth_m:.2f} m below ground" if p.depth_m is not None else "DEPTH NOT AVAILABLE") + ")", (x, y, gz + 1.0), "lab_svc")
 
     def tank(self):
         t = self.r.rwt

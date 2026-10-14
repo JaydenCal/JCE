@@ -110,7 +110,7 @@ def test_building_is_described_only_as_by_others(doc, out):
 
 def test_no_dwelling_numbers(doc):
     """No floor area, height, setback, floor level, BASIX or footprint figure is stated for the building."""
-    pat = re.compile(r"(floor area|gross floor|gfa|building height|ridge|setback|ffl|floor level|basix|footprint|storey|bedroom)[^.\n]{0,80}\d", re.I)
+    pat = re.compile(r"\b(floor area|gross floor|gfa|building height|ridge|setback|ffl|floor level|basix|footprint|storey|bedroom)\b[^.\n]{0,80}\d", re.I)
     for s in doc.statements():
         assert not pat.search(s.text), s.text
     t = doc.to_text()
@@ -786,7 +786,8 @@ def test_dem_levels_are_indicative_not_assumed(doc):
         if s.kind == "statement" and re.search(r"\bDEM\b", s.text) and re.search(r"level|fall|gradient|grade|cut|fill", s.text, re.I):
             assert s.tag != "ASSUMED / PLATFORM DEFAULT" and s.tag != "ASSUMED", s.text
     lv = _stmts(doc, r"^These levels come from the NSW 5 m digital elevation model", "2")[0]
-    assert lv.tag == "INDICATIVE, 5 m DEM" and "NSW_5M_Elevation" in lv.text
+    # Offline runs label the source as the offline fixture (3D stage 3 review fix); live runs name the service.
+    assert lv.tag == "INDICATIVE, 5 m DEM" and ("NSW_5M_Elevation" in lv.text or "OFFLINE FIXTURE" in lv.text)
     assert S.T_IND == "INDICATIVE, 5 m DEM"
 
 

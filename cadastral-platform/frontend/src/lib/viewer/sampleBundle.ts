@@ -128,7 +128,7 @@ export function buildSampleBundle(): SceneBundle {
     { id: 'p5', itemId: 'letterbox', p: [3.2, -19, design(3.2, -19)], yaw: 0, surface: 'ground' },
   ];
   return {
-    info: { title: 'Demo Lot 12 Sample Street', subtitle: 'Synthetic bundle for the viewer demo (not survey data)', FFL, origin: [768000, 6407000, 0], z0: 100 },
+    info: { title: 'Demo Lot 12 Sample Street', subtitle: 'DEMO DATA, NOT A REAL SITE (synthetic bundle for the viewer demo, not survey data)', FFL, origin: [768000, 6407000, 0], z0: 100 },
     layers: [
       { c: 'surface', n: 'Design surface', on: true }, { c: 'contours', n: 'Contours (0.25 m)', on: true }, { c: 'existing', n: 'Existing ground TIN', on: false },
       { c: 'buildings', n: 'Buildings', on: true }, { c: 'drainage', n: 'Drainage (pit and pipe)', on: true }, { c: 'road', n: 'Driveway', on: true },

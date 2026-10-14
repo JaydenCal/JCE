@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import type { Built } from './sceneBuilder';
 import type { CatalogueItem, PlacedItem, Vec3 } from './types';
-import { createItemObject, styleGhost } from './itemModels';
+import { createItemObject, fallbackItem, styleGhost } from './itemModels';
 import { snapFromHit, stepYaw, normDeg } from './snapping';
 import { makeSprite } from './textures';
 
 export interface PlaceState { items: PlacedItem[]; selectedId: string | null; ghostCatId: string | null; mode: 'idle' | 'place' | 'move' | 'duplicate'; canUndo: boolean; canRedo: boolean; hint: string }
-const SKIP_LAYERS = ['boundary', 'gradearrows', 'cutfill', 'context', 'dbyd', 'drainage'];
+export const SKIP_LAYERS = ['boundary', 'gradearrows', 'cutfill', 'context', 'dbyd', 'services', 'drainage', 'aerial'];
 let uid = 0; const newId = () => `i${Date.now().toString(36)}${(uid++).toString(36)}`;
 
 export class PlaceController {
@@ -34,21 +34,26 @@ export class PlaceController {
 
   private rebuild(it: PlacedItem) {
     const old = this.objs.get(it.id); if (old) { this.built.itemsGroup.remove(old); this.objs.delete(it.id); }
-    const c = this.catalogue.get(it.itemId); if (!c) return null;
-    const o = createItemObject(c); o.userData.placedId = it.id; this.built.itemsGroup.add(o); this.objs.set(it.id, o); return o;
+    const c = this.catalogue.get(it.itemId);
+    let o: THREE.Group;
+    if (c) { o = createItemObject(c); o.userData.h = c.dims.h; }
+    else {      // no catalogue entry: never drop the item; draw a labelled proxy from dims_m (or a marker without dimensions)
+      const f = fallbackItem(it); o = createItemObject(f.cat); o.userData.fallback = true; o.userData.h = f.cat.dims.h;
+      const sp = makeSprite(f.label, 0.6, '#c0392b'); sp.position.set(0, 0, f.cat.dims.h + 0.4); sp.userData.itemLabel = true; o.add(sp);
+    }
+    o.userData.placedId = it.id; this.built.itemsGroup.add(o); this.objs.set(it.id, o); return o;
   }
   sync() {
     const live = new Set(this.items.map((i) => i.id));
     for (const [id, o] of this.objs) if (!live.has(id)) { this.built.itemsGroup.remove(o); this.objs.delete(id); }
     for (const [id, s] of this.warn) if (!live.has(id) || !this.items.find((i) => i.id === id)?.warnings?.length) { s.parent?.remove(s); this.warn.delete(id); }
     for (const it of this.items) {
-      let o = this.objs.get(it.id); if (!o || o.userData.catId !== it.itemId) o = this.rebuild(it) ?? undefined; if (!o) continue;
+      let o = this.objs.get(it.id); if (!o || o.userData.catId !== it.itemId || (o.userData.fallback && this.catalogue.has(it.itemId))) o = this.rebuild(it) ?? undefined; if (!o) continue;
       o.position.set(...it.p); o.rotation.z = -(it.yaw * Math.PI) / 180; o.visible = !(this.movingId === it.id && this.ghost);
-      const c = this.catalogue.get(it.itemId);
-      if (it.warnings?.length && c) {
+      if (it.warnings?.length) {
         let s = this.warn.get(it.id); const text = it.warnings.join('\n');
         if (!s || s.userData.text !== text) { s?.parent?.remove(s); s = makeSprite('! ' + text, 0.7, '#c0392b'); s.userData.text = text; this.warn.set(it.id, s); this.built.itemsGroup.add(s); }
-        s.position.set(it.p[0], it.p[1], it.p[2] + c.dims.h + 0.5);
+        s.position.set(it.p[0], it.p[1], it.p[2] + (o.userData.h ?? 0) + 0.5);
       }
     }
     this.updateSelection();

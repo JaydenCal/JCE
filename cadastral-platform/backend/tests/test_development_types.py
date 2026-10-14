@@ -11,9 +11,9 @@ from app.agents.sa2_dcp_rag.extract import parse_setback_table
 from app.agents.sa2_dcp_rag.models import Chunk
 from app.agents.sa3_driveway.envelope import build_envelope
 from app.agents.sa3_driveway.models import SetbackRule
-from app.agents.sa6_glide3d import build_scene
-from app.agents.sa6_glide3d import sample as S
-from app.agents.sa6_glide3d.presets import (DEFAULTS_NOTE, building_preset, default_dims, place_rectangle,
+from app.agents.sa6_site3d import build_scene
+from app.agents.sa6_site3d import sample as S
+from app.agents.sa6_site3d.presets import (DEFAULTS_NOTE, building_preset, default_dims, place_rectangle,
                                             preset_footprint)
 from app.agents.sa9_constraints.intersect import LayerResult
 from app.agents.sa9_constraints.triggers import evaluate

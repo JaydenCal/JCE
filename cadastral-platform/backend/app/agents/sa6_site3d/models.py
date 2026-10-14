@@ -71,7 +71,7 @@ class PitIn(M):
     xy: tuple[float, float]
     label: str = "Pit"
     size_m: float = 0.6
-    depth_m: float = 0.9
+    depth_m: float | None = None                  # None = DEPTH NOT AVAILABLE: never assumed, the pit is drawn as a lid on the ground
 
 
 class RollerDoorIn(M):
@@ -119,21 +119,44 @@ class PlacedItem(M):
     level: str | None = None
 
 
+AERIAL_NOTE = "AERIAL IMAGERY FOR INFORMATION ONLY, TO BE CONFIRMED ON SITE"
+
+
 class AerialIn(M):
-    """Aerial image draped on the ground as an optional texture. ``extent`` is (E min, N min, E max, N max) in the scene CRS (north up)."""
-    path: str                                     # file name or URL of the image, relative to the bundle
+    """Aerial image draped on the ground as an optional, toggleable layer (information only). ``extent`` is (E min, N min, E max, N max)
+    in the scene CRS (north up). ``path`` is a file name, URL or data URI of the image."""
+    path: str
     extent: tuple[float, float, float, float]
     attribution: str = ""
-    capture_date: str | None = None
+    capture_date: str | None = None               # DD/MM/YYYY; None = CAPTURE DATE NOT STATED
+    source: str = ""                              # service / provider name
+    licence: str = ""
+    resolution_m: float | None = None             # ground size of one image pixel (of the embedded image), when known
+    size_px: tuple[int, int] | None = None        # pixel size of the embedded image (after any size cap)
+
+
+class TerrainProvenanceIn(M):
+    """Where the ground levels came from (see app.agents.sa3_terrain.provenance). Shown in the summary, as a terrain label and on contour labels."""
+    status: str
+    source: str = ""
+    url: str = ""
+    resolution_text: str = "NOT STATED"
+    resolution_m: float | None = None             # nominal product resolution; None = estimated from the point spacing
+    effective_spacing_m: float | None = None      # ground spacing of the points actually sampled (after coarsening / stride); chooses the contour interval
+    capture_date: str = "CAPTURE DATE NOT STATED"
+    accuracy: str = "NOT STATED"
+    licence: str = "NOT STATED"
+    datum: str = "NOT STATED"
+    notes: list[str] = []
 
 
 class SceneOptions(M):
-    contour_interval_m: float = 0.5
-    major_every: int = 5
+    contour_interval_m: float | None = None       # None = chosen from the data resolution (see contours.contour_plan); an explicit value is respected
+    major_every: int | None = None                # None = from the chosen interval
     max_triangles_per_mesh: int = 20000
     max_total_triangles: int = 50000
     tube_sides: int = 8
-    road_width_m: float = 8.0                     # ASSUMED carriageway width (kerb to far edge); no road survey is available
+    road_width_m: float = 8.0                     # ASSUMED carriageway width (kerb to far edge); no road survey is available; the road label states it
     verge_depth_m: float | None = None            # ASSUMED kerb to front boundary depth; None = from the SA3 crossover (kerb point), else 0
     gutter_width_m: float = 0.45                  # matches the SA3 longitudinal profile station spacing
     kerb_height_m: float = 0.15
@@ -147,8 +170,6 @@ class SceneOptions(M):
     surface_texture: str | None = "conc"
     context_colour: str = "#b3ad9f"
     eye_height_m: float = 1.6
-    default_depth_m: dict[str, float] = {"water": 0.6, "sewer": 1.2, "stormwater": 0.9, "electricity": 0.6,
-                                         "gas": 0.5, "telecom": 0.5, "other": 0.6}
 
 
 class SceneRequest(M):
@@ -157,7 +178,7 @@ class SceneRequest(M):
     subtitle: str = ""
     lot: LotContext
     origin: tuple[float, float] | None = None     # MGA E0,N0; default = lot centroid floored to 10 m
-    ffl: float | None = None
+    ffl: float | None = None                      # optional: site-only scenes have no building and no finished floor level
     ffl_label: str | None = None   # e.g. "FFL RL 100.50 (flood level RL 100.00 + 0.50 freeboard)"
     existing_tin: TinArrays | None = None
     survey_points: list[tuple[float, float, float]] = []   # absolute MGA x, y and AHD z; triangulated when no existing_tin is given
@@ -177,10 +198,11 @@ class SceneRequest(M):
     council_overlays: list[OverlayPolygon] = []
     items: list[PlacedItem] = []
     aerial: AerialIn | None = None
+    terrain_provenance: TerrainProvenanceIn | None = None   # provenance of the ground levels (stage 3 terrain chain)
     envelope_note: str | None = None              # one line stating the rules behind lot.envelope_wkt (shown on the envelope label)
     data_status: str | None = None                # e.g. "Test data: offline fixture, not a survey" (shown by the standalone viewer)
     extra_notes: list[str] = []
-    development_type: DevelopmentType = DevelopmentType.dwelling_house
+    development_type: DevelopmentType | None = None   # optional: a site-only scene names no development
     terms_version_id: UUID | None = None
     options: SceneOptions = SceneOptions()
 
@@ -229,7 +251,13 @@ class Info(M):
     ground_texture_extent: tuple[float, float, float, float] | None = None
     ground_texture_attribution: str | None = None
     ground_texture_date: str | None = None
+    ground_texture_source: str | None = None
+    ground_texture_licence: str | None = None
+    ground_texture_resolution_m: float | None = None
+    ground_texture_note: str | None = None        # AERIAL_NOTE: shown persistently on the viewer layer legend
+    terrain: dict | None = None         # terrain provenance record (status, source, resolution, capture date, accuracy, licence, notes)
     data_status: str | None = None      # provenance statement, e.g. test data
+    statement: str | None = None        # legacy field, optional and no longer set by the builder (the viewer shows no draft banner); kept so older bundles still validate
 
 
 class Floor(M):

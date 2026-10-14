@@ -27,7 +27,7 @@ class Sa10Esc:
         if p.lot.jurisdiction != "NSW":
             raise AgentError("SA10_JURISDICTION_UNSUPPORTED", "Only the NSW ESC standards (Blue Book, Building Sites 2024) are ingested; QLD later.")
         rs, unresolved_db = load_requirements(p.requirements_path)
-        rq = ReqView(rs, unresolved_db)
+        rq = ReqView(rs, unresolved_db, selectors={k: v for k, v in dict(jurisdiction=p.lot.jurisdiction, lga=p.lot.lga_name).items() if v})
         L = build_layout(p, rq)
         out_dir = Path(p.output_dir)
         out_dir.mkdir(parents=True, exist_ok=True)

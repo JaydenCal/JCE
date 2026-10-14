@@ -21,7 +21,7 @@ class AgentCode(str, Enum):
     SA3_GEOM_TIN = "SA3_GEOM_TIN"
     SA4_HYDRO = "SA4_HYDRO"
     SA5_CAD_DXF = "SA5_CAD_DXF"
-    SA6_GLIDE3D = "SA6_GLIDE3D"
+    SA6_SITE3D = "SA6_SITE3D"
     SA7_PDF_ALIGN = "SA7_PDF_ALIGN"
 
 

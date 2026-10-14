@@ -1,4 +1,4 @@
-"""Imagery providers: NSW export (verified), QLD stub (unverified), disk cache, tiling, MGA warp."""
+"""Imagery providers: NSW MapServer export (verified), QLD ImageServer (metadata verified 15/10/2026), disk cache, tiling, MGA warp."""
 from __future__ import annotations
 
 import hashlib
@@ -109,6 +109,22 @@ def warp_lonlat_to_mga(src: Image.Image, src_bbox: Bbox, bbox: Bbox, srid: int, 
     return Image.fromarray(np.asarray(src.convert("RGB"))[py, px])
 
 
+def warp_to_mga(src: Image.Image, src_bbox: Bbox, src_srid: int, bbox: Bbox, srid: int, size: tuple[int, int]) -> Image.Image:
+    """Resample an image that is linear in ``src_srid`` coordinates (4326 degrees or 3857 metres, north up) into a north-up raster in ``srid``."""
+    import numpy as np
+    from pyproj import Transformer
+    t = Transformer.from_crs(srid, src_srid, always_xy=True)
+    w, h = size
+    xs = bbox[0] + (np.arange(w) + 0.5) * (bbox[2] - bbox[0]) / w
+    ys = bbox[3] - (np.arange(h) + 0.5) * (bbox[3] - bbox[1]) / h
+    gx, gy = np.meshgrid(xs, ys)
+    sx_, sy_ = t.transform(gx, gy)
+    sw, sh = src.size
+    px = ((sx_ - src_bbox[0]) / (src_bbox[2] - src_bbox[0]) * sw).astype(int).clip(0, sw - 1)
+    py = ((src_bbox[3] - sy_) / (src_bbox[3] - src_bbox[1]) * sh).astype(int).clip(0, sh - 1)
+    return Image.fromarray(np.asarray(src.convert("RGB"))[py, px])
+
+
 class NswImageryProvider:
     name = "nsw_imagery"
     licence = NSW_LICENCE
@@ -209,26 +225,85 @@ class NswImageryProvider:
         return res
 
 
+QLD_IMAGE_SERVICE = "https://spatial-img.information.qld.gov.au/arcgis/rest/services/Basemaps/LatestStateProgram_AllUsers/ImageServer"
+
+
 class QldImageryProvider(NswImageryProvider):
-    """UNVERIFIED stub: same ArcGIS export convention against a configurable URL (env QLD_IMAGERY_URL)."""
+    """Queensland latest state program imagery (ImageServer, Basemaps/LatestStateProgram_AllUsers).
+
+    Service metadata read 15/10/2026: spatial reference 102100, U8 x 3 bands, maxImage 4096 x 2048, min pixel size 0.149 web units, capabilities
+    Catalog,Mensuration,Image,Metadata, mosaic methods NorthWest, Center, ByAttribute; catalog fields include name, capturestart, captureend,
+    res_value, res_unit (2 = cm), year, metalink.  A live `identify` with returnCatalogItems=true returned the displayed item first (top level
+    objectId / name) followed by the other items at the point, with capturestart / captureend / res_value.  NOT STATED: licence name.
+    The mosaic is NOT locked to one image: a bbox can span several catalog items, and a lock to the item at the centre would draw the wrong
+    pixels (or blank) outside it.  The capture date is therefore read from the displayed item at five points (centre and four points 10 percent
+    inside each corner) and reported as one date, or as the interval covering the items found; when any point gives no item or no dates, or a
+    request fails, the date is not stated.
+    The catalog `query` operation was not used: a sandbox check could not confirm that its spatial filter is honoured."""
     name = "qld_imagery"
     licence = QLD_LICENCE
 
     def __init__(self, base_url: str | None = None, service: str = "", **kw):
-        base = base_url or os.environ.get("QLD_IMAGERY_URL")
-        if not base:
-            raise RuntimeError("QLD imagery URL not configured (set QLD_IMAGERY_URL); endpoint unverified")
-        super().__init__(base_url=base, service=service or "", **kw)
+        super().__init__(base_url=base_url or os.environ.get("QLD_IMAGERY_URL") or QLD_IMAGE_SERVICE, service="", **kw)
+        self._items: list[dict] | None = None
 
-    def _export(self, bbox, sr, size):  # base is the full MapServer URL
-        url = f"{self.base}/export"
-        p = {"bbox": ",".join(f"{v:.6f}" for v in bbox), "bboxSR": sr, "imageSR": sr, "size": f"{size[0]},{size[1]}",
-             "format": "jpg", "f": "image"}
+    def _identify(self, bbox: Bbox, srid: int, fx: float = 0.5, fy: float = 0.5) -> dict | None:
+        """Attributes of the catalog item drawn at a point of the bbox (default the centre); None when the service gives none."""
+        from pyproj import Transformer
+        cx, cy = bbox[0] + fx * (bbox[2] - bbox[0]), bbox[1] + fy * (bbox[3] - bbox[1])
+        x, y = Transformer.from_crs(srid, 3857, always_xy=True).transform(cx, cy) if srid != 3857 else (cx, cy)
+        r = self._get(f"{self.base}/identify", {"geometry": json.dumps({"x": x, "y": y, "spatialReference": {"wkid": 102100}}),
+                                                   "geometryType": "esriGeometryPoint", "returnCatalogItems": "true", "returnGeometry": "false",
+                                                   "returnPixelValues": "false", "f": "json"}).json()
+        feats = ((r.get("catalogItems") or {}).get("features")) or []
+        if not feats:
+            return None
+        top = r.get("objectId")
+        pick = next((f for f in feats if (f.get("attributes") or {}).get("objectid") == top), feats[0])
+        return pick.get("attributes") or None
+
+    def _identify_all(self, bbox: Bbox, srid: int) -> list[dict] | None:
+        """Displayed items at the centre and near the four corners; None when any of the five gives nothing (then no capture date is claimed)."""
+        items: list[dict] = []
+        for fx, fy in ((0.5, 0.5), (0.1, 0.1), (0.9, 0.1), (0.1, 0.9), (0.9, 0.9)):
+            it = self._identify(bbox, srid, fx, fy)
+            if it is None:
+                return None
+            if it not in items:
+                items.append(it)
+        return items
+
+    def _export(self, bbox: Bbox, sr: int, size: tuple[int, int]) -> tuple[Image.Image, str]:
+        url = f"{self.base}/exportImage"
+        p = {"bbox": ",".join(f"{v:.6f}" for v in bbox), "bboxSR": sr, "imageSR": sr, "size": f"{size[0]},{size[1]}", "format": "jpg", "f": "image"}
         r = self._get(url, p)
+        if not r.headers.get("content-type", "").startswith("image"):
+            raise RuntimeError(f"non-image response: {r.text[:120]}")
         return Image.open(io.BytesIO(r.content)).convert("RGB"), requests.Request("GET", url, params=p).prepare().url
 
+    def fetch(self, bbox: Bbox, srid: int, size_px: tuple[int, int], dpi: int = 96) -> ImageResult:
+        try:
+            self._items = self._identify_all(bbox, srid)
+        except Exception:  # noqa: BLE001 - the image can still be drawn; the capture date is then reported as not stated
+            self._items = None
+        return super().fetch(bbox, srid, size_px, dpi)       # the base class sets meta.capture_date from self.capture_date()
+
     def capture_date(self, bbox, srid):
-        return None
+        """ISO date, or ISO interval ``start/end`` covering every item found at the sample points; None when any item or its dates are unknown or anything fails."""
+        try:
+            starts, ends = [], []
+            for t in self._items or []:
+                a, b = (time.strftime("%Y-%m-%d", time.gmtime(t[k] / 1000)) if t.get(k) else None for k in ("capturestart", "captureend"))
+                if not (a or b):
+                    return None
+                starts.append(a or b)
+                ends.append(b or a)
+            if not starts:
+                return None
+            lo, hi = min(starts), max(ends)
+            return f"{lo}/{hi}" if lo != hi else lo
+        except Exception:  # noqa: BLE001 - mirrors the NSW provider: any failure is CAPTURE DATE NOT STATED
+            return None
 
 
 def provider_from_env(jurisdiction: str = "NSW") -> ImageryProvider | None:
@@ -239,6 +314,6 @@ def provider_from_env(jurisdiction: str = "NSW") -> ImageryProvider | None:
         return CachedImagery()
     if mode in ("nsw", "auto") and jurisdiction.upper() == "NSW":
         return NswImageryProvider()
-    if mode in ("qld", "auto") and jurisdiction.upper() == "QLD" and os.environ.get("QLD_IMAGERY_URL"):
+    if mode in ("qld", "auto") and jurisdiction.upper() == "QLD":
         return QldImageryProvider()
     return None

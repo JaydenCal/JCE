@@ -39,7 +39,7 @@ _STUB_SCHEMAS: dict[AgentCode, tuple[str, str]] = {
     AgentCode.SA2_DCP_RAG: ("dcp_query.v1", "setback_ruleset.v1"),
     AgentCode.SA3_GEOM_TIN: ("terrain_request.v1", "earthworks_result.v1"),
     AgentCode.SA4_HYDRO: ("services_request.v1", "services_result.v1"),
-    AgentCode.SA6_GLIDE3D: ("scene_request.v1", "scene_bundle.v1"),
+    AgentCode.SA6_SITE3D: ("scene_request.v1", "scene_bundle.v1"),
     AgentCode.SA7_PDF_ALIGN: ("plan_upload.v1", "plan_overlay.v1"),
     AgentCode.SA5_CAD_DXF: ("cad_request.v1", "cad_result.v1"),
 }
@@ -149,5 +149,5 @@ def default_registry(*, env: Mapping[str, str] | None = None, sa1_client: Any = 
         reg.register_import_path(code, path)
     reg.register(AgentCode.SA1_CADASTRE, lambda: build_sa1(e, sa1_client))
     reg.register(AgentCode.SA2_DCP_RAG, lambda: build_sa2(e, sa2_documents))
-    reg.register(AgentCode.SA6_GLIDE3D, lambda: StubAgent(AgentCode.SA6_GLIDE3D, skip=policy == "skip"))
+    reg.register(AgentCode.SA6_SITE3D, lambda: StubAgent(AgentCode.SA6_SITE3D, skip=policy == "skip"))
     return reg

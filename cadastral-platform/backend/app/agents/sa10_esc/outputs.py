@@ -10,8 +10,8 @@ from shapely import wkt as swkt
 from shapely.geometry import LineString, mapping
 
 from app.agents.sa5_cad_dxf.layers import ensure_layers
-from app.agents.sa6_glide3d import geom as G
-from app.agents.sa6_glide3d.models import Part
+from app.agents.sa6_site3d import geom as G
+from app.agents.sa6_site3d.models import Part
 
 from app.branding.brand import Brand
 from .layers import ESC_LAYERS

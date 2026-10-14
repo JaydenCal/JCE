@@ -8,6 +8,14 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 PLACEHOLDER_STAMP = "PLACEHOLDER, NOT A REQUIREMENT"
+# Stamp carried by every platform default value (docs/14-3d-site-design-tools.md section 7.3). A default is shown and printed
+# with this text wherever it appears; it is never an LGA rule.
+PLATFORM_DEFAULT_STAMP = "PLATFORM DEFAULT, LGA RULE NOT LOADED"
+# Owner decision D3: until an LGA's own value for a key is loaded the platform default applies, and the stamp says why.
+STAMP_LGA_RULE_NOT_LOADED = PLATFORM_DEFAULT_STAMP                 # no rules loaded for the caller's LGA at all
+STAMP_LGA_VALUE_NOT_FOUND = "PLATFORM DEFAULT, LGA VALUE NOT FOUND"   # the LGA's rules are loaded but hold no row for the key
+STAMP_LGA_VALUE_UNRESOLVED = "PLATFORM DEFAULT, LGA VALUE UNRESOLVED"  # the LGA has an explicit unresolved entry for the key
+PLATFORM_DEFAULT_PROFILE = "JCESITE platform default profile"
 
 
 class RequirementKey(str, Enum):
@@ -47,6 +55,16 @@ KEY_HELP = {
 
 
 EXTRA_KEY_HELP: dict[str, str] = {}      # keys registered by extensions (e.g. app.jurisdiction custom keys)
+
+# Stormwater keys used by the 3D site design tools (stage 2B). osd_required and psd_l_s have a platform default
+# (knowledge/platform_default/requirements.json); osd_method and ssr_m3 have none and stay UNRESOLVED until an LGA supplies them.
+STORMWATER_KEY_HELP: dict[str, str] = {
+    "stormwater.osd_required": "whether on-site detention (OSD) is required for this LGA",
+    "stormwater.psd_l_s": "permissible site discharge (PSD), litres per second",
+    "stormwater.osd_method": "the OSD sizing method the LGA prescribes (e.g. a named procedure or table)",
+    "stormwater.ssr_m3": "site storage requirement (SSR), cubic metres",
+}
+EXTRA_KEY_HELP.update(STORMWATER_KEY_HELP)
 
 
 def key_help(key: str) -> str:
@@ -113,14 +131,19 @@ class Requirement(M):
     value_struct: dict[str, Any] | None = None
     unit: str | None = None
     source: Source | None = None
-    extraction_method: Literal["table", "llm", "user_entered", "regex"] | None = None
+    extraction_method: Literal["table", "llm", "user_entered", "regex", "platform_default"] | None = None
     confidence: float = 0.0
-    status: Literal["resolved", "unresolved", "user_confirmed", "conflict"] = "unresolved"
+    status: Literal["resolved", "unresolved", "user_confirmed", "conflict", "platform_default"] = "unresolved"
     prompt: str | None = None                      # what to ask the user when unresolved/conflict
     alternatives: list["Requirement"] = Field(default_factory=list)   # conflict: the competing citations
     verified_by: str | None = None
     entered_value: float | None = None             # user entry exactly as typed, in entered_unit (value/unit hold the canonical form)
     entered_unit: str | None = None
+    default_profile: str | None = None             # platform_default only: the profile the default belongs to
+    default_stamp: str | None = None               # platform_default only: why the default applies (one of the STAMP_ constants)
+    notes: str | None = None                       # unresolved entries: what was looked for (e.g. unresolved.json "looked")
+    lga_entry_prompt: str | None = None            # platform_default result: prompt of the LGA's unresolved entry, if any
+    lga_entry_notes: str | None = None             # platform_default result: notes of the LGA's unresolved entry, if any
 
     def quantity(self, ctx=None):
         """(value, unit) as a Quantity; raises UnitMismatch/UnitError when unit is missing or unknown."""
@@ -135,10 +158,38 @@ class Requirement(M):
 
     @property
     def usable(self) -> bool:
-        return self.status in ("resolved", "user_confirmed") and self.value is not None
+        return self.status in ("resolved", "user_confirmed", "platform_default") and self.value is not None
+
+    @property
+    def is_platform_default(self) -> bool:
+        return self.status == "platform_default"
+
+    @property
+    def stamp(self) -> str | None:
+        """The stamp of a platform default (default_stamp, else PLATFORM_DEFAULT_STAMP), else None. Callers print it beside the value."""
+        return (self.default_stamp or PLATFORM_DEFAULT_STAMP) if self.is_platform_default else None
 
     def citation(self) -> str:
+        if self.is_platform_default:
+            s = self.source
+            when = f" ({s.effective_date:%d/%m/%Y})" if s and s.effective_date and f"{s.effective_date:%d/%m/%Y}" not in s.document_title else ""
+            return f"{self.stamp}: {s.document_title if s else self.default_profile or ''}{when}"
         return self.source.cite() if self.source else ""
+
+    def describe(self) -> str:
+        """Value with unit, followed by the stamp when the value is a platform default, e.g. '2 L/s [PLATFORM DEFAULT, ...]'."""
+        v = self.value
+        if isinstance(v, bool):
+            v = "yes" if v else "no"
+        elif isinstance(v, float) and v == int(v):
+            v = int(v)
+        txt = f"{v} {self.unit}".strip() if self.unit and not isinstance(self.value, bool) else str(v)
+        return f"{txt} [{self.stamp}]" if self.is_platform_default else txt
+
+    def lga_code(self) -> str | None:
+        """Normalised LGA code of the row's selectors ("nsw-gunnedah"), None for state-wide rows and platform defaults."""
+        from .lgacode import normalise_lga_code
+        return normalise_lga_code(self.applies_to.jurisdiction, self.applies_to.lga)
 
     def to_db_row(self) -> dict[str, Any]:
         s = self.source or Source()
@@ -151,7 +202,10 @@ class Requirement(M):
                 "entered_by": s.entered_by, "entered_at": s.entered_at, "verified_by": self.verified_by,
                 "prompt": self.prompt,
                 "entered_value": self.entered_value, "entered_unit": self.entered_unit, "quote_language": s.language,
-                "quote_en": s.quote_en, "quote_en_machine_translated": s.quote_en_machine_translated}
+                "quote_en": s.quote_en, "quote_en_machine_translated": s.quote_en_machine_translated,
+                "lga_code": self.lga_code(),
+                "default_profile": (self.default_profile or PLATFORM_DEFAULT_PROFILE) if self.is_platform_default else None,
+                "default_stamp": self.stamp}
 
 
 class UnresolvedRequirement(Exception):
@@ -172,6 +226,9 @@ def to_item(e: UnresolvedRequirement) -> UnresolvedItem:
     return UnresolvedItem(key=e.key, selectors=e.selectors, prompt=e.prompt, conflict=e.conflict is not None)
 
 
+from .lgacode import lga_state, same_lga  # noqa: E402  (pure module, no import cycle)
+
+
 def _ci(a: str | None, b: str | None) -> bool:
     return (a or "").casefold() == (b or "").casefold()
 
@@ -181,16 +238,30 @@ CONTEXT_SEL = ("jurisdiction", "authority", "lga", "zone")
 
 class RequirementSet(M):
     requirements: list[Requirement] = Field(default_factory=list)
+    # LGAs whose knowledge folder was loaded into this set (jurisdiction + lga name). An LGA listed here, or one that has any
+    # row of its own in `requirements`, counts as "rules loaded" when a platform default is stamped.
+    loaded: list[Selectors] = Field(default_factory=list)
 
     def add(self, r: Requirement) -> None:
         self.requirements.append(r)
 
     def _match(self, r: Requirement, key: str, q: dict[str, Any]) -> bool:
-        if r.key != key:
-            return False
+        if r.key != key and not (r.status == "unresolved" and r.key.endswith(".*") and key.startswith(r.key[:-1])):
+            return False                           # (an unresolved "x.*" entry stands for every key under x.)
         a = r.applies_to
+        # LGA isolation: a row that names an LGA matches only when the caller names a matching LGA (never a no-selector call).
+        if a.lga is not None and q.get("lga") is None:
+            return False
         for f in CONTEXT_SEL:                      # context selectors: checked only when the caller supplies them
-            if getattr(a, f) is not None and q.get(f) is not None and not _ci(getattr(a, f), str(q[f])):
+            if getattr(a, f) is None or q.get(f) is None:
+                continue
+            if f == "lga":                         # "GUNNEDAH", "Gunnedah Shire Council" and "nsw-gunnedah" are one LGA; state must agree
+                # Known limitation: an LGA row carrying no state (no jurisdiction, no state prefix) matches by name only.
+                # All shipped LGA rows carry a jurisdiction; the loader must keep it that way (docs/14 section 7.2).
+                ok = same_lga(a.lga, str(q["lga"]), a.jurisdiction or lga_state(a.lga), self._caller_state(q))
+            else:
+                ok = _ci(getattr(a, f), str(q[f]))
+            if not ok:
                 return False
         if a.service is not None and not _ci(a.service, q.get("service")):
             return False
@@ -200,12 +271,39 @@ class RequirementSet(M):
                 return False
         return True
 
+    def _caller_state(self, q: dict[str, Any]) -> str | None:
+        return (str(q["jurisdiction"]).strip().upper() if q.get("jurisdiction") else None) or lga_state(q.get("lga"))
+
+    def _match_default(self, r: Requirement, key: str, q: dict[str, Any]) -> bool:
+        """A platform default applies only when the caller's jurisdiction is known and matches the default row's."""
+        st = self._caller_state(q)
+        if st is None or r.key != key:
+            return False
+        if r.applies_to.jurisdiction is not None and not _ci(r.applies_to.jurisdiction, st):
+            return False
+        return self._match(r, key, {**q, "jurisdiction": st})
+
+    def lga_rules_loaded(self, q: dict[str, Any]) -> bool:
+        """True when rules for the caller's LGA are in this set (a loaded folder, or any non-default row naming that LGA)."""
+        lga = q.get("lga")
+        if not lga:
+            return False
+        st = self._caller_state(q)
+        if any(l.lga and same_lga(l.lga, str(lga), l.jurisdiction, st) for l in self.loaded):
+            return True
+        return any(r.status != "platform_default" and r.applies_to.lga and same_lga(r.applies_to.lga, str(lga), r.applies_to.jurisdiction, st)
+                   for r in self.requirements)
+
     def get_requirement(self, key: "str | RequirementKey", **sel: Any) -> Requirement:
         k = key.value if isinstance(key, RequirementKey) else key
         shown = {a: b for a, b in sel.items() if b is not None}
         if "service" not in shown and k.split(".")[0] in ("sewer", "water"):
             shown["service"] = k.split(".")[0]
-        hits = [r for r in self.requirements if r.status != "unresolved" and self._match(r, k, shown)]
+        # Resolution order: project user_confirmed > LGA-specific resolved > state-wide resolved (these two by selector
+        # specificity, unchanged) > platform_default (only when nothing cited matches) > UnresolvedRequirement.
+        # A cited value always beats the default; a conflict entry always raises; an LGA unresolved entry lets the default
+        # apply but changes its stamp (owner decision D3: the default applies regardless of LGA, and says why).
+        hits = [r for r in self.requirements if r.status not in ("unresolved", "platform_default") and self._match(r, k, shown)]
         confirmed = [r for r in hits if r.status == "user_confirmed"]
         pool = confirmed or hits
         if pool:
@@ -218,12 +316,21 @@ class RequirementSet(M):
             if len(vals) > 1:
                 raise UnresolvedRequirement(k, shown, "conflicting values at equal specificity; confirm which applies")
             return best[0]
-        try:
-            base = RequirementKey(k)
-            help_ = KEY_HELP.get(base, k)
-        except ValueError:
-            help_ = k
-        pr = next((r.prompt for r in self.requirements if r.key == k and r.status == "unresolved" and r.prompt), None)
+        defaults = [r for r in self.requirements if r.status == "platform_default" and r.value is not None and self._match_default(r, k, shown)]
+        entry = next((r for r in self.requirements if r.status == "unresolved" and r.applies_to.lga is not None and self._match(r, k, shown)), None)
+        if defaults:
+            top = max(r.applies_to.specificity() for r in defaults)
+            d = next(r for r in defaults if r.applies_to.specificity() == top).model_copy(deep=True)
+            if entry is not None:
+                d.default_stamp, d.lga_entry_prompt, d.lga_entry_notes = STAMP_LGA_VALUE_UNRESOLVED, entry.prompt, entry.notes
+            elif self.lga_rules_loaded(shown):
+                d.default_stamp = STAMP_LGA_VALUE_NOT_FOUND
+            else:
+                d.default_stamp = STAMP_LGA_RULE_NOT_LOADED
+            return d
+        help_ = key_help(k)
+        pr = (entry.prompt if entry is not None else None) or next(
+            (r.prompt for r in self.requirements if r.key == k and r.status == "unresolved" and r.prompt), None)
         raise UnresolvedRequirement(k, shown, pr or f"Not found in the governing documents: please supply {help_} "
                                     f"with its source, for {shown or 'this lot'}.")
 

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import type { CatalogueItem } from './types';
+import type { CatalogueItem, PlacedItem } from './types';
 
 const texCache = new Map<string, THREE.Texture>();
 const gltfCache = new Map<string, Promise<THREE.Object3D>>();
@@ -45,4 +45,17 @@ export function styleGhost(o: THREE.Object3D, ok: boolean) {
     for (const x of mesh.material as THREE.MeshStandardMaterial[]) if (x.emissive) { x.emissive.set(ok ? 0x2a7a3a : 0xa02020); x.emissiveIntensity = 0.45; }
     mesh.castShadow = false;
   });
+}
+
+export const ITEM_MODEL_NOT_AVAILABLE = 'ITEM MODEL NOT AVAILABLE';
+export const ITEM_DIMENSIONS_NOT_AVAILABLE = 'ITEM DIMENSIONS NOT AVAILABLE';
+/**
+ * Stand-in for a placed item whose id has no catalogue entry (nothing is dropped and nothing is invented). With dims_m a dimensioned box
+ * proxy (dims times scale) labelled ITEM MODEL NOT AVAILABLE; without dims_m a small marker labelled ITEM DIMENSIONS NOT AVAILABLE.
+ */
+export function fallbackItem(it: PlacedItem): { cat: CatalogueItem; label: string } {
+  const k = it.scale && it.scale > 0 ? it.scale : 1, dm = it.dims_m, hasDims = !!dm;
+  const dims = dm ? { w: dm[0] * k, d: dm[1] * k, h: dm[2] * k } : { w: 0.3, d: 0.3, h: 0.3 };
+  return { cat: { id: it.itemId, title: it.name ?? it.itemId, retailer: '', category: '', price: 0, dims, model_kind: 'proxy' },
+           label: (it.name ? it.name + '\n' : '') + (hasDims ? ITEM_MODEL_NOT_AVAILABLE : ITEM_DIMENSIONS_NOT_AVAILABLE) };
 }

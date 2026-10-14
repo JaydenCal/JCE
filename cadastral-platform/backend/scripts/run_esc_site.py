@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_site as RS  # noqa: E402
 from app.agents.sa10_esc import Sa10Esc, Sa10EscInput  # noqa: E402
 from app.agents.sa3_terrain.live_levels import fetch_levels  # noqa: E402
-from app.agents.sa6_glide3d.presets import preset_footprint  # noqa: E402
+from app.agents.sa6_site3d.presets import preset_footprint  # noqa: E402
 from app.common.contracts import AgentCode, DevelopmentType  # noqa: E402
 from app.imagery.provider import provider_from_env, NswImageryProvider  # noqa: E402
 from app.orchestrator.adapters.config import sa1_config_from_env  # noqa: E402

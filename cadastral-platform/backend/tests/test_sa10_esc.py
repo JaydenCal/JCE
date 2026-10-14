@@ -156,7 +156,7 @@ def test_unresolved_requirements_surfaced(tmp_path):
     # every resolved key is a cited requirement with a quote
     rs = RequirementSet(requirements=[Requirement.model_validate(r) for r in json.loads((Path(__file__).parents[1] / "knowledge/esc/requirements.json").read_text())["requirements"]])
     for k in out.resolved_keys:
-        r = rs.get_requirement(k)
+        r = rs.get_requirement(k, jurisdiction="NSW", lga="Gunnedah")        # Gunnedah rows answer only for a Gunnedah caller
         assert r.source and r.source.quote and r.source.page and r.source.sha256
 
 
@@ -223,3 +223,17 @@ def test_stockpile_toe_fences_and_low_side(tmp_path):
         assert f.distance(sp) < 1.0 and f.centroid.y > sp.centroid.y      # downslope (north) toe
         assert [e for e in el(out, "fence") if e.id == f"SF-{i}"][0].status == "unresolved"
     assert out.flow.note and abs(out.quantities["fence_length_m"] - sum(e.quantity for e in el(out, "fence"))) < 0.5
+
+
+def test_gunnedah_esc_rows_do_not_answer_for_another_council(tmp_path):
+    rs = RequirementSet(requirements=[Requirement.model_validate(r) for r in json.loads((Path(__file__).parents[1] / "knowledge/esc/requirements.json").read_text())["requirements"]])
+    from app.agents.requirements.models import UnresolvedRequirement
+    from app.agents.sa10_esc.reqs import ReqView
+    key = "esc.topsoil.reinstate_min_mm"
+    assert rs.get(key, jurisdiction="NSW", lga="Gunnedah") == 100.0
+    for sel in ({}, {"jurisdiction": "NSW", "lga": "Narrabri"}, {"jurisdiction": "QLD", "lga": "qld-gunnedah"}):
+        with pytest.raises(UnresolvedRequirement):
+            rs.get_requirement(key, **sel)
+    assert ReqView(rs, {}, selectors={"jurisdiction": "NSW", "lga": "Gunnedah Shire Council"}).value(key) == 100.0
+    other = ReqView(rs, {}, selectors={"jurisdiction": "NSW", "lga": "Narrabri"})
+    assert other.value(key) is None and key in other.missing

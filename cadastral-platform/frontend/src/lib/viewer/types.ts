@@ -29,6 +29,8 @@ export interface PlacedItem {
   surface?: 'ground' | 'floor' | 'wall'; level?: string; room?: string;
   /** compliance warnings from the server, e.g. 'over DBYD buffer' */
   warnings?: string[];
+  /** backend (SA6 ItemOut) fields kept through normalisation: used to draw a dimensioned proxy when the catalogue has no entry for itemId */
+  name?: string; dims_m?: Vec3; scale?: number; model_url?: string;
 }
 
 export interface CatalogueItem {
@@ -40,8 +42,20 @@ export interface CatalogueItem {
   mount?: 'floor' | 'wall';
 }
 
+export interface TerrainInfo {
+  status: string; source: string; url?: string; resolution?: string; capture_date?: string; accuracy?: string; licence?: string; notes?: string[];
+}
+
 export interface SceneBundle {
-  info: { title: string; subtitle?: string; FFL?: number; origin: Vec3; z0?: number };
+  info: {
+    title: string; subtitle?: string; FFL?: number; origin: Vec3; z0?: number; srid?: number; status?: string; data_status?: string;
+    /** legacy field from bundles written before stage 3; ignored (the viewer shows no AI draft banner) */ statement?: string;
+    /** aerial imagery for information only: data URI or URL of a north-up image and its extent (E min, N min, E max, N max) in the scene CRS */
+    ground_texture?: string; ground_texture_extent?: [number, number, number, number]; ground_texture_attribution?: string;
+    ground_texture_date?: string; ground_texture_source?: string; ground_texture_licence?: string; ground_texture_note?: string;
+    /** terrain provenance (stage 3): source, status label and the rest of the provenance record */
+    terrain?: TerrainInfo;
+  };
   layers: LayerDef[]; parts: PartDef[]; labels?: LabelDef[];
   views?: Record<string, ViewDef>; summary?: [string, string][]; notes?: string[];
   walkable?: Walkable; items?: PlacedItem[];

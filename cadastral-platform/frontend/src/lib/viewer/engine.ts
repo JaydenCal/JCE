@@ -1,30 +1,36 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { AERIAL_LAYER, aerialLegend, drawAerialNote, setAerialOpacity } from './aerial';
 import { buildScene, xrayMeshes, XRAY_BUILDINGS, XRAY_GROUND, type Built } from './sceneBuilder';
 import { FirstPersonController } from './fpController';
 import { PlaceController, type PlaceState } from './placeController';
 import { drawMinimap } from './minimap';
 import { floorGround, maxGround } from './movement';
+import { DesignController, type DesignState, type PointerInfo } from '../site/designController';
+import { lotRingFromBundle, terrainAvailable } from '../site/lot';
+import { designTerrainMeshes } from '../site/terrain';
+import { metresPerPixelOrtho, metresPerPixelPerspective } from '../site/snap';
+import type { SiteDesignStore } from '../site/store';
 import { DEFAULT_SETTINGS, type CatalogueItem, type PickInfo, type PlacedItem, type SceneBundle, type Settings } from './types';
 
 export interface EngineEvents {
   onHover?: (t: string) => void; onPick?: (p: PickInfo | null) => void; onFp?: (active: boolean, locked: boolean) => void;
-  onPlace?: (s: PlaceState) => void; onItemsChange?: (items: PlacedItem[]) => void;
+  onPlace?: (s: PlaceState) => void; onItemsChange?: (items: PlacedItem[]) => void; onDesign?: (s: DesignState) => void;
 }
 export interface Hud { needle?: SVGElement | null; minimap?: HTMLCanvasElement | null }
 export type Opt = 'cutfill' | 'xray' | 'sxray' | 'edges' | 'shadow' | 'exag';
 
 export class ViewerEngine {
-  readonly built: Built; readonly place: PlaceController; fp: FirstPersonController;
+  readonly built: Built; readonly place: PlaceController; readonly design: DesignController; fp: FirstPersonController;
   renderer: THREE.WebGLRenderer; scene = new THREE.Scene(); camera!: THREE.Camera; controls!: OrbitControls; fpCam: THREE.PerspectiveCamera;
   cOn: Record<string, boolean> = {}; opts = { cutfill: false, edges: true, exag: false }; settings: Settings = { ...DEFAULT_SETTINGS };
   hud: Hud = {}; fpActive = false; placeActive = false;
   private marker: THREE.Mesh; private ptr = new THREE.Vector2(); private ray = new THREE.Raycaster(); private raf = 0; private disposed = false;
-  private hovered: THREE.Mesh | null = null; private downAt: [number, number] | null = null; private lastPtr: PointerEvent | null = null;
+  private designDown: [number, number] | null = null; private hovered: THREE.Mesh | null = null; private downAt: [number, number] | null = null; private lastPtr: PointerEvent | null = null;
   private lamp = new THREE.PointLight(0xffd9a8, 0, 12, 2); private interior = 0; private walkMeshes: THREE.Mesh[];
   private bounds: [number, number, number, number]; private cleanups: Array<() => void> = [];
 
-  constructor(private canvas: HTMLCanvasElement, private stage: HTMLElement, private theme: HTMLElement, private bundle: SceneBundle, private ev: EngineEvents = {}) {
+  constructor(private canvas: HTMLCanvasElement, private stage: HTMLElement, private theme: HTMLElement, private bundle: SceneBundle, private ev: EngineEvents = {}, opts: { store?: SiteDesignStore } = {}) {
     const css = (n: string) => getComputedStyle(this.theme).getPropertyValue(n).trim();
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); this.renderer.shadowMap.enabled = true; this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -42,6 +48,15 @@ export class ViewerEngine {
     this.place = new PlaceController(this.built, (x, y, zl) => this.groundAt(x, y, zl));
     this.place.listener = (s) => this.ev.onPlace?.(s); this.place.onChange = (i) => this.ev.onItemsChange?.(i);
     this.place.setCatalogue(bundle.catalogue ?? []); this.place.setItems(bundle.items ?? []);
+    const O = bundle.info.origin;
+    // Design ground is terrain surface parts only (never the walkMeshes fallback of "every other mesh", which can include buildings, the aerial or items)
+    const designGround = designTerrainMeshes(this.built.meshes, w?.terrain ?? []);
+    this.design = new DesignController({
+      built: this.built, origin: [O[0], O[1]], terrainMeshes: designGround, lot: lotRingFromBundle(bundle), terrainAvailable: designGround.length > 0 && terrainAvailable(bundle), store: opts.store,
+      mpp: (p) => this.metresPerPixel(p), setOrbit: (on) => { if (this.controls) this.controls.enabled = on && !this.fpActive; },
+    });
+    this.design.listener = (s) => { this.canvas.style.cursor = s.active && s.tool !== 'select' ? 'crosshair' : ''; this.ev.onDesign?.(s); };
+    this.cOn.design = true;
     this.setView('iso-sw'); this.applyTheme(); this.applyVis(); this.bindEvents(); this.resize(); this.loop();
   }
 
@@ -71,6 +86,24 @@ export class ViewerEngine {
     this.controls.enableZoom = !this.place.active; this.resize();
   }
 
+  /** Metres per screen pixel at a world point (for snap radii and constant size handles). */
+  metresPerPixel(p: THREE.Vector3): number {
+    const h = this.stage.clientHeight || 600, cam = this.camera as THREE.PerspectiveCamera & THREE.OrthographicCamera;
+    if (!cam) return 0.05;
+    if ((cam as THREE.OrthographicCamera).isOrthographicCamera) return metresPerPixelOrtho(cam.top - cam.bottom, cam.zoom, h);
+    return metresPerPixelPerspective(cam.position.distanceTo(p), cam.fov, h);
+  }
+  private info(ev: PointerEvent): PointerInfo {
+    const r = this.rayFromEvent(ev); return { ray: r.ray.clone(), x: ev.clientX, y: ev.clientY, alt: ev.altKey, shift: ev.shiftKey, button: ev.button };
+  }
+  get designActive() { return this.design.active; }
+  /** Design mode: site object tools. Leaves place mode and first person; exaggeration is switched off so heights stay true. */
+  setDesign(on: boolean) {
+    if (on === this.design.active) return;
+    if (on) { if (this.placeActive) this.setPlace(false); if (this.fpActive) this.setFirstPerson(false); this.setOpt('exag', false); }
+    this.design.setActive(on); this.controls.enableZoom = true;
+  }
+
   // ---- visibility / modes
   applyVis() {
     const { meshes, lineObjs, edgeLines, sprites, itemsGroup } = this.built, on = this.cOn;
@@ -79,7 +112,10 @@ export class ViewerEngine {
     for (const e of edgeLines) e.visible = this.opts.edges && e.userData.owner.visible;
     for (const s of sprites) s.visible = !!on[s.userData.c];
     itemsGroup.visible = !!on.items;
+    if (this.design) this.design.scene.group.visible = on.design !== false;
   }
+  /** Aerial imagery opacity, 0 to 1 (the layer toggle is separate). */
+  setAerialOpacity(v: number) { setAerialOpacity(this.built.meshes, v); }
   setLayer(c: string, v: boolean) { this.cOn[c] = v; this.applyVis(); }
   setOpt(o: Opt, v: boolean) {
     const b = this.built;
@@ -99,12 +135,14 @@ export class ViewerEngine {
 
   setFirstPerson(on: boolean) {
     if (on === this.fpActive) return;
+    if (on && this.design.active) this.design.setActive(false);
     this.fpActive = on;
     if (on) { this.fp.enable(); this.camera = this.fpCam; this.controls.enabled = false; this.setOpt('exag', false); this.marker.visible = false; }
     else { this.fp.disable(); this.controls.enabled = true; const c = this.controls.object; this.camera = c; this.interiorTarget(0); }
     this.ev.onFp?.(on, this.fp.locked); this.resize();
   }
   setPlace(on: boolean) {
+    if (on && this.design.active) this.design.setActive(false);
     this.placeActive = on; if (!on) { this.place.cancel(); this.place.select(null); }
     this.controls.enableZoom = !(on && this.place.active);
     if (on) this.setOpt('exag', false);
@@ -117,13 +155,14 @@ export class ViewerEngine {
   }
   private cast(ev: { clientX: number; clientY: number }) {
     const r = this.rayFromEvent(ev); r.far = 5000;
-    return r.intersectObjects(this.built.meshes.filter((m) => m.visible && !['boundary', 'gradearrows'].includes(m.userData.c)), false)[0] ?? null;
+    return r.intersectObjects(this.built.meshes.filter((m) => m.visible && !['boundary', 'gradearrows', 'aerial'].includes(m.userData.c)), false)[0] ?? null;
   }
   private centreRay() { this.ray.setFromCamera(new THREE.Vector2(0, 0), this.camera); return this.ray; }
   private bindEvents() {
     const c = this.canvas, add = (t: EventTarget, e: string, f: (x: any) => void, o?: AddEventListenerOptions) => { t.addEventListener(e, f, o); this.cleanups.push(() => t.removeEventListener(e, f, o)); };
     add(c, 'pointermove', (ev: PointerEvent) => {
       if (this.fpActive) return; this.lastPtr = ev;
+      if (this.design.active) { this.design.pointerMove(this.info(ev)); return; }
       if (this.place.active) { const r = this.rayFromEvent(ev); this.place.updateFromRay(r.ray.origin, r.ray.direction); return; }
       const h = this.cast(ev);
       if (this.hovered && (!h || h.object !== this.hovered)) { const m = this.hovered.material as THREE.MeshStandardMaterial; if (m.emissive && !this.hovered.userData.eml) m.emissive.setHex(0); this.hovered = null; }
@@ -131,14 +170,21 @@ export class ViewerEngine {
       else this.ev.onHover?.('');
     });
     add(c, 'pointerdown', (ev: PointerEvent) => { this.downAt = [ev.clientX, ev.clientY]; });
+    // design tools: captured on the stage so they run before OrbitControls, which a grabbed handle or object must be able to disable
+    add(this.stage, 'pointerdown', (ev: PointerEvent) => { if (this.design.active && !this.fpActive && ev.target === c) { this.designDown = [ev.clientX, ev.clientY]; this.design.pointerDown(this.info(ev)); } }, { capture: true });
+    add(window, 'pointerup', (ev: PointerEvent) => {
+      if (!this.design.active || this.fpActive || (!this.design.state().dragging && !this.designDown && ev.target !== c)) return;
+      const d = this.designDown; this.designDown = null; this.design.pointerUp(this.info(ev), !!d && Math.hypot(ev.clientX - d[0], ev.clientY - d[1]) > 4);
+    });
+    add(c, 'dblclick', () => { if (this.design.active) this.design.doubleClick(); });
     add(c, 'pointerup', (ev: PointerEvent) => {
-      const d = this.downAt; this.downAt = null; if (ev.button === 2 && this.place.active) { this.place.cancel(); this.controls.enableZoom = true; return; }
+      const d = this.downAt; this.downAt = null; if (this.design.active) return; if (ev.button === 2 && this.place.active) { this.place.cancel(); this.controls.enableZoom = true; return; }
       if (this.fpActive) { if (this.placeActive && this.fp.locked) { const r = this.centreRay(); this.place.click(r.ray.origin, r.ray.direction); } return; }
       if (!d || Math.hypot(ev.clientX - d[0], ev.clientY - d[1]) > 4) return;
       if (this.placeActive) { const r = this.rayFromEvent(ev); this.place.click(r.ray.origin, r.ray.direction); this.controls.enableZoom = !this.place.active; return; }
       this.pick(ev);
     });
-    add(c, 'contextmenu', (e: Event) => { if (this.place.active) e.preventDefault(); });
+    add(c, 'contextmenu', (e: Event) => { if (this.place.active || (this.design.active && this.design.state().tool !== 'select')) e.preventDefault(); });
     add(c, 'wheel', (e: WheelEvent) => { if (this.place.active) { e.preventDefault(); this.place.rotate(e.deltaY > 0 ? 1 : -1); } }, { passive: false });
     add(window, 'keydown', (e: KeyboardEvent) => this.onKey(e));
     add(window, 'resize', () => this.resize());
@@ -148,6 +194,7 @@ export class ViewerEngine {
   }
   private onKey(e: KeyboardEvent) {
     const t = e.target as HTMLElement | null; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;
+    if (this.design.active) { this.design.key(e); return; }
     const ctrl = e.ctrlKey || e.metaKey;
     if (ctrl && e.code === 'KeyZ') { e.preventDefault(); e.shiftKey ? this.place.redo() : this.place.undo(); return; }
     if (ctrl && e.code === 'KeyY') { e.preventDefault(); this.place.redo(); return; }
@@ -189,14 +236,31 @@ export class ViewerEngine {
       if (this.placeActive) { const r = this.centreRay(); this.place.updateFromRay(r.ray.origin, r.ray.direction); }
       const mm = this.hud.minimap; if (mm) drawMinimap(mm, this.bundle, this.bundle.walkable?.colliders ?? [], this.bounds, { x: s.x, y: s.y, yaw: this.fp.yaw }, this.css);
     } else {
-      this.controls.update(); const n = new THREE.Vector3(0, 1, 0).applyQuaternion(this.camera.quaternion.clone().invert()); heading = -Math.atan2(n.x, n.y);
+      this.controls.update(); this.design.frame(); const n = new THREE.Vector3(0, 1, 0).applyQuaternion(this.camera.quaternion.clone().invert()); heading = -Math.atan2(n.x, n.y);
     }
     if (this.hud.needle) this.hud.needle.setAttribute('transform', `rotate(${(-heading * 180) / Math.PI} 27 27)`);
     this.renderer.render(this.scene, this.camera);
   };
+  /** Screenshot export path: renders the current frame (PNG data URL). */
+  snapshotPng(): string {
+    this.renderer.render(this.scene, this.camera);
+    if (!this.aerialVisible()) return this.canvas.toDataURL('image/png');
+    // the aerial layer is visible: the information-only wording is burned into the exported image
+    const out = document.createElement('canvas'); out.width = this.canvas.width; out.height = this.canvas.height;
+    const ctx = out.getContext('2d');
+    if (!ctx) return this.canvas.toDataURL('image/png');
+    ctx.drawImage(this.canvas, 0, 0);
+    const lg = aerialLegend(this.bundle);
+    drawAerialNote(ctx, out.width, out.height, lg?.note, lg ? `SOURCE: ${lg.source}. CAPTURE DATE: ${lg.capture}.` : undefined);
+    return out.toDataURL('image/png');
+  }
+  /** True when an aerial mesh is switched on and not fully transparent (the wording must then appear on screen and in exports). */
+  aerialVisible(): boolean {
+    return !!this.cOn[AERIAL_LAYER] && this.built.meshes.some((m) => m.userData.c === AERIAL_LAYER && m.visible && (m.material as THREE.Material).opacity > 0);
+  }
   snapshotState() { const s = this.fp.state; return { fpActive: this.fpActive, x: s.x, y: s.y, z: s.z, yaw: this.fp.yaw, grounded: s.grounded }; }
   dispose() {
-    this.disposed = true; cancelAnimationFrame(this.raf); this.cleanups.forEach((f) => f()); this.fp.disable(); this.controls?.dispose(); this.place.dispose(); this.built.dispose(); this.renderer.dispose();
+    this.disposed = true; cancelAnimationFrame(this.raf); this.cleanups.forEach((f) => f()); this.fp.disable(); this.controls?.dispose(); this.place.dispose(); this.design.dispose(); this.built.dispose(); this.renderer.dispose();
   }
   setCatalogue(c: CatalogueItem[]) { this.place.setCatalogue(c); }
 }
