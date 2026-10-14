@@ -10,4 +10,4 @@ Drop-in files for the live site root (hosted static, cPanel). Existing pages, as
 
 Colours, font and logo are the live brand (paper #f3f4ef, ink #232a28, terracotta #a3532d, Manrope).
 Source of the live site is not in this repo, so the existing `style.css`, analytics and quote dock scripts are not linked here. Add them to each page's head if wanted.
-Plan Studio (PS-SCOPE-001) tool and Stripe/AI back end are not built here: the product page shows it as "Coming soon" (`premiumEnabled:false`).
+Pocket Architect (PS-SCOPE-001) tool and Stripe/AI back end are not built here: the product page shows it as "Coming soon" (`premiumEnabled:false`).
