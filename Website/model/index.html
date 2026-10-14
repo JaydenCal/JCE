@@ -362,12 +362,13 @@ const MODEL = {"parts":[{"n":"FS_accessway_concrete","c":"surface","col":"#c4c3b
   grid.position.set(X.centre.x,X.centre.y,Z0-0.15); grid.material.transparent=true; grid.material.depthWrite=false; X.scene.add(grid);
   var asp=function(){return cam.aspect||1.5};
   var lastT=0,oc=null,viewed=false;
-  function apply(t){
-    t=clamp(+t||0,0,1);lastT=t;V.setCamera(cam);
+  function apply(t,keep){
+    t=clamp(+t||0,0,1);if(!keep)lastT=t;V.setCamera(cam);
     var u=sm(t), zk=lerp(0.001,1,sm((t-0.12)/0.7)), fk=sm((t-0.08)/0.75), lk=sm((t-0.82)/0.18);
     var plan=(t<=0.0005);
     /* z flatten, same recipe as the viewer's level exaggeration control */
     root.scale.set(1,1,zk); root.position.z=Z0*(1-zk);
+    if(!keep){
     /* camera: dolly zoom from a near-orthographic top view to the iso perspective */
     var fov=FOV0*Math.pow(FOV1/FOV0,u);
     var H0=Math.max(X.size.y/2, X.size.x/2/asp())*1.12;
@@ -375,6 +376,7 @@ const MODEL = {"parts":[{"n":"FS_accessway_concrete","c":"surface","col":"#c4c3b
     var dir=dir0.clone().lerp(dir1,u).normalize();
     cam.fov=fov; cam.near=Math.max(0.5,dist*0.35); cam.far=dist*2+X.size.length()*2;
     cam.position.copy(T).addScaledVector(dir,dist); cam.lookAt(T); cam.updateProjectionMatrix();
+    }
     /* fills fade toward the dark ground, line work stays bright */
     var f=lerp(0.1,1,fk);
     mats.forEach(function(r){ r.m.color.copy(r.col).lerp(DARK,1-f); if(r.m.emissive&&r.emi) r.m.emissive.copy(r.emi); });
@@ -385,8 +387,8 @@ const MODEL = {"parts":[{"n":"FS_accessway_concrete","c":"surface","col":"#c4c3b
     X.renderer.shadowMap.enabled=t>0.6;
   }
   window.addEventListener('message',function(e){ var d=e.data; if(!d) return;
-    if(d.type==='morph'){ apply(d.t); return; }
-    if(d.type==='orbit'){ if(d.on&&!oc){ oc=new THREE_.OrbitControls(cam,X.renderer.domElement); oc.target.copy(T); oc.enableDamping=false; } if(oc){ oc.enabled=!!d.on&&!viewed; oc.enableZoom=!!d.zoom; } return; }
+    if(d.type==='morph'){ apply(d.t,d.keep); return; }
+    if(d.type==='orbit'){ if(d.on&&!oc){ oc=new THREE_.OrbitControls(cam,X.renderer.domElement); oc.target.copy(T); oc.enableDamping=false; } if(oc){ oc.enabled=!!d.on&&!viewed; oc.enableZoom=!!d.zoom; oc.maxPolarAngle=Math.PI/2-0.02; oc.minDistance=3; } if(d.zoom){ cam.near=0.5; cam.far=5000; cam.updateProjectionMatrix(); } return; }
     if(d.type==='view'){ viewed=true; if(oc) oc.enabled=false; return; }
     if(d.type==='control'){ if(!d.on){ viewed=false; var b=document.querySelector('#views button[data-v="iso-sw"]'); if(b) b.click(); var c=V.controls(); if(c) c.enabled=false; apply(lastT); } }
   });

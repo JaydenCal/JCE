@@ -7,11 +7,13 @@
   function V(){return window.__viewer}
   function CAM(){var v=V();return v&&(v.camera?v.camera():v.getCamera())}
   function CTL(){var v=V();return v&&(v.controls?v.controls():v.getControls())}
-  function tween(ms,fn){if(rm||!ms){fn(1);return}var t0=performance.now();(function f(n){var k=Math.min(1,(n-t0)/ms);fn(1-Math.pow(1-k,3));if(k<1)requestAnimationFrame(f)})(t0)}
+  var animId=0;
+  function tween(ms,fn){var id=++animId;if(rm||!ms){fn(1);return}var t0=performance.now();(function f(n){if(id!==animId)return;var k=Math.min(1,(n-t0)/ms);fn(1-Math.pow(1-k,3));if(k<1)requestAnimationFrame(f)})(t0)}
+  function clampCtl(t){if(!t||!t.target)return;t.maxPolarAngle=Math.PI/2-0.02;t.minDistance=Math.max(t.minDistance||0,3)}
   /* dolly toward the target on taking control */
   function dolly(k,ms){
     var c=CAM(),t=CTL();if(!c||!t||!c.isPerspectiveCamera)return;
-    var tg=t.target.clone(),p0=c.position.clone(),d0=p0.distanceTo(tg),d1=Math.max(t.minDistance||0.5,d0*k),dir=p0.clone().sub(tg).normalize();
+    clampCtl(t);var tg=t.target.clone(),p0=c.position.clone(),d0=p0.distanceTo(tg),d1=Math.max(t.minDistance||0.5,6,d0*k),dir=p0.clone().sub(tg).normalize();
     tween(ms,function(e){c.position.copy(tg).addScaledVector(dir,d0+(d1-d0)*e);c.lookAt(tg);if(t.update)t.update()});
   }
   /* switch to a named view, flying the camera there instead of snapping */
@@ -19,7 +21,7 @@
     var b=document.querySelector('#views button[data-v="'+String(id).replace(/"/g,'')+'"]');if(!b)return;
     var c0=CAM(),t0=CTL(),op=c0&&c0.position.clone(),ot=t0&&t0.target.clone(),persp=c0&&c0.isPerspectiveCamera;
     b.click();
-    var c1=CAM(),t1=CTL();
+    var c1=CAM(),t1=CTL();clampCtl(t1);
     if(!persp||!c1||!c1.isPerspectiveCamera||!t1)return;
     var dp=c1.position.clone(),dt=t1.target.clone();
     c1.position.copy(op);t1.target.copy(ot);

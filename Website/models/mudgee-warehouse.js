@@ -230,7 +230,7 @@ const MODEL = {"parts":[{"n":"FS_dish","c":"surface","col":"#cfd0cb","a":1.0,"ro
         if(!anim) return;
         var el=window.__scrubMode?(HOLD+window.__scrubT*DUR):(now-t0)/1000, t=Math.min(1,Math.max(0,el-HOLD)/DUR);
         var u=ease((t-0.1)/0.72), dir=dir0.clone().lerp(dir1,u).normalize().multiplyScalar(dir0.length()+(dir1.length()-dir0.length())*u);
-        var tg=T0.clone().lerp(T,u); cam.position.copy(tg).add(dir); cam.lookAt(tg); c.target.copy(tg); c.update();
+        var tg=T0.clone().lerp(T,u); if(!window.__keepCam){ cam.position.copy(tg).add(dir); cam.lookAt(tg); c.target.copy(tg); c.update(); }
         sheetMat.opacity=el<HOLD?Math.min(1,el/0.6):(t<0.2?1:Math.max(0,1-(t-0.2)/0.2));
         var kOf=new Map();
         items.forEach(function(it){ var k=ease((t-it.delay)/it.dur); kOf.set(it.o,k); it.o.scale.z=Math.max(0.001,k); it.o.position.z=Zs*(1-Math.max(0.001,k)); it.o.visible=it.vis&&k>0.004; });
@@ -259,7 +259,7 @@ const MODEL = {"parts":[{"n":"FS_dish","c":"surface","col":"#cfd0cb","a":1.0,"ro
   }
   window.addEventListener('message',function(e){
     var d=e.data||{}; if(e.source!==window.parent) return;
-    if(d.type==='morph'){ window.__scrubMode=true; window.__scrubT=Math.max(0,Math.min(1,+d.t||0)); if(!anim) startBuild(); else if(anim.step) anim.step(performance.now()); return; }
+    if(d.type==='morph'){ window.__keepCam=!!d.keep; window.__scrubMode=true; window.__scrubT=Math.max(0,Math.min(1,+d.t||0)); if(!anim) startBuild(); else if(anim.step) anim.step(performance.now()); return; }
     if(d.type==='orbit'){ var oc0=V.getControls(); if(oc0){ oc0.enabled=!!d.on; oc0.enableZoom=!!d.zoom; } return; }
     if(d.type==='control'){ var cc=V.getControls(); if(cc) cc.enabled=!!d.on; if(!d.on&&window.__scrubMode){ stopBuild(); startBuild(); } return; }
     if(d.jceStep) apply(d.jceStep);

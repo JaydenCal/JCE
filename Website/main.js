@@ -168,7 +168,10 @@ function buildViews(){
     vcol.appendChild(b);
   });
 }
-var locked=false;
+var locked=false,inside=false;
+function applyLock(){lockPage(control&&inside)}
+wrap.addEventListener('pointerenter',function(e){if(e.pointerType==='touch')return;inside=true;applyLock()});
+wrap.addEventListener('pointerleave',function(e){if(e.pointerType==='touch')return;inside=false;applyLock()});
 function stopTouch(e){if(!e.target.closest||!e.target.closest('.vcol'))e.preventDefault()}
 function lockPage(on){
   if(on===locked)return;locked=on;
@@ -180,8 +183,8 @@ function setControl(on){
   if(on===control)return;
   control=on;
   var f=frameOf(cur);
-  if(on){if(mapT(prog)<0.6)send(cur,1);if(f)f.style.opacity=1;activeView='';lockPage(true)}else lockPage(false);
-  post(cur,{type:'control',on:on});orb={};
+  if(on){post(cur,{type:'morph',t:1,keep:true});if(f)f.style.opacity=1;activeView='';inside=true}else inside=false;
+  post(cur,{type:'control',on:on});orb={};applyLock();
   if(on)buildViews();
   else{activeView='';orb={};paint(cur);send(cur,mapT(prog))}
   ui();
