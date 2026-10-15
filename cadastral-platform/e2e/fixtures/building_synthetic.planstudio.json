@@ -1,0 +1,408 @@
+{
+  "schema": 2,
+  "id": "p_coup685b",
+  "name": "SYNTHETIC TEST FIXTURE",
+  "type": "house",
+  "createdAt": "2026-10-14T16:18:33.779Z",
+  "updatedAt": "2026-10-14T16:18:33.780Z",
+  "settings": {
+    "gridMm": 100,
+    "snapMm": 50,
+    "extWall": 250,
+    "intWall": 100,
+    "floorToFloor": 3000
+  },
+  "finishes": {
+    "externalWalls": {
+      "material": "brick",
+      "colour": "brick-light-grey"
+    },
+    "internalWalls": {
+      "material": "paint",
+      "colour": "paint-white"
+    },
+    "roof": {
+      "material": "corrugated",
+      "colour": "steel-charcoal"
+    },
+    "fascia": {
+      "colour": "steel-charcoal"
+    },
+    "frames": {
+      "colour": "frame-black"
+    },
+    "floors": {
+      "material": "timber",
+      "colour": "floor-natural-oak"
+    }
+  },
+  "site": {
+    "northDeg": 30,
+    "underlay": null,
+    "tanks": [],
+    "points": [
+      {
+        "id": "sp_hszdmkl3",
+        "kind": "downpipe",
+        "x": 6000,
+        "y": 0,
+        "status": "new"
+      },
+      {
+        "id": "sp_11n4f3o0",
+        "kind": "sewer_exit",
+        "x": 3000,
+        "y": 8000,
+        "status": "new"
+      },
+      {
+        "id": "sp_kf3a32oy",
+        "kind": "water_exit",
+        "x": -400,
+        "y": 2000,
+        "status": "new"
+      }
+    ]
+  },
+  "titleBlock": {
+    "projectName": "",
+    "client": "",
+    "address": "",
+    "lotDp": "",
+    "council": "",
+    "company": "",
+    "drawnBy": "",
+    "checkedBy": "",
+    "jobNumber": "",
+    "drawingPrefix": "PS",
+    "revision": "A",
+    "issuePurpose": "Concept",
+    "date": "",
+    "notes": ""
+  },
+  "drawing": {
+    "scale": "auto",
+    "paper": "A3"
+  },
+  "levels": [
+    {
+      "id": "l_hv8eff6q",
+      "name": "Ground",
+      "elevation": 0,
+      "height": 2550,
+      "roof": {
+        "enabled": true,
+        "type": "hip",
+        "pitch": 22.5,
+        "overhang": 450
+      },
+      "walls": [
+        {
+          "id": "w_pwaorh7z",
+          "a": {
+            "x": 0,
+            "y": 0
+          },
+          "b": {
+            "x": 6000,
+            "y": 0
+          },
+          "thickness": 250,
+          "height": null,
+          "kind": "exterior",
+          "outside": -1,
+          "auto": true,
+          "status": "new",
+          "finish": null
+        },
+        {
+          "id": "w_mecc2sly",
+          "a": {
+            "x": 6000,
+            "y": 0
+          },
+          "b": {
+            "x": 6000,
+            "y": 5000
+          },
+          "thickness": 250,
+          "height": null,
+          "kind": "exterior",
+          "outside": -1,
+          "auto": true,
+          "status": "new",
+          "finish": null
+        },
+        {
+          "id": "w_sto96iw3",
+          "a": {
+            "x": 6000,
+            "y": 5000
+          },
+          "b": {
+            "x": 3000,
+            "y": 5000
+          },
+          "thickness": 250,
+          "height": null,
+          "kind": "exterior",
+          "outside": -1,
+          "auto": true,
+          "status": "new",
+          "finish": null
+        },
+        {
+          "id": "w_xc8r1v4g",
+          "a": {
+            "x": 3000,
+            "y": 5000
+          },
+          "b": {
+            "x": 0,
+            "y": 5000
+          },
+          "thickness": 100,
+          "height": null,
+          "kind": "interior",
+          "outside": 0,
+          "auto": true,
+          "status": "new",
+          "finish": null
+        },
+        {
+          "id": "w_f6e249mr",
+          "a": {
+            "x": 0,
+            "y": 5000
+          },
+          "b": {
+            "x": 0,
+            "y": 0
+          },
+          "thickness": 250,
+          "height": null,
+          "kind": "exterior",
+          "outside": -1,
+          "auto": true,
+          "status": "new",
+          "finish": null
+        },
+        {
+          "id": "w_52g5cshh",
+          "a": {
+            "x": 3000,
+            "y": 5000
+          },
+          "b": {
+            "x": 3000,
+            "y": 8000
+          },
+          "thickness": 250,
+          "height": null,
+          "kind": "exterior",
+          "outside": -1,
+          "auto": true,
+          "status": "new",
+          "finish": null
+        },
+        {
+          "id": "w_l92oekcd",
+          "a": {
+            "x": 3000,
+            "y": 8000
+          },
+          "b": {
+            "x": 0,
+            "y": 8000
+          },
+          "thickness": 250,
+          "height": null,
+          "kind": "exterior",
+          "outside": -1,
+          "auto": true,
+          "status": "new",
+          "finish": null
+        },
+        {
+          "id": "w_ibnpohve",
+          "a": {
+            "x": 0,
+            "y": 8000
+          },
+          "b": {
+            "x": 0,
+            "y": 5000
+          },
+          "thickness": 250,
+          "height": null,
+          "kind": "exterior",
+          "outside": -1,
+          "auto": true,
+          "status": "new",
+          "finish": null
+        }
+      ],
+      "openings": [],
+      "rooms": [
+        {
+          "id": "r_817d5s0a",
+          "name": "Living",
+          "type": "living",
+          "polygon": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 6000,
+              "y": 0
+            },
+            {
+              "x": 6000,
+              "y": 5000
+            },
+            {
+              "x": 0,
+              "y": 5000
+            }
+          ],
+          "floor": null,
+          "outdoor": false,
+          "roofed": false,
+          "balustrade": false,
+          "status": "new"
+        },
+        {
+          "id": "r_lpgu539g",
+          "name": "Bed 1",
+          "type": "bedroom",
+          "polygon": [
+            {
+              "x": 0,
+              "y": 5000
+            },
+            {
+              "x": 3000,
+              "y": 5000
+            },
+            {
+              "x": 3000,
+              "y": 8000
+            },
+            {
+              "x": 0,
+              "y": 8000
+            }
+          ],
+          "floor": null,
+          "outdoor": false,
+          "roofed": false,
+          "balustrade": false,
+          "status": "new"
+        }
+      ],
+      "furniture": [],
+      "stairs": []
+    }
+  ],
+  "site_export": {
+    "schema": "planstudio.site_export.v1",
+    "cell_mm": 100,
+    "simplify_tol_mm": 50,
+    "north_deg": 30,
+    "levels": [
+      {
+        "id": "l_hv8eff6q",
+        "name": "Ground",
+        "ffl_above_ground_floor_mm": 0,
+        "footprint": [
+          [
+            [
+              -100,
+              -100
+            ],
+            [
+              6100,
+              -100
+            ],
+            [
+              6100,
+              5100
+            ],
+            [
+              3100,
+              5100
+            ],
+            [
+              3100,
+              8100
+            ],
+            [
+              -100,
+              8100
+            ]
+          ]
+        ],
+        "footprint_area_m2": 41.84,
+        "holes_dropped": 0
+      }
+    ],
+    "roof": {
+      "outline": [
+        [
+          [
+            -500,
+            -500
+          ],
+          [
+            6500,
+            -500
+          ],
+          [
+            6500,
+            5500
+          ],
+          [
+            3500,
+            5500
+          ],
+          [
+            3500,
+            8500
+          ],
+          [
+            -500,
+            8500
+          ]
+        ]
+      ],
+      "plan_area_m2": 54,
+      "area_basis": "approximate_raster",
+      "holes_dropped": 0,
+      "notes": [
+        "Rooms under the roof, dilated by the eave overhang, on a 100 mm raster. Approximate, not a measured roof area."
+      ]
+    },
+    "downpipes": [
+      {
+        "id": "sp_hszdmkl3",
+        "x": 6000,
+        "y": 0
+      }
+    ],
+    "sewer_exits": [
+      {
+        "id": "sp_11n4f3o0",
+        "x": 3000,
+        "y": 8000
+      }
+    ],
+    "water_exits": [
+      {
+        "id": "sp_kf3a32oy",
+        "x": -400,
+        "y": 2000
+      }
+    ]
+  }
+}

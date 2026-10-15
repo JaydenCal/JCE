@@ -27,6 +27,12 @@ export interface OpCtx {
   newId(type: ObjectType): string;
   /** the assumed kerb line of the 3D model, or null/absent when the model has none (the crossover is then not constrained and no chainage is stored) */
   kerb?: () => KerbRef | null;
+  /**
+   * True only while the batch is the AI first design batch the server returned (`store.runBatch(..., { engine: true })`, called by the first design session). An ENGINE DERIVED value
+   * (basis derived on a pair of ENGINE_DERIVED_PARAMS, ref starting AI FIRST DESIGN) is written by that batch and by nothing else: not by the assistant, not by a hand edit, not by an import.
+   * The server enforces the same rule on save (DERIVED_NOT_FROM_FIRST_DESIGN, docs/22).
+   */
+  engineBatch?: boolean;
 }
 let seq = 0;
 export const defaultCtx: OpCtx = { newId: (t) => `${t}_${Date.now().toString(36)}${(seq++).toString(36)}${Math.random().toString(36).slice(2, 5)}` };
@@ -127,6 +133,15 @@ export function checkTypedParam(type: ObjectType, key: string, p: Param): Param 
   if (p.basis === 'derived' && !DERIVED_PARAMS.includes(`${type}.${key}`) && !ENGINE_DERIVED_PARAMS.includes(`${type}.${key}`)) fail(`${key}: a DERIVED value is not accepted for a ${type.replace(/_/g, ' ')} parameter`);
   if (p.basis === 'platform_default' && platformDefaultRefused(type, key, p.ref)) fail(`${key}: a platform default is not accepted for a ${type.replace(/_/g, ' ')} parameter; enter a value (basis user) or cite the requirement key (basis lga_rule with its key as ref)`);
   return p;
+}
+/** An engine derived value on a new object is accepted only inside the AI first design batch (`ctx.engineBatch`). */
+export function engineGate(type: ObjectType, params: Record<string, Param>, ctx: OpCtx | undefined): Record<string, Param> {
+  if (ctx?.engineBatch === true) return params;
+  for (const [k, p] of Object.entries(params)) {
+    if (p.basis === 'derived' && ENGINE_DERIVED_PARAMS.includes(`${type}.${k}`) && (!DERIVED_PARAMS.includes(`${type}.${k}`) || String(p.ref ?? '').startsWith(ENGINE_REF_PREFIX)))
+      fail(`${k}: an ENGINE DERIVED value (basis DERIVED, written by AI FIRST DESIGN) can only come from the server AI first design batch. Enter a value (basis user)`);
+  }
+  return params;
 }
 function parseParams(v: unknown, type?: ObjectType): Record<string, Param> {
   if (v === undefined || v === null) return {};
@@ -229,7 +244,7 @@ export const OPS: Record<string, OpDef> = {
       } else { id = ctx.newId(type); while (taken.has(id)) id = ctx.newId(type); }
       const obj: SiteObject = {
         id, type, status: oneOf<Status>(a.status ?? 'proposed', STATUSES, 'status'), origin, ...(origin === 'ai_proposal' ? { accepted: 'pending' as const } : {}),
-        verified: false, ...(a.label ? { label: String(a.label).slice(0, 120) } : {}), geometry, params: { ...startingParams(type, kind), ...parseParams(a.params, type) }, issues: [],
+        verified: false, ...(a.label ? { label: String(a.label).slice(0, 120) } : {}), geometry, params: { ...startingParams(type, kind), ...engineGate(type, parseParams(a.params, type), ctx) }, issues: [],
       };
       return { patch: [{ op: 'add', path: ptr('objects', '-'), value: obj }], result: { id } };
     },
@@ -300,12 +315,12 @@ export const OPS: Record<string, OpDef> = {
     description: 'Set one parameter with its basis: user (entered by the user), lga_rule (needs the requirement key as ref; the server checks it resolves to this value, otherwise the value is not used) or unresolved (no value). A platform default cannot be set. Dimension parameters are never defaulted.',
     params: { id: ID, key: P.str('Parameter key, e.g. height_m'), value: { description: 'number, text or true/false; omit or null for UNRESOLVED' }, basis: P.enm(BASES.filter((b) => !SYSTEM_BASES.includes(b)), 'Default user, or unresolved when value is empty'), ref: P.str('Requirement key or stamp') },
     required: ['id', 'key'],
-    run(doc, a) {
+    run(doc, a, ctx) {
       const { o, i } = find(doc, a.id), key = String(a.key ?? '');
       if (o.type === 'building' && READ_ONLY_BUILDING_PARAMS.has(key)) fail(`${key} is a fact from the import and cannot be edited; import the building again`);
       if (o.type === 'service_existing' && o.verified && key === 'verified_by') fail(SERVICE_VERIFIED_BY);
       if (a.basis === 'platform_default') fail(`${key}: a platform default cannot be set. Enter a value (basis user), cite the requirement key (basis lga_rule with its key as ref) or leave it unresolved`);
-      const engineDerived = a.basis === 'derived' && ENGINE_DERIVED_PARAMS.includes(`${o.type}.${key}`) && typeof a.ref === 'string' && a.ref.startsWith(ENGINE_REF_PREFIX);       // AI first design batch only: the batch guard checks it too
+      const engineDerived = ctx?.engineBatch === true && a.basis === 'derived' && ENGINE_DERIVED_PARAMS.includes(`${o.type}.${key}`) && typeof a.ref === 'string' && a.ref.startsWith(ENGINE_REF_PREFIX);       // the server side AI first design batch only (stage 11): the batch guard and the server check it too
       if (a.basis === 'plan_indicated' || (a.basis === 'derived' && !engineDerived)) fail(`${key}: the basis ${String(a.basis).toUpperCase().replace('_', ' ')} is set by the system (a value read from a DBYD plan, or computed from a requirement) and cannot be chosen by hand. Enter a value (basis user)`);
       const empty = a.value === undefined || a.value === null || a.value === '';
       const param = checkTypedParam(o.type, key, parseParam(key, { value: empty ? null : a.value, basis: a.basis ?? (empty ? 'unresolved' : 'user'), ref: a.ref }));

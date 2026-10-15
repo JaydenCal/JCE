@@ -1,0 +1,115 @@
+{
+ "steps": [
+  {
+   "name": "01_load_scene_bundle",
+   "ok": true,
+   "file": "01_load_scene_bundle.png",
+   "detail": "18 parts, OFFLINE FIXTURE (Lot 2 DP227508 rebuilt from the saved run; not live data; not a survey)"
+  },
+  {
+   "name": "02_layer_groups",
+   "ok": true,
+   "file": "02_layer_groups.png",
+   "detail": "groups present (0 marked)"
+  },
+  {
+   "name": "03_plan_view_north_arrow_scale",
+   "ok": true,
+   "file": "03_plan_view_north_arrow_scale.png",
+   "detail": "plan overlay nodes 1"
+  },
+  {
+   "name": "04_open_design_tab_and_import_building",
+   "ok": true,
+   "file": "04_open_design_tab_and_import_building.png",
+   "detail": "import accepted, placement started"
+  },
+  {
+   "name": "05_place_building",
+   "ok": true,
+   "file": "05_place_building.png",
+   "detail": "building building_mv8vq97i0jw8"
+  },
+  {
+   "name": "06_set_ffl",
+   "ok": true,
+   "file": "06_set_ffl.png",
+   "detail": "FFL 265.26 m RL, basis user"
+  },
+  {
+   "name": "07_draw_driveway",
+   "ok": true,
+   "file": "07_draw_driveway.png",
+   "detail": "driveway driveway_mv8vqgvp1gvv, crossover at [238451.25677144236,6569527.6404462075]"
+  },
+  {
+   "name": "08_drag_crossover",
+   "ok": true,
+   "file": "08_drag_crossover.png",
+   "detail": "crossover moved 4.00 m along the kerb"
+  },
+  {
+   "name": "09_add_tank",
+   "ok": true,
+   "file": "09_add_tank.png",
+   "detail": "tank rwt_mv8vqpqh2uc5"
+  },
+  {
+   "name": "10_add_infiltration_trench",
+   "ok": true,
+   "file": "10_add_infiltration_trench.png",
+   "detail": "trench infiltration_trench_mv8vqt273bp3"
+  },
+  {
+   "name": "11_run_checks",
+   "ok": true,
+   "file": "11_run_checks.png",
+   "detail": "4 objects checked"
+  },
+  {
+   "name": "12_stormwater_with_uploaded_ifd",
+   "ok": true,
+   "file": "12_stormwater_with_uploaded_ifd.png",
+   "detail": "IFD stored and analysis ran"
+  },
+  {
+   "name": "13_ai_first_design_rules_mode",
+   "ok": true,
+   "file": "13_ai_first_design_rules_mode.png",
+   "detail": "3 proposals, SELECTED BY RULES, NO AI, 0 model calls"
+  },
+  {
+   "name": "14_accept_a_proposal",
+   "ok": true,
+   "file": "14_accept_a_proposal.png",
+   "detail": "proposal accepted (1 of 3), objects 8 to 8"
+  },
+  {
+   "name": "15_measure_distance_area_level",
+   "ok": true,
+   "file": "15_measure_distance_area_level.png",
+   "detail": "distance: 20.00 m in plan | level: 0.56 m fall | area: 32.00 m² in plan"
+  },
+  {
+   "name": "16_first_person_collision",
+   "ok": true,
+   "file": "16_first_person_collision.png",
+   "detail": "free walk 2.28 m, into the building 1.23 m, stopped 5.53 m from its centre, outside the footprint, on the ground (z 265.05 vs 265.05)"
+  },
+  {
+   "name": "17_export_tab_glb",
+   "ok": true,
+   "file": "17_export_tab_glb.png",
+   "detail": "site_5a0e2e11_glb.glb 159904 bytes, 31 nodes, every object has its node"
+  },
+  {
+   "name": "18_export_dxf",
+   "ok": true,
+   "file": "18_export_dxf.png",
+   "detail": "site_5a0e2e11_dxf.dxf 119763 bytes, 25 layers, 28 text entities all upper case"
+  }
+ ],
+ "notes": [],
+ "problems": [],
+ "bytes": 3268533
+}

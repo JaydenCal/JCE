@@ -2,10 +2,15 @@
 import type { LayerDef, PickInfo, SceneBundle } from '@/lib/viewer/types';
 import type { Opt } from '@/lib/viewer/engine';
 import { AERIAL_LAYER, aerialLegend, terrainLegend } from '@/lib/viewer/aerial';
+import { groupLayers } from '@/lib/viewer/layerGroups';
+import type { SiteDesign } from '@/lib/site/types';
+import { LayerGroups } from './ViewerTools';
 
 export interface ReviewProps {
   bundle: SceneBundle; layers: LayerDef[]; on: Record<string, boolean>; opts: Record<Opt, boolean>; pick: PickInfo | null; hasCutFill: boolean;
   setLayer(c: string, v: boolean): void; setOpt(o: Opt, v: boolean): void;
+  /** the saved or unsaved site design, for the design object and service layers (stage 11) */
+  doc?: SiteDesign | null;
   /** aerial imagery opacity 0 to 1 (default 1) */
   aerialOpacity?: number; setAerialOpacity?(v: number): void;
 }
@@ -18,11 +23,8 @@ export function ReviewPanel(p: ReviewProps) {
   return (
     <>
       {ds && <section className="note" data-data-status><h2>Data status</h2><p style={{ margin: 0, fontWeight: 600 }}>{ds}</p></section>}
-      <section><h2>Layers</h2><div className="layers">
-        {p.layers.map((L) => (
-          <label key={L.c} className={L.n.length > 30 ? 'wide' : undefined}><input type="checkbox" checked={!!p.on[L.c]} onChange={(e) => p.setLayer(L.c, e.target.checked)} />{L.n}</label>
-        ))}
-      </div>
+      <section><h2>Layers</h2>
+      <LayerGroups groups={groupLayers(p.layers, p.doc ?? null)} state={p.on} onToggle={p.setLayer} onToggleGroup={(keys, v) => keys.forEach((k) => p.setLayer(k, v))} />
       {terr && <small className="legend-note" data-terrain-note>{terr}</small>}
       {aer && (
         <div className="aerial-legend" data-aerial-legend>

@@ -400,10 +400,7 @@ class Orchestrator:
                 key = idempotency_key(node.agent, in_ref.sha256, agent.version)
 
                 # 3. idempotency cache
-                hit = conn.execute(
-                    "SELECT i.output_payload_id FROM agents.invocations i "
-                    "WHERE i.idempotency_key=%s AND i.status='succeeded' AND i.output_payload_id IS NOT NULL "
-                    "ORDER BY i.finished_at DESC LIMIT 1", (key,)).fetchone()
+                hit = self._cache_hit(conn, node, key)
                 if hit:
                     out = get_payload(conn, hit["output_payload_id"])
                     inv = self._new_invocation(conn, run_id, node, agent, key, in_ref, dep_invocations,
@@ -429,6 +426,17 @@ class Orchestrator:
             return NodeResult(nid, "failed", error_code="ORCH_INTERNAL")
 
         return self._attempt_loop(run, node, agent, key, in_ref, in_dict, dep_invocations, run_id)
+
+    @staticmethod
+    def _cache_hit(conn, node: NodeSpec, key: str):
+        """The earlier succeeded invocation with this idempotency key, or None. A node that is not cacheable (SA6: its output depends on live terrain and aerial services that its
+        input does not describe, so a rebuild must recompute) never gets a hit."""
+        if not node.cacheable:
+            return None
+        return conn.execute(
+            "SELECT i.output_payload_id FROM agents.invocations i "
+            "WHERE i.idempotency_key=%s AND i.status='succeeded' AND i.output_payload_id IS NOT NULL "
+            "ORDER BY i.finished_at DESC LIMIT 1", (key,)).fetchone()
 
     def _fail_early(self, conn, run_id, node, code, detail) -> NodeResult:
         log_event(conn, run_id, "failed", from_agent=AgentCode.ORCH, to_agent=node.agent,

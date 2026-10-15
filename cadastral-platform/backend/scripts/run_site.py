@@ -193,34 +193,7 @@ class ArcGisLayerLoader:
 
 
 # --------------------------------------------------------------------------- terrain chain and aerial imagery (stage 3)
-def _no_network(*_a, **_k):
-    raise ConnectionError("no network access in this run (an HTTP fetcher was injected without terrain data)")
-
-
-def terrain_providers(mode: str, fetcher: Fetcher | None, off, env: dict[str, str]) -> list:
-    """Terrain chain for ``--levels``: 'auto' = survey, QLD LiDAR, hosted tile library, NSW 5 m DEM; 'nsw' = the NSW 5 m DEM only.
-    Network clients are built from the injected ``fetcher`` (tests) or the default urllib fetcher; the offline fixture serves the 5 m DEM itself."""
-    fx = fetcher or (lambda u, p: C.default_fetcher(u, p, 120.0))
-    nsw_export = off.export_tiff if off is not None else (_no_network if fetcher is not None else None)
-    nsw = Nsw5mProvider(export=nsw_export)
-    if mode == "nsw":
-        return [nsw]
-    # an offline fixture run never reads the hosted tile library: JCESITE_LIDAR_TILE_DIR is ignored so the fixture cannot be mixed with real tiles
-    tiles = TileLibraryProvider(None, disabled_reason="hosted LiDAR tile library not read: offline fixture run (JCESITE_LIDAR_TILE_DIR is ignored)") if off is not None \
-        else TileLibraryProvider(store_from_env(env))
-    return [SurveyProvider(), QldLidarProvider(default_query(fx), default_export(fx)), tiles, nsw]
-
-
-def aerial_providers(mode: str, fetcher: Fetcher | None, off) -> list:
-    """[(state or None, ImageryProvider)] for the aerial chain; none when disabled or when an HTTP fetcher was injected without imagery."""
-    if mode == "none":
-        return []
-    if off is not None:
-        return [(None, off.CachedImagery())]
-    if fetcher is not None:
-        return []
-    from app.imagery.provider import NswImageryProvider, QldImageryProvider
-    return [("NSW", NswImageryProvider()), ("QLD", QldImageryProvider())]
+from app.agents.sa6_site3d.site_data import aerial_providers, terrain_providers, _no_network  # noqa: E402,F401  (shared with the orchestrator adapter Sa6Adapter)
 
 
 def _levels_provenance_fact(prov: TerrainProvenance) -> dict:

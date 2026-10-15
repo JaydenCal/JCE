@@ -138,7 +138,7 @@ export function drivewayParts(o: SiteObject, width: number, view: ProfileView | 
   }
   const design = s.design, cf = cfColour(c);
   const base = ribbon(pts, cum, s.chainage, design, half, c, -Infinity, Infinity, DESIGN_LIFT, cf);
-  if (base) { base.userData.design = true; out.push(base); }
+  if (base) { base.userData.design = true; base.userData.walk = true; out.push(base); }
   for (const f of view.failing) out.push(...failingRibbon(f, pts, cum, s.chainage, design, half, c));
   const ew = view.earthworks;
   if (ew && !view.preview) {
@@ -181,7 +181,7 @@ export function gradingParts(o: SiteObject, res: GradingResult | null, c: EwCtx)
   const ring: Pt2[] = o.geometry.ring.map((p): Pt2 => [p[0], p[1]]);
   const out: THREE.Object3D[] = [];
   const m = polyMesh([ring], c, { zAt: (x, y) => level(x, y), colourAt: cfColour(c) });
-  if (m) { m.userData.design = true; out.push(m); }
+  if (m) { m.userData.design = true; m.userData.walk = true; out.push(m); }
   if (res.earthworks) out.push(...batterMeshes(res.earthworks, ring, level, c));
   return out;
 }

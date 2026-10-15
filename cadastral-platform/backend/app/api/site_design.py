@@ -60,8 +60,11 @@ from pydantic import BaseModel, ConfigDict, Field
 from typing import Literal
 
 from app.design import building_import as bi
+from app.exports import building_store as BG
+from app.common.bundle_dir import scene_base_dir
 from app.common.filestore import atomic_write_text, file_lock
 from app.design import import_store as istore
+from app.design import derived_ledger as DL
 from app.design import service_model as SM
 from app.design import engine_limits as EL
 from app.design.driveway_engine import driveway_profile
@@ -83,8 +86,7 @@ _LOCK = threading.Lock()          # one writer at a time inside this process (re
 
 
 def site_design_base(request: Request) -> Path:
-    env = os.environ.get("SCENE_BUNDLE_DIR")
-    return Path(env) if env else Path(request.app.state.settings.export_dir)
+    return scene_base_dir(request.app.state.settings.export_dir)
 
 
 def site_design_access(project_id: UUID, user_id: UUID = Depends(require_terms), conn: Connection = Depends(get_conn)) -> UUID:
@@ -146,6 +148,10 @@ def put_site_design(project_id: UUID, request: Request, _user: UUID = Depends(si
             return JSONResponse(status_code=409, headers={"Cache-Control": "no-store"}, content={
                 "code": "VERSION_CONFLICT", "current_version": current.version,
                 "message": "The site design was saved from somewhere else since it was loaded. Reload it before saving again."})
+        bad = DL.unbacked(body, folder, current)
+        if bad:
+            raise ApiError(422, DL.CODE, "AN ENGINE DERIVED PARAMETER MUST COME FROM AN AI FIRST DESIGN RESULT OF THIS PROJECT, AND NO RESULT BACKS: " + ", ".join(b.upper() for b in bad[:12]),
+                           parameters=bad[:50])
         try:
             body, _cleared = SM.enforce_verification(body, current)       # a verified service whose position or facts changed is no longer verified; verified_by is locked
         except SM.VerifiedByLocked as e:
@@ -154,6 +160,7 @@ def put_site_design(project_id: UUID, request: Request, _user: UUID = Depends(si
                                         "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds")})
         atomic_write_text(path, json.dumps(saved.dump(), separators=(",", ":")))
         istore.prune(folder, istore.used_import_ids(saved))
+        BG.prune(folder, {o.id for o in saved.objects if o.type == "building"})          # the stored GLB of a building that is no longer in the design goes with it
     return _json(saved)
 
 
@@ -358,15 +365,22 @@ async def _project_gate(project_id: UUID):
             del _GATES[key]
 
 
-async def _run_engine(project_id: UUID, work):
-    """Run ``work()`` on the engine pool under the project gate. A request over an engine cap is 422."""
+async def _run_engine(project_id: UUID, work, timeout_s: float | None = None):
+    """Run ``work()`` on the engine pool under the project gate. A request over an engine cap is 422. With ``timeout_s`` the wait for the result is capped (504 ENGINE_TIMEOUT); the work
+    itself must stop at its own deadline, a thread cannot be killed."""
     def guarded():
         try:
             return work()
         except EL.EngineLimitError as e:
             raise ApiError(422, e.code, e.message) from None
     async with _project_gate(project_id):
-        return await asyncio.get_running_loop().run_in_executor(_POOL, guarded)
+        fut = asyncio.get_running_loop().run_in_executor(_POOL, guarded)
+        if timeout_s is None:
+            return await fut
+        try:
+            return await asyncio.wait_for(fut, timeout_s)
+        except asyncio.TimeoutError:
+            raise ApiError(504, "ENGINE_TIMEOUT", "THE REQUEST TOOK TOO LONG AND WAS STOPPED") from None
 
 
 def _limit_422(check, obj) -> None:

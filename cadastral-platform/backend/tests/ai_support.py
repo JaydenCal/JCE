@@ -74,3 +74,41 @@ def site_objects(**kw):
 
 def terrain():
     return terrain_from_bundle(H.bundle(z=SLOPE, extent=(-10.0, 28.0, -10.0, 44.0)))
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------- the page saves before it asks
+import json as _json  # noqa: E402
+import re as _re  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+from fastapi.testclient import TestClient as _TestClient  # noqa: E402
+
+
+class SavingClient(_TestClient):
+    """A client that behaves like the page: before a first design request it saves the design in the body as the saved design of the project (the route refuses a design that is not the
+    saved one, 409 DESIGN_NOT_SAVED). It writes the file the PUT route would write; a body that is not a valid design is passed on as it is, so the validation errors stay testable."""
+
+    def __init__(self, app, base: _Path, **kw) -> None:
+        super().__init__(app, **kw)
+        self.base = _Path(base)
+
+    def post(self, url, *a, **kw):  # type: ignore[override]
+        m = _re.search(r"/projects/([0-9a-f-]{36})/ai/first-design$", str(url))
+        body = kw.get("json")
+        if m and isinstance(body, dict) and isinstance(body.get("design"), dict):
+            self.save_design(m.group(1), body["design"])
+        return super().post(url, *a, **kw)
+
+    def save_design(self, pid: str, doc: dict) -> None:
+        from app.design import derived_ledger as DL
+        from app.design.site_design import SiteDesign as _SD, empty_design
+        try:
+            d = _SD.model_validate(doc)
+        except ValueError:
+            return
+        path = self.base / pid / "site_design.json"
+        cur = _SD.model_validate_json(path.read_text()) if path.is_file() else empty_design(pid)
+        if DL.inputs_hash(cur) == DL.inputs_hash(d):
+            return
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(_json.dumps(d.model_copy(update={"version": cur.version + 1, "project_id": pid}).dump()))

@@ -125,15 +125,15 @@ export class SiteDesignStore {
   /** Run one registry operation as one undo step. Throws OpError and changes nothing when the arguments are invalid. */
   run(name: string, args: Record<string, unknown> = {}, label?: string): Record<string, unknown> {
     this.assertOpen();
-    const r = applyOp(this._doc, name, args, this.ctx);
+    const r = applyOp(this._doc, name, args, { ...this.ctx, engineBatch: false });
     this.commit(label ?? OPS[name]?.label ?? name, r.doc, r.patch, r.inverse);
     return r.result;
   }
   /** Run several operations as ONE undo step (used by the AI). Failed steps are reported and skipped; with `atomic` any failure rolls the whole batch back
    *  (nothing is committed and the results end with the failing step). */
-  runBatch(label: string, steps: BatchStep[], opts: { atomic?: boolean } = {}) {
+  runBatch(label: string, steps: BatchStep[], opts: { atomic?: boolean; /** the batch IS the server side AI first design batch: engine derived values are accepted (ops.ts OpCtx.engineBatch) */ engine?: boolean } = {}) {
     this.assertOpen();
-    const r = runBatch(this._doc, steps, this.ctx, opts);
+    const r = runBatch(this._doc, steps, opts.engine === true ? { ...this.ctx, engineBatch: true } : { ...this.ctx, engineBatch: false }, { atomic: opts.atomic });
     this.commit(label, r.doc, r.patch, r.inverse);
     return r.results;
   }

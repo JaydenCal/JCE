@@ -4,7 +4,11 @@ import { AERIAL_LAYER, aerialLegend, drawAerialNote, setAerialOpacity } from './
 import { buildScene, xrayMeshes, XRAY_BUILDINGS, XRAY_GROUND, type Built } from './sceneBuilder';
 import { FirstPersonController } from './fpController';
 import { PlaceController, type PlaceState } from './placeController';
-import { drawMinimap } from './minimap';
+import { drawMinimap, minimapBounds, miniShapes, type MiniShape } from './minimap';
+import { designColliders } from './fpDesign';
+import { MeasureState, niceScaleBar, type MeasureMode, type MeasureResult } from './measure';
+import { MeasureOverlay } from './measureOverlay';
+import { hiddenFromState, OVERLAND_KEY } from './layerGroups';
 import { floorGround, maxGround } from './movement';
 import { DesignController, type DesignState, type PointerInfo } from '../site/designController';
 import { lotRingFromBundle, terrainAvailable } from '../site/lot';
@@ -13,12 +17,20 @@ import type { Endpoint } from '../site/persist';
 import { designTerrainMeshes } from '../site/terrain';
 import { metresPerPixelOrtho, metresPerPixelPerspective } from '../site/snap';
 import type { SiteDesignStore } from '../site/store';
-import { DEFAULT_SETTINGS, type CatalogueItem, type PickInfo, type PlacedItem, type SceneBundle, type Settings } from './types';
+import { DEFAULT_SETTINGS, type BoxCollider, type CatalogueItem, type PickInfo, type PlacedItem, type SceneBundle, type Settings, type ViewDef } from './types';
 
 export interface EngineEvents {
   onHover?: (t: string) => void; onPick?: (p: PickInfo | null) => void; onFp?: (active: boolean, locked: boolean) => void;
   onPlace?: (s: PlaceState) => void; onItemsChange?: (items: PlacedItem[]) => void; onDesign?: (s: DesignState) => void;
+  /** the name of the view the camera was set to (stage 11: drives the plan view toggle) */
+  onView?: (name: string) => void;
+  /** a scale bar for the orthographic views: its length on screen and label, or null in a perspective view */
+  onScale?: (bar: { px: number; label: string } | null) => void;
+  onMeasure?: (s: MeasureSnapshot) => void;
 }
+export interface MeasureSnapshot { active: boolean; mode: MeasureMode; result: MeasureResult; canUndo: boolean }
+/** The top (plan) view used when a bundle names none: looking straight down, north up, orthographic. The tiny y part keeps the camera's up vector valid. */
+export const PLAN_VIEW: ViewDef = { dir: [0, -0.0001, 1], ortho: true };
 export interface Hud { needle?: SVGElement | null; minimap?: HTMLCanvasElement | null }
 export type Opt = 'cutfill' | 'xray' | 'sxray' | 'edges' | 'shadow' | 'exag';
 
@@ -26,7 +38,12 @@ export class ViewerEngine {
   readonly built: Built; readonly place: PlaceController; readonly design: DesignController; fp: FirstPersonController;
   renderer: THREE.WebGLRenderer; scene = new THREE.Scene(); camera!: THREE.Camera; controls!: OrbitControls; fpCam: THREE.PerspectiveCamera;
   cOn: Record<string, boolean> = {}; opts = { cutfill: false, edges: true, exag: false }; settings: Settings = { ...DEFAULT_SETTINGS };
-  hud: Hud = {}; fpActive = false; placeActive = false;
+  hud: Hud = {}; fpActive = false; placeActive = false; measureActive = false; viewName = 'iso-sw'; private lastView = 'iso-sw';
+  /** stage 11: the measurement tool (state, drawing) */
+  readonly measure = new MeasureState(); private measureOverlay = new MeasureOverlay();
+  private fpWorld: { colliders: BoxCollider[]; ground: (x: number, y: number, zl: number) => number | null };
+  private miniLot: [number, number][] | null = null; private miniShapesCache: MiniShape[] = []; private miniBounds: [number, number, number, number];
+  private layerState: Record<string, boolean> = {}; private scaleKey = '';
   private marker: THREE.Mesh; private ptr = new THREE.Vector2(); private ray = new THREE.Raycaster(); private raf = 0; private disposed = false;
   private designDown: [number, number] | null = null; private hovered: THREE.Mesh | null = null; private downAt: [number, number] | null = null; private lastPtr: PointerEvent | null = null;
   private lamp = new THREE.PointLight(0xffd9a8, 0, 12, 2); private interior = 0; private walkMeshes: THREE.Mesh[];
@@ -45,7 +62,8 @@ export class ViewerEngine {
     const bb = this.built.bbox; this.bounds = [bb.min.x, bb.min.y, bb.max.x, bb.max.y];
     this.fpCam = new THREE.PerspectiveCamera(this.settings.fov, 1, 0.05, 1500); this.fpCam.up.set(0, 0, 1);
     const spawn = w?.spawn ?? { p: [this.built.centre.x, this.built.centre.y, this.built.bbox.max.z] as [number, number, number] };
-    this.fp = new FirstPersonController(this.fpCam, canvas, { colliders: w?.colliders ?? [], ground: (x, y, zl) => this.groundAt(x, y, zl) }, spawn, this.settings, this.built.bbox.min.z);
+    this.fpWorld = { colliders: w?.colliders ?? [], ground: (x, y, zl) => this.groundAt(x, y, zl) };
+    this.fp = new FirstPersonController(this.fpCam, canvas, this.fpWorld, spawn, this.settings, this.built.bbox.min.z);
     this.fp.onExit = () => this.setFirstPerson(false); this.fp.onLockChange = (l) => this.ev.onFp?.(this.fpActive, l);
     this.place = new PlaceController(this.built, (x, y, zl) => this.groundAt(x, y, zl));
     this.place.listener = (s) => this.ev.onPlace?.(s); this.place.onChange = (i) => this.ev.onItemsChange?.(i);
@@ -63,20 +81,36 @@ export class ViewerEngine {
     });
     this.design.listener = (s) => { this.canvas.style.cursor = s.active && s.tool !== 'select' ? 'crosshair' : ''; this.ev.onDesign?.(s); };
     this.cOn.design = true;
+    this.scene.add(this.measureOverlay.group);
+    this.miniLot = lot ? lot.map((q): [number, number] => [q[0] - O[0], q[1] - O[1]]) : null; this.miniBounds = minimapBounds(this.bounds, this.miniLot);
+    if (opts.store) { const off = opts.store.on('change', () => { this.refreshMini(); if (this.fpActive) this.refreshColliders(); }); this.cleanups.push(off); }
+    this.refreshMini();
     this.setView('iso-sw'); this.applyTheme(); this.applyVis(); this.bindEvents(); this.resize(); this.loop();
   }
 
   groundAt = (x: number, y: number, zl: number): number | null => {
     this.ray.set(new THREE.Vector3(x, y, zl), new THREE.Vector3(0, 0, -1)); this.ray.far = 400;
-    const h = this.ray.intersectObjects(this.walkMeshes, false)[0];
+    const h = this.ray.intersectObjects(this.design ? [...this.walkMeshes, ...(this.cOn.design === false ? [] : this.design.scene.walkMeshes())] : this.walkMeshes, false)[0];      // terrain, and the design surfaces the walker may stand on (stage 11)
     return maxGround(h ? h.point.z : null, floorGround(this.bundle.walkable?.floors ?? [], x, y, zl));
   };
+  /** The terrain alone (no design surface) at a local point, for the base of a collision volume. */
+  private terrainAt = (x: number, y: number): number | null => {
+    this.ray.set(new THREE.Vector3(x, y, 1e4), new THREE.Vector3(0, 0, -1)); this.ray.far = 2e4;
+    const h = this.ray.intersectObjects(this.walkMeshes, false)[0]; return h ? h.point.z : null;
+  };
+  /** Collision volumes of the design for the walk: the bundle's own colliders plus buildings, walls, tanks, pools and furniture of the saved or unsaved design. */
+  refreshColliders() {
+    const O = this.bundle.info.origin, base = this.bundle.walkable?.colliders ?? [];
+    this.fpWorld.colliders = [...base, ...designColliders(this.design.store.doc, [O[0], O[1]], (e, n) => this.terrainAt(e - O[0], n - O[1]))];
+  }
+  private refreshMini() { this.miniShapesCache = miniShapes(this.design?.store.doc ?? null, [this.bundle.info.origin[0], this.bundle.info.origin[1]]); }
   private css = (n: string) => getComputedStyle(this.theme).getPropertyValue(n).trim();
 
   // ---- views
   setView(name: string) {
     if (this.fpActive) this.setFirstPerson(false);
-    const { size, centre, radius } = this.built, VIEWS = this.bundle.views ?? {}, vd = VIEWS[name] ?? VIEWS['iso-sw'] ?? { dir: [-1, -1, 0.8] as [number, number, number] };
+    const { size, centre, radius } = this.built, VIEWS = this.bundle.views ?? {}, vd = VIEWS[name] ?? (name === 'plan' ? PLAN_VIEW : undefined) ?? VIEWS['iso-sw'] ?? { dir: [-1, -1, 0.8] as [number, number, number] };
+    if (this.viewName !== 'plan') this.lastView = this.viewName; this.viewName = name === 'plan' || VIEWS[name] ? name : 'iso-sw'; this.scaleKey = '';
     const w = this.stage.clientWidth || 800, h = this.stage.clientHeight || 600;
     let cam: THREE.Camera;
     if (vd.ortho) {
@@ -89,8 +123,10 @@ export class ViewerEngine {
     cam.position.copy(tgt).addScaledVector(v, d); cam.lookAt(tgt);
     this.controls?.dispose(); this.camera = cam;
     this.controls = new OrbitControls(cam, this.canvas); this.controls.target.copy(tgt); this.controls.enableDamping = true; this.controls.dampingFactor = 0.12; this.controls.maxPolarAngle = Math.PI; this.controls.update();
-    this.controls.enableZoom = !this.place.active; this.resize();
+    this.controls.enableZoom = !this.place.active; this.resize(); this.ev.onView?.(this.viewName);
   }
+  /** Top (plan) view on and off: on looks straight down with north up; off returns to the view that was showing before. */
+  togglePlan() { this.setView(this.viewName === 'plan' ? this.lastView : 'plan'); }
 
   /** Metres per screen pixel at a world point (for snap radii and constant size handles). */
   metresPerPixel(p: THREE.Vector3): number {
@@ -106,7 +142,7 @@ export class ViewerEngine {
   /** Design mode: site object tools. Leaves place mode and first person; exaggeration is switched off so heights stay true. */
   setDesign(on: boolean) {
     if (on === this.design.active) return;
-    if (on) { if (this.placeActive) this.setPlace(false); if (this.fpActive) this.setFirstPerson(false); this.setOpt('exag', false); }
+    if (on) { if (this.measureActive) this.setMeasure(false); if (this.placeActive) this.setPlace(false); if (this.fpActive) this.setFirstPerson(false); this.setOpt('exag', false); }
     this.design.setActive(on); this.controls.enableZoom = true;
   }
 
@@ -122,7 +158,16 @@ export class ViewerEngine {
   }
   /** Aerial imagery opacity, 0 to 1 (the layer toggle is separate). */
   setAerialOpacity(v: number) { setAerialOpacity(this.built.meshes, v); }
-  setLayer(c: string, v: boolean) { this.cOn[c] = v; this.applyVis(); }
+  /** A bundle layer by class code, or (stage 11) a design layer: `type:<object type>`, `service:<kind>` or `sw:overland`. */
+  setLayer(c: string, v: boolean) {
+    if (c.startsWith('type:') || c.startsWith('service:') || c === OVERLAND_KEY) {
+      this.layerState[c] = v;
+      const h = hiddenFromState(this.layerState);
+      this.design.scene.setHiddenKeys([...h.types.map((t) => `type:${t}`), ...h.services.map((k) => `service:${k}`)]); this.design.scene.setOverlandVisible(!h.overland);
+      return;
+    }
+    this.cOn[c] = v; this.applyVis();
+  }
   setOpt(o: Opt, v: boolean) {
     const b = this.built;
     if (o === 'cutfill') { this.opts.cutfill = v; this.applyVis(); }
@@ -142,16 +187,39 @@ export class ViewerEngine {
   setFirstPerson(on: boolean) {
     if (on === this.fpActive) return;
     if (on && this.design.active) this.design.setActive(false);
+    if (on && this.measureActive) this.setMeasure(false);
     this.fpActive = on;
-    if (on) { this.fp.enable(); this.camera = this.fpCam; this.controls.enabled = false; this.setOpt('exag', false); this.marker.visible = false; }
+    if (on) { this.refreshColliders(); this.fp.enable(); this.camera = this.fpCam; this.controls.enabled = false; this.setOpt('exag', false); this.marker.visible = false; }
     else { this.fp.disable(); this.controls.enabled = true; const c = this.controls.object; this.camera = c; this.interiorTarget(0); }
     this.ev.onFp?.(on, this.fp.locked); this.resize();
   }
   setPlace(on: boolean) {
     if (on && this.design.active) this.design.setActive(false);
+    if (on && this.measureActive) this.setMeasure(false);
     this.placeActive = on; if (!on) { this.place.cancel(); this.place.select(null); }
     this.controls.enableZoom = !(on && this.place.active);
     if (on) this.setOpt('exag', false);
+  }
+  // ---- measurement (stage 11)
+  private emitMeasure() {
+    this.measureOverlay.update(this.measure.pts, this.measure.mode, [this.bundle.info.origin[0], this.bundle.info.origin[1]]);
+    this.ev.onMeasure?.({ active: this.measureActive, mode: this.measure.mode, result: this.measure.result(this.bundle.info.terrain?.status), canUndo: this.measure.pts.length > 0 });
+  }
+  setMeasure(on: boolean) {
+    if (on === this.measureActive) return;
+    if (on) { if (this.design.active) this.design.setActive(false); if (this.placeActive) this.setPlace(false); if (this.fpActive) this.setFirstPerson(false); }
+    this.measureActive = on; this.canvas.style.cursor = on ? 'crosshair' : ''; this.emitMeasure();
+  }
+  setMeasureMode(m: MeasureMode) { this.measure.setMode(m); this.emitMeasure(); }
+  clearMeasure() { this.measure.clear(); this.emitMeasure(); }
+  undoMeasure() { this.measure.undo(); this.emitMeasure(); }
+  /** Add a point at a pointer position, read from the TERRAIN mesh (E, N from the hit, RL from its height). Nothing is added where the terrain is not hit. */
+  measureAt(ev: { clientX: number; clientY: number }): boolean {
+    if (!this.walkMeshes.length) return false;
+    const r = this.rayFromEvent(ev); r.far = 5000;
+    const h = r.intersectObjects(this.walkMeshes, false)[0]; if (!h) return false;
+    const k = this.built.root.scale.z, O = this.bundle.info.origin;
+    this.measure.add({ e: h.point.x + O[0], n: h.point.y + O[1], rl: (h.point.z - this.built.root.position.z) / k }); this.emitMeasure(); return true;
   }
   private interiorTarget(v: number) { this.interior = v; this.built.hemi.intensity = (0.8 + 0.5 * v) * Math.PI; this.built.sun.intensity = (0.9 - 0.55 * v) * Math.PI; this.lamp.intensity = 0; }
 
@@ -187,6 +255,7 @@ export class ViewerEngine {
       const d = this.downAt; this.downAt = null; if (this.design.active) return; if (ev.button === 2 && this.place.active) { this.place.cancel(); this.controls.enableZoom = true; return; }
       if (this.fpActive) { if (this.placeActive && this.fp.locked) { const r = this.centreRay(); this.place.click(r.ray.origin, r.ray.direction); } return; }
       if (!d || Math.hypot(ev.clientX - d[0], ev.clientY - d[1]) > 4) return;
+      if (this.measureActive) { this.measureAt(ev); return; }
       if (this.placeActive) { const r = this.rayFromEvent(ev); this.place.click(r.ray.origin, r.ray.direction); this.controls.enableZoom = !this.place.active; return; }
       this.pick(ev);
     });
@@ -200,6 +269,10 @@ export class ViewerEngine {
   }
   private onKey(e: KeyboardEvent) {
     const t = e.target as HTMLElement | null; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;
+    if (this.measureActive && !e.ctrlKey && !e.metaKey) {
+      if (e.code === 'Escape') { this.clearMeasure(); return; }
+      if (e.code === 'Backspace' || e.code === 'Delete') { e.preventDefault(); this.undoMeasure(); return; }
+    }
     if (this.design.active) { this.design.key(e); return; }
     const ctrl = e.ctrlKey || e.metaKey;
     if (ctrl && e.code === 'KeyZ') { e.preventDefault(); e.shiftKey ? this.place.redo() : this.place.undo(); return; }
@@ -240,13 +313,23 @@ export class ViewerEngine {
       this.built.hemi.intensity = (0.8 + 0.5 * this.interior) * Math.PI; this.built.sun.intensity = (0.9 - 0.5 * this.interior) * Math.PI;
       this.lamp.intensity = 14 * this.interior; this.lamp.position.set(s.x, s.y, s.z + 2.2);
       if (this.placeActive) { const r = this.centreRay(); this.place.updateFromRay(r.ray.origin, r.ray.direction); }
-      const mm = this.hud.minimap; if (mm) drawMinimap(mm, this.bundle, this.bundle.walkable?.colliders ?? [], this.bounds, { x: s.x, y: s.y, yaw: this.fp.yaw }, this.css);
+      const mm = this.hud.minimap; if (mm) drawMinimap(mm, this.bundle, this.fpWorld.colliders, this.miniBounds, { x: s.x, y: s.y, yaw: this.fp.yaw }, this.css, { lot: this.miniLot, shapes: this.miniShapesCache });
     } else {
       this.controls.update(); this.design.frame(); const n = new THREE.Vector3(0, 1, 0).applyQuaternion(this.camera.quaternion.clone().invert()); heading = -Math.atan2(n.x, n.y);
     }
+    this.measureOverlay.frame((p) => this.metresPerPixel(p));
+    this.emitScale();
     if (this.hud.needle) this.hud.needle.setAttribute('transform', `rotate(${(-heading * 180) / Math.PI} 27 27)`);
     this.renderer.render(this.scene, this.camera);
   };
+  /** The scale bar of an orthographic view: emitted when its length or label changes. A perspective view has no single scale, so it has no bar. */
+  private emitScale() {
+    const cam = this.camera as THREE.OrthographicCamera;
+    if (this.fpActive || !cam || !cam.isOrthographicCamera) { if (this.scaleKey !== '-') { this.scaleKey = '-'; this.ev.onScale?.(null); } return; }
+    const bar = niceScaleBar(this.metresPerPixel(this.controls.target), 110); if (!bar) return;
+    const key = `${bar.label}:${Math.round(bar.px)}`; if (key === this.scaleKey) return;
+    this.scaleKey = key; this.ev.onScale?.({ px: Math.round(bar.px), label: bar.label });
+  }
   /** Screenshot export path: renders the current frame (PNG data URL). */
   snapshotPng(): string {
     this.renderer.render(this.scene, this.camera);
@@ -266,7 +349,7 @@ export class ViewerEngine {
   }
   snapshotState() { const s = this.fp.state; return { fpActive: this.fpActive, x: s.x, y: s.y, z: s.z, yaw: this.fp.yaw, grounded: s.grounded }; }
   dispose() {
-    this.disposed = true; cancelAnimationFrame(this.raf); this.cleanups.forEach((f) => f()); this.fp.disable(); this.controls?.dispose(); this.place.dispose(); this.design.dispose(); this.built.dispose(); this.renderer.dispose();
+    this.disposed = true; cancelAnimationFrame(this.raf); this.cleanups.forEach((f) => f()); this.fp.disable(); this.controls?.dispose(); this.place.dispose(); this.measureOverlay.dispose(); this.design.dispose(); this.built.dispose(); this.renderer.dispose();
   }
   setCatalogue(c: CatalogueItem[]) { this.place.setCatalogue(c); }
 }

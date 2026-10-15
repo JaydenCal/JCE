@@ -402,10 +402,24 @@ export class DesignController {
   // ---- buildings (imported, never designed here)
   /** Parse a Plan Studio GLB (metres, Y up) into an object that can be shown as the building visual. */
   loadGlb(buf: ArrayBuffer): Promise<THREE.Object3D> {
-    return new Promise((resolve, reject) => new GLTFLoader().parse(buf, '', (g) => resolve(g.scene), (e) => reject(new Error(`THE GLB COULD NOT BE READ: ${e instanceof Error ? e.message : String(e)}`))));
+    return new Promise((resolve, reject) => new GLTFLoader().parse(buf, '', (g) => { this.glbSource.set(g.scene, buf); resolve(g.scene); }, (e) => reject(new Error(`THE GLB COULD NOT BE READ: ${e instanceof Error ? e.message : String(e)}`))));
   }
   /** Show a loaded GLB for an existing building (also used to attach it again after a reload; the bytes are not saved in the design). */
-  attachGlb(id: string, obj: THREE.Object3D) { this.scene.setGlb(id, obj); this.emit(); }
+  attachGlb(id: string, obj: THREE.Object3D) { this.scene.setGlb(id, obj); this.rememberGlb(id, obj); this.emit(); }
+
+  // ---- stage 11: the GLB bytes of a building go to the server when an export is asked for, so the exported GLB holds the building. The bytes are not part of the design document.
+  private glbSource = new WeakMap<THREE.Object3D, ArrayBuffer>();
+  private glbById = new Map<string, ArrayBuffer>();
+  private glbSent = new Map<string, ArrayBuffer>();
+  private rememberGlb(id: string, obj: THREE.Object3D) { const b = this.glbSource.get(obj); if (b) this.glbById.set(id, b); }
+  /** Building ids whose GLB has been loaded in this session and not yet sent to the server (or was replaced). */
+  glbUnsent(): string[] { return [...this.glbById].filter(([id, b]) => this.glbSent.get(id) !== b && this.store.doc.objects.some((o) => o.id === id && o.type === 'building')).map(([id]) => id); }
+  /** Send the unsent GLBs. The design must have been saved first. Returns the ids sent; stops with the error of the first one that fails. */
+  async sendGlbs(send: (id: string, bytes: ArrayBuffer) => Promise<void>): Promise<string[]> {
+    const done: string[] = [];
+    for (const id of this.glbUnsent()) { const b = this.glbById.get(id)!; await send(id, b); this.glbSent.set(id, b); done.push(id); }
+    return done;
+  }
   /**
    * The imported footprint follows the cursor on the terrain until it is clicked. R, Q and E turn it.
    * A PDF import that SA7 aligned to the lot (`aligned_at`) is not placed by the cursor: the footprint already is in MGA orientation (yaw 0) and
@@ -433,7 +447,7 @@ export class DesignController {
   placeBuildingAt(payload: ImportPayload, at: Pt2, yaw = 0, glb: { object: THREE.Object3D; name: string } | null = null, label?: string): string | null {
     try {
       const r = this.store.run('place_building', { payload, import_id: payload.import_id, at: { e: at[0], n: at[1] }, yaw_deg: yaw, status: this.newStatus, ...(glb ? { glb_name: glb.name } : {}), ...(label ? { label } : {}) }, 'Place building');
-      const id = r.id as string; if (glb) this.scene.setGlb(id, glb.object);
+      const id = r.id as string; if (glb) { this.scene.setGlb(id, glb.object); this.rememberGlb(id, glb.object); }
       this.selected = id; this.scene.setSelected(id); this.message = ''; this.syncHandles(); this.emit(); return id;
     } catch (e) { this.message = e instanceof OpError ? e.message : String(e); this.emit(); return null; }
   }
@@ -813,7 +827,7 @@ export class DesignController {
       try {
         const r = this.store.run('place_building', { payload: pb.payload, import_id: pb.payload.import_id, at: { e: a.mga[0], n: a.mga[1] }, yaw_deg: this.yaw, status: this.newStatus, ...(pb.glb ? { glb_name: pb.glb.name } : {}) }, 'Place building');
         const id = r.id as string;
-        if (pb.glb) { this.scene.setGlb(id, pb.glb.object); this.pending = { ...pb, glb: null }; }          // the scene owns the GLB now
+        if (pb.glb) { this.scene.setGlb(id, pb.glb.object); this.rememberGlb(id, pb.glb.object); this.pending = { ...pb, glb: null }; }          // the scene owns the GLB now
         this.setTool('select'); this.selected = id; this.scene.setSelected(id); this.syncHandles(); this.message = '';
       } catch (e) { this.message = e instanceof OpError ? e.message : String(e); }
       this.emit(); return;

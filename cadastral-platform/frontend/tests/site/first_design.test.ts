@@ -247,6 +247,16 @@ describe('the estimate, the confirm step and the errors', () => {
     expect(s.state).toMatchObject({ phase: 'error', errorCode: 'DESIGN_CHANGED', error: 'DESIGN CHANGED, RUN AGAIN' });
     expect(store.history().undoCount).toBe(before); expect(store.doc.objects.some((o) => o.origin === 'ai_proposal')).toBe(false); expect(store.locked).toBeNull();
   });
+  it('saves the design before it asks, and does not ask when the design could not be saved', async () => {
+    const r = rig(); const order: string[] = [];
+    r.s.flush = async () => { order.push(`flush:${r.calls.length}`); return null; };
+    expect(await r.s.estimate()).toBe(true); expect(await r.s.run()).toBe(true);
+    expect(order).toEqual(['flush:0', 'flush:1']);                                         // each request is preceded by a save
+    const bad = rig(); bad.s.flush = async () => 'NOT SAVED: THE DESIGN WAS CHANGED SOMEWHERE ELSE';
+    expect(await bad.s.run()).toBe(false); expect(bad.calls.length).toBe(0);
+    expect(bad.s.state).toMatchObject({ phase: 'error', errorCode: 'NOT_SAVED' }); expect(bad.s.state.error).toMatch(/NOT RUN/); expect(bad.store.locked).toBeNull();
+    expect(await bad.s.estimate()).toBe(false); expect(bad.calls.length).toBe(0);
+  });
   it('a request without the AI sends use_ai false', async () => {
     const r = rig(); r.s.setUseAi(false);
     await r.s.run();

@@ -268,6 +268,17 @@ def rate_limit(store: UsageStore, cfg: AiConfig, project_id: str, now_ms: float)
     return None
 
 
+def run_rate_limit(store: UsageStore, cfg: AiConfig, project_id: str, now_ms: float) -> Refusal | None:
+    """Count one first design RUN (rules or AI) against the per project limits of runs per minute and per day (the same numbers as the AI limits, counted apart). None when allowed."""
+    if store.hit_rate(f"fd:min:{project_id}", 60, now_ms) > cfg.rate_per_min:
+        return Refusal("RATE_LIMITED", "First design runs are coming too quickly for this project. Wait a moment and try again.", 429,
+                       {"retry_after": 60 - int(now_ms // 1000) % 60, "window": "minute", "scope": "runs"})
+    if store.hit_rate(f"fd:day:{project_id}", 86400, now_ms) > cfg.rate_per_day:
+        return Refusal("RATE_LIMITED", "The daily limit of first design runs for this project has been reached.", 429,
+                       {"retry_after": 86400 - int(now_ms // 1000) % 86400, "window": "day", "scope": "runs"})
+    return None
+
+
 def record_success(store: UsageStore, cfg: AiConfig, project_id: str, model: str, usage: Usage, now_ms: float, purpose: str = "first_design") -> float:
     """Record the spend of ONE call that returned, and log it (model and token counts only). Returns the cost in micro-USD. Never called for a call that failed."""
     cost = cost_micros(usage, cfg)

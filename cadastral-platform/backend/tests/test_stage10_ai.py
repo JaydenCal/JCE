@@ -457,7 +457,7 @@ def api(tmp_path, monkeypatch):
     app.dependency_overrides[site_rules_dep] = lambda: S.fake_rules()
     pid = uuid.uuid4()
     H.write_bundle(tmp_path, pid, H.bundle(z=S.SLOPE, extent=(-10.0, 28.0, -10.0, 44.0)))
-    return TestClient(app), pid, app, tmp_path
+    return S.SavingClient(app, tmp_path), pid, app, tmp_path
 
 
 def body(**kw):

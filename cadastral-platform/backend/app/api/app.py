@@ -11,18 +11,21 @@ from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, Request, Uplo
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from psycopg import Connection, errors as pgerr
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.api.deps import (ApiError, current_user_id, get_conn, optional_user_id, require_project,
                           require_terms)
 from app.api.design import router as design_router
+from app.api.scene import scene_access
 from app.api.settings import Settings
 from app.api.uploads import safe_filename, store_pdf
+from app.common.bundle_dir import project_dir
 from app.common.contracts import AckKind
 from app.common.db import make_pool, user_connection
 from app.orchestrator.core import (GateBlocked, InvalidRunState, Orchestrator, OrchestratorConfig,
                                    RunNotFound)
 from app.common.contracts import DevelopmentType
+from app.orchestrator import rebuild_lease as lease
 from app.orchestrator.inputs import RunRequest
 
 log = logging.getLogger(__name__)
@@ -39,6 +42,24 @@ class AckBody(BaseModel):
     subject_table: str | None = None
     subject_id: UUID | None = None
     subject_sha256: str | None = Field(default=None, pattern=r"^[0-9a-fA-F]{64}$")
+
+
+class SceneRebuildBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    params: dict[str, Any] = Field(default_factory=dict)          # as for POST /runs: the lot identifier and jurisdiction for SA1
+    project_title: str | None = None
+    development_type: DevelopmentType = DevelopmentType.dwelling_house
+
+
+def _run_rebuild(orch: Orchestrator, run_id: UUID, user_id: UUID, folder) -> None:
+    """The background task of a scene rebuild: runs the DAG and always gives the lease of the project back."""
+    try:
+        _run_background(orch, run_id, user_id)
+    finally:
+        try:
+            lease.release(folder)
+        except OSError:
+            log.exception("scene rebuild lease of %s could not be released", folder)
 
 
 def _run_background(orch: Orchestrator, run_id: UUID, user_id: UUID) -> None:
@@ -147,6 +168,24 @@ def create_app(settings: Settings | None = None, pool=None, orchestrator: Orches
         background.add_task(_run_background, o, run.run_id, user_id)
         return {"run_id": str(run.run_id), "status": run.status}
 
+    @app.post("/projects/{project_id}/scene/rebuild", status_code=202)
+    def rebuild_scene(project_id: UUID, body: SceneRebuildBody, background: BackgroundTasks, request: Request,
+                      user_id: UUID = Depends(scene_access)):
+        """Stage 11: rebuild the scene bundle (terrain chain, aerial, envelope, services) of a project. Runs SA6 and the nodes it needs (SA1, SA2, ENV, and SA3, SA4, SA7 when
+        their inputs exist) in the background; the bundle is then served by GET /projects/{id}/scene-bundle and every export reads it."""
+        o = orch(request)
+        folder = project_dir(settings.export_dir, project_id)
+        if not lease.claim(folder):
+            raise ApiError(409, "REBUILD_ACTIVE", "A rebuild of the scene of this project is already running. Wait for it to finish, then ask again.")
+        try:
+            run = o.create_run(user_id, RunRequest(project_id=project_id, targets=["SA6"], params=body.params, project_title=body.project_title,
+                                                   development_type=body.development_type))
+        except BaseException:
+            lease.release(folder)
+            raise
+        background.add_task(_run_rebuild, o, run.run_id, user_id, folder)
+        return {"run_id": str(run.run_id), "status": run.status, "scene_bundle_url": f"/projects/{project_id}/scene-bundle"}
+
     @app.get("/runs/{run_id}")
     def get_run(run_id: UUID, request: Request, user_id: UUID = Depends(require_terms)):
         return jsonable_encoder(orch(request).get_run(run_id, user_id))
@@ -229,6 +268,8 @@ def create_app(settings: Settings | None = None, pool=None, orchestrator: Orches
     app.include_router(assistant_router)
     from app.api.enquiries import router as enquiries_router
     app.include_router(enquiries_router)
+    from app.api.exports import router as exports_router
+    app.include_router(exports_router)
     from app.api.scene import router as scene_router
     app.include_router(scene_router)
     from app.api.site_design import router as site_design_router

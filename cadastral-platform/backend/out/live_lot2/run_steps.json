@@ -1,0 +1,99 @@
+{
+ "facts": {
+  "development_type": "dwelling_house",
+  "started": "2026-10-14T23:19:53+00:00",
+  "args": {
+   "check_network": false,
+   "offline": null,
+   "lga": null,
+   "address": null,
+   "lotplan": "2//DP227508",
+   "random_vacant": false,
+   "centre": null,
+   "radius_m": 1500.0,
+   "min_area": 300.0,
+   "max_area": 2500.0,
+   "seed": null,
+   "buildings_url": null,
+   "development_type": "dwelling_house",
+   "zone_code": null,
+   "levels": "nsw",
+   "levels_accuracy_m": null,
+   "rules_json": "tests/fixtures/R2_dwelling_house_rules.json",
+   "params_json": null,
+   "sa9_endpoints": null,
+   "acknowledge": true,
+   "profile": null,
+   "parcel": null,
+   "scale": 200,
+   "planset": true,
+   "planset_only": false,
+   "planset_style": "ref",
+   "planset_sheets": null,
+   "council": null,
+   "base_rl": 0.0,
+   "flood_level_ahd": null,
+   "flood_event": "1% AEP",
+   "freeboard_m": null,
+   "report": true,
+   "title": null,
+   "out": "out/live_lot2"
+  }
+ },
+ "steps": [
+  {
+   "name": "locate lot",
+   "status": "OK",
+   "detail": "lot identifier 2//DP227508",
+   "files": []
+  },
+  {
+   "name": "SA1 cadastre/zoning",
+   "status": "FAILED",
+   "detail": "SA1_UPSTREAM_UNAVAILABLE: https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9/query: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "files": []
+  },
+  {
+   "name": "SA2 DCP rules",
+   "status": "SKIPPED",
+   "detail": "upstream SA1 did not produce a lot",
+   "files": []
+  },
+  {
+   "name": "ENV setbacks/driveway",
+   "status": "SKIPPED",
+   "detail": "upstream SA1 did not produce a lot",
+   "files": []
+  },
+  {
+   "name": "SA3 terrain",
+   "status": "SKIPPED",
+   "detail": "upstream SA1 did not produce a lot",
+   "files": []
+  },
+  {
+   "name": "SA4 services/RWT",
+   "status": "SKIPPED",
+   "detail": "upstream SA1 did not produce a lot",
+   "files": []
+  },
+  {
+   "name": "SA5 DXF + PDF plan",
+   "status": "SKIPPED",
+   "detail": "upstream SA1 did not produce a lot",
+   "files": []
+  },
+  {
+   "name": "SA6 scene bundle",
+   "status": "SKIPPED",
+   "detail": "upstream SA1 did not produce a lot",
+   "files": []
+  },
+  {
+   "name": "SA9 constraints",
+   "status": "SKIPPED",
+   "detail": "upstream SA1 did not produce a lot",
+   "files": []
+  }
+ ]
+}

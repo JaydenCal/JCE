@@ -29,6 +29,8 @@ export const RUNNING_NOTE = 'AI DESIGN RUNNING';
 export const CHANGED_NOTE = 'DESIGN CHANGED, RUN AGAIN';
 
 export class FirstDesignSession {
+  /** Saves the design now and returns why it could not be saved (null when saved). The server computes from the SAVED design and refuses (409 DESIGN_NOT_SAVED) a design that is not the saved one. */
+  flush: (() => Promise<string | null>) | null = null;
   state: FdState = { phase: 'idle', useAi: true, estimate: null, result: null, items: [], index: 0, error: '', errorCode: '', message: '', applied: false };
   listener: (s: FdState) => void = () => {};
   private abort: AbortController | null = null;
@@ -46,11 +48,23 @@ export class FirstDesignSession {
 
   setUseAi(on: boolean) { this.put({ useAi: on, phase: this.state.phase === 'ready' || this.state.phase === 'confirm' ? 'idle' : this.state.phase, estimate: null, error: '', errorCode: '' }); }
 
+  /** Save first. Returns false (and shows why) when the design could not be saved. */
+  private async saved(): Promise<boolean> {
+    if (!this.flush) return true;
+    let why: string | null;
+    try { why = await this.flush(); } catch (e) { why = e instanceof Error ? e.message : String(e); }
+    if (why === null || this.dead) return why === null;
+    this.put({ phase: 'error', error: `THE DESIGN COULD NOT BE SAVED, SO AI FIRST DESIGN WAS NOT RUN: ${why}`, errorCode: 'NOT_SAVED' });
+    return false;
+  }
+
   /** Ask what a run would cost. No model is called and nothing is spent. */
   async estimate(): Promise<boolean> {
     if (!this.ep) return false;
     const ac = this.begin();
     this.put({ phase: 'estimating', error: '', errorCode: '', message: '' });
+    if (!(await this.saved())) { if (this.abort === ac) this.abort = null; return false; }
+    if (this.dead || this.abort !== ac) return false;
     try {
       const est = await postFirstDesignEstimate(this.ep, this.getDoc(), this.state.useAi, ac.signal);
       if (this.dead || this.abort !== ac) return false;
@@ -66,6 +80,9 @@ export class FirstDesignSession {
     const est = this.state.estimate?.estimate;
     if (!confirm && est?.uses_ai && est.requires_confirm) { this.put({ phase: 'confirm' }); return false; }
     const ac = this.begin();
+    if (this.flush) this.put({ phase: 'running', error: '', errorCode: '', message: '' });          // shown while the design is saved
+    if (!(await this.saved())) { if (this.abort === ac) this.abort = null; return false; }
+    if (this.dead || this.abort !== ac) return false;
     const sent = this.getDoc();
     const sig = designSig(sent);                    // the design as it was sent: the answer is for this design and no other
     this.store.lock(RUNNING_NOTE);                  // read only while the request runs, so the design cannot change under it
@@ -89,7 +106,7 @@ export class FirstDesignSession {
     catch (e) { this.put({ phase: 'error', error: `THE ANSWER WAS REFUSED: ${e instanceof Error ? e.message : String(e)}`, errorCode: 'BATCH_REFUSED' }); return false; }
     if (res.batch.length) {
       let out;
-      try { out = this.store.runBatch(`${BATCH_LABEL}: ${res.proposals.length} PROPOSAL(S)`, res.batch.map((s) => ({ op: s.op, args: s.args })), { atomic: true }); }
+      try { out = this.store.runBatch(`${BATCH_LABEL}: ${res.proposals.length} PROPOSAL(S)`, res.batch.map((s) => ({ op: s.op, args: s.args })), { atomic: true, engine: true }); }
       catch (e) { this.put({ phase: 'error', error: e instanceof Error ? e.message : String(e), errorCode: 'LOCKED' }); return false; }
       const bad = out.find((r) => !r.ok);
       if (bad && !bad.ok) { this.put({ phase: 'error', error: `NOTHING WAS APPLIED: ${bad.op}: ${bad.error}`, errorCode: 'BATCH_FAILED' }); return false; }
@@ -107,7 +124,7 @@ export class FirstDesignSession {
   private runSteps(label: string, steps: { op: string; args: Record<string, unknown> }[]): string | null {
     if (!steps.length) return null;
     try {
-      const out = this.store.runBatch(label, steps, { atomic: true });
+      const out = this.store.runBatch(label, steps, { atomic: true, engine: true });
       const bad = out.find((r) => !r.ok);
       this.hooks.requestChecks();
       return bad && !bad.ok ? `${bad.op}: ${bad.error}` : null;

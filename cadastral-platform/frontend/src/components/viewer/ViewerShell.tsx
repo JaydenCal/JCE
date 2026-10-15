@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './viewer.css';
-import { ViewerEngine, type Opt } from '@/lib/viewer/engine';
+import { ViewerEngine, type MeasureSnapshot, type Opt } from '@/lib/viewer/engine';
 import { fetchBundle, validateBundle } from '@/lib/viewer/loadBundle';
 import { fetchProvider, type CatalogueProvider } from '@/lib/viewer/catalogue';
 import { API_BASE, DEV_USER_ID } from '@/lib/api';
@@ -15,7 +15,9 @@ import { DesignPanel } from './DesignPanel';
 import { lotRingFromBundle } from '@/lib/site/lot';
 import type { DesignState } from '@/lib/site/designController';
 import { SiteAutosave, SiteDesignSession, LOADING_NOTE, type AutosaveState, type LoadState } from '@/lib/site/persist';
-import { designShortcutAllowed, isTypingTarget } from '@/lib/viewer/shortcuts';
+import { designShortcutAllowed, isTypingTarget, toolShortcut } from '@/lib/viewer/shortcuts';
+import { MeasureBar, PlanOverlay, ShortcutHelp, SiteExports } from './ViewerTools';
+import { measureResult } from '@/lib/viewer/measure';
 import { SiteDesignStore } from '@/lib/site/store';
 import { emptyDesign, type SiteDesign } from '@/lib/site/types';
 import { aerialLegend, aerialNoteVisible } from '@/lib/viewer/aerial';
@@ -33,7 +35,7 @@ export interface ViewerShellProps {
   /** the supplied bundle is synthetic demo data: labelled "DEMO DATA, NOT A REAL SITE" (set only by the demo page) */
   demo?: boolean;
 }
-type Tab = 'review' | 'place' | 'design' | 'walk' | 'assistant';
+type Tab = 'review' | 'place' | 'design' | 'walk' | 'assistant' | 'export';
 const VIEW_NAMES: Record<string, string> = { 'iso-sw': 'Iso SW', 'iso-ne': 'Iso NE', 'iso-se': 'Iso SE', plan: 'Plan', s: 'South', w: 'West', frontage: 'Frontage', dda: 'DDA bay', west: 'West driveway', lane: 'Lane', rear: 'Rear', street: 'Street', entry: 'Entry', service: 'Service area' };
 const defaultProvider = fetchProvider(API_BASE);
 const INIT_PLACE: PlaceState = { items: [], selectedId: null, ghostCatId: null, mode: 'idle', canUndo: false, canRedo: false, hint: '' };
@@ -78,6 +80,9 @@ function ViewerInner({ bundle, projectId, catalogue, provider, onItemsChange, co
   const [cat, setCat] = useState<CatalogueItem[]>(catalogue ?? bundle.catalogue ?? []);
   const [loading, setLoading] = useState('');
   const [touch, setTouch] = useState(false);
+  // stage 11: plan view, scale bar, measurement, shortcut help
+  const [view, setView] = useState('iso-sw'), [bar, setBar] = useState<{ px: number; label: string } | null>(null), [help, setHelp] = useState(false);
+  const [meas, setMeas] = useState<MeasureSnapshot>({ active: false, mode: 'distance', result: measureResult('distance', [], bundle.info.terrain?.status), canUndo: false });
   const cb = useRef({ onItemsChange, complianceCheck }); cb.current = { onItemsChange, complianceCheck };
   // site design: the store outlives the engine; saved to the server only when a project id is present and this is not the demo page
   const persistent = !!projectId && !demo;
@@ -105,7 +110,7 @@ function ViewerInner({ bundle, projectId, catalogue, provider, onItemsChange, co
   useEffect(() => { try { setTouch(matchMedia('(pointer: coarse)').matches); } catch { /* ignore */ } }, []);
   useEffect(() => {
     const e = new ViewerEngine(canvas.current!, stage.current!, root.current!, bundle, {
-      onHover: setHover, onPick: setPick, onFp: (a, l) => { setFpOn(a); setLocked(l); }, onPlace: setPl, onItemsChange: (i) => cb.current.onItemsChange?.(i), onDesign: setDs,
+      onHover: setHover, onPick: setPick, onFp: (a, l) => { setFpOn(a); setLocked(l); }, onPlace: setPl, onItemsChange: (i) => cb.current.onItemsChange?.(i), onDesign: setDs, onView: setView, onScale: setBar, onMeasure: setMeas,
     }, { store, engine: persistent && projectId ? { base: API_BASE, projectId, headers: { 'X-User-Id': DEV_USER_ID } } : null });
     e.hud.needle = needle.current; e.place.check = (i, c) => cb.current.complianceCheck?.(i, c) ?? [];
     (window as unknown as { __viewer?: ViewerEngine }).__viewer = e; setEng(e); setPl(e.place.state()); setDs(e.design.state());
@@ -124,19 +129,34 @@ function ViewerInner({ bundle, projectId, catalogue, provider, onItemsChange, co
   useEffect(() => { eng?.setSettings(settings); }, [eng, settings]);
   useEffect(() => { const t = setTimeout(() => eng?.applyTheme(), 0); return () => clearTimeout(t); }, [eng, theme]);
 
+  const togglePlan = useCallback(() => { eng?.togglePlan(); }, [eng]);
+  const toggleMeasure = useCallback(() => { if (!eng) return; const v = !eng.measureActive; eng.setMeasure(v); if (v) { setPlaceOn(false); setOpts((o) => ({ ...o, exag: false })); } }, [eng]);
   const toggleFp = useCallback(() => { if (!eng) return; const v = !eng.fpActive; eng.setFirstPerson(v); if (v) setTab('walk'); else setTab((t) => (t === 'walk' ? 'review' : t)); }, [eng]);
   const toggleDesign = useCallback(() => { if (!eng) return; const v = !eng.designActive; eng.setDesign(v); if (v) { setPlaceOn(false); setOpts((o) => ({ ...o, exag: false })); } setTab(v ? 'design' : 'review'); }, [eng]);
   const togglePlace = useCallback(() => { if (!eng) return; const v = !eng.placeActive; eng.setPlace(v); setPlaceOn(v); setTab(v ? 'place' : fpOn ? 'walk' : 'review'); if (v) setOpts((o) => ({ ...o, exag: false })); }, [eng, fpOn]);
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
+      if (e.code === 'Escape' && help) { setHelp(false); return; }
       if (isTypingTarget(e.target) || e.ctrlKey || e.metaKey) return;
+      const tool = toolShortcut(e, eng);
+      if (tool === 'help') { setHelp((v) => !v); return; }
+      if (tool === 'plan') { togglePlan(); return; }
+      if (tool === 'measure') { toggleMeasure(); return; }
       if (e.code === 'KeyF') toggleFp(); else if (e.code === 'KeyP') togglePlace();
       else if (designShortcutAllowed(e, eng)) toggleDesign();          // never in first person: D is strafe right there
     };
     window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k);
-  }, [toggleFp, togglePlace, toggleDesign, eng]);
+  }, [toggleFp, togglePlace, toggleDesign, togglePlan, toggleMeasure, eng, help]);
 
   const setLayer = (c: string, v: boolean) => { setOn((o) => ({ ...o, [c]: v })); eng?.setLayer(c, v); };
+  const exportEp = persistent && projectId ? { base: API_BASE, projectId, headers: { 'X-User-Id': DEV_USER_ID } } : null;
+  /** Save the design now and report why it could not be saved (null when saved): the server exports the SAVED design. */
+  const flushSave = useCallback(async (): Promise<string | null> => {
+    const a = autosave.current; if (!a) return null;
+    await a.flush();
+    return a.state.status === 'error' || a.state.status === 'conflict' || a.state.status === 'dirty' ? a.state.message || 'NOT SAVED' : null;
+  }, []);
+  useEffect(() => { if (eng) eng.design.firstDesign.flush = flushSave; }, [eng, flushSave]);          // AI first design computes from the SAVED design: the page saves before it asks
   useEffect(() => { eng?.setAerialOpacity(aerialOp); }, [eng]);   // eslint-disable-line react-hooks/exhaustive-deps
   const setAerialOpacity = (v: number) => { setAerialOp(v); eng?.setAerialOpacity(v); };
   const setOpt = (o: Opt, v: boolean) => { setOpts((s) => ({ ...s, [o]: v })); eng?.setOpt(o, v); };
@@ -160,6 +180,9 @@ function ViewerInner({ bundle, projectId, catalogue, provider, onItemsChange, co
         <div className="grp right">
           {bundle.walkable && <button className={'view' + (fpOn ? ' on' : '')} aria-pressed={fpOn} onClick={toggleFp}>Walk<kbd>F</kbd></button>}
           <button className={'view' + (placeOn ? ' on' : '')} aria-pressed={placeOn} onClick={togglePlace}>Place<kbd>P</kbd></button>
+          <button className={'view' + (view === 'plan' ? ' on' : '')} aria-pressed={view === 'plan'} onClick={togglePlan} data-tool="plan">Plan view<kbd>T</kbd></button>
+          <button className={'view' + (meas.active ? ' on' : '')} aria-pressed={meas.active} onClick={toggleMeasure} data-tool="measure">Measure<kbd>M</kbd></button>
+          <button className="view" onClick={() => setHelp(true)} data-tool="help" aria-label="Keyboard shortcuts">Help<kbd>?</kbd></button>
           <button className={'view' + (ds?.active ? ' on' : '')} aria-pressed={!!ds?.active} onClick={toggleDesign}>Design<kbd>D</kbd></button>
           <button className="view" aria-label="Toggle theme" onClick={() => setTheme((t) => (t === 'dark' ? 'light' : t === 'light' ? 'auto' : 'dark'))}>Theme: {theme}</button>
         </div>
@@ -174,15 +197,19 @@ function ViewerInner({ bundle, projectId, catalogue, provider, onItemsChange, co
           {placeOn && <div className="placehint">{pl.hint}</div>}
           {ds?.active && <div className="placehint">{ds.snapLabel ? `${ds.hint} · ${ds.snapLabel}` : ds.hint}</div>}
           {aerialNoteVisible(bundle, on, aerialOp) && <div className="aerial-note" role="note" data-aerial-stage-note>{aerialLegend(bundle)!.note}</div>}
+          {view === 'plan' && !fpOn && <PlanOverlay bar={bar} />}
+          {meas.active && !fpOn && <MeasureBar snap={meas} onMode={(m) => eng?.setMeasureMode(m)} onUndo={() => eng?.undoMeasure()} onClear={() => eng?.clearMeasure()} onClose={() => eng?.setMeasure(false)} />}
+          {help && <ShortcutHelp onClose={() => setHelp(false)} />}
           {fpOn && <FpOverlay fp={eng?.fp ?? null} locked={locked} touch={touch} onExit={() => eng?.setFirstPerson(false)} />}
         </div>
         <aside className="dock">
           <div className="tabs" role="tablist">
-            {(['review', 'place', 'design', ...(assistant ? ['assistant'] : []), ...(fpOn ? ['walk'] : [])] as Tab[]).map((t) => <button key={t} role="tab" aria-selected={tab === t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t === 'review' ? 'Review' : t === 'place' ? 'Place items' : t === 'design' ? 'Design' : t === 'assistant' ? 'Design assistant' : 'Walk'}</button>)}
+            {(['review', 'place', 'design', 'export', ...(assistant ? ['assistant'] : []), ...(fpOn ? ['walk'] : [])] as Tab[]).map((t) => <button key={t} role="tab" aria-selected={tab === t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t === 'review' ? 'Review' : t === 'place' ? 'Place items' : t === 'design' ? 'Design' : t === 'assistant' ? 'Design assistant' : t === 'export' ? 'Export' : 'Walk'}</button>)}
           </div>
-          {tab === 'review' && <ReviewPanel bundle={bundle} layers={layers} on={on} opts={opts} pick={pick} hasCutFill={hasCF} setLayer={setLayer} setOpt={setOpt} aerialOpacity={aerialOp} setAerialOpacity={setAerialOpacity} />}
+          {tab === 'review' && <ReviewPanel bundle={bundle} layers={layers} on={on} opts={opts} pick={pick} hasCutFill={hasCF} setLayer={setLayer} setOpt={setOpt} doc={doc} aerialOpacity={aerialOp} setAerialOpacity={setAerialOpacity} />}
           {tab === 'assistant' && assistant && <AssistantPanel provider={assistant} picked={pick?.part ?? null} buildingParts={buildingParts} onTurn={onAssistantTurn} />}
           {tab === 'design' && eng && ds && <DesignPanel ds={ds} doc={doc} ctl={eng.design} save={save} importer={importer} catalogue={cat} gate={gate} onRetryLoad={() => { void session.current?.load(); }} onConfirmLocal={() => session.current?.confirmLocal()} onResolve={(how) => autosave.current?.resolve(how) ?? Promise.resolve('NOT SAVING: there is no save connection for this view')} />}
+          {tab === 'export' && eng && <SiteExports ep={exportEp} flush={flushSave} ctl={eng.design} terrainStatus={bundle.info.terrain?.status ?? ''} canExport={persistent && gate?.phase === 'ready'} />}
           {tab === 'walk' && <SettingsPanel s={settings} set={(p) => setSettings((s) => ({ ...s, ...p }))} />}
           {tab === 'place' && (
             <PlacePanel catalogue={cat} state={pl} loading={loading}

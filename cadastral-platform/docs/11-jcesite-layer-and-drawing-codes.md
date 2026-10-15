@@ -142,3 +142,38 @@ Each element below exists as `-LINE`, `-HATCH` and `-TEXT` layers (the viewport 
 
 ## Stage 3b round 2 additions
 Linetype `JCS_BDY` replaces `JCE_BDY`. Requirement text on the sheets is generated from `planset/phrases.py` (one readable sentence plus a short source per key). Sheet C600 draws pavement layers by cited surface type; with no type cited the layers are plain, numbered and marked "PAVEMENT TYPE NOT SELECTED, THICKNESS TBC".
+
+## Stage 11 export layers (DXF export of the site design)
+The DXF export of the 3D site tool (`GET /projects/{id}/exports/dxf`, versions R2010 (default), R2000 and R12) draws the site design in plan on the JCS scheme above. Every layer name matches the pattern `JCS-(SITE|ANNO)-XXXX-(LINE|HATCH|TEXT)`. The element code has four characters: a three character object type code and one status letter, E for existing, P for proposed and R for to be removed. Existing services use V for verified by the user and U for UNVERIFIED; UNVERIFIED services are drawn with the DASHED linetype, and objects to be removed with HIDDEN. The fixed elements are BNDY (lot boundary), ADJN (adjoining lots), KERB (assumed kerb line, not surveyed), CONT (contours and their labels), LOTS (neighbour lot labels), NOTE (title note with the terrain status, the services status, the date and the coordinate system) and NRTH (north arrow and 10 m scale bar). Coordinates are MGA. All text is upper case. The HATCH layers exist in R2010 and R2000 only (R12 has no hatch).
+
+| Object type | Element codes (status letter last) | Statuses | ACI | Lineweight (mm) | Linetype | Example layer |
+|---|---|---|---|---|---|---|
+| building (building) | `BLDE`, `BLDP`, `BLDR` | existing, proposed, to be removed | 7 | 0.35 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-BLDP-LINE` |
+| driveway (driveway) | `DRVE`, `DRVP`, `DRVR` | existing, proposed, to be removed | 8 | 0.35 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-DRVP-LINE` |
+| footpath (footpath) | `FTPE`, `FTPP`, `FTPR` | existing, proposed, to be removed | 9 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-FTPP-LINE` |
+| landscape_area (landscape area) | `LNDE`, `LNDP`, `LNDR` | existing, proposed, to be removed | 3 | 0.18 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-LNDP-LINE` |
+| grading_area (grading area) | `GRDE`, `GRDP`, `GRDR` | existing, proposed, to be removed | 4 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-GRDP-LINE` |
+| retaining_wall (retaining wall) | `RTWE`, `RTWP`, `RTWR` | existing, proposed, to be removed | 6 | 0.35 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-RTWP-LINE` |
+| pool (pool) | `POLE`, `POLP`, `POLR` | existing, proposed, to be removed | 5 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-POLP-LINE` |
+| pool_barrier (pool barrier) | `PBRE`, `PBRP`, `PBRR` | existing, proposed, to be removed | 6 | 0.18 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-PBRP-LINE` |
+| tree (tree) | `TREE`, `TREP`, `TRER` | existing, proposed, to be removed | 3 | 0.18 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-TREP-LINE` |
+| furniture (furniture) | `FURE`, `FURP`, `FURR` | existing, proposed, to be removed | 8 | 0.13 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-FURP-LINE` |
+| rwt (rainwater tank) | `RWTE`, `RWTP`, `RWTR` | existing, proposed, to be removed | 5 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-RWTP-LINE` |
+| osd (osd tank) | `OSDE`, `OSDP`, `OSDR` | existing, proposed, to be removed | 5 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-OSDP-LINE` |
+| osd_basin (osd basin) | `OSBE`, `OSBP`, `OSBR` | existing, proposed, to be removed | 5 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-OSBP-LINE` |
+| infiltration_trench (infiltration trench) | `TRNE`, `TRNP`, `TRNR` | existing, proposed, to be removed | 5 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-TRNP-LINE` |
+| stormwater_pit (stormwater pit) | `PITE`, `PITP`, `PITR` | existing, proposed, to be removed | 5 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-PITP-LINE` |
+| stormwater_pipe (stormwater pipe) | `PIPE`, `PIPP`, `PIPR` | existing, proposed, to be removed | 5 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-PIPP-LINE` |
+| overflow_route (overflow route) | `OFRE`, `OFRP`, `OFRR` | existing, proposed, to be removed | 5 | 0.18 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-OFRP-LINE` |
+| discharge_point (discharge point) | `DCHE`, `DCHP`, `DCHR` | existing, proposed, to be removed | 1 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-DCHP-LINE` |
+| sewer_drain (sewer drain) | `SWDE`, `SWDP`, `SWDR` | existing, proposed, to be removed | 6 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-SWDP-LINE` |
+| water_service (water service) | `WSVE`, `WSVP`, `WSVR` | existing, proposed, to be removed | 5 | 0.25 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-WSVP-LINE` |
+| service_node (service node) | `SNDE`, `SNDP`, `SNDR` | existing, proposed, to be removed | 2 | 0.18 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-SNDP-LINE` |
+| service_trace (traced service) | `TRCE`, `TRCP`, `TRCR` | existing, proposed, to be removed | 4 | 0.18 | CONTINUOUS (HIDDEN when to be removed) | `JCS-SITE-TRCP-LINE` |
+| service_existing, water | `WATV`, `WATU` | verified by the user, UNVERIFIED | 5 | 0.18 | CONTINUOUS (DASHED when unverified) | `JCS-SITE-WATU-LINE` |
+| service_existing, sewer | `SWRV`, `SWRU` | verified by the user, UNVERIFIED | 6 | 0.18 | CONTINUOUS (DASHED when unverified) | `JCS-SITE-SWRU-LINE` |
+| service_existing, stormwater | `STWV`, `STWU` | verified by the user, UNVERIFIED | 4 | 0.18 | CONTINUOUS (DASHED when unverified) | `JCS-SITE-STWU-LINE` |
+| service_existing, gas | `GASV`, `GASU` | verified by the user, UNVERIFIED | 2 | 0.18 | CONTINUOUS (DASHED when unverified) | `JCS-SITE-GASU-LINE` |
+| service_existing, electricity | `ELCV`, `ELCU` | verified by the user, UNVERIFIED | 1 | 0.18 | CONTINUOUS (DASHED when unverified) | `JCS-SITE-ELCU-LINE` |
+| service_existing, telecommunications | `TELV`, `TELU` | verified by the user, UNVERIFIED | 200 | 0.18 | CONTINUOUS (DASHED when unverified) | `JCS-SITE-TELU-LINE` |
+| service_existing, other | `OTHV`, `OTHU` | verified by the user, UNVERIFIED | 8 | 0.18 | CONTINUOUS (DASHED when unverified) | `JCS-SITE-OTHU-LINE` |

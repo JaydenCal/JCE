@@ -12,6 +12,12 @@ GUARDS (``ai_guard``, ported from Plan Studio): 503 AI_PAUSED when the daily or 
 CONFIRM_REQUIRED when the worst case cost is over the confirm threshold and ``confirm_large`` is not set, 429 RATE_LIMITED per project (per minute and per day). The order is
 pause, confirm, rate limit (per project and global). With ``use_ai`` false, no key, or no set with a real choice, the rules decide and none of these applies. Before EACH model call the worst case cost of that call is reserved under the store lock together with the cap check and settled after it, so concurrent requests cannot pass the cap together. Spend is recorded for every call that returned, also one whose answer was ignored because the deadline passed; a call that failed records nothing. The 504 answer says how many calls were recorded.
 
+SAVED DESIGN: the design in the request must be the design that is SAVED for the project (compared by ``derived_ledger.inputs_hash``; the page saves before it asks): otherwise 409
+DESIGN_NOT_SAVED and nothing is computed. The candidates are computed from the saved design read from storage, never from the design the client sent, and the derived values are recorded in the
+ledger with the saved version and the fingerprints of the saved objects (``derived_ledger``), so a derived value can only be saved with the inputs it was computed from.
+
+RATE LIMIT: every run (not an estimate) counts against the per project and the global limits of first design runs, also with ``use_ai`` false: the rules path writes the ledger and uses the engines.
+
 Same access and caps as the other site design routes: terms accepted, project visible, 413 over 5 MB, caps by ``engine_limits`` (422), engines on a pool under the per project gate.
 """
 from __future__ import annotations
@@ -28,9 +34,10 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from app.api.deps import ApiError
-from app.api.site_design import (_engine_json, _limit_422, _project_gate, _run_engine, _terrain_or_none, limited_body, site_design_access, site_design_base, site_rules_dep)
+from app.api.site_design import (SITE_DESIGN_FILE, _engine_json, _read, _limit_422, _project_gate, _run_engine, _terrain_or_none, limited_body, site_design_access, site_design_base, site_rules_dep)
 from app.design import ai_first_design as F
 from app.design import ai_guard as GU
+from app.design import derived_ledger as DL
 from app.design import engine_limits as EL
 from app.design.ai_candidates import GenerateError
 from app.design.assistant.llm import AnthropicClient, LlmClient
@@ -99,13 +106,16 @@ async def post_first_design(project_id: UUID, request: Request, _user: UUID = De
     if len(body.design.objects) > EL.MAX_AI_DESIGN_OBJECTS:
         raise ApiError(422, EL.AI_TOO_LARGE, f"THE DESIGN HAS {len(body.design.objects)} OBJECTS; AT MOST {EL.MAX_AI_DESIGN_OBJECTS} ARE ACCEPTED FOR AI FIRST DESIGN")
     base = site_design_base(request)
+    saved = _read(base / str(project_id) / SITE_DESIGN_FILE, project_id)         # the design on the server: the inputs of the engines and of the ledger
+    if DL.inputs_hash(saved) != DL.inputs_hash(body.design):
+        raise ApiError(409, "DESIGN_NOT_SAVED", "THE DESIGN IN THE PAGE IS NOT THE SAVED DESIGN. SAVE IT FIRST, THEN RUN AI FIRST DESIGN AGAIN.", saved_version=saved.version)
     cfg = ai_config(request)
     client = ai_client(request, cfg)
     will_use_ai = bool(body.use_ai and client is not None and getattr(client, "configured", True))
     store = GU.UsageStore(base)
     pid = str(project_id)
 
-    plan = await _run_ai(project_id, lambda: F.make_plan(body.design, rules, _terrain_or_none(base, project_id), None))
+    plan = await _run_ai(project_id, lambda: F.make_plan(saved, rules, _terrain_or_none(base, project_id), None))
     est = F.estimate(plan, cfg, will_use_ai=will_use_ai)
     now = time.time() * 1000
     if body.estimate:
@@ -122,6 +132,9 @@ async def post_first_design(project_id: UUID, request: Request, _user: UUID = De
         r = GU.rate_limit(store, cfg, pid, now)
         if r is not None:
             raise _refuse(r)
+    r = GU.run_rate_limit(store, cfg, pid, now)                      # every run, also by the rules: it writes the ledger and uses the engines
+    if r is not None:
+        raise _refuse(r)
 
     model = getattr(client, "model", cfg.model)
     cancel = threading.Event()
@@ -133,4 +146,5 @@ async def post_first_design(project_id: UUID, request: Request, _user: UUID = De
 
     out = await _run_ai(project_id, run, gate, cancel)
     out["estimate"] = est
+    DL.record_batch(base / str(project_id), saved, out.get("batch") or [])        # the only way an engine derived parameter can be saved (docs/22)
     return _engine_json(out)

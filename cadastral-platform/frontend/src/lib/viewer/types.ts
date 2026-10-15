@@ -1,3 +1,4 @@
+import { FP_EYE_HEIGHT_M, FP_SLOPE_LIMIT_DEG, FP_STEP_UP_M } from './fpLimits';
 export type Vec3 = [number, number, number];
 
 export interface LayerDef { c: string; n: string; on: boolean }
@@ -11,7 +12,8 @@ export interface LabelDef { t: string; p: Vec3; c: string; s?: number }
 export interface ViewDef { dir: Vec3; ortho?: boolean; target?: Vec3; dist?: number }
 
 /** Wall / fence collider: oriented box (centre, full size, yaw degrees about Z). */
-export interface BoxCollider { c: Vec3; s: Vec3; yaw?: number; kind?: string }
+/** `note` is set when a size of the box is a DISPLAY constant of the walk because the object's own parameter is NOT SET. */
+export interface BoxCollider { c: Vec3; s: Vec3; yaw?: number; kind?: string; note?: string }
 /** Rectangular walkable floor plane at height z (local metres). */
 export interface FloorPlane { n?: string; min: [number, number]; max: [number, number]; z: number }
 export interface Walkable {
@@ -67,4 +69,4 @@ export interface PickInfo { e: number; n: number; rl: number; depth: number | nu
 export interface Settings {
   eyeHeight: number; fov: number; headBob: boolean; sensitivity: number; stepUp: number; slopeDeg: number;
 }
-export const DEFAULT_SETTINGS: Settings = { eyeHeight: 1.6, fov: 75, headBob: true, sensitivity: 1, stepUp: 0.4, slopeDeg: 45 };
+export const DEFAULT_SETTINGS: Settings = { eyeHeight: FP_EYE_HEIGHT_M, fov: 75, headBob: true, sensitivity: 1, stepUp: FP_STEP_UP_M, slopeDeg: FP_SLOPE_LIMIT_DEG };

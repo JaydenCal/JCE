@@ -17,6 +17,7 @@ import { CUT_COLOUR, CUTFILL_SATURATION_M, FILL_COLOUR, LIFT, cutFillColour, mes
 export { CUT_COLOUR, CUTFILL_SATURATION_M, FILL_COLOUR, LIFT, cutFillColour };
 import type { ChangeEvent } from './store';
 import { drivewayParts, gradingParts } from './earthworksScene';
+import { objectLayerKey } from '../viewer/layerGroups';
 import type { GradingResult, ProfileView } from './driveway';
 import { SRZ_LABEL, TPZ_LABEL, extraLabelLines } from './siteObjects';
 import { dashSegments, isUnverified, serviceColour } from './services';
@@ -352,13 +353,13 @@ function flatFill(ring: readonly Pos[], z: number, c: Ctx, mat: THREE.Material):
 /** Pool: water surface at the water level, walls and floor down by the depth, and the coping band outside the water edge. Needs depth, coping width and water level. */
 function poolParts(o: SiteObject, ps: readonly Pos[], c: Ctx, col: THREE.Color, op: number): THREE.Object3D[] {
   const wl = levelOf(o, 'water_level_rl')!, D = dimOf(o, 'depth_m')!, cw = dimOf(o, 'coping_width_m')!, out: THREE.Object3D[] = [];
-  const water = flatFill(ps, wl, c, new THREE.MeshBasicMaterial({ color: new THREE.Color('#29a3c7'), transparent: true, opacity: 0.55 * op, side: THREE.DoubleSide, depthWrite: false })); if (water) out.push(water);
+  const water = flatFill(ps, wl, c, new THREE.MeshBasicMaterial({ color: new THREE.Color('#29a3c7'), transparent: true, opacity: 0.55 * op, side: THREE.DoubleSide, depthWrite: false })); if (water) { water.userData.water = true; out.push(water); }         // the water surface is never walkable (no userData.walk)
   out.push(wallsMesh(ps, wl - D, D, c, col, 0.35 * op));
   const floor = flatFill(ps, wl - D, c, solidMat(col, 0.35 * op)); if (floor) out.push(floor);
   const outer = offsetRing(ps, cw);
   if (outer) {
     const a: V3[] = ps.map((p) => [p[0] - c.O[0], p[1] - c.O[1], wl + 0.02]), b: V3[] = outer.map((p) => [p[0] - c.O[0], p[1] - c.O[1], wl + 0.02]); a.push(a[0]); b.push(b[0]);
-    const pos: number[] = []; strip(a, b, pos); out.push(meshOf(pos, solidMat(new THREE.Color('#d8d2c4'), op)));
+    const pos: number[] = []; strip(a, b, pos); { const cope = meshOf(pos, solidMat(new THREE.Color('#d8d2c4'), op)); cope.userData.walk = true; out.push(cope); }
   }
   return out;
 }
@@ -441,7 +442,7 @@ export function buildObject(o: SiteObject, c: Ctx): THREE.Group {
       if (w !== null) drivewayParts(o, w, c.drive?.(o.id) ?? null, { O: c.O, existing: c.existing ?? (() => null) }).forEach((x) => g.add(x));
     } else if (set && o.type === 'footpath') {
       const { left, right } = offsets(path, dimOf(o, 'width_m')! / 2, c), pos: number[] = [];
-      strip(left, right, pos); g.add(meshOf(pos, flatMat(col, op)));
+      strip(left, right, pos); const fp = meshOf(pos, flatMat(col, op)); fp.userData.walk = true; g.add(fp);
     } else if (set && o.type === 'retaining_wall') {
       const r = wallParts(o, ps, c, col, op); r.parts.forEach((x) => g.add(x)); labelRise = r.rise;
     } else if (set && o.type === 'infiltration_trench') {
@@ -549,6 +550,7 @@ export class SiteScene {
     if (this.overlandGroup) { this.group.remove(this.overlandGroup); disposeGroup(this.overlandGroup); this.overlandGroup = null; }
     if (!o || o.status !== 'EVALUATED') return;
     this.overlandGroup = buildOverlandLayer(o, this.opts.origin, this.opts.makeLabel ?? makeSprite);
+    this.overlandGroup.visible = this.overlandOn;
     this.group.add(this.overlandGroup);
   }
 
@@ -569,6 +571,29 @@ export class SiteScene {
     return out;
   }
 
+  // ---- stage 11: grouped layer toggles (a display setting of the viewer, never saved in the document)
+  private hiddenKeys = new Set<string>();
+  private overlandOn = true;
+  private shown(o: SiteObject) { return o.accepted !== 'rejected' && !this.hiddenKeys.has(objectLayerKey(o)); }
+  /** Hide the objects of these layer keys (`type:<object type>` or `service:<kind>`, see lib/viewer/layerGroups). Everything else is shown. */
+  setHiddenKeys(keys: Iterable<string>) {
+    this.hiddenKeys = new Set(keys);
+    for (const [id, g] of this.groups) { const o = this.doc?.objects.find((x) => x.id === id); if (o) g.visible = this.shown(o); }
+    this.walkCache = null;
+  }
+  setOverlandVisible(v: boolean) { this.overlandOn = v; if (this.overlandGroup) this.overlandGroup.visible = v; }
+  private walkCache: THREE.Mesh[] | null = null;
+  /** The design surfaces the walker may stand on (a driveway at its design level, a footpath, a grading surface, pool coping). Pool water, pool floors and walls are not among them. */
+  walkMeshes(): THREE.Mesh[] {
+    if (!this.group.visible) return [];
+    if (!this.walkCache) {
+      const out: THREE.Mesh[] = [];
+      for (const g of this.groups.values()) if (g.visible) g.traverse((o) => { if (o.userData.walk === true && (o as THREE.Mesh).isMesh) out.push(o as THREE.Mesh); });
+      this.walkCache = out;
+    }
+    return this.walkCache;
+  }
+
   /** Rebuild everything (first load, or the terrain changed). */
   syncAll(doc: SiteDesign) {
     this.doc = doc;
@@ -583,10 +608,12 @@ export class SiteScene {
     const byId = new Map(ev.doc.objects.map((o) => [o.id, o]));
     for (const id of [...ev.changed, ...ev.added]) { const o = byId.get(id); if (o) this.put(o); }
   }
-  private drop(id: string) { const g = this.groups.get(id); if (g) { this.group.remove(g); disposeGroup(g); this.groups.delete(id); } if (!this.doc?.objects.some((x) => x.id === id)) { this.drives.delete(id); this.gradings.delete(id); } }
+  private drop(id: string) { this.walkCache = null; const g = this.groups.get(id); if (g) { this.group.remove(g); disposeGroup(g); this.groups.delete(id); } if (!this.doc?.objects.some((x) => x.id === id)) { this.drives.delete(id); this.gradings.delete(id); } }
   private put(o: SiteObject) {
     this.drop(o.id);
     const g = buildObject(o, this.ctx); this.group.add(g); this.groups.set(o.id, g);
+    if (!this.shown(o)) g.visible = false;
+    this.walkCache = null;
     this.lastRebuilt.push(o.id); this.rebuildCount++;
     if (o.id === this.selected) this.paint(g, true);
   }

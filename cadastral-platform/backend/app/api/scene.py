@@ -6,7 +6,6 @@ invented: a project without a bundle returns 404 "DATA NOT AVAILABLE". The bundl
 """
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from uuid import UUID
 
@@ -17,6 +16,7 @@ from pydantic import ValidationError
 
 from app.agents.sa6_site3d import SceneBundle, dumps
 from app.api.deps import get_conn, require_project, require_terms
+from app.common.bundle_dir import scene_base_dir
 
 router = APIRouter()
 
@@ -25,8 +25,7 @@ NO_BUNDLE_DETAIL = "DATA NOT AVAILABLE: no scene bundle for this project"
 
 
 def scene_bundle_base(request: Request) -> Path:
-    env = os.environ.get("SCENE_BUNDLE_DIR")
-    return Path(env) if env else Path(request.app.state.settings.export_dir)
+    return scene_base_dir(request.app.state.settings.export_dir)
 
 
 def scene_access(project_id: UUID, user_id: UUID = Depends(require_terms), conn: Connection = Depends(get_conn)) -> UUID:
