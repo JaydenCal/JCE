@@ -43,6 +43,14 @@ Basis = Literal["user", "lga_rule", "platform_default", "unresolved", "plan_indi
 #: requirement key that resolves. Neither basis may be set by hand: the operations refuse them.
 PLAN_INDICATED_PARAMS: frozenset[tuple[str, str]] = frozenset({("service_existing", k) for k in ("service_kind", "diameter_mm", "material", "depth_m", "depth_basis", "source_file")})
 DERIVED_PARAMS: frozenset[tuple[str, str]] = frozenset({("sewer_drain", "upstream_invert_rl"), ("sewer_drain", "downstream_invert_rl"), ("service_node", "invert_rl")})
+#: ``derived`` by an ENGINE of AI first design (stage 10): a link or a position that a generator computed from existing objects and geometry (not from a requirement). Accepted only for
+#: these pairs and only when the ref starts with ``ENGINE_REF_PREFIX`` and names the engine and its inputs. It is never ``user``: nobody typed it.
+ENGINE_REF_PREFIX = "AI FIRST DESIGN"
+_DRAINS_TO_TYPES = ("building", "driveway", "footpath", "pool", "landscape_area", "grading_area", "osd", "osd_basin", "infiltration_trench", "rwt")
+ENGINE_DERIVED_PARAMS: frozenset[tuple[str, str]] = frozenset({
+    ("driveway", "crossover_chainage_m"), ("driveway", "end_building_id"), ("rwt", "roof_building_id"), ("overflow_route", "rwt_id"), ("overflow_route", "osd_id"),
+    ("overflow_route", "trench_id"), ("sewer_drain", "building_id"), ("service_node", "main_id"), ("water_service", "main_id"), ("service_node", "invert_rl"),
+    ("service_node", "node_kind"), *{(t, "drains_to_id") for t in _DRAINS_TO_TYPES}})
 Severity = Literal["blocking", "warning", "info"]
 
 #: geometry kind required by each object type (docs/14 section 6.5)
@@ -397,7 +405,7 @@ class SiteObject(_Strict):
                 raise ValueError(f"{k}: a platform default is not accepted for a {self.type} parameter; enter a value (USER) or cite a requirement (LGA RULE with its key)")
             if p.basis == "plan_indicated" and (self.type, k) not in PLAN_INDICATED_PARAMS:
                 raise ValueError(f"{k}: a PLAN INDICATED value is not accepted for a {self.type} parameter")
-            if p.basis == "derived" and (self.type, k) not in DERIVED_PARAMS:
+            if p.basis == "derived" and (self.type, k) not in DERIVED_PARAMS and (self.type, k) not in ENGINE_DERIVED_PARAMS:
                 raise ValueError(f"{k}: a DERIVED value is not accepted for a {self.type} parameter")
         for (t, k), allowed in PARAM_ENUMS.items():
             p = self.params.get(k) if t == self.type else None

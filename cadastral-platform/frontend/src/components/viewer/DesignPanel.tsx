@@ -8,6 +8,7 @@ import { BuildingImportBox, BuildingInfo, FeatureTools } from './BuildingTools';
 import { DrivewaySection, GradingSection } from './EngineSections';
 import { DbydSection } from './DbydTools';
 import { StormwaterSection } from './StormwaterPanel';
+import { FirstDesignSection } from './FirstDesignPanel';
 import { SewerSection, WaterSection } from './RouteTools';
 import { ServiceVerifyBox, TraceServiceSection } from './ServiceTools';
 import type { PlanRecord } from '@/lib/site/dbydApi';
@@ -226,6 +227,7 @@ export function DesignPanel({ ds, doc, ctl, save, onResolve, gate, onRetryLoad, 
           </tbody></table>
         )}
       </section>
+      <FirstDesignSection fd={ds.firstDesign} ctl={ctl} doc={doc} locked={locked} />
       <ChecksSection doc={doc} ds={ds} ctl={ctl} />
       <StormwaterSection sw={ds.stormwater} ctl={ctl} locked={locked} />
       {sel && <section><h2>Properties</h2><Props o={sel} doc={doc} ds={ds} ctl={ctl} key={sel.id} locked={locked} /></section>}

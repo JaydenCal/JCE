@@ -189,13 +189,15 @@ def _summary(checks: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------- sewer
-def propose_sewer(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | None, *, building_id: str, exit_index: int = 0, start_invert_rl: float,
-                  diameter_mm: float, connection: dict[str, Any], grade_pct: float | None = None, today: date | None = None) -> dict[str, Any]:
+def propose_sewer(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | None, *, building_id: str, exit_index: int = 0, start_invert_rl: float | None,
+                  diameter_mm: float | None, connection: dict[str, Any], grade_pct: float | None = None, today: date | None = None) -> dict[str, Any]:
+    """``start_invert_rl`` and ``diameter_mm`` are the user's entries. Both may be None (AI first design, stage 10): the route and the nodes are then proposed with the inverts
+    and the diameter NOT SET, and the notes say what the user still has to enter. They are never defaulted."""
     _check_inputs(design)
     for name, v in (("START INVERT", start_invert_rl), ("DIAMETER", diameter_mm)):
-        if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
+        if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)):
             raise RouteError("BAD_INPUT", f"{name} MUST BE A NUMBER")
-    if diameter_mm <= 0:
+    if diameter_mm is not None and diameter_mm <= 0:
         raise RouteError("BAD_INPUT", "DIAMETER MUST BE ABOVE ZERO")
     if grade_pct is not None and (isinstance(grade_pct, bool) or not isinstance(grade_pct, (int, float)) or not math.isfinite(grade_pct) or grade_pct < 0):
         raise RouteError("BAD_INPUT", "GRADE MUST BE A NUMBER OF ZERO OR MORE")
@@ -219,20 +221,26 @@ def propose_sewer(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | N
     # grade and inverts
     grade, grade_ref = grade_pct, "GRADE ENTERED BY THE USER"
     rule_key: str | None = None                        # set when the grade comes from a requirement: the inverts that follow from it are DERIVED from that key
-    if grade is None:
+    if start_invert_rl is None:
+        notes.append("THE START INVERT WAS NOT ENTERED, SO THE INVERTS, THE GRADE AND THE COVER ARE NOT SET. ENTER THE START INVERT ON THE FIRST DRAIN LINK")
+    if diameter_mm is None:
+        notes.append("THE DIAMETER WAS NOT ENTERED, SO IT IS NOT SET ON THE DRAIN LINKS AND THE MINIMUM GRADE FOR A DIAMETER CANNOT BE READ. ENTER THE DIAMETER")
+    if grade is None and diameter_mm is not None:
         rg = rules.get_for("sewer.min_grade_pct", dia_mm=int(round(diameter_mm)))
         if rg.resolved:
             grade, grade_ref, rule_key = float(rg.value), f"MINIMUM GRADE FROM {rg.key} ({rg.basis})", rg.key
         else:
             notes.append(f"NO GRADE WAS GIVEN AND THE MINIMUM GRADE IS UNRESOLVED ({rg.key}), SO THE INVERTS ARE NOT SET")
-    inv = ES.link_inverts(lens, start_invert_rl, grade) if grade is not None else [(None, None)] * len(links)
+    inv = ES.link_inverts(lens, start_invert_rl, grade) if grade is not None and start_invert_rl is not None else [(None, None)] * len(links)
     taken = {o.id for o in design.objects}
     new: list[dict[str, Any]] = []
     link_ids: list[str] = []
     for k, (pts, (u, d)) in enumerate(zip(links, inv)):
         oid = _uid(taken, "sewer")
         link_ids.append(oid)
-        params: dict[str, Any] = {"diameter_mm": _user(diameter_mm), "building_id": _user(building_id)}
+        params: dict[str, Any] = {"building_id": _user(building_id)}
+        if diameter_mm is not None:
+            params["diameter_mm"] = _user(diameter_mm)
         if u is not None:
             ref = f"SEWER TOOL: START INVERT {start_invert_rl:g} AND {grade_ref}"
             if rule_key is None:
@@ -245,7 +253,7 @@ def propose_sewer(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | N
         x, y = ES.point_at(route, c_)
         oid = _uid(taken, "sewer_io")
         iv = None
-        if grade is not None:
+        if grade is not None and start_invert_rl is not None:
             iv = start_invert_rl - grade / 100.0 * c_
         params = {"node_kind": _user("inspection_opening")}
         if iv is not None:
@@ -261,7 +269,7 @@ def propose_sewer(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | N
     # profile
     profile: list[dict[str, Any]] = []
     arrive = inv[-1][1] if inv and inv[-1][1] is not None else None
-    if grade is not None and terrain is not None:
+    if grade is not None and terrain is not None and start_invert_rl is not None and diameter_mm is not None:
         drv = [g for g in (G.footprint(o, None) for o in design.objects if o.type == "driveway" and o.status != "to_be_removed") if g is not None]
         fp = [g for g in (G.footprint(o, None) for o in design.objects if o.type == "footpath" and o.status != "to_be_removed") if g is not None]
         down = arrive if arrive is not None else start_invert_rl
@@ -290,18 +298,34 @@ def propose_sewer(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | N
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------- water
-def propose_water(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | None, *, building_id: str, exit_index: int = 0, meter_p: list[float],
-                  diameter_mm: float, cover_m: float, connection: dict[str, Any], rwt_id: str | None = None, today: date | None = None) -> dict[str, Any]:
+def _meter_on_route(route: list[tuple[float, float]], lot: Any) -> tuple[float, float] | None:
+    """The point where a service route first crosses the lot boundary from the connection, or None (no lot, or the route does not cross it). Geometry only: a position
+    to adjust, not a requirement."""
+    if lot is None:
+        return None
+    hit = LineString(route).intersection(lot.exterior)
+    pts = [g for g in getattr(hit, "geoms", [hit]) if g.geom_type == "Point"]
+    if not pts:
+        return None
+    ln = LineString(route)
+    p = min(pts, key=lambda g: ln.project(g))
+    return (float(p.x), float(p.y))
+
+
+def propose_water(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | None, *, building_id: str, exit_index: int = 0, meter_p: list[float] | None,
+                  diameter_mm: float | None, cover_m: float | None, connection: dict[str, Any], rwt_id: str | None = None, today: date | None = None) -> dict[str, Any]:
+    """``meter_p``, ``diameter_mm`` and ``cover_m`` are the user's entries. Any may be None (AI first design, stage 10): the size and the cover are then NOT SET, and with no meter
+    position the meter is proposed where the route crosses the lot boundary (none when that is not known). They are never defaulted."""
     _check_inputs(design)
     for name, v in (("DIAMETER", diameter_mm), ("COVER", cover_m)):
-        if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or v <= 0:
+        if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or v <= 0):
             raise RouteError("BAD_INPUT", f"{name} MUST BE A NUMBER ABOVE ZERO")
-    if len(meter_p) < 2 or not all(isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) for x in meter_p[:2]):
+    if meter_p is not None and (len(meter_p) < 2 or not all(isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) for x in meter_p[:2])):
         raise RouteError("BAD_INPUT", "THE METER POSITION MUST BE TWO NUMBERS")
     b = _building(design, building_id)
     exit_ = _exit_point(b, "water", exit_index)
-    meter = (float(meter_p[0]), float(meter_p[1]))
-    cn = _connection(design, rules, terrain, "water", connection, meter)
+    meter = (float(meter_p[0]), float(meter_p[1])) if meter_p is not None else None
+    cn = _connection(design, rules, terrain, "water", connection, meter if meter is not None else exit_)
     notes: list[str] = list(cn["notes"])
     if rwt_id is not None:
         r_ = next((o for o in design.objects if o.id == rwt_id and o.type == "rwt" and o.accepted != "rejected"), None)
@@ -310,12 +334,22 @@ def propose_water(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | N
         from .param_basis import Reader
         if not any(G.flag(r_, k, Reader(rules)) for k in ("reuse_toilet", "reuse_laundry", "reuse_garden")):
             notes.append(f"THE TANK {rwt_id.upper()} HAS NO REUSE SET, SO THE LINK IS KEPT BUT NO MAINS BACKUP IS REQUIRED FOR REUSE")
-    a = _route(design, rules, building_id, cn["p"], meter, notes)
-    z = _route(design, rules, building_id, meter, exit_, notes)
-    route = ES.simplify_collinear([*a, *z[1:]])
+    if meter is None:
+        route = _route(design, rules, building_id, cn["p"], exit_, notes)
+        meter = _meter_on_route(route, terrain.lot if terrain is not None else None)
+        notes.append("THE METER POSITION WAS NOT ENTERED. IT IS PROPOSED WHERE THE ROUTE CROSSES THE LOT BOUNDARY: MOVE IT TO THE POSITION THE AUTHORITY REQUIRES" if meter is not None
+                     else "THE METER POSITION WAS NOT ENTERED AND THE LOT BOUNDARY CROSSING IS NOT KNOWN, SO NO METER IS PROPOSED. PLACE THE METER")
+    else:
+        a = _route(design, rules, building_id, cn["p"], meter, notes)
+        z = _route(design, rules, building_id, meter, exit_, notes)
+        route = ES.simplify_collinear([*a, *z[1:]])
     taken = {o.id for o in design.objects}
     wid = _uid(taken, "water")
-    params: dict[str, Any] = {"diameter_mm": _user(diameter_mm), "cover_m": _user(cover_m)}
+    params: dict[str, Any] = {}
+    if diameter_mm is not None:
+        params["diameter_mm"] = _user(diameter_mm)
+    if cover_m is not None:
+        params["cover_m"] = _user(cover_m)
     if cn["main"] is not None:
         params["main_id"] = _user(cn["main"].id)
     if rwt_id is not None:
@@ -324,9 +358,10 @@ def propose_water(design: SiteDesign, rules: SiteRules, terrain: SiteTerrain | N
         {"id": wid, "type": "water_service", "status": "proposed", "origin": "user", "label": "WATER SERVICE", "geometry": {"kind": "polyline", "pts": [[round(x, 4), round(y, 4)] for x, y in route]}, "params": params},
         {"id": _uid(taken, "water_cn"), "type": "service_node", "status": "proposed", "origin": "user", "label": f"WATER CONNECTION ({cn['label']})",
          "geometry": {"kind": "point", "p": [round(cn["p"][0], 4), round(cn["p"][1], 4)]}, "params": {"node_kind": _user("water_connection"), **({"main_id": _user(cn["main"].id)} if cn["main"] is not None else {})}},
-        {"id": _uid(taken, "water_meter"), "type": "service_node", "status": "proposed", "origin": "user", "label": "WATER METER", "geometry": {"kind": "point", "p": [round(meter[0], 4), round(meter[1], 4)]},
-         "params": {"node_kind": _user("water_meter")}},
     ]
+    if meter is not None:
+        new.append({"id": _uid(taken, "water_meter"), "type": "service_node", "status": "proposed", "origin": "user", "label": "WATER METER", "geometry": {"kind": "point", "p": [round(meter[0], 4), round(meter[1], 4)]},
+                    "params": {"node_kind": _user("water_meter")}})
     full, ids = _run_checks(design, rules, terrain, new, today)
     checks = _filter(full["checks"], ids)
     # the tank's own mains backup check names the tank, not the new objects; include it when the tank is linked

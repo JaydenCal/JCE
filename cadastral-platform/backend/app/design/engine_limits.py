@@ -170,3 +170,20 @@ def check_overland(width_m: float, height_m: float, cell_m: float) -> tuple[int,
     if nx * ny > MAX_OVERLAND_CELLS:
         raise EngineLimitError(OVERLAND_TOO_LARGE, f"THE OVERLAND FLOW RASTER WOULD HAVE {nx * ny:,} CELLS ({nx} x {ny} AT {cell_m:g} M); AT MOST {MAX_OVERLAND_CELLS:,} ARE ACCEPTED. USE A LARGER CELL SIZE")
     return nx, ny
+
+
+# ---- stage 10: AI first design (sanity limits, not engineering values)
+AI_TOO_LARGE = "AI_INPUT_TOO_LARGE"
+AI_TIMEOUT = "AI_GENERATE_TIMEOUT"
+MAX_AI_DESIGN_OBJECTS = 600                      # objects in the design the candidate generators accept (each candidate runs the whole design check)
+MAX_AI_CANDIDATES_PER_SET = 4                    # candidates kept in one set
+MAX_AI_SETS = 8                                  # sets of one stage
+MAX_AI_GENERATE_SECONDS = 25.0                   # wall clock of the candidate generation of one run; over it the remaining candidates are not built and the set says so
+MAX_AI_PROMPT_CHECKS = 10                        # check lines per candidate in the prompt
+MAX_AI_PROMPT_CHARS = 24_000                     # the prompt of one round; over it the check lines are cut to the failing ones
+MAX_AI_REASON_CHARS = 300                        # the reason a model gives for one choice
+MAX_AI_BATCH_STEPS = 400                         # operations in the batch the server returns
+MAX_AI_LANDSCAPE_AREAS = 24                      # landscape areas in one candidate (the hole free parts of the unbuilt lot; a lot with several buildings and surfaces needs several)
+MAX_AI_TOTAL_SECONDS = 60.0                      # wall clock of all model calls of one run; over it the remaining sets are decided by the rules
+MAX_AI_CALL_RETRIES = 2                          # extra attempts after a retryable model failure (timeout, busy, network); made by our loop under the deadline, the SDK does not retry
+AI_RETRY_BACKOFF_S = 0.5                         # wait before a retry, times the attempt number

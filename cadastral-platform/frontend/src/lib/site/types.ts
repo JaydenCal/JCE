@@ -228,6 +228,17 @@ export function platformDefaultRefused(type: ObjectType, key: string, ref: strin
  */
 export const PLAN_INDICATED_PARAMS: readonly string[] = ['service_kind', 'diameter_mm', 'material', 'depth_m', 'depth_basis', 'source_file'].map((k) => `service_existing.${k}`);
 export const DERIVED_PARAMS: readonly string[] = ['sewer_drain.upstream_invert_rl', 'sewer_drain.downstream_invert_rl', 'service_node.invert_rl'];
+/**
+ * (type, parameter) pairs that AI first design may write as basis derived from objects and geometry (not from a requirement): a link, a role or a position that a server generator
+ * computed. The ref must start with ENGINE_REF_PREFIX and name the engine and its inputs. The same list is in the backend model (ENGINE_DERIVED_PARAMS), which a test compares.
+ */
+export const ENGINE_REF_PREFIX = 'AI FIRST DESIGN';
+export const ENGINE_DERIVED_PARAMS: readonly string[] = [
+  'driveway.crossover_chainage_m', 'driveway.end_building_id', 'rwt.roof_building_id', 'overflow_route.rwt_id', 'overflow_route.osd_id', 'overflow_route.trench_id',
+  'sewer_drain.building_id', 'service_node.main_id', 'water_service.main_id', 'service_node.invert_rl', 'service_node.node_kind',
+  'building.drains_to_id', 'driveway.drains_to_id', 'footpath.drains_to_id', 'pool.drains_to_id', 'landscape_area.drains_to_id', 'grading_area.drains_to_id', 'osd.drains_to_id',
+  'osd_basin.drains_to_id', 'infiltration_trench.drains_to_id', 'rwt.drains_to_id',
+];
 /** The issue added when an edit voids a service's verification. Unlike the geometry issues it is not recomputed: it stays until the service is verified again. */
 export const VERIFICATION_CLEARED_CODE = 'VERIFICATION_CLEARED_BY_EDIT';
 export const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;

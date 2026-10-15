@@ -13,7 +13,8 @@ tank sizing read their engineering inputs ONLY through this module, and a value 
   parameters never take a plan indicated value) and reported with the basis PLAN INDICATED, never as USER. It is a plan's statement, not a measurement.
 * ``derived``: a value the server computed from a requirement (a sewer proposal invert from the minimum grade rule). Accepted ONLY for the pairs in
   ``site_design.DERIVED_PARAMS`` and only when its reference is the requirement key it was derived from AND that key has a usable row for this project's LGA. It is
-  reported with the basis DERIVED and the key as reference.
+  reported with the basis DERIVED and the key as reference. The pairs in ``site_design.ENGINE_DERIVED_PARAMS`` (a link or a position that an AI first design generator computed from
+  objects and geometry) are also accepted as DERIVED when the reference starts with ``AI FIRST DESIGN`` and names the engine and its inputs; they are never read as USER.
 * ``unresolved`` or no value: not set.
 
 The basis of what is read is the TRUE basis (the resolver's own basis for a verified rule, ``USER`` only for a user entry): it is never relabelled.
@@ -27,7 +28,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from . import object_keys as OK
-from .site_design import DERIVED_PARAMS, PLAN_INDICATED_PARAMS, SiteObject
+from .site_design import DERIVED_PARAMS, ENGINE_DERIVED_PARAMS, ENGINE_REF_PREFIX, PLAN_INDICATED_PARAMS, SiteObject
 from .site_rules import DEFAULT, DERIVED, PLAN_INDICATED, UNRESOLVED, USER, SiteRules
 
 LGA_NOT_VERIFIED = "LGA RULE REFERENCE NOT VERIFIED"
@@ -96,6 +97,8 @@ def read(o: SiteObject, key: str, rules: SiteRules | None = None) -> Read:
     if p.basis == "derived":
         ref = (p.ref or "").strip()
         why = f"{name}: DERIVED VALUE NOT ACCEPTED"
+        if (o.type, key) in ENGINE_DERIVED_PARAMS and ref.startswith(ENGINE_REF_PREFIX) and len(ref) > len(ENGINE_REF_PREFIX) + 2:
+            return Read(v, DERIVED, ref)                      # computed by an engine of AI first design from objects and geometry; the ref names the engine and its inputs
         if (o.type, key) not in DERIVED_PARAMS:
             return Read(why=f"{why} (NOT A DERIVABLE PARAMETER)")
         if not ref or rules is None or ref not in rules.keys_under(ref):

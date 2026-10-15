@@ -11,7 +11,7 @@ import { READ_ONLY_BUILDING_PARAMS, IMPORT_PARAM_KEYS, IMPORT_ID_RE, levelsToMga
 import { applyPatch, ptr, type Patch } from './patch';
 import { normDeg } from './snap';
 import {
-  BASES, DERIVED_PARAMS, ISO_DATE_RE, OBJECT_KINDS, PANEL_KEYS, OBJECT_TYPES, ORIGINS, PARAM_BOOLS, PARAM_DATES, PARAM_ENUMS, PARAM_LINKS, PARAM_NUMBERS, PLAN_INDICATED_PARAMS, STATUSES, SYSTEM_BASES, VERIFICATION_CLEARED_CODE, canonicalType, minVertices, platformDefaultRefused, verticesOf,
+  BASES, DERIVED_PARAMS, ENGINE_DERIVED_PARAMS, ENGINE_REF_PREFIX, ISO_DATE_RE, OBJECT_KINDS, PANEL_KEYS, OBJECT_TYPES, ORIGINS, PARAM_BOOLS, PARAM_DATES, PARAM_ENUMS, PARAM_LINKS, PARAM_NUMBERS, PLAN_INDICATED_PARAMS, STATUSES, SYSTEM_BASES, VERIFICATION_CLEARED_CODE, canonicalType, minVertices, platformDefaultRefused, verticesOf,
   type Basis, type Building, type Geometry, type GeometryKind, type ObjectType, type Origin, type Param, type Pos, type SiteDesign, type SiteObject, type Status,
 } from './types';
 
@@ -124,7 +124,7 @@ export function checkTypedParam(type: ObjectType, key: string, p: Param): Param 
   if ((PARAM_BOOLS[type] ?? []).includes(key) && p.value !== null && typeof p.value !== 'boolean') fail(`${key} must be true or false`);
   if ((PARAM_DATES[type] ?? []).includes(key) && p.value !== null && !(typeof p.value === 'string' && ISO_DATE_RE.test(p.value))) fail(`${key} must be a date written YYYY-MM-DD`);
   if (p.basis === 'plan_indicated' && !PLAN_INDICATED_PARAMS.includes(`${type}.${key}`)) fail(`${key}: a PLAN INDICATED value is not accepted for a ${type.replace(/_/g, ' ')} parameter`);
-  if (p.basis === 'derived' && !DERIVED_PARAMS.includes(`${type}.${key}`)) fail(`${key}: a DERIVED value is not accepted for a ${type.replace(/_/g, ' ')} parameter`);
+  if (p.basis === 'derived' && !DERIVED_PARAMS.includes(`${type}.${key}`) && !ENGINE_DERIVED_PARAMS.includes(`${type}.${key}`)) fail(`${key}: a DERIVED value is not accepted for a ${type.replace(/_/g, ' ')} parameter`);
   if (p.basis === 'platform_default' && platformDefaultRefused(type, key, p.ref)) fail(`${key}: a platform default is not accepted for a ${type.replace(/_/g, ' ')} parameter; enter a value (basis user) or cite the requirement key (basis lga_rule with its key as ref)`);
   return p;
 }
@@ -305,7 +305,8 @@ export const OPS: Record<string, OpDef> = {
       if (o.type === 'building' && READ_ONLY_BUILDING_PARAMS.has(key)) fail(`${key} is a fact from the import and cannot be edited; import the building again`);
       if (o.type === 'service_existing' && o.verified && key === 'verified_by') fail(SERVICE_VERIFIED_BY);
       if (a.basis === 'platform_default') fail(`${key}: a platform default cannot be set. Enter a value (basis user), cite the requirement key (basis lga_rule with its key as ref) or leave it unresolved`);
-      if (a.basis === 'plan_indicated' || a.basis === 'derived') fail(`${key}: the basis ${String(a.basis).toUpperCase().replace('_', ' ')} is set by the system (a value read from a DBYD plan, or computed from a requirement) and cannot be chosen by hand. Enter a value (basis user)`);
+      const engineDerived = a.basis === 'derived' && ENGINE_DERIVED_PARAMS.includes(`${o.type}.${key}`) && typeof a.ref === 'string' && a.ref.startsWith(ENGINE_REF_PREFIX);       // AI first design batch only: the batch guard checks it too
+      if (a.basis === 'plan_indicated' || (a.basis === 'derived' && !engineDerived)) fail(`${key}: the basis ${String(a.basis).toUpperCase().replace('_', ' ')} is set by the system (a value read from a DBYD plan, or computed from a requirement) and cannot be chosen by hand. Enter a value (basis user)`);
       const empty = a.value === undefined || a.value === null || a.value === '';
       const param = checkTypedParam(o.type, key, parseParam(key, { value: empty ? null : a.value, basis: a.basis ?? (empty ? 'unresolved' : 'user'), ref: a.ref }));
       const links = PARAM_LINKS[`${o.type}.${key}`];
@@ -615,6 +616,7 @@ export const OPS: Record<string, OpDef> = {
   accept_proposal: {
     label: 'Accept proposal',
     description: 'Accept an AI proposal.',
+    ai: false,                                      // the person decides; the AI never accepts, rejects or restores a proposal
     params: { id: ID },
     required: ['id'],
     run(doc, a) { return decide(doc, a.id, 'accepted'); },
@@ -622,12 +624,21 @@ export const OPS: Record<string, OpDef> = {
   reject_proposal: {
     label: 'Reject proposal',
     description: 'Reject an AI proposal. The object is kept, marked rejected and hidden in the model.',
+    ai: false,
     params: { id: ID },
     required: ['id'],
     run(doc, a) { return decide(doc, a.id, 'rejected'); },
   },
+  restore_proposal: {
+    label: 'Restore proposal',
+    description: 'Bring a rejected AI proposal back: it is shown again and waits for acceptance (pending).',
+    ai: false,
+    params: { id: ID },
+    required: ['id'],
+    run(doc, a) { return decide(doc, a.id, 'pending'); },
+  },
 };
-function decide(doc: SiteDesign, id: unknown, to: 'accepted' | 'rejected'): OpOutcome {
+function decide(doc: SiteDesign, id: unknown, to: 'accepted' | 'rejected' | 'pending'): OpOutcome {
   const { o, i } = find(doc, id);
   if (o.origin !== 'ai_proposal') fail(`${o.id} is not an AI proposal`);
   if (o.accepted === to) return { patch: [], result: { id: o.id } };

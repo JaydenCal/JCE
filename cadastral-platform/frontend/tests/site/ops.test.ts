@@ -189,7 +189,7 @@ describe('runBatch', () => {
 describe('toolSchemas', () => {
   const tools = toolSchemas();
   it('has one Anthropic tool definition per registry operation', () => {
-    expect(tools.map((t) => t.name).sort()).toEqual(['accept_proposal', 'add_object', 'delete_object', 'duplicate_object', 'edit_vertices', 'link_driveway_end', 'move_object', 'reject_proposal', 'remove_param', 'rotate_object', 'set_catalogue_item', 'set_driveway_crossover', 'set_param', 'set_status', 'set_vertex_rl', 'clear_vertex_rls'].sort());
+    expect(tools.map((t) => t.name).sort()).toEqual(['add_object', 'delete_object', 'duplicate_object', 'edit_vertices', 'link_driveway_end', 'move_object', 'remove_param', 'rotate_object', 'set_catalogue_item', 'set_driveway_crossover', 'set_param', 'set_status', 'set_vertex_rl', 'clear_vertex_rls'].sort());
     expect(tools.map((t) => t.name)).toEqual(Object.keys(OPS).filter((k) => OPS[k].ai !== false));       // place_building, set_service_verified and add_service_objects are not offered to the AI
   });
   it('each tool has name, description and an object input_schema whose required keys are properties', () => {
