@@ -137,6 +137,9 @@ def start(ctx: RefCtx, number: str, rows=(), notes=(), want_xover: bool = False,
     nrect, _ = notes_layout(proj, pre, (), reserve=0)
     rects = [PLAN_RECT] if nrect[3] <= PLAN_RECT[1] + 0.5 else [(PLAN_RECT[0], max(nrect[3] + 3.0, PLAN_RECT[1]), PLAN_RECT[2], PLAN_RECT[3]), (PLAN_RECT[0], PLAN_RECT[1], nrect[0] - 3.0, PLAN_RECT[3])]
     ch = VP.choose_view(subject_g, rects, margin, min_scale=min_sc, align_poly=align, prefer_twist=s.view_twist)
+    if front is None and ch.rot_note:                                    # no frontage in the lot data: the view is aligned to the long axis of the lot, not to a frontage
+        import dataclasses as _dc
+        ch = _dc.replace(ch, rot_note=ch.rot_note.replace("TO SQUARE THE LOT FRONTAGE TO THE SHEET", "TO ALIGN THE LONG AXIS OF THE LOT WITH THE SHEET (NO FRONTAGE IDENTIFIED)"))
     scale, r, twist = ch.scale, ch.rect, ch.twist
     k = 1000.0 / scale
     fx, fy = (r[0] + r[2]) / 2, (r[1] + r[3]) / 2                      # the full plan rectangle on every sheet, so the plan sheets overlay exactly
@@ -287,6 +290,14 @@ def text_panel(b: Base, title: str, lines, w: float = 100.0, warn: bool = False,
         return None
     D.panel(b.v, r[0], r[1], r[2], r[3], title, lines, h_text, warn=warn)
     return r
+
+
+def byda_panel(b: Base) -> None:
+    """BYDA status panel (C100, C310): job, owners responded, validity and the project-only notice.  Status only: no service is drawn from the BYDA data."""
+    pan = getattr(b.s.inp, "byda", None)
+    if pan is None:
+        return
+    text_panel(b, "BYDA STATUS: EXISTING SERVICES NOT CONFIRMED", [ST.clean(x) for x in pan.all_lines()], 150.0, warn=True)
 
 
 def pave_callout(b: Base) -> None:
@@ -473,14 +484,14 @@ def c100(ctx: RefCtx) -> Sheet:
     if s.tin is None:
         rows.append("existing contours and spot levels: no survey or DEM levels supplied (run with levels nsw or supply a detail survey)")
     if not s.inp.services:
-        rows.append("existing services: none supplied; location to be confirmed from council records and DBYD")
+        rows.append("existing services: NOT CONFIRMED (BYDA PLANS ARE NOT TRACED: SEE THE BYDA PANEL)" if s.inp.byda is not None else "existing services: none supplied; location to be confirmed from council records and DBYD")
     rows.append("existing buildings, trees, fences and easements: not in the supplied data (confirm by title search and s88B instrument)")
     b0 = start(ctx, "C100", rows, [], want_xover=False)
     rows += road_rows(s, b0.xg, b0.front, b0.pave)
     if len(rows) != len(b0.rows):                                    # the missing-road row changes the panel: rebuild with it
         b0 = start(ctx, "C100", rows, [], want_xover=False)
     b = b0
-    b.pre = ([f"EXISTING CONTOURS: {DEM_NOTE_REF}"] if s.tin is not None else [])
+    b.pre = ([f"EXISTING CONTOURS: {s.dem_note_ref}" + (f" ({s.inp.contour_source.upper()}, {s.inp.contour_interval_m:g} m MINOR, {s.inp.contour_major_m:g} m MAJOR)" if (s.inp.contour_source and s.inp.contour_interval_m and s.inp.contour_major_m) else "")] if s.tin is not None else [])
     v = b.v
     if s.tin is not None:
         contour_sets(s, v.model_window())
@@ -492,6 +503,7 @@ def c100(ctx: RefCtx) -> Sheet:
     CX.callouts_crossover(v, b.xg, b.std, b.keep, [], [s.lot], kerb_only=True, short_kerb=True, must_avoid=list(getattr(b, 'kerb_geoms', [])))
     for lines_, pt_ in pending:
         place(b, lines_, pt_)
+    byda_panel(b)
     pave_callout(b)
     b.sh.data_missing += [m for m in missing]
     return seal(b)
@@ -572,7 +584,7 @@ def c101(ctx: RefCtx) -> Sheet:
     if cand:
         sg = max(cand, key=lambda g: g.distance_m)
         mid = ((sg.start_xy[0] + sg.end_xy[0]) / 2, (sg.start_xy[1] + sg.end_xy[1]) / 2)
-        place(b, [f"AREA {s.inp.lot.area_m2_calculated:,.0f} m2 (CALCULATED FROM CADASTRE)"], mid, "arrow", avoid=hard)
+        place(b, [f"AREA {s.inp.lot.area_m2_calculated:,.0f} m2 (CALCULATED FROM " + ("THE SITE DATA FOLDER BOUNDARY)" if s.inp.boundary_source else "CADASTRE)")], mid, "arrow", avoid=hard)
     notes = [codes.SETBACK_PLACEHOLDER + "."] if fp is None else []
     return seal(b, notes)
 
@@ -729,9 +741,9 @@ def c200(ctx: RefCtx) -> Sheet:
     if pad_ok:
         notes.append("BATTERS 1V:2H CUT AND 1V:3H FILL ARE ASSUMED. GEOTECHNICAL ADVICE REQUIRED.")
     if s.tin is not None:
-        notes.append("EXISTING CONTOURS: " + DEM_NOTE_REF)
+        notes.append("EXISTING CONTOURS: " + s.dem_note_ref)
     if ew is not None:
-        notes.append("DRIVEWAY CUT AND FILL: EXISTING 5 m DEM AGAINST THE PLATFORM DRIVEWAY PROFILE (LEVEL AT THE DRIVEWAY END IS A PLATFORM DEFAULT). INDICATIVE.")
+        notes.append(f"DRIVEWAY CUT AND FILL: EXISTING {s.dem_label} AGAINST THE PLATFORM DRIVEWAY PROFILE (LEVEL AT THE DRIVEWAY END IS A PLATFORM DEFAULT). INDICATIVE.")
     b = start(ctx, "C200", rows, notes, want_xover=False)
     rr = road_rows(s, b.xg, b.front, b.pave)
     v = b.v
@@ -762,7 +774,7 @@ def c200(ctx: RefCtx) -> Sheet:
     pave_callout(b)
     extra = []
     if pad_ok:
-        extra.append(f"PAD CUT {s.cutfill.cut_volume_m3:,.1f} m3, FILL {s.cutfill.fill_volume_m3:,.1f} m3, NET {s.cutfill.net_volume_m3:+,.1f} m3 (INDICATIVE, 5 m DEM)")
+        extra.append(f"PAD CUT {s.cutfill.cut_volume_m3:,.1f} m3, FILL {s.cutfill.fill_volume_m3:,.1f} m3, NET {s.cutfill.net_volume_m3:+,.1f} m3 (INDICATIVE, {s.dem_label})")
     sh = seal(b, extra)
     sh.data_missing = list(b.rows) + [r for r in rr if r not in b.rows]
     return sh
@@ -780,7 +792,7 @@ def c300(ctx: RefCtx) -> Sheet:
     notes = ["ALL DRAINAGE IS TO BE DESIGNED BY A HYDRAULIC DESIGNER. NOTHING HERE IS A DRAINAGE DESIGN."]
     notes += cited(s, ("stormwater.designed_per_eng_standards", "stormwater.osd_roof_plumbing_design_aep_pct"))
     if s.tin is not None:
-        notes.append("OVERLAND FLOW ARROWS SHOW THE DOWNSLOPE DIRECTION OF THE 5 m DEM (INDICATIVE). FLOW PATHS AND CATCHMENTS ARE NOT MODELLED.")
+        notes.append(f"OVERLAND FLOW ARROWS SHOW THE DOWNSLOPE DIRECTION OF THE {s.dem_label} (INDICATIVE). FLOW PATHS AND CATCHMENTS ARE NOT MODELLED.")
     dn = drainage_discharge_note(s)
     if dn:
         notes.append(dn)
@@ -829,6 +841,7 @@ def c310(ctx: RefCtx) -> Sheet:
     CX.callouts_crossover(b.v, b.xg, b.std, b.keep, [], [s.lot], kerb_only=True, short_kerb=True, must_avoid=list(getattr(b, 'kerb_geoms', [])))
     for lines_, pt_ in pending:
         place(b, lines_, pt_)
+    byda_panel(b)
     pave_callout(b)
     return seal(b)
 
@@ -1074,7 +1087,7 @@ def c410(ctx: RefCtx) -> Sheet:
     fl = falls_to_lot_note(s)
     if fl:
         lines.append(fl + ".")
-    lines.append(f"EXISTING GROUND {DEM_NOTE_REF}. KERB LINE, GUTTER BAND ({CX._fmt_m(gw)}) AND PROPERTY BOUNDARY POSITIONS ARE ASSUMED GROUND POINTS (KERB NOT SURVEYED).")
+    lines.append(f"EXISTING GROUND {s.dem_note_ref}. KERB LINE, GUTTER BAND ({CX._fmt_m(gw)}) AND PROPERTY BOUNDARY POSITIONS ARE ASSUMED GROUND POINTS (KERB NOT SURVEYED).")
     pw = min(165.0, VIEW_RECT[2] - 2.0 - (xr + 12.0))               # notes column to the right of the profile (the chart keeps the full width)
     h_ = _wrap_h(lines, pw - 2.0, 2.4)
     ptop = CONTENT_Y1 - 2.0
@@ -1222,7 +1235,7 @@ def c420(ctx: RefCtx) -> Sheet:
     if front is not None:
         ltr = "LEFT TO RIGHT" if sgn > 0 else "RIGHT TO LEFT"
         put(f"FRONT BOUNDARY: BEARING {front.bearing_dms}  {CX.frontage_length_m(front):.2f}m ({ltr}, CADASTRE)", [(xr - 3, M(0, 0)[1] + 3.0 + d, "BOTTOM_RIGHT") for d in (0, 4, 8)], halo=True)
-    put("BOUNDARY FROM CADASTRE: NOT A SURVEY", [(xr - 3, M(0, 0)[1] - 3.0 - d, "TOP_RIGHT") for d in (0, 4, 8)], 2.4, halo=True)
+    put(("BOUNDARY FROM THE SITE DATA FOLDER: NOT A SURVEY" if s.inp.boundary_source else "BOUNDARY FROM CADASTRE: NOT A SURVEY"), [(xr - 3, M(0, 0)[1] - 3.0 - d, "TOP_RIGHT") for d in (0, 4, 8)], 2.4, halo=True)
     put(f"VERGE (ASSUMED, NOT SURVEYED; {kerb_src})", [(xr - 3, M(0, Dk / 2)[1] + d, "MIDDLE_RIGHT") for d in (0, 6, -6, 12)], halo=True)
     put("ROAD (ASSUMED PAVEMENT EXTENT)", [(xl + 3, M(0, Dk + 1.0)[1] + d, "MIDDLE_LEFT") for d in (0, -5, 5, 10)], halo=True)
     CO.place_callout(v, ["KERB AND GUTTER BAND", CX.KERB_ASSUMED_TEXT], M(s_r + sgn * 0.5, Dk - gw / 2), "arrow", keep, must=True)
@@ -1338,7 +1351,8 @@ def _esc_target(g) -> tuple[float, float]:
 def c500(ctx: RefCtx) -> Sheet:
     s = ctx.site
     out = s.esc
-    rows = [] if out is not None else ["ESCP DATA PENDING: the SA10 erosion and sediment control layout was not available in this run; controls will be drawn when SA10 output is supplied"]
+    rows = [] if out is not None else ([f"ESC LAYOUT NOT DRAWN: {s.inp.esc_unavailable_reason}"] if s.inp.esc_unavailable_reason else
+                                       ["ESCP DATA PENDING: the SA10 erosion and sediment control layout was not available in this run; controls will be drawn when SA10 output is supplied"])
     notes = ["ESCP TO BE REVIEWED AND CERTIFIED BY A SUITABLY QUALIFIED PERSON", (PH.sentence(s.cites, "esc.escp.prepared_by_suitably_qualified_person") or "")]
     b = start(ctx, "C500", rows, notes)
     v = b.v
@@ -1366,7 +1380,7 @@ def c500(ctx: RefCtx) -> Sheet:
         for w in out.warnings:
             (flags if "not drawn" in w.lower() else basis).append(_up(w))
         if dem:
-            basis.insert(0, f"LOT FALL {dem['pct']:.1f} PERCENT TOWARDS BEARING {dem['bearing']:.0f} DEG (INDICATIVE, 5 m DEM, PLANE FIT TO {dem.get('n', 0)} LEVELS)")
+            basis.insert(0, f"LOT FALL {dem['pct']:.1f} PERCENT TOWARDS BEARING {dem['bearing']:.0f} DEG (INDICATIVE, {s.dem_label}, PLANE FIT TO {dem.get('n', 0)} LEVELS)")
         elif out.flow.assumed:
             basis.insert(0, f"FALL DIRECTION ASSUMED TOWARDS THE ROAD (BEARING {out.flow.bearing_deg:.0f} DEG): NO LEVELS AVAILABLE TO THE ESCP LAYOUT")
         basis.append(f"ELEMENTS FROM SA10: {len(out.elements)} (INDICATIVE LAYOUT, TO BE CONFIRMED BY THE ESCP PREPARER)")
@@ -1567,7 +1581,9 @@ def c001(ctx: RefCtx, others: list[Sheet]) -> Sheet:
                 P.text(cols[ci] + 9.0, y - k * pitch, w, hb, "TOP_LEFT", layer="C-ANNO-NOTE", color=RED if red else None)
     if not ok:
         sh.data_missing.append("general notes overflow the sheet")
-    LG.draw_legend(v, CONTENT_X0, CONTENT_Y0 + lg_h, CONTENT_X1 - CONTENT_X0, lg_cols, lg_pitch)
+    LG.draw_legend(v, CONTENT_X0, CONTENT_Y0 + lg_h, CONTENT_X1 - CONTENT_X0, lg_cols, lg_pitch,
+                   contour_label=(f"EXISTING CONTOUR ({s.dem_label}, INDICATIVE)" if s.inp.terrain_label else None),
+                   boundary_label=("PROPERTY BOUNDARY (SITE DATA FOLDER, NOT A SURVEY)" if s.inp.boundary_source else None))
     title_strip(sh, "GENERAL NOTES", "NOT TO SCALE (NTS)", None)
     sh.notes = ["GENERAL NOTES AND REGISTER OF MISSING DATA FOR THIS PLAN SET"]
     return sh
@@ -1686,10 +1702,12 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
     v.line([(rx0, y), (rx0, top - 9.0)], "C-ANNO-TABL", False, 0.25)
     # ---- DATA SOURCES AND STATUS: what this set is built from (each line follows the data actually supplied) --------------------------------------
     yb = y - 12.0
-    src = [("CADASTRE", "STATE CADASTRE (DCDB). BOUNDARIES, LOT NUMBERS AND PLAN NUMBERS ARE NOT A SURVEY."),
-           ("LEVELS", "5 m DEM, INDICATIVE ONLY. DETAIL SURVEY AT THE DETAILED DESIGN STAGE." if s.tin is not None else "NO LEVELS SUPPLIED: NOT DRAWN."),
+    src = [("CADASTRE", (f"SUBJECT LOT FROM {s.inp.boundary_source}. NOT A SURVEY. NO ADJOINING LOT OR ROAD DATA WAS QUERIED." if s.inp.boundary_source
+                         else "STATE CADASTRE (DCDB). BOUNDARIES, LOT NUMBERS AND PLAN NUMBERS ARE NOT A SURVEY.")),
+           ("LEVELS", (f"{s.dem_label}, INDICATIVE ONLY. DETAIL SURVEY AT THE DETAILED DESIGN STAGE." + (f" {s.accuracy_sentence}." if s.inp.terrain_label else "")) if s.tin is not None else "NO LEVELS SUPPLIED: NOT DRAWN."),
            ("AERIAL", ST.clean(s.aerial_site.note).upper() if s.aerial_site is not None else "NO AERIAL IMAGE SUPPLIED."),
-           ("SERVICES", "SUPPLIED SERVICES ARE DRAWN AS SUPPLIED (INDICATIVE)." if s.inp.services else "NONE SUPPLIED: LOCATE BY DIAL BEFORE YOU DIG AND POTHOLING."),
+           ("SERVICES", "SUPPLIED SERVICES ARE DRAWN AS SUPPLIED (INDICATIVE)." if s.inp.services else
+            ((s.inp.byda.headline + ". NO SERVICE IS DRAWN.") if s.inp.byda is not None else "NONE SUPPLIED: LOCATE BY DIAL BEFORE YOU DIG AND POTHOLING.")),
            ("ASSUMED ITEMS", "KERB, ROAD EXTENT AND LAYOVER VALUES ARE ASSUMED OR PLACEHOLDERS WHERE MARKED."),
            ("CODES", "DRAWING NUMBER JCS-{JOB}-CIV-{NNN}. LAYERS JCS-{DISCIPLINE}-{ELEMENT}-{TYPE}, THE SAME IN THE DXF."),
            ("BUILDING", "NOT PART OF THIS SET: NO BUILDING FOOTPRINT, SETBACK OR FLOOR LEVEL IS DRAWN.")]

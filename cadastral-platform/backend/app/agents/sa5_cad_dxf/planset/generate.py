@@ -15,6 +15,13 @@ from app.agents.sa5_cad_dxf.planset.render_pdf import render_pdf
 from app.agents.sa5_cad_dxf.planset.titleblock import Proj, draw_frame
 
 
+
+def _vertical_note(inp) -> str:
+    """Vertical datum line of the title block notes.  A site data run states the parsed datum and terrain basis; otherwise the NSW DEM wording (AHD)."""
+    if getattr(inp, "terrain_label", ""):
+        return f"Vertical: {inp.terrain_datum or 'datum not stated'}; {inp.terrain_label}, indicative only"
+    return "Vertical: AHD; DEM-derived, indicative only"
+
 def _aerial(inp: PlansetInput, ext, out_dir: Path, name: str, long_px: int = 1800) -> Aerial | None:
     if inp.imagery is None:
         return None
@@ -81,7 +88,7 @@ def build_planset(inp: PlansetInput, out_dir: str | Path, stem: str = "planset",
     lot = inp.lot
     proj = Proj(inp.project_title, inp.address or ("" if not lot.lga_name else lot.lga_name), lot.lotplan.replace("//", " ").replace("/", " "),
                 (inp.council_name or lot.lga_name or "").upper(), site.zone, f"{lot.area_m2_calculated:,.0f} m2", site.dev_label.title(), inp.drawn_by, "", date, b,
-                ["Horizontal: GDA2020 MGA zone " + str(lot.mga_srid)[-2:] + " (EPSG:" + str(lot.mga_srid) + ")", "Vertical: AHD; DEM-derived, indicative only", "Units: metres. Not a survey."],
+                ["Horizontal: GDA2020 MGA zone " + str(lot.mga_srid)[-2:] + " (EPSG:" + str(lot.mga_srid) + ")", _vertical_note(inp), "Units: metres. Not a survey."],
                 [("A", "PRELIMINARY ISSUE", date, inp.drawn_by[:6])])
     ctx = SP.Ctx(site, proj, scale, centre, kc, ks)
     body = [SP.c100(ctx), SP.c101(ctx), SP.c200(ctx), SP.c300(ctx), SP.c310(ctx), SO.c400(ctx), SO.c410(ctx), SO.c420(ctx), SO.c500(ctx), SO.c600(ctx)]
@@ -119,7 +126,7 @@ def _proj(inp: PlansetInput, site: Site, b, date: str) -> Proj:
     lot = inp.lot
     return Proj(project_name(inp.project_title, lot.lotplan, inp.address or ""), inp.address or ("" if not lot.lga_name else lot.lga_name), lot.lotplan.replace("//", " ").replace("/", " "),
                 (inp.council_name or lot.lga_name or "").upper(), site.zone, f"{lot.area_m2_calculated:,.0f} m2", site.dev_label.title(), inp.drawn_by, "", date, b,
-                ["Horizontal: GDA2020 MGA zone " + str(lot.mga_srid)[-2:] + " (EPSG:" + str(lot.mga_srid) + ")", "Vertical: AHD; DEM-derived, indicative only", "Units: metres. Not a survey."],
+                ["Horizontal: GDA2020 MGA zone " + str(lot.mga_srid)[-2:] + " (EPSG:" + str(lot.mga_srid) + ")", _vertical_note(inp), "Units: metres. Not a survey."],
                 [("A", "PRELIMINARY ISSUE", date, inp.drawn_by[:6])], inp.client, getattr(inp, "job", "") or "")
 
 
@@ -154,7 +161,9 @@ def _build_ref(inp: PlansetInput, site: Site, out: Path, stem: str, only, fi) ->
         pad = max(max(lb[2] - lb[0], lb[3] - lb[1], 40.0) * 0.6, 100.0)
         site.aerial_site = _aerial(inp, (lb[0] - pad, lb[1] - pad, lb[2] + pad, lb[3] + pad), out, f"{stem}_aerial_site.png")
     if site.esc is None:                                             # SA10 erosion and sediment control layout for C500 (never invented here)
-        if inp.esc_output is not None:
+        if inp.esc_unavailable_reason:
+            site.esc_error = inp.esc_unavailable_reason
+        elif inp.esc_output is not None:
             site.esc = inp.esc_output
         elif inp.esc_runner is not None:
             try:

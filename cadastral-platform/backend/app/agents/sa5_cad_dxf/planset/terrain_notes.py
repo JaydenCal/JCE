@@ -66,6 +66,6 @@ def drainage_discharge_note(s: Site) -> str | None:
     if c is None or f is None or c < 0.25:
         return None
     council = LN.lga_name(getattr(s.inp, "council_name", None), getattr(s.inp.lot, "lga_name", None), getattr(s.cites, "council_name", None))
-    basis = "5 m DEM" if "5 m DEM" in (s.tin_source or "") else "SUPPLIED LEVELS"
+    basis = getattr(s, "dem_label", "5 m DEM") if (getattr(s.inp, "terrain_label", "") or "5 m DEM" in (getattr(s, "tin_source", "") or "")) else "SUPPLIED LEVELS"
     return (f"LOT FALLS AWAY FROM THE STREET (INDICATIVE, {basis}). LEGAL POINT OF DISCHARGE UNRESOLVED; AN INTER-ALLOTMENT DRAINAGE EASEMENT OR OTHER "
             f"SOLUTION MAY BE REQUIRED. CONFIRM WITH {council}.")

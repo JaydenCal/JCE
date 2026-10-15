@@ -217,6 +217,30 @@ def _default_title(args) -> str:
     return f"Lot {m.group(1)} {m.group(2)} site works" if m else "Site works"
 
 
+def _parse_run_date(text: str | None):
+    """--run-date DD/MM/YYYY or YYYY-MM-DD (default today).  Used for the BYDA validity check."""
+    import datetime as _dt
+    if not text:
+        return _dt.date.today()
+    from app.sitedata.mdparse import parse_date
+    d = parse_date(text)
+    if d is None:
+        raise SystemExit(f"--run-date {text!r} is not DD/MM/YYYY or YYYY-MM-DD")
+    return d
+
+
+def _front_from_sa1(new_segs, old_segs, tol: float = 15.0):
+    """Carry the road adjacency and frontage of the SA1 segments onto the collector boundary segments (midpoint within ``tol`` metres of an SA1 road segment)."""
+    from shapely.geometry import LineString
+    out = []
+    olds = [(LineString([o.start_xy, o.end_xy]), o) for o in old_segs if o.adjoins == "road" or o.is_front]
+    for sg in new_segs:
+        mid = LineString([sg.start_xy, sg.end_xy]).interpolate(0.5, normalized=True)
+        hit = next((o for ln, o in olds if ln.distance(mid) <= tol), None)
+        out.append(sg.model_copy(update={"adjoins": "road", "is_front": bool(hit.is_front)}) if hit is not None else sg)
+    return out
+
+
 def _err(ex: Exception) -> str:
     return f"{getattr(ex, 'error_code', type(ex).__name__)}: {getattr(ex, 'detail', ex)}"
 
@@ -261,6 +285,16 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     if args.zone_code:
         params["zone_code"] = args.zone_code
 
+    # ---- site data folder (data collector): parsed once, every item with its provenance; a missing file never stops the run
+    sd = None
+    run_date = _parse_run_date(getattr(args, "run_date", None))
+    if getattr(args, "site_data", None):
+        from app.sitedata import load_site_data
+        sd = load_site_data(args.site_data)
+        found = [it.item for it in sd.items if it.status != "MISSING"]
+        rep.add("site data", UNRESOLVED if (sd.missing or sd.warnings) else OK,
+                f"{args.site_data}: read {', '.join(found) or 'nothing'}; missing: {'; '.join(sd.missing) or 'none'}" + (f"; warnings: {'; '.join(sd.warnings)}" if sd.warnings else ""))
+
     # ---- locate the lot
     try:
         if custom_req is not None:
@@ -285,8 +319,12 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         elif args.address:
             params["address"] = args.address
             rep.add("locate lot", OK, f"address '{args.address}' (geocoded by SA1)")
+        elif sd is not None and sd.boundary is not None:
+            if sd.boundary.lotplan:
+                params["lot_identifier"] = sd.boundary.lotplan
+            rep.add("locate lot", OK, f"site data boundary {sd.boundary.name} (lot identifier {sd.boundary.lotplan or 'not stated'})")
         else:
-            raise AgentError("NO_LOCATION", "give --address, --lotplan or --random-vacant")
+            raise AgentError("NO_LOCATION", "give --address, --lotplan, --random-vacant or --site-data with a lot boundary")
     except Exception as ex:  # noqa: BLE001
         rep.add("locate lot", FAILED, _err(ex))
         return _finish(rep, out)
@@ -331,6 +369,38 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     else:
         sa1 = call("SA1 cadastre/zoning", AgentCode.SA1_CADASTRE,
                    {"project_id": str(rr.project_id), "project_jurisdiction": "NSW", "params": params}, "SA1")
+    boundary_used, comparison = False, None
+    if sd is not None and sd.boundary is not None and OFF is None and custom_req is None:
+        from app.sitedata import apply as SDA
+        lga_arg = getattr(args, "council", None) or args.lga
+        if sa1 is None:
+            sa1 = SDA.lot_from_boundary(sd, lotplan=args.lotplan, lga=lga_arg, zone=params.get("zone_code"))
+            R["SA1"] = sa1
+            ctx.upstream["SA1"] = _json(sa1)
+            boundary_used = True
+            rep.add("lot (site data boundary)", UNRESOLVED,
+                    f"SA1 returned no lot: using {sd.boundary.source_label}; {sd.boundary.computed_area_ha:.2f} ha computed"
+                    + (f" against {sd.boundary.stated_area_ha:.2f} ha stated ({sd.boundary.area_diff_pct:+.2f} percent{'; DIFFERENCE OVER 2 PERCENT' if sd.boundary.area_flag else ''})" if sd.boundary.stated_area_ha else "")
+                    + "; no road, neighbour or zoning data (frontage NOT IDENTIFIED)")
+        else:
+            comparison = SDA.compare_with_sa1(sd, sa1.lot)
+            rep.facts["site_data_boundary_comparison"] = comparison
+            msg = (f"SA1 lot {comparison['sa1_area_m2']:,.0f} m2 against collector boundary {comparison['collector_area_m2']:,.0f} m2 ({comparison['difference_pct']:+.2f} percent, "
+                   f"overlap {comparison['overlap_iou']})")
+            if getattr(args, "use_site_boundary", False):
+                alt = SDA.lot_from_boundary(sd, lotplan=sa1.lot.lotplan, lga=sa1.lot.lga_name, zone=sa1.lot.zone_code)
+                alt.lot.segments = _front_from_sa1(alt.lot.segments, sa1.lot.segments)
+                alt.lot.road_names, alt.lot.neighbours = list(sa1.lot.road_names), list(sa1.lot.neighbours)
+                alt.zones, alt.overlays, alt.multi_zone, alt.is_residential = sa1.zones, sa1.overlays, sa1.multi_zone, sa1.is_residential
+                alt.snapshots = sa1.snapshots
+                sa1 = alt
+                R["SA1"] = sa1
+                ctx.upstream["SA1"] = _json(sa1)
+                boundary_used = True
+                msg += "; collector boundary USED as the subject lot (--use-site-boundary)"
+            else:
+                msg += "; SA1 lot kept as the subject lot"
+            rep.add("lot (site data boundary check)", UNRESOLVED if comparison["flag"] else OK, msg + ("; DIFFERENCE OVER 2 PERCENT: CHECK BOTH BOUNDARIES" if comparison["flag"] else ""))
     if sa1 is None:
         for n in ("SA2 DCP rules", "ENV setbacks/driveway", "SA3 terrain", "SA4 services/RWT", "SA5 DXF + PDF plan", "SA6 scene bundle", "SA9 constraints"):
             rep.add(n, SKIPPED, "upstream SA1 did not produce a lot")
@@ -341,8 +411,35 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     rep.add("SA1 result", OK if lot.zone_code else UNRESOLVED,
             f"{lot.lotplan}, {lot.lga_name}, {lot.area_m2_calculated:.0f} m2, zone {lot.zone_code or 'UNRESOLVED (pass --zone-code)'}; flags {sa1.flags or 'none'}")
 
+    # ---- site data LiDAR levels: replace the NSW 5 m DEM (the stated accuracy comes from lidar_status.md)
+    lidar_used, lidar_pts, lidar_thin, sdl_label = False, None, None, None
+    if sd is not None and sd.lidar is not None and sd.lidar.has_points:
+        from shapely import wkt as _wk
+        from app.sitedata import apply as SDA
+        try:
+            lidar_pts, lidar_thin = SDA.level_points(sd, _wk.loads(sa1.lot.boundary_wkt))
+            sdl_label = sd.terrain_label
+            surv = SDA.survey_kwargs(sd, lidar_pts, sa1.lot.mga_srid)
+            for tgt in (params, rr.params):
+                tgt.setdefault("terrain", {})["survey"] = surv
+            prov = {"source": surv["source"], "kind": "lidar", "label": sdl_label, "points": len(lidar_pts), "points_read": lidar_thin["points_in"], "thinning": lidar_thin,
+                    "copyright": "NSW Spatial Services via ELVIS (licence terms as stated by the data supplier: confirm before redistribution)" if (sd.lidar.status and sd.lidar.status.elvis) else "NOT STATED",
+                    "datum": (sd.lidar.status.vertical_datum if sd.lidar.status and sd.lidar.status.vertical_datum else "NOT STATED"),
+                    "vertical_accuracy_m": surv["stated_vertical_accuracy_m"], "vertical_accuracy_source": "stated in lidar_status.md" if sd.vertical_accuracy_m is not None else "NOT STATED (placeholder)",
+                    "retrieved": sd.lidar.status.received if sd.lidar.status else ""}
+            warns = list(sd.warnings)
+            rep.facts.update(levels_provenance=prov, levels_warnings=warns)
+            lidar_used = True
+            rep.add("levels (site data LiDAR)", OK if sd.vertical_accuracy_m is not None else UNRESOLVED,
+                    f"{sdl_label}: {len(lidar_pts):,} of {lidar_thin['points_in']:,} points" + (f" (one per {lidar_thin['cell_m']:g} m cell)" if lidar_thin["thinned"] else " (all kept)")
+                    + f"; {sd.lidar.contours_file or 'no contour file'}; accuracy {sd.lidar.status.accuracy_text if sd.lidar.status else 'NOT STATED'}")
+            if getattr(args, "levels", None) == "nsw":
+                rep.add("levels (NSW 5 m DEM)", SKIPPED, "site data LiDAR levels used instead")
+        except Exception as ex:  # noqa: BLE001
+            rep.add("levels (site data LiDAR)", FAILED, _err(ex))
+
     # ---- live levels (user asked for --levels nsw): sample NSW_5M_Elevation over the lot and use it as params.terrain.survey
-    if getattr(args, "levels", None) == "nsw":
+    if getattr(args, "levels", None) == "nsw" and not lidar_used:
         try:
             from app.agents.sa3_terrain.live_levels import fetch_levels
             lv = fetch_levels(sa1.lot.boundary_wkt, sa1.lot.mga_srid, accuracy_m=getattr(args, "levels_accuracy_m", None), **({"export": OFF.export_tiff} if OFF else {}))
@@ -353,6 +450,26 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                     f"{lv.provenance['points']} points, {lv.provenance['source']}, {lv.provenance['copyright']}; " + "; ".join(lv.warnings))
         except Exception as ex:  # noqa: BLE001
             rep.add("levels (NSW 5 m DEM)", FAILED, _err(ex))
+
+    # ---- site data record: BYDA panel, sources table, draft vector features (stored for the verification step, never drawn)
+    if sd is not None:
+        from app.sitedata import apply as SDA
+        panel = SDA.byda_panel(sd, run_date)
+        rows_ = SDA.sources_rows(sd, comparison, boundary_used if sd.boundary is not None else False, sd.boundary.source_label if sd.boundary else None, lidar_used, run_date=run_date)
+        fall_chk = None
+        if lidar_used and lidar_pts is not None:   # the platform fall is recomputed from the levels used (planset dem_fall), then set against the collector's own fit
+            try:
+                from types import SimpleNamespace
+                from shapely import wkt as _wk2
+                from app.agents.sa5_cad_dxf.planset.terrain_notes import dem_fall as _dem_fall
+                fall_chk = SDA.collector_fall_check(sd, _dem_fall(SimpleNamespace(spots=[tuple(map(float, q)) for q in lidar_pts], tin=None, lot=_wk2.loads(sa1.lot.boundary_wkt))))
+            except Exception as ex:  # noqa: BLE001
+                fall_chk = {"error": _err(ex)}
+        rep.facts["site_data"] = SDA.run_record(sd, run_date=run_date, comparison=comparison, boundary_used=boundary_used, thin=lidar_thin, panel=panel, fall_check=fall_chk, rows=rows_)
+        if panel is not None:
+            rep.add("BYDA status", UNRESOLVED, f"{panel.headline}; {panel.lines[1] if len(panel.lines) > 1 else ''}" + (f"; {panel.gis_draft_count} draft vector feature(s) stored unverified, not drawn" if panel.gis_draft_count else ""))
+        else:
+            rep.add("BYDA status", UNRESOLVED, "no byda_status.md: existing services NOT CONFIRMED, NOT CHECKED")
 
     # ---- SA2
     sa2 = None
@@ -421,6 +538,18 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     if params.get("terrain", {}).get("survey") and env_out is not None:
         if call("SA3 terrain/earthworks", AgentCode.SA3_GEOM_TIN, build_input("SA3", ctx), "SA3") is not None:
             rep.add("SA3 terrain/earthworks", OK, "TIN built from the supplied survey")
+    elif params.get("terrain", {}).get("survey") and sd is not None:
+        # site data run without an envelope (no zone or rules, no frontage): the existing ground TIN is still built; there is no pad, so no earthworks
+        from app.agents.sa3_terrain.agent import Sa3Terrain
+        from app.agents.sa3_terrain.models import Sa3TerrainRequest, SurveyInput
+        from app.orchestrator.adapters.nodes import agent_lot
+        try:
+            R["SA3"] = Sa3Terrain().run(Sa3TerrainRequest(lot=agent_lot(sa1), survey=SurveyInput(**params["terrain"]["survey"])))
+            ctx.upstream["SA3"] = _json(R["SA3"])
+            rep.add("SA3 terrain", OK, f"existing ground TIN built from the supplied survey ({R['SA3'].tin.vertex_count:,} vertices); no building pad, so no earthworks "
+                    "(ENV envelope and driveway not run)" + ("; " + "; ".join(R["SA3"].warnings[:2]) if R["SA3"].warnings else ""))
+        except Exception as ex:  # noqa: BLE001
+            rep.add("SA3 terrain", FAILED, _err(ex))
     else:
         rep.add("SA3 terrain", SKIPPED, "no survey supplied (--levels nsw or params.terrain.survey via --params-json); no levels invented")
 
@@ -455,17 +584,26 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
 
     # ---- multi-sheet civil plan set (PDF + DXF)
     if getattr(args, "planset", False):
-        if env_out is not None and sa4 is not None and args.acknowledge:
+        if ((env_out is not None and sa4 is not None) or sd is not None) and args.acknowledge:
             try:
                 from app.agents.sa5_cad_dxf.planset import PlansetInput, build_planset
                 from app.imagery.provider import provider_from_env
                 dem = None
-                if getattr(args, "levels", None) == "nsw":
+                if lidar_used:
+                    from app.sitedata import apply as SDA
+                    dem = SDA.window_fetch(sd, lidar_pts, lot.mga_srid)           # LiDAR points (already thinned for the lot size) clipped to each plan window
+                elif getattr(args, "levels", None) == "nsw":
                     from app.agents.sa3_terrain.live_levels import fetch_levels
                     dem = lambda poly: fetch_levels(poly.wkt, lot.mga_srid, buffer_m=5.0, max_points=3000, accuracy_m=getattr(args, "levels_accuracy_m", None), **({"export": OFF.export_tiff} if OFF else {})).survey  # noqa: E731
-                lot_pl = lot_with_envelope(sa1, env_out)
+                from app.orchestrator.adapters.nodes import agent_lot
+                lot_pl = lot_with_envelope(sa1, env_out) if env_out is not None else agent_lot(sa1)        # no envelope when the zone or rules are unresolved (site data runs)
                 if OFF is not None:
                     cad_fetch = OFF.cadastre_window                                  # the saved-run fixture only holds the 3 adjoining lots
+                elif boundary_used:
+                    from app.agents.sa5_cad_dxf.planset.data import CadastreWindow
+
+                    def cad_fetch(window):                                           # the subject lot came from the site data folder: no cadastre window was queried
+                        return CadastreWindow([], False, "SUBJECT LOT FROM THE SITE DATA FOLDER (NO CADASTRE QUERY MADE), ADJOINING LOTS AND ROADS NOT AVAILABLE, NOT CHECKED")
                 else:
                     from shapely import wkt as _swkt
                     from app.agents.sa1_cadastre.agent import Sa1Cadastre
@@ -488,15 +626,31 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                         def esc_run(site):  # noqa: E306
                             tpts = [tuple(float(c) for c in q) for q in (site.spots or (site.tin.vertices.tolist() if site.tin is not None else []))]       # the DEM points the plans use: SA10 fits the fall direction to them
                             return m.Sa10Esc().run(Sa10EscInput(lot=lot_pl, development_type=dev, footprint_wkt=site.footprint.wkt if (site.footprint is not None and getattr(site.inp, "show_dwelling", False)) else None,        # the preset footprint is illustrative and is not drawn: the ESC layout must not depend on it
-                                                                 driveway=env_out.driveway, services=sa4.to_cad_services(), terrain_points=tpts, output_dir=str(out)))
+                                                                 driveway=env_out.driveway if env_out is not None else None, services=sa4.to_cad_services() if sa4 is not None else [], terrain_points=tpts, output_dir=str(out)))
                 except Exception:  # noqa: BLE001
                     esc_run = None
-                pin = PlansetInput(lot=lot_pl, development_type=dev, project_title=rr.project_title, drawn_by="JCESITE", council_name=council, driveway=env_out.driveway,
-                                   driveway_checks=list(env_out.checks), services=sa4.to_cad_services(), rwt=sa4.to_cad_rwt(), terrain=R.get("SA3"), survey_points=pts, dem_fetch=dem,
-                                   levels_accuracy_m=getattr(args, "levels_accuracy_m", None), ffl_value=ffl_value if ffl_lab else None, ffl_label=ffl_lab,
-                                   imagery=provider_from_env("NSW"), esc_runner=esc_run, unresolved=list(env_out.envelope.unresolved_elements),
+                site_kw: dict = {}
+                if sd is not None:
+                    from app.sitedata import apply as SDA
+                    site_kw = dict(terrain_label=sdl_label if lidar_used else "", supplied_contours=SDA.supplied_contours(sd) if lidar_used else None,
+                                   contour_source=(f"SUPPLIED {sd.lidar.contours_file}" if (lidar_used and sd.lidar.contours) else ""),
+                                   contour_interval_m=sd.lidar.interval_m if lidar_used else None, contour_major_m=sd.lidar.major_interval_m if lidar_used else None,
+                                   byda=SDA.byda_panel(sd, run_date), site_sources=rep.facts.get("site_data", {}).get("sources", []) or [],
+                                   boundary_source=sd.boundary.source_label if boundary_used else "",
+                                   terrain_datum=(sd.lidar.status.vertical_datum if (lidar_used and sd.lidar.status) else ""),
+                                   terrain_accuracy_text=(sd.lidar.status.accuracy_text if (lidar_used and sd.lidar.status) else ""))
+                    if env_out is None or not any(sg.is_front for sg in lot.segments):
+                        site_kw["esc_unavailable_reason"] = ("NO FRONT BOUNDARY, ENVELOPE OR DRIVEWAY IS IDENTIFIED FOR THIS LOT (NO ROAD OR ZONING DATA), SO NO ACCESS OR WORKS AREA EXISTS "
+                                                              "TO PLACE CONTROLS AGAINST AND NONE IS INVENTED. THE ESCP IS TO BE PREPARED AGAINST THE ACTUAL WORKS")
+                pin = PlansetInput(lot=lot_pl, development_type=dev, project_title=rr.project_title, drawn_by="JCESITE", council_name=council, driveway=env_out.driveway if env_out is not None else None,
+                                   driveway_checks=list(env_out.checks) if env_out is not None else [], services=sa4.to_cad_services() if sa4 is not None else [],
+                                   rwt=sa4.to_cad_rwt() if sa4 is not None else None, terrain=R.get("SA3"), survey_points=pts, dem_fetch=dem,
+                                   levels_accuracy_m=sd.vertical_accuracy_m if lidar_used else getattr(args, "levels_accuracy_m", None),
+                                   ffl_value=ffl_value if ffl_lab else None, ffl_label=ffl_lab,
+                                   imagery=provider_from_env("NSW"), esc_runner=esc_run, unresolved=list(env_out.envelope.unresolved_elements) if env_out is not None else [],
                                    address=args.address or "", cadastre_fetch=cad_fetch,
-                                   rules=list((raw_rules.get("rules", []) if isinstance(raw_rules, dict) else raw_rules) or []))
+                                   rules=list((raw_rules.get("rules", []) if isinstance(raw_rules, dict) else raw_rules) or []),
+                                   **site_kw)
                 res = build_planset(pin, out, "planset", style=getattr(args, "planset_style", "legacy"),
                                     only=[x for x in (getattr(args, "planset_sheets", None) or "").split(",") if x.strip()] or None)
                 rep.add("SA5 plan set", OK, f"{len(res['sheets'])} sheets; font {res['font']}; DXF audit errors {res['dxf_stats'].get('audit_errors')}", [res["pdf"], res["dxf"]])
@@ -577,7 +731,8 @@ def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4) -> dict | None:
     if t3 is not None:
         tin = t3.tin
         cv["terrain"] = {"source": prov.get("source") or t3.source, "points": prov.get("points"), "min_z": tin.min_z, "max_z": tin.max_z,
-                         "copyright": prov.get("copyright", ""), "dem_5m": "5M" in str(prov.get("source", "")).upper(),
+                         "copyright": prov.get("copyright", ""), "dem_5m": "5M" in str(prov.get("source", "")).upper() and prov.get("kind") != "lidar",
+                         "lidar": prov.get("kind") == "lidar", "label": prov.get("label") or "", "points_read": prov.get("points_read"), "datum": prov.get("datum", ""),
                          "accuracy_text": (f"{t3.vertical_accuracy_m:g} m ({prov.get('vertical_accuracy_source', 'stated')})" if t3.vertical_accuracy_m is not None else "Unknown")}
         if t3.cut_fill is not None:
             cv["earthworks"] = t3.cut_fill.model_dump()
@@ -588,6 +743,14 @@ def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4) -> dict | None:
     if sa4 is not None:
         cv["services"] = {"assets": len(sa4.assets), "connections": len(sa4.connections),
                           "rwt_text": (f"{sa4.rwt.tank_volume_l} L tank (unverified)" if getattr(sa4, "rwt", None) is not None and hasattr(sa4.rwt, "tank_volume_l") else None)}
+    sdr = facts.get("site_data")
+    if sdr:
+        cv.setdefault("services", {"assets": 0, "connections": 0, "rwt_text": None})
+        b_ = sdr.get("byda") or {}
+        pan = b_.get("panel") or {}
+        cv["site_data"] = {"sources": sdr.get("sources", []), "boundary": sdr.get("boundary"), "lidar": sdr.get("lidar"), "missing": sdr.get("missing", []),
+                           "warnings": sdr.get("warnings", []), "run_date": sdr.get("run_date"), "byda": {"headline": pan.get("headline"), "lines": pan.get("lines", []),
+                           "validity_state": pan.get("validity_state"), "job_no": b_.get("job_no"), "owners": b_.get("owners", []), "draft_features": len(b_.get("draft_features", []))} if pan else None}
     return cv or None
 
 
@@ -602,6 +765,13 @@ def _finish(rep: Report, out: Path) -> Report:
     if f.get("lotplan"):
         lines.append(f"- Lot: {f['lotplan']}, {f.get('lga')}, zone {f.get('zone') or 'UNRESOLVED'}, {f.get('area_m2', 0):.0f} m2 calculated "
                      f"(registered {f.get('area_registered') or 'n/a'}); SA1 flags {f.get('flags') or 'none'}")
+    sdr = f.get("site_data")
+    if sdr:
+        bd, ld, by = sdr.get("boundary") or {}, sdr.get("lidar") or {}, sdr.get("byda") or {}
+        lines.append(f"- Site data folder: `{sdr.get('folder')}` (run date {sdr.get('run_date')}); boundary {bd.get('label') or 'NOT SUPPLIED'}"
+                     + (" (used as the subject lot)" if bd.get("used_as_subject_lot") else "") + f"; terrain {ld.get('label') or 'NOT SUPPLIED'}; "
+                     + (((by.get("panel") or {}).get("headline") or "BYDA status not read") if by else "BYDA NOT SUPPLIED")
+                     + ("; missing: " + "; ".join(sdr["missing"]) if sdr.get("missing") else ""))
     lines += ["", "| # | Step | Status | Detail |", "|---|---|---|---|"]
     lines += [f"| {i} | {s.name} | {s.status} | {s.detail.replace('|', '/')} |" for i, s in enumerate(rep.steps, 1)]
     lines += ["", "## Files", *[f"- `{x}`" for s in rep.steps for x in s.files], "- `run_summary.md`, `run_steps.json`", "",
@@ -642,6 +812,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--acknowledge", action="store_true", help="operator confirms the nine export acknowledgements (needed for DXF/PDF)")
     p.add_argument("--profile", help="JurisdictionProfile JSON (custom municipality: units, CRS, locale, vehicles, cadastre source)")
     p.add_argument("--parcel", help="CustomParcelRequest JSON (GeoJSON/DXF/coordinates/traverse) used when the profile's cadastre_source is 'custom'")
+    p.add_argument("--site-data", metavar="DIR", help="site data folder written by the data collector (lot_boundary.geojson, LiDAR/, BYDA/; docs/14-site-data-import.md). "
+                   "Supplies the subject lot when SA1 returns none, LiDAR levels and contours instead of the NSW 5 m DEM, and the BYDA status")
+    p.add_argument("--use-site-boundary", action="store_true", help="with --site-data: use the collector boundary as the subject lot even when SA1 also returns a lot (areas are compared and a difference over 2 percent is flagged)")
+    p.add_argument("--run-date", help="date of the run, DD/MM/YYYY or YYYY-MM-DD (default today); BYDA enquiry validity is checked against it")
     p.add_argument("--scale", type=int, default=200)
     p.add_argument("--planset", action="store_true", help="also write the multi-sheet civil plan set planset.pdf / planset.dxf")
     p.add_argument("--planset-only", action="store_true", help="with --planset: stop after the plan set (skip SA6 scene and SA9 constraints)")

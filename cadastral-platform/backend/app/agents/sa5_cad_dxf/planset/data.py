@@ -64,6 +64,18 @@ class PlansetInput:
     job: str = ""                                                # job number for the reference-style drawing number (JCE-{job}-CV-1xxx); empty shows XXX
     cadastre_fetch: Callable[[Polygon], Any] | None = None       # window (MGA polygon) -> CadastreWindow: lots in and around the viewport, so the DCDB fills it edge to edge
     rules: list = field(default_factory=list)                    # requirements-resolver / --rules-json entries (setbacks etc.) cited on the general notes sheet
+    # ---- site data folder (data collector); all empty for a run without --site-data, which then behaves exactly as before
+    terrain_label: str = ""                                      # e.g. "2022 LIDAR 1 m DEM (ELVIS), +/-0.30 m", built from lidar_status.md; empty = the NSW 5 m DEM
+    terrain_datum: str = ""                                      # vertical datum as stated by the supplier, e.g. "AHD71 (AUSGeoid2020)"
+    terrain_accuracy_text: str = ""                              # the supplier's accuracy statement
+    supplied_contours: list | None = None                        # [(rl, major, (n, 2) array)] drawn instead of contours regenerated from the levels
+    contour_source: str = ""                                     # e.g. "SUPPLIED contours_1m.geojson"
+    contour_interval_m: float | None = None
+    contour_major_m: float | None = None
+    byda: Any = None                                             # sitedata.apply.BydaPanel: BYDA status shown on C100 and C310 (no service is ever drawn from it)
+    site_sources: list = field(default_factory=list)             # "Site data sources" rows (dicts) listed on the cover
+    esc_unavailable_reason: str = ""                             # when set, the SA10 ESC layout is not run and C500 says why (no frontage, envelope or driveway: nothing is assumed)
+    boundary_source: str = ""                                    # e.g. "SITE DATA COLLECTOR: lot_boundary.geojson, Lot 143 DP753851 ..." when the collector boundary is the subject lot
 
 
 @dataclass
@@ -125,7 +137,26 @@ class Site:
     cad_cache: list = field(default_factory=list)        # [(window Polygon, complete, note)] of the cadastre windows already fetched
     cad_complete: bool | None = None                     # None = no window fetch hook, True = every window fetched in full, False = a window came back partial or failed
     cad_note: str = ""
+    contour_label_policy: str | None = None              # "major_only": label only the major (index) contours (dense supplied contour sets)
     view_twist: float | None = None                      # set-wide plan view twist (degrees counter-clockwise), decided once from the lot
+
+    @property
+    def dem_label(self) -> str:
+        """The terrain basis wording: the supplier-derived label for a site data run, else the NSW 5 m DEM."""
+        return self.inp.terrain_label or "5 m DEM"
+
+    @property
+    def dem_note(self) -> str:
+        return f"INDICATIVE, DERIVED FROM {self.dem_label}; DETAIL SURVEY REQUIRED"
+
+    @property
+    def dem_note_ref(self) -> str:
+        return f"INDICATIVE, DERIVED FROM {self.dem_label}"
+
+    @property
+    def accuracy_sentence(self) -> str:
+        return ("VERTICAL ACCURACY AS STATED BY THE DATA SUPPLIER: " + (self.inp.terrain_accuracy_text or "NOT STATED") if self.inp.terrain_label
+                else "VERTICAL ACCURACY IS NOT STATED BY THE DATA SERVICE")
 
     @property
     def zone(self) -> str:
@@ -256,7 +287,7 @@ def build_site(inp: PlansetInput) -> Site:
         V = np.frombuffer(base64.b64decode(t.vertices_f64_b64), "<f8").reshape(-1, 3)
         T = np.frombuffer(base64.b64decode(t.triangles_u32_b64), "<u4").reshape(-1, 3)
         tin = Tin(V, T)
-        tin_src = "SA3 TIN from NSW 5 m DEM"
+        tin_src = "SA3 TIN from " + (inp.terrain_label or "NSW 5 m DEM")
     spots = [tuple(p) for p in inp.survey_points]
     big = lot.area > 20000
     site = Site(inp, lot, nb, env, fp, src, lab, None, "", cl, dpoly, xo, tp, tin, tin_src, spots, None, None, None, None, cites, dev,
@@ -279,7 +310,7 @@ def build_site(inp: PlansetInput) -> Site:
             kw = inp.dem_fetch(ref)
             if kw and len(kw.get("points", [])) >= 6:
                 t2, sv = _tin_from_survey(kw, srid, ref)
-                site.tin, site.tin_source = t2, "5 m DEM sampled over the plan window"
+                site.tin, site.tin_source = t2, f"{inp.terrain_label or '5 m DEM'} sampled over the plan window"
                 site.spots = [tuple(p) for p in kw["points"]]
         except Exception as ex:  # noqa: BLE001
             notes.append(f"Local DEM for plan window unavailable ({type(ex).__name__}); using the lot-wide SA3 TIN.")
@@ -331,6 +362,29 @@ def _design(site: Site) -> None:
         site.notes.append(f"Earthworks quantities not computed ({type(ex).__name__}: {ex})")
 
 
+def _supplied_contours(lines, box_xy) -> list:
+    """Contour objects for the supplied lines inside ``box_xy`` (x0, y0, x1, y1); lines crossing the box edge are clipped, never extended."""
+    from shapely.geometry import LineString as _LS
+    bx = box(*box_xy)
+    out = []
+    for rl, major, coords in lines:
+        a = np.asarray(coords, float)
+        if len(a) < 2:
+            continue
+        mn, mx = a.min(0), a.max(0)
+        if mx[0] < box_xy[0] or mn[0] > box_xy[2] or mx[1] < box_xy[1] or mn[1] > box_xy[3]:
+            continue
+        if mn[0] >= box_xy[0] and mn[1] >= box_xy[1] and mx[0] <= box_xy[2] and mx[1] <= box_xy[3]:
+            pieces = [a]
+        else:
+            g = _LS(a).intersection(bx)
+            pieces = [np.array(x.coords) for x in (g.geoms if hasattr(g, "geoms") else [g]) if x.geom_type == "LineString" and len(x.coords) >= 2]
+        for pc in pieces:
+            closed = bool(np.allclose(pc[0], pc[-1]) and len(pc) > 3)
+            out.append(K.Contour(float(rl), [(float(x), float(y)) for x, y in pc], closed, bool(major)))
+    return out
+
+
 def contour_sets(site: Site, window: tuple[float, float, float, float]) -> None:
     """Existing and proposed contours over the plan window (shared interval)."""
     tin = site.tin
@@ -343,7 +397,12 @@ def contour_sets(site: Site, window: tuple[float, float, float, float]) -> None:
     relief = float(zs.max() - zs.min())
     site.interval = K.pick_interval(relief, 0.5)
     T = tin.triangles.astype(int)
-    site.ex_cont = K.contours_from_mesh(V, T, site.interval, zrange=(float(V[:, 2].min()), float(V[:, 2].max())))
+    if site.inp.supplied_contours:                                   # contours supplied with the site data (LiDAR): used as given, clipped to the window, not smoothed
+        site.interval = site.inp.contour_interval_m or site.interval
+        site.ex_cont = _supplied_contours(site.inp.supplied_contours, (x0 - 20, y0 - 20, x1 + 20, y1 + 20))
+        site.contour_label_policy = "major_only" if len(site.ex_cont) > 40 else None
+    else:
+        site.ex_cont = K.contours_from_mesh(V, T, site.interval, zrange=(float(V[:, 2].min()), float(V[:, 2].max())))
     site.pr_cont = []
     if site.surf is not None and site.pad is not None:
         b = site.pad.buffer(35).bounds

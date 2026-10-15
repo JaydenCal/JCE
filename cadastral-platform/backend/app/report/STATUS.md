@@ -51,3 +51,10 @@ constraints_report.pdf/json; `scripts/run_site.py --report` also writes site_rep
 - Aerial fetch is retried once; a failed fetch shows a vector-only figure with a note.
 - Whole-lot figures for very large lots cannot zoom below the lot extent.
 - The Council requirements section is long for councils with many cited site rules (3 pages for Gunnedah).
+
+## Stage 6 (15/10/2026): site data folder import
+- `civil_section` states the terrain basis from the parsed LiDAR label (never "5 m DEM") with points used of points read, vertical accuracy (stated in lidar_status.md, or "NOT STATED"), the BYDA headline, enquiry and plans rows. Earthworks and driveway read "Not calculated" or "No driveway was designed for this run" when no design exists.
+- `site_page` shows "Boundary source" (collector file) or "Boundary check" (SA1 against collector, flag over 2 percent).
+- `sections_ex.site_sources_block` adds the "SITE DATA SOURCES" table (item, source file, date, accuracy and datum, status) and a "Not supplied" line to the data sources and limitations page. The caveat text is conditional on LiDAR.
+- Inputs travel in `Sa9Input.civil["site_data"]` (built by `run_site._civil_summary`); a run without `--site-data` has no such key and its pages are unchanged.
+- Tests: tests/test_sitedata.py (report wording against a synthetic 21 ha folder).

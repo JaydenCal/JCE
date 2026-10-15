@@ -473,6 +473,13 @@ def site_page(ctx: Ctx) -> list:
             ("Zone", zone_text(ctx) + (" (from the NSW LEP zoning layer)" if ctx.zone else "")),
             ("Site area", fmt.area(m.get("area_m2")) + " calculated from the boundary" + (f"; registered area {fmt.area(m['area_registered'])}" if m.get("area_registered") else "; registered area not available")),
             ("Frontage", frontage_text(ctx))]
+    sdb = ((ev.get("site_data") or {}).get("boundary")) or {}
+    if sdb.get("used_as_subject_lot"):
+        rows.insert(4, ("Boundary source", fmt.clean(sdb.get("label", "")) + (f"; stated area {sdb['stated_area_ha']:.2f} ha, computed {sdb['computed_area_ha']:.2f} ha" if sdb.get("stated_area_ha") else "")
+                        + ("; AREA DIFFERENCE OVER 2 PERCENT, CHECK" if sdb.get("area_flag") else "") + ". Not a survey; no road, adjoining lot or zoning data was queried."))
+    elif sdb.get("comparison_with_sa1"):
+        cmp_ = sdb["comparison_with_sa1"]
+        rows.insert(4, ("Boundary check", f"Collector boundary {cmp_['collector_area_m2']:,.0f} m2 against cadastre lot {cmp_['sa1_area_m2']:,.0f} m2 ({cmp_['difference_pct']:+.2f} percent)" + ("; DIFFERENCE OVER 2 PERCENT, CHECK BOTH" if cmp_["flag"] else "")))
     for key, lab in (("nsw_lot_size_map", "Minimum lot size"), ("nsw_fsr_map", "Floor space ratio"), ("nsw_height_map", "Maximum height")):
         v = control_value(ctx.findings, key)
         f = ctx.f(key)
@@ -740,22 +747,27 @@ def civil_section(ctx: Ctx) -> list | None:
     fl.append(Spacer(1, 2 * mm))
     tr = cv.get("terrain")
     if tr:
-        rows = [("Source", tr.get("source", "-")), ("Points sampled", str(tr.get("points", "-"))),
+        rows = [("Source", tr.get("source", "-")), *([("Terrain basis", tr["label"])] if tr.get("lidar") and tr.get("label") else []),
+                ("Points sampled", (f"{tr.get('points'):,} of {tr.get('points_read'):,} read (thinned for the lot size)" if tr.get("points_read") and tr.get("points") and tr.get("points_read") != tr.get("points") else str(tr.get("points", "-")))),
                 ("Ground range", f"RL {tr['min_z']:.1f} to {tr['max_z']:.1f} m AHD ({tr['max_z'] - tr['min_z']:.1f} m relief across the lot)" if tr.get("min_z") is not None else "-"),
                 ("Vertical accuracy", ("ASSUMED / PLATFORM DEFAULT: " if "placeholder" in str(tr.get("accuracy_text", "")).lower() else "") + str(tr.get("accuracy_text", "Unknown")))]
         fl += [P("Terrain", "h2"), kv_table(rows)]
         if tr.get("dem_5m"):
             fl.append(Spacer(1, 1.5 * mm))
             fl.append(callout("The 5 m DEM is derived from stereo imagery and is too coarse for detailed cut and fill on a residential lot. Commission a detail survey before relying on levels or earthworks quantities.", "gold"))
+        elif tr.get("lidar"):
+            fl.append(Spacer(1, 1.5 * mm))
+            fl.append(callout(f"Levels and contours come from the {fmt.clean(tr.get('label', 'supplied LiDAR'))}. This is not a survey, and features smaller than the grid are not resolved. "
+                              "Commission a detail survey before relying on levels or earthworks quantities for design.", "gold"))
     ew = cv.get("earthworks")
     fl.append(P("Earthworks", "h2"))
     if ew:
         rows = [("Cut", f"{ew['cut_volume_m3']:.0f} m³ bank over {ew['cut_area_m2']:.0f} m²"), ("Fill", f"{ew['fill_volume_m3']:.0f} m³ bank over {ew['fill_area_m2']:.0f} m²"),
                 ("Net", f"{ew['net_volume_m3']:+.0f} m³ (positive = export)"), ("Topsoil strip", f"{ew['topsoil_strip_m3']:.0f} m³"),
                 ("Uncertainty", f"plus or minus {ew['volume_uncertainty_m3']:.0f} m³")]
-        fl += [kv_table(rows), P("Cut and fill volumes are indicative estimates from third-party terrain data (5 m DEM) and must not be used for pricing or earthworks without independent verification.", "muted")]
+        fl += [kv_table(rows), P("Cut and fill volumes are indicative estimates from third-party terrain data (" + ((tr or {}).get("label") or "5 m DEM") + ") and must not be used for pricing or earthworks without independent verification.", "muted")]
     else:
-        fl.append(P("Not calculated: no earthworks design was supplied and the terrain model is a coarse 5 m DEM.", "body"))
+        fl.append(P("Not calculated: no earthworks design was supplied" + (" (no building pad or driveway was designed for this lot)." if (tr or {}).get("lidar") else " and the terrain model is a coarse 5 m DEM."), "body"))
     dv = cv.get("driveway")
     fl.append(P("Driveway and crossover", "h2"))
     if dv:
@@ -773,9 +785,14 @@ def civil_section(ctx: Ctx) -> list | None:
         fl.append(P("No driveway was designed for this run.", "body"))
     sv = cv.get("services") or {}
     fl.append(P("Services and rainwater tank", "h2"))
-    rows = [("Existing services", f"{sv.get('assets', 0)} service assets entered" + ("; no BYDA plans were supplied, so existing underground services are unknown" if not sv.get("assets") else "; all unverified")),
+    byda_ = ((cv.get("site_data") or {}).get("byda")) or {}
+    rows = [("Existing services", (f"{sv.get('assets', 0)} service assets entered; " + fmt.clean(byda_["headline"]) + "." if byda_.get("headline") else
+                                   f"{sv.get('assets', 0)} service assets entered" + ("; no BYDA plans were supplied, so existing underground services are unknown" if not sv.get("assets") else "; all unverified"))),
             ("Proposed connections", f"{sv.get('connections', 0)}"),
             ("Rainwater tank", sv.get("rwt_text") or "Not sized in this run")]
+    if byda_.get("headline"):
+        rows.insert(1, ("BYDA enquiry", "; ".join(fmt.clean(x) for x in byda_.get("lines", []) if x.startswith(("ENQUIRY", "BYDA ENQUIRY")))))
+        rows.insert(2, ("BYDA plans", "Asset owner plans are for this project only and are not drawn on any sheet. No service has been traced from them." + (f" {byda_.get('draft_features')} draft vector feature(s) are held as unverified in the run file and are not drawn." if byda_.get("draft_features") else "")))
     fl += [kv_table(rows), P("Service positions and depths are indicative. Obtain current BYDA plans and physically locate services (potholing) before any excavation.", "muted")]
     return fl
 

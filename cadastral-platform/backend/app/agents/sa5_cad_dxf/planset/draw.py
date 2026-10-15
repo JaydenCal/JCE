@@ -168,7 +168,7 @@ def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = Fa
         lw = (0.28 if c.index else 0.13) if which == "ex" else (0.4 if c.index else 0.2)
         v.geom(g, layer, lw=lw, color=col if which == "ex" else None, dash=None)
         n += 1
-        if labels and (c.index or s.interval >= 1.0 or which == "ex" and len(conts) <= 8):
+        if labels and (c.index or (s.interval >= 1.0 and getattr(s, "contour_label_policy", None) != "major_only") or which == "ex" and len(conts) <= 8):
             vis = ln.intersection(win.buffer(-8 / v.k))
             if vis.is_empty:
                 continue

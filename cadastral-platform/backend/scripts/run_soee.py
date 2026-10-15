@@ -47,8 +47,10 @@ def _load_run_site():
     return mod
 
 
-def run_pipeline(run_dir: Path, rules_json: str, variant: str, development_type: str = "dwelling_house") -> dict:
-    """Run the offline Lot 2 pipeline into ``run_dir`` and return the cached inputs (works dict, constraints, run steps)."""
+def run_pipeline(run_dir: Path, rules_json: str, variant: str, development_type: str = "dwelling_house", site_data: str | None = None, lotplan: str | None = None,
+                 run_date: str | None = None, use_site_boundary: bool = False) -> dict:
+    """Run the pipeline into ``run_dir`` and return the cached inputs (works dict, constraints, run steps).  Default: the offline Lot 2 fixture.  With
+    ``site_data`` (a collector folder, docs/14-site-data-import.md) the same run_site.py flags are used as for scripts/run_site.py --site-data DIR and nothing is offline."""
     import app.agents.sa5_cad_dxf.planset as PS
     from app.pack.soee_site import extract_site_works
 
@@ -66,8 +68,17 @@ def run_pipeline(run_dir: Path, rules_json: str, variant: str, development_type:
 
     PS.build_planset = wrap
     try:
-        args = ["--offline", "lot2", "--lotplan", "2//DP227508", "--development-type", development_type, "--levels", "nsw", "--acknowledge", "--report",
-                "--planset", "--planset-style", "ref", "--out", str(run_dir)]
+        if site_data:
+            args = ["--site-data", site_data, "--development-type", development_type, "--acknowledge", "--report", "--planset", "--planset-style", "ref", "--out", str(run_dir)]
+            if lotplan:
+                args += ["--lotplan", lotplan]
+            if run_date:
+                args += ["--run-date", run_date]
+            if use_site_boundary:
+                args += ["--use-site-boundary"]
+        else:
+            args = ["--offline", "lot2", "--lotplan", "2//DP227508", "--development-type", development_type, "--levels", "nsw", "--acknowledge", "--report",
+                    "--planset", "--planset-style", "ref", "--out", str(run_dir)]
         if rules_json:
             args += ["--rules-json", rules_json]
         rc = rs.main(args)
@@ -90,14 +101,21 @@ def load_cache(run_dir: Path) -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default="out/soee")
-    ap.add_argument("--rules-json", default=DEFAULT_RULES if Path(DEFAULT_RULES).exists() else None)
+    ap.add_argument("--rules-json", default=None, help="user entered setback rules JSON (default for the offline Lot 2 fixture only; never defaulted for a site data run)")
     ap.add_argument("--variant", choices=["fixture", "all_not_checked"], default="fixture")
     ap.add_argument("--from-run", help="reuse the cached inputs (soee_inputs.json, constraints_report.json, run_steps.json) of an earlier run directory")
     ap.add_argument("--job", default="", help="job number for the document and drawing numbers (default XXX)")
     ap.add_argument("--revision", default="A")
     ap.add_argument("--date", help="document date YYYY-MM-DD (default today)")
     ap.add_argument("--no-png", action="store_true")
+    ap.add_argument("--site-data", help="site data folder written by the data collector (docs/14-site-data-import.md); runs the real pipeline on it instead of the offline Lot 2 fixture")
+    ap.add_argument("--lotplan", help="lot//plan for a site data run (for example 143//DP753851)")
+    ap.add_argument("--development-type", default="dwelling_house")
+    ap.add_argument("--run-date", help="run date DD/MM/YYYY or YYYY-MM-DD for a site data run (BYDA validity is compared with it); default today")
+    ap.add_argument("--use-site-boundary", action="store_true", help="use the site data boundary as the subject lot even when the cadastre returns a lot")
     a = ap.parse_args(argv)
+    if a.rules_json is None and not a.site_data and Path(DEFAULT_RULES).exists():
+        a.rules_json = DEFAULT_RULES
 
     from app.pack import soee_site as S
     from app.pack import soee_site_out as O
@@ -107,7 +125,7 @@ def main(argv: list[str] | None = None) -> int:
     run_dir = Path(a.from_run) if a.from_run else out / "run"
     if not a.from_run:
         run_dir.mkdir(parents=True, exist_ok=True)
-        cache = run_pipeline(run_dir, a.rules_json, a.variant)
+        cache = run_pipeline(run_dir, a.rules_json, a.variant, a.development_type, a.site_data, a.lotplan, a.run_date, a.use_site_boundary)
     else:
         cache = load_cache(run_dir)
     cp = run_dir / "constraints_report.json"

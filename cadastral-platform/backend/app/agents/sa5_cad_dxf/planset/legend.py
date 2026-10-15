@@ -104,7 +104,7 @@ def legend_height(cols: int, pitch: float = 11.0) -> float:
     return 12.0 + math.ceil(len(ENTRIES) / cols) * pitch
 
 
-def draw_legend(v: View, x0: float, y1: float, w: float, cols: int = 3, pitch: float = 11.0, title: str = "LEGEND") -> float:
+def draw_legend(v: View, x0: float, y1: float, w: float, cols: int = 3, pitch: float = 11.0, title: str = "LEGEND", contour_label: str | None = None, boundary_label: str | None = None) -> float:
     """Boxed legend with its top-left at (x0, y1) in paper mm; returns the y of the bottom of the box."""
     P = ST.Paper(v)
     rows = math.ceil(len(ENTRIES) / cols)
@@ -114,6 +114,10 @@ def draw_legend(v: View, x0: float, y1: float, w: float, cols: int = 3, pitch: f
     P.text(x0 + 4.0, y1 - 3.0, title, 4.0, "TOP_LEFT", bold=True, layer="C-ANNO-NOTE")
     cw = (w - 8.0) / cols
     for i, (fn, label) in enumerate(ENTRIES):
+        if fn is _contour and contour_label:
+            label = contour_label
+        if fn is _boundary and boundary_label:
+            label = boundary_label
         c, r = divmod(i, rows)
         x = x0 + 4.0 + c * cw
         y = y1 - 15.0 - r * pitch - SH / 2 + 3.0

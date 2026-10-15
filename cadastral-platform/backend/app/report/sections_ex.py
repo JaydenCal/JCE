@@ -113,6 +113,34 @@ def glossary(ctx: Ctx) -> list:
     return fl
 
 
+# ------------------------------------------------------------------ Site data sources table (site data folder import)
+def site_sources_block(ctx: Ctx) -> list:
+    """"Site data sources": one row per item taken from the site data folder, with its file, date, accuracy and status in this run.  Empty without site data."""
+    sdd = (ctx.inp.civil or {}).get("site_data") or {}
+    rows_in = sdd.get("sources") or []
+    if not rows_in:
+        return []
+    rows = []
+    for r in rows_in:
+        item = [P(f"<b>{fmt.esc(fmt.clean(r['item']))}</b>", "cell", raw=True)]
+        if r.get("dataset"):
+            item.append(P(fmt.esc(fmt.clean(r["dataset"])), "cellm", raw=True))
+        stat = [P(f"<b>{fmt.esc(fmt.clean(r['status']))}</b>", "cell", raw=True)]
+        if r.get("note"):
+            stat.append(P(fmt.esc(fmt.clean(r["note"])), "cellm", raw=True))
+        acc = fmt.esc(fmt.clean(r.get("accuracy") or "NOT STATED"))
+        crs = f" {fmt.esc(fmt.clean(r['crs']))}" if r.get("crs") and r["crs"] != "NOT APPLICABLE" else ""
+        rows.append([item, P(fmt.esc(fmt.clean(r.get("file") or "NOT SUPPLIED")), "cellm", raw=True), P(fmt.esc(fmt.clean(r.get("date") or "NOT STATED")), "cell", raw=True),
+                     [P(acc, "cellm", raw=True)] + ([P(crs.strip(), "cellm", raw=True)] if crs else []), stat])
+    out = [Spacer(1, 3.5 * mm), P("SITE DATA SOURCES", "label"), KS(2),
+           P("Items supplied in the site data folder written by the data collector. Status is for this run: USED, NOT USED, MISSING, FLAGGED or DRAFT. A missing item is not checked and is never treated as clear.", "muted"),
+           grid_table(["Item", "Source file", "Date", "Accuracy and datum", "Status"], rows, [40 * mm, 30 * mm, 22 * mm, CW - 40 * mm - 30 * mm - 22 * mm - 46 * mm, 46 * mm], zebra=False)]
+    miss = sdd.get("missing") or []
+    if miss:
+        out.append(P("Not supplied: " + "; ".join(fmt.esc(fmt.clean(x)) for x in miss) + ".", "muted", raw=True))
+    return out
+
+
 # ------------------------------------------------------------------ Data sources and limitations
 def data_limits(ctx: Ctx) -> list:
     m = ctx.meta
@@ -143,8 +171,12 @@ def data_limits(ctx: Ctx) -> list:
     else:
         ext.append(["Aerial imagery", "DATA NOT AVAILABLE for this run (vector figures only).", "-", ""])
     flags = [x for x in (m.get("flags") or []) if x]
-    ext.append(["Lot boundary (cadastre)", "Boundary geometry supplied to this run" + (". OFFLINE FIXTURE, not live data." if "offline_fixture" in flags else ".")
-                + " Publisher and date: " + EX.SOURCE_NOT_RECORDED + ". Indicative, not a survey.", "-", ""])
+    sdd = (ctx.inp.civil or {}).get("site_data") or {}
+    if (sdd.get("boundary") or {}).get("used_as_subject_lot"):
+        ext.append(["Lot boundary (site data)", fmt.clean(sdd["boundary"].get("label", "")) + ". Collector boundary, not a survey; no road, adjoining lot or zoning data was queried. Date: not stated in the file.", "-", ""])
+    else:
+        ext.append(["Lot boundary (cadastre)", "Boundary geometry supplied to this run" + (". OFFLINE FIXTURE, not live data." if "offline_fixture" in flags else ".")
+                    + " Publisher and date: " + EX.SOURCE_NOT_RECORDED + ". Indicative, not a survey.", "-", ""])
     tr = (ctx.inp.civil or {}).get("terrain")
     if tr:
         ext.append(["Ground levels (DEM)", fmt.clean(tr.get("source", EX.SOURCE_NOT_RECORDED)) + ". " + fmt.clean(tr.get("copyright", "")), "-", ""])
@@ -157,6 +189,7 @@ def data_limits(ctx: Ctx) -> list:
         ext.append(["Council requirements", "DATA NOT AVAILABLE: no cited requirements were loaded for this council.", "-", ""])
     fl += [Spacer(1, 2), grid_table(["Other sources", "Attribution", "Date", "Licence note"], [[P(a, "cell"), P(b, "cellm"), P(c, "cell"), P(d, "cellm")] for a, b, c, d in ext],
                                     [38 * mm, CW - 38 * mm - 22 * mm - 38 * mm, 22 * mm, 38 * mm], zebra=False)]
+    fl += site_sources_block(ctx)
     fl += [Spacer(1, 2), P(f"Report date: {fmt.hdate(m.get('date'), 'DATA NOT AVAILABLE')}. Run flags: {', '.join(x.replace('_', ' ').upper() for x in flags) if flags else 'none'}. "
                            "Development type is recorded only as a run setting used to select requirement sets; no building has been assessed.", "muted")]
 
@@ -168,8 +201,11 @@ def data_limits(ctx: Ctx) -> list:
                  "Figures show the lot over aerial imagery where available, with mapped features clipped to the figure window."])
 
     fl += [Spacer(1, 3.5 * mm), P("C. RESOLUTION AND CURRENCY CAVEATS", "label"), KS(2)]
-    cav = ["Ground levels come from a 5 m DEM where one was loaded. A 5 m grid is coarse for a small lot and cannot show small level changes. "
-           "Commission a detail survey before relying on any level.",
+    _tr = (ctx.inp.civil or {}).get("terrain") or {}
+    cav = ([f"Ground levels come from the {fmt.clean(_tr.get('label', 'supplied LiDAR'))}. It is not a survey: the stated accuracy is the supplier's, features smaller than the grid are not resolved, "
+            "and changes to the ground since capture are not shown. Commission a detail survey before relying on any level for design."] if _tr.get("lidar") else
+           ["Ground levels come from a 5 m DEM where one was loaded. A 5 m grid is coarse for a small lot and cannot show small level changes. "
+            "Commission a detail survey before relying on any level."]) + [
            "The aerial date is shown on each figure. Where the date is not published it is not assumed, and the image may be years old.",
            "Cadastral boundaries are indicative. Mapped features have their own positional accuracy, which is not stated in the data loaded."]
     for f in ctx.findings:

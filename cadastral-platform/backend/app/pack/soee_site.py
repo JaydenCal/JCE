@@ -46,7 +46,8 @@ DOC_TITLE = "STATEMENT OF ENVIRONMENTAL EFFECTS"
 T_NC, T_UNRES, T_NOTREV = "NOT CHECKED", "UNRESOLVED", "NOT REVIEWED, UNRESOLVED"
 T_DNA, T_ASSUMED, T_NA = "DATA NOT AVAILABLE", "ASSUMED / PLATFORM DEFAULT", "NOT ASSESSED"
 T_ASSUMED1 = "ASSUMED"                              # an assumption that is not a platform default value (for example that the lot is vacant)
-T_IND = "INDICATIVE, 5 m DEM"                       # a level or a value derived from the sourced 5 m digital elevation model (not an assumption)
+T_IND = "INDICATIVE, 5 m DEM"                       # a level or a value derived from the sourced digital elevation model (not an assumption); set per build from the terrain basis (site data LiDAR label)
+_DEM_LABEL: str | None = None                       # terrain basis label for a site data run (e.g. "2022 LIDAR 1 m DEM (ELVIS), +/-0.30 m"); None = the NSW 5 m DEM
 T_BLD, T_FIX = "BUILDING DESIGN BY OTHERS", "OFFLINE FIXTURE"
 OPEN_TAGS = (T_NC, T_UNRES, T_NOTREV, T_DNA, T_NA)
 
@@ -86,6 +87,8 @@ DEV_WORDS = [                                   # internal or tooling wording ->
 def T(s: Any) -> str:
     """Single text choke point: no em or en dashes, m2 and m3 written plainly, internal tool names and run wording replaced by plain wording."""
     t = fmt.clean(s).replace("²", "2").replace("³", "3").replace("’", "'").replace("‘", "'")
+    if _DEM_LABEL:                                   # site data run: the terrain basis is the supplied LiDAR, never the NSW 5 m DEM
+        t = t.replace("5 m DEM", _DEM_LABEL)
     for rx, to in DEV_WORDS:
         t = re.sub(rx, to, t)
     return t
@@ -682,6 +685,13 @@ class _Data:
         self.sel = {"zone": self.lot.get("zone_code") or self.meta.get("zone_code"), "lga": (self.lot.get("lga_name") or self.meta.get("lga_name") or "").title() or None}
         self.sel = {k: v for k, v in self.sel.items() if v}
         self.fixture = "offline_fixture" in (self.meta.get("flags") or []) or "offline_fixture" in (self.lot.get("flags") or [])
+        prov_ = self.facts.get("levels_provenance") or {}
+        self.sd = self.facts.get("site_data") or None                    # site data folder record (run_steps.json facts), None for a run without --site-data
+        self.lidar = prov_.get("kind") == "lidar"
+        self.dem = prov_.get("label") if self.lidar else None
+        self.sdl = (self.sd or {}).get("lidar") or {}
+        self.byda = ((self.sd or {}).get("byda") or {})
+        self.byda_panel = self.byda.get("panel") or None
 
     def r(self, key: str) -> Requirement | None:
         try:
@@ -840,7 +850,16 @@ def build_gaps(d: _Data, comp: list[dict]) -> list[dict]:
 
 # ---------------------------------------------------------------------------------------------------------------------- the build
 def build_site_soee(inp: SoeeSiteInputs) -> SiteSoee:
+    global _DEM_LABEL, T_IND
     d = _Data(inp)
+    _DEM_LABEL, T_IND = d.dem, (f"INDICATIVE, {d.dem}" if d.dem else "INDICATIVE, 5 m DEM")
+    try:
+        return _build_site_soee(inp, d)
+    finally:
+        _DEM_LABEL, T_IND = None, "INDICATIVE, 5 m DEM"
+
+
+def _build_site_soee(inp: SoeeSiteInputs, d: _Data) -> SiteSoee:
     b = _Build()
     w = d.w
     drv, ter, ew = w.get("driveway", {}), w.get("terrain", {}), w.get("earthworks", {})
@@ -899,17 +918,73 @@ def _s1(b: _Build, d: _Data, doc_no: str, gaps: list[dict]) -> None:
     b.p("The same result terms are used here as in the JCESITE site report, which this statement should be read with.", "platform:report_terms")
     terms = [([t, w_], "platform:app.report.explain.RESULT_TERMS") for t, _k, w_ in explain.RESULT_TERMS]
     terms += [(["ASSUMED", "An assumption that is not a platform default, for example that the lot is vacant. It has not been confirmed."], "platform:method"),
-              (["INDICATIVE, 5 m DEM", "A level, fall or quantity derived from the sourced 5 m digital elevation model. It is not an assumption. It is too coarse for design and is not a survey."], "platform:method"),
+              (["INDICATIVE, 5 m DEM", ("A level, fall or quantity derived from the supplied LiDAR digital elevation model, with the accuracy stated by its supplier. It is not an assumption. It is not a survey and is not a design level."
+                                      if d.lidar else "A level, fall or quantity derived from the sourced 5 m digital elevation model. It is not an assumption. It is too coarse for design and is not a survey.")], "platform:method"),
               (["NOT REVIEWED, UNRESOLVED", "A source document that could not be obtained in this run. Its content has not been read. Nothing has been assumed in its place."], "platform:method"),
               (["DATA NOT AVAILABLE", "The run holds no data for the item. It is not estimated or defaulted. The applicant or a qualified person must supply it."], "platform:method"),
               (["NOT ASSESSED", "A matter that this draft does not assess because no data bears on it. It is left to the applicant."], "platform:method")]
     b.table(["Term", "Meaning"], terms, [1.5, 3.5])
     b.h2("1.4 What this document is not")
     b.bullets([("Not certified, not checked by a qualified person and not for approval, sale, finance or construction decisions.", "platform:app.report.explain.ABOUT_IS_NOT"),
-               ("Not a survey. Lot boundaries come from the cadastre and are indicative.", "platform:app.report.explain.ABOUT_IS_NOT"),
+               (("Not a survey. The lot boundary comes from the site data folder supplied by the data collector and is indicative." if (((d.sd or {}).get("boundary") or {}).get("used_as_subject_lot")) else "Not a survey. Lot boundaries come from the cadastre and are indicative."), "platform:app.report.explain.ABOUT_IS_NOT"),
                ("Not legal advice or planning advice, and not a section 10.7 planning certificate or council property report.", "platform:app.report.explain.ABOUT_IS_NOT"),
                ("Not a complete list of constraints. Only the layers listed in section 5.11 were screened.", "platform:method"),
                (f"Site works only. {BUILDING_BY_OTHERS}.", "scope:site_works_only", T_BLD)])
+    _sd_sources_table(b, d)
+
+
+# ---- site data folder helpers (a run without --site-data never calls these)
+def _n(v) -> str:
+    return f"{v:,}" if isinstance(v, int) else "not recorded"
+
+
+def _bl(text: str, src: str, tag: str | None = None) -> tuple:
+    return (text, src, tag) if tag else (text, src)
+
+
+def _boundary_items(d: _Data) -> list[tuple]:
+    """Bullets for 2.1 stating where the lot boundary came from when it came from a site data folder (empty for a normal run)."""
+    bd = (d.sd or {}).get("boundary")
+    if not bd:
+        return []
+    out = []
+    if bd.get("used_as_subject_lot"):
+        out.append(_bl(f"Boundary source: {bd['label']}. The lot boundary was supplied by the data collector from a site data folder and used as the subject lot. It is not a survey and has not been checked against the title.", "data:run.site_data.boundary", T_UNRES))
+    else:
+        out.append(_bl(f"Boundary source: the cadastre. A boundary was also supplied in the site data folder ({bd['label']}) and was not used as the subject lot.", "data:run.site_data.boundary"))
+    if bd.get("stated_area_ha") is not None:
+        diff = bd.get("difference_pct")
+        out.append(_bl(f"The collector states an area of {bd['stated_area_ha']:g} ha. The area computed from the supplied boundary is {bd['computed_area_ha']:g} ha" + (f" ({diff:+.2f}% difference)" if diff is not None else "")
+                       + (". The difference exceeds 2% and is FLAGGED: confirm the area against the title." if bd.get("area_flag") else "."), "data:run.site_data.boundary", T_UNRES if bd.get("area_flag") else None))
+    cmp_ = bd.get("comparison_with_sa1")
+    if cmp_:
+        out.append(_bl(f"The cadastre lot area is {cmp_['sa1_area_m2']:,.0f} m2 and the collector boundary area is {cmp_['collector_area_m2']:,.0f} m2 ({cmp_['difference_pct']:+.2f}%)"
+                       + (". The difference exceeds 2%. Both boundaries must be checked against the title before any reliance." if cmp_.get("flag") else ", within the 2% tolerance."), "data:run.site_data.boundary.comparison_with_sa1", T_UNRES if cmp_.get("flag") else None))
+    return out
+
+
+def _byda_note(b: _Build, d: _Data) -> None:
+    pn = d.byda_panel
+    if not pn:
+        return
+    b.p(pn["headline"] + ". " + " ".join(ln.rstrip(".") + "." for ln in pn.get("lines", [])[:2]), "data:run.site_data.byda", T_NC)
+    b.p("Asset owner plans received through the BYDA enquiry are for that project only. They have not been traced, copied or redistributed by the platform, and no service has been drawn from them. A service may be present that is not on any plan: locate by potholing before excavation.", "data:run.site_data.byda", T_NC)
+    if (d.byda.get("draft_features") or []):
+        b.p(f"{len(d.byda['draft_features'])} vector feature(s) were supplied with the BYDA response. They are held as DRAFT, UNVERIFIED data for a later verification step, are not drawn on any sheet and are not relied on here.", "data:run.site_data.byda.draft_features", T_NC)
+
+
+def _sd_sources_table(b: _Build, d: _Data) -> None:
+    rows = (d.sd or {}).get("sources") or []
+    if not rows:
+        return
+    b.h2("1.5 Site data sources")
+    b.p("The site data folder supplied by the data collector was read as data. Each item is listed with its source file, date, stated accuracy and status in this run.", "data:run.site_data.sources")
+    b.table(["Item", "Source file", "Date", "Accuracy and datum", "Status"],
+            [([r.get("item", ""), (r.get("file") or "none") + (f" ({r['dataset']})" if r.get("dataset") else ""), r.get("date") or "not stated",
+               (r.get("accuracy") or "not stated") + (f"; {r['crs']}" if r.get("crs") else ""), r.get("status", "") + (f". {r['note'].strip('; ')}" if r.get("note") else "")], "data:run.site_data.sources") for r in rows],
+            [1.0, 1.7, 0.8, 1.4, 1.4])
+    if (d.sd or {}).get("missing"):
+        b.p("Not supplied in the site data folder: " + "; ".join(d.sd["missing"]) + ". Each is DATA NOT AVAILABLE for this run.", "data:run.site_data.missing", T_DNA)
 
 
 # ---- 2 Site description
@@ -927,6 +1002,7 @@ def _s2(b: _Build, d: _Data) -> None:
         ("Street address: not recorded in the run data.", "data:sa1.lot", T_DNA),
         (f"Area: {num(lot.get('area_m2_calculated'), 0)} m2, calculated from the cadastre (not a survey).", "data:sa1.lot.area_m2_calculated") if lot.get("area_m2_calculated") else ("Area: not recorded.", "data:sa1.lot", T_DNA),
         ("Registered (title) area: not recorded in the run data.", "data:sa1.lot.area_m2_registered", T_DNA) if lot.get("area_m2_registered") is None else (f"Registered area: {num(lot['area_m2_registered'], 0)} m2.", "data:sa1.lot.area_m2_registered"),
+        *_boundary_items(d),
         (f"Zone: {lot['zone_code']}, as returned by the cadastre and zoning service. The zone name and objectives are not in the run data (the Local Environmental Plan was not obtained).", "data:sa1.lot.zone_code") if lot.get("zone_code") else ("Zone: not returned by the zoning service.", "data:sa1.lot.zone_code", T_DNA),
     ])
     rows = []
@@ -934,19 +1010,37 @@ def _s2(b: _Build, d: _Data) -> None:
         adj = "Road frontage" + (f" ({', '.join(lot['road_names'])})" if lot.get("road_names") else "") if s["is_front"] else (s["neighbour"] or ("Adjoining land not identified in the data" if s["adjoins"] != "road" else "Road"))
         rows.append(([str(s["seq"] + 1), s["bearing_dms"], num(s["length_m"], 2), adj], f"data:sa1.lot.segments[{s['seq']}]"))
     if rows:
-        b.table(["Boundary", "Bearing", "Length (m)", "Adjoins"], rows, [0.8, 1.2, 1.0, 3.0], caption="Boundary bearings and lengths are from the cadastre and are indicative.")
+        b.table(["Boundary", "Bearing", "Length (m)", "Adjoins"], rows, [0.8, 1.2, 1.0, 3.0], caption=("Boundary bearings and lengths are from the site data folder boundary and are indicative." if (((d.sd or {}).get("boundary") or {}).get("used_as_subject_lot")) else "Boundary bearings and lengths are from the cadastre and are indicative."))
     b.h2("2.2 Existing conditions")
     if ter.get("available"):
-        b.p(f"Existing ground levels over the lot range from RL {num(ter['lot_min_m'], 2)} m to RL {num(ter['lot_max_m'], 2)} m AHD. A best fit plane to the DEM levels near the lot falls at an average of {num(ter['avg_fall_pct'], 1)}% towards the {_compass(ter['fall_bearing_deg'])} (bearing {ter['fall_bearing_deg']:.0f} degrees). The steepest gradient between adjacent DEM grid points is {num(ter['max_gradient_pct'], 1)}%.", "data:planset.terrain")
+        b.p(f"Existing ground levels over the lot range from RL {num(ter['lot_min_m'], 2)} m to RL {num(ter['lot_max_m'], 2)} m AHD. A best fit plane to the {'LiDAR' if d.lidar else 'DEM'} levels near the lot falls at an average of {num(ter['avg_fall_pct'], 1)}% towards the {_compass(ter['fall_bearing_deg'])} (bearing {ter['fall_bearing_deg']:.0f} degrees). The steepest gradient between adjacent {'levels of the thinned LiDAR surface' if d.lidar else 'DEM grid points'} is {num(ter['max_gradient_pct'], 1)}%.", "data:planset.terrain")
         prov = d.facts.get("levels_provenance") or {}
-        b.p(f"These levels come from the NSW 5 m digital elevation model (DEM; {prov.get('points', 'n/a')} points; source {T(prov.get('source', 'not recorded'))}). Copyright note from the service: {T(prov.get('copyright', 'not recorded'))}. A 5 m grid is too coarse for detailed cut and fill on a lot of this size. Levels are INDICATIVE and a detail survey is required.", "data:run.levels_provenance", T_IND)
+        if d.lidar:
+            sl = d.sdl
+            b.p(f"These levels come from the {d.dem} (dataset {T(sl.get('dataset') or 'not recorded')}; source file {T(sl.get('points_file') or 'not recorded')}; {_n(prov.get('points'))} of {_n(prov.get('points_read', prov.get('points')))} points used"
+                + (f", thinned to about one point per {sl['thinning']['cell_m']:g} m cell for the lot size" if (sl.get("thinning") or {}).get("thinned") else ", every point kept")
+                + f"). Vertical datum {T(sl.get('vertical_datum') or 'not stated')}; coordinate system {T(sl.get('crs') or 'not stated')}; received {T(sl.get('received') or 'date not stated')}. "
+                "Levels are INDICATIVE: they are not a survey, and a detail survey is required before design.", "data:run.site_data.lidar", T_IND)
+        else:
+            b.p(f"These levels come from the NSW 5 m digital elevation model (DEM; {prov.get('points', 'n/a')} points; source {T(prov.get('source', 'not recorded'))}). Copyright note from the service: {T(prov.get('copyright', 'not recorded'))}. A 5 m grid is too coarse for detailed cut and fill on a lot of this size. Levels are INDICATIVE and a detail survey is required.", "data:run.levels_provenance", T_IND)
         warn = " ".join(d.facts.get("levels_warnings") or [])
         m = re.search(r"(\d+(?:\.\d+)?) m placeholder", warn)
-        b.p("The vertical accuracy of the DEM is not stated by the data service." + (f" A placeholder accuracy of {m.group(1)} m was used in the platform earthworks calculations only, so that uncertainty is not understated. It is not a stated figure." if m else ""), "data:run.levels_warnings", T_UNRES)
+        if d.lidar:
+            sl = d.sdl
+            b.p(f"The accuracy stated by the data supplier is: {T(sl.get('accuracy_text') or 'not stated')}. It is the supplier's statement and has not been verified by the platform." + (" The platform uses the stated vertical figure in its earthworks uncertainty." if sl.get("vertical_accuracy_m") is not None else " No vertical accuracy was stated, so none is claimed."), "data:run.site_data.lidar", T_NC if sl.get("vertical_accuracy_m") is None else "")
+            fc = sl.get("fall_check") or {}
+            if fc.get("collector_bearing_deg") is not None and fc.get("platform_bearing_deg") is not None:
+                b.p(f"The data collector states a best fit plane falling at {fc['collector_grade_pct']:g}% towards bearing {fc['collector_bearing_deg']:g} degrees. The platform recomputed the fall from the levels it used as {fc['platform_grade_pct']:g}% towards bearing {fc['platform_bearing_deg']:g} degrees "
+                    f"(a difference of {fc.get('bearing_difference_deg', 0):g} degrees in bearing). Both are indicative.", "data:run.site_data.lidar.fall_check", T_IND)
+        else:
+            b.p("The vertical accuracy of the DEM is not stated by the data service." + (f" A placeholder accuracy of {m.group(1)} m was used in the platform earthworks calculations only, so that uncertainty is not understated. It is not a stated figure." if m else ""), "data:run.levels_warnings", T_UNRES)
     else:
         b.p("Existing ground levels: no survey or DEM levels were available in this run. Contours, earthworks and long sections could not be drawn.", "data:planset.terrain", T_DNA)
     b.p("Existing buildings, trees, fences and easements are not in the run data. They must be confirmed by a title search, the registered easements and a site inspection.", "planset:sheets[C100].data_missing", T_DNA)
-    b.p("Existing underground services are not in the run data. A Before You Dig Australia (BYDA) enquiry is needed. Asset owners hold the data and answer each enquiry.", "planset:sheets[C100].data_missing", T_DNA)
+    if d.byda_panel:
+        _byda_note(b, d)
+    else:
+        b.p("Existing underground services are not in the run data. A Before You Dig Australia (BYDA) enquiry is needed. Asset owners hold the data and answer each enquiry.", "planset:sheets[C100].data_missing", T_DNA)
     b.p("The lot is assumed to be vacant. This has not been confirmed by a records check or a site inspection.", "scope:site_works_only", T_ASSUMED1)
     a = d.w.get("aerial")
     if a and a.get("capture_date"):
@@ -969,7 +1063,10 @@ def _s2(b: _Build, d: _Data) -> None:
         items.append((f"Road frontage: {', '.join(lot.get('road_names') or ['road name not recorded'])}, along boundary {front['seq'] + 1}, {num(front['length_m'], 2)} m long (bearing {front['bearing_dms']}, from the cadastre).", f"data:sa1.lot.segments[{front['seq']}]"))
     else:
         items.append(("Road frontage: no front boundary was identified in the lot data.", "data:sa1.lot.segments", T_DNA))
-    items.append(("Road reserve width, pavement width and kerb position are not surveyed. The plan set shows an ASSUMED kerb line. Road pavement extent is not shown (no survey or road reserve data).", "planset:sheets[C101].data_missing", T_ASSUMED))
+    if front:
+        items.append(("Road reserve width, pavement width and kerb position are not surveyed. The plan set shows an ASSUMED kerb line. Road pavement extent is not shown (no survey or road reserve data).", "planset:sheets[C101].data_missing", T_ASSUMED))
+    else:
+        items.append(("Road reserve width, pavement width and kerb position are not in the data. No road and no kerb line is drawn on the plan set, because no front boundary was identified.", "planset:sheets[C101].data_missing", T_DNA))
     items.append(("Whether the lot is a corner allotment is not confirmed. The offline data hold only the adjoining lots, so the cadastre does not reach the edges of the plan viewports (not checked, not clear).", "planset:sheets[C100].data_missing", T_NC) if d.fixture else
                  ("Whether the lot is a corner allotment is not confirmed by a records check.", "data:sa1.lot.segments", T_UNRES))
     b.bullets(items)
@@ -1166,6 +1263,8 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
 
     b.h2("3.7 Services connections (indicative)")
     sv = w.get("services", {})
+    if d.byda_panel:
+        _byda_note(b, d)
     b.bullets([
         ("No existing water main, sewer main or junction was supplied. Existing service locations must be confirmed from council records and the BYDA response before any excavation.", "planset:sheets[C310].data_missing", T_DNA) if not sv.get("count") else
         (f"{sv['count']} service line(s) were supplied to the plan set.", "data:planset.services"),
@@ -1175,7 +1274,7 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
     ])
 
     b.h2("3.8 Site constraints shown on the plan set")
-    b.p("The plan set shows the cadastral boundaries, adjoining lots, an assumed kerb line, existing contours from the 5 m DEM and the items above. Mapped planning and hazard layers are screened in section 5 and in the JCESITE site report.", "planset:sheets[C100]")
+    b.p(("The plan set shows the cadastral boundaries, adjoining lots, an assumed kerb line, existing contours from the 5 m DEM and the items above." if any(sg["is_front"] for sg in d.lot.get("segments", [])) else "The plan set shows the lot boundary, existing contours from the 5 m DEM and the items above. No adjoining lot, road or kerb line is drawn (not in the data).")+" Mapped planning and hazard layers are screened in section 5 and in the JCESITE site report.", "planset:sheets[C100]")
     b.h2("3.9 Data gaps recorded on the plan set")
     if gaps:
         b.p(f"{_plural(len(gaps), 'data gap is', 'data gaps are')} recorded on the plan set. Each is listed once, with the sheets that carry it. Section 1.2 refers to the item numbers.", "planset:sheets")
@@ -1350,7 +1449,7 @@ def _s5(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, lrows: list[dict], 
     th = d.r("site.slope_geotech_threshold_pct")
     if th and ter.get("available"):
         ok = ter["max_gradient_pct"] <= th.value + 1e-9
-        items.append((f"The cited slope above which a detailed geotechnical investigation is required is {th.value:g}%. The steepest gradient between adjacent DEM grid points over the lot is {ter['max_gradient_pct']:.1f}%, " + ("which does not exceed it" if ok else "which exceeds it") + ". A 5 m DEM may not show local steeper ground, so this is INDICATIVE. [" + cite_ref(th) + "]", f"doc:{T(th.source.document_title)} page {th.source.page} ({th.key}); data:planset.terrain.max_gradient_pct", T_IND, cite_dict(th)))
+        items.append((f"The cited slope above which a detailed geotechnical investigation is required is {th.value:g}%. The steepest gradient between adjacent " + ("levels of the thinned LiDAR surface" if d.lidar else "DEM grid points") + f" over the lot is {ter['max_gradient_pct']:.1f}%, " + ("which does not exceed it" if ok else "which exceeds it") + (". Thinning and the stated vertical accuracy mean that local steeper ground may not show, so this is INDICATIVE. [" if d.lidar else ". A 5 m DEM may not show local steeper ground, so this is INDICATIVE. [") + cite_ref(th) + "]", f"doc:{T(th.source.document_title)} page {th.source.page} ({th.key}); data:planset.terrain.max_gradient_pct", T_IND, cite_dict(th)))
     items.append(_layer_item(d, "nsw_acid_sulfate"))
     items.append(("Soil type, salinity, dispersion and geotechnical conditions are not in the run data. A geotechnical investigation has not been provided.", "platform:no_data_source", T_DNA))
     items.append(("Construction noise, dust and working hours are not addressed in the run data.", "platform:no_data_source", T_NA))
@@ -1396,6 +1495,8 @@ def _s5(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, lrows: list[dict], 
     # 5.9
     b.h2(f"5.9 {nm[8]}")
     items = [("No existing service data were supplied (water, sewer, stormwater, electricity, gas, telecommunications). Availability and location of connections are UNRESOLVED.", "planset:sheets[C310].data_missing", T_DNA)]
+    if d.byda_panel:
+        items = [(d.byda_panel["headline"] + ". The plans have not been traced, so no existing service is shown or relied on. Availability and location of connections are UNRESOLVED.", "data:run.site_data.byda", T_NC)]
     for key, sent in (("utilities.servicing_strategy_required", "A servicing strategy is required with all development applications (water, sewer and stormwater)"),
                       ("water.potable_connection_required_if_available", "Connection to the potable water supply is required if it is available"),
                       ("util.build_over_sewer_policy", "Work near a council sewer main must follow the council Building over Sewer Policy (the policy document was not obtained)")):
@@ -1510,7 +1611,7 @@ def _compliance(d: _Data) -> list[dict]:
     if th and ter.get("available"):
         v = ter["max_gradient_pct"]
         st = "NOT TRIGGERED (INDICATIVE, 5 m DEM)" if v <= th.value + 1e-9 else "TRIGGERED (INDICATIVE, 5 m DEM)"
-        add("Slope above which a detailed geotechnical investigation is required", f"slopes greater than {th.value:g}%", th, f"steepest DEM gradient {v:.1f}% (average fall {ter['avg_fall_pct']:.1f}%)", "5 m DEM, INDICATIVE: too coarse to rule out local steeper ground. NOT TRIGGERED means that the steepest gradient in the DEM does not exceed the threshold. It does not rule out steeper local ground.", st, f"doc:{T(th.source.document_title)} page {th.source.page} ({th.key}); data:planset.terrain.max_gradient_pct")
+        add("Slope above which a detailed geotechnical investigation is required", f"slopes greater than {th.value:g}%", th, f"steepest DEM gradient {v:.1f}% (average fall {ter['avg_fall_pct']:.1f}%)", ("LiDAR surface thinned for the lot size, INDICATIVE: may not show local steeper ground. NOT TRIGGERED means that the steepest gradient in the thinned surface does not exceed the threshold. It does not rule out steeper local ground." if d.lidar else "5 m DEM, INDICATIVE: too coarse to rule out local steeper ground. NOT TRIGGERED means that the steepest gradient in the DEM does not exceed the threshold. It does not rule out steeper local ground."), st, f"doc:{T(th.source.document_title)} page {th.source.page} ({th.key}); data:planset.terrain.max_gradient_pct")
     else:
         add("Slope above which a detailed geotechnical investigation is required", nofound("slope"), th, "no levels", "", "UNRESOLVED", "data:planset.terrain")
     textctl("Stormwater designed to the Engineering Design Minimum Standards", "stormwater.designed_per_eng_standards", "no stormwater design provided", "TO BE COMPLETED BY THE APPLICANT.")
@@ -1569,7 +1670,8 @@ def _s7(b: _Build, d: _Data, cnt: dict, lc: dict, blocked: list[dict]) -> dict:
     if n_nc:
         items.append((f"Check directly with the authority the {n_nc} screening layers marked NOT CHECKED (section 5.11).", "data:sa9.layers", T_NC))
     items += [("Commission a detail survey (levels, boundaries, kerb, trees, easements and services), and replace the 5 m DEM levels.", "data:run.levels_provenance"),
-              ("Lodge a Before You Dig Australia enquiry and confirm service locations by potholing before any excavation.", "planset:sheets[C310].data_missing"),
+              (("Trace and review the asset owner plans received for the BYDA enquiry (plans are for that project only), renew the enquiry if its validity date has passed, and confirm service locations by potholing before any excavation." if d.byda_panel
+                else "Lodge a Before You Dig Australia enquiry and confirm service locations by potholing before any excavation."), "planset:sheets[C310].data_missing"),
               ("Obtain a flood certificate or flood information and the council legal point of stormwater discharge" + (" (an inter-allotment drainage easement or another solution may be required, because the lot falls " + ("away from the street" if fall_side(d.w.get("terrain", {})) == "away from" else "across the street frontage") + ")" if fall_side(d.w.get("terrain", {})) in ("away from", "across") else "") + ", and have a hydraulic designer prepare the stormwater design.", "knowledge:unresolved flood.lot_specific_fpl; data:planset.terrain.fall_away_c"),
               ("Select the council standard crossing drawing and driveway materials, and confirm the driveway grade control with the council.", "knowledge:unresolved driveway.max_grade_pct"),
               ("Have an erosion and sediment control plan prepared by a suitably qualified person, and obtain geotechnical advice for the earthworks and batters.", "planset:sheets[C500].data_missing"),
@@ -1587,7 +1689,8 @@ def _s8(b: _Build, d: _Data, blocked: list[dict]) -> None:
         ("This document was produced by software using public map data, the plan set data and requirement values extracted from the documents listed in section 4.2. No person has checked or certified it.", "app.report.explain.SIGN_OFF"),
         ("A qualified person must check and verify every result, source and figure before any use. Matters that need professional sign off include boundaries (registered surveyor), flood and drainage (qualified engineer), bushfire (qualified assessor), soils and ground (qualified geotechnical engineer) and approvals (council or an accredited certifier).", "app.report.explain.SIGN_OFF"),
         ("Where a requirement is shown as UNRESOLVED, or a layer as NOT CHECKED, the matter remains open and must be confirmed with the authority.", "app.report.explain.SIGN_OFF"),
-        ("Levels come from a 5 m DEM. They are indicative, are not a survey and are too coarse for detailed earthworks. Boundaries come from the cadastre and are not a survey.", "data:run.levels_provenance", T_IND),
+        (("Levels come from the supplied LiDAR digital elevation model. They are indicative, are not a survey and are not a design level. The boundary is " + ("the collector boundary" if (((d.sd or {}).get("boundary") or {}).get("used_as_subject_lot")) else "from the cadastre") + " and is not a survey.")
+         if d.lidar else "Levels come from a 5 m DEM. They are indicative, are not a survey and are too coarse for detailed earthworks. Boundaries come from the cadastre and are not a survey.", "data:run.levels_provenance", T_IND),
         (METHOD_TEXT + " Some values were extracted at a confidence below 1 (recorded in the accompanying data file, soee.json).", "knowledge:requirements.json"),
         (f"{_plural(len(blocked), 'source document', 'source documents')} could not be obtained or could not be read, and {'was' if len(blocked) == 1 else 'were'} NOT REVIEWED (section 4.1). The LEP, the Regulation and the relevant SEPPs have not been read.", "knowledge:manifest", T_NOTREV),
         ("The values drawn on the plan set that are marked PLATFORM DEFAULT, PLACEHOLDER or ASSUMED (driveway width, design vehicle, kerb position, layover widths and flare, driveway end level) are not a design and are not a council selection.", "planset:sheets", T_ASSUMED),

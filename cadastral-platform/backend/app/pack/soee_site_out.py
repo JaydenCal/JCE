@@ -32,6 +32,13 @@ def status_style(txt: str) -> tuple[str, str]:
     if txt.startswith("PASS ("):
         return ("#8a5a12", "#f7ecd3")
     return STATUS_HEX.get(txt.split(" (")[0], ("#1e2024", "#ffffff"))
+def _tag_hex(tag: str) -> str:
+    """Colour for a tag; a site data run's tag is "INDICATIVE, <terrain basis label>" and takes the INDICATIVE colour."""
+    if tag in TAG_HEX:
+        return TAG_HEX[tag]
+    return TAG_HEX["INDICATIVE, 5 m DEM"] if (tag or "").startswith("INDICATIVE, ") else "#1e2024"
+
+
 TAG_HEX = {"NOT CHECKED": "#4a5160", "UNRESOLVED": "#2d5a96", "NOT REVIEWED, UNRESOLVED": "#2d5a96", "DATA NOT AVAILABLE": "#a63a2b", "NOT ASSESSED": "#6b6e75",
            "ASSUMED / PLATFORM DEFAULT": "#b4601a", "ASSUMED": "#b4601a", "INDICATIVE, 5 m DEM": "#8a5a12", "BUILDING DESIGN BY OTHERS": "#6b6e75", "OFFLINE FIXTURE": "#a63a2b",
            "MAPPED OR INTERSECTS": "#a63a2b", "WITHIN BUFFER": "#b4601a", "NOT INTERSECTED BY THE DATA LOADED": "#5b5f66"}
@@ -98,7 +105,7 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
 
     def tagged(s: Stmt) -> str:
         if s.tag:
-            col = TAG_HEX.get(s.tag, "#1e2024")
+            col = _tag_hex(s.tag)
             return f'<font name="Plex-Bold" color="{col}">{e(s.tag)}.</font> {e(s.text)}'
         return e(s.text)
 
@@ -371,7 +378,7 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
 
     def tagged(p, s: Stmt):
         if s.tag:
-            run(p, s.tag + ". ", bold=True, color=TAG_HEX.get(s.tag, "#1e2024"))
+            run(p, s.tag + ". ", bold=True, color=_tag_hex(s.tag))
         run(p, s.text)
 
     def shade(cell, fill: str):
