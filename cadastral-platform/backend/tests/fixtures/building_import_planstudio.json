@@ -1,0 +1,162 @@
+{
+  "schema": "building_import.v1",
+  "source": "plan_studio",
+  "source_file": "synthetic.planstudio.json",
+  "used_site_export": true,
+  "building": {
+    "levels": [
+      {
+        "name": "Ground",
+        "elevation_m": 0.0,
+        "rings": [
+          [
+            [
+              -0.13660254037844388,
+              0.03660254037844388
+            ],
+            [
+              3.9633974596215555,
+              -7.064805770653954
+            ],
+            [
+              6.734678751731759,
+              -5.464805770653954
+            ],
+            [
+              5.234678751731759,
+              -2.8667295593006377
+            ],
+            [
+              7.832754963085075,
+              -1.3667295593006379
+            ],
+            [
+              5.2327549630850765,
+              3.136602540378443
+            ]
+          ]
+        ]
+      }
+    ],
+    "datum_index": 0,
+    "roof_outline": [
+      [
+        [
+          -0.6830127018922193,
+          0.18301270189221938
+        ],
+        [
+          3.8169872981077795,
+          -7.611215932167729
+        ],
+        [
+          7.281088913245534,
+          -5.611215932167729
+        ],
+        [
+          5.781088913245535,
+          -3.0131397208144124
+        ],
+        [
+          8.37916512459885,
+          -1.513139720814413
+        ],
+        [
+          5.379165124598852,
+          3.6830127018922187
+        ]
+      ]
+    ],
+    "exits": {
+      "sewer": [
+        [
+          6.598076211353315,
+          -5.42820323027551
+        ]
+      ],
+      "water": [
+        [
+          0.6535898384862244,
+          -1.9320508075688774
+        ]
+      ],
+      "downpipes": [
+        [
+          5.196152422706632,
+          2.9999999999999996
+        ]
+      ]
+    },
+    "north_deg": 30.0,
+    "notes": [
+      "Rooms under the roof, dilated by the eave overhang, on a 100 mm raster. Approximate, not a measured roof area.",
+      "Roof plan area is Plan Studio's approximate raster value (100 mm cells, rooms under the roof plus the eave overhang). It is not a measured area.",
+      "Overall height is NOT SET: the file gives the ceiling height of the top level (2.55 m above the ground floor), not the roof ridge. Enter it, or take it from the Plan Studio GLB.",
+      "Finished floor level (ffl_rl) is NOT SET: Plan Studio levels are relative to the ground floor. Enter the absolute RL.",
+      "1 rainwater tank(s) in the file are imported as rwt objects with their capacity. Inlet, overflow and outlet levels are NOT SET.",
+      "1 tank(s) have a non standard capacity: their diameter and height are PLAN STUDIO ESTIMATES (basis PLAN STUDIO ESTIMATE), not manufacturer dimensions."
+    ],
+    "params": {
+      "building_use": {
+        "value": "house",
+        "basis": "user",
+        "ref": "IMPORTED FROM PLAN STUDIO: synthetic.planstudio.json"
+      },
+      "source": {
+        "value": "plan_studio",
+        "basis": "user",
+        "ref": "IMPORTED FROM PLAN STUDIO: synthetic.planstudio.json"
+      },
+      "source_file": {
+        "value": "synthetic.planstudio.json",
+        "basis": "user",
+        "ref": "IMPORTED"
+      },
+      "roof_area_basis": {
+        "value": "APPROXIMATE (PLAN STUDIO RASTER)",
+        "basis": "user",
+        "ref": "IMPORTED FROM PLAN STUDIO: synthetic.planstudio.json"
+      },
+      "roof_plan_area_m2": {
+        "value": 54.0,
+        "basis": "user",
+        "ref": "IMPORTED FROM PLAN STUDIO RASTER: synthetic.planstudio.json"
+      }
+    }
+  },
+  "ref": [
+    4.020381043702839,
+    -1.6518407535565922
+  ],
+  "extras": [
+    {
+      "type": "rwt",
+      "p": [
+        7.062177826491071,
+        1.7679491924311221
+      ],
+      "yaw_deg": 0.0,
+      "status": "proposed",
+      "label": "5000 L tank",
+      "params": {
+        "capacity_l": {
+          "value": 5000.0,
+          "basis": "user",
+          "ref": "IMPORTED FROM PLAN STUDIO TANK: synthetic.planstudio.json"
+        },
+        "diameter_m": {
+          "value": 2.3,
+          "basis": "platform_default",
+          "ref": "PLAN STUDIO ESTIMATE: size for a non standard capacity, not a manufacturer dimension (synthetic.planstudio.json)"
+        },
+        "height_m": {
+          "value": 1.9,
+          "basis": "platform_default",
+          "ref": "PLAN STUDIO ESTIMATE: size for a non standard capacity, not a manufacturer dimension (synthetic.planstudio.json)"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "requires_confirmation": false
+}

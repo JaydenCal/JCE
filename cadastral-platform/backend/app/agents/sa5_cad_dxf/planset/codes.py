@@ -10,6 +10,7 @@ import re
 from dataclasses import dataclass
 
 from app.agents.sa5_cad_dxf.layers import LayerDef
+from app.common.statement import AI_DRAFT_STATEMENT
 
 
 # ---- platform brand ---------------------------------------------------------------------------------------------------------
@@ -29,7 +30,7 @@ class PlatformBrand:
 
 PLATFORM_BRAND = PlatformBrand()
 
-AI_STATEMENT = "AI GENERATED DRAFT. NOT CHECKED OR CERTIFIED. MUST BE CHECKED AND VERIFIED BY A QUALIFIED PERSON BEFORE ANY USE."
+AI_STATEMENT = AI_DRAFT_STATEMENT          # one platform-wide definition: app/common/statement.py
 AI_CHECK_LABEL = "AI CHECK"
 SETBACK_PLACEHOLDER = "SETBACK DIMENSIONS: PLACEHOLDER (BUILDING DESIGN NOT SUPPLIED)"
 

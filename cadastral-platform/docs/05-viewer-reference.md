@@ -20,7 +20,13 @@ labels  [{ t:text, p:[x,y,z], c:layerId, s:scale }]
 views   { "iso-sw": { dir:[x,y,z] }, ... }
 summary [[label, value], ...]      notes [string, ...]
 ```
-**Sub-Agent 6 (GlideInside 3D sync) emits this format**, extended with placed-item and walkable-geometry data (see `docs/06-play-mode.md`). The frontend renderer targets it.
+**Sub-Agent 6 (JCESITE 3D site scene) emits this format**, extended with placed-item and walkable-geometry data (see `docs/06-play-mode.md`). The frontend renderer targets it.
+
+Stage 2A contract notes:
+- `info.statement` is always the AI draft statement (`backend/app/common/statement.py`) and is not replaceable: the backend model and the scene API force it, and the viewer renders the constant whatever text a bundle carries. Every viewer view shows it (including the loading and error states) and snapshots burn it in.
+- `GET /projects/{project_id}/scene-bundle` serves `<SCENE_BUNDLE_DIR or export_dir>/<project_id>/scene_bundle.json`; 404 "DATA NOT AVAILABLE: no scene bundle for this project" when absent. The viewer never substitutes demo data for a project.
+- Backend `items` (`id, name, t, yaw_deg, catalogue_id`) are normalised by `loadBundle` into the viewer shape (`id, itemId, p, yaw`).
+- Layer `services` (backend) is handled exactly as `dbyd`; `dbyd` is reserved for DBYD-sourced data. A service with no depth is drawn on the ground surface and labelled DEPTH NOT AVAILABLE.
 
 ## New requirement (user): game-like play mode
 Everything placeable in the site and the house, first-person mode, place real store items. Plan in `docs/06-play-mode.md`.

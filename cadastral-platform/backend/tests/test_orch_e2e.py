@@ -25,7 +25,7 @@ from app.agents.sa2_dcp_rag.ingest import ingest_pdf
 from app.agents.sa2_dcp_rag.models import DocMeta
 from app.common.contracts import AgentCode, RunStatus
 from app.common.db import user_connection
-from app.orchestrator.adapters import Sa3Dispatch
+from app.orchestrator.adapters import Sa3Dispatch, Sa6Adapter, Sa6Result
 from app.orchestrator.core import Orchestrator
 from app.orchestrator.inputs import RunRequest
 from app.orchestrator.registry import SkippedResult, default_registry
@@ -88,7 +88,7 @@ def _registry(tmp: Path, **kw):
     chunks, _ = ingest_pdf(dcp, "dcp1")
     docs = [DocMeta(doc_id="dcp1", title="Hornsby DCP (synthetic)", lga="Hornsby", effective_date=date(2024, 1, 1), chunks=chunks)]
     client = C.ArcGISClient(fetcher=_sa1_fetcher(), sleep=lambda s: None)
-    env = {"SA1_ROADS_URL_NSW": "http://roads/0", **kw.pop("env", {})}
+    env = {"SA1_ROADS_URL_NSW": "http://roads/0", "JCESITE_AERIAL": "none", **kw.pop("env", {})}       # no aerial service is called in this test
     return default_registry(env=env, sa1_client=client, sa2_documents=docs, **kw)
 
 
@@ -123,8 +123,8 @@ def test_registry_wiring():
     reg = default_registry(env={})
     assert isinstance(reg.get(AgentCode.SA3_GEOM_TIN), Sa3Dispatch)
     assert not any(reg.is_stub(c) for c in (AgentCode.SA1_CADASTRE, AgentCode.SA2_DCP_RAG, AgentCode.SA3_GEOM_TIN,
-                                            AgentCode.SA4_HYDRO, AgentCode.SA5_CAD_DXF, AgentCode.SA7_PDF_ALIGN))
-    assert reg.is_stub(AgentCode.SA6_GLIDE3D)
+                                            AgentCode.SA4_HYDRO, AgentCode.SA5_CAD_DXF, AgentCode.SA7_PDF_ALIGN, AgentCode.SA6_SITE3D))
+    assert not reg.is_stub(AgentCode.SA6_SITE3D) and isinstance(reg.get(AgentCode.SA6_SITE3D), Sa6Adapter)      # stage 11: the real scene agent
     with pytest.raises(ValueError):
         default_registry(env={"ORCH_STUB_POLICY": "maybe"})
 
@@ -149,7 +149,8 @@ def test_full_chain_real_agents(pool, world, tmp_path, monkeypatch):
     assert o["SA3"]["cut_fill"]["pad_level_m"] == 100.8 and o["SA3"]["tin"]["triangle_count"] > 0
     assert len(o["SA4"]["assets"]) == 2 and o["SA4"]["rwt"] is not None
     assert {c["kind"] for c in o["SA4"]["connections"]} == {"sewer", "water"}
-    assert SkippedResult.model_validate(o["SA6"]).error_code == "NOT_IMPLEMENTED"
+    sc = Sa6Result.model_validate(o["SA6"])          # the real scene agent: a bundle on disk, with the terrain provenance of the chain (the user survey here)
+    assert Path(sc.scene_bundle_path).is_file() and sc.parts > 0 and sc.terrain_status.startswith("SURVEY")
 
     cad = o["SA5"]
     dxf, pdf = Path(cad["dxf_path"]), Path(cad["pdf_path"])
@@ -179,10 +180,9 @@ def test_export_gate_blocks_sa5_and_writes_nothing(pool, world, tmp_path, monkey
     assert not list((tmp_path / "exports").glob("**/*.dxf")) and not list((tmp_path / "exports").glob("**/*.pdf"))
 
 
-def test_stub_policy_fail_makes_sa6_fatal_but_exports_still_produced(pool, world, tmp_path, monkeypatch):
-    _, _, out, _ = _run(pool, world, tmp_path, monkeypatch, stub_policy="fail")
-    assert out.status is RunStatus.failed
-    assert out.nodes["SA6"].error_code == "NOT_IMPLEMENTED" and out.nodes["SA5"].status == "succeeded"
+def test_stub_policy_no_longer_touches_sa6(pool, world, tmp_path, monkeypatch):
+    _, _, out, _ = _run(pool, world, tmp_path, monkeypatch, stub_policy="fail")           # SA6 is a real agent now: the policy applies to no node
+    assert out.status is RunStatus.succeeded and out.nodes["SA6"].status == "succeeded" and out.nodes["SA5"].status == "succeeded"
 
 
 def test_no_plan_upload_uses_envelope_as_pad(pool, world, tmp_path, monkeypatch):

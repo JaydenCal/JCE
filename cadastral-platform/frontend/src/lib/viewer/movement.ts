@@ -1,3 +1,4 @@
+import { FP_EYE_HEIGHT_M, FP_SLOPE_LIMIT_DEG, FP_STEP_UP_M } from './fpLimits';
 import type { BoxCollider, FloorPlane } from './types';
 
 export interface MoveSettings {
@@ -5,8 +6,8 @@ export interface MoveSettings {
   walk: number; sprint: number; gravity: number; jump: number; stepUp: number; slopeDeg: number;
 }
 export const MOVE_DEFAULTS: MoveSettings = {
-  eyeHeight: 1.6, radius: 0.3, height: 1.8, crouchHeight: 1.1, walk: 2.8, sprint: 5.2,
-  gravity: 18, jump: 5.2, stepUp: 0.4, slopeDeg: 45,
+  eyeHeight: FP_EYE_HEIGHT_M, radius: 0.3, height: 1.8, crouchHeight: 1.1, walk: 2.8, sprint: 5.2,
+  gravity: 18, jump: 5.2, stepUp: FP_STEP_UP_M, slopeDeg: FP_SLOPE_LIMIT_DEG,
 };
 export interface PlayerState { x: number; y: number; z: number; vx: number; vy: number; vz: number; grounded: boolean; crouch: number }
 export interface MoveInput { fwd: number; right: number; sprint: boolean; jump: boolean; crouch: boolean; yaw: number }

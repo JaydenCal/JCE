@@ -2,9 +2,8 @@
 
 * SA1, SA2, SA3 (``Sa3Dispatch``: ENV + terrain), SA4, SA5, SA7 are real agents wrapped by the
   typed adapters in ``app.orchestrator.adapters``; SA1/SA2 are configured from the environment.
-* SA6 is not implemented: its ``StubAgent`` either returns a recorded ``skipped`` result
-  (``ORCH_STUB_POLICY=skip``, the default, so the run stays green) or raises
-  ``AgentError('NOT_IMPLEMENTED')`` (``ORCH_STUB_POLICY=fail``).
+* SA6 (stage 11) is the real scene generator ``Sa6Adapter``: it resolves the terrain chain and the aerial image itself and writes ``scene_bundle.json`` for the project. ``JCESITE_OFFLINE_FIXTURE`` is honoured only with ``JCESITE_ENV=test`` (otherwise ignored with a warning). The stub policy
+  (``ORCH_STUB_POLICY``, ``skip`` by default or ``fail``) now applies to no registered agent; it stays for an agent that has no factory (``StubAgent``).
 * Real agents are loaded lazily from their import paths. If the import (or construction)
   fails, the registry records why and installs an ``UnavailableAgent`` that raises
   ``AgentError('AGENT_UNAVAILABLE')``, so a broken optional dependency cannot take the
@@ -39,7 +38,7 @@ _STUB_SCHEMAS: dict[AgentCode, tuple[str, str]] = {
     AgentCode.SA2_DCP_RAG: ("dcp_query.v1", "setback_ruleset.v1"),
     AgentCode.SA3_GEOM_TIN: ("terrain_request.v1", "earthworks_result.v1"),
     AgentCode.SA4_HYDRO: ("services_request.v1", "services_result.v1"),
-    AgentCode.SA6_GLIDE3D: ("scene_request.v1", "scene_bundle.v1"),
+    AgentCode.SA6_SITE3D: ("scene_request.v1", "scene_bundle.v1"),
     AgentCode.SA7_PDF_ALIGN: ("plan_upload.v1", "plan_overlay.v1"),
     AgentCode.SA5_CAD_DXF: ("cad_request.v1", "cad_result.v1"),
 }
@@ -137,7 +136,7 @@ class AgentRegistry:
 
 def default_registry(*, env: Mapping[str, str] | None = None, sa1_client: Any = None,
                      sa2_documents: list | None = None, stub_policy: str | None = None) -> AgentRegistry:
-    """Real agents (lazy, env-configured); SA6 as a stub per ``ORCH_STUB_POLICY`` (skip|fail)."""
+    """Real agents (lazy, env-configured). ``stub_policy`` (skip|fail) is validated and kept for a registry that leaves an agent without a factory."""
     from app.orchestrator.adapters import build_sa1, build_sa2
 
     e = os.environ if env is None else env
@@ -149,5 +148,6 @@ def default_registry(*, env: Mapping[str, str] | None = None, sa1_client: Any = 
         reg.register_import_path(code, path)
     reg.register(AgentCode.SA1_CADASTRE, lambda: build_sa1(e, sa1_client))
     reg.register(AgentCode.SA2_DCP_RAG, lambda: build_sa2(e, sa2_documents))
-    reg.register(AgentCode.SA6_GLIDE3D, lambda: StubAgent(AgentCode.SA6_GLIDE3D, skip=policy == "skip"))
+    from app.orchestrator.adapters.sa6 import Sa6Adapter
+    reg.register(AgentCode.SA6_SITE3D, lambda: Sa6Adapter(env=dict(e)))
     return reg

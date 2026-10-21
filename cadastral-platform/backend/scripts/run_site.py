@@ -34,8 +34,8 @@ from shapely.geometry import shape  # noqa: E402
 from app.agents.base import AgentError  # noqa: E402
 from app.agents.sa1_cadastre import clients as C  # noqa: E402
 from app.agents.sa1_cadastre.geometry import to_mga  # noqa: E402
-from app.agents.sa6_glide3d import Sa6Glide3d, SceneRequest, dumps  # noqa: E402
-from app.agents.sa6_glide3d.presets import DEFAULTS_NOTE, building_preset, preset_footprint  # noqa: E402
+from app.agents.sa6_site3d import Sa6Site3d, SceneRequest, dumps  # noqa: E402
+from app.agents.sa6_site3d.presets import DEFAULTS_NOTE, building_preset, preset_footprint  # noqa: E402
 from app.agents.sa9_constraints import Sa9Constraints, Sa9Input  # noqa: E402
 from app.agents.sa9_constraints import layers as L9  # noqa: E402
 from app.agents.sa9_constraints.intersect import Feature, LayerData  # noqa: E402
@@ -46,6 +46,12 @@ from app.orchestrator.adapters.config import sa1_config_from_env  # noqa: E402
 from app.orchestrator.adapters.nodes import lot_with_envelope  # noqa: E402
 from app.orchestrator.inputs import BuildContext, InputError, RunRequest, build_input  # noqa: E402
 from app.orchestrator.registry import StubAgent, default_registry  # noqa: E402
+from app.agents.sa3_terrain.chain import Nsw5mProvider, SurveyProvider, TerrainRequest, mark_offline_outcome, resolve_terrain, terrain_note  # noqa: E402
+from app.agents.sa3_terrain.provenance import TerrainProvenance, scene_provenance
+from app.common.labels import upper_label  # noqa: E402
+from app.agents.sa3_terrain.qld_lidar import QldLidarProvider, default_export, default_query  # noqa: E402
+from app.agents.sa3_terrain.tile_library import TileLibraryProvider, store_from_env  # noqa: E402
+from app.imagery.aerial import fetch_aerial  # noqa: E402
 
 OK, UNRESOLVED, SKIPPED, BLOCKED, FAILED = "OK", "UNRESOLVED", "SKIPPED", "BLOCKED", "FAILED"
 Fetcher = Callable[[str, dict], "tuple[bytes, str | None]"]
@@ -187,6 +193,16 @@ class ArcGisLayerLoader:
         return LayerData(features=feats, currency=f"fetched {res.snapshot.fetched_at:%Y-%m-%d}")
 
 
+# --------------------------------------------------------------------------- terrain chain and aerial imagery (stage 3)
+from app.agents.sa6_site3d.site_data import aerial_providers, terrain_providers, _no_network  # noqa: E402,F401  (shared with the orchestrator adapter Sa6Adapter)
+
+
+def _levels_provenance_fact(prov: TerrainProvenance) -> dict:
+    """Shape used by _civil_summary and the report (source, points, copyright, accuracy)."""
+    return {"source": prov.source_name, "url": prov.url, "points": prov.points, "copyright": prov.licence, "vertical_accuracy_m": prov.accuracy_m,
+            "vertical_accuracy_source": "stated" if prov.accuracy_m is not None else "unknown (placeholder)", "status": prov.status, "tier": prov.tier}
+
+
 # --------------------------------------------------------------------------- the run
 def _user_rules_sa2(raw, zone: str | None, dwelling_type: str):
     """--rules-json: [{"element": "front", "value_numeric": 6.0, "unit": "m", ["dwelling_type"], ["lot_condition"], ["is_performance_outcome"]}, ...]
@@ -229,6 +245,67 @@ def _centre(s: str | None) -> tuple[float, float] | None:
     return lon, lat
 
 
+def explicit_lga(value: str | None) -> str | None:
+    """The council name typed with --lga, or None for 'auto' / unset."""
+    v = (value or "").strip()
+    return None if not v or v.lower() == "auto" else v
+
+
+STORMWATER_KEYS = ("stormwater.osd_required", "stormwater.psd_l_s", "stormwater.osd_method", "stormwater.ssr_m3")
+
+
+def lookup_site_lga(args: argparse.Namespace, lot, client: C.ArcGISClient, rep: "Report", offline: bool = False, custom: bool = False):
+    """Resolve the LGA for the lot: typed name, else point query on the lot centroid, offline boundary files, lot attribute."""
+    from app.jurisdiction import lga as G
+    if custom:
+        rep.add("LGA lookup", SKIPPED, "custom profile: no NSW/QLD LGA lookup")
+        return None
+    state = lot.jurisdiction if lot.jurisdiction in ("NSW", "QLD") else None
+    typed = explicit_lga(getattr(args, "lga", None))
+    try:
+        if typed:
+            res = G.from_user_entry(typed, state)
+        else:
+            lon, lat = G.centroid_lonlat(lot.boundary_wkt, lot.mga_srid)
+            res = G.lookup_lga(lon, lat, client=G.PointQueryClient(getattr(client, "fetcher", None)), lot_lga_name=lot.lga_name,
+                               state_hint=state, network=not offline)
+            rep.facts["lga_point"] = [round(lon, 6), round(lat, 6)]
+    except Exception as ex:  # noqa: BLE001 - the lookup must never stop a run
+        res = G.LgaResult(method="not_found", notes=[_err(ex)])
+    rep.facts["lga_lookup"] = res.model_dump()
+    rep.facts["lga_code"] = res.lga_code
+    rep.add("LGA lookup", OK if res.found and res.boundary_tested and not res.ambiguous else UNRESOLVED, res.summary())
+    return res
+
+
+def apply_requirements_context(res, lot, rep: "Report") -> None:
+    """Build the requirements context with the LGA code and resolve the stormwater keys (LGA rule, else the stamped platform default)."""
+    from app.agents.requirements import LotRequirementContext
+    from app.agents.requirements.models import UnresolvedRequirement
+    from app.report.knowledge import load_requirement_set
+    if res is None:
+        return
+    state = res.state or (lot.jurisdiction if lot.jurisdiction in ("NSW", "QLD") else None)
+    ctxt = LotRequirementContext(jurisdiction=state or lot.jurisdiction, lga=res.lga_code or "", zone=lot.zone_code)
+    rep.facts["requirements_context"] = ctxt.model_dump()
+    rs = load_requirement_set(res.lga_name or lot.lga_name, state=state)
+    shown: dict[str, str] = {}
+    defaults, unresolved = [], []
+    for k in STORMWATER_KEYS:
+        try:
+            r = rs.get_requirement(k, jurisdiction=state, lga=res.lga_code)
+            shown[k] = r.describe() + ("" if r.is_platform_default else f" ({r.citation()[:120]})")
+            if r.is_platform_default:
+                defaults.append(k)
+        except UnresolvedRequirement:
+            shown[k] = "UNRESOLVED (no LGA rule loaded and no platform default)"
+            unresolved.append(k)
+    rep.facts["stormwater_requirements"] = shown
+    rep.facts["platform_defaults"] = defaults
+    rep.add("Stormwater requirements", UNRESOLVED if (defaults or unresolved) else OK,
+            "; ".join(f"{k} = {v}" for k, v in shown.items()))
+
+
 def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetcher: Fetcher | None = None,
              echo: Callable[[str], None] = print) -> Report:
     e = dict(os.environ if env is None else env)
@@ -262,6 +339,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     if args.zone_code:
         params["zone_code"] = args.zone_code
 
+    lga_arg = explicit_lga(getattr(args, "lga", None))      # None when --lga is 'auto' (the default): the LGA is looked up from the lot
     # ---- locate the lot
     try:
         if custom_req is not None:
@@ -272,11 +350,11 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         elif args.random_vacant:
             centre = _centre(args.centre)
             if centre is None:
-                gc, q = cfg.geocoders.get("NSW"), args.address or (f"{args.lga}, NSW" if args.lga else None)
+                gc, q = cfg.geocoders.get("NSW"), args.address or (f"{lga_arg}, NSW" if lga_arg else None)
                 if not (gc and q):
                     raise AgentError("NO_CENTRE", "give --centre lon,lat (or --lga / --address the geocoder can resolve)")
                 centre = client.geocode(gc, q)
-            pick = pick_random_lot(client, cfg.lot_layers["NSW"], centre, args.radius_m, args.lga, args.seed,
+            pick = pick_random_lot(client, cfg.lot_layers["NSW"], centre, args.radius_m, lga_arg, args.seed,
                                    args.buildings_url or e.get("RUN_SITE_BUILDINGS_URL"), args.min_area, args.max_area)
             g = shape(pick["feature"]["geometry"]).representative_point()
             params["point"] = [g.x, g.y]
@@ -342,18 +420,61 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     rep.add("SA1 result", OK if lot.zone_code else UNRESOLVED,
             f"{lot.lotplan}, {lot.lga_name}, {lot.area_m2_calculated:.0f} m2, zone {lot.zone_code or 'UNRESOLVED (pass --zone-code)'}; flags {sa1.flags or 'none'}")
 
-    # ---- live levels (user asked for --levels nsw): sample NSW_5M_Elevation over the lot and use it as params.terrain.survey
-    if getattr(args, "levels", None) == "nsw":
+    # ---- LGA (looked up from the lot centroid, or typed with --lga <name>) and the requirements context
+    lga_res = lookup_site_lga(args, sa1.lot, client, rep, offline=OFF is not None, custom=custom_req is not None)
+    apply_requirements_context(lga_res, sa1.lot, rep)
+
+    # ---- terrain chain (stage 3): survey, QLD LiDAR, hosted tile library, NSW 5 m DEM; first available wins and carries provenance.
+    #      --levels nsw keeps the earlier behaviour (NSW 5 m DEM only); --levels none skips terrain.
+    terrain_out = None
+    lvl = getattr(args, "levels", None) or "auto"
+    if lvl != "none":
         try:
-            from app.agents.sa3_terrain.live_levels import fetch_levels
-            lv = fetch_levels(sa1.lot.boundary_wkt, sa1.lot.mga_srid, accuracy_m=getattr(args, "levels_accuracy_m", None), **({"export": OFF.export_tiff} if OFF else {}))
-            for tgt in (params, rr.params):
-                tgt.setdefault("terrain", {})["survey"] = lv.survey
-            rep.facts.update(levels_provenance=lv.provenance, levels_warnings=lv.warnings)
-            rep.add("levels (NSW 5 m DEM)", UNRESOLVED if lv.warnings else OK,
-                    f"{lv.provenance['points']} points, {lv.provenance['source']}, {lv.provenance['copyright']}; " + "; ".join(lv.warnings))
+            lot_state = lot.jurisdiction if lot.jurisdiction in ("NSW", "QLD") else None
+            treq = TerrainRequest(boundary_wkt=lot.boundary_wkt, srid=lot.mga_srid, state=lot_state, buffer_m=float(getattr(args, "terrain_buffer_m", 30.0)),
+                                  survey=(params.get("terrain") or {}).get("survey"), accuracy_m=getattr(args, "levels_accuracy_m", None))
+            terrain_out = resolve_terrain(terrain_providers(lvl, fetcher, OFF, e), treq)
+            if OFF is not None:
+                mark_offline_outcome(terrain_out)        # source / URL read OFFLINE FIXTURE, NOT LIVE DATA; no retrieved date
+            prov = terrain_out.provenance
+            rep.facts["terrain_provenance"] = prov.to_dict()
+            if terrain_out.result is not None:
+                if prov.tier != 1:                       # a user supplied survey stays exactly as supplied
+                    for tgt in (params, rr.params):
+                        tgt.setdefault("terrain", {})["survey"] = terrain_out.result.survey
+                rep.facts.update(levels_provenance=_levels_provenance_fact(prov), levels_warnings=terrain_out.result.warnings)
+                rep.add("levels (NSW 5 m DEM)" if lvl == "nsw" else "terrain chain", UNRESOLVED if (terrain_out.result.warnings or prov.tier > 1) else OK,
+                        f"{upper_label(prov.status)}; {prov.points} points; {prov.source_name}; resolution {prov.resolution_text}; capture {prov.capture_text}; "
+                        f"vertical accuracy {prov.accuracy_text}; licence {prov.licence}; " + " | ".join(a["provider"] + ": " + a["outcome"] + " (" + a["note"] + ")" for a in terrain_out.attempts)
+                        + ("; " + "; ".join(terrain_out.result.warnings) if terrain_out.result.warnings else ""))
+            else:
+                rep.add("levels (NSW 5 m DEM)" if lvl == "nsw" else "terrain chain", UNRESOLVED,
+                        f"{prov.status}; " + " | ".join(a["provider"] + ": " + a["outcome"] + " (" + a["note"] + ")" for a in terrain_out.attempts))
         except Exception as ex:  # noqa: BLE001
-            rep.add("levels (NSW 5 m DEM)", FAILED, _err(ex))
+            rep.add("levels (NSW 5 m DEM)" if lvl == "nsw" else "terrain chain", FAILED, _err(ex))
+
+    # ---- aerial imagery (information only): NSW / QLD orthophoto over the lot plus a margin, highest resolution first (--aerial none to skip)
+    aerial_img = None
+    amode = getattr(args, "aerial", None) or "auto"
+    aprov = aerial_providers(amode, fetcher, OFF)
+    if aprov:
+        try:
+            ao = fetch_aerial(aprov, lot.boundary_wkt, lot.mga_srid, lot.jurisdiction, margin_m=float(getattr(args, "terrain_buffer_m", 30.0)))
+            aerial_img = ao.image
+            if aerial_img is not None:
+                (out / "aerial.jpg").write_bytes(aerial_img.jpeg)
+                emb = aerial_img.capped()
+                rep.facts["aerial"] = {"source": aerial_img.source, "capture_date": aerial_img.capture_label, "extent": aerial_img.extent, "size_px": aerial_img.size_px,
+                                       "embedded_size_px": emb.size_px, "embedded_jpeg_bytes": len(emb.jpeg), "embedded_resolution_m": emb.resolution_m,
+                                       "licence": aerial_img.licence, "attempts": ao.attempts}
+                rep.add("Aerial imagery", OK, f"{aerial_img.source}; capture {aerial_img.capture_label}; {aerial_img.size_px[0]} x {aerial_img.size_px[1]} px; "
+                        f"extent {tuple(round(v, 1) for v in aerial_img.extent)}; FOR INFORMATION ONLY", [str(out / "aerial.jpg")])
+            else:
+                rep.add("Aerial imagery", UNRESOLVED, "no aerial provider returned an image: " + " | ".join(f"{a['provider']}: {a['outcome']} ({a['note']})" for a in ao.attempts))
+        except Exception as ex:  # noqa: BLE001
+            rep.add("Aerial imagery", FAILED, _err(ex))
+    else:
+        rep.add("Aerial imagery", SKIPPED, "disabled (--aerial none) or no aerial provider available in this run")
 
     # ---- SA2
     sa2 = None
@@ -423,7 +544,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         if call("SA3 terrain/earthworks", AgentCode.SA3_GEOM_TIN, build_input("SA3", ctx), "SA3") is not None:
             rep.add("SA3 terrain/earthworks", OK, "TIN built from the supplied survey")
     else:
-        rep.add("SA3 terrain", SKIPPED, "no survey supplied (--levels nsw or params.terrain.survey via --params-json); no levels invented")
+        rep.add("SA3 terrain", SKIPPED, "no terrain levels from the chain or a user survey (see the terrain chain step; --params-json terrain.survey is also accepted); no levels invented")
 
     # ---- SA4 (the orchestrator's builder also demands SA3 output; without a survey it is built here without that dependency)
     sa4 = None
@@ -477,7 +598,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                     def cad_fetch(window):                                           # viewport window -> every lot and road reserve in it (SA1 query)
                         lots_, ok_, note_ = _sa1a.window_lots(lot.jurisdiction, lot.mga_srid, _lot_mga, window)
                         return CadastreWindow(lots_, ok_, note_)
-                council = getattr(args, "council", None) or args.lga or lot.lga_name or ""
+                council = getattr(args, "council", None) or lga_arg or lot.lga_name or ""
                 if not council and getattr(args, "rules_json", None):
                     council = "Gunnedah" if "Gunnedah" in Path(args.rules_json).read_text() else ""
                 pts = [tuple(p) for p in params.get("terrain", {}).get("survey", {}).get("points", [])]
@@ -525,14 +646,23 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                     blds = [building_preset(dev, footprint_wkt, args.base_rl)]
                     note = (f"{blds[0].name} preset at placeholder RL {args.base_rl:g} (NO survey, not AHD). {DEFAULTS_NOTE} "
                             + ("Setbacks UNRESOLVED: placement illustrative only. " if env_out.envelope.unresolved_elements else ""))
-            scene = Sa6Glide3d().run(SceneRequest(
+            tkw: dict[str, Any] = {}
+            if terrain_out is not None:
+                tkw["terrain_provenance"] = scene_provenance(terrain_out.provenance)
+                if terrain_out.result is not None:
+                    tkw.update(survey_points=terrain_out.result.points, terrain_note=terrain_note(terrain_out.provenance))
+            if aerial_img is not None:
+                tkw["aerial"] = aerial_img.to_scene()
+            if OFF is not None:
+                tkw["data_status"] = OFF.provenance_note()
+            scene = Sa6Site3d().run(SceneRequest(
                 project_title=rr.project_title, subtitle=f"{dev.label} (unverified)", lot=lot_with_envelope(sa1, env_out),
                 driveway=env_out.driveway, services=sa4.to_cad_services(), rwt=sa4.to_cad_rwt(), buildings=blds,
-                development_type=dev, ffl=ffl_value if (blds or ffl_lab) else None, ffl_label=ffl_lab))
+                development_type=dev, ffl=ffl_value if (blds or ffl_lab) else None, ffl_label=ffl_lab, **tkw))
             p = out / "scene_bundle.json"
             p.write_text(dumps(scene))
             rep.add("SA6 scene bundle", OK if not env_out.envelope.unresolved_elements else UNRESOLVED,
-                    note + f"{len(scene.parts)} parts; no terrain (no survey)", [str(p)])
+                    note + f"{len(scene.parts)} parts; terrain: " + (terrain_out.provenance.status if terrain_out is not None else "chain not run"), [str(p)])
         except Exception as ex:  # noqa: BLE001
             rep.add("SA6 scene bundle", FAILED, _err(ex))
     else:
@@ -613,7 +743,7 @@ def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4, ps: dict | None = N
     if t3 is not None:
         tin = t3.tin
         cv["terrain"] = {"source": prov.get("source") or t3.source, "points": prov.get("points"), "min_z": tin.min_z, "max_z": tin.max_z,
-                         "copyright": prov.get("copyright", ""), "dem_5m": "5M" in str(prov.get("source", "")).upper(),
+                         "copyright": prov.get("copyright", ""), "dem_5m": prov.get("tier") == 4 or "5M" in str(prov.get("source", "")).upper(),
                          "accuracy_text": _accuracy_text(t3.vertical_accuracy_m, prov.get("vertical_accuracy_source"))}
         if t3.cut_fill is not None:
             cv["earthworks"] = t3.cut_fill.model_dump()
@@ -641,6 +771,10 @@ def _finish(rep: Report, out: Path) -> Report:
     if f.get("lotplan"):
         lines.append(f"- Lot: {f['lotplan']}, {f.get('lga')}, zone {f.get('zone') or 'UNRESOLVED'}, {f.get('area_m2', 0):.0f} m2 calculated "
                      f"(registered {f.get('area_registered') or 'n/a'}); SA1 flags {f.get('flags') or 'none'}")
+    if f.get("lga_lookup"):
+        from app.jurisdiction import lga as G
+        lines.append(f"- LGA: {f['lga_lookup'].get('lga_name') or 'UNRESOLVED'}, code {f.get('lga_code') or 'UNRESOLVED'}, "
+                     f"{f['lga_lookup'].get('method')} ({G.verification_text(bool(f['lga_lookup'].get('boundary_tested')), bool(f['lga_lookup'].get('source_verified')), bool(f['lga_lookup'].get('ambiguous')))})")
     lines += ["", "| # | Step | Status | Detail |", "|---|---|---|---|"]
     lines += [f"| {i} | {s.name} | {s.status} | {s.detail.replace('|', '/')} |" for i, s in enumerate(rep.steps, 1)]
     lines += ["", "## Files", *[f"- `{x}`" for s in rep.steps for x in s.files], "- `run_summary.md`, `run_steps.json`", "",
@@ -649,6 +783,9 @@ def _finish(rep: Report, out: Path) -> Report:
                      ("sa9_unresolved_rules", "SA9 rules with unresolved values")):
         if f.get(k):
             lines.append(f"- {label}: {', '.join(map(str, f[k]))}")
+    if f.get("platform_defaults"):
+        lines += ["", "## Platform defaults in use (PLATFORM DEFAULT, LGA RULE NOT LOADED)"]
+        lines += [f"- {k}: {f['stormwater_requirements'][k]}" for k in f["platform_defaults"]]
     lines += ["", "All outputs are indicative and unverified: the cadastre is not a survey and nothing here is a planning or building "
               "approval. Verify setbacks and requirements with the council / certifier."]
     (out / "run_summary.md").write_text("\n".join(lines) + "\n")
@@ -660,8 +797,9 @@ def _finish(rep: Report, out: Path) -> Report:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--check-network", action="store_true", help="probe each configured host and exit")
-    p.add_argument("--offline", choices=["lot2"], help="use the saved Lot 2 DP227508 fixture (app/offline/lot2.py) instead of the NSW services: SA1 lot, 5 m DEM and aerials come from the saved run; use with --lotplan 2//DP227508 --levels nsw")
-    p.add_argument("--lga", help="council name (random-lot filter / centre lookup), e.g. Gunnedah")
+    p.add_argument("--offline", choices=["lot2"], help="use the saved Lot 2 DP227508 fixture (app/offline/lot2.py) instead of the NSW services: SA1 lot, 5 m DEM and aerials come from the saved run; use with --lotplan 2//DP227508 (--levels auto or nsw)")
+    p.add_argument("--lga", default="auto", help="'auto' (default): find the LGA (NSW or QLD) from the lot centroid and load its rules; or a council name "
+                   "(typed LGA, also the random-lot filter / centre lookup), e.g. Gunnedah")
     p.add_argument("--address", help='e.g. "756 Quia Road, Gunnedah"')
     p.add_argument("--lotplan", help="NSW lot identifier, e.g. 12//DP345678")
     p.add_argument("--random-vacant", action="store_true", help="random lot near --centre/--address/--lga; vacancy needs --buildings-url")
@@ -673,7 +811,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--buildings-url", help="ArcGIS building-footprint layer URL (or env RUN_SITE_BUILDINGS_URL)")
     p.add_argument("--development-type", choices=[d.value for d in DevelopmentType], default="dwelling_house")
     p.add_argument("--zone-code", help="override when SA1 cannot determine the zone")
-    p.add_argument("--levels", choices=["nsw"], help="'nsw': sample the live NSW 5 m DEM over the lot as params.terrain.survey (accuracy not stated by service)")
+    p.add_argument("--levels", choices=["auto", "nsw", "none"], default="auto",
+                   help="terrain source. 'auto' (default): first available of user survey (params.terrain.survey), QLD LiDAR (QLD lots with LiDAR coverage), hosted LiDAR tile library "
+                        "(JCESITE_LIDAR_TILE_DIR), NSW 5 m DEM; 'nsw': the NSW 5 m DEM only (accuracy not stated by the service); 'none': no terrain")
+    p.add_argument("--aerial", choices=["auto", "none"], default="auto", help="draped aerial imagery for information only (NSW / QLD orthophoto, highest resolution); 'none' skips it")
+    p.add_argument("--terrain-buffer-m", type=float, default=30.0, help="terrain and aerial margin beyond the lot, metres (road, adjoining lots)")
     p.add_argument("--levels-accuracy-m", type=float, help="user-entered vertical accuracy for --levels (otherwise flagged UNKNOWN)")
     p.add_argument("--rules-json", help="JSON list of USER-ENTERED setback rules [{element,value_numeric,unit,...}] used instead of SA2 DCP extraction")
     p.add_argument("--params-json", help="JSON file merged into run params (terrain.survey, dbyd.*, ...)")

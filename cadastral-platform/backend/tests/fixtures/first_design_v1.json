@@ -1,0 +1,1836 @@
+{
+ "design": {
+  "objects": [
+   {
+    "building": {
+     "datum_index": 0,
+     "exits": {
+      "downpipes": [
+       [
+        334505.0,
+        6263912.0
+       ],
+       [
+        334513.0,
+        6263912.0
+       ],
+       [
+        334513.0,
+        6263918.0
+       ]
+      ],
+      "sewer": [
+       [
+        334509.0,
+        6263910.0
+       ]
+      ],
+      "water": [
+       [
+        334507.0,
+        6263910.0
+       ]
+      ]
+     },
+     "frame": {
+      "origin": [
+       334500.0,
+       6263900.0
+      ],
+      "yaw_deg": 0.0
+     },
+     "levels": [
+      {
+       "elevation_m": 0.0,
+       "name": "GROUND",
+       "rings": [
+        [
+         [
+          334505.0,
+          6263910.0
+         ],
+         [
+          334513.0,
+          6263910.0
+         ],
+         [
+          334513.0,
+          6263920.0
+         ],
+         [
+          334505.0,
+          6263920.0
+         ]
+        ]
+       ]
+      }
+     ],
+     "notes": []
+    },
+    "geometry": {
+     "kind": "polygon",
+     "ring": [
+      [
+       334505.0,
+       6263910.0
+      ],
+      [
+       334513.0,
+       6263910.0
+      ],
+      [
+       334513.0,
+       6263920.0
+      ],
+      [
+       334505.0,
+       6263920.0
+      ]
+     ]
+    },
+    "id": "house",
+    "issues": [],
+    "label": "House",
+    "origin": "user",
+    "params": {
+     "building_use": {
+      "basis": "user",
+      "value": "house"
+     },
+     "ffl_rl": {
+      "basis": "user",
+      "value": 101.2
+     }
+    },
+    "status": "proposed",
+    "type": "building",
+    "verified": false
+   },
+   {
+    "geometry": {
+     "kind": "polyline",
+     "pts": [
+      [
+       334498.0,
+       6263903.0
+      ],
+      [
+       334520.0,
+       6263903.0
+      ]
+     ]
+    },
+    "id": "sewer_main",
+    "issues": [],
+    "origin": "user",
+    "params": {
+     "asset_owner": {
+      "basis": "user",
+      "value": "Hunter Water"
+     },
+     "depth_basis": {
+      "basis": "user",
+      "value": "potholed"
+     },
+     "depth_m": {
+      "basis": "user",
+      "value": 2.5
+     },
+     "depth_reference": {
+      "basis": "user",
+      "value": "invert"
+     },
+     "diameter_mm": {
+      "basis": "user",
+      "value": 225
+     },
+     "plan_date": {
+      "basis": "user",
+      "value": "2026-09-01"
+     },
+     "plan_expiry_date": {
+      "basis": "user",
+      "value": "2026-12-01"
+     },
+     "position_tolerance_m": {
+      "basis": "user",
+      "value": 0.3
+     },
+     "service_kind": {
+      "basis": "user",
+      "value": "sewer"
+     },
+     "verified_by": {
+      "basis": "user",
+      "value": "J Citizen"
+     }
+    },
+    "status": "proposed",
+    "type": "service_existing",
+    "verified": true,
+    "verified_on": "2026-09-05"
+   },
+   {
+    "geometry": {
+     "kind": "polyline",
+     "pts": [
+      [
+       334498.0,
+       6263905.0
+      ],
+      [
+       334520.0,
+       6263905.0
+      ]
+     ]
+    },
+    "id": "water_main",
+    "issues": [],
+    "origin": "user",
+    "params": {
+     "asset_owner": {
+      "basis": "user",
+      "value": "Hunter Water"
+     },
+     "depth_basis": {
+      "basis": "user",
+      "value": "potholed"
+     },
+     "depth_m": {
+      "basis": "user",
+      "value": 2.5
+     },
+     "depth_reference": {
+      "basis": "user",
+      "value": "invert"
+     },
+     "diameter_mm": {
+      "basis": "user",
+      "value": 100
+     },
+     "plan_date": {
+      "basis": "user",
+      "value": "2026-09-01"
+     },
+     "plan_expiry_date": {
+      "basis": "user",
+      "value": "2026-12-01"
+     },
+     "position_tolerance_m": {
+      "basis": "user",
+      "value": 0.3
+     },
+     "service_kind": {
+      "basis": "user",
+      "value": "water"
+     },
+     "verified_by": {
+      "basis": "user",
+      "value": "J Citizen"
+     }
+    },
+    "status": "proposed",
+    "type": "service_existing",
+    "verified": true,
+    "verified_on": "2026-09-05"
+   },
+   {
+    "geometry": {
+     "kind": "point",
+     "p": [
+      334509.0,
+      6263898.0
+     ]
+    },
+    "id": "dp1",
+    "issues": [],
+    "origin": "user",
+    "params": {
+     "discharge_kind": {
+      "basis": "user",
+      "value": "kerb_outlet"
+     }
+    },
+    "status": "proposed",
+    "type": "discharge_point",
+    "verified": false
+   },
+   {
+    "geometry": {
+     "kind": "point",
+     "p": [
+      334515.0,
+      6263925.0
+     ]
+    },
+    "id": "osd1",
+    "issues": [],
+    "origin": "user",
+    "params": {
+     "length_m": {
+      "basis": "user",
+      "value": 2.0
+     },
+     "width_m": {
+      "basis": "user",
+      "value": 1.0
+     }
+    },
+    "status": "proposed",
+    "type": "osd",
+    "verified": false
+   }
+  ],
+  "schema": "site_design.v1",
+  "version": 1
+ },
+ "result": {
+  "ai_errors": [],
+  "batch": [
+   {
+    "args": {
+     "id": "ai_drive_2",
+     "label": "DRIVEWAY (PROPOSED ALIGNMENT)",
+     "origin": "ai_proposal",
+     "params": {
+      "crossover_chainage_m": {
+       "basis": "derived",
+       "ref": "AI FIRST DESIGN: DRIVEWAY GENERATOR FROM THE ASSUMED KERB LINE OF THE 3D MODEL (CHAINAGE FROM ITS FIRST POINT) AND THE LOT BOUNDARY",
+       "value": 39.0
+      },
+      "end_building_id": {
+       "basis": "derived",
+       "ref": "AI FIRST DESIGN: DRIVEWAY GENERATOR FROM THE FOOTPRINT OF THE BUILDING (END SNAPPED TO ITS NEAREST POINT; END LEVEL IS ITS FFL)",
+       "value": "house"
+      },
+      "surface_kind": {
+       "basis": "unresolved",
+       "value": null
+      },
+      "width_m": {
+       "basis": "unresolved",
+       "value": null
+      }
+     },
+     "points": [
+      {
+       "e": 334509.0,
+       "n": 6263896.0
+      },
+      {
+       "e": 334509.0,
+       "n": 6263910.0
+      }
+     ],
+     "status": "proposed",
+     "type": "driveway"
+    },
+    "op": "add_object"
+   },
+   {
+    "args": {
+     "id": "ai_tank_1",
+     "label": "RAINWATER TANK (PROPOSED POSITION)",
+     "origin": "ai_proposal",
+     "params": {
+      "roof_building_id": {
+       "basis": "derived",
+       "ref": "AI FIRST DESIGN: TANK GENERATOR FROM THE DOWNPIPE POINTS OF THE BUILDING",
+       "value": "house"
+      }
+     },
+     "points": [
+      {
+       "e": 334505.0,
+       "n": 6263912.0
+      }
+     ],
+     "status": "proposed",
+     "type": "rwt"
+    },
+    "op": "add_object"
+   },
+   {
+    "args": {
+     "id": "ai_sewer_1",
+     "label": "SEWER 1",
+     "origin": "ai_proposal",
+     "params": {
+      "building_id": {
+       "basis": "derived",
+       "ref": "AI FIRST DESIGN: SEWER ROUTE ENGINE FROM THE BUILDING WHOSE SEWER EXIT STARTS THE ROUTE",
+       "value": "house"
+      }
+     },
+     "points": [
+      {
+       "e": 334509.0,
+       "n": 6263910.0
+      },
+      {
+       "e": 334509.0,
+       "n": 6263903.0
+      }
+     ],
+     "status": "proposed",
+     "type": "sewer_drain"
+    },
+    "op": "add_object"
+   },
+   {
+    "args": {
+     "id": "ai_sewer_cn_1",
+     "label": "CONNECTION (VERIFIED)",
+     "origin": "ai_proposal",
+     "params": {
+      "invert_rl": {
+       "basis": "derived",
+       "ref": "AI FIRST DESIGN: SEWER ROUTE ENGINE FROM THE TERRAIN GROUND LEVEL AT THE CONNECTION MINUS THE VERIFIED DEPTH OF THE MAIN",
+       "value": 97.65
+      },
+      "main_id": {
+       "basis": "derived",
+       "ref": "AI FIRST DESIGN: ROUTE ENGINE FROM THE NEAREST POINT OF THE VERIFIED MAIN",
+       "value": "sewer_main"
+      },
+      "node_kind": {
+       "basis": "derived",
+       "ref": "AI FIRST DESIGN: ROUTE ENGINE FROM THE ROLE OF THE NODE ON THE ROUTE",
+       "value": "sewer_connection"
+      }
+     },
+     "points": [
+      {
+       "e": 334509.0,
+       "n": 6263903.0
+      }
+     ],
+     "status": "proposed",
+     "type": "service_node"
+    },
+    "op": "add_object"
+   },
+   {
+    "args": {
+     "id": "ai_water_1",
+     "label": "WATER SERVICE",
+     "origin": "ai_proposal",
+     "params": {
+      "main_id": {
+       "basis": "derived",
+       "ref": "AI FIRST DESIGN: WATER ROUTE ENGINE FROM THE NEAREST POINT OF THE VERIFIED MAIN",
+       "value": "water_main"
+      }
+     },
+     "points": [
+      {
+       "e": 334507.0,
+       "n": 6263905.0
+      },
+      {
+       "e": 334507.0,
+       "n": 6263910.0
+      }
+     ],
+     "status": "proposed",
+     "type": "water_service"
+    },
+    "op": "add_object"
+   },
+   {
+    "args": {
+     "id": "ai_water_cn_1",
+     "label": "WATER CONNECTION (VERIFIED)",
+     "origin": "ai_proposal",
+     "params": {
+      "main_id": {
+       "basis": "derived",
+       "ref": "AI FIRST DESIGN: ROUTE ENGINE FROM THE NEAREST POINT OF THE VERIFIED MAIN",
+       "value": "water_main"
+      },
+      "node_kind": {
+       "basis": "derived",
+       "ref": "AI FIRST DESIGN: ROUTE ENGINE FROM THE ROLE OF THE NODE ON THE ROUTE",
+       "value": "water_connection"
+      }
+     },
+     "points": [
+      {
+       "e": 334507.0,
+       "n": 6263905.0
+      }
+     ],
+     "status": "proposed",
+     "type": "service_node"
+    },
+    "op": "add_object"
+   },
+   {
+    "args": {
+     "basis": "derived",
+     "id": "ai_tank_1",
+     "key": "drains_to_id",
+     "ref": "AI FIRST DESIGN: STORMWATER LINK GENERATOR FROM THE TANK POSITION AND DISCHARGE POINT PLACED BY THE USER",
+     "value": "dp1"
+    },
+    "op": "set_param"
+   },
+   {
+    "args": {
+     "id": "ai_landscape_1",
+     "label": "LANDSCAPE AREA (SURFACE NOT SET)",
+     "origin": "ai_proposal",
+     "params": {
+      "surface_kind": {
+       "basis": "unresolved",
+       "value": null
+      }
+     },
+     "points": [
+      {
+       "e": 334500.0,
+       "n": 6263920.0
+      },
+      {
+       "e": 334505.0,
+       "n": 6263920.0
+      },
+      {
+       "e": 334505.0,
+       "n": 6263910.0
+      },
+      {
+       "e": 334513.0,
+       "n": 6263910.0
+      },
+      {
+       "e": 334513.0,
+       "n": 6263920.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263920.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263900.0
+      },
+      {
+       "e": 334500.0,
+       "n": 6263900.0
+      }
+     ],
+     "status": "proposed",
+     "type": "landscape_area"
+    },
+    "op": "add_object"
+   },
+   {
+    "args": {
+     "id": "ai_landscape_2",
+     "label": "LANDSCAPE AREA (SURFACE NOT SET)",
+     "origin": "ai_proposal",
+     "params": {
+      "surface_kind": {
+       "basis": "unresolved",
+       "value": null
+      }
+     },
+     "points": [
+      {
+       "e": 334500.0,
+       "n": 6263927.0
+      },
+      {
+       "e": 334500.0,
+       "n": 6263928.0
+      },
+      {
+       "e": 334500.0,
+       "n": 6263929.0
+      },
+      {
+       "e": 334500.0,
+       "n": 6263930.0
+      },
+      {
+       "e": 334500.0,
+       "n": 6263931.0
+      },
+      {
+       "e": 334500.0,
+       "n": 6263932.0
+      },
+      {
+       "e": 334500.0,
+       "n": 6263933.0
+      },
+      {
+       "e": 334500.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334501.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334502.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334503.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334504.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334505.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334506.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334507.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334508.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334509.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334510.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334511.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334512.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334513.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334514.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334515.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334516.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334517.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263934.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263933.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263932.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263931.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263930.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263929.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263928.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263927.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263926.0
+      },
+      {
+       "e": 334515.5,
+       "n": 6263926.0
+      },
+      {
+       "e": 334514.5,
+       "n": 6263926.0
+      },
+      {
+       "e": 334500.0,
+       "n": 6263926.0
+      }
+     ],
+     "status": "proposed",
+     "type": "landscape_area"
+    },
+    "op": "add_object"
+   },
+   {
+    "args": {
+     "id": "ai_landscape_3",
+     "label": "LANDSCAPE AREA (SURFACE NOT SET)",
+     "origin": "ai_proposal",
+     "params": {
+      "surface_kind": {
+       "basis": "unresolved",
+       "value": null
+      }
+     },
+     "points": [
+      {
+       "e": 334500.0,
+       "n": 6263926.0
+      },
+      {
+       "e": 334514.5,
+       "n": 6263926.0
+      },
+      {
+       "e": 334514.5,
+       "n": 6263924.0
+      },
+      {
+       "e": 334515.5,
+       "n": 6263924.0
+      },
+      {
+       "e": 334515.5,
+       "n": 6263926.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263926.0
+      },
+      {
+       "e": 334518.0,
+       "n": 6263920.0
+      },
+      {
+       "e": 334500.0,
+       "n": 6263920.0
+      }
+     ],
+     "status": "proposed",
+     "type": "landscape_area"
+    },
+    "op": "add_object"
+   }
+  ],
+  "design_version": 1,
+  "final_checks": {
+   "blocking": 0,
+   "blocking_list": [],
+   "total": 41,
+   "warning": 25
+  },
+  "label": "AI GENERATED DRAFT, NOT CHECKED OR CERTIFIED, MUST BE CHECKED AND VERIFIED BY A QUALIFIED PERSON BEFORE ANY USE.",
+  "late_results_ignored": 0,
+  "mode": "rules",
+  "model": null,
+  "notes": [],
+  "proposals": [
+   {
+    "alternatives": [
+     {
+      "blocked": false,
+      "id": "B",
+      "summary": "DRIVEWAY FROM THE KERB AT CHAINAGE 33.6 M TO THE NEAREST POINT OF HOUSE, 14.1 M LONG, WIDTH AND SURFACE NOT SET. CHECKS: 0 FAIL, 6 NOT EVALUATED, 2 PASS"
+     },
+     {
+      "blocked": false,
+      "id": "C",
+      "summary": "DRIVEWAY FROM THE KERB AT CHAINAGE 44.4 M TO THE NEAREST POINT OF HOUSE, 14.1 M LONG, WIDTH AND SURFACE NOT SET. CHECKS: 0 FAIL, 6 NOT EVALUATED, 2 PASS"
+     }
+    ],
+    "blocked": false,
+    "candidate_id": "A",
+    "checks": [
+     {
+      "code": "max_grade",
+      "id": "ai_drive_2:max_grade",
+      "message": "STEEPEST GRADE: grades by section: [5.0, 5.0, 12.0]; max grade requirement UNRESOLVED",
+      "object_id": "ai_drive_2",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "change_of_grade@GUTTER BAND",
+      "id": "ai_drive_2:change_of_grade@GUTTER BAND",
+      "message": "CHANGE OF GRADE AT GUTTER BAND: max change-of-grade requirement UNRESOLVED; not checked",
+      "object_id": "ai_drive_2",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "change_of_grade@PROPERTY BOUNDARY",
+      "id": "ai_drive_2:change_of_grade@PROPERTY BOUNDARY",
+      "message": "CHANGE OF GRADE AT PROPERTY BOUNDARY: max change-of-grade requirement UNRESOLVED; not checked",
+      "object_id": "ai_drive_2",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "b85_scraping_clearance",
+      "id": "ai_drive_2:b85_scraping_clearance",
+      "message": "B85 UNDERBODY CLEARANCE, FORWARD AND REVERSE: VALUE 0.019 m, LIMIT 0",
+      "object_id": "ai_drive_2",
+      "severity": "info",
+      "status": "PASS"
+     },
+     {
+      "code": "width_min",
+      "id": "ai_drive_2:width_min",
+      "message": "DRIVEWAY WIDTH, MINIMUM: WIDTH NOT SET",
+      "object_id": "ai_drive_2",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "width_max",
+      "id": "ai_drive_2:width_max",
+      "message": "DRIVEWAY WIDTH, MAXIMUM: WIDTH NOT SET",
+      "object_id": "ai_drive_2",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "crossover_separation",
+      "id": "ai_drive_2:crossover_separation",
+      "message": "CROSSOVER SEPARATION FROM A CORNER OR INTERSECTION: NEEDS WHICH BOUNDARIES ADJOIN A ROAD, WHICH THE 3D MODEL DOES NOT CARRY",
+      "object_id": "ai_drive_2",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "AI_DRIVEWAY_CLEAR",
+      "id": "ai_drive_2:AI_DRIVEWAY_CLEAR",
+      "message": "THE ALIGNMENT CROSSES NO OTHER BUILDING OR POOL",
+      "object_id": "ai_drive_2",
+      "severity": "info",
+      "status": "PASS"
+     }
+    ],
+    "counts": {
+     "blocking": 0,
+     "fail": 0,
+     "not_evaluated": 6,
+     "total": 8
+    },
+    "edited_ids": [],
+    "flags": [],
+    "id": "driveway",
+    "kind": "driveway",
+    "object_ids": [
+     "ai_drive_2"
+    ],
+    "reason": "THE BEST RANKED CANDIDATE: FEWEST FAILING CHECKS, THEN FEWEST CHECKS NOT EVALUATED, THEN THE SHORTEST",
+    "required_inputs": [
+     "DRIVEWAY WIDTH",
+     "DRIVEWAY SURFACE",
+     "GARAGE POSITION"
+    ],
+    "revert_steps": [],
+    "selected_by": "SELECTED BY RULES, NO AI",
+    "selected_by_ai": false,
+    "set_id": "driveway",
+    "steps": [
+     {
+      "args": {
+       "id": "ai_drive_2",
+       "label": "DRIVEWAY (PROPOSED ALIGNMENT)",
+       "origin": "ai_proposal",
+       "params": {
+        "crossover_chainage_m": {
+         "basis": "derived",
+         "ref": "AI FIRST DESIGN: DRIVEWAY GENERATOR FROM THE ASSUMED KERB LINE OF THE 3D MODEL (CHAINAGE FROM ITS FIRST POINT) AND THE LOT BOUNDARY",
+         "value": 39.0
+        },
+        "end_building_id": {
+         "basis": "derived",
+         "ref": "AI FIRST DESIGN: DRIVEWAY GENERATOR FROM THE FOOTPRINT OF THE BUILDING (END SNAPPED TO ITS NEAREST POINT; END LEVEL IS ITS FFL)",
+         "value": "house"
+        },
+        "surface_kind": {
+         "basis": "unresolved",
+         "value": null
+        },
+        "width_m": {
+         "basis": "unresolved",
+         "value": null
+        }
+       },
+       "points": [
+        {
+         "e": 334509.0,
+         "n": 6263896.0
+        },
+        {
+         "e": 334509.0,
+         "n": 6263910.0
+        }
+       ],
+       "status": "proposed",
+       "type": "driveway"
+      },
+      "op": "add_object"
+     }
+    ],
+    "summary": "DRIVEWAY FROM THE KERB AT CHAINAGE 39.0 M TO THE NEAREST POINT OF HOUSE, 14.0 M LONG, WIDTH AND SURFACE NOT SET. CHECKS: 0 FAIL, 6 NOT EVALUATED, 2 PASS",
+    "title": "DRIVEWAY"
+   },
+   {
+    "alternatives": [
+     {
+      "blocked": false,
+      "id": "B",
+      "summary": "TANK AT DOWNPIPE 2 OF HOUSE, 5.0 M FROM THE BOUNDARY, SIZE NOT SET. CHECKS: 0 FAIL, 7 NOT EVALUATED, 2 PASS"
+     },
+     {
+      "blocked": false,
+      "id": "C",
+      "summary": "TANK AT DOWNPIPE 3 OF HOUSE, 5.0 M FROM THE BOUNDARY, SIZE NOT SET. CHECKS: 0 FAIL, 7 NOT EVALUATED, 2 PASS"
+     }
+    ],
+    "blocked": false,
+    "candidate_id": "A",
+    "checks": [
+     {
+      "code": "AI_TANK_SETBACK",
+      "id": "ai_tank_1:AI_TANK_SETBACK",
+      "message": "THE POINT IS 5.00 M FROM THE BOUNDARY; THE RULE rwt.min_boundary_distance_m IS 0.9 M (LGA RULE)",
+      "object_id": "ai_tank_1",
+      "severity": "info",
+      "status": "PASS"
+     },
+     {
+      "code": "AI_TANK_CLEAR",
+      "id": "ai_tank_1:AI_TANK_CLEAR",
+      "message": "THE POINT IS CLEAR OF OTHER OBJECTS AND OF SERVICE CLEARANCES THAT RESOLVE",
+      "object_id": "ai_tank_1",
+      "severity": "info",
+      "status": "PASS"
+     },
+     {
+      "code": "RWT_MAX_HEIGHT",
+      "id": "ai_tank_1:RWT_MAX_HEIGHT",
+      "message": "NOT EVALUATED: UNRESOLVED REQUIREMENT: rwt.max_height_m (NO ZONE QUALIFIED KEY RESOLVED EITHER).",
+      "object_id": "ai_tank_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "RWT_STREET_SETBACK",
+      "id": "ai_tank_1:RWT_STREET_SETBACK",
+      "message": "NOT EVALUATED: UNRESOLVED REQUIREMENT: rwt.location_behind_street_setback",
+      "object_id": "ai_tank_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "RWT_UNDERGROUND_CLEARANCE",
+      "id": "ai_tank_1:RWT_UNDERGROUND_CLEARANCE",
+      "message": "NOT EVALUATED: TANK SHAPE NOT SET",
+      "object_id": "ai_tank_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "RWT_BOUNDARY_DISTANCE",
+      "id": "ai_tank_1:RWT_BOUNDARY_DISTANCE",
+      "message": "NOT EVALUATED: A DIMENSION IS NOT SET, SO THE FOOTPRINT IS NOT KNOWN",
+      "object_id": "ai_tank_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "RWT_ROOF_CONNECTION",
+      "id": "ai_tank_1:RWT_ROOF_CONNECTION",
+      "message": "NOT EVALUATED: THE LINKED BUILDING HAS NO ROOF AREA",
+      "object_id": "ai_tank_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "RWT_LEVEL_ORDER",
+      "id": "ai_tank_1:RWT_LEVEL_ORDER",
+      "message": "NOT EVALUATED: NOT SET: INLET RL, OVERFLOW RL, OUTLET RL",
+      "object_id": "ai_tank_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "RWT_LEVELS_IN_BODY",
+      "id": "ai_tank_1:RWT_LEVELS_IN_BODY",
+      "message": "NOT EVALUATED: NOT SET: TANK BASE RL, TANK HEIGHT, INLET RL, OVERFLOW RL, OUTLET RL",
+      "object_id": "ai_tank_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     }
+    ],
+    "counts": {
+     "blocking": 0,
+     "fail": 0,
+     "not_evaluated": 7,
+     "total": 9
+    },
+    "edited_ids": [],
+    "flags": [],
+    "id": "tank",
+    "kind": "tank",
+    "object_ids": [
+     "ai_tank_1"
+    ],
+    "reason": "THE BEST RANKED CANDIDATE: FEWEST FAILING CHECKS, THEN FEWEST CHECKS NOT EVALUATED, THEN THE SHORTEST",
+    "required_inputs": [
+     "TANK SHAPE AND SIZE",
+     "TANK VOLUME",
+     "CONNECTED ROOF AREA",
+     "TANK LEVELS (INLET, OVERFLOW, OUTLET)"
+    ],
+    "revert_steps": [],
+    "selected_by": "SELECTED BY RULES, NO AI",
+    "selected_by_ai": false,
+    "set_id": "tank",
+    "steps": [
+     {
+      "args": {
+       "id": "ai_tank_1",
+       "label": "RAINWATER TANK (PROPOSED POSITION)",
+       "origin": "ai_proposal",
+       "params": {
+        "roof_building_id": {
+         "basis": "derived",
+         "ref": "AI FIRST DESIGN: TANK GENERATOR FROM THE DOWNPIPE POINTS OF THE BUILDING",
+         "value": "house"
+        }
+       },
+       "points": [
+        {
+         "e": 334505.0,
+         "n": 6263912.0
+        }
+       ],
+       "status": "proposed",
+       "type": "rwt"
+      },
+      "op": "add_object"
+     }
+    ],
+    "summary": "TANK AT DOWNPIPE 1 OF HOUSE, 5.0 M FROM THE BOUNDARY, SIZE NOT SET. CHECKS: 0 FAIL, 7 NOT EVALUATED, 2 PASS",
+    "title": "RAINWATER TANK POSITION FOR HOUSE"
+   },
+   {
+    "alternatives": [],
+    "blocked": false,
+    "candidate_id": "A",
+    "checks": [
+     {
+      "code": "DRAIN_GRADE",
+      "id": "ai_sewer_1:DRAIN_GRADE",
+      "message": "NOT EVALUATED: UPSTREAM OR DOWNSTREAM INVERT NOT SET",
+      "object_id": "ai_sewer_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "DRAIN_COVER",
+      "id": "ai_sewer_1:DRAIN_COVER",
+      "message": "NOT EVALUATED: DIAMETER NOT SET",
+      "object_id": "ai_sewer_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "DRAIN_CONNECTION_DEPTH",
+      "id": "ai_sewer_1:DRAIN_CONNECTION_DEPTH",
+      "message": "NOT EVALUATED: DOWNSTREAM INVERT NOT SET",
+      "object_id": "ai_sewer_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "DRAIN_ENDS",
+      "id": "ai_sewer_1:DRAIN_ENDS",
+      "message": "UPSTREAM END AT BUILDING EXIT, DRAIN; DOWNSTREAM END AT NODE, DRAIN, EXISTING SEWER",
+      "object_id": "ai_sewer_1",
+      "severity": "info",
+      "status": "PASS"
+     },
+     {
+      "code": "DRAIN_BUILDING_CLEARANCE",
+      "id": "ai_sewer_1:DRAIN_BUILDING_CLEARANCE",
+      "message": "NOT APPLICABLE: NO OTHER BUILDING IN THE DESIGN (THE BUILDING THE DRAIN LEAVES IS NOT CHECKED)",
+      "object_id": "ai_sewer_1",
+      "severity": "info",
+      "status": "NOT APPLICABLE"
+     },
+     {
+      "code": "NODE_CONNECTION",
+      "id": "ai_sewer_cn_1:NODE_CONNECTION",
+      "message": "THE CONNECTION IS ON SEWER SEWER_MAIN, VERIFIED",
+      "object_id": "ai_sewer_cn_1",
+      "severity": "info",
+      "status": "PASS"
+     },
+     {
+      "code": "DRAIN_INSPECTION",
+      "id": "ai_sewer_1:DRAIN_INSPECTION",
+      "message": "NOT EVALUATED: RUN OF 1 LINK(S), 7.00 M, 0 INSPECTION OPENING(S) BETWEEN ITS ENDS. THE ENDS OF A RUN COUNT AS OPENINGS. UNRESOLVED REQUIREMENT: sewer.inspection_opening_max_deflection_deg",
+      "object_id": "ai_sewer_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "CLASH_CROSSING",
+      "id": "water_main:CLASH_CROSSING:ai_sewer_1",
+      "message": "NOT EVALUATED: WATER WATER_MAIN CROSSES SEWER DRAIN SEWER 1 AT 334509.0, 6263905.0 BUT DEPTH IS NOT AVAILABLE (SEWER DRAIN SEWER 1: INVERT LEVELS ARE NOT SET)",
+      "object_id": "water_main",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "AI_ROUTE_NOTE",
+      "id": "_set:AI_ROUTE_NOTE",
+      "message": "CONNECTION INVERT FROM THE MAIN: GROUND 100.150 MINUS DEPTH 2.500 M (POTHOLED)",
+      "object_id": null,
+      "severity": "info",
+      "status": "INFO"
+     },
+     {
+      "code": "AI_ROUTE_NOTE",
+      "id": "_set:AI_ROUTE_NOTE",
+      "message": "NO DEFLECTION RULE (sewer.inspection_opening_max_deflection_deg UNRESOLVED): OPENINGS FOR CHANGES OF DIRECTION WERE NOT PLACED",
+      "object_id": null,
+      "severity": "info",
+      "status": "INFO"
+     },
+     {
+      "code": "AI_ROUTE_NOTE",
+      "id": "_set:AI_ROUTE_NOTE",
+      "message": "THE START INVERT WAS NOT ENTERED, SO THE INVERTS, THE GRADE AND THE COVER ARE NOT SET. ENTER THE START INVERT ON THE FIRST DRAIN LINK",
+      "object_id": null,
+      "severity": "info",
+      "status": "INFO"
+     },
+     {
+      "code": "AI_ROUTE_NOTE",
+      "id": "_set:AI_ROUTE_NOTE",
+      "message": "THE DIAMETER WAS NOT ENTERED, SO IT IS NOT SET ON THE DRAIN LINKS AND THE MINIMUM GRADE FOR A DIAMETER CANNOT BE READ. ENTER THE DIAMETER",
+      "object_id": null,
+      "severity": "info",
+      "status": "INFO"
+     }
+    ],
+    "counts": {
+     "blocking": 0,
+     "fail": 0,
+     "not_evaluated": 5,
+     "total": 12
+    },
+    "edited_ids": [],
+    "flags": [],
+    "id": "sewer",
+    "kind": "sewer",
+    "object_ids": [
+     "ai_sewer_1",
+     "ai_sewer_cn_1"
+    ],
+    "reason": "THE ONLY CANDIDATE WITHOUT A BLOCKING FAILURE",
+    "required_inputs": [
+     "SEWER START INVERT",
+     "SEWER DIAMETER",
+     "SEWER CONNECTION INVERT WHEN THE DEPTH OF THE MAIN IS NOT VERIFIED"
+    ],
+    "revert_steps": [],
+    "selected_by": "SELECTED BY RULES, NO AI",
+    "selected_by_ai": false,
+    "set_id": "sewer",
+    "steps": [
+     {
+      "args": {
+       "id": "ai_sewer_1",
+       "label": "SEWER 1",
+       "origin": "ai_proposal",
+       "params": {
+        "building_id": {
+         "basis": "derived",
+         "ref": "AI FIRST DESIGN: SEWER ROUTE ENGINE FROM THE BUILDING WHOSE SEWER EXIT STARTS THE ROUTE",
+         "value": "house"
+        }
+       },
+       "points": [
+        {
+         "e": 334509.0,
+         "n": 6263910.0
+        },
+        {
+         "e": 334509.0,
+         "n": 6263903.0
+        }
+       ],
+       "status": "proposed",
+       "type": "sewer_drain"
+      },
+      "op": "add_object"
+     },
+     {
+      "args": {
+       "id": "ai_sewer_cn_1",
+       "label": "CONNECTION (VERIFIED)",
+       "origin": "ai_proposal",
+       "params": {
+        "invert_rl": {
+         "basis": "derived",
+         "ref": "AI FIRST DESIGN: SEWER ROUTE ENGINE FROM THE TERRAIN GROUND LEVEL AT THE CONNECTION MINUS THE VERIFIED DEPTH OF THE MAIN",
+         "value": 97.65
+        },
+        "main_id": {
+         "basis": "derived",
+         "ref": "AI FIRST DESIGN: ROUTE ENGINE FROM THE NEAREST POINT OF THE VERIFIED MAIN",
+         "value": "sewer_main"
+        },
+        "node_kind": {
+         "basis": "derived",
+         "ref": "AI FIRST DESIGN: ROUTE ENGINE FROM THE ROLE OF THE NODE ON THE ROUTE",
+         "value": "sewer_connection"
+        }
+       },
+       "points": [
+        {
+         "e": 334509.0,
+         "n": 6263903.0
+        }
+       ],
+       "status": "proposed",
+       "type": "service_node"
+      },
+      "op": "add_object"
+     }
+    ],
+    "summary": "SEWER ROUTE FROM EXIT 1 OF HOUSE TO VERIFIED MAIN SEWER SEWER_MAIN, 7.0 M LONG, INVERTS AND SIZE NOT SET. CHECKS: 0 FAIL, 5 NOT EVALUATED, 2 PASS",
+    "title": "SEWER ROUTE FOR HOUSE"
+   },
+   {
+    "alternatives": [],
+    "blocked": false,
+    "candidate_id": "A",
+    "checks": [
+     {
+      "code": "WATER_COVER",
+      "id": "ai_water_1:WATER_COVER",
+      "message": "NOT EVALUATED: COVER NOT SET",
+      "object_id": "ai_water_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "WATER_SIZE",
+      "id": "ai_water_1:WATER_SIZE",
+      "message": "NOT EVALUATED: SIZE (DIAMETER) NOT SET",
+      "object_id": "ai_water_1",
+      "severity": "info",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "WATER_MAIN",
+      "id": "ai_water_1:WATER_MAIN",
+      "message": "THE SERVICE CONNECTS TO WATER WATER_MAIN, VERIFIED",
+      "object_id": "ai_water_1",
+      "severity": "info",
+      "status": "PASS"
+     },
+     {
+      "code": "WATER_METER",
+      "id": "ai_water_1:WATER_METER",
+      "message": "NO WATER METER NODE IS ON THIS SERVICE; PLACE THE METER POSITION",
+      "object_id": "ai_water_1",
+      "severity": "warning",
+      "status": "ACTION REQUIRED"
+     },
+     {
+      "code": "NODE_CONNECTION",
+      "id": "ai_water_cn_1:NODE_CONNECTION",
+      "message": "THE CONNECTION IS ON WATER WATER_MAIN, VERIFIED",
+      "object_id": "ai_water_cn_1",
+      "severity": "info",
+      "status": "PASS"
+     },
+     {
+      "code": "AI_ROUTE_NOTE",
+      "id": "_set:AI_ROUTE_NOTE",
+      "message": "CONNECTION INVERT FROM THE MAIN: GROUND 100.250 MINUS DEPTH 2.500 M (POTHOLED)",
+      "object_id": null,
+      "severity": "info",
+      "status": "INFO"
+     },
+     {
+      "code": "AI_ROUTE_NOTE",
+      "id": "_set:AI_ROUTE_NOTE",
+      "message": "THE METER POSITION WAS NOT ENTERED AND THE LOT BOUNDARY CROSSING IS NOT KNOWN, SO NO METER IS PROPOSED. PLACE THE METER",
+      "object_id": null,
+      "severity": "info",
+      "status": "INFO"
+     }
+    ],
+    "counts": {
+     "blocking": 0,
+     "fail": 0,
+     "not_evaluated": 2,
+     "total": 7
+    },
+    "edited_ids": [],
+    "flags": [],
+    "id": "water",
+    "kind": "water",
+    "object_ids": [
+     "ai_water_1",
+     "ai_water_cn_1"
+    ],
+    "reason": "THE ONLY CANDIDATE WITHOUT A BLOCKING FAILURE",
+    "required_inputs": [
+     "WATER SERVICE DIAMETER",
+     "WATER SERVICE COVER",
+     "WATER METER POSITION ACCEPTED BY THE AUTHORITY"
+    ],
+    "revert_steps": [],
+    "selected_by": "SELECTED BY RULES, NO AI",
+    "selected_by_ai": false,
+    "set_id": "water",
+    "steps": [
+     {
+      "args": {
+       "id": "ai_water_1",
+       "label": "WATER SERVICE",
+       "origin": "ai_proposal",
+       "params": {
+        "main_id": {
+         "basis": "derived",
+         "ref": "AI FIRST DESIGN: WATER ROUTE ENGINE FROM THE NEAREST POINT OF THE VERIFIED MAIN",
+         "value": "water_main"
+        }
+       },
+       "points": [
+        {
+         "e": 334507.0,
+         "n": 6263905.0
+        },
+        {
+         "e": 334507.0,
+         "n": 6263910.0
+        }
+       ],
+       "status": "proposed",
+       "type": "water_service"
+      },
+      "op": "add_object"
+     },
+     {
+      "args": {
+       "id": "ai_water_cn_1",
+       "label": "WATER CONNECTION (VERIFIED)",
+       "origin": "ai_proposal",
+       "params": {
+        "main_id": {
+         "basis": "derived",
+         "ref": "AI FIRST DESIGN: ROUTE ENGINE FROM THE NEAREST POINT OF THE VERIFIED MAIN",
+         "value": "water_main"
+        },
+        "node_kind": {
+         "basis": "derived",
+         "ref": "AI FIRST DESIGN: ROUTE ENGINE FROM THE ROLE OF THE NODE ON THE ROUTE",
+         "value": "water_connection"
+        }
+       },
+       "points": [
+        {
+         "e": 334507.0,
+         "n": 6263905.0
+        }
+       ],
+       "status": "proposed",
+       "type": "service_node"
+      },
+      "op": "add_object"
+     }
+    ],
+    "summary": "WATER ROUTE FROM EXIT 1 OF HOUSE TO VERIFIED MAIN WATER WATER_MAIN, 5.0 M LONG, SIZE AND COVER NOT SET. CHECKS: 0 FAIL, 2 NOT EVALUATED, 2 PASS",
+    "title": "WATER ROUTE FOR HOUSE"
+   },
+   {
+    "alternatives": [
+     {
+      "blocked": false,
+      "id": "B",
+      "summary": "LINKS TO OSD1: OVERFLOW OF RAINWATER TANK (PROPOSED POSITION) TO OSD1; OSD1 DRAINS TO DP1. CHECKS: 0 FAIL, 0 NOT EVALUATED"
+     }
+    ],
+    "blocked": false,
+    "candidate_id": "A",
+    "checks": [],
+    "counts": {
+     "blocking": 0,
+     "fail": 0,
+     "not_evaluated": 0,
+     "total": 0
+    },
+    "edited_ids": [
+     "ai_tank_1"
+    ],
+    "flags": [],
+    "id": "stormwater",
+    "kind": "stormwater",
+    "object_ids": [],
+    "reason": "THE BEST RANKED CANDIDATE: FEWEST FAILING CHECKS, THEN FEWEST CHECKS NOT EVALUATED, THEN THE SHORTEST",
+    "required_inputs": [
+     "TANK, OSD AND TRENCH SIZES",
+     "PIPE SIZES AND LEVELS"
+    ],
+    "revert_steps": [
+     {
+      "args": {
+       "id": "ai_tank_1",
+       "key": "drains_to_id"
+      },
+      "op": "remove_param"
+     }
+    ],
+    "selected_by": "SELECTED BY RULES, NO AI",
+    "selected_by_ai": false,
+    "set_id": "stormwater",
+    "steps": [
+     {
+      "args": {
+       "basis": "derived",
+       "id": "ai_tank_1",
+       "key": "drains_to_id",
+       "ref": "AI FIRST DESIGN: STORMWATER LINK GENERATOR FROM THE TANK POSITION AND DISCHARGE POINT PLACED BY THE USER",
+       "value": "dp1"
+      },
+      "op": "set_param"
+     }
+    ],
+    "summary": "LINKS TO DP1: RAINWATER TANK (PROPOSED POSITION) DRAINS TO DP1. CHECKS: 0 FAIL, 0 NOT EVALUATED",
+    "title": "STORMWATER LINKS"
+   },
+   {
+    "alternatives": [
+     {
+      "blocked": false,
+      "id": "B",
+      "summary": "1 LANDSCAPE AREA(S) FROM THE UNBUILT LOT AREA, 280 M2 IN TOTAL, SURFACE NOT SET. CHECKS: 0 FAIL, 2 NOT EVALUATED"
+     }
+    ],
+    "blocked": false,
+    "candidate_id": "A",
+    "checks": [
+     {
+      "code": "LANDSCAPE_RUNOFF",
+      "id": "ai_landscape_1:LANDSCAPE_RUNOFF",
+      "message": "NOT EVALUATED: SURFACE KIND NOT SET",
+      "object_id": "ai_landscape_1",
+      "severity": "info",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "LANDSCAPE_RUNOFF",
+      "id": "ai_landscape_2:LANDSCAPE_RUNOFF",
+      "message": "NOT EVALUATED: SURFACE KIND NOT SET",
+      "object_id": "ai_landscape_2",
+      "severity": "info",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "LANDSCAPE_RUNOFF",
+      "id": "ai_landscape_3:LANDSCAPE_RUNOFF",
+      "message": "NOT EVALUATED: SURFACE KIND NOT SET",
+      "object_id": "ai_landscape_3",
+      "severity": "info",
+      "status": "NOT EVALUATED"
+     },
+     {
+      "code": "AI_LANDSCAPE_CLEAR",
+      "id": "ai_landscape_1:AI_LANDSCAPE_CLEAR",
+      "message": "THE PROPOSED AREAS OVERLAP NO BUILDING, SURFACE OR STRUCTURE IN THE DESIGN",
+      "object_id": "ai_landscape_1",
+      "severity": "info",
+      "status": "PASS"
+     },
+     {
+      "code": "AI_LANDSCAPE_UNSIZED_OVERLAP",
+      "id": "ai_landscape_1:AI_LANDSCAPE_UNSIZED_OVERLAP",
+      "message": "DRIVEWAY (PROPOSED ALIGNMENT) HAS NO WIDTH SET AND PASSES THROUGH A PROPOSED AREA; SET ITS WIDTH AND CHECK AGAIN",
+      "object_id": "ai_landscape_1",
+      "severity": "warning",
+      "status": "NOT EVALUATED"
+     }
+    ],
+    "counts": {
+     "blocking": 0,
+     "fail": 0,
+     "not_evaluated": 4,
+     "total": 5
+    },
+    "edited_ids": [],
+    "flags": [],
+    "id": "landscape",
+    "kind": "landscape",
+    "object_ids": [
+     "ai_landscape_1",
+     "ai_landscape_2",
+     "ai_landscape_3"
+    ],
+    "reason": "THE BEST RANKED CANDIDATE: FEWEST FAILING CHECKS, THEN FEWEST CHECKS NOT EVALUATED, THEN THE SHORTEST",
+    "required_inputs": [
+     "SURFACE OF EACH LANDSCAPE AREA",
+     "WIDTHS OF DRIVEWAY"
+    ],
+    "revert_steps": [],
+    "selected_by": "SELECTED BY RULES, NO AI",
+    "selected_by_ai": false,
+    "set_id": "landscape",
+    "steps": [
+     {
+      "args": {
+       "id": "ai_landscape_1",
+       "label": "LANDSCAPE AREA (SURFACE NOT SET)",
+       "origin": "ai_proposal",
+       "params": {
+        "surface_kind": {
+         "basis": "unresolved",
+         "value": null
+        }
+       },
+       "points": [
+        {
+         "e": 334500.0,
+         "n": 6263920.0
+        },
+        {
+         "e": 334505.0,
+         "n": 6263920.0
+        },
+        {
+         "e": 334505.0,
+         "n": 6263910.0
+        },
+        {
+         "e": 334513.0,
+         "n": 6263910.0
+        },
+        {
+         "e": 334513.0,
+         "n": 6263920.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263920.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263900.0
+        },
+        {
+         "e": 334500.0,
+         "n": 6263900.0
+        }
+       ],
+       "status": "proposed",
+       "type": "landscape_area"
+      },
+      "op": "add_object"
+     },
+     {
+      "args": {
+       "id": "ai_landscape_2",
+       "label": "LANDSCAPE AREA (SURFACE NOT SET)",
+       "origin": "ai_proposal",
+       "params": {
+        "surface_kind": {
+         "basis": "unresolved",
+         "value": null
+        }
+       },
+       "points": [
+        {
+         "e": 334500.0,
+         "n": 6263927.0
+        },
+        {
+         "e": 334500.0,
+         "n": 6263928.0
+        },
+        {
+         "e": 334500.0,
+         "n": 6263929.0
+        },
+        {
+         "e": 334500.0,
+         "n": 6263930.0
+        },
+        {
+         "e": 334500.0,
+         "n": 6263931.0
+        },
+        {
+         "e": 334500.0,
+         "n": 6263932.0
+        },
+        {
+         "e": 334500.0,
+         "n": 6263933.0
+        },
+        {
+         "e": 334500.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334501.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334502.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334503.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334504.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334505.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334506.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334507.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334508.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334509.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334510.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334511.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334512.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334513.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334514.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334515.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334516.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334517.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263934.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263933.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263932.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263931.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263930.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263929.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263928.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263927.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263926.0
+        },
+        {
+         "e": 334515.5,
+         "n": 6263926.0
+        },
+        {
+         "e": 334514.5,
+         "n": 6263926.0
+        },
+        {
+         "e": 334500.0,
+         "n": 6263926.0
+        }
+       ],
+       "status": "proposed",
+       "type": "landscape_area"
+      },
+      "op": "add_object"
+     },
+     {
+      "args": {
+       "id": "ai_landscape_3",
+       "label": "LANDSCAPE AREA (SURFACE NOT SET)",
+       "origin": "ai_proposal",
+       "params": {
+        "surface_kind": {
+         "basis": "unresolved",
+         "value": null
+        }
+       },
+       "points": [
+        {
+         "e": 334500.0,
+         "n": 6263926.0
+        },
+        {
+         "e": 334514.5,
+         "n": 6263926.0
+        },
+        {
+         "e": 334514.5,
+         "n": 6263924.0
+        },
+        {
+         "e": 334515.5,
+         "n": 6263924.0
+        },
+        {
+         "e": 334515.5,
+         "n": 6263926.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263926.0
+        },
+        {
+         "e": 334518.0,
+         "n": 6263920.0
+        },
+        {
+         "e": 334500.0,
+         "n": 6263920.0
+        }
+       ],
+       "status": "proposed",
+       "type": "landscape_area"
+      },
+      "op": "add_object"
+     }
+    ],
+    "summary": "3 LANDSCAPE AREA(S) FROM THE UNBUILT LOT AREA, 530 M2 IN TOTAL, SURFACE NOT SET. CHECKS: 0 FAIL, 4 NOT EVALUATED",
+    "title": "LANDSCAPE AREAS"
+   }
+  ],
+  "refused_tool_calls": 0,
+  "required_inputs": [
+   "DRIVEWAY WIDTH",
+   "DRIVEWAY SURFACE",
+   "GARAGE POSITION",
+   "TANK SHAPE AND SIZE",
+   "TANK VOLUME",
+   "CONNECTED ROOF AREA",
+   "TANK LEVELS (INLET, OVERFLOW, OUTLET)",
+   "SEWER START INVERT",
+   "SEWER DIAMETER",
+   "SEWER CONNECTION INVERT WHEN THE DEPTH OF THE MAIN IS NOT VERIFIED",
+   "WATER SERVICE DIAMETER",
+   "WATER SERVICE COVER",
+   "WATER METER POSITION ACCEPTED BY THE AUTHORITY",
+   "TANK, OSD AND TRENCH SIZES",
+   "PIPE SIZES AND LEVELS",
+   "SURFACE OF EACH LANDSCAPE AREA",
+   "WIDTHS OF DRIVEWAY"
+  ],
+  "schema": "first_design.v1",
+  "selected_by": "SELECTED BY RULES, NO AI",
+  "skipped": [
+   {
+    "notes": [
+     "DRIVEWAY (PROPOSED ALIGNMENT): NO BATTERS OR EARTHWORKS ARE COMPUTED (A WIDTH, LEVEL OR BATTER SLOPE IS NOT SET)"
+    ],
+    "reason": "NO BATTER IS COMPUTED, SO NO WALL IS PROPOSED",
+    "required_inputs": [
+     "WALL TYPE",
+     "WALL HEIGHT AND THICKNESS",
+     "TOP AND BOTTOM LEVELS"
+    ],
+    "set_id": "walls",
+    "skipped_by": "generator",
+    "title": "RETAINING WALLS AT THE BOUNDARY"
+   }
+  ],
+  "usage": {
+   "cache_read_tokens": 0,
+   "cache_write_tokens": 0,
+   "calls": 0,
+   "cost_usd": 0.0,
+   "input_tokens": 0,
+   "output_tokens": 0
+  }
+ }
+}

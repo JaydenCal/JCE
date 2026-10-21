@@ -96,8 +96,8 @@ def test_deterministic_extraction_with_exact_citations(docs):
     assert rs.get("sewer.min_grade_pct", dia_mm=100) == 2.0 and rs.get("water.min_cover_m", dia_mm=20) == 0.75
     assert rs.get("util.build_over_allowed", service="sewer") is False
     assert rs.get("util.build_over_allowed", service="water") is True
-    assert rs.get("driveway.max_grade_pct", lga="Testville") == 20 and rs.get("driveway.max_width_m") == 5.5
-    assert rs.get("driveway.min_width_m") == 3.0 and rs.get("driveway.max_grade_change_pct") == 12
+    assert rs.get("driveway.max_grade_pct", lga="Testville") == 20 and rs.get("driveway.max_width_m", lga="Testville") == 5.5
+    assert rs.get("driveway.min_width_m", lga="Testville") == 3.0 and rs.get("driveway.max_grade_change_pct", lga="Testville") == 12
     r = rs.get_requirement("util.clearance_m", service="sewer", dia_mm=450)
     s, ch = r.source, None
     assert s.sha256 == sha256_file(docs / "sw.pdf") and s.authority == "Sydney Water" and s.version == "v3"
@@ -130,7 +130,7 @@ def test_llm_only_for_unresolved_and_validated(docs):
     llm = FakeLlm()
     rz, rs = resolve(docs, llm)
     assert llm.calls == 1                                      # only the single unresolved key
-    r = rs.get_requirement("driveway.min_separation_m")
+    r = rs.get_requirement("driveway.min_separation_m", lga="Testville")
     assert r.value == 9 and r.extraction_method == "llm" and r.confidence <= 0.8
     assert "tangent point" in r.source.quote
     n = llm.calls
@@ -142,7 +142,7 @@ def test_llm_only_for_unresolved_and_validated(docs):
 def test_fabricated_llm_output_rejected(docs, bad):
     _, rs = resolve(docs, FakeLlm(bad))
     with pytest.raises(UnresolvedRequirement):
-        rs.get("driveway.min_separation_m")
+        rs.get("driveway.min_separation_m", lga="Testville")
 
 
 def test_conflict_flagged_with_both_citations(tmp_path):
@@ -178,3 +178,14 @@ def test_selector_specificity():
     for lga, v in ((None, 10.0), ("Testville", 20.0)):
         rs.add(Requirement(key="driveway.max_grade_pct", applies_to=Selectors(lga=lga), value=v, status="resolved"))
     assert rs.get("driveway.max_grade_pct", lga="Testville") == 20.0 and rs.get("driveway.max_grade_pct", lga="Other") == 10.0
+
+
+def test_council_document_filter_accepts_an_lga_code(docs):
+    key = "driveway.max_width_m"
+    for lga in ("Testville", "nsw-testville", "TESTVILLE", "Testville Shire Council"):
+        rz = RequirementsResolver(LotRequirementContext(jurisdiction="NSW", lga=lga), LocalFolderSource(docs))
+        assert [d.lga for d in rz.governing_docs(key)] == ["Testville"], lga
+    other = RequirementsResolver(LotRequirementContext(jurisdiction="NSW", lga="nsw-elsewhere"), LocalFolderSource(docs))
+    assert other.governing_docs(key) == []
+    qld = RequirementsResolver(LotRequirementContext(jurisdiction="QLD", lga="qld-testville"), LocalFolderSource(docs))
+    assert qld.governing_docs(key) == []                                 # the NSW document is not a QLD council's

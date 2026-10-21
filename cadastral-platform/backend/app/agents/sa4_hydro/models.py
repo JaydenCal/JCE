@@ -179,6 +179,19 @@ class TankResult(Model):
     storage_change_l: float
 
 
+class PlaceholderUse(Model):
+    """One hard-coded SA4 placeholder that a sizing run used because the caller did not set the field and no requirement supplied it.
+    ``key`` is the registered requirement key that replaces it (None for a project input that is not a requirement)."""
+    key: str | None
+    field: str
+    value: float | int | str | bool
+    unit: str = ""
+    stamp: str = "PLACEHOLDER, NOT A REQUIREMENT"
+
+    def text(self) -> str:
+        return f"{self.stamp}: {self.key or self.field} = {self.value}{(' ' + self.unit) if self.unit else ''} was used (field {self.field}); enter a value or load the requirement"
+
+
 class RwtSizing(Model):
     regime: str
     target_reliability_pct: float | None      # None => target unresolved (see `unresolved`)
@@ -193,6 +206,7 @@ class RwtSizing(Model):
     unresolved: list[UnresolvedItem] = []
     citations: list[str] = []
     placeholder: bool = False
+    placeholders: list[PlaceholderUse] = []         # every placeholder value the run used (stamped); empty when none
 
 
 class Sa4Request(Model):

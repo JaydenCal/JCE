@@ -314,7 +314,7 @@ def test_mesh_volumes_and_parts(house):
             assert soup_volume(np.array(p["v"]).reshape(-1, 3, 3)) == pytest.approx(w.length * w.thickness * w.height - sum(o.width * o.height * w.thickness for o in house.openings if o.wall_id == w.id), rel=1e-6)
     off = to_parts(house, origin=(10.0, 20.0))
     assert np.array(off[0]["v"])[0] == pytest.approx(np.array(to_parts(house)[0]["v"])[0] - 10.0)
-    from app.agents.sa6_glide3d.models import Part
+    from app.agents.sa6_site3d.models import Part
     Part(**parts[0])
     b = to_building_in(house)
     assert len(b) == 1 and b[0].roof_type == "gable"

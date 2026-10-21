@@ -30,6 +30,7 @@ class NodeSpec:
     tolerate_after_failure: bool = False
     export_gate: bool = False
     llm: bool = False
+    cacheable: bool = True      # False: the node is always recomputed (no idempotency cache hit); SA6 reads live terrain and aerial services that its input does not describe
     description: str = ""
 
     @property
@@ -58,9 +59,9 @@ _NODE_LIST: tuple[NodeSpec, ...] = (
     NodeSpec("SA5", AgentCode.SA5_CAD_DXF, "cad_request.v1", "cad_result.v1", "F",
              deps=("SA1", "SA3", "SA4"), after=("SA7",), export_gate=True,
              description="DXF/PDF export (export ack gate)"),
-    NodeSpec("SA6", AgentCode.SA6_GLIDE3D, "scene_request.v1", "scene_bundle.v1", "F",
-             deps=("SA3", "SA4"), after=("SA7",), export_gate=True,
-             description="3D scene bundle (export ack gate)"),
+    NodeSpec("SA6", AgentCode.SA6_SITE3D, "scene_request.v1", "scene_bundle.v1", "F",
+             deps=("SA1", "ENV"), after=("SA3", "SA4", "SA7"), tolerate_after_failure=True, export_gate=True, cacheable=False,
+             description="3D site scene bundle with the terrain chain and aerial (export ack gate); a site scene needs only the lot and the envelope, SA3 and SA4 add to it when they succeed"),
 )
 
 DAG: Mapping[str, NodeSpec] = {n.node_id: n for n in _NODE_LIST}

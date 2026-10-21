@@ -38,16 +38,16 @@ def test_numeric_values_appear_in_their_quotes(reqs):
 
 def test_resolver_lookups_for_the_three_test_runs(reqs):
     rs = RequirementSet(requirements=reqs)
-    assert rs.get("setback.dwelling_house.front_m", zone="R2") == 6.5
-    assert rs.get("setback.dwelling_house.side_m", zone="R2") == 0.9
-    assert rs.get("outbuilding.max_cumulative_area_m2.lot_gt_900m2", zone="R2") == 100
-    assert rs.get("setback.outbuilding.side_m", zone="RU1") == 10
-    assert rs.get("secondary_dwelling.max_floor_area_m2") == 60
-    assert rs.get("water.unserviced_min_tank_storage_l") == 60000
+    assert rs.get("setback.dwelling_house.front_m", zone="R2", lga="Gunnedah") == 6.5
+    assert rs.get("setback.dwelling_house.side_m", zone="R2", lga="Gunnedah") == 0.9
+    assert rs.get("outbuilding.max_cumulative_area_m2.lot_gt_900m2", zone="R2", lga="Gunnedah") == 100
+    assert rs.get("setback.outbuilding.side_m", zone="RU1", lga="Gunnedah") == 10
+    assert rs.get("secondary_dwelling.max_floor_area_m2", lga="Gunnedah") == 60
+    assert rs.get("water.unserviced_min_tank_storage_l", lga="Gunnedah") == 60000
     with pytest.raises(UnresolvedRequirement):          # not in the documents: must not be defaulted
-        rs.get("setback.outbuilding.side_m", zone="R2")
+        rs.get("setback.outbuilding.side_m", zone="R2", lga="Gunnedah")
     with pytest.raises(UnresolvedRequirement):
-        rs.get("building.max_height_m", zone="R2")
+        rs.get("building.max_height_m", zone="R2", lga="Gunnedah")
 
 
 def test_unresolved_entries_say_where_we_looked():

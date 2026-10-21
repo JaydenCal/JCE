@@ -2,6 +2,7 @@
 import { useRef } from 'react';
 import type { FirstPersonController } from '@/lib/viewer/fpController';
 import type { Settings } from '@/lib/viewer/types';
+import { FP_SLOPE_LIMIT_DEG, FP_STEP_UP_M } from '@/lib/viewer/fpLimits';
 
 export function FpOverlay({ fp, locked, touch, onExit }: { fp: FirstPersonController | null; locked: boolean; touch: boolean; onExit(): void }) {
   const knob = useRef<HTMLElement>(null), look = useRef<{ x: number; y: number; id: number } | null>(null);
@@ -35,6 +36,7 @@ export function SettingsPanel({ s, set }: { s: Settings; set(p: Partial<Settings
   return (
     <section><h2>Walk settings</h2>
       {R('Eye height', 'eyeHeight', 1.2, 2, 0.05, ' m')}{R('Field of view', 'fov', 50, 110, 1, '°')}{R('Look speed', 'sensitivity', 0.3, 3, 0.1, '×')}
+      <p className="note" data-walk-limits>Step up limit {FP_STEP_UP_M.toFixed(2)} m and slope limit {FP_SLOPE_LIMIT_DEG} degrees are display settings of the walk (in use: {s.stepUp.toFixed(2)} m and {s.slopeDeg} degrees). They are not requirements and say nothing about access or trafficability. Buildings, walls, tanks, pools and furniture block the walk; pool water is not walkable.</p>
       <label className="row" style={{ gridTemplateColumns: 'auto 1fr' }}><input type="checkbox" checked={s.headBob} onChange={(e) => set({ headBob: e.target.checked })} /><span>Head bob</span></label>
     </section>
   );

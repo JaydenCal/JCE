@@ -41,10 +41,13 @@ class ReqView:
     unresolved_db: dict[str, dict]
     used: dict[str, Resolved] = field(default_factory=dict)
     missing: dict[str, str] = field(default_factory=dict)
+    # Caller context (jurisdiction, lga). LGA rows match only when the lga is supplied, so the Gunnedah rows of the ESC set
+    # can never answer for another council; state-wide rows (no lga) match with or without a context.
+    selectors: dict[str, str] = field(default_factory=dict)
 
     def get(self, key: str) -> Resolved | None:
         try:
-            r = self.rs.get_requirement(key)
+            r = self.rs.get_requirement(key, **self.selectors)
         except UnresolvedRequirement as ex:
             self.missing[key] = (self.unresolved_db.get(key) or {}).get("prompt") or ex.prompt
             return None

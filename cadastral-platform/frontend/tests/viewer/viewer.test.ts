@@ -1,7 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, it, expect, afterEach } from 'vitest';
 import { MOVE_DEFAULTS as C, newPlayer, stepPlayer, resolveColliders, eyeOffset, type MoveWorld, type MoveInput } from '@/lib/viewer/movement';
 import { snapFromHit, stepYaw, footprint, shoppingList, shoppingCsv } from '@/lib/viewer/snapping';
-import { validateBundle } from '@/lib/viewer/loadBundle';
+import { validateBundle, normalizeItem, fetchBundle, BundleLoadError } from '@/lib/viewer/loadBundle';
+import { DOUBLE, GHOST_SERVICE } from '@/lib/viewer/sceneBuilder';
+import { SKIP_LAYERS, PlaceController } from '@/lib/viewer/placeController';
+import { fallbackItem } from '@/lib/viewer/itemModels';
+import * as THREE from 'three';
+import { vi } from 'vitest';
+vi.mock('@/lib/viewer/textures', async () => { const T = await import('three'); return { makeSprite: () => new T.Sprite(), makeTextures: () => ({}) }; });
 import type { CatalogueItem } from '@/lib/viewer/types';
 
 const flat = (z = 0, w: Partial<MoveWorld> = {}): MoveWorld => ({ colliders: [], ground: (_x, _y, zl) => (z <= zl ? z : null), ...w });
@@ -69,5 +77,96 @@ describe('shopping + bundle', () => {
   it('validates bundles', () => {
     expect(() => validateBundle({})).toThrow(); expect(() => validateBundle({ info: { title: 't', origin: [0, 0, 0] }, layers: [], parts: [{ n: 'a', c: 'b', col: '#fff', v: [1, 2] }] })).toThrow();
     expect(validateBundle({ info: { title: 't', origin: [0, 0, 0] }, layers: [], parts: [] }).parts).toEqual([]);
+  });
+});
+
+const base = { info: { title: 't', origin: [0, 0, 0] }, layers: [], parts: [] };
+describe('backend bundle items (SA6 ItemOut) normalise to the viewer shape', () => {
+  const out = { id: 'i1', name: 'Outdoor table', t: [1, 2, 3], yaw_deg: 90, scale: 1, dims_m: [1.8, 0.9, 0.75], proxy: 'box', catalogue_id: 'cat-9', level: 'ground', warnings: ['outside lot boundary'] };
+  it('maps t, yaw_deg and catalogue_id', () => {
+    expect(normalizeItem(out)).toEqual({ id: 'i1', itemId: 'cat-9', p: [1, 2, 3], yaw: 90, level: 'ground', warnings: ['outside lot boundary'], name: 'Outdoor table', dims_m: [1.8, 0.9, 0.75], scale: 1 });
+  });
+  it('keeps dims_m, scale, name and model_url, and drops invalid dimensions rather than guessing', () => {
+    const n = normalizeItem({ ...out, scale: 2, model_url: '/m/table.glb' });
+    expect(n.dims_m).toEqual([1.8, 0.9, 0.75]); expect(n.scale).toBe(2); expect(n.model_url).toBe('/m/table.glb'); expect(n.name).toBe('Outdoor table');
+    const bad = normalizeItem({ id: 'b', t: [0, 0, 0], dims_m: [1, 0, 2] });
+    expect(bad.dims_m).toBeUndefined(); expect(normalizeItem({ id: 'c', t: [0, 0, 0], dims_m: [1, 2] }).dims_m).toBeUndefined();
+  });
+  it('falls back to the item id when there is no catalogue id, and omits empty warnings', () => {
+    const n = normalizeItem({ id: 'i2', name: 'Planter', t: [4, 5, 0], yaw_deg: 0, warnings: [] });
+    expect(n.itemId).toBe('i2'); expect(n.p).toEqual([4, 5, 0]); expect(n.warnings).toBeUndefined();
+  });
+  it('leaves viewer-shaped items untouched and rejects malformed ones', () => {
+    const v = { id: 'p1', itemId: 'sofa', p: [0, 0, 0] as [number, number, number], yaw: 180, surface: 'floor' as const };
+    expect(normalizeItem(v)).toBe(v);
+    expect(() => normalizeItem({ id: 'x' })).toThrow(/item needs/);
+  });
+  it('validateBundle normalises items in place', () => {
+    const b = validateBundle({ ...base, items: [out] });
+    expect(b.items).toEqual([{ id: 'i1', itemId: 'cat-9', p: [1, 2, 3], yaw: 90, level: 'ground', warnings: ['outside lot boundary'], name: 'Outdoor table', dims_m: [1.8, 0.9, 0.75], scale: 1 }]);
+  });
+});
+
+describe('AI draft banner removed (owner decision 15/10/2026)', () => {
+  it('a validated bundle carries no forced statement and keeps its other info', () => {
+    const b = validateBundle(base);
+    expect(b.info.statement).toBeUndefined();
+    expect(b.info.title).toBe(base.info.title);
+  });
+  it('a legacy statement in an older bundle is not forced, replaced or required', () => {
+    expect(validateBundle({ ...base, info: { ...base.info, statement: 'LEGACY TEXT' } }).info.statement).toBe('LEGACY TEXT');
+  });
+  it('the banner component, its stylesheet rules and the snapshot burn-in no longer exist', () => {
+    const src = (f: string) => readFileSync(join(__dirname, '..', '..', 'src', f), 'utf8');
+    for (const f of ['components/viewer/ViewerShell.tsx', 'components/viewer/FpOverlay.tsx', 'lib/viewer/engine.ts', 'lib/viewer/loadBundle.ts', 'app/site-model/[name]/page.tsx'])
+      expect(src(f)).not.toMatch(/StatementBanner|burnStatement|AI_DRAFT_STATEMENT/);
+    expect(src('components/viewer/viewer.css')).not.toMatch(/\.stmt/);
+    expect(existsSync(join(__dirname, '..', '..', 'src', 'components/viewer/StatementBanner.tsx'))).toBe(false);
+    expect(existsSync(join(__dirname, '..', '..', 'src', 'lib/viewer/statement.ts'))).toBe(false);
+  });
+});
+
+describe('services layer is treated as dbyd', () => {
+  it('both are double sided, ghost shaded and excluded from placement snapping', () => {
+    for (const c of ['dbyd', 'services']) { expect(DOUBLE.has(c)).toBe(true); expect(GHOST_SERVICE.has(c)).toBe(true); expect(SKIP_LAYERS).toContain(c); }
+  });
+});
+
+describe('fetchBundle does not mask failures', () => {
+  const mock = (r: Partial<Response> | Error) => vi.stubGlobal('fetch', vi.fn(async () => { if (r instanceof Error) throw r; return r as Response; }));
+  it('404 is DATA NOT AVAILABLE', async () => {
+    mock({ ok: false, status: 404 });
+    await expect(fetchBundle('/x')).rejects.toMatchObject({ status: 404, message: 'DATA NOT AVAILABLE: no scene bundle for this project' });
+    await expect(fetchBundle('/x')).rejects.toBeInstanceOf(BundleLoadError);
+  });
+  it('other statuses and network errors reject too', async () => {
+    mock({ ok: false, status: 500 }); await expect(fetchBundle('/x')).rejects.toMatchObject({ status: 500 });
+    mock(new Error('offline')); await expect(fetchBundle('/x')).rejects.toMatchObject({ status: 0 });
+  });
+  it('returns a validated bundle on success', async () => {
+    mock({ ok: true, status: 200, json: async () => ({ ...base }) });
+    expect((await fetchBundle('/x')).info.title).toBe(base.info.title);
+  });
+  afterEach(() => { vi.unstubAllGlobals(); });
+});
+
+describe('items without a catalogue entry are never dropped', () => {
+  it('a box proxy from dims_m (times scale) labelled ITEM MODEL NOT AVAILABLE', () => {
+    const f = fallbackItem(normalizeItem({ id: 'i1', name: 'Outdoor table', t: [0, 0, 0], catalogue_id: 'gone', dims_m: [1.8, 0.9, 0.75], scale: 2 }));
+    expect(f.cat.dims).toEqual({ w: 3.6, d: 1.8, h: 1.5 }); expect(f.cat.id).toBe('gone'); expect(f.label).toContain('ITEM MODEL NOT AVAILABLE'); expect(f.cat.model_kind).toBe('proxy');
+  });
+  it('a small marker labelled ITEM DIMENSIONS NOT AVAILABLE when dims_m is missing', () => {
+    const f = fallbackItem(normalizeItem({ id: 'i2', t: [0, 0, 0] }));
+    expect(f.cat.dims).toEqual({ w: 0.3, d: 0.3, h: 0.3 }); expect(f.label).toBe('ITEM DIMENSIONS NOT AVAILABLE'); expect(f.label).not.toContain('MODEL');
+  });
+  it('PlaceController keeps them as labelled objects and swaps in the catalogue model when it arrives', () => {
+    const built = { itemsGroup: new THREE.Group() } as unknown as ConstructorParameters<typeof PlaceController>[0];
+    const pc = new PlaceController(built, () => 0);
+    pc.setItems([normalizeItem({ id: 'a', t: [1, 2, 0], dims_m: [1, 1, 1], catalogue_id: 'x' }), normalizeItem({ id: 'b', t: [3, 4, 0] })]);
+    const kids = (built as unknown as { itemsGroup: THREE.Group }).itemsGroup.children as THREE.Group[];
+    expect(kids.length).toBe(2); expect(kids.every((k) => k.userData.fallback && k.children.some((c) => c.userData.itemLabel))).toBe(true);
+    pc.setCatalogue([{ id: 'x', title: 'X', retailer: 'r', category: 'c', price: 1, dims: { w: 1, d: 1, h: 1 }, model_kind: 'proxy' }]);
+    const after = (built as unknown as { itemsGroup: THREE.Group }).itemsGroup.children as THREE.Group[];
+    expect(after.length).toBe(2); expect(after.filter((k) => k.userData.fallback).length).toBe(1);      // 'a' now has a catalogue entry; 'b' stays a marker
   });
 });

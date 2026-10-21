@@ -348,14 +348,14 @@ def to_parts(m: BuildingModel, origin: tuple[float, float] | None = None, layer:
 
 def to_scene_parts(m: BuildingModel, origin=None):
     """SA6 ``Part`` models (lazy import so SA8 has no hard dependency on SA6)."""
-    from app.agents.sa6_glide3d.models import Part
+    from app.agents.sa6_site3d.models import Part
     return [Part(**p) for p in to_parts(m, origin)]
 
 
 def to_building_in(m: BuildingModel) -> list:
     """Converter to SA6 ``BuildingIn`` entries (one per roof-bearing footprint; absolute MGA WKT). Use in SceneRequest.buildings."""
     from shapely import affinity
-    from app.agents.sa6_glide3d.models import BuildingIn
+    from app.agents.sa6_site3d.models import BuildingIn
     from app.common.contracts import DevelopmentType
     fp = to_footprint_polygon(m)
     if fp.is_empty:

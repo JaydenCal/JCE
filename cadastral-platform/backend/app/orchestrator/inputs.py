@@ -13,6 +13,7 @@ from uuid import UUID
 from psycopg import Connection
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.common.bundle_dir import project_dir
 from app.common.contracts import DevelopmentType
 
 
@@ -138,11 +139,22 @@ def _sa5(c: BuildContext) -> dict:
 
 
 def _sa6(c: BuildContext) -> dict:
+    """The scene needs the lot (SA1) and the envelope and driveway (ENV). Earthworks (SA3), services (SA4) and the plan overlay (SA7) are added when those nodes succeeded."""
+    title = c.request.project_title
+    if not title:
+        p = c.conn.execute("SELECT name FROM core.projects WHERE project_id = %s", (c.project_id,)).fetchone()
+        title = p["name"] if p else str(c.project_id)
     return {
-        "lot_context": c.need("SA1"),
-        "earthworks": c.need("SA3"),
-        "services": c.need("SA4"),
+        "project_id": str(c.project_id),
+        "project_title": title,
+        "sa1": c.need("SA1"),
+        "env": c.need("ENV"),
+        "sa3": c.upstream.get("SA3"),
+        "sa4": c.upstream.get("SA4"),
         "overlay": c.upstream.get("SA7"),
+        "params": run_params(c.request),
+        "development_type": c.request.development_type.value,
+        "output_path": str(project_dir(c.export_dir, c.project_id)),         # the folder the scene bundle route and the exports read (SCENE_BUNDLE_DIR when set)
     }
 
 

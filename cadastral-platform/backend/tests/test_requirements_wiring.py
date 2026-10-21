@@ -7,7 +7,7 @@ from app.agents.requirements.models import RequirementSet
 from app.agents.sa3_driveway.agent import Sa3Driveway
 from app.agents.sa3_driveway.crossover import council_standard
 from app.agents.sa4_hydro.agent import Sa4Hydro
-from app.agents.sa4_hydro.models import Sa4Request
+from app.agents.sa4_hydro.models import RainfallTable, RwtDemand, RwtInput, Sa4Request
 from test_requirements import CTX, make_docs
 from test_sa3_driveway import make_req
 from test_sa4_hydro import CPS, DEN, _inp, lot_dict, make_pdf, mga
@@ -25,17 +25,23 @@ def reqset(tmp_path_factory):
     return nsw
 
 
-def sa4_req(tmp_path, **kw):
+def sa4_req(tmp_path, explicit_rwt=False, **kw):
     p = tmp_path / "d.pdf"
     make_pdf(p)
     x0, y0 = mga(100, 220)
+    rwt = _inp(downpipe_xy=(x0 + 10, y0 + 12))
+    if explicit_rwt:        # stage 7: every mass balance input entered by the caller (USER), so no placeholder is used and none is unresolved
+        rwt = RwtInput(roof_area_m2=150.0, rainfall=RainfallTable(station_id="066062", monthly_mm=[100] * 12, wet_day_fraction=0.3), downpipe_xy=(x0 + 10, y0 + 12),
+                       runoff_coeff=0.85, first_flush_mm=2.0, candidate_sizes_l=[2000, 3000, 4500, 5000], tank_height_m=2.0, boundary_offset_m=0.45,
+                       demand=RwtDemand(occupants=4, toilet_l_pp_day=18.0, laundry_l_pp_day=20.0, garden_area_m2=0.0, garden_l_m2_day=2.0,
+                                        garden_monthly_factor=[1.0] * 12, use_toilet=True, use_laundry=True, use_garden=True))
     return Sa4Request(lot=lot_dict(), pdf_path=str(p), control_points=CPS, scale_denominator=DEN,
                       slab_wkt=box(x0 + 10, y0 + 10, x0 + 20, y0 + 25).wkt, outlet_xy=(x0 + 15, y0 + 12),
-                      rwt=_inp(downpipe_xy=(x0 + 10, y0 + 12)), **kw)
+                      rwt=rwt, **kw)
 
 
 def test_sa4_uses_cited_requirements(tmp_path, reqset):
-    res = Sa4Hydro().run(sa4_req(tmp_path, requirements=reqset))
+    res = Sa4Hydro().run(sa4_req(tmp_path, explicit_rwt=True, requirements=reqset))
     assert res.unresolved == [] and res.verifiable and not res.placeholders_used
     by = {b.service: b for b in res.buffers}
     assert by["sewer"].clearance_m == 1.2 and by["water"].clearance_m == 1.5 and not by["sewer"].placeholder

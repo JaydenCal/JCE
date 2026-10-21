@@ -1,0 +1,12 @@
+SYNTHETIC TEST FIXTURE, NOT BOM DATA
+Issued: 01/01/2016
+Location label: Synthetic Test Point
+Requested coordinate: Latitude -33.5000 S, Longitude 151.2000 E
+Nearest grid cell: Latitude -33.5000 S, Longitude 151.2000 E
+Intensity (mm/h)
+Duration,50%,20%,10%,1%
+5 min,120,140,150,200
+10 min,80,95,100,140
+20 min,50,56,60,85
+30 min,38,43,45,66
+60 min,25,28,30,45

@@ -508,7 +508,7 @@ Cautions:
 Work done in the sandbox copy on 13/10/2026 and 14/10/2026 is not in `jaydencal/jce`:
 
 - An offline fixture for Lot 2 DP227508 (`backend/app/offline/`), an `offline_lot2` imagery provider and a `--offline lot2` option in `run_site.py`. This allows a full run without access to NSW services.
-- Groundwork in the 3D scene code (`sa6_glide3d/geom.py` and `models.py`: terrain drape, boundary posts, kerb and verge options). Not verified by tests.
+- Groundwork in the 3D scene code (`sa6_site3d/geom.py` and `models.py`: terrain drape, boundary posts, kerb and verge options). Not verified by tests.
 - Small changes to report formatting helpers (`report/fmt.py`).
 - Planned and not yet built: the plan set restyle, the explanatory report content, terrain and dwelling massing in the scene bundle.
 

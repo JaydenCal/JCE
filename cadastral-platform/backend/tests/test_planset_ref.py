@@ -115,7 +115,7 @@ def test_ai_statement_boxed_on_title_block_and_notes_panel(built):
     assert " ".join(" ".join(t.text for t in ai if t.pts[0][1] >= 88).split()) == codes.AI_STATEMENT         # sheet notes panel
     assert [it for it in frame.items if it.kind == "fill" and it.layer == "JCS-FRAM-AICK-HATCH" and it.edge]     # boxed
     assert STAMP in flat and "AI CHECK" in flat and "CHECKED" in flat and "APPROVED" in flat
-    assert " ".join(" ".join(pymupdf.open(res["pdf"])[0].get_text().split()).split()).count("AI GENERATED DRAFT.") >= 2
+    assert " ".join(" ".join(pymupdf.open(res["pdf"])[0].get_text().split()).split()).count("AI GENERATED DRAFT,") >= 2
 
 
 def test_drawing_number_scheme_and_sheet_table():
@@ -449,7 +449,7 @@ def test_all_twelve_sheets_a1_branding_ai_statement_jcs_layers(full_set):
     for i, pg in enumerate(doc):
         assert abs(pg.rect.width - 841 / 25.4 * 72) < 1.0 and abs(pg.rect.height - 594 / 25.4 * 72) < 1.0
         t = " ".join(pg.get_text().split())
-        assert "JCESITE" in t and "AI GENERATED DRAFT." in t and "AI CHECK" in t and f"JCS-XXX-CIV-{list(codes.SHEET_NNN.values())[i]}" in t
+        assert "JCESITE" in t and "AI GENERATED DRAFT," in t and "AI CHECK" in t and f"JCS-XXX-CIV-{list(codes.SHEET_NNN.values())[i]}" in t
         assert not any(d in t for d in DASHES) and "JCE INFRASTRUCTURE" not in t.upper()
     d = ezdxf.readfile(res["dxf"])
     assert len(d.audit().errors) == 0 and res["dxf_stats"]["audit_errors"] == 0

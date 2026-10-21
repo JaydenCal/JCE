@@ -202,12 +202,16 @@ def test_check_compliance_tool_is_read_only(state):
 # ---- error handling / tokens ---------------------------------------------------------------------------------------
 def test_not_configured_client_reports_clearly(state, monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("JCESITE_AI_MODEL", raising=False)
+    monkeypatch.delenv("ASSISTANT_MODEL", raising=False)
     c = AnthropicClient()
-    assert not c.configured and c.model == "claude-opus-5-5"
+    assert not c.configured and c.model == "claude-haiku-5-5"
     res = DesignAssistant(c, state).turn("hello")
     assert res.status == "not_configured" and res.ops == []
     monkeypatch.setenv("ASSISTANT_MODEL", "claude-sonnet-5-5")
     assert AnthropicClient(api_key="k").model == "claude-sonnet-5-5"
+    monkeypatch.setenv("JCESITE_AI_MODEL", "claude-haiku-5-6")                      # the platform wide variable wins over the older name
+    assert AnthropicClient(api_key="k").model == "claude-haiku-5-6" and AnthropicClient(api_key="k", model="x-model").model == "x-model"
 
 
 def test_tokens_reported_to_orchestrator(state):

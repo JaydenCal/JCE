@@ -182,7 +182,7 @@ def test_export_gate_blocks_then_resumes(pool, world):
     run, out = go(orch, uid, project)
     assert out.status is RunStatus.blocked_by_gate
     assert out.nodes["SA5"].status == "blocked_by_gate" and out.nodes["SA6"].status == "blocked_by_gate"
-    assert calls["SA5_CAD_DXF"] == 0 and calls["SA6_GLIDE3D"] == 0
+    assert calls["SA5_CAD_DXF"] == 0 and calls["SA6_SITE3D"] == 0
     gates = events(pool, uid, run.run_id, "gate_blocked")
     assert len(gates) == 2 and set(gates[0]["detail"]["missing"]) == set(ALL_ACKS)
     ack_all(pool, uid, project)
