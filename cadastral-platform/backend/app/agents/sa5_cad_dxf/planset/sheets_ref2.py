@@ -26,6 +26,7 @@ from app.agents.sa5_cad_dxf.planset import lga_notes as LN
 from app.agents.sa5_cad_dxf.planset import panels as PN
 from app.agents.sa5_cad_dxf.planset import phrases as PH
 from app.agents.sa5_cad_dxf.planset import sections as SEC
+from app.agents.sa5_cad_dxf.planset import typical_details as TD
 from app.agents.sa5_cad_dxf.planset.terrain_notes import dem_fall, drainage_discharge_note, fall_vs_street  # noqa: F401
 from app.agents.sa5_cad_dxf.planset import viewport as VP
 from app.agents.sa5_cad_dxf.planset import codes
@@ -62,13 +63,15 @@ DRIVEWAY_SHEETS = ("C101", "C400", "C420")
 LAYOVER_REF = ["LAYOVER DIMENSIONS (SEE C420)", "FULL SCHEDULE, SOURCES AND TYPICAL SECTIONS ON C420"]      # the layover is dimensioned in full on its own sheet
 
 
-def draw_ctrs(b, light: bool = True) -> int:
+def draw_ctrs(b, light: bool = True, column_w: float = 0.0) -> int:
     """Existing contours with RL labels (stage 8: on every plan sheet), labels clear of the dwelling and of everything already reserved."""
     s, v = b.s, b.v
     if s.tin is None:
         return 0
     contour_sets(s, v.model_window())
-    return D.contours(v, s, "ex", lab_h=TXT.BODY, light=light, avoid=s.footprint if s.placement is not None else None)
+    R = v.rect
+    strips = ((R[0], R[1], R[0] + column_w + 6.0, R[3]), (R[2] - column_w - 6.0, R[1], R[2], R[3])) if column_w else ()          # the data-panel column goes against either edge: keep labels out of both
+    return D.contours(v, s, "ex", lab_h=D.CONTOUR_LAB_H, light=light, avoid=s.footprint if s.placement is not None else None, no_label_rects=strips)
 
 
 def ctr_notes(s: Site) -> list[str]:
@@ -99,8 +102,11 @@ def make_xg(s: Site, reach: float = 0.0):
     drv = s.inp.driveway
     kuser = drv.kerb_to_boundary_user_supplied if drv is not None else None
     std = drv.council_standard_label if drv is not None else None
-    xg = CX.build_crossover(fseg, s.lot, s.crossover, CX.default_kerb_offset_m(), True, reach, kuser)
+    cit = CX.cited_crossing(getattr(getattr(s, "cites", None), "typ", None))             # council standard drawing geometry (SD-107) where the council data has it
+    xg = CX.build_crossover(fseg, s.lot, s.crossover, CX.default_kerb_offset_m(), True, reach, kuser, cit)
     xg.drive_width_m = drv.width_m if drv is not None else 0.0
+    if cit is not None:
+        std = cit.label                              # the council standard drawing the crossing is drawn to
     xg.std_label = std                               # provenance of the width and splay (platform default unless a council standard was selected)
     return front, drv, std, xg
 
@@ -356,7 +362,7 @@ def ref_profile(s: Site):
     L = cl.length
     c = list(cl.coords)
     xg = make_xg(s, 0.0)[3]
-    gw = CX.gutter_band_m(xg.kerb_offset_m or CX.default_kerb_offset_m())
+    gw = CX.gutter_band_m(xg.kerb_offset_m or CX.default_kerb_offset_m(), xg.cited.layback_run_m if getattr(xg, "cited", None) else None)
     sb = None
     for g in s.inp.lot.segments:
         h = cl.intersection(LineString([g.start_xy, g.end_xy]))
@@ -529,7 +535,7 @@ def c100(ctx: RefCtx) -> Sheet:
     v = b.v
     if s.tin is not None:
         contour_sets(s, v.model_window())
-        D.contours(v, s, "ex", lab_h=TXT.BODY)                     # contours only: spot levels are not shown on the existing site plan
+        D.contours(v, s, "ex", lab_h=D.CONTOUR_LAB_H)                     # contours only: spot levels are not shown on the existing site plan
     draw_xover(b, "existing")
     missing: list[str] = []
     _n, pending = _services(v, s, missing)
@@ -805,7 +811,7 @@ def c200(ctx: RefCtx) -> Sheet:
     v = b.v
     if s.tin is not None:
         contour_sets(s, v.model_window())
-        D.contours(v, s, "ex", lab_h=TXT.BODY)
+        D.contours(v, s, "ex", lab_h=D.CONTOUR_LAB_H)
     if pad_ok:
         from shapely import wkt as swkt
         for z in s.cutfill.zones:
@@ -850,6 +856,21 @@ def services_status_text(s) -> str:
 
 
 # ====================================================================================================== C300 stormwater
+def inter_allotment_notes(s: Site) -> list[str]:
+    """Council inter-allotment drainage rules (Engineering Standards 3.9) for a lot that falls away from the street: read from the typicals data, only
+    where gravity drainage to the street gutter is not possible from the lot itself.  Empty when the council has no typicals data."""
+    T = s.cites.typ
+    if not T.present:
+        return []
+    t_pipe, t_in, t_ease = T.get("eng.inter_allotment.min_pipe_diameter"), T.get("eng.inter_allotment.lot_inlet"), T.get("eng.inter_allotment.easement_width")
+    if t_pipe is None or t_in is None or t_ease is None:
+        return []
+    pipe = t_pipe.value.split(" (")[0] if isinstance(t_pipe.value, str) else t_pipe.value
+    out = [f"INTER-ALLOTMENT DRAINAGE ONLY WHERE GRAVITY TO THE STREET IS NOT POSSIBLE: PIPE {pipe} mm MIN (150 mm FOR ONE LOT), GRATED INLET PIT AT THE LOWEST POINT WITH A 150 mm JUNCTION, "
+           f"EASEMENT {t_ease.value} m [{t_pipe.ref_short}; {t_ease.ref_short}]. DETAIL ON C600."]
+    return [ST.clean(n).upper() for n in out]
+
+
 def c300(ctx: RefCtx) -> Sheet:
     s = ctx.site
     if s.placement is not None:
@@ -868,6 +889,7 @@ def c300(ctx: RefCtx) -> Sheet:
     dn = drainage_discharge_note(s)
     if dn:
         notes.append(dn)
+        notes += inter_allotment_notes(s)
     if s.inp.rwt is None:
         notes.append("RAINWATER TANK: NONE SUPPLIED (ANY COUNCIL REQUIREMENT TO BE CONFIRMED)")
     b = start(ctx, "C300", rows, notes + ctr_notes(s))
@@ -1059,7 +1081,7 @@ def c400(ctx: RefCtx) -> Sheet:
             notes.append(fl)
     b = start(ctx, "C400", rows, notes + ctr_notes(s), want_xover=True, focus="drive")
     v, xg = b.v, b.xg
-    draw_ctrs(b)
+    draw_ctrs(b, column_w=132.0)
     step = 2.0
     ch_plan: list = []
     lost: list[str] = []
@@ -1120,7 +1142,7 @@ def c400(ctx: RefCtx) -> Sheet:
             place(b, lines, (m.x, m.y), avoid=b.hard)
     if not col and has:                                                  # no clear column: the old behaviour, panels wherever the sheet is free
         for p_ in panels:
-            text_panel(b, p_[1], [r_[0] for r_ in p_[2]] if p_[0] == "table" else p_[2], PW, warn=(p_[0] == "text" and p_[3]))
+            text_panel(b, p_[1], [" ".join(str(x_) for x_ in r_) for r_ in p_[2]] if p_[0] == "table" else p_[2], PW, warn=(p_[0] == "text" and p_[3]))
     pave_callout(b)
     if s.spots and s.drive_poly is not None:                      # sparse design-sheet spot levels near the driveway (never on C100)
         D.spot_levels_sparse(b.v, s, s.drive_poly, h=TXT.BODY, avoid=list(b.kerb_geoms) + [s.lot.boundary, s.drive_poly] + [g for g in b.hard if g is not None and not g.is_empty])
@@ -1371,7 +1393,17 @@ def c420(ctx: RefCtx) -> Sheet:
     s, proj = ctx.site, ctx.proj
     sh = Sheet("C420", codes.SHEET_TITLES["C420"], "", paper=A1, north=0.0)
     front, drv, std, xg = make_xg(s, 0.0)
-    notes = [CX.LAYOVER_STANDARD_NOTE] + CX.crossover_notes(xg, std)
+    cit = xg.cited
+    T = s.cites.typ
+    if cit is not None:
+        notes = [f"CROSSING DRAWN TO {cit.label}. GSC RD003, RD0010, RD011 NOT PUBLISHED: OBTAIN FROM COUNCIL."] + CX.crossover_notes(xg, std)
+        fw = T.get("eng.verge.footway_width_built_up_min")
+        if fw is not None and fw.number and xg.kerb_offset_m and xg.kerb_offset_m < fw.number:
+            notes.append(f"BOUNDARY TO KERB {CX._fmt_m(xg.kerb_offset_m)} (PLATFORM DEFAULT, NOT SURVEYED) IS LESS THAN THE CITED FOOTWAY WIDTH {fw.value} m ({fw.ref_short}): SURVEY REQUIRED")
+        if xg.width_note:
+            notes.append(xg.width_note)
+    else:
+        notes = [CX.LAYOVER_STANDARD_NOTE] + CX.crossover_notes(xg, std)
     nrect, _ = notes_layout(proj, _dedupe(notes), (), reserve=2)
     v = sh.add(View("layover", PLAN_RECT))
     P = ST.Paper(v)
@@ -1382,12 +1414,12 @@ def c420(ctx: RefCtx) -> Sheet:
         sh.scale_text = "NOT DRAWN"
         return sh
     fr, w, f, Dk = xg.frontage, xg.width_m, xg.flare_m, xg.kerb_offset_m
-    avail, gw, ex = xg.avail_m, xg.band_w_m, ST.REF.band_extra_m
+    avail, gw, ex = xg.avail_m, xg.band_w_m, xg.band_extra_m
     sa, sb, sc0 = xg.centre_s - w / 2, xg.centre_s + w / 2, xg.centre_s
     sgn = -1.0 if (fr.u[0] * fr.n[1] - fr.u[1] * fr.n[0]) > 0 else 1.0          # road at the bottom of the sheet, no mirroring
     PX0, PX1, PY0, PY1 = CONTENT_X0, 566.0, CONTENT_Y0 + 2.0, CONTENT_Y1 - 2.0
     half = w / 2 + f + ex + 1.6
-    t_lo, t_hi = -2.2, Dk + 2.0
+    t_lo, t_hi = -2.2, Dk + (xg.road_side_m or 0.0) + 2.0
     sc = 50
     for cand in (10, 20, 25, 50):
         if 2 * half * 1000 / cand <= PX1 - PX0 - 16 and (t_hi - t_lo) * 1000 / cand <= PY1 - PY0 - 30:
@@ -1438,16 +1470,43 @@ def c420(ctx: RefCtx) -> Sheet:
     wid_ph = " (" + lv.get("w_bdy", CX.WIDTH_SRC) + ")"
     left, up, down = (-1.0, 0.0), (0, 1), (0, -1)
     avoid = [g.buffer(0.3) for g in hardp]
-    dim_best(v, M(sc0 - drive_w / 2, t_lo), M(sc0 + drive_w / 2, t_lo), f"DRIVEWAY WIDTH {CX._fmt_m(drive_w)}{wid_ph}", (9.0, 16.0), (up,), TXT.BODY, [])
-    dim_best(v, M(sa, 0), M(sb, 0), f"LAYOVER WIDTH AT BOUNDARY {CX._fmt_m(w)}{wid_ph}", (14.0, 22.0), (up, down), TXT.BODY, [])
-    dim_best(v, M(sa - f, avail), M(sb + f, avail), f"LAYOVER WIDTH AT KERB {CX._fmt_m(w + 2 * f)}{flare_ph}", (gw * k + 16.0, gw * k + 24.0), (down,), TXT.BODY, [])
-    dim_best(v, M(sb, avail), M(sb + f, avail), f"FLARE {CX._fmt_m(f)}{flare_ph}", (gw * k + 7.0, gw * k + 11.0), (down,), TXT.BODY, [])
-    s_e = sa if sgn > 0 else sb
-    dim_best(v, M(s_e, xg.body_len_m), M(s_e, avail), f"WING LENGTH {CX._fmt_m(xg.wing_len_m)}{PH}", (f * k + 9.0, f * k + 16.0), (left,), TXT.BODY, [])
-    s_l = sc0 - sgn * (w / 2 + f + ex + 0.3)
-    dim_best(v, M(s_l, 0), M(s_l, Dk), f"BOUNDARY TO KERB {CX._fmt_m(Dk)}", (9.0, 16.0), (left,), TXT.BODY, [])
-    s_r = sc0 + sgn * (w / 2 + f + ex)
-    dim_best(v, M(s_r, Dk - gw), M(s_r, Dk), f"KERB AND GUTTER BAND {CX._fmt_m(gw)}{PH}", (9.0, 15.0), ((1.0, 0.0),), TXT.BODY, [])
+    if cit is None:
+        dim_best(v, M(sc0 - drive_w / 2, t_lo), M(sc0 + drive_w / 2, t_lo), f"DRIVEWAY WIDTH {CX._fmt_m(drive_w)}{wid_ph}", (9.0, 16.0), (up,), TXT.BODY, [])
+        dim_best(v, M(sa, 0), M(sb, 0), f"LAYOVER WIDTH AT BOUNDARY {CX._fmt_m(w)}{wid_ph}", (14.0, 22.0), (up, down), TXT.BODY, [])
+        dim_best(v, M(sa - f, avail), M(sb + f, avail), f"LAYOVER WIDTH AT KERB {CX._fmt_m(w + 2 * f)}{flare_ph}", (gw * k + 16.0, gw * k + 24.0), (down,), TXT.BODY, [])
+        dim_best(v, M(sb, avail), M(sb + f, avail), f"FLARE {CX._fmt_m(f)}{flare_ph}", (gw * k + 7.0, gw * k + 11.0), (down,), TXT.BODY, [])
+        s_e = sa if sgn > 0 else sb
+        dim_best(v, M(s_e, xg.body_len_m), M(s_e, avail), f"WING LENGTH {CX._fmt_m(xg.wing_len_m)}{PH}", (f * k + 9.0, f * k + 16.0), (left,), TXT.BODY, [])
+        s_l = sc0 - sgn * (w / 2 + f + ex + 0.3)
+        dim_best(v, M(s_l, 0), M(s_l, Dk), f"BOUNDARY TO KERB {CX._fmt_m(Dk)}", (9.0, 16.0), (left,), TXT.BODY, [])
+        s_r = sc0 + sgn * (w / 2 + f + ex)
+        dim_best(v, M(s_r, Dk - gw), M(s_r, Dk), f"KERB AND GUTTER BAND {CX._fmt_m(gw)}{PH}", (9.0, 15.0), ((1.0, 0.0),), TXT.BODY, [])
+    else:                                                                                              # council standard drawing: every dimension carries SD-107 (width: the SA3 width held to the cited range)
+        lab = cit.label
+        rngtxt = f"{cit.width_min_m * 1000:g} MIN TO {cit.width_max_m * 1000:g} MAX"
+        lip = avail + xg.wing_len_m
+        dim_best(v, M(sc0 - drive_w / 2, t_lo), M(sc0 + drive_w / 2, t_lo), f"DRIVEWAY WIDTH {CX._fmt_m(drive_w)} (SA3 WIDTH, PLATFORM DEFAULT)", (9.0, 16.0), (up,), TXT.BODY, [])
+        dim_best(v, M(sa, 0), M(sb, 0), f"WIDTH AT BOUNDARY {CX._fmt_m(w)} ({lab}: {rngtxt})", (14.0, 22.0), (up, down), TXT.BODY, [])
+        dim_best(v, M(sa - f, lip), M(sb + f, lip), f"OVERALL WIDTH AT KERB {CX._fmt_m(w + 2 * f)} ({lab}: {cit.overall_min_m * 1000:g} MIN TO {cit.overall_max_m * 1000:g} MAX)", ((Dk + xg.road_side_m - lip) * k + 14.0, (Dk + xg.road_side_m - lip) * k + 22.0), (down,), TXT.BODY, [])
+        dim_best(v, M(sb, lip), M(sb + f, lip), f"SPLAY {CX._fmt_m(f)} ({lab})", ((Dk + xg.road_side_m - lip) * k + 6.0, (Dk + xg.road_side_m - lip) * k + 10.0), (down,), TXT.BODY, [])
+        s_e = sa if sgn > 0 else sb
+        dim_best(v, M(s_e, avail), M(s_e, lip), f"SPLAY DEPTH {CX._fmt_m(xg.wing_len_m)} ({lab})", (f * k + 9.0, f * k + 16.0), (left,), TXT.BODY, [])
+        s_l = sc0 - sgn * (w / 2 + f + 0.5)
+        dim_best(v, M(s_l, 0), M(s_l, Dk), f"BOUNDARY TO KERB {CX._fmt_m(Dk)}", (9.0, 16.0), (left,), TXT.BODY, [])
+        s_r = sc0 + sgn * (w / 2 + f + 0.2)
+        dim_best(v, M(s_r, avail), M(s_r, Dk), f"LAYBACK RUN {CX._fmt_m(gw)} ({lab})", (9.0, 15.0), ((1.0, 0.0),), TXT.BODY, [])
+        dim_best(v, M(s_r, Dk), M(s_r, Dk + xg.road_side_m), f"{CX._fmt_m(xg.road_side_m)}", (9.0, 15.0), ((1.0, 0.0),), TXT.BODY, [])
+        # joints and saw cut as SD-107: E.J. at the back of the layback with R16 dowels at 300 centres, E.J. at the boundary, saw cut across the existing kerb and gutter
+        P.line([M(sa, avail), M(sb, avail)], "C-ANNO-NOTE", 0.7, ST.BLACK)
+        P.line([M(sa, 0), M(sb, 0)], "C-ANNO-NOTE", 0.7, ST.BLACK)
+        n_t = max(int(w // 0.3), 1)
+        for i_ in range(n_t + 1):
+            sx_ = sa + i_ * w / n_t
+            a_, b_ = M(sx_, avail), M(sx_, avail - 0.13)
+            P.line([a_, b_], "C-ANNO-NOTE", 0.3, ST.BLACK)
+        for s_c in (sa - f, sb + f):
+            P.line([M(s_c, lip), M(s_c, Dk + xg.road_side_m)], "C-ANNO-NOTE", 0.5, ST.BLACK, dash="DASHED")
+        P.line([M(sc0, 0), M(sc0, avail)], "C-ANNO-NOTE", 0.3, ST.BLACK, dash="DASHED") if w > 4.2 else None
     # labels, each at the first free spot ----------------------------------------------------------------------------------------------------
     def put(txt, cands, h=TXT.BODY, **kw):
         for x, y, anc in cands:
@@ -1465,34 +1524,68 @@ def c420(ctx: RefCtx) -> Sheet:
     put("BOUNDARY FROM CADASTRE: NOT A SURVEY", [(xr - 3, M(0, 0)[1] - 3.0 - d, "TOP_RIGHT") for d in (0, 4, 8)], halo=True)
     put(f"VERGE (ASSUMED, NOT SURVEYED; {kerb_src})", [(xr - 3, M(0, Dk / 2)[1] + d, "MIDDLE_RIGHT") for d in (0, 6, -6, 12)], halo=True)
     put("ROAD (ASSUMED PAVEMENT EXTENT)", [(xl + 3, M(0, Dk + 1.0)[1] + d, "MIDDLE_LEFT") for d in (0, -5, 5, 10)], halo=True)
-    CO.place_callout(v, ["KERB AND GUTTER BAND", CX.KERB_ASSUMED_TEXT], M(s_r + sgn * 0.5, Dk - gw / 2), "arrow", keep, must=True)
+    if cit is None:
+        CO.place_callout(v, ["KERB AND GUTTER BAND", CX.KERB_ASSUMED_TEXT], M(s_r + sgn * 0.5, Dk - gw / 2), "arrow", keep, must=True)
+    else:
+        CO.place_callout(v, ["NOMINAL KERB LINE", CX.KERB_ASSUMED_TEXT, f"GUTTER CROSSING {CX._fmt_m(xg.road_side_m)} EACH SIDE ({lab})"], M(s_r + sgn * 0.5, Dk), "arrow", keep, must=True)
+        CO.place_callout(v, ["E.J. AT THE BACK OF THE LAYBACK (SD-107 NOTE 7)", "R16 DOWELS 300 LONG AT 300 CENTRES, BOND BREAK TO ONE HALF OF EACH DOWEL"], M(sc0 + sgn * w * 0.3, avail - 0.07), "dot", keep, must=True)
     CO.place_callout(v, ["PROPOSED LAYOVER (VEHICLE CROSSING)", CX.standard_text(std)], M(sc0 + sgn * w * 0.25, xg.body_len_m * 0.6), "dot", keep, must=True)
-    # right column: statement, schedule, typical cross section (the same panel and table look as the other sheets) -------------------------------
-    RX0, RX1 = 574.0, 828.0
-    y = 580.0
-    stmt_h = PN.panel_height([CX.LAYOVER_STANDARD_NOTE], RX1 - RX0)
-    PN.draw_panel(v, (RX0, y - stmt_h, RX1, y), "COUNCIL STANDARD NOT SELECTED", [CX.LAYOVER_STANDARD_NOTE], warn=True, layer="C-DATA-NONE")
-    y -= stmt_h + 5
-    vals = CX.layover_values(xg, front)
-    rows_ = [(r["label"], CX._fmt_m(r["m"]), CX.PLACEHOLDER_TAG if r["placeholder"] else r["src"]) for r in vals]
-    if front is not None:
-        rows_.append(("FRONTAGE BEARING", f"{front.bearing_dms}  {CX.frontage_length_m(front):.2f}m", CX.FRONTAGE_SOURCE))
-    cols_ = (0.38, 0.22, 0.40)
-    th = PN.table_height(rows_, RX1 - RX0, cols_)
-    PN.draw_table(v, (RX0, y - th, RX1, y), "LAYOVER DIMENSION SCHEDULE", rows_, cols_, red_when=lambda r_: r_[2] == CX.PLACEHOLDER_TAG)
-    y -= th + 6
-    tv = SEC.TypicalValues(s.cites)
-    ybot = max(nrect[3] + 4.0, CONTENT_Y0)
-    hk = max(120.0, min(200.0, (y - ybot - 4.0) * 0.55))
-    r1 = (RX0, y - hk, RX1, y)
-    r2 = (RX0, ybot, RX1, y - hk - 4.0)
-    foot1, foot2 = [], []
-    SEC.box(v, P, r1)
-    SEC.detail_kerb_layover(v, P, tv, r1, foot1, CX._fmt_m(gw) + " " + CX.PLACEHOLDER_TAG, fall=verge_fall(s))
-    _footer(P, r1, [SEC.TBC_STATEMENT] + foot1)
-    SEC.box(v, P, r2)
-    SEC.detail_driveway_pavement(v, P, tv, r2, foot2)
-    _footer(P, r2, foot2)
+    if cit is None:
+        # right column: statement, schedule, typical cross section (the same panel and table look as the other sheets) -------------------------------
+        RX0, RX1 = 574.0, 828.0
+        y = 580.0
+        stmt_h = PN.panel_height([CX.LAYOVER_STANDARD_NOTE], RX1 - RX0)
+        PN.draw_panel(v, (RX0, y - stmt_h, RX1, y), "COUNCIL STANDARD NOT SELECTED", [CX.LAYOVER_STANDARD_NOTE], warn=True, layer="C-DATA-NONE")
+        y -= stmt_h + 5
+        vals = CX.layover_values(xg, front)
+        rows_ = [(r["label"], CX._fmt_m(r["m"]), CX.PLACEHOLDER_TAG if r["placeholder"] else r["src"]) for r in vals]
+        if front is not None:
+            rows_.append(("FRONTAGE BEARING", f"{front.bearing_dms}  {CX.frontage_length_m(front):.2f}m", CX.FRONTAGE_SOURCE))
+        cols_ = (0.38, 0.22, 0.40)
+        th = PN.table_height(rows_, RX1 - RX0, cols_)
+        PN.draw_table(v, (RX0, y - th, RX1, y), "LAYOVER DIMENSION SCHEDULE", rows_, cols_, red_when=lambda r_: r_[2] == CX.PLACEHOLDER_TAG)
+        y -= th + 6
+        tv = SEC.TypicalValues(s.cites)
+        ybot = max(nrect[3] + 4.0, CONTENT_Y0)
+        hk = max(120.0, min(200.0, (y - ybot - 4.0) * 0.55))
+        r1 = (RX0, y - hk, RX1, y)
+        r2 = (RX0, ybot, RX1, y - hk - 4.0)
+        foot1, foot2 = [], []
+        SEC.box(v, P, r1)
+        SEC.detail_kerb_layover(v, P, tv, r1, foot1, CX._fmt_m(gw) + " " + CX.PLACEHOLDER_TAG, fall=verge_fall(s))
+        _footer(P, r1, [SEC.TBC_STATEMENT] + foot1)
+        SEC.box(v, P, r2)
+        SEC.detail_driveway_pavement(v, P, tv, r2, foot2)
+        _footer(P, r2, foot2)
+
+    else:
+        RX0, RX1 = 574.0, 828.0
+        y = 580.0
+        stmt = [f"THE CROSSING IS DRAWN TO {cit.label} (PLAN, SECTION AND NOTES ON C600). THE SA3 WIDTH IS A PLATFORM DEFAULT HELD WITHIN THE CITED RANGE.",
+                TD.RD003_TEXT + ". " + TD.LAYBACK_DWG_TEXT + "."]
+        stmt_h = PN.panel_height(stmt, RX1 - RX0)
+        PN.draw_panel(v, (RX0, y - stmt_h, RX1, y), "COUNCIL STANDARD: " + cit.label, stmt, warn=True, layer="C-DATA-NONE")
+        y -= stmt_h + 5
+        vals = CX.layover_values(xg, front)
+        rows_ = [(r["label"], CX._fmt_m(r["m"]), r["src"]) for r in vals]
+        if front is not None:
+            rows_.append(("FRONTAGE BEARING", f"{front.bearing_dms}  {CX.frontage_length_m(front):.2f}m", CX.FRONTAGE_SOURCE))
+        cols_ = (0.38, 0.16, 0.46)
+        th = PN.table_height(rows_, RX1 - RX0, cols_)
+        PN.draw_table(v, (RX0, y - th, RX1, y), "LAYOVER DIMENSION SCHEDULE", rows_, cols_)
+        y -= th + 6
+        ybot = max(nrect[3] + 4.0, CONTENT_Y0)
+        cf = [TD.CONFLICT_NOTE.capitalize().upper() + ".", "SD-107 NOTES 1 TO 15 ARE PRINTED IN FULL ON C600."]
+        cf_h = PN.panel_height(cf, RX1 - RX0)
+        hk = max(120.0, min(215.0, (y - ybot - 8.0 - cf_h) * 0.62))
+        r1 = (RX0, y - hk, RX1, y)
+        r2 = (RX0, ybot + cf_h + 4.0, RX1, y - hk - 4.0)
+        PN.draw_panel(v, (RX0, ybot, RX1, ybot + cf_h), "COUNCIL DOCUMENT CONFLICT: NUMBER OF CROSSINGS", cf, warn=True, layer="C-DATA-NONE")
+        SEC.box(v, P, r1)
+        TD.sd107_section(P, T, r1)
+        TD.footer(P, r1, ["SOURCE: " + T.get(TD.SD + "slab.thickness_min").ref] if T.get(TD.SD + "slab.thickness_min") else [])
+        SEC.box(v, P, r2)
+        TD.pavement_detail(P, T, r2)
     sh.notes = _dedupe(notes)
     sh.tag_notes = _tag_notes(v, None)
     return sh
@@ -1687,6 +1780,28 @@ def _footer(P, r: tuple, lines, h: float = TXT.BODY) -> None:
 
 
 def c600(ctx: RefCtx) -> Sheet:
+    """Typical details sheet: the council standard drawing SD-107 (plan, section, notes) and the council typicals for pavement, kerb and gutter, lot
+    drainage, OSD, verge services and ESC.  Every value is read from the typicals data (typical_details.py) and printed with its citation."""
+    s, c = ctx.site, ctx.site.cites
+    T = c.typ
+    if not T.present:
+        return c600_generic(ctx)
+    sh = Sheet("C600", codes.SHEET_TITLES["C600"], "", paper=A1, north=None, scale_text="NTS")
+    v = sh.add(View("details", PLAN_RECT))
+    P = ST.Paper(v)
+    gx, gy = 5.0, 5.0
+    total_h = CONTENT_Y1 - CONTENT_Y0 - 2 * gy
+    cells = TD.c600_cells(CONTENT_X0, CONTENT_X1, CONTENT_Y0, CONTENT_Y1, gx, gy)
+    for name, r in cells.items():
+        SEC.box(v, P, r)
+    TD.c600_fill(v, P, s, T, tv_for(s), cells)
+    title_strip(sh, "TYPICAL DETAILS", "NOT TO SCALE (NTS)", None)
+    sh.notes = ["TYPICAL DETAILS ONLY. COUNCIL STANDARD DRAWINGS GOVERN."]
+    return sh
+
+
+def c600_generic(ctx: RefCtx) -> Sheet:
+    """Typical details for a council with NO typicals data: the schematic details with TBC for every value that is not cited (stage 8 layout, unchanged)."""
     s, c = ctx.site, ctx.site.cites
     tv = SEC.TypicalValues(c)
     sh = Sheet("C600", codes.SHEET_TITLES["C600"], "", paper=A1, north=None, scale_text="NTS")
@@ -1743,7 +1858,10 @@ def c600(ctx: RefCtx) -> Sheet:
     return sh
 
 
-# ====================================================================================================== C001 general notes (sheet 2)
+def tv_for(s: Site):
+    return SEC.TypicalValues(s.cites)
+
+
 DCDB_ROW = "DCDB BEYOND THE LOTS SHOWN IS NOT AVAILABLE OR NOT CHECKED (SEE THE NOTE UNDER THE TITLE OF EACH PLAN SHEET), SO THE CADASTRE MAY NOT REACH THE VIEWPORT EDGES. NOT CHECKED, NOT CLEAR"
 
 

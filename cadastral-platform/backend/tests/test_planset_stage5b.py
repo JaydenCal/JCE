@@ -38,16 +38,32 @@ def stext(sh) -> str:
     return " ".join(it.text for v in sh.views for it in v.items if it.kind == "text")
 
 
-@pytest.fixture(scope="module")
-def real(tmp_path_factory):
+def _run_real(out, generic: bool):
     from scripts.run_site import build_parser, run_site
-    out = tmp_path_factory.mktemp("lot2_stage5b")
+    mp = pytest.MonkeyPatch()
+    if generic:                                       # a council WITHOUT typical-detail data: the generic crossover, kerb and C600 behaviour (stage 8b keeps it for such councils)
+        from app.agents.sa5_cad_dxf.planset import typicals as TY
+        mp.setattr(TY, "KNOW", out / "no_knowledge")
     args = build_parser().parse_args(["--offline", "lot2", "--lotplan", "2//DP227508", "--development-type", "dwelling_house", "--levels", "nsw",
                                       "--rules-json", str(ROOT / "tests/fixtures/R2_dwelling_house_rules.json"), "--acknowledge", "--planset", "--planset-only",
                                       "--planset-style", "ref", "--out", str(out)])
-    run_site(args)
+    try:
+        run_site(args)
+    finally:
+        mp.undo()
     sheets = dict(G.LAST_SHEETS)
     return NS(sheets=sheets, site=G.LAST_SITE, proj=G.LAST_PROJ, text={k: stext(v) for k, v in sheets.items()}, out=out)
+
+
+@pytest.fixture(scope="module")
+def real(tmp_path_factory):
+    return _run_real(tmp_path_factory.mktemp("lot2_stage5b"), True)
+
+
+@pytest.fixture(scope="module")
+def real_cited(tmp_path_factory):
+    """The same run for Gunnedah WITH its typical-detail data (the default)."""
+    return _run_real(tmp_path_factory.mktemp("lot2_stage5b_cited"), False)
 
 
 def _ctx(real, **over):
@@ -364,6 +380,16 @@ def test_no_spaced_hyphen_dash_or_initialism_anywhere_in_the_rendered_text(real)
         assert not re.search(r"\s-\s", t), (code, re.findall(r".{25}\s-\s.{15}", t)[:2])
         assert "—" not in t and "–" not in t, code
         assert "GSC" not in t, code
+
+
+def test_cited_run_has_no_spaced_hyphen_or_dash_and_gsc_only_as_a_drawing_or_document_tag(real_cited):
+    """Stage 8b: the council standard drawing is labelled GSC SD-107 REV A (owner's brief); the initialism appears only in the short document and drawing tags of the typicals data."""
+    ok = re.compile(r"GSC (SD-107 REV A|ENGINEERING STANDARDS V1 \(APR 2025\)|ENGINEERING DESIGN MINIMUM STANDARDS|DCP 2025|RD0?\d+|SW0?\d+|G00\d|WATER \d+)", re.I)
+    for code, t in real_cited.text.items():
+        assert not re.search(r"\s-\s", t), (code, re.findall(r".{25}\s-\s.{15}", t)[:2])
+        assert "—" not in t and "–" not in t, code
+        rest = ok.sub("", t)
+        assert "GSC" not in rest.upper(), (code, re.findall(r".{20}GSC.{20}", rest.upper())[:2])
 
 
 def test_council_initialism_inside_a_cited_value_is_written_in_full():

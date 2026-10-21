@@ -532,8 +532,21 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                 cited_b = cited_setbacks(council_b, zone_b, dev.value)
                 from app.design.building_place import cited_requirement
                 placement = place_house(house, lot_poly, lot_edges, cited_b, freeboard=cited_requirement(council_b, zone_b, "flood.freeboard_m"),
-                                        flood_level_m=getattr(args, "flood_level_ahd", None))
+                                        flood_level_m=getattr(args, "flood_level_ahd", None), mirror=bool(getattr(args, "building_mirror", False)))
                 rep.facts["building"] = placement.to_dict()
+                if getattr(args, "building_orientation_study", False):         # stage 8b: does ANY orientation of this template meet the cited garage rule?  The template is not changed.
+                    from app.design.building_place import orientation_study, orientation_summary
+                    study = orientation_study(house, lot_poly, lot_edges, cited_b, freeboard=cited_requirement(council_b, zone_b, "flood.freeboard_m"),
+                                              flood_level_m=getattr(args, "flood_level_ahd", None))
+                    summ = orientation_summary(study)
+                    rep.facts["building"]["orientation_study"] = {"summary": summ, "orientations": [dict(label=r.label, mirror=r.mirror, turn_deg=r.turn_deg, placed=r.placed, all_setbacks_met=r.all_setbacks_met,
+                                                                                                    garage_behind_m=(None if r.garage_behind_m is None else round(r.garage_behind_m, 2)),
+                                                                                                    garage_rule_met=r.garage_rule_met, garage_door_faces_street=r.garage_door_faces_street,
+                                                                                                    meets_all=r.meets_all, usable=r.usable) for r in study]}
+                    if placement.garage_rule is not None and placement.garage_rule.met is False:
+                        placement.flags.append("ORIENTATION STUDY: " + summ.split(". ")[0])
+                    rep.add("building orientation study", OK if any(r.usable for r in study) else UNRESOLVED, summ)
+                    rep.facts["building"] = {**placement.to_dict(), "orientation_study": rep.facts["building"]["orientation_study"]}
                 rep.facts["building"]["house_provenance"] = house.provenance
                 if placement.placed:
                     rep.facts["building"]["footprint_area_m2"] = round(placement.footprint.area, 1)
@@ -890,6 +903,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--freeboard-m", type=float, help="freeboard override (user_entered); default = cited flood.freeboard_m for the LGA else UNRESOLVED")
     p.add_argument("--report", action="store_true", help="also write site_report.pdf/.json (Site Assessment and Planning Constraints Report; live NSW aerials unless IMAGERY_PROVIDER is set)")
     p.add_argument("--building", help="Plan Studio project file (.planstudio.json) of the house to place on the lot to the cited setbacks (stage 8); e.g. tests/fixtures/planstudio_house_single.planstudio.json")
+    p.add_argument("--building-mirror", action="store_true", help="place the typical house MIRRORED left to right (stage 8b option; the template file is not changed)")
+    p.add_argument("--building-orientation-study", action="store_true", help="test all eight orientations of the template against the cited setbacks and the cited garage rule and report the result (stage 8b); the placement itself is unchanged")
     p.add_argument("--dbyd-project", help="project folder that holds the DBYD registry (<folder>/dbyd/owners.json from scripts/dbyd_import.py) and the traced services; verified services are drawn on C100 and C310, "
                                           "drafts never, and the services status table is added (stage 8)")
     p.add_argument("--title")

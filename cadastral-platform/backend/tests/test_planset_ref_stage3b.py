@@ -22,6 +22,7 @@ from app.agents.sa5_cad_dxf.planset.core import View
 from app.agents.sa5_cad_dxf.planset.data import CadastreWindow, build_site
 from app.agents.sa5_cad_dxf.planset.generate import _proj
 from app.agents.sa5_cad_dxf.planset.refs import Cite, Cites
+from app.agents.sa5_cad_dxf.planset.typicals import Typicals
 from tests.test_planset_ref_stage3 import _ctx, _inp, texts
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -185,6 +186,7 @@ def test_c001_is_numbered_inside_the_frame_with_no_orphan_heading():
 
 # ---------------------------------------------------------------------------------------------------------------- typical details
 def _uncited(site):
+    site.cites.typ = Typicals(None)                  # a council without typical-detail data: the generic C600 (stage 8b keeps this layout for such councils)
     site.cites.by_key = {k: v for k, v in site.cites.by_key.items() if not k.startswith(("driveway.pavement", "earthworks.", "kerb.", "access.pavement"))}
 
 
@@ -239,6 +241,7 @@ def test_c420_and_c200_carry_the_layer_and_batter_details():
 
 def test_details_use_the_reference_hatches():
     site, ctx = _ctx()
+    _uncited(site)
     sh = S2.c600(ctx)
     ang_e, _ = SEC.ST.REF.hatch_existing
     ang_p, _ = SEC.ST.REF.hatch_proposed

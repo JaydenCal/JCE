@@ -1,0 +1,1040 @@
+{
+ "generated_at": "2026-10-21T09:11:11Z",
+ "entries": 132,
+ "resolved": 122,
+ "not_found": 10,
+ "failures": [],
+ "report": [
+  {
+   "key": "sd107.crossing.width_at_property_boundary_min",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossing.width_at_property_boundary_max",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossing.width_between_splays_min",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossing.overall_width_at_kerb_incl_splays_min",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossing.overall_width_at_kerb_incl_splays_max",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.layback.splay_length_along_kerb_each_side",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.layback.splay_depth_back_of_layback_to_lip_line",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.layback.lip_line_to_nominal_kerb_line",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.gutter_crossing.width_each_side_of_nominal_kerb_line",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.layback.run_behind_nominal_kerb_line",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.section.slab_thickness_at_road_side_edge_of_gutter_crossing",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.section.gutter_crossing_fall_edge_to_flowline",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.section.layback_top_above_road_side_edge",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.section.layback_rise_flowline_to_back_derived",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.section.flowline_radius",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.section.profile_description",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.slab.thickness_min",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.slab.reinforcement",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.slab.reinforcement_top_cover",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.slab.concrete_strength",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.slab.finish",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": null,
+   "page": 1
+  },
+  {
+   "key": "sd107.slab.base_course",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossfall.pathway_crossing",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.joints.expansion_joint_locations",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": null,
+   "page": 1
+  },
+  {
+   "key": "sd107.joints.dowels_along_expansion_joint",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.joints.bars_into_existing_kerb_and_gutter",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.joints.contraction_joint",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": null,
+   "page": 1
+  },
+  {
+   "key": "sd107.kerb.existing_kerb_and_gutter",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": null,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossing.entry_angle_to_road_centreline",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossing.entry_angle_min_with_council_approval",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.verge.unused_crossings",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": null,
+   "page": 1
+  },
+  {
+   "key": "sd107.footpath.existing_threshold",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.pavers.option",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossover.approval",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossover.clearance_template",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossover.maintenance",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": true,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "sd107.crossover.drawing_scales",
+   "ok": true,
+   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "quote_found": null,
+   "value_found": true,
+   "page": 1
+  },
+  {
+   "key": "eng.table2H.max_crossings_per_frontage",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 44
+  },
+  {
+   "key": "eng.table2H.access_width_residential",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 44
+  },
+  {
+   "key": "eng.table2H.access_width_commercial_industrial",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 44
+  },
+  {
+   "key": "eng.table2H.min_distance_crossing_to_corner_boundary",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 44
+  },
+  {
+   "key": "eng.table2H.min_kerb_separation_between_crossings",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 44
+  },
+  {
+   "key": "eng.table2H.min_separation_crossing_to_common_boundary",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 44
+  },
+  {
+   "key": "eng.crossing.layback_requirement",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 45
+  },
+  {
+   "key": "eng.crossing.layback_back_height",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 45
+  },
+  {
+   "key": "eng.crossing.driveway_risers",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 45
+  },
+  {
+   "key": "eng.crossing.design_vehicle",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 44
+  },
+  {
+   "key": "eng.crossing.footway_crossing_direction",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 45
+  },
+  {
+   "key": "eng.crossing.sealed_road_surface",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 45
+  },
+  {
+   "key": "eng.crossing.open_drain",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 45
+  },
+  {
+   "key": "eng.crossing.cross_reference_note",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 82
+  },
+  {
+   "key": "dcp.access_standard",
+   "ok": true,
+   "method": "cross-reference to requirements.json",
+   "quote_found": true,
+   "value_found": null,
+   "page": 39
+  },
+  {
+   "key": "notfound.crossover.driveway.max_grade_and_change_of_grade",
+   "ok": true,
+   "method": "not_found marker"
+  },
+  {
+   "key": "notfound.crossover.rd010_rd011_layback_drawings",
+   "ok": true,
+   "method": "not_found marker"
+  },
+  {
+   "key": "notfound.crossover.other_sd_vehicle_access_drawings",
+   "ok": true,
+   "method": "not_found marker"
+  },
+  {
+   "key": "eng.kerb.type",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 43
+  },
+  {
+   "key": "eng.kerb.table2A_rds",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": null,
+   "page": 32
+  },
+  {
+   "key": "eng.kerb.semi_mountable",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 42
+  },
+  {
+   "key": "eng.kerb.barrier_kerb",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 42
+  },
+  {
+   "key": "eng.kerb.carriageway_crossfall",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 42
+  },
+  {
+   "key": "eng.kerb.gutter_min_grade",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 41
+  },
+  {
+   "key": "eng.kerb.road_grades_table2G",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": null,
+   "page": 41
+  },
+  {
+   "key": "eng.kerb.R2_local_road_section",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": null,
+   "page": 35
+  },
+  {
+   "key": "eng.kerb.subgrade_behind_kerb_invert",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 57
+  },
+  {
+   "key": "eng.kerb.major_flow_depth_in_road",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 84
+  },
+  {
+   "key": "notfound.kerb.profile_dimensions_height_gutter_width_lip",
+   "ok": true,
+   "method": "not_found marker"
+  },
+  {
+   "key": "eng.verge.footway_width_built_up_min",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 36
+  },
+  {
+   "key": "eng.verge.footway_crossfall_paved_commercial",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 37
+  },
+  {
+   "key": "eng.verge.footpath_crossfall_paved",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 37
+  },
+  {
+   "key": "eng.verge.footway_crossfall_unpaved_or_partly_paved",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 37
+  },
+  {
+   "key": "eng.verge.footpath_drawings",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 37
+  },
+  {
+   "key": "eng.verge.pathway_limits",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 37
+  },
+  {
+   "key": "eng.verge.utility_corridors_table2I",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 48
+  },
+  {
+   "key": "eng.verge.street_tree",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 49
+  },
+  {
+   "key": "eng.verge.verge_finish",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 151
+  },
+  {
+   "key": "eng.verge.lot_batter_max",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 44
+  },
+  {
+   "key": "eng.verge.lot_fall_narrow_lots",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 159
+  },
+  {
+   "key": "eng.verge.inter_allotment_retaining_wall",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 160
+  },
+  {
+   "key": "notfound.verge.nature_strip_width_slab_thickness_RD007_RD008",
+   "ok": true,
+   "method": "not_found marker"
+  },
+  {
+   "key": "notfound.pavement.pavement_design_2_12_2_13",
+   "ok": true,
+   "method": "not_found marker"
+  },
+  {
+   "key": "dcp.pavement.surface_materials",
+   "ok": true,
+   "method": "cross-reference to requirements.json",
+   "quote_found": true,
+   "value_found": null,
+   "page": 39
+  },
+  {
+   "key": "eng.stormwater.direct_to_street_gutter",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 87
+  },
+  {
+   "key": "eng.inter_allotment.design_event",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 71
+  },
+  {
+   "key": "eng.inter_allotment.min_pipe_diameter",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 87
+  },
+  {
+   "key": "eng.inter_allotment.manhole_spacing_max",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 87
+  },
+  {
+   "key": "eng.inter_allotment.pit_freeboard",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 87
+  },
+  {
+   "key": "eng.inter_allotment.lot_inlet",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 88
+  },
+  {
+   "key": "eng.inter_allotment.pit_drawings",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 88
+  },
+  {
+   "key": "eng.inter_allotment.exclusions",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 87
+  },
+  {
+   "key": "eng.inter_allotment.pipe_larger_than",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 88
+  },
+  {
+   "key": "eng.inter_allotment.easement_width",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 100
+  },
+  {
+   "key": "eng.inter_allotment.pipe_design_life",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 83
+  },
+  {
+   "key": "eng.stormwater.fraction_impervious_residential_lot_600_to_1000_m2",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 76
+  },
+  {
+   "key": "eng.stormwater.design_aep_residential_minor",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 71
+  },
+  {
+   "key": "eng.stormwater.road_pit_rules",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 77
+  },
+  {
+   "key": "eng.stormwater.road_pipe_rules",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 80
+  },
+  {
+   "key": "eng.stormwater.pit_drop_and_freeboard",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 78
+  },
+  {
+   "key": "eng.stormwater.osd_trigger",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 95
+  },
+  {
+   "key": "eng.stormwater.osd_small_development_definition",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 88
+  },
+  {
+   "key": "eng.stormwater.osd_permissible_discharge",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 96
+  },
+  {
+   "key": "eng.stormwater.osd_tank_rules",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 96
+  },
+  {
+   "key": "eng.stormwater.osd_underground_tank",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 97
+  },
+  {
+   "key": "eng.stormwater.osd_above_ground_paved_ponding",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 98
+  },
+  {
+   "key": "eng.stormwater.water_service",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 110
+  },
+  {
+   "key": "eng.stormwater.sewer_junction",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 128
+  },
+  {
+   "key": "notfound.stormwater.kerb_outlet_kerb_adaptor_property_connection_detail",
+   "ok": true,
+   "method": "not_found marker"
+  },
+  {
+   "key": "notfound.stormwater.stormwater_pipe_minimum_cover",
+   "ok": true,
+   "method": "not_found marker"
+  },
+  {
+   "key": "eng.esc.standard_references",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 157
+  },
+  {
+   "key": "eng.esc.topsoil_reinstate_min",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 159
+  },
+  {
+   "key": "eng.esc.controls_remain_until",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 160
+  },
+  {
+   "key": "eng.esc.batter_revegetation",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 159
+  },
+  {
+   "key": "notfound.esc.council_sediment_fence_stabilised_access_typical",
+   "ok": true,
+   "method": "not_found marker"
+  },
+  {
+   "key": "dcp.floor.flood_planning_level",
+   "ok": true,
+   "method": "cross-reference to requirements.json",
+   "quote_found": true,
+   "value_found": null,
+   "page": 22
+  },
+  {
+   "key": "dcp.floor.habitable_floor",
+   "ok": true,
+   "method": "cross-reference to requirements.json",
+   "quote_found": true,
+   "value_found": null,
+   "page": 24
+  },
+  {
+   "key": "dcp.floor.garage_floor",
+   "ok": true,
+   "method": "cross-reference to requirements.json",
+   "quote_found": true,
+   "value_found": null,
+   "page": 24
+  },
+  {
+   "key": "eng.floor.major_system_freeboard",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": null,
+   "page": 84
+  },
+  {
+   "key": "notfound.floor.min_floor_level_above_ground_kerb_or_overland_flow",
+   "ok": true,
+   "method": "not_found marker"
+  },
+  {
+   "key": "dcp.floor.setbacks_pointer",
+   "ok": true,
+   "method": "skipped: pointer to requirements.json, no quote"
+  },
+  {
+   "key": "eng.table2I.street_lighting.corridor_width",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.street_lighting.offset_from_boundary",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.electricity.corridor_width",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.electricity.offset_from_boundary",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.telecommunications.corridor_width",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.telecommunications.offset_from_boundary",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.sewer.corridor_width",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.sewer.offset_from_boundary",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.water.corridor_width",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.water.centre_from_kerb_face",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.concrete_footpath.corridor_width_min",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.concrete_footpath.offset_from_boundary",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.street_tree.corridor_width",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": null,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.street_tree.edge_from_travel_lane_min",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 48
+  },
+  {
+   "key": "eng.table2I.note2.electrical_allocation",
+   "ok": true,
+   "method": "Engineering Standards text, cited page range",
+   "quote_found": true,
+   "value_found": true,
+   "page": 48
+  }
+ ]
+}

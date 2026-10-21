@@ -850,23 +850,37 @@ def test_crossing_standard_wording(doc, out, run):
 
 
 def test_layover_basis_matches_the_plan_set(doc, run):
+    """Stage 8b: Gunnedah has the council standard drawing data, so the kerb width, splay and layback run are CITED (GSC SD-107 REV A); the width, driveway width and boundary to
+    kerb stay platform defaults (the width held within the cited range).  A council without typicals keeps every value a platform default / drafting convention (stage 5b tests)."""
     d, cache = run
     lay = {x["key"]: x for x in cache["works"]["driveway"]["layover"]}
     defaults = ("w_bdy", "w_kerb", "flare", "drive", "d_kerb")
     assert set(defaults) | {"wing", "band"} <= set(lay)
-    for k in defaults:
-        assert "PLATFORM DEFAULT" in lay[k]["src"].upper() and lay[k]["placeholder"] is False, k
-    for k in lay:
-        if k not in defaults:
-            assert lay[k]["placeholder"] is True and "DRAFTING CONVENTION" in lay[k]["src"].upper(), k
+    cited = [k for k in lay if "SD-107" in lay[k]["src"].upper()]
+    if cited:
+        assert {"w_kerb", "wing", "flare", "band"} <= set(cited), cited
+        for k in ("w_bdy", "drive"):
+            assert "PLATFORM DEFAULT" in lay[k]["src"].upper() and lay[k]["placeholder"] is False, k
+        assert "PLATFORM DEFAULT" in lay["d_kerb"]["src"].upper()
+        for k in cited:
+            assert lay[k]["placeholder"] is False, k
+    else:
+        for k in defaults:
+            assert "PLATFORM DEFAULT" in lay[k]["src"].upper() and lay[k]["placeholder"] is False, k
+        for k in lay:
+            if k not in defaults:
+                assert lay[k]["placeholder"] is True and "DRAFTING CONVENTION" in lay[k]["src"].upper(), k
     (_s, tb), = [x for x in _tables(doc, "Dimension")]
     for r in tb.rows:
         assert not (r[2].startswith("Platform default") and "PLACEHOLDER" in r[2]), r
     by = {r[0].lower(): r for r in tb.rows}
-    for lab in ("layover width at boundary", "layover width at kerb", "wing flare (each side)", "driveway width"):
-        assert by[lab][2].startswith("Platform default"), (lab, by[lab])
-    for lab in ("wing length", "kerb and gutter band width"):
-        assert "PLACEHOLDER" in by[lab][2] and by[lab][2].startswith("Drafting convention"), lab
+    for lab in ("layover width at boundary", "driveway width"):
+        assert by[lab][2].startswith("Platform default") or "SD-107" in by[lab][2].upper(), (lab, by[lab])
+    if not cited:
+        for lab in ("layover width at kerb", "wing flare (each side)"):
+            assert by[lab][2].startswith("Platform default"), (lab, by[lab])
+        for lab in ("wing length", "kerb and gutter band width"):
+            assert "PLACEHOLDER" in by[lab][2] and by[lab][2].startswith("Drafting convention"), lab
     t3 = _stmts(doc, r"^Driveway width 3\.0 m", "3")[0]
     assert t3.tag == "ASSUMED / PLATFORM DEFAULT"
 

@@ -125,7 +125,7 @@ def test_scale_reason_text_and_nts_follow_the_actual_scale(real):
     m = re.search(r"SO THE SUBJECT FITS AT 1:(\d+)", c400)
     assert m and int(m.group(1)) == 50                  # C400 is drawn at 1:50, so the reason says 1:50, never 1:100
     assert "AS SHOWN" not in c001 and " NTS" in c001
-    assert "1:n" not in " ".join(real.pages) and "T = TBC" in real.pages[11]
+    assert "1:n" not in " ".join(real.pages) and ("T = TBC" in real.pages[11] or "VERIFY AGAINST SD-107" in real.pages[11])          # C600: TBC legend (no council typicals) or the cited details (stage 8b)
 
 
 def test_title_block_text_is_uppercase(real):

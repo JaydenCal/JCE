@@ -307,6 +307,7 @@ class Placement:
     garage: Polygon | None = None
     dwelling: Polygon | None = None            # footprint without the garage (the front building line is read from it)
     rotation_deg: float = 0.0
+    orientation: str = "AS DRAWN"             # the orientation option applied to the template (stage 8b): AS DRAWN, MIRRORED, FRONT TURNED 90/180/270
     translation: tuple[float, float] = (0.0, 0.0)
     front_dir: tuple[float, float] = (0.0, 0.0)  # unit vector toward the street
     garage_door_xy: tuple[float, float] | None = None
@@ -333,7 +334,7 @@ class Placement:
         return affinity.translate(affinity.rotate(g, self.rotation_deg, origin=(0, 0)), *self.translation)
 
     def to_dict(self) -> dict:
-        return {"placed": self.placed, "reason": self.reason, "source": self.source, "rotation_deg": round(self.rotation_deg, 3),
+        return {"placed": self.placed, "reason": self.reason, "source": self.source, "rotation_deg": round(self.rotation_deg, 3), "orientation": self.orientation,
                 "footprint_wkt": self.footprint.wkt if self.footprint is not None else None,
                 "garage_door_xy": self.garage_door_xy, "flags": list(self.flags), "ffl_m": self.ffl_m, "ffl_note": self.ffl_note,
                 "house": self.house.summary() if self.house else None, "ground_range": self.ground_range,
@@ -382,11 +383,91 @@ def _side_label(kind: str, line: LineString, front_dir_out: tuple[float, float],
     return {"front": "FRONT BOUNDARY", "secondary": "SECONDARY FRONTAGE", "rear": "REAR BOUNDARY"}.get(kind, "SIDE BOUNDARY")
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# orientation study (stage 8b): does ANY orientation of this template meet the cited garage rule?  The template is never changed silently.
+# ---------------------------------------------------------------------------------------------------------------------
+def orientation_label(mirror: bool, turn_deg: float) -> str:
+    t = int(round(turn_deg)) % 360
+    if not mirror and t == 0:
+        return "AS DRAWN"
+    return ("MIRRORED" if mirror else "") + (" AND " if mirror and t else "") + (f"FRONT TURNED {t} DEG" if t else "")
+
+
+def orient_house(house: HouseModel, mirror: bool = False, turn_deg: float = 0.0) -> HouseModel:
+    """A copy of the house mirrored left to right (``mirror``) and/or with the street-facing direction turned ``turn_deg`` anticlockwise about the house (the house is turned
+    relative to the street: the garage door then faces another way).  Geometry other than that is unchanged."""
+    import dataclasses
+
+    def tf(g):
+        if g is None:
+            return None
+        return affinity.scale(g, -1.0, 1.0, origin=(0, 0)) if mirror else g
+
+    fd = (-house.front_dir[0], house.front_dir[1]) if mirror else house.front_dir
+    a = math.radians(turn_deg)
+    fd = (fd[0] * math.cos(a) - fd[1] * math.sin(a), fd[0] * math.sin(a) + fd[1] * math.cos(a))
+    dc = house.garage_door_centre
+    if dc is not None and mirror:
+        dc = (-dc[0], dc[1])
+    return dataclasses.replace(house, footprint=tf(house.footprint), roof=tf(house.roof), garage=tf(house.garage), dwelling=tf(house.dwelling), garage_door_centre=dc,
+                               front_dir=_unit(fd), provenance=dict(house.provenance))
+
+
+@dataclass
+class OrientationResult:
+    label: str
+    mirror: bool
+    turn_deg: float
+    placed: bool
+    all_setbacks_met: bool | None
+    garage_behind_m: float | None            # positive: the garage is behind the dwelling front wall
+    garage_rule_met: bool | None
+    garage_door_faces_street: bool           # the garage door looks toward the street (template orientation turned 0 or mirrored only)
+    n_flags: int
+
+    @property
+    def meets_all(self) -> bool:
+        return bool(self.placed and self.all_setbacks_met and self.garage_rule_met)
+
+    @property
+    def usable(self) -> bool:
+        """Meets every cited setback and the garage rule AND the garage door faces the street (a garage whose door faces the side or rear would not meet the intent of the rule)."""
+        return self.meets_all and self.garage_door_faces_street
+
+
+def orientation_study(house: HouseModel, lot: Polygon, edges: list[Edge], cited: dict[str, Cited | None], **kw) -> list[OrientationResult]:
+    """Place the template in each of the eight orientations (as drawn, mirrored, front turned 90/180/270, each also mirrored) and report the cited garage rule and the setbacks."""
+    out: list[OrientationResult] = []
+    for mirror in (False, True):
+        for turn in (0.0, 90.0, 180.0, 270.0):
+            pl = place_house(house, lot, edges, cited, mirror=mirror, turn_deg=turn, **kw)
+            gr = pl.garage_rule
+            out.append(OrientationResult(pl.orientation, mirror, turn, pl.placed, pl.all_met if pl.placed else None, (gr.actual_m if gr else None), (gr.met if gr else None),
+                                         turn == 0.0, len(pl.flags)))
+    return out
+
+
+def orientation_summary(res: list[OrientationResult]) -> str:
+    """Plain statement for the report and the sheets."""
+    if not res:
+        return "ORIENTATION STUDY NOT RUN"
+    ok = [r for r in res if r.usable]
+    lines = [f"{r.label}: GARAGE {('LEVEL WITH' if abs(r.garage_behind_m or 0) < 0.005 else 'BEHIND' if (r.garage_behind_m or 0) > 0 else 'FORWARD OF')} THE FRONT BUILDING LINE" + ("" if abs(r.garage_behind_m or 0) < 0.005 else f" BY {abs(r.garage_behind_m or 0):.2f} m") + " "
+             f"({'MET' if r.garage_rule_met else 'NOT MET' if r.garage_rule_met is False else 'NOT CHECKED'}); GARAGE DOOR {'FACES' if r.garage_door_faces_street else 'DOES NOT FACE'} THE STREET" for r in res]
+    head = ("NO ORIENTATION OF THIS TEMPLATE MEETS THE CITED GARAGE RULE WITH THE GARAGE DOOR TO THE STREET: THE TEMPLATE IS KEPT AS DRAWN"
+            if not ok else f"ORIENTATION(S) MEETING THE CITED GARAGE RULE WITH THE GARAGE DOOR TO THE STREET: {', '.join(r.label for r in ok)} (THE TEMPLATE IS STILL PLACED AS DRAWN UNLESS THE OPTION IS SELECTED)")
+    return head + ". " + "; ".join(lines)
+
+
 def place_house(house: HouseModel, lot: Polygon, edges: list[Edge], cited: dict[str, Cited | None], ground: Any = None, freeboard: Cited | None = None,
-                flood_level_m: float | None = None) -> Placement:
+                flood_level_m: float | None = None, mirror: bool = False, turn_deg: float = 0.0) -> Placement:
     """Place ``house`` on ``lot`` to the cited setbacks (see the module docstring).  ``ground`` is an optional callable (x, y) -> RL used only to report the existing ground range
-    under the footprint."""
-    pl = Placement(placed=False, house=house, cited=cited, edges=edges)
+    under the footprint.  ``mirror`` / ``turn_deg`` (stage 8b) test an alternative orientation of the same template (``orient_house``); the default placement is the template as drawn
+    and the template itself is never changed."""
+    orientation = orientation_label(mirror, turn_deg)
+    if orientation != "AS DRAWN":
+        house = orient_house(house, mirror, turn_deg)
+    pl = Placement(placed=False, house=house, cited=cited, edges=edges, orientation=orientation)
     front_edges = [e for e in edges if e.kind == "front"]
     if not front_edges:
         pl.reason = "NO FRONT BOUNDARY IN THE LOT DATA: THE DWELLING CANNOT BE ORIENTED"

@@ -84,3 +84,17 @@ boundary in RU1).
 
 The bot-blocked sources are recorded as `status: blocked` in the manifest with the reason. `fetch_docs.py --try-blocked` retries them (a
 different network or a manually saved copy in `raw/` + manifest edit would unblock them; then add candidates and rerun the builder).
+
+## Council typical details (stage 8b)
+
+`typicals.json` holds the council TYPICAL DETAIL values the plan set draws (SD-107 Rev A vehicle crossover, Engineering Standards crossings, driveway, verge corridors, drainage,
+OSD, DCP driveway statements). It is generated, not typed: `typicals_candidates.json` (the research output plus Table 2-I rows) goes through `build_typicals.py`, which checks every
+entry against the council PDFs and writes `typicals.json` and `typicals_validation.json`.
+
+    cd knowledge/gunnedah && python3 -I build_typicals.py --pdf-dir <folder with the council PDFs>
+
+Entry: key, value, unit, numeric, doc (documents table: title, edition, URL, short and tag), clause (or the SD-107 drawing view), page (Engineering Standards: printed "Page n of 166";
+DCP: PDF index, printed number is that minus 6; SD-107 is a single sheet), quote (normalised text found in the cited page), confidence, verify (true at 0.7 or lower), status.
+`NOT FOUND` entries (RD003 kerb and gutter profile, RD0010 and RD011 layback drawings, RD007 and RD008, pavement design 2.12 and 2.13, G001 and G002 and others) carry a label and no value:
+the drawings print "NOT PUBLISHED, OBTAIN FROM COUNCIL". Python reader: `app/agents/sa5_cad_dxf/planset/typicals.py`.
+

@@ -6,6 +6,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from app.agents.sa5_cad_dxf.planset.typicals import Typicals
+
 KNOW = Path(__file__).resolve().parents[4] / "knowledge"
 
 
@@ -47,6 +49,7 @@ class Cites:
         self.council_file: str | None = None
         self.council_name: str | None = None          # taken from the council source document title (e.g. 'Gunnedah Shire Council'), never typed in
         self.docs: list[str] = []                     # short titles of every source document cited, council documents first
+        self.typ = Typicals(council)                  # council typical-detail data (knowledge/<council>/typicals.json); empty for a council without one
         folders = []
         c = (council or "").lower()
         for d in KNOW.iterdir() if KNOW.exists() else []:
@@ -76,7 +79,9 @@ class Cites:
                                              s.get("page"), s.get("section_ref", ""), s.get("quote", ""))
 
     def doc_list(self) -> list[str]:
-        return list(dict.fromkeys(self.docs))
+        sd = self.typ.docs.get("sd107") if self.typ.present else None
+        extra = [f"{sd['title']} ({sd['edition']})"] if sd else []           # the standard drawing the typical details are taken from
+        return list(dict.fromkeys(self.docs + extra))
 
     def get(self, key: str) -> Cite | None:
         return self.by_key.get(key)

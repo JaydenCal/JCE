@@ -1,0 +1,4167 @@
+{
+ "region": "gunnedah",
+ "generated_at": "2026-10-21T09:11:11Z",
+ "schema": 1,
+ "documents": {
+  "sd107": {
+   "short": "GSC SD-107 REV A",
+   "title": "Gunnedah Shire Council Standard Drawing SD-107 Vehicle Access Urban Residential",
+   "authority": "Gunnedah Shire Council",
+   "edition": "Rev A, 01/08/2023",
+   "tag": "GSC SD-107 REV A",
+   "kind": "standard drawing",
+   "page_convention": "single sheet (page 1)",
+   "sha256": "52bc635fcf9fdb6e30e5e5a64014a4504b6eac7a0dfe4fda7cf12e1d543863f8",
+   "source_file": "GSC_SD-107_Vehicle_Access_Urban_Residential.pdf"
+  },
+  "eng": {
+   "short": "GSC ENGINEERING DESIGN MINIMUM STANDARDS (VERSION 1, APRIL 2025)",
+   "title": "Gunnedah Shire Council Engineering Design Minimum Standards for Subdivisions and Development",
+   "authority": "Gunnedah Shire Council",
+   "edition": "Version 1, April 2025",
+   "tag": "GSC ENGINEERING STANDARDS V1 (APR 2025)",
+   "kind": "standard",
+   "page_convention": "printed \"Page n of 166\"",
+   "sha256": "c9bcf75eff19cec881495b6571803adb7e29e86e6fed23ab40e8fcd345c35a52",
+   "source_file": "GSC_Engineering_Design_Minimum_Standards_V1_April_2025.pdf"
+  },
+  "dcp": {
+   "short": "GSC DCP 2025",
+   "title": "Gunnedah Shire Council Development Control Plan 2025",
+   "authority": "Gunnedah Shire Council",
+   "edition": "DCP 2025 (adopted 18 June 2025)",
+   "tag": "GSC DCP 2025",
+   "kind": "development control plan",
+   "page_convention": "PDF page index (printed page = PDF page - 6), as requirements.json"
+  }
+ },
+ "sd107_notes": [
+  {
+   "n": 1,
+   "text": "A SECTION 138 APPROVAL IS REQUIRED BEFORE ANY WORK CAN COMMENCE IN COUNCIL'S ROAD RESERVE."
+  },
+  {
+   "n": 2,
+   "text": "DIMENSIONS ARE MILLIMETRES UNLESS OTHERWISE SHOWN."
+  },
+  {
+   "n": 3,
+   "text": "PROVISION FOR SERVICES UNDER SLAB TO BE INVESTIGATED PRIOR TO CONSTRUCTION. LODGE ENQUIRY VIA \"BEFORE YOU DIG AUSTRALIA\"."
+  },
+  {
+   "n": 4,
+   "text": "ANY EXISTING UN-USED CROSSINGS MUST BE REMOVED AND KERB & GUTTER, FOOTPATH AND NATURE STRIP REINSTATED TO COUNCIL'S SATISFACTION."
+  },
+  {
+   "n": 5,
+   "text": "THE ENTRANCE IS GENERALLY TO BE CONSTRUCTED WITHIN THE ROAD RESERVE, AT AN ANGLE OF NINETY DEGREES (90°) TO THE CENTRE LINE OF THE ROAD. THIS MAY BE REDUCED TO A MINIMUM OF SEVENTY DEGREES (70°) WITH THE APPROVAL OF COUNCIL'S OFFICER."
+  },
+  {
+   "n": 6,
+   "text": "COMPACT SUB-GRADE AND 50mm DEEP BASE COURSE OF APPROVED GRANULAR (FINE CRUSHED ROCK) MATERIAL TO 95% STANDARD COMPACTION."
+  },
+  {
+   "n": 7,
+   "text": "PROVIDE EXPANSION JOINTS AT PROPERTY BOUNDARY, AGAINST LAYBACK AND ADJACENT TO FOOTPATHS. PROVIDE HOT DIPPED GALVANIZED R16 BARS 300MM LONG AT 300 CENTRES ALONG EXPANSION JOINT (EJ). PROVIDE BOND BREAK TO ONE HALF OF DOWEL."
+  },
+  {
+   "n": 8,
+   "text": "PROVIDE SAW CUT CONTRACTION JOINT (CJ) CENTRALLY PLACED FOR DOUBLE DRIVEWAYS."
+  },
+  {
+   "n": 9,
+   "text": "RESIDENTIAL PATHWAY CROSSING TO BE MINIMUM 125mm THICK, SL82 REINFORCEMENT PLACED WITH 30-40mm TOP COVER."
+  },
+  {
+   "n": 10,
+   "text": "SPECIFIED STRENGTH OF CONCRETE SHALL BE F'c 25MPa."
+  },
+  {
+   "n": 11,
+   "text": "EXISTING CONCRETE FOOTPATH LESS THAN 125mm THICK, OR IN POOR CONDITION, SHALL BE REMOVED AND REPLACED. FOOTPATH 125mm OR THICKER IN GOOD CONDITION MAY BE RETAINED."
+  },
+  {
+   "n": 12,
+   "text": "65mm THICK CONCRETE OR CLAY PAVERS MAY BE PLACED IF DESIRED PROVIDED THEY ARE LAID ON A 20mm THICK 6:1 SAND CEMENT BEDDING ON A MINIMUM 100mm THICK REINFORCED (SL72) CONCRETE BASE."
+  },
+  {
+   "n": 13,
+   "text": "DRIVEWAY SHALL HAVE A NON-SLIP FINISH, e.g. STEEL COVE, WOOD FLOAT OR BROOM FINISH."
+  },
+  {
+   "n": 14,
+   "text": "REFER AS2890.1 OFF-STREET CAR PARKING STANDARD FOR VEHICLE CLEARANCE TEMPLATES."
+  },
+  {
+   "n": 15,
+   "text": "IT IS PROPERTY OWNER'S RESPONSIBILITY TO REPAIR AND MAINTAIN THE DRIVEWAY/VEHICLE CROSSING TO THEIR LAND. REFER SEC 218 OF NSW ROADS ACT, 1993."
+  }
+ ],
+ "entries": [
+  {
+   "key": "sd107.crossing.width_at_property_boundary_min",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan, top dimension '3000 MIN / 4500 MAX'",
+   "value": 3000,
+   "unit": "mm",
+   "numeric": {
+    "value": 3000.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Top dimension string spans the slab edges at the property boundary: 3000 MIN, 4500 MAX. Same pair repeated between the splays at the back of the layback.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.9,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossing.width_at_property_boundary_max",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan, top dimension '3000 MIN / 4500 MAX'",
+   "value": 4500,
+   "unit": "mm",
+   "numeric": {
+    "value": 4500.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. As above.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.9,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossing.width_between_splays_min",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan, bottom dimension string",
+   "value": 3000,
+   "unit": "mm",
+   "numeric": {
+    "value": 3000.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Parallel-sided slab: the 3000 MIN / 4500 MAX width is held from the boundary to the back of the layback, between the two 600 splays.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.9,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossing.overall_width_at_kerb_incl_splays_min",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan, overall dimension '4200 MIN / 5700 MAX'",
+   "value": 4200,
+   "unit": "mm",
+   "numeric": {
+    "value": 4200.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Overall dimension line at the kerb under the 600 | width | 600 string. 4200 = 3000 + 2x600; 5700 = 4500 + 2x600.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossing.overall_width_at_kerb_incl_splays_max",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan, overall dimension '4200 MIN / 5700 MAX'",
+   "value": 5700,
+   "unit": "mm",
+   "numeric": {
+    "value": 5700.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. As above.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.layback.splay_length_along_kerb_each_side",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan, '600' dimensions either side of the opening",
+   "value": 600,
+   "unit": "mm",
+   "numeric": {
+    "value": 600.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Splay wings flare outward on each side along the kerb line, 600 each.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.layback.splay_depth_back_of_layback_to_lip_line",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan, left stacked dimension '300'",
+   "value": 300,
+   "unit": "mm",
+   "numeric": {
+    "value": 300.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Measured perpendicular to the kerb from the back-of-layback line to the lip line where the 600 splay starts. Splay diagonal is therefore 600 along x by 300 deep in plan (1 in 2).",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.8,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.layback.lip_line_to_nominal_kerb_line",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan, left stacked dimension '150'",
+   "value": 150,
+   "unit": "mm",
+   "numeric": {
+    "value": 150.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Between the lip line (splay start) and the nominal kerb line. 150 + 300 = 450 = layback run behind the nominal kerb line.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.8,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.gutter_crossing.width_each_side_of_nominal_kerb_line",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan '450' and section 'GUTTER CROSSING 450 | 450'",
+   "value": 450,
+   "unit": "mm",
+   "numeric": {
+    "value": 450.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Section shows 'GUTTER CROSSING' 450 each side of the NOMINAL KERB LINE (900 total). Plan shows 450 from the nominal kerb line to the road-side edge of the gutter crossing.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.9,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.layback.run_behind_nominal_kerb_line",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 section (nominal kerb line to expansion joint at back of layback) = plan 150 + 300",
+   "value": 450,
+   "unit": "mm",
+   "numeric": {
+    "value": 450.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Layback surface rises from the flowline at the nominal kerb line to a vertical double line (expansion joint) 450 behind it, where the 125 MIN footpath crossing slab begins.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.85,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.section.slab_thickness_at_road_side_edge_of_gutter_crossing",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 section, left dimension '190'",
+   "value": 190,
+   "unit": "mm",
+   "numeric": {
+    "value": 190.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Vertical dimension of concrete at the road-side edge (excludes the dotted 50 mm base course drawn below).",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.8,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.section.gutter_crossing_fall_edge_to_flowline",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 section, dimension '40'",
+   "value": 40,
+   "unit": "mm",
+   "numeric": {
+    "value": 40.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Top surface falls 40 mm from the road-side edge level to the flowline notch at the nominal kerb line (extension lines read at edge level and flowline level).",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.7,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": true,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.section.layback_top_above_road_side_edge",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 section, dimension '60'",
+   "value": 60,
+   "unit": "mm",
+   "numeric": {
+    "value": 60.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Top of the layback at the back (expansion joint) is 60 mm above the road-side edge level (extension lines read at edge level and back-of-layback top).",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.7,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": true,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.section.layback_rise_flowline_to_back_derived",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 section, derived: 40 + 60 over 450",
+   "value": 100,
+   "unit": "mm over 450 mm (about 22%, 1 in 4.5)",
+   "numeric": {
+    "value": 100.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "DERIVED by Claude (not a drawn dimension): 40 mm fall + 60 mm rise = 100 mm from flowline to back of layback over the 450 run. Scaled off the drawing: about 101 mm over 462 mm.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.6,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": true,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.section.flowline_radius",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 section, label 'R25'",
+   "value": 25,
+   "unit": "mm",
+   "numeric": {
+    "value": 25.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. R25 leader ends at the flowline notch where the gutter crossing meets the layback surface. Radius of that vertex.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.6,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": true,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.section.profile_description",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 section 1 (1:25)",
+   "value": "Road-side edge: vertical face 190 mm deep, top surface falling 40 mm toward the nominal kerb line, R25 flowline notch (there is a short near-vertical step up at the kerb line), layback rising straight to the expansion joint 450 behind, then slab at 1.5-2.5% pathway crossfall to the boundary; base course drawn 50 mm thick and stepping up under the layback; SL82 fabric draped with the slab",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Read from the rendered drawing (500 dpi crops), not inferred. Dashed line on the section is the normal pathway crossfall line projected back to the kerb.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.75,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.slab.thickness_min",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 9; section '125 MIN'",
+   "value": 125,
+   "unit": "mm",
+   "numeric": {
+    "value": 125.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "RESIDENTIAL PATHWAY CROSSING TO BE MINIMUM 125mm THICK, SL82 REINFORCEMENT PLACED WITH 30-40mm TOP COVER"
+   ],
+   "description": "\"RESIDENTIAL PATHWAY CROSSING TO BE MINIMUM 125mm THICK, SL82 REINFORCEMENT PLACED WITH 30-40mm TOP COVER.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.slab.reinforcement",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 9; section label 'SL82 FABRIC'",
+   "value": "SL82 fabric",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Note 9 quote as above. Section label reads 'SL82 FABRIC - SEE NOTE 7' (note number on label is 7, reinforcement is stated in Note 9).",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.slab.reinforcement_top_cover",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 9",
+   "value": "30 to 40",
+   "unit": "mm",
+   "numeric": {
+    "min": 30.0,
+    "max": 40.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "As above.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.slab.concrete_strength",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 10",
+   "value": "25",
+   "unit": "MPa (f'c)",
+   "numeric": {
+    "value": 25.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "SPECIFIED STRENGTH OF CONCRETE SHALL BE F'c 25MPa"
+   ],
+   "description": "\"SPECIFIED STRENGTH OF CONCRETE SHALL BE F'c 25MPa.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.slab.finish",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 13",
+   "value": "non-slip finish: steel float / wood float / broom",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "DRIVEWAY SHALL HAVE A NON-SLIP FINISH, e.g. STEEL COVE, WOOD FLOAT OR BROOM FINISH"
+   ],
+   "description": "\"DRIVEWAY SHALL HAVE A NON-SLIP FINISH, e.g. STEEL COVE, WOOD FLOAT OR BROOM FINISH.\" (sic 'steel cove')",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.9,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.slab.base_course",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 6; section 'REFER NOTE 6'",
+   "value": "50 mm approved granular (fine crushed rock) at 95% standard compaction over compacted sub-grade",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "COMPACT SUB-GRADE AND 50mm DEEP BASE COURSE OF APPROVED GRANULAR (FINE CRUSHED ROCK) MATERIAL TO 95% STANDARD COMPACTION"
+   ],
+   "description": "\"COMPACT SUB-GRADE AND 50mm DEEP BASE COURSE OF APPROVED GRANULAR (FINE CRUSHED ROCK) MATERIAL TO 95% STANDARD COMPACTION.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossfall.pathway_crossing",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 section label",
+   "value": "1.5 to 2.5",
+   "unit": "percent",
+   "numeric": {
+    "min": 1.5,
+    "max": 2.5
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Section label '1.5% TO 2.5% NORMAL PATHWAY CROSSFALL' (leader to the dashed projected line).",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.9,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.joints.expansion_joint_locations",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 7; plan labels 'E.J.' and 'E.J. REFER NOTE 7'",
+   "value": "at property boundary, against the layback, and adjacent to footpaths; plan shows E.J. lines on both sides of the opening beside the existing footpath and across the back of the layback",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "PROVIDE EXPANSION JOINTS AT PROPERTY BOUNDARY, AGAINST LAYBACK AND ADJACENT TO FOOTPATHS"
+   ],
+   "description": "\"PROVIDE EXPANSION JOINTS AT PROPERTY BOUNDARY, AGAINST LAYBACK AND ADJACENT TO FOOTPATHS.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.9,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.joints.dowels_along_expansion_joint",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 7; plan tick marks across the back-of-layback E.J.",
+   "value": "hot dipped galvanised R16 bars, 300 mm long, at 300 mm centres, bond break to one half of each dowel",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "PROVIDE HOT DIPPED GALVANIZED R16 BARS 300MM LONG AT 300 CENTRES ALONG EXPANSION JOINT (EJ)"
+   ],
+   "description": "\"PROVIDE HOT DIPPED GALVANIZED R16 BARS 300MM LONG AT 300 CENTRES ALONG EXPANSION JOINT (EJ).\" Plan shows about nine ticks across the 3000 to 4500 joint.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.9,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.joints.bars_into_existing_kerb_and_gutter",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan callout at left (road-side) kerb end",
+   "value": "R16 bars 300 long at 400 centres, placed after saw cutting the existing kerb and gutter across at full depth",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "EXISTING KERB & GUTTER TO BE SAW CUT ACROSS AT FULL DEPTH. R16 BARS 300 LONG @ 400 CTS TO BE PLACED. REFER NOTE 7"
+   ],
+   "description": "\"EXISTING KERB & GUTTER TO BE SAW CUT ACROSS AT FULL DEPTH. R16 BARS 300 LONG @ 400 CTS TO BE PLACED. REFER NOTE 7.\" Resolves the earlier 400 vs 300 query: 400 cts applies to bars into the cut face of the existing kerb and gutter (bar symbols drawn at both kerb ends); 300 cts applies along the E.J. per Note 7.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.85,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.joints.contraction_joint",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 8; plan label 'C.J. REFER NOTE 8'",
+   "value": "saw cut CJ centrally placed for double driveways; plan draws a C.J. on the crossing centreline",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "PROVIDE SAW CUT CONTRACTION JOINT (CJ) CENTRALLY PLACED FOR DOUBLE DRIVEWAYS"
+   ],
+   "description": "\"PROVIDE SAW CUT CONTRACTION JOINT (CJ) CENTRALLY PLACED FOR DOUBLE DRIVEWAYS.\" No joint spacing given for single driveways.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.9,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.kerb.existing_kerb_and_gutter",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 plan callout",
+   "value": "saw cut across at full depth (see bars entry)",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "As bars entry.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.9,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossing.entry_angle_to_road_centreline",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 5",
+   "value": 90,
+   "unit": "degrees",
+   "numeric": {
+    "value": 90.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "AT AN ANGLE OF NINETY DEGREES (90°) TO THE CENTRE LINE OF THE ROAD"
+   ],
+   "description": "\"AT AN ANGLE OF NINETY DEGREES (90°) TO THE CENTRE LINE OF THE ROAD.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossing.entry_angle_min_with_council_approval",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 5",
+   "value": 70,
+   "unit": "degrees",
+   "numeric": {
+    "value": 70.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "MAY BE REDUCED TO A MINIMUM OF SEVENTY DEGREES (70°) WITH THE APPROVAL OF COUNCIL'S OFFICER"
+   ],
+   "description": "\"MAY BE REDUCED TO A MINIMUM OF SEVENTY DEGREES (70°) WITH THE APPROVAL OF COUNCIL'S OFFICER.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.verge.unused_crossings",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 4",
+   "value": "remove and reinstate kerb and gutter, footpath and nature strip",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "ANY EXISTING UN-USED CROSSINGS MUST BE REMOVED AND KERB & GUTTER, FOOTPATH AND NATURE STRIP REINSTATED"
+   ],
+   "description": "\"ANY EXISTING UN-USED CROSSINGS MUST BE REMOVED AND KERB & GUTTER, FOOTPATH AND NATURE STRIP REINSTATED\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.footpath.existing_threshold",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 11",
+   "value": 125,
+   "unit": "mm",
+   "numeric": {
+    "value": 125.0
+   },
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "EXISTING CONCRETE FOOTPATH LESS THAN 125mm THICK, OR IN POOR CONDITION, SHALL BE REMOVED AND REPLACED"
+   ],
+   "description": "\"EXISTING CONCRETE FOOTPATH LESS THAN 125mm THICK, OR IN POOR CONDITION, SHALL BE REMOVED AND REPLACED.\" (125 mm or thicker in good condition may be retained). Plan shows existing footpath cut with break lines either side of the slab.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.pavers.option",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 12",
+   "value": "65 mm pavers on 20 mm 6:1 sand cement bed over min 100 mm SL72 concrete base",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "65mm THICK CONCRETE OR CLAY PAVERS MAY BE PLACED IF DESIRED"
+   ],
+   "description": "\"65mm THICK CONCRETE OR CLAY PAVERS MAY BE PLACED IF DESIRED\" on 20mm 6:1 bedding over min 100mm reinforced (SL72) base.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossover.approval",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Notes 1 and 3",
+   "value": "Section 138 approval before any work in road reserve; services under slab to be investigated (Before You Dig)",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "A SECTION 138 APPROVAL IS REQUIRED BEFORE ANY WORK CAN COMMENCE IN COUNCIL'S ROAD RESERVE"
+   ],
+   "description": "\"A SECTION 138 APPROVAL IS REQUIRED BEFORE ANY WORK CAN COMMENCE IN COUNCIL'S ROAD RESERVE.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossover.clearance_template",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 14",
+   "value": "AS 2890.1 vehicle clearance templates",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "REFER AS2890.1 OFF-STREET CAR PARKING STANDARD FOR VEHICLE CLEARANCE TEMPLATES"
+   ],
+   "description": "\"REFER AS2890.1 OFF-STREET CAR PARKING STANDARD FOR VEHICLE CLEARANCE TEMPLATES.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossover.maintenance",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107 Note 15",
+   "value": "owner repairs and maintains the driveway/crossing (Roads Act 1993 s218)",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [
+    "IT IS PROPERTY OWNER'S RESPONSIBILITY TO REPAIR AND MAINTAIN THE DRIVEWAY/VEHICLE CROSSING TO THEIR LAND"
+   ],
+   "description": "\"IT IS PROPERTY OWNER'S RESPONSIBILITY TO REPAIR AND MAINTAIN THE DRIVEWAY/VEHICLE CROSSING TO THEIR LAND.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "sd107.crossover.drawing_scales",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "sd107",
+   "clause": "SD-107",
+   "value": "Plan 1:50 (A3), Section 1:25 (A3), 'DO NOT SCALE'",
+   "unit": null,
+   "numeric": null,
+   "page_text": "1 (single sheet)",
+   "quote": [],
+   "description": "Scale labels on drawing.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
+   "confidence": 0.95,
+   "page": 1,
+   "pages": [
+    1
+   ],
+   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
+   "verify": false,
+   "drawing_read": true,
+   "verification": {
+    "method": "SD-107 text (pdftotext), quotes and numbers",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2H.max_crossings_per_frontage",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "value": 2,
+   "unit": "count",
+   "numeric": {
+    "value": 2.0
+   },
+   "page_text": "44",
+   "quote": [],
+   "description": "Maximum number of crossings per street frontage 2",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 44,
+   "pages": [
+    44
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2H.access_width_residential",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "value": "3.0 to 4.5",
+   "unit": "m",
+   "numeric": {
+    "min": 3.0,
+    "max": 4.5
+   },
+   "page_text": "44",
+   "quote": [],
+   "description": "Width of access (excluding layback splays) 3.0 - 4.5m",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 44,
+   "pages": [
+    44
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2H.access_width_commercial_industrial",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "value": "6.0 to 9.0",
+   "unit": "m",
+   "numeric": {
+    "min": 6.0,
+    "max": 9.0
+   },
+   "page_text": "44",
+   "quote": [],
+   "description": "Width of access (excluding layback splays) ... 6.0m - 9.0m",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 44,
+   "pages": [
+    44
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2H.min_distance_crossing_to_corner_boundary",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "value": 6,
+   "unit": "m",
+   "numeric": {
+    "value": 6.0
+   },
+   "page_text": "44",
+   "quote": [],
+   "description": "Minimum distance from crossing to corner allotment boundary 6m",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 44,
+   "pages": [
+    44
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2H.min_kerb_separation_between_crossings",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "value": 2,
+   "unit": "m",
+   "numeric": {
+    "value": 2.0
+   },
+   "page_text": "44",
+   "quote": [],
+   "description": "Minimum kerb separation distance between crossings 2m",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 44,
+   "pages": [
+    44
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2H.min_separation_crossing_to_common_boundary",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7 Vehicular crossings and accesses, Table 2-H",
+   "value": 0.5,
+   "unit": "m",
+   "numeric": {
+    "value": 0.5
+   },
+   "page_text": "44",
+   "quote": [],
+   "description": "Minimum separation distance between crossings and common property boundary 0.5m",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 44,
+   "pages": [
+    44
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.crossing.layback_requirement",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7",
+   "value": "concrete laybacks to GSC Standard Drawings RD0010 and RD011 for all vehicle crossovers where Integral Kerb and Gutter is used",
+   "unit": null,
+   "numeric": null,
+   "page_text": "45",
+   "quote": [
+    "concrete laybacks designed in accordance with GSC Standard Drawings RD0010 and RD011 shall be provided"
+   ],
+   "description": "\"concrete laybacks designed in accordance with GSC Standard Drawings RD0010 and RD011 shall be provided\" (RD0010 as printed). Those drawings are not published; SD-107 is the published detail.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 45,
+   "pages": [
+    45
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.crossing.layback_back_height",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7",
+   "value": "not less than adjacent kerb and gutter height",
+   "unit": null,
+   "numeric": null,
+   "page_text": "45",
+   "quote": [
+    "the height at the back of the layback is at a minimum equal to the height of the adjacent kerb and gutter"
+   ],
+   "description": "\"the height at the back of the layback is at a minimum equal to the height of the adjacent kerb and gutter\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 45,
+   "pages": [
+    45
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.crossing.driveway_risers",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7",
+   "value": "not permitted",
+   "unit": null,
+   "numeric": null,
+   "page_text": "45",
+   "quote": [
+    "The use of driveway risers shall not be permitted"
+   ],
+   "description": "\"The use of driveway risers shall not be permitted.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 45,
+   "pages": [
+    45
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.crossing.design_vehicle",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7",
+   "value": "B99 (AS 2890.1) must enter and exit each lot",
+   "unit": null,
+   "numeric": null,
+   "page_text": "44-45",
+   "quote": [
+    "such that the B99 Vehicle as detailed in Australian Standard 2890.1"
+   ],
+   "description": "\"such that the B99 Vehicle as detailed in Australian Standard 2890.1\" can satisfactorily enter or exit the allotment.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 44,
+   "pages": [
+    44,
+    45
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.crossing.footway_crossing_direction",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7",
+   "value": "perpendicular to the longitudinal road alignment",
+   "unit": null,
+   "numeric": null,
+   "page_text": "45",
+   "quote": [
+    "Vehicle accesses shall be designed to cross the footway reserve perpendicular to the longitudinal road alignment"
+   ],
+   "description": "\"Vehicle accesses shall be designed to cross the footway reserve perpendicular to the longitudinal road alignment.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 45,
+   "pages": [
+    45
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.crossing.sealed_road_surface",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7",
+   "value": "sealed with asphalt, concrete or bitumen from seal edge to property boundary; scour protection on batters",
+   "unit": null,
+   "numeric": null,
+   "page_text": "45",
+   "quote": [
+    "vehicle crossings shall be sealed with asphalt, concrete or bitumen from the edge of the pavement seal to the property boundary"
+   ],
+   "description": "\"vehicle crossings shall be sealed with asphalt, concrete or bitumen from the edge of the pavement seal to the property boundary.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 45,
+   "pages": [
+    45
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.crossing.open_drain",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.7",
+   "value": "piped culvert min 4.5 m wide with sloped headwalls or concrete causeway (RD012); min pipe 450 rural / 375 rural residential; culvert capacity 0.2 EY minimum",
+   "unit": null,
+   "numeric": null,
+   "page_text": "45",
+   "quote": [
+    "The minimum width of culverts shall be 4.5 metres",
+    "0.2 EY (minimum) capacity before property culvert overtops"
+   ],
+   "description": "\"The minimum width of culverts shall be 4.5 metres.\"; \"0.2 EY (minimum) capacity before property culvert overtops\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 45,
+   "pages": [
+    45
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.crossing.cross_reference_note",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.7.3.7",
+   "value": "clause 3.7.3.7 says vehicle crossings are designed per 'Section 2.7.7' (apparent typo for 2.8.7)",
+   "unit": null,
+   "numeric": null,
+   "page_text": "82",
+   "quote": [
+    "Vehicle crossings shall be designed in accordance with Section 2.7.7"
+   ],
+   "description": "\"Vehicle crossings shall be designed in accordance with Section 2.7.7.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.8,
+   "page": 82,
+   "pages": [
+    82
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "dcp.access_standard",
+   "topic": "crossover_driveway",
+   "status": "resolved",
+   "doc": "dcp",
+   "clause": "C.1.4 Internal driveway, access and parking",
+   "value": "access to the boundary to comply with Council standard access drawings and AS 2890 series; multiple access points and laybacks not permitted unless two road frontages",
+   "unit": null,
+   "numeric": null,
+   "page_text": "34 printed (39 PDF index)",
+   "quote": [
+    "Multiple vehicle access points and laybacks are not permitted"
+   ],
+   "description": "\"Multiple vehicle access points and laybacks are not permitted\". Tension with Eng Std Table 2-H (2 per frontage).",
+   "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FLANDUSE-PLANNING%252FDevelopment-Control-Plan%252FGSC%2B-%2BDevelopment%2BControl%2BPlan%2B2025%2B%2528adopted%2B18%2BJune%2B2025%2529.pdf",
+   "confidence": 0.85,
+   "page": 39,
+   "pages": [
+    39
+   ],
+   "edition": "Adopted 18 June 2025",
+   "verify": false,
+   "drawing_read": false,
+   "ref_key": "access.multiple_access_points",
+   "verification": {
+    "method": "cross-reference to requirements.json",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "notfound.crossover.driveway.max_grade_and_change_of_grade",
+   "topic": "crossover_driveway",
+   "status": "not_found",
+   "doc": null,
+   "clause": "n/a",
+   "value": null,
+   "unit": null,
+   "numeric": null,
+   "page_text": "n/a",
+   "quote": [],
+   "description": "Whole Standards text (pages 1-166, pdftotext) searched for driveway, grade, breakover: no driveway grade, ramp or transition value. SD-107 gives only 1.5-2.5% crossfall. DCP C.1.4 none. Council AS 2890.1 excerpt (image-only PDF) not available locally. SD-107 Note 14 defers to AS 2890.1. Pathway maximum crossfall 3% (p.38) and longitudinal 15% (p.38) are for public pathways, not driveways.",
+   "source_url": null,
+   "confidence": 0.0,
+   "verify": false,
+   "verification": {
+    "method": "none",
+    "ok": true
+   },
+   "label": "DRIVEWAY MAXIMUM GRADE AND CHANGE OF GRADE (SD-107 NOTE 14 REFERS TO AS 2890.1)"
+  },
+  {
+   "key": "notfound.crossover.rd010_rd011_layback_drawings",
+   "topic": "crossover_driveway",
+   "status": "not_found",
+   "doc": null,
+   "clause": "n/a",
+   "value": null,
+   "unit": null,
+   "numeric": null,
+   "page_text": "n/a",
+   "quote": [],
+   "description": "RD0010/RD011 not published on the council site; SD-107 supplies the layback geometry (above).",
+   "source_url": null,
+   "confidence": 0.0,
+   "verify": false,
+   "verification": {
+    "method": "none",
+    "ok": true
+   },
+   "label": "LAYBACK DRAWINGS GSC RD0010 AND RD011"
+  },
+  {
+   "key": "notfound.crossover.other_sd_vehicle_access_drawings",
+   "topic": "crossover_driveway",
+   "status": "not_found",
+   "doc": null,
+   "clause": "n/a",
+   "value": null,
+   "unit": null,
+   "numeric": null,
+   "page_text": "n/a",
+   "quote": [],
+   "description": "Rural residential, commercial and industrial, and rural (TfNSW) vehicle access drawings not read (not supplied locally; text-less in WebFetch).",
+   "source_url": null,
+   "confidence": 0.0,
+   "verify": false,
+   "verification": {
+    "method": "none",
+    "ok": true
+   },
+   "label": "OTHER VEHICLE ACCESS STANDARD DRAWINGS"
+  },
+  {
+   "key": "eng.kerb.type",
+   "topic": "kerb_and_gutter",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.2",
+   "value": "Integral Kerb and Gutter for all road classifications; RD003 where the carriageway is an overland flow path",
+   "unit": null,
+   "numeric": null,
+   "page_text": "43",
+   "quote": [
+    "Kerb and gutter shall be of the type 'Integral Kerb and Gutter' for all road classifications"
+   ],
+   "description": "\"Kerb and gutter shall be of the type 'Integral Kerb and Gutter' for all road classifications.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 43,
+   "pages": [
+    43
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.kerb.table2A_rds",
+   "topic": "kerb_and_gutter",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-A Road Design Standard Matrix",
+   "value": "RDS 1 and 2: kerb and gutter, formed footway, piped drainage (RDS 1 asphalt, RDS 2 sprayed seal). RDS 3 to 5: none (surface drainage)",
+   "unit": null,
+   "numeric": null,
+   "page_text": "32",
+   "quote": [],
+   "description": "Check marks read from the rendered page: kerb and gutter ticked for RDS 1 and RDS 2 only.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 32,
+   "pages": [
+    32
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.kerb.semi_mountable",
+   "topic": "kerb_and_gutter",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.7.9",
+   "value": "semi-mountable kerb on the high side of one-way crossfalls",
+   "unit": null,
+   "numeric": null,
+   "page_text": "42",
+   "quote": [
+    "Semi-Mountable Kerb shall be installed on the high side of one-way cross-falls"
+   ],
+   "description": "\"Semi-Mountable Kerb shall be installed on the high side of one-way cross-falls.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 42,
+   "pages": [
+    42
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.kerb.barrier_kerb",
+   "topic": "kerb_and_gutter",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.7.12",
+   "value": "barrier kerb along all median edges",
+   "unit": null,
+   "numeric": null,
+   "page_text": "42",
+   "quote": [
+    "Barrier Kerb shall be provided along all median edges to prevent mounting by vehicles"
+   ],
+   "description": "\"Barrier Kerb shall be provided along all median edges to prevent mounting by vehicles.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 42,
+   "pages": [
+    42
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.kerb.carriageway_crossfall",
+   "topic": "kerb_and_gutter",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.7.8",
+   "value": 3.0,
+   "unit": "percent",
+   "numeric": {
+    "value": 3.0
+   },
+   "page_text": "42",
+   "quote": [
+    "The nominal cross-fall on all pavements shall be 3.0%"
+   ],
+   "description": "\"The nominal cross-fall on all pavements shall be 3.0%.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 42,
+   "pages": [
+    42
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.kerb.gutter_min_grade",
+   "topic": "kerb_and_gutter",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.7.5",
+   "value": 1,
+   "unit": "percent",
+   "numeric": {
+    "value": 1.0
+   },
+   "page_text": "41",
+   "quote": [
+    "Gutters or open channel drains are to have a minimum grade of 1%"
+   ],
+   "description": "\"Gutters or open channel drains are to have a minimum grade of 1%\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 41,
+   "pages": [
+    41
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.kerb.road_grades_table2G",
+   "topic": "kerb_and_gutter",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-G, 2.7.5",
+   "value": "local roads max 16% (max 150 m); max 10% near intersections; min 1%",
+   "unit": null,
+   "numeric": null,
+   "page_text": "41",
+   "quote": [],
+   "description": "Maximum permissible grade on all other road categories 16.0%; adjacent to street intersections 10.0%; minimum 1.0%.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 41,
+   "pages": [
+    41
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.kerb.R2_local_road_section",
+   "topic": "kerb_and_gutter",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-C, R2 Low Density Residential RDS1/RDS2 columns",
+   "value": "R2 RDS1/RDS2 Local: 20 m reserve; 2 x 3.5 m travel lanes + 2 x 2.0 m parking lanes (carriageway 11.0 m, derived). Access: 18 m reserve, 2 x 3.5 m + 1 x 2.0 m parking (9.0 m derived). Collector: 25 m reserve, 2 x 3.5 + 2 x 3.0 parking",
+   "unit": null,
+   "numeric": null,
+   "page_text": "35",
+   "quote": [],
+   "description": "Table read from the rendered page. Parking lanes built to the same standard as travel lanes.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.85,
+   "page": 35,
+   "pages": [
+    35
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.kerb.subgrade_behind_kerb_invert",
+   "topic": "kerb_and_gutter",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.13.3.1",
+   "value": 500,
+   "unit": "mm (minimum; sub-grade and sub-base extend behind kerb invert, drawing RD002)",
+   "numeric": {
+    "value": 500.0
+   },
+   "page_text": "57",
+   "quote": [
+    "designed to a minimum 500mm behind the invert of kerb see GSC Standard Drawing RD002"
+   ],
+   "description": "\"designed to a minimum 500mm behind the invert of kerb see GSC Standard Drawing RD002\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 57,
+   "pages": [
+    57
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.kerb.major_flow_depth_in_road",
+   "topic": "kerb_and_gutter",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 3-L",
+   "value": "maximum flow depth top of kerb, or 200 mm above top of kerb where footway can cater",
+   "unit": null,
+   "numeric": null,
+   "page_text": "84",
+   "quote": [
+    "Maximum flow depth to be top of kerb or 200mm above top of kerb"
+   ],
+   "description": "\"Maximum flow depth to be top of kerb or 200mm above top of kerb\" ... (major system freeboard greatest of 150 mm / velocity head / climate change)",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.85,
+   "page": 84,
+   "pages": [
+    84
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "notfound.kerb.profile_dimensions_height_gutter_width_lip",
+   "topic": "kerb_and_gutter",
+   "status": "not_found",
+   "doc": null,
+   "clause": "n/a",
+   "value": null,
+   "unit": null,
+   "numeric": null,
+   "page_text": "n/a",
+   "quote": [],
+   "description": "RD003 integral kerb and gutter drawing is not published; no kerb height, gutter width or lip dimension in the Standards (searched all 166 pages for kerb, gutter, roll). No 'roll-top' profile is named. Only SD-107 shows the gutter crossing (450 each side of nominal kerb line, flowline fall 40 mm to R25 notch, layback to 450).",
+   "source_url": null,
+   "confidence": 0.0,
+   "verify": false,
+   "verification": {
+    "method": "none",
+    "ok": true
+   },
+   "label": "KERB AND GUTTER PROFILE DIMENSIONS (GSC RD003)"
+  },
+  {
+   "key": "eng.verge.footway_width_built_up_min",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.6.2.4 Footway (verge) width",
+   "value": 4.5,
+   "unit": "m",
+   "numeric": {
+    "value": 4.5
+   },
+   "page_text": "36",
+   "quote": [
+    "The nominal footway width in built-up areas is minimum 4.5m"
+   ],
+   "description": "\"The nominal footway width in built-up areas is minimum 4.5m\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 36,
+   "pages": [
+    36
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.footway_crossfall_paved_commercial",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.6.2.5",
+   "value": 2,
+   "unit": "percent",
+   "numeric": {
+    "value": 2.0
+   },
+   "page_text": "37",
+   "quote": [
+    "the cross-fall is to be nominally 2% towards the carriageway edge"
+   ],
+   "description": "\"the cross-fall is to be nominally 2% towards the carriageway edge.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 37,
+   "pages": [
+    37
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.footpath_crossfall_paved",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.6.2.5",
+   "value": "2 to 3",
+   "unit": "percent",
+   "numeric": {
+    "min": 2.0,
+    "max": 3.0
+   },
+   "page_text": "37",
+   "quote": [
+    "For areas such as concrete footpaths and paved areas, the cross-fall is to be nominally 2-3%"
+   ],
+   "description": "\"For areas such as concrete footpaths and paved areas, the cross-fall is to be nominally 2-3%.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 37,
+   "pages": [
+    37
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.footway_crossfall_unpaved_or_partly_paved",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.6.2.5",
+   "value": "2 to 6",
+   "unit": "percent",
+   "numeric": {
+    "min": 2.0,
+    "max": 6.0
+   },
+   "page_text": "37",
+   "quote": [
+    "cross-fall from kerb to the adjacent property boundary is to be nominally between 2% and 6% towards the carriageway edge"
+   ],
+   "description": "\"cross-fall from kerb to the adjacent property boundary is to be nominally between 2% and 6% towards the carriageway edge.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 37,
+   "pages": [
+    37
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.footpath_drawings",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.6.2.4",
+   "value": "concrete footpaths and shared paths per GSC Standard Drawings RD007 and RD008 (not published); pram ramps to AS 1428.1 at kerb and gutter crossings where concrete footpaths are built",
+   "unit": null,
+   "numeric": null,
+   "page_text": "37",
+   "quote": [
+    "Perambulator ramps as per Australian Standard 1428.1 shall be provided at all kerb and gutter crossings"
+   ],
+   "description": "\"Perambulator ramps as per Australian Standard 1428.1 shall be provided at all kerb and gutter crossings\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 37,
+   "pages": [
+    37
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.pathway_limits",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.6.2.6, Table 2-D",
+   "value": "max lateral crossfall 3%; max longitudinal grade 15%; low/medium demand width 1500 mm; shared path 2500 mm",
+   "unit": null,
+   "numeric": null,
+   "page_text": "37-38",
+   "quote": [
+    "Generally the maximum allowable lateral crossfall for pathways shall be 3%"
+   ],
+   "description": "\"Generally the maximum allowable lateral crossfall for pathways shall be 3%.\" (public pathways, not driveways)",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.85,
+   "page": 37,
+   "pages": [
+    37,
+    38
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.utility_corridors_table2I",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I; drawings G001 (built-up) and G002 (rural)",
+   "value": "street light 600 wide from boundary; electricity 1000 from boundary; telecom 600 wide, 1450 to 2050 from boundary; sewer 600 wide, 2050 to 2650 from boundary; water 600 wide, centre 900 from kerb face; concrete footpath 1500 min wide, 850 to 2050 from boundary; street tree corridor 1200 wide, edge min 3500 from travel lane edge",
+   "unit": null,
+   "numeric": null,
+   "page_text": "48",
+   "quote": [
+    "Centre of water main corridor to be 900mm from face of kerb"
+   ],
+   "description": "Table read in full from text and cross-checked: \"Centre of water main corridor to be 900mm from face of kerb\".",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.street_tree",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "6.9; Table 2-I Note 4",
+   "value": "1 tree per residential frontage (1 per 30 m on longer frontages), in the footway central to the lot; service separation 600 mm from tree centre",
+   "unit": null,
+   "numeric": null,
+   "page_text": "49, 151",
+   "quote": [
+    "Street Trees shall be planted at a rate of 1 tree per residential frontage"
+   ],
+   "description": "\"Street Trees shall be planted at a rate of 1 tree per residential frontage.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.85,
+   "page": 49,
+   "pages": [
+    49,
+    151
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.verge_finish",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "6.10, 6.11",
+   "value": "uniform grade, no depressions, trimmed for mowing; topsoil stripped and reused",
+   "unit": null,
+   "numeric": null,
+   "page_text": "151",
+   "quote": [
+    "The ground surface of all road verges",
+    "shall be of uniform grade"
+   ],
+   "description": "\"The ground surface of all road verges ... shall be of uniform grade\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.8,
+   "page": 151,
+   "pages": [
+    151
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.lot_batter_max",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "2.8.6",
+   "value": "1(V) in 10(H) where RDS 1/2 batters extend into lots",
+   "unit": null,
+   "numeric": null,
+   "page_text": "44",
+   "quote": [
+    "The maximum grade of batters within a lot shall be 1(V) in 10(H)"
+   ],
+   "description": "\"The maximum grade of batters within a lot shall be 1(V) in 10(H).\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 44,
+   "pages": [
+    44
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.lot_fall_narrow_lots",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "7.4.1 Allotment filling",
+   "value": "fall across lot at building line must be less than 2% where lot width at future building line is under 13 m",
+   "unit": null,
+   "numeric": null,
+   "page_text": "159",
+   "quote": [
+    "Where a proposed lot width at the future building line is less than 13m, the fall across the lot must be less than 2%"
+   ],
+   "description": "\"Where a proposed lot width at the future building line is less than 13m, the fall across the lot must be less than 2%.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 159,
+   "pages": [
+    159
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.verge.inter_allotment_retaining_wall",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "7.5.1",
+   "value": "max height 1.2 m; wall on high-side lot, 50 mm off boundary; drainage layer 300 mm with 100 mm slotted pipe",
+   "unit": null,
+   "numeric": null,
+   "page_text": "160",
+   "quote": [
+    "The acceptable maximum height for residential inter-allotment retaining walls is 1.2m"
+   ],
+   "description": "\"The acceptable maximum height for residential inter-allotment retaining walls is 1.2m.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 160,
+   "pages": [
+    160
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "notfound.verge.nature_strip_width_slab_thickness_RD007_RD008",
+   "topic": "footpath_verge",
+   "status": "not_found",
+   "doc": null,
+   "clause": "n/a",
+   "value": null,
+   "unit": null,
+   "numeric": null,
+   "page_text": "n/a",
+   "quote": [],
+   "description": "RD007/RD008 not published. Footpath thickness only via SD-107 Note 11 (125 mm). Verge width fixed at 4.5 m minimum in built-up areas (reserve less carriageway).",
+   "source_url": null,
+   "confidence": 0.0,
+   "verify": false,
+   "verification": {
+    "method": "none",
+    "ok": true
+   },
+   "label": "NATURE STRIP WIDTH AND FOOTPATH SLAB THICKNESS (GSC RD007 AND RD008)"
+  },
+  {
+   "key": "notfound.pavement.pavement_design_2_12_2_13",
+   "topic": "driveway_pavement",
+   "status": "not_found",
+   "doc": null,
+   "clause": "n/a",
+   "value": null,
+   "unit": null,
+   "numeric": null,
+   "page_text": "n/a",
+   "quote": [],
+   "description": "Sections 2.12 and 2.13 (pages 51-58) read: they cover road pavement (design life, flexible/rigid, subgrade), with no private driveway pavement values. Driveway pavement values exist only in SD-107 (125 mm SL82 slab on 50 mm base, pavers option) and DCP C.1.4 surface list.",
+   "source_url": null,
+   "confidence": 0.0,
+   "verify": false,
+   "verification": {
+    "method": "none",
+    "ok": true
+   },
+   "label": "ON-LOT DRIVEWAY PAVEMENT DESIGN (ENGINEERING STANDARDS 2.12 AND 2.13)"
+  },
+  {
+   "key": "dcp.pavement.surface_materials",
+   "topic": "driveway_pavement",
+   "status": "resolved",
+   "doc": "dcp",
+   "clause": "C.1.4(b),(c)",
+   "value": "concrete, bitumen, interlocking pavers or asphalt; RU1, RU4, RU5, RU6, E3 may use an alternative all-weather 2WD, dust-suppressing material",
+   "unit": null,
+   "numeric": null,
+   "page_text": "34 printed (39 PDF index)",
+   "quote": [
+    "are to be concrete, bitumen, interlocking pavers or asphalt"
+   ],
+   "description": "\"are to be concrete, bitumen, interlocking pavers or asphalt\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FLANDUSE-PLANNING%252FDevelopment-Control-Plan%252FGSC%2B-%2BDevelopment%2BControl%2BPlan%2B2025%2B%2528adopted%2B18%2BJune%2B2025%2529.pdf",
+   "confidence": 0.85,
+   "page": 39,
+   "pages": [
+    39
+   ],
+   "edition": "Adopted 18 June 2025",
+   "verify": false,
+   "drawing_read": false,
+   "ref_key": "access.internal_surface",
+   "verification": {
+    "method": "cross-reference to requirements.json",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.direct_to_street_gutter",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.9 Inter-Allotment Drainage Systems",
+   "value": "roof and surface water discharged to the street gutter where possible; inter-allotment drainage only where it cannot",
+   "unit": null,
+   "numeric": null,
+   "page_text": "87",
+   "quote": [
+    "necessary",
+    "where roof water and surface water cannot be discharged directly to the street gutter or other road drainage"
+   ],
+   "description": "\"necessary ... where roof water and surface water cannot be discharged directly to the street gutter or other road drainage.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 87,
+   "pages": [
+    87
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.inter_allotment.design_event",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.9; Table 3-B",
+   "value": 10,
+   "unit": "percent",
+   "numeric": {
+    "value": 10.0
+   },
+   "page_text": "71, 87",
+   "quote": [
+    "Inter-allotment drainage lines shall be designed for a 10% AEP event"
+   ],
+   "description": "\"Inter-allotment drainage lines shall be designed for a 10% AEP event\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 71,
+   "pages": [
+    71,
+    87
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.inter_allotment.min_pipe_diameter",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.9",
+   "value": "225 (150 may be considered where only one lot is served)",
+   "unit": null,
+   "numeric": null,
+   "page_text": "87",
+   "quote": [
+    "The minimum size pipe is to be 225mm diameter",
+    "150mm diameter pipe where only one (1) lot is to be served"
+   ],
+   "description": "\"The minimum size pipe is to be 225mm diameter.\" ... \"150mm diameter pipe where only one (1) lot is to be served.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 87,
+   "pages": [
+    87
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.inter_allotment.manhole_spacing_max",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.9",
+   "value": 75,
+   "unit": "m",
+   "numeric": {
+    "value": 75.0
+   },
+   "page_text": "87",
+   "quote": [
+    "manholes at intervals of not more than 75 metres"
+   ],
+   "description": "\"manholes at intervals of not more than 75 metres\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 87,
+   "pages": [
+    87
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.inter_allotment.pit_freeboard",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.9",
+   "value": 150,
+   "unit": "mm",
+   "numeric": {
+    "value": 150.0
+   },
+   "page_text": "87",
+   "quote": [
+    "A freeboard allowance of 150mm above the peak water level shall be adopted for inter-allotment pits"
+   ],
+   "description": "\"A freeboard allowance of 150mm above the peak water level shall be adopted for inter-allotment pits\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 87,
+   "pages": [
+    87
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.inter_allotment.lot_inlet",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.9",
+   "value": "each lot: at least one grated inlet pit at the lowest surface point along the line, with a 150 mm junction left in the pit wall for roof water",
+   "unit": null,
+   "numeric": null,
+   "page_text": "88",
+   "quote": [
+    "From the wall of the pit a 150mm junction is to be left for the connection of roof water"
+   ],
+   "description": "\"From the wall of the pit a 150mm junction is to be left for the connection of roof water.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 88,
+   "pages": [
+    88
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.inter_allotment.pit_drawings",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.9",
+   "value": "GSC Standard Drawings SW009 and SW010 (not published)",
+   "unit": null,
+   "numeric": null,
+   "page_text": "88",
+   "quote": [
+    "Inter-allotment drainage pits are to be in accordance with GSC Standard Drawing SW009 and SW010"
+   ],
+   "description": "\"Inter-allotment drainage pits are to be in accordance with GSC Standard Drawing SW009 and SW010.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 88,
+   "pages": [
+    88
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.inter_allotment.exclusions",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.9",
+   "value": "no road, park or public drainage into the line; only roofs and private surfaces",
+   "unit": null,
+   "numeric": null,
+   "page_text": "87-88",
+   "quote": [
+    "Stormwater from roads, parks, reserves or other public places shall not be discharged into inter-allotment drainage lines"
+   ],
+   "description": "\"Stormwater from roads, parks, reserves or other public places shall not be discharged into inter-allotment drainage lines.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 87,
+   "pages": [
+    87,
+    88
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.inter_allotment.pipe_larger_than",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.9",
+   "value": "lot layout should avoid any inter-allotment pipe larger than 450 mm",
+   "unit": null,
+   "numeric": null,
+   "page_text": "88",
+   "quote": [
+    "minimise the need for any inter-allotment larger than 450mm in residential subdivisions"
+   ],
+   "description": "\"minimise the need for any inter-allotment larger than 450mm in residential subdivisions.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 88,
+   "pages": [
+    88
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.inter_allotment.easement_width",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.11.1 Table 3-O",
+   "value": 3.0,
+   "unit": "m",
+   "numeric": {
+    "value": 3.0
+   },
+   "page_text": "100",
+   "quote": [],
+   "description": "Inter-Allotment Drainage 3.0 metres, easement identifying benefiting lots.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 100,
+   "pages": [
+    100
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.inter_allotment.pipe_design_life",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 3-K",
+   "value": 50,
+   "unit": "years",
+   "numeric": {
+    "value": 50.0
+   },
+   "page_text": "83",
+   "quote": [],
+   "description": "Inter-allotment drainage: Minimum 50 Year Design Life.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 83,
+   "pages": [
+    83
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.fraction_impervious_residential_lot_600_to_1000_m2",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.6.3.2 Table 3-F",
+   "value": 0.75,
+   "unit": "f",
+   "numeric": {
+    "value": 0.75
+   },
+   "page_text": "76",
+   "quote": [],
+   "description": "Residential Lot in Built-Up Area 0.75 (0.80 including half road), minimum lot size 600 - 1000 m2.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 76,
+   "pages": [
+    76
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.design_aep_residential_minor",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.5.6.1 Table 3-B",
+   "value": 20,
+   "unit": "percent",
+   "numeric": {
+    "value": 20.0
+   },
+   "page_text": "71",
+   "quote": [],
+   "description": "Residential areas - minor system 20%; major systems 1%.",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.95,
+   "page": 71,
+   "pages": [
+    71
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.road_pit_rules",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.7.1.1, 3.7.1.2, 3.7.2.2-3.7.2.4",
+   "value": "gutter flow width max 2.5 m; max pit spacing 75 m; inlets not on kerb returns between tangent points; side-entry/grated inlets (Weldlok type grates); inlet pit drawings SW003 to SW006, junction SW007, footway inlet SW008",
+   "unit": null,
+   "numeric": null,
+   "page_text": "77-79",
+   "quote": [
+    "Maximum spacing between pits shall not exceed 75m"
+   ],
+   "description": "\"Maximum spacing between pits shall not exceed 75m\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 77,
+   "pages": [
+    77,
+    78,
+    79
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.road_pipe_rules",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.7.3.1",
+   "value": "min diameter 375 mm urban, 450 mm rural; min grade 1.0%; cross roads at right angles; pipelines under and parallel to the kerb and gutter whenever possible; manholes max 75 m",
+   "unit": null,
+   "numeric": null,
+   "page_text": "80-81",
+   "quote": [
+    "Pipelines in roadways shall have a minimum diameter of 375mm in urban areas",
+    "pipelines shall be designed under and parallel to the road kerb and gutter"
+   ],
+   "description": "\"Pipelines in roadways shall have a minimum diameter of 375mm in urban areas\"; \"pipelines shall be designed under and parallel to the road kerb and gutter\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 80,
+   "pages": [
+    80,
+    81
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.pit_drop_and_freeboard",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.7.2.1",
+   "value": "50 mm invert drop straight-through, 70 mm with direction change; 150 mm freeboard to inlet surface; step irons at 300 mm centres where deeper than 1.2 m",
+   "unit": null,
+   "numeric": null,
+   "page_text": "78-79",
+   "quote": [
+    "A 150mm freeboard shall be allowed for between the peak water level for design events and surface levels at inlets"
+   ],
+   "description": "\"A 150mm freeboard shall be allowed for between the peak water level for design events and surface levels at inlets.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 78,
+   "pages": [
+    78,
+    79
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.osd_trigger",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.10.4.2",
+   "value": "OSD may be required for small developments where post-development flows exceed existing flows, downstream capacity is exceeded, private property may be affected, or Council-identified problem areas",
+   "unit": null,
+   "numeric": null,
+   "page_text": "95",
+   "quote": [
+    "Any development on an existing lot where post-developed flows exceed existing flows;"
+   ],
+   "description": "\"Any development on an existing lot where post-developed flows exceed existing flows;\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 95,
+   "pages": [
+    95
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.osd_small_development_definition",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.10.1",
+   "value": "five or fewer dwellings and pre-developed lot under 2000 m2",
+   "unit": null,
+   "numeric": null,
+   "page_text": "88",
+   "quote": [
+    "A Small Development is defined as a development consisting of less than or equal to 5 potential dwellings or units and a predeveloped lot size less than 2000m²"
+   ],
+   "description": "\"A Small Development is defined as a development consisting of less than or equal to 5 potential dwellings or units and a predeveloped lot size less than 2000m²\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 88,
+   "pages": [
+    88
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.osd_permissible_discharge",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.10.4.3",
+   "value": "post-development discharge must not exceed the existing (undeveloped) discharge for all durations from 0.5 EY to 1% AEP; no numeric L/s/ha value is given",
+   "unit": null,
+   "numeric": null,
+   "page_text": "96",
+   "quote": [
+    "OSD systems shall be designed to maintain the existing undeveloped discharges for all storm durations and frequencies in the range from the 0.5EY up to and including the 1% AEP events"
+   ],
+   "description": "\"OSD systems shall be designed to maintain the existing undeveloped discharges for all storm durations and frequencies in the range from the 0.5EY up to and including the 1% AEP events.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 96,
+   "pages": [
+    96
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.osd_tank_rules",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.10.4.2-3.10.4.4",
+   "value": "roof water to BASIX tank; BASIX overflow and unconnected roof to a dedicated detention tank; rainwater tank volume excluded; 88B instrument; roof plumbing for 5% AEP to AS 3500; overflow to the legal point of discharge for storms to 1% AEP",
+   "unit": null,
+   "numeric": null,
+   "page_text": "96",
+   "quote": [
+    "All roof water shall be directed to the proposed (BASIX) water storage tank"
+   ],
+   "description": "\"All roof water shall be directed to the proposed (BASIX) water storage tank.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 96,
+   "pages": [
+    96
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.osd_underground_tank",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.10.5",
+   "value": "access opening min 600 x 600 (storage to 600 deep) or 900 x 900 (deeper); not within 1.0 m of a water main, sewer main or on-site wastewater system",
+   "unit": null,
+   "numeric": null,
+   "page_text": "97",
+   "quote": [
+    "Underground storage tanks must not be installed over or within 1.0m of a water main, sewer main, on-site wastewater system or on-site wastewater disposal field"
+   ],
+   "description": "\"Underground storage tanks must not be installed over or within 1.0m of a water main, sewer main, on-site wastewater system or on-site wastewater disposal field.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 97,
+   "pages": [
+    97
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.osd_above_ground_paved_ponding",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "3.10.6.1, 3.10.6.2",
+   "value": "ponding depth max 150 mm where vehicles park, 180 mm elsewhere; landscaped OSD max 1200 mm deep, 1 in 6 batters, not across lot boundaries",
+   "unit": null,
+   "numeric": null,
+   "page_text": "98",
+   "quote": [
+    "Water ponding depth is to be limited to a depth of 150 mm in areas where vehicles are parked"
+   ],
+   "description": "\"Water ponding depth is to be limited to a depth of 150 mm in areas where vehicles are parked\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 98,
+   "pages": [
+    98
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.water_service",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "4.5.12, 4.7.7.3, 4.7.7.4",
+   "value": "each lot has a water meter at the position shown on GSC Water 1150 series; service min 20 mm, min cover 500 mm under carriageway and 300 mm in footway reserve, laid at right angles to the road centreline",
+   "unit": null,
+   "numeric": null,
+   "page_text": "110, 118-119",
+   "quote": [
+    "The services are to have a minimum cover of 500mm under carriageways and 300mm in footway reserves"
+   ],
+   "description": "\"The services are to have a minimum cover of 500mm under carriageways and 300mm in footway reserves.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 110,
+   "pages": [
+    110,
+    118,
+    119
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.stormwater.sewer_junction",
+   "topic": "stormwater_connection",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "5.5.5, 5.5.8, 5.5.10",
+   "value": "150 mm junction in every lot, raised 300 mm above ground and capped, within 1 m of the front and side boundaries; house drain min 300 mm cover at 1 in 60; soffit differential 1200 mm (900 mm in listed cases)",
+   "unit": null,
+   "numeric": null,
+   "page_text": "128-130",
+   "quote": [
+    "A 150 millimetre diameter sewer junction is to be provided within each lot"
+   ],
+   "description": "\"A 150 millimetre diameter sewer junction is to be provided within each lot.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 128,
+   "pages": [
+    128,
+    129,
+    130
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "notfound.stormwater.kerb_outlet_kerb_adaptor_property_connection_detail",
+   "topic": "stormwater_connection",
+   "status": "not_found",
+   "doc": null,
+   "clause": "n/a",
+   "value": null,
+   "unit": null,
+   "numeric": null,
+   "page_text": "n/a",
+   "quote": [],
+   "description": "Searched Part 3 and the whole text for kerb outlet, kerb adaptor, kerb connection, property connection to gutter: none. No standard drawing is cited for a kerb outlet. Only direct-to-gutter wording in 3.9 (p.87) and 'legal point of discharge' (3.10.4.4, p.96; 3.11, p.99). Drawing list cited: SW003-SW011, SW015 only.",
+   "source_url": null,
+   "confidence": 0.0,
+   "verify": false,
+   "verification": {
+    "method": "none",
+    "ok": true
+   },
+   "label": "KERB OUTLET AND KERB ADAPTOR PROPERTY CONNECTION DETAIL"
+  },
+  {
+   "key": "notfound.stormwater.stormwater_pipe_minimum_cover",
+   "topic": "stormwater_connection",
+   "status": "not_found",
+   "doc": null,
+   "clause": "n/a",
+   "value": null,
+   "unit": null,
+   "numeric": null,
+   "page_text": "n/a",
+   "quote": [],
+   "description": "No minimum cover figure for stormwater pipes found (Table 3-K p.83 says pipe class from available cover). Water services cover only.",
+   "source_url": null,
+   "confidence": 0.0,
+   "verify": false,
+   "verification": {
+    "method": "none",
+    "ok": true
+   },
+   "label": "STORMWATER PIPE MINIMUM COVER"
+  },
+  {
+   "key": "eng.esc.standard_references",
+   "topic": "erosion_sediment_control",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "7.2 References",
+   "value": "Managing Urban Stormwater: Soils and Construction Edition 4 (Blue Book) and 'Gunnedah Shire Council Construction Specifications' listed as references in Part 7; the Construction Specifications document was not found",
+   "unit": null,
+   "numeric": null,
+   "page_text": "157-158",
+   "quote": [
+    "Managing Urban Stormwater - Soils and Construction Edition 4"
+   ],
+   "description": "\"Managing Urban Stormwater - Soils and Construction Edition 4\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.85,
+   "page": 157,
+   "pages": [
+    157,
+    158
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.esc.topsoil_reinstate_min",
+   "topic": "erosion_sediment_control",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "7.4.1 Allotment filling",
+   "value": 100,
+   "unit": "mm",
+   "numeric": {
+    "value": 100.0
+   },
+   "page_text": "159",
+   "quote": [
+    "Topsoil (as defined in AS 3798) is required to be removed during the works and re-instated following completion at minimum 100mm thick"
+   ],
+   "description": "\"Topsoil (as defined in AS 3798) is required to be removed during the works and re-instated following completion at minimum 100mm thick.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 159,
+   "pages": [
+    159
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.esc.controls_remain_until",
+   "topic": "erosion_sediment_control",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "7.4.1",
+   "value": "80% revegetated",
+   "unit": null,
+   "numeric": null,
+   "page_text": "160",
+   "quote": [
+    "Erosion and sediment controls are to remain in place until revegetation is established over 80% of the area"
+   ],
+   "description": "\"Erosion and sediment controls are to remain in place until revegetation is established over 80% of the area\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 160,
+   "pages": [
+    160
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.esc.batter_revegetation",
+   "topic": "erosion_sediment_control",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "7.4.1",
+   "value": "revegetate with suitable grass as soon as practicable after final levels",
+   "unit": null,
+   "numeric": null,
+   "page_text": "159",
+   "quote": [
+    "Revegetation with a suitable grass species is to be installed as soon as practicable after final levels have been reached"
+   ],
+   "description": "\"Revegetation with a suitable grass species is to be installed as soon as practicable after final levels have been reached\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.8,
+   "page": 159,
+   "pages": [
+    159
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "notfound.esc.council_sediment_fence_stabilised_access_typical",
+   "topic": "erosion_sediment_control",
+   "status": "not_found",
+   "doc": null,
+   "clause": "n/a",
+   "value": null,
+   "unit": null,
+   "numeric": null,
+   "page_text": "n/a",
+   "quote": [],
+   "description": "All 166 pages searched for erosion, sediment, stabilised, shaker, fence: only the three Part 7 statements above. No Gunnedah-specific sediment fence or stabilised access drawing or dimension; DCP 2025 also has no ESC control. Use NSW Guidelines for ESC on Building Sites (Oct 2024) and Blue Book values already in backend/knowledge/esc.",
+   "source_url": null,
+   "confidence": 0.0,
+   "verify": false,
+   "verification": {
+    "method": "none",
+    "ok": true
+   },
+   "label": "COUNCIL SEDIMENT FENCE AND STABILISED ACCESS TYPICAL"
+  },
+  {
+   "key": "dcp.floor.flood_planning_level",
+   "topic": "floor_level_setbacks",
+   "status": "resolved",
+   "doc": "dcp",
+   "clause": "B.5 Flooding (introduction)",
+   "value": "1% AEP + 0.5 m freeboard",
+   "unit": null,
+   "numeric": null,
+   "page_text": "17 printed (22 PDF index)",
+   "quote": [
+    "Council has adopted the 1% Annual Exceedance Probability (AEP) plus 0.5m freeboard"
+   ],
+   "description": "\"Council has adopted the 1% Annual Exceedance Probability (AEP) plus 0.5m freeboard\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FLANDUSE-PLANNING%252FDevelopment-Control-Plan%252FGSC%2B-%2BDevelopment%2BControl%2BPlan%2B2025%2B%2528adopted%2B18%2BJune%2B2025%2529.pdf",
+   "confidence": 0.85,
+   "page": 22,
+   "pages": [
+    22
+   ],
+   "edition": "Adopted 18 June 2025",
+   "verify": false,
+   "drawing_read": false,
+   "ref_key": "flood.freeboard_m",
+   "verification": {
+    "method": "cross-reference to requirements.json",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "dcp.floor.habitable_floor",
+   "topic": "floor_level_setbacks",
+   "status": "resolved",
+   "doc": "dcp",
+   "clause": "B.5.2(b)",
+   "value": "at or above FPL",
+   "unit": null,
+   "numeric": null,
+   "page_text": "19 printed",
+   "quote": [
+    "Floor levels of habitable rooms are to be at or above the Flood Planning Level"
+   ],
+   "description": "\"Floor levels of habitable rooms are to be at or above the Flood Planning Level.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FLANDUSE-PLANNING%252FDevelopment-Control-Plan%252FGSC%2B-%2BDevelopment%2BControl%2BPlan%2B2025%2B%2528adopted%2B18%2BJune%2B2025%2529.pdf",
+   "confidence": 0.85,
+   "page": 24,
+   "pages": [
+    24
+   ],
+   "edition": "Adopted 18 June 2025",
+   "verify": false,
+   "drawing_read": false,
+   "ref_key": "flood.habitable_floor_at_or_above_fpl",
+   "verification": {
+    "method": "cross-reference to requirements.json",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "dcp.floor.garage_floor",
+   "topic": "floor_level_setbacks",
+   "status": "resolved",
+   "doc": "dcp",
+   "clause": "B.5.2(d)",
+   "value": "at or above 1% AEP level",
+   "unit": null,
+   "numeric": null,
+   "page_text": "19 printed",
+   "quote": [
+    "Residential garages are to be at or above the 1% AEP level"
+   ],
+   "description": "\"Residential garages are to be at or above the 1% AEP level.\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/index.php/list-files/preview?path=GunnedahShireCouncil%252FDEVELOPMENT-PLANNING-AND-BUILDING%252FLANDUSE-PLANNING%252FDevelopment-Control-Plan%252FGSC%2B-%2BDevelopment%2BControl%2BPlan%2B2025%2B%2528adopted%2B18%2BJune%2B2025%2529.pdf",
+   "confidence": 0.85,
+   "page": 24,
+   "pages": [
+    24
+   ],
+   "edition": "Adopted 18 June 2025",
+   "verify": false,
+   "drawing_read": false,
+   "ref_key": "flood.residential_garage_at_or_above_1pct_aep",
+   "verification": {
+    "method": "cross-reference to requirements.json",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.floor.major_system_freeboard",
+   "topic": "floor_level_setbacks",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 3-L",
+   "value": "greatest of 150 mm, velocity head, or climate change capacity",
+   "unit": null,
+   "numeric": null,
+   "page_text": "84",
+   "quote": [
+    "Freeboard to be the greatest of: 150mm"
+   ],
+   "description": "\"Freeboard to be the greatest of: 150mm\" (for major drainage systems)",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.85,
+   "page": 84,
+   "pages": [
+    84
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": null,
+    "notes": []
+   }
+  },
+  {
+   "key": "notfound.floor.min_floor_level_above_ground_kerb_or_overland_flow",
+   "topic": "floor_level_setbacks",
+   "status": "not_found",
+   "doc": null,
+   "clause": "n/a",
+   "value": null,
+   "unit": null,
+   "numeric": null,
+   "page_text": "n/a",
+   "quote": [],
+   "description": "Standards full text searched (floor level, habitable): only OSD/culvert floors and the sewer reflux remark 'set minimum floor level' (5.5.8, p.130). DCP 2025 has no finished floor level above ground or kerb outside flood provisions.",
+   "source_url": null,
+   "confidence": 0.0,
+   "verify": false,
+   "verification": {
+    "method": "none",
+    "ok": true
+   },
+   "label": "MINIMUM FLOOR LEVEL ABOVE GROUND, KERB OR OVERLAND FLOW"
+  },
+  {
+   "key": "eng.table2I.street_lighting.corridor_width",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Street Lighting row, minimum corridor width",
+   "value": 600,
+   "unit": "mm",
+   "numeric": {
+    "value": 600.0
+   },
+   "page_text": "48",
+   "quote": [
+    "Street Lighting 600"
+   ],
+   "description": "\"Street Lighting 600\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.street_lighting.offset_from_boundary",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Street Lighting row, offsets from the property boundary",
+   "value": "0 to 600",
+   "unit": "mm",
+   "numeric": {
+    "min": 0.0,
+    "max": 600.0
+   },
+   "page_text": "48",
+   "quote": [
+    "600mm from Property"
+   ],
+   "description": "\"600mm from Property\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.electricity.corridor_width",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Electricity Distribution row, minimum corridor width",
+   "value": 1000,
+   "unit": "mm",
+   "numeric": {
+    "value": 1000.0
+   },
+   "page_text": "48",
+   "quote": [
+    "Electricity"
+   ],
+   "description": "\"Electricity\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.electricity.offset_from_boundary",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Electricity Distribution row, offsets from the property boundary",
+   "value": "0 to 1000",
+   "unit": "mm",
+   "numeric": {
+    "min": 0.0,
+    "max": 1000.0
+   },
+   "page_text": "48",
+   "quote": [
+    "1000mm from property"
+   ],
+   "description": "\"1000mm from property\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.telecommunications.corridor_width",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Telecommunications row, minimum corridor width",
+   "value": 600,
+   "unit": "mm",
+   "numeric": {
+    "value": 600.0
+   },
+   "page_text": "48",
+   "quote": [],
+   "description": "Table 2-I read from the page text: Table 2-I, Telecommunications row, minimum corridor width",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.telecommunications.offset_from_boundary",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Telecommunications row, offsets from the property boundary",
+   "value": "1450 to 2050",
+   "unit": "mm",
+   "numeric": {
+    "min": 1450.0,
+    "max": 2050.0
+   },
+   "page_text": "48",
+   "quote": [
+    "1450mm from property"
+   ],
+   "description": "\"1450mm from property\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.sewer.corridor_width",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Sewer row, minimum corridor width",
+   "value": 600,
+   "unit": "mm",
+   "numeric": {
+    "value": 600.0
+   },
+   "page_text": "48",
+   "quote": [],
+   "description": "Table 2-I read from the page text: Table 2-I, Sewer row, minimum corridor width",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.sewer.offset_from_boundary",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Sewer row, offsets from the property boundary",
+   "value": "2050 to 2650",
+   "unit": "mm",
+   "numeric": {
+    "min": 2050.0,
+    "max": 2650.0
+   },
+   "page_text": "48",
+   "quote": [
+    "2050mm from property"
+   ],
+   "description": "\"2050mm from property\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.water.corridor_width",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Water row, minimum corridor width",
+   "value": 600,
+   "unit": "mm",
+   "numeric": {
+    "value": 600.0
+   },
+   "page_text": "48",
+   "quote": [],
+   "description": "Table 2-I read from the page text: Table 2-I, Water row, minimum corridor width",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.water.centre_from_kerb_face",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Water row",
+   "value": 900,
+   "unit": "mm",
+   "numeric": {
+    "value": 900.0
+   },
+   "page_text": "48",
+   "quote": [
+    "Centre of water main corridor to be 900mm from face of kerb"
+   ],
+   "description": "\"Centre of water main corridor to be 900mm from face of kerb\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.concrete_footpath.corridor_width_min",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Concrete footpath row, minimum corridor width",
+   "value": 1500,
+   "unit": "mm",
+   "numeric": {
+    "value": 1500.0
+   },
+   "page_text": "48",
+   "quote": [],
+   "description": "Table 2-I read from the page text: Table 2-I, Concrete footpath row, minimum corridor width",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.concrete_footpath.offset_from_boundary",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Concrete footpath row, offsets from the property boundary",
+   "value": "850 to 2050",
+   "unit": "mm",
+   "numeric": {
+    "min": 850.0,
+    "max": 2050.0
+   },
+   "page_text": "48",
+   "quote": [
+    "850mm from property"
+   ],
+   "description": "\"850mm from property\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.street_tree.corridor_width",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Street Tree row, minimum corridor width",
+   "value": 1200,
+   "unit": "mm",
+   "numeric": {
+    "value": 1200.0
+   },
+   "page_text": "48",
+   "quote": [],
+   "description": "Table 2-I read from the page text: Table 2-I, Street Tree row, minimum corridor width",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": null,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.street_tree.edge_from_travel_lane_min",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I, Street Tree row",
+   "value": 3500,
+   "unit": "mm",
+   "numeric": {
+    "value": 3500.0
+   },
+   "page_text": "48",
+   "quote": [
+    "Edge of street tree to be minimum 3500mm from"
+   ],
+   "description": "\"Edge of street tree to be minimum 3500mm from\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  },
+  {
+   "key": "eng.table2I.note2.electrical_allocation",
+   "topic": "footpath_verge",
+   "status": "resolved",
+   "doc": "eng",
+   "clause": "Table 2-I Note 2",
+   "value": 1000,
+   "unit": "mm",
+   "numeric": {
+    "value": 1000.0
+   },
+   "page_text": "48",
+   "quote": [
+    "The electrical allocation is 1000mm in width and extent from the property boundary"
+   ],
+   "description": "\"The electrical allocation is 1000mm in width and extent from the property boundary\"",
+   "source_url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/1/images/gunnedahshirecouncil/development-planning-and-building/development-engineering/gsc-engineering-design-minimum-standards-for-subdivisions-and-development-version-1-april-2025.pdf",
+   "confidence": 0.9,
+   "page": 48,
+   "pages": [
+    48
+   ],
+   "edition": "Version 1, April 2025",
+   "verify": false,
+   "drawing_read": false,
+   "verification": {
+    "method": "Engineering Standards text, cited page range",
+    "ok": true,
+    "quote_found": true,
+    "value_found": true,
+    "notes": []
+   }
+  }
+ ]
+}

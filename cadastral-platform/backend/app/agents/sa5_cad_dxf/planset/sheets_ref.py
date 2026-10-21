@@ -271,7 +271,7 @@ def road_labels(v: View, s: Site, xg: CX.CrossoverGeom, front) -> int:
             fr = xg.frontage
             ang = math.degrees(math.atan2(fr.u[1], fr.u[0]))
             c0 = xg.centre_s if xg.present else fr.length / 2.0
-            clear = (xg.width_m / 2 + xg.flare_m + ST.REF.band_extra_m + 1.0) if xg.present else 0.0
+            clear = (xg.width_m / 2 + xg.flare_m + xg.band_extra_m + 1.0) if xg.present else 0.0
             ss = [c0 - clear - half_m - 1.0, c0 + clear + half_m + 1.0] + [fr.length * f for f in (0.2, 0.8, 0.35, 0.65, 0.05, 0.95, -0.3, 1.3, -0.6, 1.6)]
             for sf in ss:
                 x, y = fr.xy(sf, xg.kerb_offset_m + 9.0 / v.k)

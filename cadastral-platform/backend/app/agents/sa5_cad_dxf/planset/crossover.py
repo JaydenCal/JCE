@@ -35,9 +35,53 @@ GUTTER_BAND_SIDE = "KERB LINE TOWARD THE LOT"     # the band lies between the ke
 FRONTAGE_SOURCE = "CADASTRE"
 
 
-def gutter_band_m(kerb_offset_m: float | None) -> float:
-    """Kerb and gutter band width: ONE value for the plan (C101, C400, C420) and the long section (C410)."""
-    return min(REF.kerb_band_m, kerb_offset_m * 0.25) if kerb_offset_m else 0.0
+@dataclass
+class CitedCrossing:
+    """Crossing geometry read from the council standard drawing data (typicals.json, SD-107): metres, each with its Typical for the citation."""
+    width_min_m: float
+    width_max_m: float
+    splay_along_m: float       # each side, along the kerb
+    splay_depth_m: float       # back of layback to the lip line
+    lip_to_kerb_m: float       # lip line to the nominal kerb line
+    layback_run_m: float       # nominal kerb line back to the expansion joint
+    road_side_m: float         # gutter crossing, nominal kerb line out to the road-side edge
+    overall_min_m: float
+    overall_max_m: float
+    label: str                 # 'GSC SD-107 REV A'
+    typ: dict                  # field name -> Typical
+
+
+CITED_KEYS = {"width_min_m": "sd107.crossing.width_at_property_boundary_min", "width_max_m": "sd107.crossing.width_at_property_boundary_max",
+              "splay_along_m": "sd107.layback.splay_length_along_kerb_each_side", "splay_depth_m": "sd107.layback.splay_depth_back_of_layback_to_lip_line",
+              "lip_to_kerb_m": "sd107.layback.lip_line_to_nominal_kerb_line", "layback_run_m": "sd107.layback.run_behind_nominal_kerb_line",
+              "road_side_m": "sd107.gutter_crossing.width_each_side_of_nominal_kerb_line", "overall_min_m": "sd107.crossing.overall_width_at_kerb_incl_splays_min",
+              "overall_max_m": "sd107.crossing.overall_width_at_kerb_incl_splays_max"}
+
+
+def cited_crossing(typ) -> CitedCrossing | None:
+    """The crossing geometry of the council standard drawing, or None when the council has no typicals file or any dimension is absent (then the
+    platform defaults stay and are labelled PLATFORM DEFAULT).  The drawn splay (300 deep, 600 along) and the 450 layback must be consistent."""
+    if typ is None or not getattr(typ, "present", False):
+        return None
+    vals, ts = {}, {}
+    for f, k in CITED_KEYS.items():
+        t = typ.get(k)
+        if t is None or t.m is None:
+            return None
+        vals[f], ts[f] = t.m, t
+    if abs(vals["splay_depth_m"] + vals["lip_to_kerb_m"] - vals["layback_run_m"]) > 1e-6:
+        return None
+    return CitedCrossing(label=typ.doc_short("sd107"), typ=ts, **vals)
+
+
+def gutter_band_m(kerb_offset_m: float | None, cited_run_m: float | None = None) -> float:
+    """Kerb and gutter band width: ONE value for the plan (C101, C400, C420) and the long section (C410).  ``cited_run_m``: the layback run behind
+    the nominal kerb line from the council standard drawing (SD-107), used when given; otherwise the platform drafting convention."""
+    if not kerb_offset_m:
+        return 0.0
+    if cited_run_m:
+        return cited_run_m if kerb_offset_m > 2 * cited_run_m else min(cited_run_m, kerb_offset_m * 0.25)
+    return min(REF.kerb_band_m, kerb_offset_m * 0.25)
 
 
 def frontage_length_m(front) -> float:
@@ -133,6 +177,10 @@ class CrossoverGeom:
     avail_m: float = 0.0             # boundary to the inner edge of the band
     drive_width_m: float = 0.0       # SA3 driveway width (0 = not supplied)
     std_label: str | None = None     # SA3 council standard label (None or the platform default label = nothing selected)
+    cited: CitedCrossing | None = None      # council standard drawing geometry (splays, layback run) when the council data has it
+    band_extra_m: float = 0.0        # the band continues past the wings each side (0 when the cited geometry is drawn: the gutter crossing ends at the splays)
+    road_side_m: float = 0.0         # cited gutter crossing beyond the kerb line (0 = the band ends at the kerb line)
+    width_note: str = ""             # why the width was held to the cited range (empty = within range or no range cited)
 
 
 def _s_range_at(poly_st: Polygon, t: float) -> tuple[float, float] | None:
@@ -141,13 +189,14 @@ def _s_range_at(poly_st: Polygon, t: float) -> tuple[float, float] | None:
 
 
 def build_crossover(front_seg, lot: Polygon, xover_poly: Polygon | None, kerb_offset_m: float | None = None, kerb_assumed: bool = True,
-                    reach_m: float = 60.0, kerb_user_supplied: bool | None = None) -> CrossoverGeom:
+                    reach_m: float = 60.0, kerb_user_supplied: bool | None = None, cited: CitedCrossing | None = None) -> CrossoverGeom:
     """Crossover geometry for any frontage bearing.  front_seg = ((x, y), (x, y)); xover_poly = SA3 crossover polygon or None.
     ``kerb_user_supplied``: True when the user gave the verge depth; None or False means the platform default (unknown means default)."""
     if front_seg is None:
         return CrossoverGeom(False, "NO FRONT BOUNDARY SEGMENT IN THE LOT DATA")
     fr = make_frontage(front_seg[0], front_seg[1], lot)
     g = CrossoverGeom(False, "", fr, kerb_offset_m, kerb_assumed)
+    g.band_extra_m = REF.band_extra_m
     g.kerb_source = "USER INPUT" if kerb_user_supplied is True else "PLATFORM DEFAULT"
     pst = None
     if xover_poly is not None and not xover_poly.is_empty:
@@ -160,7 +209,7 @@ def build_crossover(front_seg, lot: Polygon, xover_poly: Polygon | None, kerb_of
     if D is None or D <= 0:
         g.note = "KERB OFFSET NOT AVAILABLE" if pst is None else "CROSSOVER POLYGON INVALID"
         return g
-    gw = gutter_band_m(D)
+    gw = gutter_band_m(D, cited.layback_run_m if cited else None)
     g.verge = fr.poly([(0, 0), (fr.length, 0), (fr.length, D), (0, D)])
     g.kerb_line = LineString([fr.xy(-reach_m, D), fr.xy(fr.length + reach_m, D)])
     g.gutter_line = LineString([fr.xy(-reach_m, D - gw), fr.xy(fr.length + reach_m, D - gw)])
@@ -179,17 +228,35 @@ def build_crossover(front_seg, lot: Polygon, xover_poly: Polygon | None, kerb_of
     g.flare_source = "SA3 DRIVEWAY POLYGON"
     if g.flare_m < 0.05:                      # the SA3 polygon carries no kerb flare: use the reference sheet's wing proportion
         g.flare_m, g.flare_source = REF.wing_flare_m, "GRAPHIC CONVENTION"
-    avail = D - gw
-    wing = min(REF.wing_len_m, avail * 0.4)
-    g.body_len_m = avail - wing
+    if cited is not None:                     # council standard drawing: width held to the cited range, splay and layback as drawn
+        g.cited = cited
+        if w < cited.width_min_m - 1e-6 or w > cited.width_max_m + 1e-6:
+            g.width_note = f"SA3 WIDTH {_fmt_m(w)} IS OUTSIDE THE {cited.label} RANGE: HELD TO {_fmt_m(min(max(w, cited.width_min_m), cited.width_max_m))}"
+            g.width_m = w = min(max(w, cited.width_min_m), cited.width_max_m)
+        g.flare_m, g.flare_source = cited.splay_along_m, cited.label
+        g.band_extra_m, g.road_side_m = 0.0, cited.road_side_m
+        avail = D - gw
+        wing = cited.splay_depth_m
+        g.body_len_m = avail                  # the slab runs square to the back of the layback; the splay lies beyond it, toward the road
+    else:
+        avail = D - gw
+        wing = min(REF.wing_len_m, avail * 0.4)
+        g.body_len_m = avail - wing
     g.wing_len_m, g.band_w_m, g.avail_m = wing, gw, avail
     sa, sb = g.centre_s - w / 2, g.centre_s + w / 2
     f = g.flare_m
-    g.body = fr.poly([(sa, 0), (sb, 0), (sb, avail), (sa, avail)])        # boundary to the gutter band, so body, wings and band are one contiguous piece
-    g.wing_a = fr.poly([(sa, g.body_len_m), (sa, avail), (sa - f, avail)])
-    g.wing_b = fr.poly([(sb, g.body_len_m), (sb + f, avail), (sb, avail)])
-    ex = REF.band_extra_m
-    g.band = fr.poly([(sa - f - ex, D - gw), (sb + f + ex, D - gw), (sb + f + ex, D), (sa - f - ex, D)])
+    if cited is not None:
+        lip = avail + wing                                                  # lip line: 300 beyond the back of the layback
+        g.body = fr.poly([(sa, 0), (sb, 0), (sb, lip), (sa, lip)])         # boundary to the lip line (the splays fill the corners beyond the slab edges)
+        g.wing_a = fr.poly([(sa, avail), (sa - f, lip), (sa, lip)])
+        g.wing_b = fr.poly([(sb, avail), (sb, lip), (sb + f, lip)])
+        g.band = fr.poly([(sa - f, lip), (sb + f, lip), (sb + f, D + cited.road_side_m), (sa - f, D + cited.road_side_m)])
+    else:
+        g.body = fr.poly([(sa, 0), (sb, 0), (sb, avail), (sa, avail)])        # boundary to the gutter band, so body, wings and band are one contiguous piece
+        g.wing_a = fr.poly([(sa, g.body_len_m), (sa, avail), (sa - f, avail)])
+        g.wing_b = fr.poly([(sb, g.body_len_m), (sb + f, avail), (sb, avail)])
+        ex = REF.band_extra_m
+        g.band = fr.poly([(sa - f - ex, D - gw), (sb + f + ex, D - gw), (sb + f + ex, D), (sa - f - ex, D)])
     g.polys = {"body": g.body, "wing_a": g.wing_a, "wing_b": g.wing_b, "band": g.band, "verge": g.verge}
     g.present = True
     g.note = ""
@@ -278,12 +345,13 @@ def callouts_crossover(view: View, g: CrossoverGeom, standard_label: str | None 
         view.leader_avoid = [view.to_paper_geom(g.polys[k_]) for k_ in ("wing_a", "wing_b") if g.polys.get(k_) is not None and g.polys[k_].area > 1e-6]
     if g.present and not kerb_only:
         tgt = fr.xy(g.centre_s + g.width_m * 0.25, g.body_len_m * 0.7)
-        place_callout(view, ["PROPOSED CROSSOVER", f"WIDTH {_fmt_m(g.width_m)} (PLATFORM DEFAULT)"] + list(extra) + [standard_text(standard_label)], tgt, "dot", keep_out,
+        wtxt = f"WIDTH {_fmt_m(g.width_m)} (WITHIN {g.cited.label} {_fmt_m(g.cited.width_min_m)} TO {_fmt_m(g.cited.width_max_m)})" if g.cited else f"WIDTH {_fmt_m(g.width_m)} (PLATFORM DEFAULT)"
+        place_callout(view, ["PROPOSED CROSSOVER", wtxt] + list(extra) + [standard_text(standard_label)], tgt, "dot", keep_out,
                       avoid=avoid, soft_avoid=soft_avoid, must=True, must_avoid=must_avoid)
     if g.kerb_line is not None and g.kerb_assumed:
         D = g.kerb_offset_m
-        lo = (g.centre_s - g.width_m / 2 - g.flare_m - REF.band_extra_m - 1.0) if g.present else fr.length * 0.5
-        hi = (g.centre_s + g.width_m / 2 + g.flare_m + REF.band_extra_m + 1.0) if g.present else fr.length * 0.5
+        lo = (g.centre_s - g.width_m / 2 - g.flare_m - g.band_extra_m - 1.0) if g.present else fr.length * 0.5
+        hi = (g.centre_s + g.width_m / 2 + g.flare_m + g.band_extra_m + 1.0) if g.present else fr.length * 0.5
         lines = [KERB_ASSUMED_TEXT] if short_kerb else [KERB_ASSUMED_TEXT, kerb_text(g)]
         first = None
         for s in (lo - 2.0, hi + 2.0, fr.length * 0.15, fr.length * 0.85, fr.length * 0.5):
@@ -310,6 +378,21 @@ def layover_values(g: "CrossoverGeom", front=None) -> list[dict]:
     sel = standard_resolved(getattr(g, "std_label", None))      # a council standard was selected: the SA3 width and splay may follow it, so say so
     wsrc = WIDTH_SRC + (", WITHIN OR CLAMPED TO THE SELECTED STANDARD" if sel else "")
     fsrc = FLARE_SRC + (" UNLESS GIVEN BY THE SELECTED STANDARD" if sel else "")
+    c = g.cited
+    if c is not None:                                           # council standard drawing: every geometry value is cited, the width is the SA3 width held to the cited range
+        lab = c.label
+        wsrc = f"PLATFORM DEFAULT, WITHIN {lab} RANGE"
+        out = [
+            dict(key="w_bdy", label="LAYOVER WIDTH AT BOUNDARY", m=g.width_m, src=wsrc, placeholder=False),
+            dict(key="w_kerb", label="LAYOVER WIDTH AT KERB", m=g.width_m + 2 * g.flare_m, src=lab, placeholder=False),
+            dict(key="wing", label="SPLAY DEPTH (BACK OF LAYBACK TO LIP LINE)", m=g.wing_len_m, src=lab, placeholder=False),
+            dict(key="flare", label="SPLAY ALONG KERB (EACH SIDE)", m=g.flare_m, src=lab, placeholder=False),
+        ]
+        if g.drive_width_m:
+            out.append(dict(key="drive", label="DRIVEWAY WIDTH", m=g.drive_width_m, src=wsrc, placeholder=False))
+        out.append(dict(key="d_kerb", label="BOUNDARY TO KERB", m=g.kerb_offset_m, src=kerb_src, placeholder=False))
+        out.append(dict(key="band", label="LAYBACK RUN BEHIND NOMINAL KERB LINE", m=g.band_w_m, src=lab, placeholder=False))
+        return out
     out = [
         dict(key="w_bdy", label="LAYOVER WIDTH AT BOUNDARY", m=g.width_m, src=wsrc, placeholder=False),
         dict(key="w_kerb", label="LAYOVER WIDTH AT KERB", m=g.width_m + 2 * g.flare_m, src=fsrc, placeholder=False),
@@ -356,10 +439,11 @@ def layover_dims(view: View, g: "CrossoverGeom") -> int:
     if dim_best(view, view.tp(*fr.xy(sa, 0)), view.tp(*fr.xy(sb, 0)), _fmt_m(g.width_m), (6.0, 10.0, 14.0), (tn,), 2.5, hard) is not None:
         n += 1
     # width at kerb: across the outer wing tips, on the road side
-    if dim_best(view, view.tp(*fr.xy(sa - f, g.avail_m)), view.tp(*fr.xy(sb + f, g.avail_m)), _fmt_m(g.width_m + 2 * f), (15.0, 19.0, 23.0), (nd,), 2.5, hard) is not None:
+    t_tip = g.avail_m + (g.wing_len_m if g.cited else 0.0)                    # the wing tips lie on the lip line when the cited splay is drawn
+    if dim_best(view, view.tp(*fr.xy(sa - f, t_tip)), view.tp(*fr.xy(sb + f, t_tip)), _fmt_m(g.width_m + 2 * f), (15.0, 19.0, 23.0), (nd,), 2.5, hard) is not None:
         n += 1
     # boundary to kerb: along the normal, left of the band
-    s_l = sa - f - REF.band_extra_m - 0.3
+    s_l = sa - f - g.band_extra_m - 0.3
     u_paper = (view.tp(*fr.xy(1, 0))[0] - view.tp(*fr.xy(0, 0))[0], view.tp(*fr.xy(1, 0))[1] - view.tp(*fr.xy(0, 0))[1])
     if dim_best(view, view.tp(*fr.xy(s_l, 0)), view.tp(*fr.xy(s_l, g.kerb_offset_m)), _fmt_m(g.kerb_offset_m), (5.0, 9.0, 13.0), ((-u_paper[0], -u_paper[1]), u_paper), 2.5, hard) is not None:
         n += 1

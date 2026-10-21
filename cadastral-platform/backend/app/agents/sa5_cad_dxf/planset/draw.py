@@ -139,6 +139,11 @@ def _rl_text(lv: float, interval: float) -> str:
     return f"{lv:.2f}" if interval < 1 else f"{lv:.1f}"
 
 
+CONTOUR_SLOT_T = (0.5, 0.35, 0.65, 0.22, 0.78, 0.12, 0.88, 0.42, 0.58, 0.28, 0.72, 0.17, 0.83)    # fractions along a contour piece tried for a label, in order
+CONTOUR_LAB_H = 3.0          # contour label height, paper mm (TXT.LABEL; legible over an aerial, white halo)
+CONTOUR_LAB_SPACING_MM = 110.0   # a long contour is labelled again about every this many paper mm (never closer than half of it)
+CONTOUR_COLOUR = (0.27, 0.19, 0.10)   # dark brown: reads over an aerial photograph and on white
+CONTOUR_LW_MAJOR, CONTOUR_LW_MINOR = 0.50, 0.25
 LABEL_ALL_MAX = 24            # at most this many contours in the view and every one is labelled; above it only the index (major) contours are
 
 
@@ -152,7 +157,7 @@ def _label_slots(piece, v: View, text: str, h: float, n_max: int, avoid=None) ->
         return []
     half = (wl / 2.0 + 1.0) / v.k                                            # model m
     out = []
-    for t in (0.5, 0.35, 0.65, 0.22, 0.78, 0.12, 0.88):
+    for t in CONTOUR_SLOT_T:
         d = piece.length * t
         if d - half < 0 or d + half > piece.length:
             continue
@@ -172,14 +177,15 @@ def _label_slots(piece, v: View, text: str, h: float, n_max: int, avoid=None) ->
     return out
 
 
-def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = False, lab_h: float = 1.9, avoid=None, label_all: bool | None = None) -> int:
+def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = False, lab_h: float = CONTOUR_LAB_H, avoid=None, label_all: bool | None = None,
+             no_label_rects=()) -> int:
     """Contours with RL labels (m AHD, numeric) along the line, upright on the paper, never colliding (``View.label`` checks the reserved boxes and earlier labels).
     Index (major) contours are labelled always; the other (minor) contours are labelled as well while there are at most LABEL_ALL_MAX in the view, so a plan at a large
     scale labels every contour and a small scale labels the major contours only.  ``avoid`` is model geometry (the dwelling) that labels must not sit on.  ``light``: lighter lines."""
     conts = s.ex_cont if which == "ex" else s.pr_cont
     layer = "C-TOPO-EXST" if which == "ex" else "C-TOPO-PROP"
-    col = ((0.55, 0.55, 0.55) if light else (0.5, 0.5, 0.5)) if which == "ex" else MAGENTA
-    lab_col = (0.2, 0.2, 0.2) if which == "ex" else MAGENTA
+    col = CONTOUR_COLOUR if which == "ex" else MAGENTA          # stage 8b: dark linework (``light`` no longer lightens it; it was too faint over the aerial)
+    lab_col = (0.1, 0.07, 0.03) if which == "ex" else MAGENTA
     win = v.window_poly()
     zone = None
     if which == "pr" and s.pad is not None and s.surf is not None:
@@ -201,7 +207,7 @@ def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = Fa
             g = ln.intersection(mask)
             if g.is_empty:
                 continue
-        lw = (0.35 if c.index else 0.18) if which == "ex" else (0.4 if c.index else 0.2)
+        lw = (CONTOUR_LW_MAJOR if c.index else CONTOUR_LW_MINOR) if which == "ex" else (0.5 if c.index else 0.25)
         v.geom(g, layer, lw=lw, color=col if which == "ex" else None, dash=None)
         drawn.append((c, ln))
     if labels:
@@ -216,16 +222,23 @@ def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = Fa
                 continue
             pieces = [x for x in getattr(vis, "geoms", [vis]) if x.geom_type == "LineString"]
             text = _rl_text(c.level, s.interval)
-            placed = 0
+            placed: list[tuple[float, float]] = []
             for piece in sorted(pieces, key=lambda x: -x.length):
-                wanted = 1 + (1 if piece.length * v.k > 220.0 else 0)           # a long run is labelled twice
-                for x, y, ang in _label_slots(piece, v, text, lab_h, 6, avoid):
+                wanted = max(1, min(4, int(piece.length * v.k // CONTOUR_LAB_SPACING_MM) + (1 if piece.length * v.k > 60.0 else 0)))
+                if every and not c.index:
+                    wanted = min(wanted, 2)
+                got = 0
+                for x, y, ang in _label_slots(piece, v, text, lab_h, 13, avoid):
+                    px_, py_ = v.tp(x, y)
+                    if any(r_[0] - 12.0 <= px_ <= r_[2] + 12.0 and r_[1] - 3.0 <= py_ <= r_[3] + 3.0 for r_ in no_label_rects):
+                        continue                                                                                   # a data-panel column is reserved here: no label
+                    if any(math.hypot(px_ - a, py_ - b) < CONTOUR_LAB_SPACING_MM * 0.5 for a, b in placed):
+                        continue                                                                                   # spaced along the contour, not bunched
                     if v.label(x, y, text, lab_h, ang, color=lab_col, layer="C-ANNO-CNTR", halo=True, nudges=False):
-                        placed += 1
-                        if placed >= wanted:
+                        placed.append((px_, py_))
+                        got += 1
+                        if got >= wanted:
                             break
-                if placed >= wanted:
-                    break
     return len(drawn)
 
 
