@@ -37,7 +37,8 @@ TAG_HEX = {"NOT CHECKED": "#4a5160", "UNRESOLVED": "#2d5a96", "NOT REVIEWED, UNR
            "MAPPED OR INTERSECTS": "#a63a2b", "WITHIN BUFFER": "#b4601a", "NOT INTERSECTED BY THE DATA LOADED": "#5b5f66"}
 TOC_SKIP = ("Section 4.15(1)",)     # the nine section 4.15 sub headings are not listed in the contents (the list must fit on one page)
 SMALL_TABLE_ROWS = 6              # a table of this many rows or fewer is kept on one page
-PAGE_BREAK_BEFORE = {"1"}          # sections that start a new page (the others follow on, with a conditional break)
+PAGE_BREAK_BEFORE = {"1", "Appendix A"}          # sections that start a new page (the others follow on, with a conditional break)
+DEMO_STAMP = "SYNTHETIC DEMO DATA"
 FOOT_LEFT = "JCESITE. AI-assisted site planning. Not affiliated with any consultancy."
 
 
@@ -52,7 +53,7 @@ def write_json(doc: SiteSoee, path: Path) -> Path:
         stm.append({"id": s.id, "section": s.section, "kind": s.kind, "tag": s.tag or None, "text": s.text, "source": s.source, "citation": s.cite})
     payload = {"document": {"title": doc.title, "number": doc.number, "site": doc.site, "council": doc.council, "date": doc.date, "revision": doc.revision,
                             "status": doc.status, "ai_statement": doc.ai_statement, "platform": BRAND.name, "scope": "SITE WORKS ONLY", "building": BUILDING_BY_OTHERS,
-                            "mode": doc.mode, "text_written_by_language_model": False, "requirement_values_extracted_by_ai_model": True,
+                            "mode": doc.mode, "synthetic_demo": bool(doc.meta.get("synthetic_demo")), "text_written_by_language_model": False, "requirement_values_extracted_by_ai_model": True,
                             "requirement_values_verified_by_person": False, "method": METHOD_TEXT},
                "meta": doc.meta, "compliance": doc.compliance, "open_items": doc.open_items,
                "headings": doc.headings(), "statements": stm}
@@ -92,8 +93,8 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
         "cellh": ParagraphStyle("ch", parent=st["cellb"], fontSize=7.6, leading=9.6, textColor=colors.white),
         "cellb": ParagraphStyle("cb", parent=st["cellb"], fontSize=7.9, leading=10.2),
         "cap": ParagraphStyle("cap", parent=st["caption"], fontSize=7.4, spaceBefore=1, spaceAfter=6),
-        "toc0": ParagraphStyle("toc0", fontName="Plex-Medium", fontSize=8.8, leading=10.6, textColor=INK, spaceBefore=1.5),
-        "toc1": ParagraphStyle("toc1", fontName="Plex", fontSize=7.5, leading=8.6, textColor=INK, leftIndent=12),
+        "toc0": ParagraphStyle("toc0", fontName="Plex-Medium", fontSize=8.8, leading=10.4, textColor=INK, spaceBefore=1.2),
+        "toc1": ParagraphStyle("toc1", fontName="Plex", fontSize=7.5, leading=8.2, textColor=INK, leftIndent=12),
     }
 
     def tagged(s: Stmt) -> str:
@@ -149,7 +150,14 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
                 y -= 3.1 * mm
             self.setFont("Plex", 6.8)
             self.setFillColor(MUTED)
-            self.drawString(LM, 9.5 * mm, f"{doc.number}   {doc.status}   Revision {doc.revision}   {doc.date}")
+            left = f"{doc.number}   {doc.status}   Revision {doc.revision}   {doc.date}"
+            self.drawString(LM, 9.5 * mm, left)
+            if doc.meta.get("synthetic_demo"):
+                self.setFont("Plex-Bold", 6.9)
+                self.setFillColor(colors.HexColor("#a63a2b"))
+                self.drawString(LM + stringWidth(left, "Plex", 6.8) + 8, 9.5 * mm, DEMO_STAMP)
+                self.setFont("Plex", 6.8)
+                self.setFillColor(MUTED)
             self.drawRightString(W - RM, 9.5 * mm, f"Page {pg} of {n}")
             self.restoreState()
 
@@ -190,6 +198,23 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
         tb.setStyle(TableStyle(style))
         return tb
 
+    FW = (CW - 4 * mm) / 2
+
+    def fig_row(grp: list):
+        from PIL import Image as PILImage
+        from reportlab.platypus import Image as RLImage
+        cells = []
+        for fb in grp:
+            png = fb.fig["png"]
+            with PILImage.open(png) as im:
+                wpx, hpx = im.size
+            cells.append([RLImage(png, width=FW, height=FW * hpx / wpx), Paragraph(e(fb.stmts[0].text), sty["cap"])])
+        row = [cells[0], "", cells[1] if len(cells) > 1 else ""]
+        t = RTable([row], colWidths=[FW, 4 * mm, FW])
+        t.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                               ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0)]))
+        return t
+
     story: list = []
     # ---- cover
     story.append(Spacer(1, 18 * mm))
@@ -212,6 +237,9 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
     box.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1.2, colors.HexColor("#a63a2b")), ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#fbeeea")),
                              ("LEFTPADDING", (0, 0), (-1, -1), 9), ("RIGHTPADDING", (0, 0), (-1, -1), 9), ("TOPPADDING", (0, 0), (-1, -1), 8), ("BOTTOMPADDING", (0, 0), (-1, -1), 8)]))
     story.append(box)
+    if doc.meta.get("synthetic_demo"):
+        story.append(Spacer(1, 4 * mm))
+        story.append(P(f'<font name="Plex-Bold" color="#a63a2b">{DEMO_STAMP}.</font> {e("The constraint layers and planning maps in this document are invented to exercise the drawing code. They describe no real site and must not be used.")}', "cap"))
     if doc.meta.get("offline_fixture"):
         story.append(Spacer(1, 4 * mm))
         story.append(P(f'<font name="Plex-Bold" color="#a63a2b">OFFLINE FIXTURE.</font> {e("The site and constraint data in this draft come from saved fixture data (approximate geometry), not from live services.")}', "cap"))
@@ -258,16 +286,29 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
         else:
             story.append(CondPageBreak(75 * mm))          # the section heading, the first sub heading (which breaks the page below 42 mm) and some body text must fit
         story.append(heading(f"{s.number} {s.title}", 0))
+        fig_done: set[int] = set()
         for bi, b in enumerate(s.blocks):
             nxt = s.blocks[bi + 1] if bi + 1 < len(s.blocks) else None
-            if b.kind == "h2":
-                story.append(CondPageBreak(42 * mm))
+            if b.kind == "figure":
+                if bi in fig_done:
+                    continue
+                grp = [b]
+                if nxt is not None and nxt.kind == "figure":
+                    grp.append(nxt)
+                    fig_done.add(bi + 1)
+                story.append(fig_row(grp))
+                story.append(Spacer(1, 3 * mm))
+            elif b.kind == "h2":
+                nxt2 = s.blocks[bi + 2] if bi + 2 < len(s.blocks) else None
+                intro_table = nxt is not None and nxt.kind == "p" and nxt2 is not None and nxt2.kind in ("table", "figure")
+                story.append(CondPageBreak(62 * mm if intro_table else 42 * mm))      # heading, intro paragraph and the head of the table or figure below it
                 story.append(heading(b.text, 1))
             elif b.kind == "p":
-                # a paragraph that introduces a table stays with the table
-                if nxt is not None and nxt.kind == "table":
+                # a paragraph that introduces a table stays with the table (when a heading sits directly above, the break was made before the heading)
+                prev = s.blocks[bi - 1] if bi > 0 else None
+                if nxt is not None and nxt.kind == "table" and not (prev is not None and prev.kind == "h2"):
                     story.append(CondPageBreak(50 * mm))                 # room for the paragraph and the head of the table below it
-                story.append(Paragraph(tagged(b.stmts[0]), sty["body"]))
+                story.append(Paragraph(tagged(b.stmts[0]), sty["body_kwn" if nxt is not None and nxt.kind == "figure" else "body"]))
             elif b.kind == "bullets":
                 n_ = len(b.stmts)
                 for i_, x in enumerate(b.stmts):
@@ -466,7 +507,10 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
         run(p, doc.ai_statement, bold=True, color="A63A2B", size=7)
         p2 = f.add_paragraph()
         p2.paragraph_format.space_after = Pt(0)
-        run(p2, f"{doc.number}   {doc.status}   Revision {doc.revision}   {doc.date}   Page ", size=7.5, color="6B6E75")
+        run(p2, f"{doc.number}   {doc.status}   Revision {doc.revision}   {doc.date}   ", size=7.5, color="6B6E75")
+        if doc.meta.get("synthetic_demo"):
+            run(p2, DEMO_STAMP + "   ", bold=True, size=7.5, color="A63A2B")
+        run(p2, "Page ", size=7.5, color="6B6E75")
         field(p2, "PAGE")
         run(p2, " of ", size=7.5, color="6B6E75")
         field(p2, "NUMPAGES")
@@ -512,6 +556,11 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
     shade(box.rows[0].cells[0], "FBEEEA")
     cell_text(box.rows[0].cells[0], doc.ai_statement, bold=True, color="A63A2B", size=11)
     fixed(box, [CWmm])
+    if doc.meta.get("synthetic_demo"):
+        d.add_paragraph().paragraph_format.space_after = Pt(2)
+        p = d.add_paragraph()
+        run(p, DEMO_STAMP + ". ", bold=True, color="A63A2B", size=8.5)
+        run(p, "The constraint layers and planning maps in this document are invented to exercise the drawing code. They describe no real site and must not be used.", size=8.5)
     if doc.meta.get("offline_fixture"):
         d.add_paragraph().paragraph_format.space_after = Pt(2)
         p = d.add_paragraph()
@@ -572,20 +621,50 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
                 q.paragraph_format.left_indent = Mm(8)
                 q.paragraph_format.space_after = Pt(0)
                 run(q, b.text, size=8.5)
+    def fig_row(grp: list):
+        from PIL import Image as PILImage
+        fw = (CWmm - 4) / 2
+        tbl = d.add_table(rows=1, cols=3)
+        row_props(tbl.rows[0])
+        for ci, fb in zip((0, 2), grp):
+            cell = tbl.rows[0].cells[ci]
+            p0 = cell.paragraphs[0]
+            p0.paragraph_format.keep_with_next = True
+            p0.paragraph_format.space_after = Pt(1)
+            with PILImage.open(fb.fig["png"]) as im:
+                wpx, hpx = im.size
+            iw = fw - 4.4                                  # less the default cell margins, or the picture runs past the cell
+            p0.add_run().add_picture(fb.fig["png"], width=Mm(iw), height=Mm(iw * hpx / wpx))
+            pc = cell.add_paragraph()
+            pc.paragraph_format.space_after = Pt(4)
+            run(pc, fb.stmts[0].text, size=7.8, color="6B6E75")
+        fixed(tbl, [fw, 4, fw])
+        sp = d.add_paragraph()
+        sp.paragraph_format.space_after = Pt(2)
+
     # sections
     for s in doc.sections:
         if s.number in PAGE_BREAK_BEFORE or s.number == "1":
             page_break()
         d.add_heading(f"{s.number} {s.title}", 1)
+        fig_done: set[int] = set()
         for bi, b in enumerate(s.blocks):
             nxt = s.blocks[bi + 1] if bi + 1 < len(s.blocks) else None
-            if b.kind == "h2":
+            if b.kind == "figure":
+                if bi in fig_done:
+                    continue
+                grp = [b]
+                if nxt is not None and nxt.kind == "figure":
+                    grp.append(nxt)
+                    fig_done.add(bi + 1)
+                fig_row(grp)
+            elif b.kind == "h2":
                 d.add_heading(b.text, 2)
             elif b.kind == "p":
                 p = d.add_paragraph()
                 tagged(p, b.stmts[0])
-                if nxt is not None and nxt.kind == "table":
-                    p.paragraph_format.keep_with_next = True       # a paragraph that introduces a table stays with the table
+                if nxt is not None and nxt.kind in ("table", "figure"):
+                    p.paragraph_format.keep_with_next = True       # a paragraph that introduces a table or a figure stays with it
             elif b.kind == "bullets":
                 n_ = len(b.stmts)
                 for i_, x in enumerate(b.stmts):

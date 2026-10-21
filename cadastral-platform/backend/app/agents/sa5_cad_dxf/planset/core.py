@@ -75,6 +75,7 @@ class View:
         self.frame, self.clip, self.title, self.subtitle = frame, clip, title, subtitle
         self.items: list[Item] = []
         self.occ: list[tuple[float, float, float, float]] = []      # occupied label boxes (paper mm)
+        self.tbox: list[tuple[float, float, float, float]] = []     # paper-mm boxes of placed TEXT only (labels, dimension figures): leaders and other linework never cross them
         self.dropped = 0
         self.dim_lines: list[tuple] = []            # paper-mm dimension lines drawn so far ((x1, y1), (x2, y2)); a new dimension never shares one
         self.avoid_lines: list = []                 # paper-mm LineStrings (driveway centreline) that dimension text must not sit on
@@ -224,12 +225,14 @@ class View:
             box = self._box(px + dx, py + dy, s, h, anchor, rot, bold)
             if self.free(box):
                 self.occ.append(box)
+                self.tbox.append(box)
                 mx, my = self.tm(px + dx, py + dy)
                 self.text(mx, my, s, h, anchor, self.model_rot(rot), bold, color=color, layer=layer, halo=halo)
                 return True
         if force:
             box = self._box(px, py, s, h, anchor, rot, bold)
             self.occ.append(box)
+            self.tbox.append(box)
             self.text(x, y, s, h, anchor, self.model_rot(rot), bold, color=color, layer=layer, halo=halo)
             return True
         self.dropped += 1

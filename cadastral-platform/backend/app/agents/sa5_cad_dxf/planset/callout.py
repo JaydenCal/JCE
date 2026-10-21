@@ -116,10 +116,25 @@ def callout(view: View, lines, box_xy_paper, target_model_xy, side: str = "auto"
     return Callout(box, mid, leader, t, side, lines)
 
 
-def find_slot(view: View, w: float, ht: float, t, keep_out=(), avoid=(), strict: int = 2):
+def _is_own(o, box) -> bool:
+    """True when the occupied rectangle ``o`` is (a margin around) the candidate box itself."""
+    return abs(o[0] - box[0]) < 2.0 and abs(o[1] - box[1]) < 2.0 and abs(o[2] - box[2]) < 2.0 and abs(o[3] - box[3]) < 2.0
+
+
+def leader_conflicts(view: View, ln: LineString, box) -> bool:
+    """True when the new leader ``ln`` crosses (or touches) an earlier leader, or an earlier leader runs through the new box.  Always enforced."""
+    bx = shp_box(*box)
+    for q in view.leaders:
+        lq = LineString(q)
+        if ln.intersects(lq) or lq.intersects(bx):
+            return True
+    return False
+
+
+def find_slot(view: View, w: float, ht: float, t, keep_out=(), avoid=(), strict: int = 2, max_dist: float = 1e9):
     """First free top-left corner for a box w x ht whose leader (landing + diagonal) reaches paper point ``t``; None if the view is full."""
     L = REF.leader_landing
-    for dist in (16, 24, 34, 46, 60, 78, 100, 130):
+    for dist in (d_ for d_ in (16, 24, 34, 46, 60, 78, 100, 130) if d_ <= max_dist):
         for sy in (1, -1):
             for sx in (-1, 1):
                 for ang in (52, 35, 70):
@@ -137,14 +152,15 @@ def find_slot(view: View, w: float, ht: float, t, keep_out=(), avoid=(), strict:
                             continue
                     if keep_out and any(LineString([(ax, p1[1]), p1, t]).intersects(shp_box(*k)) for k in keep_out):
                         continue                                 # the leader must not run through a reserved rectangle (north point, scale bar, notes panel)
-                    if strict:                                   # the leader (landing + diagonal) must not cross earlier call-out boxes, nor earlier leaders when strict > 1
-                        ln = LineString([(ax, p1[1]), p1, t])
-                        if any(ln.intersects(shp_box(*b)) for b in view.callout_boxes):
-                            continue
-                        if strict > 1 and any(ln.intersects(LineString(q)) for q in view.leaders):
-                            continue
-                        if strict > 1 and any(ln.difference(Point(t).buffer(1.2)).intersects(shp_box(*o)) for o in view.occ):
-                            continue                             # nor through a label already placed (bearings, distances, names)
+                    ln = LineString([(ax, p1[1]), p1, t])
+                    if leader_conflicts(view, ln, box):
+                        continue                                 # a leader NEVER crosses an earlier leader, and an earlier leader never runs through the new box
+                    if any(ln.difference(Point(t).buffer(1.2)).intersects(shp_box(*o)) for o in view.tbox):
+                        continue                                 # a leader never runs through text already placed (bearings, distances, names, chainage, dimension figures)
+                    if strict > 1 and any(ln.difference(Point(t).buffer(1.2)).intersects(shp_box(*o)) for o in view.occ if not _is_own(o, box)):
+                        continue                                 # preferred: nor through the reserved zone of a label or dimension
+                    if strict and any(ln.intersects(shp_box(*b)) for b in view.callout_boxes):
+                        continue                                 # nor through an earlier call-out box (relaxed only when the sheet is full)
                     return (x0, box[3])
     return None
 
@@ -172,7 +188,7 @@ def fallback_tag(view: View, lines, target_model_xy, hidden: bool = False, layer
 
 
 def place_callout(view: View, lines, target_model_xy, terminator: str = "dot", keep_out=(), layer: str = "C-ANNO-CALL", avoid=(), soft_avoid=(),
-                  must: bool = False, must_avoid=()) -> Callout | None:
+                  must: bool = False, must_avoid=(), short_first: float | None = None) -> Callout | None:
     """Pick a free slot near the target (greedy, avoids earlier boxes, labels in ``view.occ`` and ``keep_out``) and draw the call-out.
     ``must``: when no slot fits, fall back to a numbered tag at the target with the full text in the notes panel (``fallback_tag``)."""
     lines = prep(lines)
@@ -189,7 +205,12 @@ def place_callout(view: View, lines, target_model_xy, terminator: str = "dot", k
             fallback_tag(view, lines, target_model_xy, hidden=True, layer=layer)
         return None                                      # the target is hidden under an earlier call-out
     slot = None
-    for strict in (2, 1, 0):                                          # leaders crossing leaders, then boxes, are relaxed only when the sheet is full
+    if short_first:                                                   # a crowded sheet: a short leader (box close to its target, even inside the soft-avoided lot) beats a long one
+        for av in (list(avoid) + list(soft_avoid) + list(must_avoid), list(avoid) + list(must_avoid), list(must_avoid)):
+            slot = find_slot(view, w, ht, t, keep_out, av, 2, short_first)
+            if slot is not None:
+                break
+    for strict in ((2, 1, 0) if slot is None else ()):                # leaders crossing leaders, then boxes, are relaxed only when the sheet is full
         for av in (list(avoid) + list(soft_avoid) + list(must_avoid), list(avoid) + list(must_avoid), list(must_avoid)):      # soft items (the lot) are relaxed first when the sheet is full; must_avoid (kerb lines) never
             slot = find_slot(view, w, ht, t, keep_out, av, strict)
             if slot is not None:
@@ -199,6 +220,11 @@ def place_callout(view: View, lines, target_model_xy, terminator: str = "dot", k
     if slot is None:
         c = nudge_box((t[0] + 20, t[1] + 20, t[0] + 20 + w, t[1] + 20 + ht), view.occ, view.rect, keep_out)
         slot = (c[0], c[3]) if c else None
+        if slot is not None:                                         # the last resort still never crosses an earlier leader
+            bx_ = (slot[0], slot[1] - ht, slot[0] + w, slot[1])
+            mid_ = ((bx_[0] + bx_[2]) / 2, (bx_[1] + bx_[3]) / 2)
+            if leader_conflicts(view, LineString([mid_, t]), bx_):
+                slot = None
     if slot is None:
         view.dropped += 1
         if must:

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import io
 from datetime import date
+from pathlib import Path
 
 from reportlab.lib import colors
 from reportlab.lib.units import mm
@@ -16,6 +17,8 @@ from app.report import sections as S
 from app.agents.sa5_cad_dxf.planset import codes as PS_CODES
 from app.report import explain as EX
 from app.report import sections_ex as SX
+from app.report import sections_maps as SM
+from app.report import maps as MP
 from app.report.blocks import Bookmark
 from app.report.findings import build_findings
 from app.report.inputs import IMAGERY_FROM_ENV, SiteReportInputs
@@ -72,7 +75,9 @@ def _brand(inp: SiteReportInputs):
     return PS_CODES.PLATFORM_BRAND
 
 
-def build_site_report(inp: SiteReportInputs) -> tuple[bytes, dict]:
+def build_site_report(inp: SiteReportInputs, maps_dir: Path | None = None) -> tuple[bytes, dict]:
+    """(pdf bytes, json dict). ``maps_dir``: when given, each planning map is also written there as a PNG (the SoEE appendix uses them) and
+    the JSON lists them under ``planning_maps``."""
     T.register_fonts()
     lot = wkt.loads(inp.lot_wkt)
     brand = _brand(inp)
@@ -89,6 +94,7 @@ def build_site_report(inp: SiteReportInputs) -> tuple[bytes, dict]:
     lga = (inp.meta.get("lga_name") or "").strip() or S.lga_from_layers(findings)
     zone = inp.meta.get("zone_code")
     ctx = S.Ctx(inp, findings, lot, _resolve_imagery(inp), brand, dev_key, zone, lga)
+    ctx.maps = MP.build_plan_maps(inp, findings, lot, ctx.imagery, demo=demo, base_no=ctx.map_base + 1, width_pt=SM.FIG_W)
     m = inp.meta
     lot_label = ctx.lot_label
     date_s = fmt.hdate_long(m.get("date")) or str(m.get("date", ""))
@@ -102,6 +108,7 @@ def build_site_report(inp: SiteReportInputs) -> tuple[bytes, dict]:
     story += SX.buffers_explained(ctx) + [PageBreak()]
     story += S.exec_summary(ctx) + [PageBreak()]
     story += S.site_page(ctx) + [PageBreak()]
+    story += SM.planning_maps_section(ctx) + ([PageBreak()] if ctx.maps else [])
     story += S.constraint_table(ctx)
     pages = [f for f in findings if f.has_page]
     pages.sort(key=lambda f: ({"affected": 0, "nearby": 1}[f.status], f.rank))
@@ -183,6 +190,15 @@ def build_site_report(inp: SiteReportInputs) -> tuple[bytes, dict]:
     except Exception:  # noqa: BLE001
         pages_n = None
 
+    pm_rec = []
+    for pm in ctx.maps:
+        png = None
+        if maps_dir is not None:
+            maps_dir = Path(maps_dir)
+            maps_dir.mkdir(parents=True, exist_ok=True)
+            (maps_dir / f"{pm.key}.png").write_bytes(MP.render_png(pm, SM.FIG_W))
+            png = f"{maps_dir.name}/{pm.key}.png"
+        pm_rec.append(pm.record(png))
     cnt: dict[str, int] = {}
     for f in findings:
         cnt[f.status] = cnt.get(f.status, 0) + 1
@@ -191,7 +207,7 @@ def build_site_report(inp: SiteReportInputs) -> tuple[bytes, dict]:
           "findings": [{"key": f.key, "label": f.short, "status": f.status, "headline": f.headline, "currency": f.currency, "source": f.source_name,
                         "features": [{"name": r.name, "distance_m": r.distance_m, "overlap_m2": r.overlap_m2} for r in f.rows], "has_page": f.has_page,
                         "why_unchecked": f.why_unchecked or None} for f in findings],
-          "triggers": [t.model_dump() for t in inp.triggers], "figures": ctx.figures,
+          "triggers": [t.model_dump() for t in inp.triggers], "figures": ctx.figures, "planning_maps": pm_rec,
           "requirements_shown": [r["key"] for r in S.relevant_requirements(inp.requirements, zone, dev_key)],
           "pathway": "provided" if inp.pathway is not None else "not run", "civil": bool(inp.civil), "legal": S.LEGAL,
           "brand": {"company": brand.name, "tagline": brand.tagline}, "ai_statement": EX.AI_STATEMENT,

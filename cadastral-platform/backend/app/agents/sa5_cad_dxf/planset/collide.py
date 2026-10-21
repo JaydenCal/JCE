@@ -195,3 +195,25 @@ def resolve(v: View, max_shift_mm: float = 14.0) -> int:
             m.pts = [[v.tm(*(v.tp(x, y)[0] + sx, v.tp(x, y)[1] + sy)) if not v.paper else (x + sx, y + sy) for x, y in m.pts[0]]]
         polys[i] = q
     return bad
+
+
+def leader_crossings(v: View) -> list[tuple[int, int]]:
+    """Index pairs of call-out leaders that cross or touch each other (the reference never lets two leaders cross).  Empty = none."""
+    out = []
+    lines = [LineString(q) for q in v.leaders]
+    for i in range(len(lines)):
+        for j in range(i + 1, len(lines)):
+            if lines[i].intersects(lines[j]):
+                out.append((i, j))
+    return out
+
+
+def leaders_through_boxes(v: View) -> list[tuple[int, int]]:
+    """(leader index, box index) where a leader runs through a call-out box that is not its own."""
+    out = []
+    for i, q in enumerate(v.leaders):
+        ln = LineString(q)
+        for j, b in enumerate(v.callout_boxes):
+            if i != j and ln.intersects(sbox(*b)):
+                out.append((i, j))
+    return out

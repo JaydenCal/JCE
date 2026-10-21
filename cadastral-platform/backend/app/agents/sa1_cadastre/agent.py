@@ -10,7 +10,7 @@ from app.common.contracts import AgentCode, LotContext
 from . import clients as C
 from .geometry import (area_mismatch, as_multi, compute_segments, mga_srid_for_lon, parse_polygonal, to_mga)
 from .models import LotIdentifier, Sa1Request, Sa1Result
-from .zoning import ZoningConfig, compute_zones, fetch_overlays, load_zone_features
+from .zoning import ZoningConfig, compute_zones, fetch_overlays, load_zone_features, zone_polygons
 
 
 @dataclass
@@ -115,8 +115,11 @@ class Sa1Cadastre:
         if mism:
             flags.append("area_mismatch")
         zcfg = self.cfg.zoning.get(jur) or ZoningConfig()
-        zfeats = load_zone_features(zcfg, self.client, lot_gda, snaps)
+        n_snaps = len(snaps)
+        zfeats = load_zone_features(zcfg, self.client, lot_gda, snaps, context_m=zcfg.context_m)
+        zone_snap = snaps[n_snaps] if len(snaps) > n_snaps else None
         zones = compute_zones(lot_gda, zfeats, srid, jur, zcfg)
+        zpolys = zone_polygons(lot_gda, zfeats, srid, zcfg, zcfg.context_m)
         if len(zones) > 1:
             flags.append("multi_zone")
         if not zones:
@@ -130,7 +133,7 @@ class Sa1Cadastre:
         return Sa1Result(lot=lot, identifier=ident, segment_details=det, zones=zones, overlays=overlays,
                          multi_zone=len(zones) > 1, is_residential=zones[0].is_residential if zones else None,
                          area_mismatch=mism, flags=flags, snapshots=snaps, boundary_wkt_gda2020=as_multi(lot_gda).wkt,
-                         attributes={"locality": props.get(f.get("locality"))})
+                         attributes={"locality": props.get(f.get("locality")), "zone_window_m": zcfg.context_m if zpolys or zfeats else None}, zone_polygons=zpolys, zone_source=zone_snap)
 
     def _neighbours(self, layer, lot_gda, mga, srid, snaps, f, jur) -> list:
         """Adjoining parcels (lot layer, 30 m buffer). Best-effort: a failed query yields [] and never fails SA1."""

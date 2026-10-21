@@ -270,13 +270,13 @@ def draw_crossover(view: View, g: CrossoverGeom, standard_label: str | None = No
     return notes
 
 
-def callouts_crossover(view: View, g: CrossoverGeom, standard_label: str | None = None, keep_out=(), avoid=(), soft_avoid=(), kerb_only: bool = False, short_kerb: bool = False, must_avoid=()) -> None:
+def callouts_crossover(view: View, g: CrossoverGeom, standard_label: str | None = None, keep_out=(), avoid=(), soft_avoid=(), kerb_only: bool = False, short_kerb: bool = False, must_avoid=(), extra=()) -> None:
     """Call-outs for the crossover (with the council standard statement) and for the assumed kerb line.  Both are must-carry: when no slot
     is free they fall back to a numbered tag with the text in the notes panel."""
     fr = g.frontage
     if g.present and not kerb_only:
         tgt = fr.xy(g.centre_s + g.width_m * 0.25, g.body_len_m * 0.7)
-        place_callout(view, ["PROPOSED CROSSOVER", f"WIDTH {_fmt_m(g.width_m)} (PLATFORM DEFAULT)", standard_text(standard_label)], tgt, "dot", keep_out,
+        place_callout(view, ["PROPOSED CROSSOVER", f"WIDTH {_fmt_m(g.width_m)} (PLATFORM DEFAULT)"] + list(extra) + [standard_text(standard_label)], tgt, "dot", keep_out,
                       avoid=avoid, soft_avoid=soft_avoid, must=True, must_avoid=must_avoid)
     if g.kerb_line is not None and g.kerb_assumed:
         D = g.kerb_offset_m
@@ -351,14 +351,14 @@ def layover_dims(view: View, g: "CrossoverGeom") -> int:
     tn = (-nd[0], -nd[1])
     hard = [_Poly([view.tp(*q) for q in p.exterior.coords]) for p in (g.body, g.wing_a, g.wing_b, g.band) if p is not None and not p.is_empty]
     # width at boundary: dimension line on the lot side so it does not meet the kerb dimensions
-    if dim_best(view, view.tp(*fr.xy(sa, 0)), view.tp(*fr.xy(sb, 0)), _fmt_m(g.width_m), (6.0, 10.0, 14.0), (tn,), 2.3, hard) is not None:
+    if dim_best(view, view.tp(*fr.xy(sa, 0)), view.tp(*fr.xy(sb, 0)), _fmt_m(g.width_m), (6.0, 10.0, 14.0), (tn,), 2.5, hard) is not None:
         n += 1
     # width at kerb: across the outer wing tips, on the road side
-    if dim_best(view, view.tp(*fr.xy(sa - f, g.avail_m)), view.tp(*fr.xy(sb + f, g.avail_m)), _fmt_m(g.width_m + 2 * f), (15.0, 19.0, 23.0), (nd,), 2.3, hard) is not None:
+    if dim_best(view, view.tp(*fr.xy(sa - f, g.avail_m)), view.tp(*fr.xy(sb + f, g.avail_m)), _fmt_m(g.width_m + 2 * f), (15.0, 19.0, 23.0), (nd,), 2.5, hard) is not None:
         n += 1
     # boundary to kerb: along the normal, left of the band
     s_l = sa - f - REF.band_extra_m - 0.3
     u_paper = (view.tp(*fr.xy(1, 0))[0] - view.tp(*fr.xy(0, 0))[0], view.tp(*fr.xy(1, 0))[1] - view.tp(*fr.xy(0, 0))[1])
-    if dim_best(view, view.tp(*fr.xy(s_l, 0)), view.tp(*fr.xy(s_l, g.kerb_offset_m)), _fmt_m(g.kerb_offset_m), (5.0, 9.0, 13.0), ((-u_paper[0], -u_paper[1]), u_paper), 2.3, hard) is not None:
+    if dim_best(view, view.tp(*fr.xy(s_l, 0)), view.tp(*fr.xy(s_l, g.kerb_offset_m)), _fmt_m(g.kerb_offset_m), (5.0, 9.0, 13.0), ((-u_paper[0], -u_paper[1]), u_paper), 2.5, hard) is not None:
         n += 1
     return n

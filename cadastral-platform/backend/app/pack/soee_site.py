@@ -154,11 +154,19 @@ def cite_ref(r: Requirement) -> str:
     s = r.source
     return f"{T(s.document_title)}, {T(s.section_ref or 'section not recorded')}, page {s.page}"
 
+def _esc_whole_lot_text(esc: dict) -> str:
+    """Sentence for items SA10 drew at an unresolved position (whole lot search), from its warning and element status; '' when there are none."""
+    wl = [x.lower() for x in esc.get("whole_lot") or []]
+    if not wl:
+        return ""
+    return (f"Drawn on C500 at an unresolved position: {_join_and(wl)}. No position outside the building envelope meets the cited clearances, so the whole lot was searched "
+            "and these items may sit where the building will be (see the basis panel on C500). To be confirmed once the building footprint is known.")
+
 
 def read_esc_output(esc_dir: Path | None) -> dict:
     """Summary of the SA10 erosion and sediment control output files written next to the plan set (escp_*.geojson and escp_*_report.md).
     Only the control list, quantities, platform status, the items still to be confirmed and the stated flow direction are read.  Nothing is invented."""
-    out: dict[str, Any] = {"elements": [], "flow_text": None, "flow_bearing_deg": None, "flow_assumed": None, "flow_pct": None, "files": [], "warnings": [], "not_drawn": [],
+    out: dict[str, Any] = {"elements": [], "flow_text": None, "flow_bearing_deg": None, "flow_assumed": None, "flow_pct": None, "files": [], "warnings": [], "not_drawn": [], "whole_lot": [],
                            "access_length_m": None, "access_width_m": None}
     if esc_dir is None or not Path(esc_dir).exists():
         return out
@@ -181,6 +189,12 @@ def read_esc_output(esc_dir: Path | None) -> dict:
         if wm:
             out["warnings"] = [x[2:].strip() for x in wm.group(1).splitlines() if x.startswith("- ")]
             out["not_drawn"] = [x for x in out["warnings"] if "not drawn" in x.lower()]
+            wl: list[str] = []                      # items SA10 drew by searching the whole lot (position unresolved), named by its own warning
+            for x in out["warnings"]:
+                mw = re.search(r":\s*(.+?)\s+placed by searching the whole lot", x)
+                if mw:
+                    wl += [n.strip() for n in mw.group(1).split(", ") if n.strip()]
+            out["whole_lot"] = wl
         for row in re.findall(r"^\| (\S+) \| .*? \| .*? \| (?:resolved|unresolved) \| .*? \| (.*?) \|$", text, re.M):
             confirm[row[0]] = [x.strip() for x in row[1].split(",") if x.strip() and x.strip() != "-"]
     if gj:
@@ -197,6 +211,9 @@ def read_esc_output(esc_dir: Path | None) -> dict:
                     out["access_width_m"], out["access_length_m"] = round(sides[0], 2), round(sides[1], 2)
                 except Exception:  # noqa: BLE001
                     pass
+    if out["whole_lot"]:                         # claim "drawn" only for items that are elements of the output with an unresolved status
+        lab = [(str(e.get("label") or "").lower(), str(e.get("status") or "").lower()) for e in out["elements"]]
+        out["whole_lot"] = [n for n in out["whole_lot"] if any(n.lower() in l and st == "unresolved" for l, st in lab)]
     return out
 
 
@@ -211,6 +228,9 @@ class SoeeSiteInputs:
     today: date = field(default_factory=date.today)
     job: str = ""
     revision: str = "A"
+    maps: list[dict] | None = None              # planning map records (site report JSON "planning_maps"); None reads them from constraints["report"]
+    maps_dir: Path | None = None                # folder that holds the map PNGs written by the site report (a map without a PNG is not listed)
+    synthetic_demo: bool = False                # SYNTHETIC DEMO DATA: stamped on the cover and in every footer
 
 
 def load_requirement_set() -> RequirementSet:
@@ -563,10 +583,11 @@ class Table:
 
 @dataclass
 class Block:
-    kind: str                            # h2 | p | bullets | table | keep (a note that must stay with the next block)
+    kind: str                            # h2 | p | bullets | table | figure | keep (a note that must stay with the next block)
     text: str = ""
     stmts: list[Stmt] = field(default_factory=list)
     table: Table | None = None
+    fig: dict | None = None              # kind "figure": {"no", "key", "title", "png"}; the caption is stmts[0]
 
 
 @dataclass
@@ -655,6 +676,10 @@ class _Build:
         if ss:
             self.cur.blocks.append(Block("bullets", stmts=ss))
 
+    def figure(self, info: dict, caption: str) -> None:
+        s = self._stmt(caption, f"map:planning_maps[{info['key']}]")
+        self.cur.blocks.append(Block("figure", stmts=[s], fig={"no": info["no"], "key": info["key"], "title": info["title"], "png": str(info["png"])}))
+
     def table(self, header: list[str], rows: list[tuple[list[str], str]], widths: list[float], status_col: int | None = None, caption: str = "") -> None:
         ids = []
         for _ in rows:
@@ -682,6 +707,18 @@ class _Data:
         self.sel = {"zone": self.lot.get("zone_code") or self.meta.get("zone_code"), "lga": (self.lot.get("lga_name") or self.meta.get("lga_name") or "").title() or None}
         self.sel = {k: v for k, v in self.sel.items() if v}
         self.fixture = "offline_fixture" in (self.meta.get("flags") or []) or "offline_fixture" in (self.lot.get("flags") or [])
+        self.figs = _figures(inp)
+
+    def fig(self, key: str) -> dict | None:
+        return self.figs.get(key)
+
+    def ref(self, key: str) -> str:
+        """'refer Figure n, Title, Appendix A' for a planning map that exists in this document, else ''."""
+        f = self.figs.get(key)
+        if not f:
+            return ""
+        tail = " (MAP NOT AVAILABLE: LAYER NOT CHECKED)" if f["rec"].get("state") == "not_checked" else ""
+        return f"refer Figure {f['no']}, {f['title']}, Appendix A{tail}"
 
     def r(self, key: str) -> Requirement | None:
         try:
@@ -708,6 +745,34 @@ class _Data:
             if m and self.locality.lower() in m.group(1).lower():
                 return m.group(1)
         return f"{self.locality} Council (name not confirmed)" if self.locality else "COUNCIL NOT IDENTIFIED"
+
+
+def _figures(inp: SoeeSiteInputs) -> dict[str, dict]:
+    """Planning maps that can be shown: a record with a PNG on disk.  Figures are numbered 1..n in record order (the SoEE has its own numbering)."""
+    recs = inp.maps
+    if recs is None:
+        recs = ((inp.constraints or {}).get("report") or {}).get("planning_maps") or []
+    out: dict[str, dict] = {}
+    if not inp.maps_dir:
+        return out
+    n = 0
+    for r in recs:
+        name = Path(r.get("png") or "").name
+        png = Path(inp.maps_dir) / name if name else None
+        if png is None or not png.exists():
+            continue
+        n += 1
+        out[r["key"]] = {"no": n, "key": r["key"], "title": T(r.get("title") or r["key"]), "rec": r, "png": png}
+    return out
+
+
+def _with_ref(d: _Data, key: str, text: str) -> str:
+    """Append the figure reference to a statement that relies on a mapped control or constraint (nothing is added when no map exists)."""
+    r = d.ref(key)
+    if not r:
+        return text
+    t = text.rstrip()
+    return t + ("" if t.endswith(".") else ".") + " " + r[0].upper() + r[1:] + "."
 
 
 def _layer_line(d: _Data, key: str) -> tuple[str, str, str]:
@@ -832,6 +897,9 @@ def build_gaps(d: _Data, comp: list[dict]) -> list[dict]:
     nd = [x.split(":")[0].strip().lower() for x in esc.get("not_drawn") or []]
     if nd:
         add("esc:not_drawn", f"Not drawn on the erosion and sediment control layout: {_join_and(nd)}. No position meets the cited clearances inside the lot. To be confirmed by the designer or certifier.", "C500", "file:escp_*_report.md")
+    wlt = _esc_whole_lot_text(esc)
+    if wlt:
+        add("esc:whole_lot", wlt, "C500", "file:escp_*_report.md; file:escp_*.geojson")
     for r in comp:
         if r.get("key") == "access_length" and r["status"].startswith("FAIL"):
             add("esc:access_short", f"Stabilised site access drawn {r['value']:.1f} m long, shorter than the cited minimum of {r['limit']:g} m. To be resolved by the ESCP preparer.", "C500", "file:escp_*.geojson")
@@ -866,8 +934,12 @@ def build_site_soee(inp: SoeeSiteInputs) -> SiteSoee:
         " ".join(" ".join(r) for r in bl.table.rows) for sec in b.sections for bl in sec.blocks if bl.table)
     _fill_docs_read(b, d, comp)
     _s9(b, gl_text)
+    _appendix_maps(b, d)
     meta = {"lot": d.lot_label, "lga": d.locality, "doc_number": doc_no, "offline_fixture": d.fixture, "counts": cnt, "layers": lc["layers"], "layers_not_checked": lc["not_checked"],
-            "layer_counts": lc, "documents_not_reviewed": len(blocked), "data_gaps": len(gaps), "run_started": d.facts.get("started"), "method": METHOD_TEXT}
+            "layer_counts": lc, "documents_not_reviewed": len(blocked), "data_gaps": len(gaps), "run_started": d.facts.get("started"), "method": METHOD_TEXT,
+            "map_figures": len(d.figs), "synthetic_demo": bool(inp.synthetic_demo),
+            "planning_maps": [{"figure": f["no"], "key": f["key"], "title": f["title"], "state": f["rec"].get("state"), "result": f["rec"].get("result"), "png": Path(f["png"]).name,
+                               "synthetic": bool(f["rec"].get("synthetic"))} for f in d.figs.values()]}
     return SiteSoee(DOC_TITLE, doc_no, site_label, d.locality, d.council, dmy(inp.today), inp.revision, "DRAFT", b.sections, meta, comp, open_items)
 
 
@@ -927,7 +999,7 @@ def _s2(b: _Build, d: _Data) -> None:
         ("Street address: not recorded in the run data.", "data:sa1.lot", T_DNA),
         (f"Area: {num(lot.get('area_m2_calculated'), 0)} m2, calculated from the cadastre (not a survey).", "data:sa1.lot.area_m2_calculated") if lot.get("area_m2_calculated") else ("Area: not recorded.", "data:sa1.lot", T_DNA),
         ("Registered (title) area: not recorded in the run data.", "data:sa1.lot.area_m2_registered", T_DNA) if lot.get("area_m2_registered") is None else (f"Registered area: {num(lot['area_m2_registered'], 0)} m2.", "data:sa1.lot.area_m2_registered"),
-        (f"Zone: {lot['zone_code']}, as returned by the cadastre and zoning service. The zone name and objectives are not in the run data (the Local Environmental Plan was not obtained).", "data:sa1.lot.zone_code") if lot.get("zone_code") else ("Zone: not returned by the zoning service.", "data:sa1.lot.zone_code", T_DNA),
+        (_with_ref(d, "zoning", f"Zone: {lot['zone_code']}, as returned by the cadastre and zoning service. The zone name and objectives are not in the run data (the Local Environmental Plan was not obtained)."), "data:sa1.lot.zone_code") if lot.get("zone_code") else ("Zone: not returned by the zoning service.", "data:sa1.lot.zone_code", T_DNA),
     ])
     rows = []
     for s in lot.get("segments", []):
@@ -1158,6 +1230,8 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
         nd = [x.split(":")[0].strip().lower() for x in esc.get("not_drawn") or []]
         if nd:
             items.append((f"Not drawn on C500: {_join_and(nd)}. No position meets the cited clearances inside the lot. To be confirmed by the designer or certifier.", "file:escp_*_report.md", T_UNRES))
+        if _esc_whole_lot_text(esc):
+            items.append((_esc_whole_lot_text(esc), "file:escp_*_report.md; file:escp_*.geojson", T_UNRES))
         b.bullets(items)
     elif esc.get("shown_on_plan"):
         b.p("Drawing C500 was built without an ESC data gap marker, but no control list was read for this statement. No control is claimed.", "planset:sheets[C500]", T_UNRES)
@@ -1210,18 +1284,25 @@ def _s4(b: _Build, d: _Data, blocked: list[dict], inp: SoeeSiteInputs) -> None:
     items = [(f"Local environmental plan named by the mapping data: {T(lep)}. The LEP text (land use table, zone objectives and development standards) was not obtained: NOT REVIEWED, UNRESOLVED.", "data:sa9.layers.attributes.EPI_NAME; knowledge:manifest[gunnedah_lep_2012]", T_NOTREV) if lep else
              ("The local environmental plan was not identified by the mapping data and its text was not obtained.", "knowledge:manifest[gunnedah_lep_2012]", T_NOTREV)]
     items.append(("Permissibility of the site works in the zone, and the zone objectives, cannot be stated. UNRESOLVED.", "knowledge:unresolved landuse.permissibility", T_UNRES))
+    items += _zoning_items(d)
     if sc and sc.get("status") == "affected":
         names = sorted({str(a.get("EPI_NAME")) for a in sc["attributes"] if a.get("EPI_NAME")})
-        items.append((f"The SEPP mapped areas layer reports a land application area over the lot for: {', '.join(T(n) for n in names)}. The content of that policy was not obtained: NOT REVIEWED, UNRESOLVED.", "data:sa9.layers[nsw_sepp_area]", T_NOTREV))
+        items.append((_with_ref(d, "nsw_sepp_area", f"The SEPP mapped areas layer reports a land application area over the lot for: {', '.join(T(n) for n in names)}. The content of that policy was not obtained: NOT REVIEWED, UNRESOLVED."), "data:sa9.layers[nsw_sepp_area]", T_NOTREV))
     elif sc and sc.get("status") == "not_checked":
-        items.append(("The SEPP mapped areas layer was not queried. Applicable State environmental planning policies are not identified.", "data:sa9.layers[nsw_sepp_area]", T_NC))
+        items.append((_with_ref(d, "nsw_sepp_area", "The SEPP mapped areas layer was not queried. Applicable State environmental planning policies are not identified."), "data:sa9.layers[nsw_sepp_area]", T_NC))
     for s in blocked:
         if "SEPP" in s["title"] or "State Environmental Planning" in s["title"]:
             items.append((f"{T(s['title'])}: not obtained, so its relevance to the site works is not determined.", f"knowledge:manifest[{s['id']}]", T_NOTREV))
     for lk, lf in (("minimum lot size map", lot_size), ("floor space ratio map", fsr), ("height of buildings map", height)):
         if lf:
             tag_, text_, src_ = _layer_line(d, {"minimum lot size map": "nsw_lot_size_map", "floor space ratio map": "nsw_fsr_map", "height of buildings map": "nsw_height_map"}[lk])
-            items.append((text_.rstrip(".") + ". This map bears on the building design and on subdivision, not on the site works, and is not assessed here. " + BUILDING_BY_OTHERS + ".", src_, tag_))
+            lkey = {"minimum lot size map": "nsw_lot_size_map", "floor space ratio map": "nsw_fsr_map", "height of buildings map": "nsw_height_map"}[lk]
+            tl_ = _with_ref(d, lkey, text_).rstrip()
+            tl_ += "" if tl_.endswith(".") else "."
+            mc_ = next((bn for bn in ((d.fig(lkey) or {}).get("rec", {}).get("banners") or []) if bn.startswith("MORE THAN ONE MAPPED CLASS")), "")
+            if mc_:
+                tl_ += " " + mc_.rstrip(".") + "."
+            items.append((tl_ + " This map bears on the building design and on subdivision, not on the site works, and is not assessed here. " + BUILDING_BY_OTHERS + ".", src_, tag_))
     b.bullets(items)
     b.h2(heads["a_ii"])
     b.p("Proposed environmental planning instruments that are or have been the subject of public consultation are not covered by any data source held by the platform. Confirm with the council.", "platform:no_data_source", T_NC)
@@ -1302,7 +1383,7 @@ def _s5(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, lrows: list[dict], 
     b.h2(f"5.1 {nm[0]}")
     lot = d.lot
     b.bullets([
-        (f"The site is {d.lot_label}, about {num(lot.get('area_m2_calculated'), 0)} m2, zone {lot.get('zone_code') or 'not returned'}, with a road frontage to {', '.join(lot.get('road_names') or ['a road not named in the data'])}.", "data:sa1.lot"),
+        (_with_ref(d, "zoning", f"The site is {d.lot_label}, about {num(lot.get('area_m2_calculated'), 0)} m2, zone {lot.get('zone_code') or 'not returned'}, with a road frontage to {', '.join(lot.get('road_names') or ['a road not named in the data'])}."), "data:sa1.lot"),
         (f"The lot adjoins {len([n for n in lot.get('neighbours', []) if not n['is_road']])} lots in the data. The use of adjoining land and the existing streetscape are not in the run data.", "data:sa1.lot.neighbours", T_DNA),
         (f"Overshadowing, privacy, bulk and scale relate to the building. {BUILDING_BY_OTHERS}.", "scope:site_works_only", T_BLD),
         ("The site works are at ground level (driveway, crossover, earthworks and drainage). Visual effects of the works on the streetscape are not assessed in this draft.", "platform:method", T_NA),
@@ -1362,7 +1443,7 @@ def _s5(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, lrows: list[dict], 
         items.append((f"The cited building sites guideline covers sites of {amin.value:g} to {amax.value:g} m2. The lot area of {lot_a:,.0f} m2 is " + ("within" if inside else "outside") + f" that range. [{cite_ref(amin)}]", f"doc:{T(amin.source.document_title)} page {amin.source.page} ({amin.key}); data:sa1.lot.area_m2_calculated", "", cite_dict(amin)))
     if w.get("esc", {}).get("shown_on_plan"):
         nd_ = [x.split(":")[0].strip().lower() for x in w["esc"].get("not_drawn") or []]
-        items.append((f"An indicative erosion and sediment control layout of {len(w['esc'].get('elements') or [])} items is shown on drawing C500 (section 3.6). It is not an ESCP. It is to be reviewed and certified by a suitably qualified person." + (f" Not drawn on C500: {_join_and(nd_)}, because no position meets the cited clearances inside the lot (ESC FLAGS panel). Where they are placed is open." if nd_ else "") + " The fall direction and the positions of the downslope controls are to be confirmed against a detail survey.", "planset:sheets[C500]; file:escp_*.geojson", T_UNRES))
+        items.append((f"An indicative erosion and sediment control layout of {len(w['esc'].get('elements') or [])} items is shown on drawing C500 (section 3.6). It is not an ESCP. It is to be reviewed and certified by a suitably qualified person." + (f" Not drawn on C500: {_join_and(nd_)}, because no position meets the cited clearances inside the lot (ESC FLAGS panel). Where they are placed is open." if nd_ else "") + (" " + _esc_whole_lot_text(w["esc"]) if _esc_whole_lot_text(w["esc"]) else "") + " The fall direction and the positions of the downslope controls are to be confirmed against a detail survey.", "planset:sheets[C500]; file:escp_*.geojson", T_UNRES))
     else:
         items.append(("The erosion and sediment control layout is not shown on drawing C500 in this run (ESCP DATA PENDING). The ESCP is not provided.", "planset:sheets[C500].data_missing", T_DNA))
     if es:
@@ -1412,8 +1493,13 @@ def _s5(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, lrows: list[dict], 
     b.h2(f"5.11 {nm[10]}")
     b.p(f"{lc['layers']} mapped layers were screened for this lot, as listed in the table below. Of these, {_count(lc['affected'])} MAPPED OR INTERSECTS (an intersect, a mapped control or a land application), {_count(lc['buffer'])} WITHIN BUFFER (inside the screening distance), {_count(lc['not_intersected'])} NOT INTERSECTED BY THE DATA LOADED and {_count(lc['not_checked'])} NOT CHECKED. Not checked is not clear.", "data:sa9.layers")
     b.p("This draft does not conclude that the site is suitable. Section 7 lists the open items.", "platform:method")
-    b.bullets([_form("Present and previous land uses and the potential for land contamination are not in the run data (the lot is assumed to be vacant, which is not a records check). The council form asks these questions and refers to State Environmental Planning Policy (Resilience and Hazards) 2021, which was not obtained: NOT REVIEWED, UNRESOLVED.", "Is the present use a potentially contaminated activity?", 2, T_NA)])
-    b.table(["Layer", "Result", "Data currency"], [([r["label"], r["status"], r["currency"]], r["source"]) for r in lrows], [2.6, 2.2, 2.2], status_col=1)
+    b.bullets([_form(_with_ref(d, "nsw_contamination", "Present and previous land uses and the potential for land contamination are not in the run data (the lot is assumed to be vacant, which is not a records check). The council form asks these questions and refers to State Environmental Planning Policy (Resilience and Hazards) 2021, which was not obtained: NOT REVIEWED, UNRESOLVED."), "Is the present use a potentially contaminated activity?", 2, T_NA)])
+    if d.figs:
+        nf = len(d.figs)
+        b.p(f"A map extract for the land zoning and for each screened layer is in Appendix A (Figures 1 to {nf}). The last column of the table below gives the figure for each layer. A figure that reads MAP NOT AVAILABLE means the layer was not checked, and not checked is not clear.", "map:planning_maps")
+        b.table(["Layer", "Result", "Data currency", "Map"], [([r["label"], r["status"], r["currency"], _fig_cell(d, r["key"])], r["source"]) for r in lrows], [2.3, 1.9, 1.9, 1.3], status_col=1)
+    else:
+        b.table(["Layer", "Result", "Data currency"], [([r["label"], r["status"], r["currency"]], r["source"]) for r in lrows], [2.6, 2.2, 2.2], status_col=1)
     # 5.12
     b.h2(f"5.12 {nm[11]}")
     b.p("No project data address the public interest. This matter is left to the applicant and the consent authority.", "platform:no_data_source", T_NA)
@@ -1425,14 +1511,35 @@ def _flood_item(d: _Data) -> tuple:
     if l is not None and l.get("status") == "not_affected":
         offline = " (offline fixture)" if d.fixture else ""
         council = d.locality or "The council area"
-        return (f"The lot is not intersected by the flood data loaded{offline}. This is not confirmed. {council} has flood affected land, so the lot must be checked with a section 10.7 planning certificate and with the council.",
+        return (_with_ref(d, "nsw_flood", f"The lot is not intersected by the flood data loaded{offline}. This is not confirmed. {council} has flood affected land, so the lot must be checked with a section 10.7 planning certificate and with the council."),
                 "data:sa9.layers[nsw_flood]; knowledge:manifest[gunnedah_carroll_fmp_1999]", "NOT INTERSECTED BY THE DATA LOADED")
     return _layer_item(d, "nsw_flood")
 
 
+def _fig_cell(d: _Data, key: str) -> str:
+    f = d.fig(key)
+    if not f:
+        return "No map in this run"
+    return f"Figure {f['no']}" + (" (panel, layer not checked)" if f["rec"].get("state") == "not_checked" else "")
+
+
+def _zoning_items(d: _Data) -> list[tuple]:
+    """Land zoning statements for section 4.15(1)(a)(i): the finding of the zoning map extract, with its figure reference.  Nothing is added when there is no zoning map."""
+    zi = d.fig("zoning")
+    if not zi:
+        return []
+    rec = zi["rec"]
+    src = "data:sa1.zone_polygons; map:planning_maps[zoning]"
+    items = [(_with_ref(d, "zoning", f"Land zoning of the lot: {rec.get('summary') or 'not recorded'}"), src, T_UNRES if rec.get("state") != "map" else "")]
+    for bn in rec.get("banners") or []:
+        if bn.startswith("MULTI-ZONE") or bn.startswith("MORE THAN ONE ZONE"):
+            items.append((bn.rstrip(".") + "." + ("" if "confirm" in bn.lower() else " Confirm the zones with the council before relying on the zone shown."), src, T_UNRES))
+    return items
+
+
 def _layer_item(d: _Data, key: str) -> tuple:
     tag, text, src = _layer_line(d, key)
-    return (text, src, tag)
+    return (_with_ref(d, key, text), src, tag)
 
 
 def _riparian(d: _Data) -> tuple | None:
@@ -1440,7 +1547,7 @@ def _riparian(d: _Data) -> tuple | None:
     if l is None:
         return None
     tag, text, src = _layer_line(d, "nsw_riparian")
-    return (text, src, tag)
+    return (_with_ref(d, "nsw_riparian", text), src, tag)
 
 
 # ---- 6 Compliance table
@@ -1612,6 +1719,24 @@ EXTRA_TERMS = [
     ("PLACEHOLDER", "A dimension drawn only so that the detail can be shown. It is a drafting convention and not a design value or a council dimension."),
     ("BYDA", "Before You Dig Australia. A referral service for finding out about underground assets before excavating."),
 ]
+
+
+def _appendix_maps(b: _Build, d: _Data) -> None:
+    """Appendix A: the planning map extracts made for the JCESITE site report, in the order of the layer table (section 5.11), numbered 1..n."""
+    if not d.figs:
+        return
+    b.sec("Appendix A", "Planning maps")
+    b.p(f"This appendix holds {len(d.figs)} map extracts: the land zoning of the lot and one map for each screened layer. They are the same extracts as the planning maps in the JCESITE site report, which numbers its figures differently. The statements in sections 2, 4 and 5 refer to these figures.", "map:planning_maps")
+    b.p("Each extract shows the subject lot (bold outline), the adjoining lot lines, the mapped categories clipped to the area loaded, a legend, a north point, a scale bar and a source line. A hatched area is outside the area the data covers. Mapped boundaries are indicative and are not a survey. Where the licence of a dataset is not recorded in the endpoint metadata, the source line says so and the attribution must be confirmed. A figure that reads MAP NOT AVAILABLE is a layer that was not checked: not checked is not clear.", "map:planning_maps")
+    lot = d.lot_label
+    for f in d.figs.values():
+        rec = f["rec"]
+        cap = f"Figure {f['no']}. {f['title']} for {lot}. {rec.get('result') or ''}".rstrip(". ") + ". " + (rec.get("summary") or "").strip()
+        if rec.get("extent") and rec.get("state") != "not_checked":
+            cap = cap.rstrip(".") + f". Figure extent {rec['extent']}."
+        if rec.get("synthetic"):
+            cap = cap.rstrip(".") + ". SYNTHETIC DEMO DATA."
+        b.figure(f, cap)
 
 
 def _s9(b: _Build, body_text: str) -> None:

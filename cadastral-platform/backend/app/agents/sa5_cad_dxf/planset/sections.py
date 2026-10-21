@@ -102,7 +102,7 @@ def grey(v, pts, col=GREY_BASE) -> None:
     v.fill(Polygon(pts), L_LINE, col, 1.0, None, None, True, edge=ST.BLACK, edge_lw=0.25)
 
 
-def dim_v(P, x: float, y0: float, y1: float, text: str, side: int = 1, h: float = 2.3, ext_to: float | None = None) -> None:
+def dim_v(P, x: float, y0: float, y1: float, text: str, side: int = 1, h: float = ST.TXT.BODY, ext_to: float | None = None) -> None:
     """Vertical dimension at x between y0 and y1; ticks, text to the right (side 1) or left (side -1) of the line."""
     P.line([(x, y0), (x, y1)], L_DIM, 0.2)
     for y in (y0, y1):
@@ -113,14 +113,14 @@ def dim_v(P, x: float, y0: float, y1: float, text: str, side: int = 1, h: float 
     P.text(x + side * 2.0, (y0 + y1) / 2, text, h, "MIDDLE_LEFT" if side > 0 else "MIDDLE_RIGHT", layer=L_DIM)
 
 
-def dim_h(P, y: float, x0: float, x1: float, text: str, h: float = 2.3, below: bool = True) -> None:
+def dim_h(P, y: float, x0: float, x1: float, text: str, h: float = ST.TXT.BODY, below: bool = True) -> None:
     P.line([(x0, y), (x1, y)], L_DIM, 0.2)
     for x in (x0, x1):
         P.line([(x - 1.2, y - 1.2), (x + 1.2, y + 1.2)], L_DIM, 0.3)
     P.text((x0 + x1) / 2, y + (-1.8 if below else 2.6), text, h, "TOP_CENTER" if below else "BOTTOM_CENTER", layer=L_DIM)
 
 
-def callout(v, P, lines, box_xy, target, w: float = 52.0, h: float = 2.3, dot: bool = True, bold_first: bool = True) -> tuple:
+def callout(v, P, lines, box_xy, target, w: float = 52.0, h: float = ST.TXT.BODY, dot: bool = True, bold_first: bool = True) -> tuple:
     """Boxed UPPERCASE call-out with a leader to ``target`` (paper mm).  ``box_xy`` is the top-left corner of the box.  Returns the box (x0, y0, x1, y1)."""
     lines = [ST.clean(x).upper() for x in lines if x]
     wr = []
@@ -144,7 +144,7 @@ def callout(v, P, lines, box_xy, target, w: float = 52.0, h: float = 2.3, dot: b
     return (x0, y0, x1, y1)
 
 
-def slope_tag(P, x0, y0, x1, y1, label: str, h: float = 2.4, off: float = 3.0) -> None:
+def slope_tag(P, x0, y0, x1, y1, label: str, h: float = ST.TXT.BODY, off: float = 3.0) -> None:
     """Ratio label set along a sloping line, on its upper side: the slope is drawn with a 1:n label."""
     ang = math.degrees(math.atan2(y1 - y0, x1 - x0))
     ang = ang + 180 if ang > 90 or ang < -90 else ang
@@ -158,8 +158,8 @@ def slope_tag(P, x0, y0, x1, y1, label: str, h: float = 2.4, off: float = 3.0) -
 def gradient_triangle(P, x: float, y: float, run: float, rise: float, label: str) -> None:
     """Right triangle (1 vertical over n horizontal) with its ratio label, the usual way a batter is dimensioned."""
     P.line([(x, y), (x + run, y), (x + run, y + rise)], L_DIM, 0.2)
-    P.text(x + run + 1.5, y + rise / 2, "1", 2.2, "MIDDLE_LEFT", layer=L_DIM)
-    P.text(x + run / 2, y - 1.4, "N  (" + label + ")", 2.2, "TOP_CENTER", layer=L_DIM)
+    P.text(x + run + 1.5, y + rise / 2, "1", ST.TXT.BODY, "MIDDLE_LEFT", layer=L_DIM)
+    P.text(x + run / 2, y - 1.4, "N  (" + label + ")", ST.TXT.BODY, "TOP_CENTER", layer=L_DIM)
 
 
 def shift(r: tuple, yb: float, dh: float, foot: float = 48.0) -> float:
@@ -170,12 +170,12 @@ def shift(r: tuple, yb: float, dh: float, foot: float = 48.0) -> float:
 def title(v, P, x0: float, ytop: float, w: float, text: str, sub: str = "") -> float:
     """Detail title: bold UPPERCASE with a red underline (same style as the sheet title strip); returns the y below it."""
     t = ST.clean(text).upper()
-    P.text(x0 + 3.0, ytop - 3.0, t, 3.6, "TOP_LEFT", bold=True, layer=L_NOTE)
-    yu = ytop - 3.0 - 3.6 - 1.6
-    P.line([(x0 + 3.0, yu), (x0 + 3.0 + max(fonts.text_width(t, 3.6, True), 30.0), yu)], L_NOTE, 0.7, (0.80, 0.08, 0.08))
+    P.text(x0 + 3.0, ytop - 3.0, t, ST.TXT.DETAIL_TITLE, "TOP_LEFT", bold=True, layer=L_NOTE)
+    yu = ytop - 3.0 - ST.TXT.DETAIL_TITLE - 1.6
+    P.line([(x0 + 3.0, yu), (x0 + 3.0 + max(fonts.text_width(t, ST.TXT.DETAIL_TITLE, True), 30.0), yu)], L_NOTE, 0.7, (0.80, 0.08, 0.08))
     if sub:
-        P.text(x0 + 3.0, yu - 1.6, ST.clean(sub).upper(), 2.3, "TOP_LEFT", layer=L_NOTE)
-        return yu - 1.6 - 2.3 - 2.0
+        P.text(x0 + 3.0, yu - 1.6, ST.clean(sub).upper(), ST.TXT.BODY, "TOP_LEFT", layer=L_NOTE)
+        return yu - 1.6 - ST.TXT.BODY - 2.0
     return yu - 3.0
 
 
@@ -224,11 +224,11 @@ def pavement_layers(v, P, tv: TypicalValues, x0: float, x1: float, ytop: float, 
         P.line([(x1, ys(x1, k)), (xd + 1.5, ys(x1, k))], L_DIM, 0.1, ST.GRID)
     for k, (name, lab, _kind) in enumerate(spec):
         dim_v(P, xd, ys(x1, k + 1), ys(x1, k), "", 1)
-        P.text(xd + 3.0, (ys(x1, k) + ys(x1, k + 1)) / 2, f"{lab}  T = {tv.text(name, 'mm')}", 2.3, "MIDDLE_LEFT", layer=L_DIM, bold=tv.has(name))
-    P.text(xd + 3.0, ys(x1, n) - 0.4 * thick, "SUBGRADE (EXISTING, COMPACTED)", 2.3, "MIDDLE_LEFT", layer=L_DIM)
-    P.text(xd + 3.0, ys(x1, n) - 1.2 * thick, f"CBR {tv.text('subgrade')}" if tv.has("subgrade") else "CBR TBC", 2.3, "MIDDLE_LEFT", layer=L_DIM)
+        P.text(xd + 3.0, (ys(x1, k) + ys(x1, k + 1)) / 2, f"{lab}  T = {tv.text(name, 'mm')}", ST.TXT.BODY, "MIDDLE_LEFT", layer=L_DIM, bold=tv.has(name))
+    P.text(xd + 3.0, ys(x1, n) - 0.4 * thick, "SUBGRADE (EXISTING, COMPACTED)", ST.TXT.BODY, "MIDDLE_LEFT", layer=L_DIM)
+    P.text(xd + 3.0, ys(x1, n) - 1.2 * thick, f"CBR {tv.text('subgrade')}" if tv.has("subgrade") else "CBR TBC", ST.TXT.BODY, "MIDDLE_LEFT", layer=L_DIM)
     if crossfall:
-        slope_tag(P, x0, ytop, x1, ytop - drop, f"CROSSFALL {tv.text('crossfall', '%')}", 2.3, 3.2)
+        slope_tag(P, x0, ytop, x1, ytop - drop, f"CROSSFALL {tv.text('crossfall', '%')}", ST.TXT.BODY, 3.2)
     return ys(x1, n) - sub, xd
 
 
@@ -261,7 +261,8 @@ def detail_driveway_pavement(v, P, tv: TypicalValues, r: tuple, foot: list | Non
     yb = shift(r, yb, 30.0 + thick * (n + 1.6) + 4.0, 24.0)
     ytop = yb - 30.0
     xa = x0 + 14.0
-    xb = xa + min(W * 0.52, 250.0)
+    lab_w = max(fonts.text_width(t_, ST.TXT.BODY) for t_ in ("SUBGRADE (EXISTING, COMPACTED)", "PAVEMENT LAYER 3  T = TBC", "WEARING COURSE  T = TBC")) + 14.0
+    xb = max(xa + 60.0, x1 - 8.0 - lab_w - 5.0)                                # the section runs to the label column, which ends at the cell edge
     pavement_layers(v, P, tv, xa, xb, ytop, thick)
     m = tv.material()
     surf = {"concrete": "CONCRETE", "bitumen": "BITUMEN OR ASPHALT"}.get(m, NOT_SELECTED)
@@ -292,7 +293,7 @@ def detail_kerb_layover(v, P, tv: TypicalValues, r: tuple, foot: list | None = N
     grey(v, [(xr0, road_top - 2 * th), (xk, yg - 2 * th), (xk, yg - 3 * th), (xr0, road_top - 3 * th)], GREY_SUB)
     hatch(v, [(xr0, road_top - 3 * th), (xk, yg - 3 * th), (xk, yg - 3 * th - 9), (xr0, road_top - 3 * th - 9)], "existing")
     k = kerb_gutter_profile(v, P, tv, xk, yg, S)
-    xb = x1 - 0.30 * W                                                     # property boundary
+    xb = x1 - max(0.07 * W, 30.0)                                          # property boundary, near the right edge of the cell
     yv = k["top"]                                                          # the layover starts at the top of the layback (no upstand)
     ybnd = yv + (0.0 if fall is None else (-6.0 if fall < 0 else 6.0))
     m = tv.material()
@@ -307,17 +308,17 @@ def detail_kerb_layover(v, P, tv: TypicalValues, r: tuple, foot: list | None = N
     grey(v, [(k["x1"], yv - e), (xb, ybnd - e), (xb, ybnd - 2 * e), (k["x1"], yv - 2 * e)], GREY_BASE if m else PLAIN)
     hatch(v, [(k["x1"], yv - 2 * e), (xb, ybnd - 2 * e), (xb, ybnd - 2 * e - 10.0), (k["x1"], yv - 2 * e - 10.0)], "existing")
     P.line([(xb, max(yv, ybnd) + 14.0), (xb, ybnd - 2 * e - 12.0)], L_LINE, 0.3, ST.BLACK, dash="DASHED")
-    P.text(xb, max(yv, ybnd) + 15.5, "PROPERTY BOUNDARY", 2.3, "BOTTOM_CENTER", layer=L_NOTE)
+    P.text(xb, max(yv, ybnd) + 15.5, "PROPERTY BOUNDARY", ST.TXT.BODY, "BOTTOM_CENTER", layer=L_NOTE)
     grade = {None: "LAYOVER GRADE " + tv.text("crossfall", "%"), -1: "LAYOVER GRADE FALLS TOWARDS THE LOT (DIAGRAMMATIC)", 1: "LAYOVER GRADE RISES TO THE BOUNDARY (DIAGRAMMATIC)"}[fall]
     if fall is None:
-        slope_tag(P, k["x1"], yv, xb, ybnd, grade, 2.3, 3.0)
+        slope_tag(P, k["x1"], yv, xb, ybnd, grade, ST.TXT.BODY, 3.0)
     else:
-        wr = fonts.wrap(grade, 2.3, 46.0)                                                    # right aligned and wrapped: clear of the layover call-out leader and the boundary line
+        wr = fonts.wrap(grade, ST.TXT.BODY, 46.0)                                                    # right aligned and wrapped: clear of the layover call-out leader and the boundary line
         for i_, ln_ in enumerate(wr):
-            P.text(xb - 3.0, max(yv, ybnd) + 4.5 + 3.4 * (len(wr) - 1 - i_), ln_, 2.3, "BOTTOM_RIGHT", layer=L_NOTE)
+            P.text(xb - 3.0, max(yv, ybnd) + 4.5 + 3.4 * (len(wr) - 1 - i_), ln_, ST.TXT.BODY, "BOTTOM_RIGHT", layer=L_NOTE)
     dim_v(P, k["foot"][0] - 3.0 * S, yg, k["top"], "", 1)
-    P.text(k["foot"][0] - 3.0 * S - 2.0, yg + LAYBACK_RISE * S / 2, f"LAYBACK HEIGHT {tv.text('kerb_height', 'mm')}", 2.3, "MIDDLE_RIGHT", layer=L_DIM)
-    dim_h(P, yg + LAYBACK_RISE * S + 7.0, xk, k["foot"][0], f"GUTTER {gutter_w_text or TBC}", 2.2, below=False)
+    P.text(k["foot"][0] - 3.0 * S - 2.0, yg + LAYBACK_RISE * S / 2, f"LAYBACK HEIGHT {tv.text('kerb_height', 'mm')}", ST.TXT.BODY, "MIDDLE_RIGHT", layer=L_DIM)
+    dim_h(P, yg + LAYBACK_RISE * S + 7.0, xk, k["foot"][0], f"GUTTER {gutter_w_text or TBC}", ST.TXT.BODY, below=False)
     callout(v, P, ["LAYBACK KERB AND GUTTER", f"CONCRETE ASSUMED, PROFILE {tv.text('kerb_type')}", "GUTTER LIP RUNS INTO THE LAYBACK"], (xk + 4.0, yg - 12.0 * S - 8.0), (xk + 14.0 * S, yg + 1.0), 52.0)
     lay = "DRIVEWAY LAYOVER" if m is None else ("DRIVEWAY LAYOVER SLAB" if m == "concrete" else "DRIVEWAY LAYOVER")
     lay2 = NOT_SELECTED if m is None else ("CONCRETE" if m == "concrete" else "BITUMEN OR ASPHALT")
@@ -338,10 +339,10 @@ def detail_batter(v, P, tv: TypicalValues, r: tuple, kind: str, foot: list | Non
     name = "cut_batter" if cut else "fill_batter"
     yb = title(v, P, x0, y1, W, ("CUT" if cut else "FILL") + " BATTER (TYPICAL SECTION)", "NOT TO SCALE. SLOPE DRAWN FOR GRAPHIC PURPOSES")
     yb = shift(r, yb, 108.0, 24.0)
-    Wd = min(W - 12.0, 340.0)
+    Wd = W - 12.0                                                          # the drawing runs the full width of its cell
     xs0, xs1 = (x0 + x1) / 2 - Wd / 2, (x0 + x1) / 2 + Wd / 2
     g = 1.0
-    m = 0.16                                                               # graphic slope of existing ground, falling to the right
+    m = 0.16 * min(1.0, 340.0 / Wd)                                        # graphic slope of existing ground, falling to the right (flatter in a wider cell so the drop stays inside the box)
     sl = 1.0 / 1.5                                                         # graphic batter slope
     hgt = 18.0
     xb_ = xs0 + 16.0
@@ -413,8 +414,8 @@ def detail_sediment_fence(v, P, tv: TypicalValues, r: tuple) -> None:
     callout(v, P, ["STAR PICKET / POST", "SPACING " + tv.text("esc.sediment_fence.post_spacing_m")], (x0 + 4.0, yg + 40.0), (xp, yg + 24.0), 46.0)
     callout(v, P, ["GEOTEXTILE FABRIC", "FABRIC HEIGHT " + TBC], (xp + 8.0, yg + 40.0), (xp + 3.0, yg + 28.0), 46.0)
     callout(v, P, ["TRENCH, BACKFILLED AND COMPACTED", "DEPTH " + tv.text("esc.sediment_fence.trench_depth_mm")], (xp + 18.0, yg - 12.0), (xp + 14.0, yg - 3.0), 52.0)
-    P.text(x0 + 8.0, yg + 3.0, "UPSLOPE", 2.3, "BOTTOM_LEFT", layer=L_NOTE, bold=True)
-    P.text(x1 - 8.0, yg + 3.0, "DOWNSLOPE", 2.3, "BOTTOM_RIGHT", layer=L_NOTE, bold=True)
+    P.text(x0 + 8.0, yg + 3.0, "UPSLOPE", ST.TXT.BODY, "BOTTOM_LEFT", layer=L_NOTE, bold=True)
+    P.text(x1 - 8.0, yg + 3.0, "DOWNSLOPE", ST.TXT.BODY, "BOTTOM_RIGHT", layer=L_NOTE, bold=True)
 
 
 def detail_access(v, P, tv: TypicalValues, r: tuple) -> None:
@@ -428,8 +429,8 @@ def detail_access(v, P, tv: TypicalValues, r: tuple) -> None:
     grey(v, [(xa0, yg + 5.0), (xa1, yg + 5.0), (xa1, yg - 3.0), (xa0, yg - 3.0)], GREY_BASE)
     P.line([(xa0 - 4.0, yg - 8.0), (xa1 + 4.0, yg - 8.0)], L_LINE, 0.4, (0.1, 0.1, 0.1), dash="DASHED")
     dim_v(P, xa1 + 8.0, yg - 3.0, yg + 5.0, "", 1)
-    P.text(xa1 + 10.0, yg + 1.0, "THICKNESS " + tv.text("esc.access.thickness_mm"), 2.3, "MIDDLE_LEFT", layer=L_DIM)
-    dim_h(P, yg - 28.0, xa0, xa1, "LENGTH " + tv.text("esc.access.min_length_m") + "   WIDTH " + tv.text("esc.access.min_width_m"), 2.2)
+    P.text(xa1 + 10.0, yg + 1.0, "THICKNESS " + tv.text("esc.access.thickness_mm"), ST.TXT.BODY, "MIDDLE_LEFT", layer=L_DIM)
+    dim_h(P, yg - 28.0, xa0, xa1, "LENGTH " + tv.text("esc.access.min_length_m") + "   WIDTH " + tv.text("esc.access.min_width_m"), ST.TXT.BODY)
     callout(v, P, ["AGGREGATE", "MAX SIZE " + tv.text("esc.access.max_aggregate_mm")], (x0 + 4.0, yg + 38.0), (xa0 + 24.0, yg + 2.0), 46.0)
     callout(v, P, ["GEOTEXTILE UNDERLAY", tv.text("esc.access.geotextile_underlay")], (x0 + 70.0, yg + 38.0), (xa0 + 50.0, yg - 5.5), 54.0)
     callout(v, P, ["ROAD / SITE BOUNDARY"], (xa1 - 36.0, yg + 18.0), (xa1, yg + 5.0), 36.0)
@@ -449,7 +450,7 @@ def detail_trench(v, P, tv: TypicalValues, r: tuple) -> None:
     P.line([(x0 + 4.0, yg), (xl, yg), (xl, yt), (xr, yt), (xr, yg), (x1 - 4.0, yg)], L_LINE, 0.6, ST.BLACK)
     P.circle((xl + xr) / 2, yt + 13.0, 8.0, L_LINE, 0.5, ST.BLACK, ST.WHITE)
     dim_v(P, xl + 6.0, yg, yt + 21.0, "", 1)
-    P.text(xl + 9.0, (yg + yt + 21.0) / 2, "COVER " + (tv.text("water.min_cover_m") if tv.has("water.min_cover_m") else TBC), 2.2, "MIDDLE_LEFT", layer=L_DIM)
+    P.text(xl + 9.0, (yg + yt + 21.0) / 2, "COVER " + (tv.text("water.min_cover_m") if tv.has("water.min_cover_m") else TBC), ST.TXT.BODY, "MIDDLE_LEFT", layer=L_DIM)
     callout(v, P, ["BACKFILL (PER STANDARD)", "COMPACTED IN LAYERS"], (x0 + 4.0, yg - 4.0), ((xl + xr) / 2 - 12.0, yt + 28.0), 46.0)
     callout(v, P, ["PIPE, BEDDING, HAUNCH AND OVERLAY", "TYPE AND THICKNESS PER AS/NZS 3500 AND THE COUNCIL OR WSAA STANDARD DRAWING " + TBC], (x0 + 4.0, yt - 8.0), ((xl + xr) / 2, yt + 6.0), 90.0)
 
@@ -459,10 +460,10 @@ def detail_notes(v, P, tv: TypicalValues, r: tuple, lines: list[str]) -> None:
     yb = title(v, P, x0, y1, x1 - x0, "STATUS OF DETAILS")
     y = yb - 2.0
     for ln in lines:
-        for w in fonts.wrap(ST.clean(ln).upper(), 2.3, x1 - x0 - 8.0):
+        for w in fonts.wrap(ST.clean(ln).upper(), ST.TXT.BODY, x1 - x0 - 8.0):
             if y < y0 + 3.0:
                 return
-            P.text(x0 + 4.0, y, w, 2.3, "TOP_LEFT", layer=L_NOTE)
+            P.text(x0 + 4.0, y, w, ST.TXT.BODY, "TOP_LEFT", layer=L_NOTE)
             y -= 3.4
         y -= 1.4
 

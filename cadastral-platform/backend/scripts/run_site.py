@@ -41,6 +41,7 @@ from app.agents.sa9_constraints import layers as L9  # noqa: E402
 from app.agents.sa9_constraints.intersect import Feature, LayerData  # noqa: E402
 from app.agents.sa9_constraints.arcgis_loader import ArcGisLayerLoader as Sa9ArcGisLoader  # noqa: E402
 from app.common.contracts import AckKind, AgentCode, DevelopmentType  # noqa: E402
+from app.report.maps import zone_map_from_sa1  # noqa: E402
 from app.orchestrator.adapters.config import sa1_config_from_env  # noqa: E402
 from app.orchestrator.adapters.nodes import lot_with_envelope  # noqa: E402
 from app.orchestrator.inputs import BuildContext, InputError, RunRequest, build_input  # noqa: E402
@@ -547,7 +548,8 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         in9 = Sa9Input(
             lot=lot_with_envelope(sa1, env_out) if env_out is not None else lot, footprint_wkt=footprint_wkt,
             output_dir=str(out), development_type=dev, flood_ffl_text=flood_text,
-            project_title=rr.project_title, flags=list(sa1.flags or []), civil=_civil_summary(R, rep.facts, fchk, env_out, sa4))
+            project_title=rr.project_title, flags=list(sa1.flags or []), civil=_civil_summary(R, rep.facts, fchk, env_out, sa4),
+            zone_map=zone_map_from_sa1(sa1))     # zone polygons for the land zoning map (none in the offline fixture: the map says so)
         if getattr(args, "report", False):       # reproducible re-render input: re-run SA9 on this file to rebuild the report
             (out / "sa9_input.json").write_text(in9.model_dump_json(indent=1))
         r9 = Sa9Constraints(Sa9ArcGisLoader(lot.mga_srid, getter=(lambda u, p: json.loads(fetcher(u, p)[0])) if fetcher else None, sleep=(lambda s: None) if fetcher else time.sleep) if configured else None).run(in9)

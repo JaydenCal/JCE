@@ -78,6 +78,21 @@ class Conventions:
 
 
 REF = Conventions()
+
+
+@dataclass(frozen=True)
+class TypeScale:
+    """One type scale for every reference sheet (cap heights, paper mm).  Body text, call-outs, dimensions, labels, panels, schedules and detail
+    annotations are all BODY; only the datum notes strip and footnotes are SMALL; boundary lengths and panel titles are LABEL; headings HEAD."""
+    SMALL: float = 2.0
+    BODY: float = 2.5
+    LABEL: float = 3.0
+    HEAD: float = 3.5
+    DETAIL_TITLE: float = 3.5
+
+
+TXT = TypeScale()
+LW_FINE, LW_STD, LW_HEAVY = 0.13, 0.25, 0.5      # the three line weights used for annotation, linework and emphasis (mm); dimension lines use LW_STD
 core.CUSTOM_DASH[DASH_BDY] = (REF.dash_len, -REF.dash_len)
 
 
@@ -220,6 +235,7 @@ def label_masked(v: View, x: float, y: float, s: str, h: float, rot_deg: float, 
     if not v.free(box):
         return False
     v.occ.append(box)
+    v.tbox.append(box)
     v._mask(px, py, fonts.text_width(s, h, bold) + 2 * pad, h + 2 * pad, rot, layer)
     v.text(x, y, s, h, "MIDDLE_CENTER", v.model_rot(rot) if not v.paper else rot, bold, color=color, layer=layer, halo=False)
     return True
@@ -256,6 +272,6 @@ def scale_bar_ref(v: View, x: float, y: float, scale: int, paper_label: str = "A
         p.poly(quad, "C-ANNO-NRTH", BLACK if i % 2 == 0 else WHITE, edge=BLACK, edge_lw=0.18)
     for i in range(5):
         lab = f"{best * i / 4:g}" + (" m" if i == 4 else "")
-        p.text(x + i * L / 4, y + 3.0, lab, 2.2, "BOTTOM_LEFT" if i == 4 else "BOTTOM_CENTER", layer="C-ANNO-NRTH")
-    p.text(x, y - 1.2, f"SCALE 1:{scale} @ {paper_label}", 2.5, "TOP_LEFT", bold=True, layer="C-ANNO-NRTH")
+        p.text(x + i * L / 4, y + 3.0, lab, TXT.BODY, "BOTTOM_LEFT" if i == 4 else "BOTTOM_CENTER", layer="C-ANNO-NRTH")
+    p.text(x, y - 1.2, f"SCALE 1:{scale} @ {paper_label}", TXT.BODY, "TOP_LEFT", bold=True, layer="C-ANNO-NRTH")
     return L

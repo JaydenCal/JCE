@@ -90,6 +90,15 @@ class ZoneShare(Model):
     geom_wkt_gda2020: str = ""
 
 
+class ZonePolygon(Model):
+    """A zoning polygon kept so a land zoning map can be drawn: MGA metres, clipped to a window around the lot (never repaired, never invented)."""
+    zone_code: str
+    zone_name: str
+    instrument: str
+    geom_wkt_mga: str
+    on_lot: bool                 # True when the polygon overlaps the lot
+
+
 class Overlay(Model):
     overlay_type: str
     overlay_label: str
@@ -116,3 +125,5 @@ class Sa1Result(Model):
     snapshots: list[Snapshot] = []
     boundary_wkt_gda2020: str = ""
     attributes: dict = {}
+    zone_polygons: list[ZonePolygon] = []      # zoning polygons in a window around the lot (MGA), on the lot or not; [] when the run kept none
+    zone_source: Snapshot | None = None        # the zoning query snapshot (service, layer name, attribution, fetch time); None when none was made

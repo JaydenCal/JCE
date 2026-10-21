@@ -39,10 +39,11 @@ def build_report(path_pdf: Path, path_json: Path, meta: dict, results: list[Laye
     (neighbours, segments, road_names, requirements, unresolved_requirements, civil, pathway, brand, srid)."""
     from app.report import SiteReportInputs, build_site_report
     from app.report.inputs import IMAGERY_FROM_ENV
+    maps_dir = extras.pop("maps_dir", None)
     inp = SiteReportInputs(meta=meta, results=results, triggers=triggers, lot_wkt=lot_wkt, footprint_wkt=fp_wkt,
                            srid=int(extras.pop("srid", meta.get("mga_srid", 7856))), acknowledgements=list(acknowledgements),
                            imagery=IMAGERY_FROM_ENV if imagery == "env" else imagery, **extras)
-    pdf, js = build_site_report(inp)
+    pdf, js = build_site_report(inp, maps_dir=maps_dir)
     Path(path_pdf).write_bytes(pdf)
     out = {"meta": meta, "layers": [r.model_dump() for r in results], "triggers": [t.model_dump() for t in triggers], "legal": js["legal"], "report": js}
     Path(path_json).write_text(json.dumps(out, indent=1, default=str))

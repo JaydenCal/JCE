@@ -21,6 +21,7 @@ from shapely.ops import unary_union
 from app.agents.sa5_cad_dxf.planset import callout as CO
 from app.agents.sa5_cad_dxf.planset import cadwin
 from app.agents.sa5_cad_dxf.planset import lga_notes as LN
+from app.agents.sa5_cad_dxf.planset import panels as PN
 from app.agents.sa5_cad_dxf.planset import phrases as PH
 from app.agents.sa5_cad_dxf.planset import sections as SEC
 from app.agents.sa5_cad_dxf.planset.terrain_notes import dem_fall, drainage_discharge_note, fall_vs_street  # noqa: F401
@@ -42,6 +43,7 @@ from app.agents.sa5_cad_dxf.planset.sheets_ref import (PAVEMENT_BASIS, PAVEMENT_
                                                        _front_segment, _services, _ffl_lines, a3_scale, boundary_labels, lot_labels, road_labels, scale_pair,
                                                        subject_lot_lines, title_strip)
 
+TXT = ST.TXT
 RED = (0.72, 0.1, 0.1)
 AMBER = (0.72, 0.45, 0.05)
 DISCL = SO.DISCL
@@ -124,7 +126,7 @@ def start(ctx: RefCtx, number: str, rows=(), notes=(), want_xover: bool = False,
     ph = 0.0
     if rows:
         extra = "  ".join(f"({i + 1}) {r}." for i, r in enumerate(rows))
-        ph = 12.0 + 3.4 * (len(fonts.wrap("NOT DRAWN, NO DATA SUPPLIED:", 2.4, 96.0)) + len(fonts.wrap(extra, 2.4, 96.0)))
+        ph = PN.panel_height(["NOT DRAWN, NO DATA SUPPLIED:", extra], 102.0)
     lot_subject = unary_union([s.lot] + [g for g in (s.drive_poly, s.crossover, xg0.verge) if g is not None])
     if s.view_twist is None:                                             # one orientation for the whole set, decided once from the lot
         s.view_twist = VP.baseline_twist(lot_subject, s.lot, PLAN_RECT, SUBJECT_MARGIN_MM)
@@ -220,7 +222,7 @@ def finish(b: Base, title: str, reserve=()) -> None:
     for cx_, cy_ in ((PLAN_RECT[2] - 38.0, PLAN_RECT[3] - 28.0), (PLAN_RECT[2] - 38.0, PLAN_RECT[1] + 28.0), (PLAN_RECT[0] + 38.0, PLAN_RECT[1] + 28.0),
                      (PLAN_RECT[0] + 38.0, PLAN_RECT[3] - 28.0)):           # first corner where no boundary line runs through the north point
         r_ = sbox(cx_ - 21.0, cy_ - 21.0, cx_ + 30.0, cy_ + 24.0)
-        if lotb.intersects(r_) or (b.rows and sbox(*b.panel).intersects(r_)):
+        if lotb.intersects(r_) or (b.rows and sbox(*b.panel).intersects(r_)) or any(sbox(*q_).intersects(r_) for q_ in reserve):
             continue
         ncx, ncy = cx_, cy_
         break
@@ -229,7 +231,7 @@ def finish(b: Base, title: str, reserve=()) -> None:
     b.strip = title_strip(sh, title, scale_pair(b.scale), b.scale, notes=list(b.choice.notes) + cadwin.cad_notes(s))
     if b.rows:
         extra = "  ".join(f"({i + 1}) {r}." for i, r in enumerate(b.rows))
-        D.no_data(v, b.panel, "NOT DRAWN, NO DATA SUPPLIED:", extra)
+        PN.no_data(v, b.panel, "NOT DRAWN, NO DATA SUPPLIED:", extra)
         keep.append(b.panel)
     keep += [tuple(r_) for r_ in reserve]                      # extra paper rectangles the caller will fill (reserved before any label is placed)
     b.keep = keep
@@ -247,12 +249,21 @@ def seal(b: Base, extra_notes=()) -> Sheet:
     road_labels(v, s, b.xg, b.front)
     collide.resolve(v)
     b.sh.notes = _dedupe(list(b.pre) + list(extra_notes))
-    b.sh.tag_notes = list(v.fallback_notes)
+    b.sh.tag_notes = _tag_notes(v, to_paper(v, unary_union([g for g in [s.lot, s.drive_poly, s.crossover] + list(getattr(b, "kerb_geoms", [])) if g is not None])).buffer(3.0))
     return b.sh
 
 
-def place(b: Base, lines, pt, term="dot", must=True, avoid=()):
-    return CO.place_callout(b.v, lines, pt, term, b.keep, avoid=list(avoid), soft_avoid=[b.s.lot], must=must, must_avoid=list(getattr(b, 'kerb_geoms', [])))
+def _tag_notes(v: View, avoid=None) -> list[str]:
+    """Text of call-outs and labels that found no free place: drawn as a boxed notes list on the sheet when there is room, else returned for the datum panel
+    (never dropped, and never left to wrap in the datum panel when a proper list fits)."""
+    lines = list(v.fallback_notes)
+    if lines and PN.place_notes_panel(v, lines, avoid) is not None:
+        return []
+    return lines
+
+
+def place(b: Base, lines, pt, term="dot", must=True, avoid=(), short_first: float | None = None):
+    return CO.place_callout(b.v, lines, pt, term, b.keep, avoid=list(avoid), soft_avoid=[b.s.lot], must=must, must_avoid=list(getattr(b, 'kerb_geoms', [])), short_first=short_first)
 
 
 def to_paper(v: View, g):
@@ -278,14 +289,14 @@ def place_panel(b: Base, w: float, h: float):
     return None
 
 
-def text_panel(b: Base, title: str, lines, w: float = 100.0, warn: bool = False, h_text: float = 2.4):
-    h = _wrap_h(lines, w, h_text)
+def text_panel(b: Base, title: str, lines, w: float = 100.0, warn: bool = False, h_text: float = TXT.BODY):
+    h = PN.panel_height(lines, w, h_text)
     r = place_panel(b, w, h)
     if r is None:
         for ln in [title] + list(lines):
             CO.fallback_tag(b.v, [ln], (0, 0), hidden=True)
         return None
-    D.panel(b.v, r[0], r[1], r[2], r[3], title, lines, h_text, warn=warn)
+    PN.draw_panel(b.v, r, title, lines, warn=warn, h=h_text)
     return r
 
 
@@ -484,7 +495,7 @@ def c100(ctx: RefCtx) -> Sheet:
     v = b.v
     if s.tin is not None:
         contour_sets(s, v.model_window())
-        D.contours(v, s, "ex")                                       # contours only: spot levels are not shown on the existing site plan
+        D.contours(v, s, "ex", lab_h=TXT.SMALL)                       # contours only: spot levels are not shown on the existing site plan
     draw_xover(b, "existing")
     missing: list[str] = []
     _n, pending = _services(v, s, missing)
@@ -539,7 +550,7 @@ def c101(ctx: RefCtx) -> Sheet:
     if s.inp.rwt is not None:
         x, y = s.inp.rwt.location_xy
         v.fill(Point(x, y).buffer(s.inp.rwt.diameter_m / 2), "C-UTIL-RWTK", ST.WHITE, 1.0, edge=ST.BLACK, edge_lw=ST.REF.outline_lw)
-    ph = fonts.wrap(codes.SETBACK_PLACEHOLDER, 2.4, 96.0, True)
+    ph = fonts.wrap(codes.SETBACK_PLACEHOLDER, TXT.BODY, 96.0, True)
     hh = 4.0 + 3.4 * len(ph)
     pr = (PLAN_RECT[2] - 106.0, PLAN_RECT[3] - 70.0 - hh, PLAN_RECT[2] - 4.0, PLAN_RECT[3] - 70.0)
     finish(b, "PROPOSED SITE PLAN", reserve=[pr] if fp is None else ())
@@ -548,7 +559,7 @@ def c101(ctx: RefCtx) -> Sheet:
         PP = ST.Paper(v)
         PP.poly([(pr[0], pr[1]), (pr[2], pr[1]), (pr[2], pr[3]), (pr[0], pr[3])], "C-DATA-NONE", ST.WHITE, edge=RED, edge_lw=0.35)
         for i, t in enumerate(ph):
-            PP.text(pr[0] + 2.0, pr[3] - 2.0 - 3.4 * i, t, 2.4, "TOP_LEFT", bold=True, color=RED, layer="C-DATA-NONE")
+            PP.text(pr[0] + 2.0, pr[3] - 2.0 - 3.4 * i, t, TXT.BODY, "TOP_LEFT", bold=True, color=RED, layer="C-DATA-NONE")
     hard, soft = b.hard, [s.lot]
     CX.callouts_crossover(v, xg, std, keep, list(hard), soft, must_avoid=list(b.kerb_geoms))
     if xg.present:
@@ -564,7 +575,7 @@ def c101(ctx: RefCtx) -> Sheet:
             lines = ["PROPOSED DRIVEWAY", "MATERIAL TO BE CONFIRMED", f"WIDTH {drv.width_m:.1f}m (PLATFORM DEFAULT)"]
             if drv.max_grade_pct is not None:
                 lines.append(f"MAX GRADE {drv.max_grade_pct:.1f}% (PLATFORM SCREENING LIMIT)")
-            place(b, lines, (m.x, m.y), avoid=hard)
+            place(b, lines, (m.x, m.y), avoid=hard, short_first=60.0)
     pave_callout(b)
     for lines_, pt_ in svc_pending:
         place(b, lines_, pt_, avoid=hard)
@@ -698,20 +709,20 @@ def _section_panel(b: Base, ew) -> None:
         bat.append((side, (xe + x_end) / 2, (Y(zd) + y_end) / 2, ("CUT" if up else "FILL") + " BATTER " + tv.ratio(name)))
     dimy = r[1] + 12.0
     for side, mx_, my_, txt in bat:                                     # boxed labels in the free band under the section, leader up to the batter
-        tw_ = fonts.text_width(txt, 2.3, True) + 6.0
+        tw_ = fonts.text_width(txt, TXT.BODY, True) + 6.0
         bx0 = (xl - 8.0 - tw_) if side < 0 else (xr + 8.0)
         bx0 = min(max(bx0, r[0] + 3.0), r[2] - 3.0 - tw_)
-        SEC.callout(sv, P, [txt], (bx0, dimy + 17.0), (mx_, my_ - 0.4), tw_ + 2.0, 2.3)
-    P.text((xl + xr) / 2, dimy + 4.0, f"DESIGN RL {zd:.2f}", 2.3, "BOTTOM_CENTER", layer="C-ANNO-NOTE", color=(0.8, 0, 0))
+        SEC.callout(sv, P, [txt], (bx0, dimy + 17.0), (mx_, my_ - 0.4), tw_ + 2.0, TXT.BODY)
+    P.text((xl + xr) / 2, dimy + 4.0, f"DESIGN RL {zd:.2f}", TXT.BODY, "BOTTOM_CENTER", layer="C-ANNO-NOTE", color=(0.8, 0, 0))
     ex_txt = f"EXISTING GROUND (INDICATIVE, DEM) RL {pts[0][1]:.2f}"
     tx0 = r[0] + 4.0
-    tw2 = fonts.text_width(ex_txt, 2.3)
+    tw2 = fonts.text_width(ex_txt, TXT.BODY)
     top_g = max(y_ for x_, y_ in ex_pts if tx0 - 1.0 <= x_ <= tx0 + tw2 + 1.0) if any(tx0 - 1.0 <= x_ <= tx0 + tw2 + 1.0 for x_, _y in ex_pts) else ex_pts[0][1]
-    P.text(tx0, min(top_g + 3.0, r[3] - 22.0), ex_txt, 2.3, "BOTTOM_LEFT", layer="C-ANNO-NOTE", color=(0.3, 0.3, 0.3))
+    P.text(tx0, min(top_g + 3.0, r[3] - 22.0), ex_txt, TXT.BODY, "BOTTOM_LEFT", layer="C-ANNO-NOTE", color=(0.3, 0.3, 0.3))
     for xe in (xl, xr):                                                 # extension lines attached to the platform edges
         P.line([(xe, Y(zd) - 0.8), (xe, dimy + 1.5)], "C-ANNO-DIMS", 0.1, ST.GRID)
-    SEC.dim_h(P, dimy, xl, xr, f"DRIVEWAY WIDTH {CX._fmt_m(w)}", 2.4)
-    P.text(r[0] + 3.0, r[1] + 3.0, "BATTER SLOPES ARE DRAWN FOR GRAPHIC PURPOSES: " + (tv.ratio("cut_batter") + " CITED" if tv.has("cut_batter") else "1:N " + SEC.TBC_STATEMENT), 2.1, "BOTTOM_LEFT", layer="C-ANNO-NOTE", color=RED)
+    SEC.dim_h(P, dimy, xl, xr, f"DRIVEWAY WIDTH {CX._fmt_m(w)}", TXT.BODY)
+    P.text(r[0] + 3.0, r[1] + 3.0, "BATTER SLOPES ARE DRAWN FOR GRAPHIC PURPOSES: " + (tv.ratio("cut_batter") + " CITED" if tv.has("cut_batter") else "1:N " + SEC.TBC_STATEMENT), TXT.BODY, "BOTTOM_LEFT", layer="C-ANNO-NOTE", color=RED)
 
 
 def c200(ctx: RefCtx) -> Sheet:
@@ -737,7 +748,7 @@ def c200(ctx: RefCtx) -> Sheet:
     v = b.v
     if s.tin is not None:
         contour_sets(s, v.model_window())
-        D.contours(v, s, "ex")
+        D.contours(v, s, "ex", lab_h=TXT.SMALL)
     if pad_ok:
         from shapely import wkt as swkt
         for z in s.cutfill.zones:
@@ -848,6 +859,55 @@ def _vehicle_lines(name: str) -> list[str]:
             "SOURCE: PLATFORM VEHICLE DATA (FLAGGED TO VERIFY AGAINST THE STANDARD)"]
 
 
+def _chainage_stations(L: float, step: float) -> list[float]:
+    ds = [i * step for i in range(int(L / step + 1e-9) + 1)]
+    if L - ds[-1] > 0.25:
+        ds.append(L)
+    return ds
+
+
+def chainage_labels(b: Base, step: float) -> list[str]:
+    """Chainage ticks and labels along the driveway centreline, placed BEFORE the call-outs so that no leader runs through a label.  Each station tries
+    both sides of the line at several offsets and small shifts along it; the end of the driveway is labelled along the line.  Returns the labels that
+    found no free place (never dropped silently: the caller prints them on the sheet)."""
+    s, v = b.s, b.v
+    cl = s.drive_cl
+    L = cl.length
+    lost: list[str] = []
+    for d in _chainage_stations(L, step):
+        p = cl.interpolate(min(d, L))
+        p0, q = cl.interpolate(max(0.0, min(d, L) - 0.1)), cl.interpolate(min(L, d + 0.1))
+        a = math.atan2(q.y - p0.y, q.x - p0.x)
+        ux, uy, nx, ny = math.cos(a), math.sin(a), -math.sin(a), math.cos(a)
+        hh = 1.6 / v.k
+        v.line([(p.x - nx * hh, p.y - ny * hh), (p.x + nx * hh, p.y + ny * hh)], "C-DRIV-CNTR", False, 0.25, "CONTINUOUS", anno=False)
+        end = abs(d - L) < 1e-6
+        txt = f"CH {d:g}"
+        ok = False
+        if end:
+            txt = f"DRIVEWAY END, CH {d:.1f}"
+            tw = fonts.text_width(txt, ST.TXT.BODY)
+            for off in (0.0, 5.0, -5.0):
+                lx = p.x + ux * (tw / 2 + 3.0) / v.k + nx * off / v.k
+                ly = p.y + uy * (tw / 2 + 3.0) / v.k + ny * off / v.k
+                if ST.label_masked(v, lx, ly, txt, ST.TXT.BODY, math.degrees(a), layer="C-ANNO-DIMS"):
+                    ok = True
+                    break
+        else:
+            for off in (6.5, -6.5, 10.0, -10.0, 13.5, -13.5):
+                for sh in (0.0, 3.0, -3.0, 6.0, -6.0, 12.0, 15.0, 9.0, -9.0, -12.0, -15.0):
+                    lx = p.x + nx * off / v.k + ux * sh / v.k
+                    ly = p.y + ny * off / v.k + uy * sh / v.k
+                    if ST.label_masked(v, lx, ly, txt, ST.TXT.BODY, math.degrees(a) + 90, layer="C-ANNO-DIMS"):
+                        ok = True
+                        break
+                if ok:
+                    break
+        if not ok:
+            lost.append(txt)
+    return lost
+
+
 def c400(ctx: RefCtx) -> Sheet:
     s = ctx.site
     drv = s.inp.driveway
@@ -869,6 +929,7 @@ def c400(ctx: RefCtx) -> Sheet:
         v.avoid_lines = [to_paper(v, s.drive_cl)]                       # dimension figures never sit on the driveway centreline
     draw_xover(b, "proposed", dims=True)
     swept = False
+    step = 2.0
     if has:
         swept = swept_ok(s, xg)
         if swept:
@@ -876,15 +937,7 @@ def c400(ctx: RefCtx) -> Sheet:
             v.geom(s.turn_path, "C-DRIV-TURN", lw=0.25, color=(0.9, 0.45, 0.0))
         L = s.drive_cl.length
         step = 5.0 if (L > 12 and b.scale > 50) else 2.0
-        for i in range(int(L / step) + 1):
-            d = i * step
-            p, q = s.drive_cl.interpolate(d), s.drive_cl.interpolate(min(L, d + 0.2))
-            a = math.atan2(q.y - p.y, q.x - p.x)
-            nx, ny = -math.sin(a), math.cos(a)
-            h = 1.6 / v.k
-            v.line([(p.x - nx * h, p.y - ny * h), (p.x + nx * h, p.y + ny * h)], "C-DRIV-CNTR", False, 0.25, "CONTINUOUS", anno=False)
         v.geom(s.drive_cl, "C-DRIV-CNTR", lw=0.13, color=ST.BLACK)
-        P = ST.Paper(v)
         avoid = [to_paper(v, s.drive_poly).buffer(0.5)] + [to_paper(v, g).buffer(0.5) for g in b.hard]
         for lab, p1, p2 in [d_ for d_ in drv.dimensions if not re.search(r"GARAGE|DWELLING|FFL|HOUSE", d_[0].upper()) and not (xg.present and ("CROSSOVER WIDTH" in d_[0].upper() or abs(math.dist(d_[1], d_[2]) - drv.width_m) < 0.02 or re.fullmatch(r"\d+(\.\d+)?\s*M", d_[0].strip().upper())))]:      # no building wording or values (site only); SA3 driveway dimensions: placed clear of the driveway, each other and the other labels
             txt = f"{lab} {math.dist(p1, p2):.2f} m" if not any(ch.isdigit() for ch in lab) else lab
@@ -892,13 +945,30 @@ def c400(ctx: RefCtx) -> Sheet:
                 txt = f"OFFSET FROM BOUNDARY CORNER TO DRIVEWAY CENTRELINE {math.dist(p1, p2):.2f} m"
             if "OFFSET" in lab.upper():                                   # runs along the boundary to the centre of the driveway: may cross the pale driveway fill, never the stipple; clear of the width dimensions
                 dark = [to_paper(v, xg.polys[k_]).buffer(0.3) for k_ in ("body", "wing_a", "wing_b", "band") if xg.present and xg.polys.get(k_) is not None and xg.polys[k_].area > 1e-6]
-                dim_best(v, v.tp(*p1), v.tp(*p2), CO.prep([txt])[0], (14.0, 20.0, 27.0, 35.0, 45.0), ((0, 1), (0, -1), (1, 0), (-1, 0)), 2.3, dark)
+                dim_best(v, v.tp(*p1), v.tp(*p2), CO.prep([txt])[0], (14.0, 20.0, 27.0, 35.0, 45.0), ((0, 1), (0, -1), (1, 0), (-1, 0)), ST.TXT.BODY, dark)
             else:
-                dim_best(v, v.tp(*p1), v.tp(*p2), CO.prep([txt])[0], (7.0, 12.0, 17.0, 23.0), ((0, 1), (0, -1), (1, 0), (-1, 0)), 2.3, avoid)
-    finish(b, "DRIVEWAY PLAN")
+                dim_best(v, v.tp(*p1), v.tp(*p2), CO.prep([txt])[0], (7.0, 12.0, 17.0, 23.0), ((0, 1), (0, -1), (1, 0), (-1, 0)), ST.TXT.BODY, avoid)
+    # --- data panels: one tidy column (reserved before any label), schedule first ---------------------------------------------------------------
+    panels: list[tuple] = []
+    PW = 132.0
+    if has:
+        panels.append(("table", "DRIVEWAY AND CROSSOVER SCHEDULE", driveway_schedule(s, xg, front=b.front)))
+        panels.append(("text", "DESIGN VEHICLE", _vehicle_lines(drv.design_vehicle), False))
+        if not swept:
+            panels.append(("text", "SWEPT PATH", [SWEPT_TBC, "THE PLATFORM PATH IS NOT DRAWN: IT DOES NOT FORM ONE CLEAN PATH INSIDE THE LOT, VERGE AND ROAD."], True))
+        panels.append(("text", CHECK_TITLE, profile_check_lines(s), False))
+    heights = [PN.table_height(p_[2], PW) if p_[0] == "table" else PN.panel_height(p_[2], PW) for p_ in panels]
+    col = PN.column(b, heights, PW) if panels else None
+    finish(b, "DRIVEWAY PLAN", reserve=col or ())
+    if col:
+        for p_, r_ in zip(panels, col):
+            (PN.draw_table(v, r_, p_[1], p_[2], red_when=_row_is_flag) if p_[0] == "table" else PN.draw_panel(v, r_, p_[1], p_[2], warn=p_[3]))
     keep = b.keep
+    lost: list[str] = []
+    if has:
+        lost = chainage_labels(b, step)                                  # before the call-outs: leaders then route around every chainage label
     if b.xg.present:
-        if s.drive_cl is not None:
+        if has and s.drive_cl is not None:
             cl_in = s.drive_cl.intersection(s.lot)
             seg = max(getattr(cl_in, "geoms", [cl_in]), key=lambda g: g.length) if not cl_in.is_empty else None
             if seg is not None and seg.geom_type == "LineString" and seg.length > 0:
@@ -907,30 +977,40 @@ def c400(ctx: RefCtx) -> Sheet:
                 if drv.max_grade_pct is not None:
                     lines.append(f"MAX GRADE {drv.max_grade_pct:.1f}% (PLATFORM SCREENING LIMIT)")
                 place(b, lines, (m.x, m.y), avoid=b.hard)
-        CX.callouts_crossover(v, xg, b.std, keep, list(b.hard), [s.lot], must_avoid=list(b.kerb_geoms))
-        place(b, LAYOVER_REF, xg.frontage.xy(xg.centre_s - xg.width_m * 0.3, xg.body_len_m * 0.4), avoid=b.hard)
-        e = s.drive_cl.interpolate(s.drive_cl.length)
-        place(b, [DRIVE_END], (e.x, e.y), "dot", must=False, avoid=b.hard)
-    if has:
-        L = s.drive_cl.length
-        for i in range(int(L / (5.0 if b.scale > 50 else 2.0)) + 1):
-            d = i * (5.0 if b.scale > 50 else 2.0)
-            p, q = s.drive_cl.interpolate(d), s.drive_cl.interpolate(min(L, d + 0.2))
-            a = math.atan2(q.y - p.y, q.x - p.x)
-            lx, ly = p.x - math.sin(a) * 6.0 / v.k, p.y + math.cos(a) * 6.0 / v.k
-            tp_ = _tp(v, lx, ly, f"CH {d:g}", 2.2, math.degrees(a) + 90).buffer(0.8)
-            if any(tp_.intersects(LineString(q)) for q in v.leaders):
-                continue                                                 # a call-out leader runs here: skip this chainage label
-            v.label(lx, ly, f"CH {d:g}", 2.2, math.degrees(a) + 90, layer="C-ANNO-DIMS", nudges=False)
-    if has:
-        text_panel(b, "DESIGN VEHICLE", _vehicle_lines(drv.design_vehicle), 92.0)
-        if not swept:
-            text_panel(b, "SWEPT PATH", [SWEPT_TBC, "THE PLATFORM PATH IS NOT DRAWN: IT DOES NOT FORM ONE CLEAN PATH INSIDE THE LOT, VERGE AND ROAD."], 92.0, warn=True)
-        text_panel(b, CHECK_TITLE, profile_check_lines(s), 130.0)
+        CX.callouts_crossover(v, xg, b.std, keep, list(b.hard), [s.lot], must_avoid=list(b.kerb_geoms), extra=["LAYOVER DIMENSIONS (SEE C420)"])
+    if not col and has:                                                  # no clear column: the old behaviour, panels wherever the sheet is free
+        for p_ in panels:
+            text_panel(b, p_[1], [r_[0] for r_ in p_[2]] if p_[0] == "table" else p_[2], PW, warn=(p_[0] == "text" and p_[3]))
     pave_callout(b)
     if s.spots and s.drive_poly is not None:                      # sparse design-sheet spot levels near the driveway (never on C100)
-        D.spot_levels_sparse(b.v, s, s.drive_poly, avoid=list(b.kerb_geoms) + [s.lot.boundary, s.drive_poly] + [g for g in b.hard if g is not None and not g.is_empty])
-    return seal(b)
+        D.spot_levels_sparse(b.v, s, s.drive_poly, h=TXT.BODY, avoid=list(b.kerb_geoms) + [s.lot.boundary, s.drive_poly] + [g for g in b.hard if g is not None and not g.is_empty])
+    return seal(b, extra_notes=[f"CHAINAGE LABEL NOT PLACED ({', '.join(lost)}): SEE C410 FOR THE CHAINAGE" ] if lost else ())
+
+
+def _row_is_flag(r) -> bool:
+    return False
+
+
+def driveway_schedule(s: Site, xg: CX.CrossoverGeom, front=None) -> list[tuple]:
+    """Rows (item, value, basis) for the on-sheet driveway and crossover schedule: every value from the SA3 driveway result, the crossover geometry or the
+    C410 profile, with its provenance (PLATFORM DEFAULT, NOT SURVEYED, SA3 and so on).  Nothing is typed in here."""
+    drv = s.inp.driveway
+    rows: list[tuple] = []
+    lv = {r_["key"]: r_ for r_ in CX.layover_values(xg, front)}
+    for key, lab in (("w_bdy", "CROSSOVER WIDTH AT BOUNDARY"), ("w_kerb", "CROSSOVER WIDTH AT KERB"), ("drive", "DRIVEWAY WIDTH"), ("d_kerb", "BOUNDARY TO KERB")):
+        r_ = lv.get(key)
+        if r_ is not None:
+            rows.append((lab, CX._fmt_m(r_["m"]), r_["src"]))
+    for lab, p1, p2 in (drv.dimensions if drv is not None else []):
+        if "OFFSET" in lab.upper():
+            rows.append(("OFFSET, BOUNDARY CORNER TO DRIVEWAY CENTRELINE", f"{math.dist(p1, p2):.2f}m", "SA3 DRIVEWAY RESULT"))
+    if s.drive_cl is not None:
+        rows.append(("DRIVEWAY LENGTH, KERB LINE TO END (CENTRELINE)", CX._fmt_m(s.drive_cl.length), "SA3 DRIVEWAY CENTRELINE"))
+    p = ref_profile(s)
+    if p is not None and p["proposed"]:
+        rows.append(("DRIVEWAY END LEVEL", f"RL {p['st'][-1][1]:.2f}", "PLATFORM DEFAULT, NOT DESIGNED (m AHD)"))
+    rows.append(("WING LENGTH, KERB AND GUTTER BAND", "SEE C420", "DRAFTING CONVENTIONS (PLACEHOLDER)"))
+    return rows
 
 
 # ====================================================================================================== C410 long section
@@ -946,13 +1026,13 @@ def _bar(sv: View, x: float, y: float, length: float, metres: float, horizontal:
     for i in range(n + 1):
         t = f"{metres * i / n:g}" + (" m" if i == n else "")
         if horizontal:
-            P.text(x + i * length / n, y + 3.0, t, 2.2, "BOTTOM_LEFT" if i == n else "BOTTOM_CENTER", layer="C-ANNO-NRTH")
+            P.text(x + i * length / n, y + 3.0, t, TXT.BODY, "BOTTOM_LEFT" if i == n else "BOTTOM_CENTER", layer="C-ANNO-NRTH")
         else:
-            P.text(x + 3.0, y + i * length / n, t, 2.2, "MIDDLE_LEFT", layer="C-ANNO-NRTH")
+            P.text(x + 3.0, y + i * length / n, t, TXT.BODY, "MIDDLE_LEFT", layer="C-ANNO-NRTH")
     if horizontal:
-        P.text(x, y - 1.2, label, 2.4, "TOP_LEFT", bold=True, layer="C-ANNO-NRTH")
+        P.text(x, y - 1.2, label, TXT.BODY, "TOP_LEFT", bold=True, layer="C-ANNO-NRTH")
     else:
-        P.text(x, y - 2.0, label, 2.4, "TOP_LEFT", bold=True, layer="C-ANNO-NRTH")
+        P.text(x, y - 2.0, label, TXT.BODY, "TOP_LEFT", bold=True, layer="C-ANNO-NRTH")
 
 
 def c410(ctx: RefCtx) -> Sheet:
@@ -967,7 +1047,7 @@ def c410(ctx: RefCtx) -> Sheet:
             why.append("driveway centreline (SA3 driveway result not supplied)")
         if s.tin is None:
             why.append("existing levels along the centreline (no survey or DEM levels supplied)")
-        D.no_data(v, (VIEW_RECT[0] + 8, VIEW_RECT[3] - 70, VIEW_RECT[0] + 200, VIEW_RECT[3] - 8), "LONGITUDINAL SECTION NOT DRAWN.", "Needed: " + "; ".join(why) + ".")
+        PN.no_data(v, (VIEW_RECT[0] + 8, VIEW_RECT[3] - 70, VIEW_RECT[0] + 200, VIEW_RECT[3] - 8), "LONGITUDINAL SECTION NOT DRAWN.", "Needed: " + "; ".join(why) + ".")
         sh.data_missing.append("driveway long section: " + "; ".join(why))
         sh.notes = ["LONGITUDINAL SECTION NOT DRAWN: DATA NOT AVAILABLE"]
         sh.scale_text = "NOT DRAWN"
@@ -977,17 +1057,36 @@ def c410(ctx: RefCtx) -> Sheet:
     zs = [e[1] for e in ex] + [x[1] for x in st]
     zmin, zmax = min(zs), max(zs)
     datum = math.floor((zmin - 0.25) * 4) / 4.0
+    # vertical budget: plan strip at the top, data bands on the bottom of the content area, the chart (profile and station labels) between them.  The scale
+    # is the largest that fits the width and this budget; any height left over goes to the strip and the data bands, so no band is left empty.
+    CY1, CY0 = CONTENT_Y1 - 2.0, CONTENT_Y0 + 2.0
+    ROWH0, SH0, GAP = 19.0, 28.0, 5.0
+    def _lab(zz, nm):
+        return f"{nm}  RL {zz:.2f}" + ("" if proposed else " (EXISTING)")
+    lab_ws = {t_: fonts.text_width(_lab(zz, nm), TXT.BODY) for t_, zz, nm in st}
+    avail = (CY1 - SH0 - GAP) - (CY0 + 4 * ROWH0)
+
+    def need_h(vs_: float) -> float:
+        """Height above the datum line needed by the profile and the top-aligned station labels (each label sits above its own station point)."""
+        return max((max(zz, exz(t_)) - datum) * 1000.0 / vs_ + 8.0 + lab_ws[t_] for t_, zz, nm in st) + 3.0
     hs, vs, ex_ = 200, 40, 5
     fit_ = False
     for hs_ in (10, 20, 25, 50, 100, 200):                              # smallest denominator that fits: the largest drawing, using the sheet width
         for ex__ in (5, 2.5, 2, 1):                                     # vertical exaggeration: vertical scale is 1:(H denominator / exaggeration)
             vs_ = hs_ / ex__
-            if (L + 1.0) * 1000.0 / hs_ <= 704.0 and (zmax - datum + 0.3) * 1000.0 / vs_ <= 270.0:
+            if (L + 1.0) * 1000.0 / hs_ <= 704.0 and need_h(vs_) <= avail:
                 hs, vs, ex_, fit_ = hs_, vs_, ex__, True
                 break
         if fit_:
             break
-    X0, Yd, ROWH = 74.0, 232.0, 19.0
+    spare = max(0.0, avail - need_h(vs))
+    ROWH = ROWH0 + min(spare * 0.35 / 4.0, 5.0)
+    SH_ = SH0 + min(spare - 4.0 * (ROWH - ROWH0), 22.0)
+    X0 = 74.0
+    Yd = CY0 + 4 * ROWH
+    strip_note: list[str] = []
+    sy1 = CY1                                                         # the plan strip is anchored to the top of the content area, the data bands to the bottom
+    sy0 = sy1 - SH_
     hx = lambda t: X0 + (t + 0.5) * 1000.0 / hs        # noqa: E731
     zy = lambda z: Yd + (z - datum) * 1000.0 / vs      # noqa: E731
     Lc = "C-DRIV-LONG"
@@ -995,19 +1094,19 @@ def c410(ctx: RefCtx) -> Sheet:
     rows_ = ("DESIGN LEVEL", "EXISTING LEVEL", "CUT/FILL DEPTH", "CHAINAGE")
     ybot = Yd - ROWH * len(rows_)
     # datum, VERT EXAG and RL grid ---------------------------------------------------------------------------------------------
-    v.text(28.0, Yd + 8.0, f"VERT EXAG {ex_:g}", 2.8, "BOTTOM_LEFT", bold=True, layer=Lc)
-    v.text(28.0, Yd + 2.5, f"DATUM RL {datum:.3f}", 2.8, "BOTTOM_LEFT", bold=True, layer=Lc)
+    v.text(28.0, Yd + 8.0, f"VERT EXAG {ex_:g}", TXT.LABEL, "BOTTOM_LEFT", bold=True, layer=Lc)
+    v.text(28.0, Yd + 2.5, f"DATUM RL {datum:.3f}", TXT.LABEL, "BOTTOM_LEFT", bold=True, layer=Lc)
     z = datum + 0.5
-    while z <= zmax + 0.3:
+    while zy(z) <= sy0 - 6.0:                                          # RL grid up to the plan strip
         v.line([(X0 - 2, zy(z)), (xr, zy(z))], "C-ANNO-TABL", False, 0.05, color=(0.8, 0.8, 0.8))
-        v.text(X0 - 3, zy(z), f"{z:.2f}", 2.4, "MIDDLE_RIGHT", layer=Lc)
+        v.text(X0 - 3, zy(z), f"{z:.2f}", TXT.BODY, "MIDDLE_RIGHT", layer=Lc)
         z += 0.5
     v.line([(27.0, Yd), (xr, Yd)], Lc, False, 0.35)
     # data bands ----------------------------------------------------------------------------------------------------------------
     for i, lab in enumerate(rows_):
         yt = Yd - i * ROWH
         v.line([(27.0, yt - ROWH), (xr, yt - ROWH)], "C-ANNO-TABL", False, 0.2)
-        v.text(28.0, yt - ROWH / 2, lab, 2.4, "MIDDLE_LEFT", bold=True, layer="C-ANNO-TABL")
+        v.text(28.0, yt - ROWH / 2, lab, TXT.BODY, "MIDDLE_LEFT", bold=True, layer="C-ANNO-TABL")
     v.line([(27.0, Yd), (27.0, ybot)], "C-ANNO-TABL", False, 0.2)
     v.line([(X0 - 4, Yd), (X0 - 4, ybot)], "C-ANNO-TABL", False, 0.2)
     v.line([(xr, Yd), (xr, ybot)], "C-ANNO-TABL", False, 0.2)
@@ -1017,17 +1116,19 @@ def c410(ctx: RefCtx) -> Sheet:
         if all(abs(t - q) * 1000.0 / hs >= 4.6 for q in pts):
             pts.append(t)
     pts = sorted(pts)
+    lab_top = sy0 - 4.0                                                 # station labels are top aligned under the plan strip; each station line runs up to its label
+    lab_base = lambda t_: lab_top - lab_ws[t_]                          # noqa: E731
     for t in pts:
         x = hx(t)
         zex = exz(t)
         zde = des(t) if proposed else None
-        ytop = zy(max(zex, zde if zde is not None else zex))
+        ytop = lab_base(t) - 1.5 if t in lab_ws else zy(max(zex, zde if zde is not None else zex))
         v.line([(x, Yd), (x, ytop)], Lc, False, 0.1, "DASHED", color=(0.45, 0.45, 0.45))        # ticks break at the data bands (text sits there)
         for k_ in range(len(rows_) + 1):
             v.line([(x, Yd - k_ * ROWH - 1.2), (x, Yd - k_ * ROWH + 1.2)], "C-ANNO-TABL", False, 0.15)
         vals = [f"{zde:.3f}" if zde is not None else "N/A", f"{zex:.3f}", ("N/A" if zde is None else (f"{abs(zex - zde):.2f} CUT" if zex - zde > 0.005 else (f"{abs(zex - zde):.2f} FILL" if zex - zde < -0.005 else "0.00"))), f"{t:.2f}"]
         for i, tx in enumerate(vals):
-            v.text(x, Yd - i * ROWH - ROWH / 2, tx, 2.2, "MIDDLE_CENTER", 90.0, layer="C-ANNO-TABL")
+            v.text(x, Yd - i * ROWH - ROWH / 2, tx, TXT.BODY, "MIDDLE_CENTER", 90.0, layer="C-ANNO-TABL")
     # profile -----------------------------------------------------------------------------------------------------------------------
     v.line([(hx(t), zy(zz)) for t, zz in ex], "C-DRIV-EXGD", False, 0.35, color=(0.3, 0.3, 0.3))
     gx0, gx1 = hx(0.0), hx(gw)
@@ -1037,35 +1138,34 @@ def c410(ctx: RefCtx) -> Sheet:
         for (t0, z0_, _a), (t1, z1, _b) in zip(st, st[1:]):
             g = 100.0 * (z1 - z0_) / (t1 - t0)
             txt = f"{g:+.1f}%"
-            if (t1 - t0) * 1000.0 / hs < fonts.text_width(txt, 2.4) + 3.0:
+            if (t1 - t0) * 1000.0 / hs < fonts.text_width(txt, TXT.BODY) + 3.0:
                 continue
             xm, ym = hx((t0 + t1) / 2), (zy(z0_) + zy(z1)) / 2
             ang = math.degrees(math.atan2(zy(z1) - zy(z0_), hx(t1) - hx(t0)))
-            v.text(xm, ym + 3.2, txt, 2.4, "MIDDLE_CENTER", ang, bold=True, layer=Lc, color=(0.85, 0, 0), halo=True)
+            v.text(xm, ym + 3.2, txt, TXT.BODY, "MIDDLE_CENTER", ang, bold=True, layer=Lc, color=(0.85, 0, 0), halo=True)
     for t, zz, nm in st:
-        yb = zy(max(zz, exz(t))) + 5.0
-        v.text(hx(t) - 1.6, yb, f"{nm}  RL {zz:.2f}" + ("" if proposed else " (EXISTING)"), 2.4, "MIDDLE_LEFT", 90.0, layer=Lc, halo=True)
+        v.text(hx(t) - 1.6, lab_base(t), _lab(zz, nm), TXT.BODY, "MIDDLE_LEFT", 90.0, layer=Lc, halo=True)
     tg = min(max(L * 0.62, st[-1][0] * 0.55), L)
-    need = fonts.text_width("DESIGN LEVEL (PLATFORM PROFILE)", 2.6) + 8.0
+    need = fonts.text_width("DESIGN LEVEL (PLATFORM PROFILE)", TXT.BODY) + 8.0
     gaps = [((a_ + b_) / 2, (b_ - a_) * 1000.0 / hs) for a_, b_ in zip(pts, pts[1:]) if (b_ - a_) * 1000.0 / hs >= need]
     if gaps:
         tg = min(gaps, key=lambda g_: abs(g_[0] - tg))[0]               # centred between two station ticks: no tick runs through the label
     low = zy(min(exz(tg), des(tg) if proposed else exz(tg)))
     high = zy(max(exz(tg), des(tg) if proposed else exz(tg)))
-    v.text(hx(tg), high + 9.0, "EXISTING GROUND (INDICATIVE, DEM)", 2.6, "BOTTOM_CENTER", layer="C-DRIV-EXGD", color=(0.3, 0.3, 0.3), halo=True)
+    v.text(hx(tg), high + 9.0, "EXISTING GROUND (INDICATIVE, DEM)", TXT.BODY, "BOTTOM_CENTER", layer="C-DRIV-EXGD", color=(0.3, 0.3, 0.3), halo=True)
     if proposed:
-        v.text(hx(tg), low - 14.0, "DESIGN LEVEL (PLATFORM PROFILE)", 2.6, "TOP_CENTER", layer=Lc, color=(0.85, 0, 0), halo=True)
+        v.text(hx(tg), low - 14.0, "DESIGN LEVEL (PLATFORM PROFILE)", TXT.BODY, "TOP_CENTER", layer=Lc, color=(0.85, 0, 0), halo=True)
     # scale bars -------------------------------------------------------------------------------------------------------------------------
     mh = next(m for m in (1, 2, 5, 10) if m * 1000.0 / hs >= 25.0)
     lh = mh * 1000.0 / hs
     mv = max([m for m in (0.05, 0.1, 0.25, 0.5, 1, 2, 5) if m * 1000.0 / vs <= 80.0] or [0.05])      # largest round length that stays a compact bar
     _bar(v, xr + 14.0, Yd + 6.0, mv * 1000.0 / vs, mv, False, f"VERTICAL SCALE 1:{vs:g} @ A1")
-    title_strip(sh, "DRIVEWAY LONGITUDINAL SECTION" + ("" if proposed else " (EXISTING GROUND ONLY)"), f"H 1:{hs}  V 1:{vs:g} @ A1    H 1:{a3_scale(hs)}  V 1:{a3_scale(vs):g} @ A3", hs)
+    title_strip(sh, sh.title.upper(), f"H 1:{hs}  V 1:{vs:g} @ A1    H 1:{a3_scale(hs)}  V 1:{a3_scale(vs):g} @ A3", hs, notes=([] if proposed else ["EXISTING GROUND ONLY: PROPOSED LEVELS NOT AVAILABLE."]))
     sh.scale_text = f"H 1:{hs} V 1:{vs:g}"
     # status, checks, notes ---------------------------------------------------------------------------------------------------------------
     lines = []
     if not proposed:
-        D.no_data(v, (X0 - 4.0, 440.0, X0 + 360.0, 500.0), "PROPOSED LEVELS NOT AVAILABLE.", "No driveway end level (platform default) is available, so the design line, grades and B85 checks are not drawn.")
+        PN.no_data(v, (X0 - 4.0, sy0 - 64.0, X0 + 360.0, sy0 - 4.0), "PROPOSED LEVELS NOT AVAILABLE.", "No driveway end level (platform default) is available, so the design line, grades and B85 checks are not drawn.")
         sh.data_missing.append("proposed driveway levels and checks: driveway end level (platform default) not available")
     else:
         lines += profile_check_lines(s)
@@ -1076,16 +1176,12 @@ def c410(ctx: RefCtx) -> Sheet:
         lines.append(fl + ".")
     lines.append(f"EXISTING GROUND {DEM_NOTE_REF}. KERB LINE, GUTTER BAND ({CX._fmt_m(gw)}) AND PROPERTY BOUNDARY POSITIONS ARE ASSUMED GROUND POINTS (KERB NOT SURVEYED).")
     pw = min(165.0, VIEW_RECT[2] - 2.0 - (xr + 12.0))               # notes column to the right of the profile (the chart keeps the full width)
-    h_ = _wrap_h(lines, pw - 2.0, 2.4)
+    h_ = PN.panel_height(lines, pw)
     ptop = CONTENT_Y1 - 2.0
-    D.panel(v, xr + 12.0, ptop - h_, xr + 12.0 + pw, ptop, "NOTES AND " + CHECK_TITLE, lines, 2.4)
+    PN.draw_panel(v, (xr + 12.0, ptop - h_, xr + 12.0 + pw, ptop), "NOTES AND " + CHECK_TITLE, lines)
     # plan strip aligned to the chainage of the profile (lateral extent diagrammatic) ---------------------------------------------
-    top_lab = max(zy(max(zz, exz(t))) + 5.0 + fonts.text_width(f"{nm}  RL {zz:.2f}" + ("" if proposed else " (EXISTING)"), 2.4) for t, zz, nm in st)
-    SH_ = 26.0
-    sy0 = top_lab + 7.0
-    if sy0 + SH_ <= CONTENT_Y1 - 2.0:
-        _plan_strip(v, s, X0, xr, hx, sy0, sy0 + SH_, L, gw, p["sb"])
-    sh.notes = ["LONGITUDINAL SECTION ALONG THE SA3 DRIVEWAY CENTRELINE. CHAINAGE 0 IS THE KERB LINE.", "LEVELS ARE DEM-DERIVED AND INDICATIVE."] + ([fl] if fl else [])
+    _plan_strip(v, s, X0, xr, hx, sy0, sy1, L, gw, p["sb"])
+    sh.notes = ["LONGITUDINAL SECTION ALONG THE SA3 DRIVEWAY CENTRELINE. CHAINAGE 0 IS THE KERB LINE.", "LEVELS ARE DEM-DERIVED AND INDICATIVE."] + ([fl] if fl else []) + strip_note
     return sh
 
 
@@ -1095,14 +1191,14 @@ def _plan_strip(v: View, s: Site, X0: float, xr: float, hx, y0: float, y1: float
     P = ST.Paper(v)
     P.line([(27.0, y0), (xr, y0), (xr, y1), (27.0, y1)], "C-ANNO-TABL", 0.2, None, None, True)
     P.line([(X0 - 4.0, y0), (X0 - 4.0, y1)], "C-ANNO-TABL", 0.2)
-    v.text(28.0, (y0 + y1) / 2 + 3.0, "PLAN", 2.4, "MIDDLE_LEFT", bold=True, layer="C-ANNO-TABL")
-    v.text(28.0, (y0 + y1) / 2 - 1.0, "(DIAGRAMMATIC,", 2.0, "MIDDLE_LEFT", layer="C-ANNO-TABL")
-    v.text(28.0, (y0 + y1) / 2 - 3.6, "NOT TO SCALE ACROSS)", 2.0, "MIDDLE_LEFT", layer="C-ANNO-TABL")
+    v.text(28.0, (y0 + y1) / 2 + 3.0, "PLAN", TXT.BODY, "MIDDLE_LEFT", bold=True, layer="C-ANNO-TABL")
+    v.text(28.0, (y0 + y1) / 2 - 1.0, "(DIAGRAMMATIC,", TXT.BODY, "MIDDLE_LEFT", layer="C-ANNO-TABL")
+    v.text(28.0, (y0 + y1) / 2 - 3.6, "NOT TO SCALE ACROSS)", TXT.BODY, "MIDDLE_LEFT", layer="C-ANNO-TABL")
     xk, xg_, xb, xe = hx(0.0), hx(gw), hx(sb), hx(L)
     ym, hw = (y0 + y1) / 2, 7.0
     # road to the left of the kerb line and the gutter band (hatch between the kerb line and the back of the band)
     P.poly([(X0 - 4.0 + 0.5, y0 + 0.5), (xk, y0 + 0.5), (xk, y1 - 0.5), (X0 - 4.0 + 0.5, y1 - 0.5)], "C-ROAD-PAVE", ST.BITUMEN, edge=None)
-    v.text((X0 - 4.0 + xk) / 2, ym, "ROAD", 2.2, "MIDDLE_CENTER", layer="C-ANNO-TABL")
+    v.text((X0 - 4.0 + xk) / 2, ym, "ROAD", TXT.BODY, "MIDDLE_CENTER", layer="C-ANNO-TABL")
     P.poly([(xk, y0 + 0.5), (xg_, y0 + 0.5), (xg_, y1 - 0.5), (xk, y1 - 0.5)], "C-ROAD-KERB", (0.82, 0.82, 0.82), edge=None)
     for xx, lw_ in ((xk, ST.REF.kerb_lw), (xg_, ST.REF.gutter_lw)):
         P.line([(xx, y0 + 0.5), (xx, y1 - 0.5)], "C-ROAD-KERB", lw_, ST.BLACK if xx == xk else ST.FENCE)
@@ -1111,19 +1207,19 @@ def _plan_strip(v: View, s: Site, X0: float, xr: float, hx, y0: float, y1: float
         lay = Polygon([(xg_, ym - hw), (xb, ym - hw), (xb, ym + hw), (xg_, ym + hw)])
         ST.concrete_fill(v, lay, "C-ROAD-CONC")
         if xb - xg_ > 38.0:
-            v.text((xg_ + xb) / 2, y1 - 3.0, "LAYOVER (SEE C420)", 2.2, "TOP_CENTER", bold=True, layer="C-ANNO-TABL", halo=True)
+            v.text((xg_ + xb) / 2, y1 - 3.0, "LAYOVER (SEE C420)", TXT.BODY, "TOP_CENTER", bold=True, layer="C-ANNO-TABL", halo=True)
         if xb - xg_ > 90.0:
-            v.text((xg_ + xb) / 2, y0 + 1.8, "NO VERGE DESIGN: DESIGN LINE IS THE EXISTING SURFACE", 2.0, "BOTTOM_CENTER", layer="C-ANNO-TABL", halo=True)
+            v.text((xg_ + xb) / 2, y0 + 1.8, "NO VERGE DESIGN: DESIGN LINE IS THE EXISTING SURFACE", TXT.BODY, "BOTTOM_CENTER", layer="C-ANNO-TABL", halo=True)
     if xe > xb + 1.0:
         drv = Polygon([(xb, ym - hw), (xe, ym - hw), (xe, ym + hw), (xb, ym + hw)])
         ST.driveway_fill(v, drv, SEC.TypicalValues(s.cites).material())
-        v.text((xb + xe) / 2, y1 - 3.0, "DRIVEWAY (SURFACE PER CITED VALUE, ELSE TO BE CONFIRMED)", 2.2, "TOP_CENTER", bold=True, layer="C-ANNO-TABL", halo=True)
+        v.text((xb + xe) / 2, y1 - 3.0, "DRIVEWAY (SURFACE PER CITED VALUE, ELSE TO BE CONFIRMED)", TXT.BODY, "TOP_CENTER", bold=True, layer="C-ANNO-TABL", halo=True)
     P.line([(xk, ym), (xe, ym)], "C-DRIV-CNTR", 0.18, ST.BLACK, "DASHDOT")
     P.line([(xb, y0 + 0.5), (xb, y1 - 0.5)], "C-PROP-BDY", ST.REF.boundary_lw, ST.BLACK)
     P.line([(xb, y0 + 0.5), (xb, y1 - 0.5)], "C-PROP-BDYD", ST.REF.dash_lw, ST.YELLOW, ST.DASH_BDY)
-    v.text(xb + 1.5, y0 + 2.0, "PROPERTY BOUNDARY", 2.0, "BOTTOM_LEFT", layer="C-ANNO-TABL", halo=True)
-    v.text(xe - 1.5, y0 + 2.0, "END OF PROFILE", 2.0, "BOTTOM_RIGHT", layer="C-ANNO-TABL", halo=True)
-    v.text(xk - 1.5, y0 + 2.0, "KERB LINE", 2.0, "BOTTOM_RIGHT", layer="C-ANNO-TABL", halo=True)
+    v.text(xb + 1.5, y0 + 2.0, "PROPERTY BOUNDARY", TXT.BODY, "BOTTOM_LEFT", layer="C-ANNO-TABL", halo=True)
+    v.text(xe - 1.5, y0 + 2.0, "END OF PROFILE", TXT.BODY, "BOTTOM_RIGHT", layer="C-ANNO-TABL", halo=True)
+    v.text(xk - 1.5, y0 + 2.0, "KERB LINE", TXT.BODY, "BOTTOM_RIGHT", layer="C-ANNO-TABL", halo=True)
 
 
 # ====================================================================================================== C420 driveway layover details
@@ -1136,7 +1232,7 @@ def c420(ctx: RefCtx) -> Sheet:
     v = sh.add(View("layover", PLAN_RECT))
     P = ST.Paper(v)
     if not xg.present:
-        D.no_data(v, (VIEW_RECT[0] + 8, VIEW_RECT[1] + 8, VIEW_RECT[2] - 8, VIEW_RECT[3] - 8), "DRIVEWAY LAYOVER NOT DRAWN.", (xg.note or CX.NO_DRIVEWAY_TEXT) + " Needed: SA3 driveway result with a crossover polygon. The layover plan, dimensions and typical cross section need the crossover.")
+        PN.no_data(v, (VIEW_RECT[0] + 8, VIEW_RECT[1] + 8, VIEW_RECT[2] - 8, VIEW_RECT[3] - 8), "DRIVEWAY LAYOVER NOT DRAWN.", (xg.note or CX.NO_DRIVEWAY_TEXT) + " Needed: SA3 driveway result with a crossover polygon. The layover plan, dimensions and typical cross section need the crossover.")
         sh.data_missing.append("driveway layover (SA3 driveway result)")
         sh.notes = _dedupe(notes)
         sh.scale_text = "NOT DRAWN"
@@ -1198,18 +1294,18 @@ def c420(ctx: RefCtx) -> Sheet:
     wid_ph = " (" + lv.get("w_bdy", CX.WIDTH_SRC) + ")"
     left, up, down = (-1.0, 0.0), (0, 1), (0, -1)
     avoid = [g.buffer(0.3) for g in hardp]
-    dim_best(v, M(sc0 - drive_w / 2, t_lo), M(sc0 + drive_w / 2, t_lo), f"DRIVEWAY WIDTH {CX._fmt_m(drive_w)}{wid_ph}", (9.0, 16.0), (up,), 2.8, [])
-    dim_best(v, M(sa, 0), M(sb, 0), f"LAYOVER WIDTH AT BOUNDARY {CX._fmt_m(w)}{wid_ph}", (14.0, 22.0), (up, down), 2.8, [])
-    dim_best(v, M(sa - f, avail), M(sb + f, avail), f"LAYOVER WIDTH AT KERB {CX._fmt_m(w + 2 * f)}{flare_ph}", (gw * k + 16.0, gw * k + 24.0), (down,), 2.8, [])
-    dim_best(v, M(sb, avail), M(sb + f, avail), f"FLARE {CX._fmt_m(f)}{flare_ph}", (gw * k + 7.0, gw * k + 11.0), (down,), 2.8, [])
+    dim_best(v, M(sc0 - drive_w / 2, t_lo), M(sc0 + drive_w / 2, t_lo), f"DRIVEWAY WIDTH {CX._fmt_m(drive_w)}{wid_ph}", (9.0, 16.0), (up,), TXT.BODY, [])
+    dim_best(v, M(sa, 0), M(sb, 0), f"LAYOVER WIDTH AT BOUNDARY {CX._fmt_m(w)}{wid_ph}", (14.0, 22.0), (up, down), TXT.BODY, [])
+    dim_best(v, M(sa - f, avail), M(sb + f, avail), f"LAYOVER WIDTH AT KERB {CX._fmt_m(w + 2 * f)}{flare_ph}", (gw * k + 16.0, gw * k + 24.0), (down,), TXT.BODY, [])
+    dim_best(v, M(sb, avail), M(sb + f, avail), f"FLARE {CX._fmt_m(f)}{flare_ph}", (gw * k + 7.0, gw * k + 11.0), (down,), TXT.BODY, [])
     s_e = sa if sgn > 0 else sb
-    dim_best(v, M(s_e, xg.body_len_m), M(s_e, avail), f"WING LENGTH {CX._fmt_m(xg.wing_len_m)}{PH}", (f * k + 9.0, f * k + 16.0), (left,), 2.8, [])
+    dim_best(v, M(s_e, xg.body_len_m), M(s_e, avail), f"WING LENGTH {CX._fmt_m(xg.wing_len_m)}{PH}", (f * k + 9.0, f * k + 16.0), (left,), TXT.BODY, [])
     s_l = sc0 - sgn * (w / 2 + f + ex + 0.3)
-    dim_best(v, M(s_l, 0), M(s_l, Dk), f"BOUNDARY TO KERB {CX._fmt_m(Dk)}", (9.0, 16.0), (left,), 2.8, [])
+    dim_best(v, M(s_l, 0), M(s_l, Dk), f"BOUNDARY TO KERB {CX._fmt_m(Dk)}", (9.0, 16.0), (left,), TXT.BODY, [])
     s_r = sc0 + sgn * (w / 2 + f + ex)
-    dim_best(v, M(s_r, Dk - gw), M(s_r, Dk), f"KERB AND GUTTER BAND {CX._fmt_m(gw)}{PH}", (9.0, 15.0), ((1.0, 0.0),), 2.8, [])
+    dim_best(v, M(s_r, Dk - gw), M(s_r, Dk), f"KERB AND GUTTER BAND {CX._fmt_m(gw)}{PH}", (9.0, 15.0), ((1.0, 0.0),), TXT.BODY, [])
     # labels, each at the first free spot ----------------------------------------------------------------------------------------------------
-    def put(txt, cands, h=2.6, **kw):
+    def put(txt, cands, h=TXT.BODY, **kw):
         for x, y, anc in cands:
             if v.label(x, y, txt, h, 0.0, anc, nudges=False, **kw):
                 return True
@@ -1218,41 +1314,28 @@ def c420(ctx: RefCtx) -> Sheet:
 
     kerb_src = "USER INPUT" if xg.kerb_source == "USER INPUT" else "PLATFORM DEFAULT"
     lot_txt = f"LOT {s.inp.lot.lotplan.replace('//', ' ')} (SUBJECT LOT)".upper()
-    put(lot_txt, [(xl + 3, yt - 3, "TOP_LEFT")], 3.0, bold=True, color=None, halo=True)
+    put(lot_txt, [(xl + 3, yt - 3, "TOP_LEFT")], TXT.LABEL, bold=True, color=None, halo=True)
     if front is not None:
         ltr = "LEFT TO RIGHT" if sgn > 0 else "RIGHT TO LEFT"
         put(f"FRONT BOUNDARY: BEARING {front.bearing_dms}  {CX.frontage_length_m(front):.2f}m ({ltr}, CADASTRE)", [(xr - 3, M(0, 0)[1] + 3.0 + d, "BOTTOM_RIGHT") for d in (0, 4, 8)], halo=True)
-    put("BOUNDARY FROM CADASTRE: NOT A SURVEY", [(xr - 3, M(0, 0)[1] - 3.0 - d, "TOP_RIGHT") for d in (0, 4, 8)], 2.4, halo=True)
+    put("BOUNDARY FROM CADASTRE: NOT A SURVEY", [(xr - 3, M(0, 0)[1] - 3.0 - d, "TOP_RIGHT") for d in (0, 4, 8)], halo=True)
     put(f"VERGE (ASSUMED, NOT SURVEYED; {kerb_src})", [(xr - 3, M(0, Dk / 2)[1] + d, "MIDDLE_RIGHT") for d in (0, 6, -6, 12)], halo=True)
     put("ROAD (ASSUMED PAVEMENT EXTENT)", [(xl + 3, M(0, Dk + 1.0)[1] + d, "MIDDLE_LEFT") for d in (0, -5, 5, 10)], halo=True)
     CO.place_callout(v, ["KERB AND GUTTER BAND", CX.KERB_ASSUMED_TEXT], M(s_r + sgn * 0.5, Dk - gw / 2), "arrow", keep, must=True)
     CO.place_callout(v, ["PROPOSED LAYOVER (VEHICLE CROSSING)", CX.standard_text(std)], M(sc0 + sgn * w * 0.25, xg.body_len_m * 0.6), "dot", keep, must=True)
-    # right column: statement, schedule, typical cross section -------------------------------------------------------------------------------
+    # right column: statement, schedule, typical cross section (the same panel and table look as the other sheets) -------------------------------
     RX0, RX1 = 574.0, 828.0
     y = 580.0
-    stmt = fonts.wrap(CX.LAYOVER_STANDARD_NOTE, 2.6, RX1 - RX0 - 6, True)
-    hh = 10.0 + 3.6 * len(stmt)
-    P.poly([(RX0, y - hh), (RX1, y - hh), (RX1, y), (RX0, y)], "C-DATA-NONE", ST.WHITE, edge=RED, edge_lw=0.4)
-    P.text(RX0 + 2, y - 1.5, "COUNCIL STANDARD NOT SELECTED", 2.8, "TOP_LEFT", bold=True, color=RED, layer="C-DATA-NONE")
-    for i, t in enumerate(stmt):
-        P.text(RX0 + 2, y - 7.0 - 3.6 * i, t, 2.6, "TOP_LEFT", bold=True, color=RED, layer="C-DATA-NONE")
-    y -= hh + 5
+    stmt_h = PN.panel_height([CX.LAYOVER_STANDARD_NOTE], RX1 - RX0)
+    PN.draw_panel(v, (RX0, y - stmt_h, RX1, y), "COUNCIL STANDARD NOT SELECTED", [CX.LAYOVER_STANDARD_NOTE], warn=True, layer="C-DATA-NONE")
+    y -= stmt_h + 5
     vals = CX.layover_values(xg, front)
-    th = 9.0 + 6.4 * (len(vals) + (1 if front is not None else 0))
-    P.poly([(RX0, y - th), (RX1, y - th), (RX1, y), (RX0, y)], "C-ANNO-TABL", ST.WHITE, edge=ST.BLACK, edge_lw=0.25)
-    P.text(RX0 + 2, y - 1.5, "LAYOVER DIMENSION SCHEDULE", 2.8, "TOP_LEFT", bold=True)
-    yy = y - 9.0
-    for r in vals:
-        P.line([(RX0, yy + 3.2), (RX1, yy + 3.2)], "C-ANNO-TABL", 0.08, ST.GRID)
-        P.text(RX0 + 2, yy, r["label"], 2.3, "MIDDLE_LEFT")
-        P.text(RX0 + 88, yy, CX._fmt_m(r["m"]), 2.3, "MIDDLE_LEFT", bold=True)
-        P.text(RX0 + 104, yy, CX.PLACEHOLDER_TAG if r["placeholder"] else r["src"], 2.1, "MIDDLE_LEFT", color=RED if r["placeholder"] else None)
-        yy -= 6.4
+    rows_ = [(r["label"], CX._fmt_m(r["m"]), CX.PLACEHOLDER_TAG if r["placeholder"] else r["src"]) for r in vals]
     if front is not None:
-        P.line([(RX0, yy + 3.2), (RX1, yy + 3.2)], "C-ANNO-TABL", 0.08, ST.GRID)
-        P.text(RX0 + 2, yy, "FRONTAGE BEARING", 2.3, "MIDDLE_LEFT")
-        P.text(RX0 + 88, yy, f"{front.bearing_dms}  {CX.frontage_length_m(front):.2f}m", 2.3, "MIDDLE_LEFT", bold=True)
-        P.text(RX0 + 160, yy, CX.FRONTAGE_SOURCE, 2.1, "MIDDLE_LEFT")
+        rows_.append(("FRONTAGE BEARING", f"{front.bearing_dms}  {CX.frontage_length_m(front):.2f}m", CX.FRONTAGE_SOURCE))
+    cols_ = (0.38, 0.22, 0.40)
+    th = PN.table_height(rows_, RX1 - RX0, cols_)
+    PN.draw_table(v, (RX0, y - th, RX1, y), "LAYOVER DIMENSION SCHEDULE", rows_, cols_, red_when=lambda r_: r_[2] == CX.PLACEHOLDER_TAG)
     y -= th + 6
     tv = SEC.TypicalValues(s.cites)
     ybot = max(nrect[3] + 4.0, CONTENT_Y0)
@@ -1267,7 +1350,7 @@ def c420(ctx: RefCtx) -> Sheet:
     SEC.detail_driveway_pavement(v, P, tv, r2, foot2)
     _footer(P, r2, foot2)
     sh.notes = _dedupe(notes)
-    sh.tag_notes = list(v.fallback_notes)
+    sh.tag_notes = _tag_notes(v, None)
     return sh
 
 
@@ -1316,9 +1399,11 @@ def _esc_lines(el, out, conflict, pit_missing: bool) -> list[str]:
         a_, b_ = txt.split("(", 1)
         lines = [a_.strip().rstrip(":"), "(" + b_.strip()]
     else:
-        lines = fonts.wrap(txt, 2.4, 52.0)
+        lines = fonts.wrap(txt, TXT.BODY, 52.0)
     if el.kind in ("fence", "diversion") and el.quantity:
         lines.append(f"LENGTH {el.quantity:.0f}m")
+    if el.kind in ("stockpile", "topsoil", "laydown") and any("whole lot was searched" in n for n in el.notes):
+        lines.append("POSITION UNRESOLVED, SEE BASIS PANEL")                  # placed by a whole lot search: it may sit where the building will be
     return [x for x in lines if x]
 
 
@@ -1353,7 +1438,7 @@ def c500(ctx: RefCtx) -> Sheet:
             if g.geom_type in ("Polygon", "MultiPolygon"):
                 v.fill(g, el.layer, (0.4, 0.7, 0.4), 0.35)
             pend.append((el, g))
-    finish(b, "EROSION AND SEDIMENT CONTROL")
+    panels: list[tuple] = []
     if out is not None:
         dem = dem_fall(s)
         flags, basis = [], []
@@ -1372,15 +1457,24 @@ def c500(ctx: RefCtx) -> Sheet:
         basis.append(f"ELEMENTS FROM SA10: {len(out.elements)} (INDICATIVE LAYOUT, TO BE CONFIRMED BY THE ESCP PREPARER)")
         basis += [_up(x) for x in list(out.assumptions[:2])]
         if flags:
-            text_panel(b, "ESC FLAGS", flags, 130.0, warn=True)
-        text_panel(b, "ESC LAYOUT BASIS AND ASSUMPTIONS", basis, 150.0)
+            panels.append(("ESC FLAGS", flags, True))
+        panels.append(("ESC LAYOUT BASIS AND ASSUMPTIONS", basis, False))
+    PW = 132.0
+    col = PN.column(b, [PN.panel_height(p_[1], PW) for p_ in panels], PW, sides=("right", "left")) if panels else None      # one tidy column, reserved before any label is placed
+    finish(b, "EROSION AND SEDIMENT CONTROL", reserve=col or ())
+    if col:
+        for p_, r_ in zip(panels, col):
+            PN.draw_panel(v, r_, p_[0], p_[1], warn=p_[2])
+    else:
+        for p_ in panels:
+            text_panel(b, p_[0], p_[1], 150.0, warn=p_[2])
     CX.callouts_crossover(v, b.xg, b.std, b.keep, [], [s.lot], kerb_only=True, short_kerb=True, must_avoid=list(getattr(b, 'kerb_geoms', [])))
     pave_callout(b)
     if out is not None:                                                          # one boxed call-out with a leader per element, boxes off the control geometry
         ctl = [g.buffer(0.6 / v.k * 2) if g.geom_type != "Point" else g for _e, g in pend]
         for el, g in sorted(pend, key=lambda eg: ESC_ORDER.get(eg[0].kind, 9)):
             pm = any("not supplied" in n.lower() and "pit" in n.lower() for n in el.notes)
-            place(b, _esc_lines(el, out, conflict, pm), _esc_target(g), "dot", must=True, avoid=list(b.hard) + ctl)
+            place(b, _esc_lines(el, out, conflict, pm), _esc_target(g), "dot", must=True, avoid=list(b.hard) + ctl, short_first=46.0)
     return seal(b)
 
 
@@ -1389,7 +1483,7 @@ CONTENT_X0, CONTENT_X1 = VIEW_RECT[0] + 4.0, VIEW_RECT[2] - 4.0
 CONTENT_Y0, CONTENT_Y1 = STRIP_RECT[3] + 4.0, VIEW_RECT[3] - 4.0         # drawing content area: above the title strip, inside the frame
 
 
-def _footer(P, r: tuple, lines, h: float = 2.2) -> None:
+def _footer(P, r: tuple, lines, h: float = TXT.BODY) -> None:
     """Cited values and TBC statements at the bottom of a detail box (stacked upward from the box bottom, wrapped, never past the box)."""
     y = r[1] + 3.0
     for ln in reversed([x for x in lines if x]):
@@ -1438,7 +1532,7 @@ def c600(ctx: RefCtx) -> Sheet:
         r = cell(i if i < 3 else i + 1)
         SEC.box(v, P, r)
         foot: list = []
-        P.text(r[0] + 1.2, r[3] - 1.2, num, 2.4, "TOP_LEFT", bold=True, layer="C-ANNO-NOTE", color=RED)
+        P.text(r[0] + 1.2, r[3] - 1.2, num, TXT.BODY, "TOP_LEFT", bold=True, layer="C-ANNO-NOTE", color=RED)
         try:
             fn(v, P, tv, r, foot=foot)
         except TypeError:
@@ -1513,7 +1607,14 @@ def c001(ctx: RefCtx, others: list[Sheet]) -> Sheet:
         ytop -= bh + 5.0
     from app.agents.sa5_cad_dxf.planset import legend as LG
     lg_cols, lg_pitch = 3, 11.0
-    lg_h = LG.legend_height(lg_cols, lg_pitch)
+    lg_swept = False
+    try:
+        _f, _d, _std, _xg = make_xg(s, 0.0)
+        lg_swept = bool(_xg.present and s.drive_cl is not None and swept_ok(s, _xg))
+    except Exception:                                                  # the legend must never stop the sheet: a swept path entry is only added when it is certain
+        lg_swept = False
+    lg_entries = LG.entries_for(s, lg_swept)
+    lg_h = LG.legend_height(lg_cols, lg_pitch, len(lg_entries))
     ybot_notes = CONTENT_Y0 + lg_h + 8.0
     gap, cw = 8.0, (CONTENT_X1 - CONTENT_X0 - 16.0) / 3
     cols = [CONTENT_X0 + i * (cw + gap) for i in range(3)]
@@ -1567,7 +1668,7 @@ def c001(ctx: RefCtx, others: list[Sheet]) -> Sheet:
                 P.text(cols[ci] + 9.0, y - k * pitch, w, hb, "TOP_LEFT", layer="C-ANNO-NOTE", color=RED if red else None)
     if not ok:
         sh.data_missing.append("general notes overflow the sheet")
-    LG.draw_legend(v, CONTENT_X0, CONTENT_Y0 + lg_h, CONTENT_X1 - CONTENT_X0, lg_cols, lg_pitch)
+    LG.draw_legend(v, CONTENT_X0, CONTENT_Y0 + lg_h, CONTENT_X1 - CONTENT_X0, lg_cols, lg_pitch, entries=lg_entries)
     title_strip(sh, "GENERAL NOTES", "NOT TO SCALE (NTS)", None)
     sh.notes = ["GENERAL NOTES AND REGISTER OF MISSING DATA FOR THIS PLAN SET"]
     return sh
@@ -1623,7 +1724,7 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
     # DCDB statement for this panel: the cadastre may not reach the panel edges.  It is fixed first so its band is reserved at the bottom of the frame.
     dc_lines: list[str] = []
     probe = View("t", (r[0] + 3.0, r[1] + 3.0, r[2] - 3.0, r[3] - 12.0))
-    wlines = lambda notes: [w for n in notes for w in fonts.wrap(ST.clean(n).upper(), 2.4, r[2] - r[0] - 12.0)]   # noqa: E731
+    wlines = lambda notes: [w for n in notes for w in fonts.wrap(ST.clean(n).upper(), TXT.BODY, r[2] - r[0] - 12.0)]   # noqa: E731
     vr = (r[0] + 3.0, r[1] + 3.0, r[2] - 3.0, r[3] - 12.0)
     tw = s.view_twist if s.view_twist is not None else 0.0                    # the same orientation as every plan sheet
     ext = unary_union([s.lot] + neighbour_polys(s)).bounds
@@ -1658,7 +1759,7 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
     ST.Paper(lv).text(vr[0] + 3.0, vr[1] + 4.0, "NTS", 3.4, "BOTTOM_LEFT", bold=True, layer="C-ANNO-NOTE")
     if dc_lines:                                                                 # DCDB incomplete or not checked: said on the panel, never left to read as clear
         for k_, ln in enumerate(dc_lines):
-            P.text(r[0] + 5.0, r[1] + 3.0 + 3.6 * (len(dc_lines) - 1 - k_) + 1.5, ln, 2.4, "BOTTOM_LEFT", color=RED, layer="C-DATA-NONE")
+            P.text(r[0] + 5.0, r[1] + 3.0 + 3.6 * (len(dc_lines) - 1 - k_) + 1.5, ln, TXT.BODY, "BOTTOM_LEFT", color=RED, layer="C-DATA-NONE")
         sh.data_missing.append(cadwin.cad_notes(s)[0].capitalize())
     # ---- DRAWING REGISTER (every sheet) --------------------------------------------------------------------------------------------------------
     rx0, rx1 = 450.0, 826.0
@@ -1669,16 +1770,16 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
     y -= 9.0
     v.fill(Polygon([(rx0, y - rh), (rx1, y - rh), (rx1, y), (rx0, y)]), "C-ANNO-TABL", (0.16, 0.16, 0.16), 1.0, anno=True)
     for x, t, a in ((rx0 + 3.0, "DRAWING No.", "MIDDLE_LEFT"), (c1 + 3.0, "DRAWING TITLE", "MIDDLE_LEFT"), ((c2 + rx1) / 2, "REV", "MIDDLE_CENTER")):
-        v.text(x, y - rh / 2, t, 2.8, a, bold=True, color=ST.WHITE, layer="C-ANNO-TABL")
+        v.text(x, y - rh / 2, t, TXT.LABEL, a, bold=True, color=ST.WHITE, layer="C-ANNO-TABL")
     y -= rh
     allsheets = [sh] + [x for x in sheets if x.number != "C000"]
     for i, x in enumerate(allsheets):
         if i % 2 == 0:
             v.fill(Polygon([(rx0, y - rh), (rx1, y - rh), (rx1, y), (rx0, y)]), "C-ANNO-TABL", (0.93, 0.93, 0.93), 1.0, anno=True)
         v.line([(rx0, y - rh), (rx1, y - rh)], "C-ANNO-TABL", False, 0.1, color=ST.GRID)
-        v.text(rx0 + 3.0, y - rh / 2, codes.drawing_number(x.number, pj.job), 2.8, "MIDDLE_LEFT", layer="C-ANNO-TABL")
-        v.text(c1 + 3.0, y - rh / 2, ST.clean(x.title).upper(), 2.8, "MIDDLE_LEFT", layer="C-ANNO-TABL")
-        v.text((c2 + rx1) / 2, y - rh / 2, ST.clean(x.revision), 2.8, "MIDDLE_CENTER", layer="C-ANNO-TABL")
+        v.text(rx0 + 3.0, y - rh / 2, codes.drawing_number(x.number, pj.job), TXT.LABEL, "MIDDLE_LEFT", layer="C-ANNO-TABL")
+        v.text(c1 + 3.0, y - rh / 2, ST.clean(x.title).upper(), TXT.LABEL, "MIDDLE_LEFT", layer="C-ANNO-TABL")
+        v.text((c2 + rx1) / 2, y - rh / 2, ST.clean(x.revision), TXT.LABEL, "MIDDLE_CENTER", layer="C-ANNO-TABL")
         y -= rh
     v.line([(rx0, y), (rx1, y), (rx1, top - 9.0), (rx0, top - 9.0)], "C-ANNO-TABL", False, 0.25)
     for x in (c1, c2):
@@ -1695,16 +1796,16 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
            ("BUILDING", "NOT PART OF THIS SET: NO BUILDING FOOTPRINT, SETBACK OR FLOOR LEVEL IS DRAWN.")]
     rows_ = []
     for k_, t_ in src:
-        rows_.append((k_, fonts.wrap(t_, 2.6, rx1 - rx0 - 46.0)))
+        rows_.append((k_, fonts.wrap(t_, TXT.BODY, rx1 - rx0 - 46.0)))
     hbox = 12.0 + sum(len(w) * 3.9 + 2.2 for _k, w in rows_)
     if yb - hbox > 104.0:
         P.line([(rx0, yb - hbox), (rx1, yb - hbox), (rx1, yb), (rx0, yb)], "C-ANNO-TABL", 0.35, ST.BLACK, closed=True)
         v.text(rx0 + 4.0, yb - 3.0, "DATA SOURCES AND STATUS", 4.0, "TOP_LEFT", bold=True, layer="C-ANNO-TABL")
         yy_ = yb - 14.0
         for k_, w in rows_:
-            v.text(rx0 + 4.0, yy_, k_, 2.6, "TOP_LEFT", bold=True, layer="C-ANNO-TABL")
+            v.text(rx0 + 4.0, yy_, k_, TXT.BODY, "TOP_LEFT", bold=True, layer="C-ANNO-TABL")
             for i_, ln in enumerate(w):
-                v.text(rx0 + 42.0, yy_ - 3.9 * i_, ln, 2.6, "TOP_LEFT", layer="C-ANNO-TABL")
+                v.text(rx0 + 42.0, yy_ - 3.9 * i_, ln, TXT.BODY, "TOP_LEFT", layer="C-ANNO-TABL")
             yy_ -= len(w) * 3.9 + 2.2
     sh.notes = ["PRELIMINARY ISSUE: NOT FOR CONSTRUCTION"]
     return sh

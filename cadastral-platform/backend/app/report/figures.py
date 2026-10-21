@@ -32,6 +32,7 @@ class Layer:
     alpha: float = 0.34
     dash: bool = False
     width: float = 0.9
+    tag: str | None = None          # short text printed on each polygon of the layer (for example a zone code), when it fits
 
 
 @dataclass
@@ -51,6 +52,9 @@ class MapFigure:
     measure: tuple[tuple[float, float], tuple[float, float], str] | None = None
     show_labels: bool = True
     compact: bool = False
+    coverage: tuple[float, float, float, float] | None = None   # area the layer data covers; the rest of the window is hatched "no data loaded"
+    legend: bool = True                                          # False: the caller draws its own legend outside the map
+    lot_tag: str | None = None                                   # text printed inside the lot outline
 
     @property
     def extent_text(self) -> str:
@@ -208,6 +212,54 @@ def draw_map(c, f: MapFigure, ox: float, oy: float) -> None:
             pth = path_for(pl)
             c.setLineWidth(3.6); c.setStrokeColor(colors.Color(0, 0, 0, alpha=0.55)); c.drawPath(pth, stroke=1, fill=0)
             c.setLineWidth(2.0); c.setStrokeColor(colors.HexColor(YELLOW if aerial else "#1e2024")); c.drawPath(pth, stroke=1, fill=0)
+    if f.coverage:                              # hatch the part of the window that the layer data does not cover (never leave it looking clear)
+        cx0, cy0, cx1, cy1 = f.coverage
+        ix0, iy0, ix1, iy1 = max(cx0, x0), max(cy0, y0), min(cx1, x1), min(cy1, y1)
+        if not (ix0 <= x0 and iy0 <= y0 and ix1 >= x1 and iy1 >= y1):
+            mp = c.beginPath(); mp.rect(ox, oy, W, H)
+            if ix1 > ix0 and iy1 > iy0:
+                mp.rect(px(ix0), py(iy0), px(ix1) - px(ix0), py(iy1) - py(iy0))
+            c.saveState()
+            c.clipPath(mp, stroke=0, fill=0, fillMode=FILL_EVEN_ODD)
+            c.setFillColor(colors.Color(0.93, 0.93, 0.92, alpha=0.62)); c.rect(ox, oy, W, H, stroke=0, fill=1)
+            c.setStrokeColor(colors.Color(0.45, 0.45, 0.45, alpha=0.55)); c.setLineWidth(0.4)
+            k = -H
+            while k < W:
+                c.line(ox + k, oy, ox + k + H, oy + H); k += 5
+            c.restoreState()
+    # polygon tags (zone codes and the like), placed clear of the lot and of each other
+    boxes: list[tuple[float, float, float, float]] = []
+    win_box = box(*f.window)
+    lot_pad = f.lot.buffer(2.5)
+    for L in f.layers:
+        if not L.tag:
+            continue
+        tw = c.stringWidth(clean(L.tag), "Mono-Medium", 5.6) + 4
+        for g in L.geoms:
+            gg = _clip(g, f.window)
+            if gg is None:
+                continue
+            vis = gg.intersection(win_box)
+            ps = [p_ for p_ in _parts(vis)] if not vis.is_empty else []
+            if not ps:
+                continue
+            pbig = max(ps, key=lambda q: q.area)
+            if pbig.area * sx * sy < tw * 9 or (pbig.bounds[2] - pbig.bounds[0]) * sx < tw * 0.9:
+                continue
+            away = pbig.difference(lot_pad)
+            anchor = (away if (not away.is_empty and away.area * sx * sy >= tw * 9) else pbig)
+            rp = (max(_parts(anchor), key=lambda q: q.area) if not anchor.is_empty else pbig).representative_point()
+            r = (px(rp.x) - tw / 2, py(rp.y) - 3.6, tw, 7.2)
+            if any(r[0] < b[0] + b[2] and b[0] < r[0] + r[2] and r[1] < b[1] + b[3] and b[1] < r[1] + r[3] for b in boxes):
+                continue
+            boxes.append(r)
+            c.setFillColor(colors.Color(1, 1, 1, alpha=0.82)); c.rect(*r, stroke=0, fill=1)
+            c.setFillColor(T.INK); c.setFont("Mono-Medium", 5.6); c.drawCentredString(px(rp.x), py(rp.y) - 1.7, clean(L.tag))
+    if f.lot_tag and lot_c is not None:
+        rp = lot_c.representative_point()
+        tw = c.stringWidth(clean(f.lot_tag), "Mono-Medium", 6.4) + 6
+        c.setFillColor(colors.Color(1, 1, 1, alpha=0.88)); c.rect(px(rp.x) - tw / 2, py(rp.y) - 4, tw, 8.4, stroke=0, fill=1)
+        c.setFillColor(T.INK); c.setFont("Mono-Medium", 6.4); c.drawCentredString(px(rp.x), py(rp.y) - 1.6, clean(f.lot_tag))
     # adjoining labels
     if f.show_labels:
         c.setFont("Mono", 5.2)
@@ -272,7 +324,7 @@ def draw_map(c, f: MapFigure, ox: float, oy: float) -> None:
         items.append(("Indicative building footprint", "#3b82f6", "#2d6fd6", False))
     if f.neighbours:
         items.append(("Adjoining lots", None, "#ffffff" if aerial else "#8d8a80", False))
-    if not f.compact or len(items) <= 3:
+    if f.legend and (not f.compact or len(items) <= 3):
         lh, lw_ = 8.4, max(c.stringWidth(clean(i[0]), "Plex", 6.2) for i in items) + 28
         lx, ly = ox + W - lw_ - 6, oy + 6
         c.setFillColor(colors.Color(1, 1, 1, alpha=0.9)); c.rect(lx, ly, lw_, lh * len(items) + 6, stroke=0, fill=1)

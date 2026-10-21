@@ -104,6 +104,7 @@ def _lot_label(v: View, p, lines: list[str]) -> bool:
     if not v.free(box):
         return False
     v.occ.append(box)
+    v.tbox.append(box)
     P = ST.Paper(v)
     if len(lines) == 2:
         P.text(px, py + 0.8, lines[0], hs[0], "BOTTOM_CENTER", layer="C-ANNO-LOTN")
@@ -177,6 +178,7 @@ def _put(v: View, pt, text: str, h: float, rot: float, box) -> None:
     """Draw a boundary label on its white mask unconditionally (the free-space check was done, or deliberately overridden, by the caller) and reserve its box."""
     px, py = v.tp(*pt)
     v.occ.append(box)
+    v.tbox.append(box)
     v._mask(px, py, fonts.text_width(text, h) + 0.8, h + 0.8, rot, "C-ANNO-BRNG")          # ``rot`` is the PAPER angle (upright)
     v.text(pt[0], pt[1], text, h, "MIDDLE_CENTER", v.model_rot(rot), False, layer="C-ANNO-BRNG", halo=False)
 
@@ -312,23 +314,23 @@ def title_strip(sh: Sheet, title: str, scale_line: str, bar_scale: int | None = 
     P = ST.Paper(v)
     x0, top = STRIP_RECT[0] + 6.0, STRIP_RECT[3]
     P.line([(STRIP_RECT[0], top), (STRIP_RECT[2], top)], "C-ANNO-NOTE", 0.35, ST.BLACK)
-    t = ST.clean(title).upper()
+    t = ST.clean(sh.title or title).upper()                 # always the register title (SHEET_TITLES), so strip, title block and C000 register agree
     th = 5.2
     tw = fonts.text_width(t, th, True)
     P.text(x0, top - 3.5, t, th, "TOP_LEFT", bold=True, layer="C-ANNO-NOTE")
     yu = top - 3.5 - th - 2.2
     P.line([(x0, yu), (x0 + max(tw, 40.0), yu)], "C-ANNO-NOTE", 0.7, RED_UL)
     sl = ST.clean(scale_line).upper() if scale_line else ""
-    P.text(x0 + 1.0, yu - 2.2, sl, 3.4, "TOP_LEFT", layer="C-ANNO-NOTE")
-    sw = fonts.text_width(sl, 3.4)
+    P.text(x0 + 1.0, yu - 2.2, sl, ST.TXT.HEAD, "TOP_LEFT", layer="C-ANNO-NOTE")
+    sw = fonts.text_width(sl, ST.TXT.HEAD)
     yy = yu - 2.2 - 3.4 - 1.8
     yy = top - 18.6
     strip_end = x0 + max(tw, sw, 40.0)
     for n_ in notes:
-        for ln in fonts.wrap(ST.clean(n_).upper(), 2.4, 560.0, True)[:2]:
+        for ln in fonts.wrap(ST.clean(n_).upper(), ST.TXT.BODY, 560.0, True)[:2]:
             if yy > STRIP_RECT[1] + 1.0:
-                P.text(x0 + 1.0, yy, ln, 2.4, "TOP_LEFT", bold=True, layer="C-ANNO-NOTE")
-                strip_end = max(strip_end, x0 + 1.0 + fonts.text_width(ln, 2.4, True))
+                P.text(x0 + 1.0, yy, ln, ST.TXT.BODY, "TOP_LEFT", bold=True, layer="C-ANNO-NOTE")
+                strip_end = max(strip_end, x0 + 1.0 + fonts.text_width(ln, ST.TXT.BODY, True))
                 yy -= 3.1
     if bar_scale:
         bx = x0 + max(tw, sw, 40.0) + 34.0

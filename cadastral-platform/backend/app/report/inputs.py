@@ -30,3 +30,4 @@ class SiteReportInputs:
     brand: Any = None                            # app.branding.Brand (default Brand.from_env())
     imagery: Any = IMAGERY_FROM_ENV              # ImageryProvider | None | IMAGERY_FROM_ENV
     generated_at: str | None = None
+    zone_map: dict | None = None                 # app.report.maps.zone_map_from_sa1: zone polygons (MGA) and their source, for the land zoning map; None = no zone geometry

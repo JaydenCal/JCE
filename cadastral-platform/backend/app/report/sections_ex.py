@@ -35,6 +35,7 @@ def how_to_read(ctx: Ctx) -> list:
     fl += [Spacer(1, 3 * mm), KeepTogether([P("HOW A CONSTRAINT PAGE IS LAID OUT", "label"), KS(2)] + _dots([
         "A figure with the lot outline, the mapped feature, the screening buffer ring and, where a feature is inside the ring, a distance line marked d.",
         "A caption stating the screening distance used and whether it is a screening setting, a cited rule or UNRESOLVED.",
+        "A reference to the matching map extract in the Planning maps section (every layer screened, and the zoning, has one).",
         "RESULT FOR THIS LOT, then WHAT THIS IS, WHY IT MATTERS and WHAT TO DO NEXT.",
         "Layers with no map page are explained in the Layer guide, with the same four parts."]))]
     return fl
@@ -95,6 +96,9 @@ def layer_guide(ctx: Ctx) -> list:
                                        ("BOTTOMPADDING", (0, 0), (-1, -1), 0)]))
         res = f.headline if f.status != "unchecked" else f"NOT CHECKED. {f.why_unchecked} Not checked is not clear."
         src = P("Source: " + EX.source_line(f.meta, f.host), "muted")
+        mp_ = ctx.map_for(f.key)
+        if mp_:
+            res += f" Map: refer Figure {mp_.number}, {mp_.title}."
         rows = [[P("RESULT", "labelm"), P(res, "cell")], [P("WHAT THIS IS", "labelm"), P(ex["what"], "cell")],
                 [P("WHY IT MATTERS", "labelm"), P(ex["why"], "cell")], [P("WHAT TO DO NEXT", "labelm"), P(ex["next"], "cell")],
                 [P("SOURCE", "labelm"), src]]

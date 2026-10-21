@@ -8,7 +8,7 @@ from shapely.ops import unary_union
 
 from .clients import ArcGISClient, LayerConfig
 from .geometry import as_multi, to_mga
-from .models import Overlay, ZoneShare
+from .models import Overlay, ZonePolygon, ZoneShare
 
 NSW_RESIDENTIAL = {"R1", "R2", "R3", "R4", "R5", "RU5"}  # E-series (E1-E5) are business/employment: not residential
 QLD_RESIDENTIAL = {"LDR", "LMR", "MDR", "HDR", "CR", "RR", "RRR", "EMR", "LMDR", "CHDR"}
@@ -36,16 +36,23 @@ class ZoningConfig:
     name_field: str = "LAY_CLASS"
     instrument_field: str = "EPI_NAME"
     overlays: list[OverlayLayer] = field(default_factory=list)
+    context_m: float = 250.0                  # zoning polygons are also fetched this far around the lot, for the land zoning map (not used for the zone shares)
 
 
-def load_zone_features(cfg: ZoningConfig, client: ArcGISClient, lot_gda, snapshots: list) -> list:
+def _deg(m: float) -> float:
+    return m / 111_000.0                       # metres to degrees of latitude (a query window only, not a measurement)
+
+
+def load_zone_features(cfg: ZoningConfig, client: ArcGISClient, lot_gda, snapshots: list, context_m: float = 0.0) -> list:
+    """Zoning features that meet the lot (``context_m`` = 0) or the lot plus ``context_m`` metres (zones beside the lot, for the zoning map)."""
+    area = lot_gda.buffer(_deg(context_m)) if context_m else lot_gda
     if cfg.geojson_path:
         with open(cfg.geojson_path) as f:
             feats = json.load(f).get("features", [])
-        return [x for x in feats if x.get("geometry") and shape(x["geometry"]).intersects(lot_gda)]
+        return [x for x in feats if x.get("geometry") and shape(x["geometry"]).intersects(area)]
     if cfg.layer is None:
         return []
-    minx, miny, maxx, maxy = lot_gda.bounds
+    minx, miny, maxx, maxy = area.bounds
     r = client.query(cfg.layer, geometry={"xmin": minx, "ymin": miny, "xmax": maxx, "ymax": maxy,
                                           "spatialReference": {"wkid": 7844}}, geometry_type="esriGeometryEnvelope")
     snapshots.append(r.snapshot)
@@ -89,6 +96,35 @@ def compute_zones(lot_gda, features, srid: int, jurisdiction: str, cfg: ZoningCo
     out.sort(key=lambda z: -z.overlap_area_m2)
     if out:
         out[0] = out[0].model_copy(update={"is_dominant": True})
+    return out
+
+
+def zone_polygons(lot_gda, features, srid: int, cfg: ZoningConfig, window_m: float) -> list[ZonePolygon]:
+    """The zoning polygons that meet a window of ``window_m`` metres around the lot, clipped to it, in MGA metres. Used only to draw the zoning map;
+    the zone shares come from ``compute_zones``.  Geometry the service returned invalid is repaired for the clip only; nothing is invented."""
+    from shapely.geometry import box
+    from shapely.validation import make_valid
+    lot = to_mga(lot_gda, srid)
+    x0, y0, x1, y1 = lot.bounds
+    win = box(x0 - window_m, y0 - window_m, x1 + window_m, y1 + window_m)
+    out: list[ZonePolygon] = []
+    for f in features:
+        try:
+            g = to_mga(shape(f["geometry"]), srid)
+            if not g.is_valid:
+                g = make_valid(g)
+            if not g.intersects(win):
+                continue
+            c = g.intersection(win)
+            on = lot.intersection(g).area > 0
+        except Exception:  # noqa: BLE001
+            continue
+        if c.is_empty:
+            continue
+        p = f.get("properties") or {}
+        code = str(p.get(cfg.code_field) or "").strip()
+        out.append(ZonePolygon(zone_code=code, zone_name=str(p.get(cfg.name_field) or code), instrument=str(p.get(cfg.instrument_field) or ""),
+                               geom_wkt_mga=c.wkt, on_lot=bool(on)))
     return out
 
 

@@ -21,6 +21,8 @@ stabilised access is 15.0 m.  This script reads the same run: the plan set input
 same levels, fall and discharge note as sheets C300 and C500), the project name printed on the title blocks, the SA10 output files and the plan set PDF (gap markers).
 
 Writes soee.pdf, soee.docx, soee.json (sidecar: every statement with its source), page PNGs (pages/) and docx_check/ (the DOCX rendered by LibreOffice).
+Appendix A (planning maps) uses the map PNGs the site report wrote to ``<run>/planning_maps`` (one per planning control or constraint, plus the land zoning);
+the statements in sections 2, 4 and 5 refer to those figures.
 Does not edit run_site.py, app/report or the plan set package.  The SoEE text is assembled by software (no language model writes it); the requirement values in the
 knowledge files were extracted by an AI model from the cited documents (quotes and pages validated, not verified by a person).
 """
@@ -115,7 +117,8 @@ def main(argv: list[str] | None = None) -> int:
     rp = run_dir / "run_steps.json"
     run = json.loads(rp.read_text()) if rp.exists() else {}
     inp = S.SoeeSiteInputs(constraints=constraints, run=run, works=cache["works"], requirements=S.load_requirement_set(), sources=S.load_sources(),
-                           today=date.fromisoformat(a.date) if a.date else date.today(), job=a.job, revision=a.revision)
+                           today=date.fromisoformat(a.date) if a.date else date.today(), job=a.job, revision=a.revision,
+                           maps_dir=(run_dir / "planning_maps") if (run_dir / "planning_maps").is_dir() else None)
     doc = S.build_site_soee(inp)
     paths = O.write_all(doc, out, png=not a.no_png)
     print(json.dumps({"counts": doc.meta["counts"], "layers_not_checked": doc.meta["layers_not_checked"], "statements": len(doc.statements()), **paths}, indent=2))

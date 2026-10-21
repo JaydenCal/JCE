@@ -110,7 +110,7 @@ def sa1_result() -> Sa1Result:
                   overlap_area_m2=lot.area_m2_calculated, overlap_fraction=1.0, is_dominant=True)
     return Sa1Result(lot=lot, identifier=LotIdentifier.parse(LOTPLAN, "NSW"),
                      segment_details=[SegmentDetail(polygon_index=0, ring_index=0, seq_in_ring=i, seq=i) for i in range(4)],
-                     zones=[z], multi_zone=False, is_residential=True, flags=["offline_fixture"], snapshots=[],
+                     zones=[z], multi_zone=False, is_residential=True, flags=["offline_fixture", "multi_zone_in_saved_live_run"], snapshots=[],
                      boundary_wkt_gda2020="", attributes={"offline_fixture": "lot2"})
 
 

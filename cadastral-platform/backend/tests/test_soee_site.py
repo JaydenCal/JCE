@@ -742,19 +742,51 @@ def test_stabilised_access_length_row(doc, run):
     assert _row(S.build_site_soee(inp3), "Stabilised site access length")["status"] == "UNRESOLVED"
 
 
-def test_esc_not_drawn_items_are_reported_in_3_6_5_4_and_the_gap_list(doc, run):
+def test_esc_whole_lot_items_are_reported_as_drawn_at_an_unresolved_position(doc, run):
+    """SA10 now draws the soil stockpile, topsoil stockpile and laydown by searching the whole lot and marks them unresolved: nothing is 'not drawn'."""
     d, cache = run
-    nd = [x.split(":")[0].strip().lower() for x in cache["works"]["esc"]["not_drawn"]]
-    assert len(nd) == 3 and any("stockpile" in x for x in nd) and any("laydown" in x for x in nd)
+    esc = cache["works"]["esc"]
+    wl = [x.lower() for x in esc["whole_lot"]]
+    assert esc["not_drawn"] == [] and len(wl) == 3 and any("stockpile" in x for x in wl) and any("laydown" in x for x in wl)
+    status = {str(e["label"]).lower(): e["status"] for e in esc["elements"]}
+    assert all(any(n in lab and st == "unresolved" for lab, st in status.items()) for n in wl)       # derived from the element status, not hard coded
     for sec in ("3", "5"):
         t = _section_text(doc, sec)
-        assert "Not drawn on C500" in t, sec
-        for x in nd:
+        assert "Drawn on C500 at an unresolved position" in t, sec
+        assert "to be confirmed once the building footprint is known" in t.lower(), sec
+        assert "Not drawn on C500" not in t, sec
+        for x in wl:
             assert x in t, (sec, x)
     (_s, tg), = _tables(doc, "Item", "Data gap")
-    row = next(r for r in tg.rows if "erosion and sediment control layout" in r[1] and "Not drawn" in r[1])
+    row = next(r for r in tg.rows if "Drawn on C500 at an unresolved position" in r[1])
     assert "C500" in row[2]
-    assert "ESC FLAGS" in _section_text(doc, "5")
+    assert not any("Not drawn on the erosion and sediment control layout" in r[1] for r in tg.rows)
+
+
+def test_esc_items_sa10_still_drops_keep_the_not_drawn_wording(run):
+    inp = _inputs(run)
+    inp.works["esc"]["not_drawn"] = ["Portable toilet: no position satisfies the cited clearances inside the lot; not drawn."]
+    inp.works["esc"]["whole_lot"] = []
+    dd = S.build_site_soee(inp)
+    for sec in ("3", "5"):
+        t = _section_text(dd, sec)
+        assert "Not drawn on C500: portable toilet" in t, sec
+        assert "Drawn on C500 at an unresolved position" not in t, sec
+    (_s, tg), = _tables(dd, "Item", "Data gap")
+    assert any("Not drawn on the erosion and sediment control layout: portable toilet" in r[1] for r in tg.rows)
+
+
+def test_esc_whole_lot_items_are_read_from_the_sa10_warning_and_status(tmp_path):
+    md = ("# ESC\n\n- Flow: **bearing 45 deg, fall 2.0 %**\n\n## Warnings\n\n- No building footprint was supplied and no position outside the building envelope meets the cited clearances: "
+          "soil stockpile, laydown area placed by searching the whole lot (they may sit where the building will be). Re-check.\n- Bin: no position satisfies the cited clearances inside the lot; not drawn.\n\n## Notes\n")
+    (tmp_path / "escp_x_report.md").write_text(md)
+    feats = [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [0, 0]}, "properties": {"id": i, "label": lab, "kind": k, "status": st}}
+             for i, lab, k, st in (("SP1", "Soil stockpile", "stockpile", "unresolved"), ("LD1", "Laydown area", "laydown", "resolved"))]
+    (tmp_path / "escp_x.geojson").write_text(json.dumps({"type": "FeatureCollection", "features": feats}))
+    esc = S.read_esc_output(tmp_path)
+    assert [x.lower() for x in esc["whole_lot"]] == ["soil stockpile"]          # laydown is not an unresolved element, so it is not claimed
+    assert len(esc["not_drawn"]) == 1 and "not drawn" in esc["not_drawn"][0].lower()
+    assert S._esc_whole_lot_text({"whole_lot": []}) == ""
 
 
 def test_esc_fall_direction_comes_from_the_levels_and_the_old_assumption_is_gone(doc, out, run):
@@ -940,7 +972,7 @@ def test_runner_reads_the_final_plan_set_run(run):
     assert w["planset_project"].upper() == "LOT 2 DP227508 SITE WORKS"
     esc = w["esc"]
     assert esc["flow_assumed"] is False and esc["access_length_m"] == pytest.approx(15.0, abs=0.06)
-    assert len(esc["not_drawn"]) == 3
+    assert esc["not_drawn"] == [] and len(esc["whole_lot"]) == 3          # SA10 +lot tier: drawn at an unresolved position, none dropped
     assert w["terrain"]["fall_basis"] == "planset.terrain_notes.dem_fall"
     assert 1.5 < w["terrain"]["avg_fall_pct"] < 4.0 and 30 < w["terrain"]["fall_bearing_deg"] < 70
     assert w["driveway"]["swept_path_drawn"] is False
@@ -948,3 +980,78 @@ def test_runner_reads_the_final_plan_set_run(run):
     assert "G.LAST_SITE" in src and "extract_site_works" in src
     sites = [x for x in w["sheets"] if x["built"]]
     assert len(sites) == 12
+
+
+# ---------------------------------------------------------------------------------------------------------- planning map appendix (stage 7)
+@pytest.fixture(scope="module")
+def map_doc(run):
+    d, _ = run
+    return S.build_site_soee(_inputs(run, maps_dir=d / "planning_maps"))
+
+
+@pytest.fixture(scope="module")
+def map_out(map_doc, tmp_path_factory):
+    d = tmp_path_factory.mktemp("soee_maps")
+    res = O.write_all(map_doc, d, png=False)
+    return {"pdf": Path(res["pdf"]), "docx": Path(res["docx"]), "dir": d, "docx_pdf": O.docx_to_pdf(Path(res["docx"]), d / "docx_check")}
+
+
+def test_soee_without_map_dir_adds_no_appendix_or_references(doc):
+    assert "Appendix A" not in [s.number for s in doc.sections]
+    assert "refer Figure" not in " ".join(s.text for s in doc.statements()).lower()
+
+
+def test_soee_appendix_has_one_figure_per_map_and_a_panel_for_not_checked(map_doc):
+    sec = next(s for s in map_doc.sections if s.number == "Appendix A")
+    figs = [b for b in sec.blocks if b.kind == "figure"]
+    assert len(figs) == map_doc.meta["map_figures"] >= 18
+    assert [b.fig["no"] for b in figs] == list(range(1, len(figs) + 1))
+    nc = [b for b in figs if b.fig["key"] in ("nsw_contamination", "nsw_transport_corridor")]
+    assert len(nc) == 2 and all("MAP NOT AVAILABLE" in b.stmts[0].text or "Not checked" in b.stmts[0].text for b in nc)
+    assert any(m["state"] == "attribute_only" for m in map_doc.meta["planning_maps"] if m["key"] == "zoning")
+
+
+def test_soee_statements_reference_their_figure_and_references_resolve(map_doc):
+    txt = " ".join(s.text for s in map_doc.statements())
+    refs = re.findall(r"[Rr]efer Figure (\d+), ([A-Z][A-Za-z ]+? Map), Appendix A", txt)
+    assert len(refs) >= 10
+    figs = {m["figure"]: m["title"] for m in map_doc.meta["planning_maps"]}
+    for n, title in refs:
+        assert figs[int(n)] == title
+    for key in ("Flood Planning Map", "Bush Fire Prone Land Map", "Heritage Item Map", "Acid Sulfate Soils Map", "Land Zoning Map", "Contaminated Land Map"):
+        assert key in " ".join(t for _, t in refs), key
+
+
+def test_soee_zone_statement_says_attribute_only_and_multizone_possible(map_doc):
+    t = " ".join(s.text for s in map_doc.statements())
+    assert "No zone boundary is drawn" in t and "MULTI-ZONE POSSIBLE" in t
+    assert t.count("Confirm the zones with the council") == 1 or "Confirm the zones with the council. Confirm" not in t
+
+
+def test_soee_layer_table_has_a_map_column(map_doc):
+    sec = next(s for s in map_doc.sections if s.number == "5")
+    tb = [b.table for b in sec.blocks if b.table and b.table.header[:1] == ["Layer"] and "Map" in b.table.header]
+    assert tb and all(r[-1].startswith("Figure") for r in tb[0].rows)
+
+
+def test_soee_map_appendix_pdf_and_docx_layout(map_doc, map_out):
+    assert O.stranded_headings(map_out["pdf"], map_doc.headings()) == [] and O.orphan_bullets(map_out["pdf"]) == []
+    import pymupdf
+    pdf = pymupdf.open(str(map_out["pdf"]))
+    app = [i for i, p in enumerate(pdf) if "This appendix holds" in p.get_text()]
+    assert app and all(len(pdf[i].get_images()) >= 1 for i in range(app[0] + 1, app[0] + 3))
+    assert "–" not in pdf[app[0]].get_text() and "—" not in pdf[app[0]].get_text()
+    if map_out["docx_pdf"]:
+        dpdf = pymupdf.open(str(map_out["docx_pdf"]))
+        assert any(len(p.get_images()) >= 2 for p in dpdf)                       # two figures per row inside the page
+
+
+def test_soee_synthetic_demo_stamp(run, tmp_path):
+    d, _ = run
+    inp = _inputs(run, maps_dir=d / "planning_maps", synthetic_demo=True)
+    dd = S.build_site_soee(inp)
+    res = O.write_all(dd, tmp_path, png=False)
+    import pymupdf
+    pdf = pymupdf.open(res["pdf"])
+    assert all("SYNTHETIC DEMO DATA" in p.get_text() for p in pdf)
+    assert json.loads(Path(res["json"]).read_text())["document"]["synthetic_demo"] is True

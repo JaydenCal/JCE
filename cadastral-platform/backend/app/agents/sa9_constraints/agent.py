@@ -32,6 +32,7 @@ class Sa9Input(Model):
     unresolved_requirements: list[dict] | None = None
     civil: dict | None = None                            # terrain / ffl / earthworks / driveway / services summary
     pathway: dict | None = None                          # sa11 pathway result when available
+    zone_map: dict | None = None                         # zone polygons and source for the land zoning map (app.report.maps.zone_map_from_sa1); None = attribute only
 
 
 class Sa9Result(Model):
@@ -78,7 +79,7 @@ class Sa9Constraints:
         pdf, js, gj = out / "constraints_report.pdf", out / "constraints_report.json", out / "constraints.geojson"
         build_report(pdf, js, meta, res, trig, p.lot.boundary_wkt, p.footprint_wkt, p.acknowledgements,
                      neighbours=p.lot.neighbours, segments=p.lot.segments, road_names=p.lot.road_names, requirements=reqs or [],
-                     unresolved_requirements=unres or [], civil=p.civil, pathway=p.pathway)
+                     unresolved_requirements=unres or [], civil=p.civil, pathway=p.pathway, zone_map=p.zone_map, maps_dir=out / "planning_maps")
         import json
         gj.write_text(json.dumps(geojson(res, p.lot.boundary_wkt, p.footprint_wkt, p.lot.mga_srid)))
         return Sa9Result(pdf_path=str(pdf), json_path=str(js), geojson_path=str(gj), layers=res, triggers=trig,

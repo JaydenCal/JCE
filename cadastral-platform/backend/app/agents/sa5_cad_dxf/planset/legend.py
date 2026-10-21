@@ -100,24 +100,134 @@ ENTRIES = [
 ]
 
 
-def legend_height(cols: int, pitch: float = 11.0) -> float:
-    return 12.0 + math.ceil(len(ENTRIES) / cols) * pitch
+# ---- symbols and linework that are drawn on some sheets only (listed when the sheet set draws them) ---------------------------------------------
+def _centreline(v, x, y):
+    P = ST.Paper(v)
+    P.line([(x, y), (x + SW, y)], "C-DRIV-CNTR", 0.18, ST.BLACK, "DASHDOT")
+    for xx in (x + 4.0, x + 12.0, x + 20.0):
+        P.line([(xx, y - 1.6), (xx, y + 1.6)], "C-DRIV-CNTR", 0.25, ST.BLACK)
 
 
-def draw_legend(v: View, x0: float, y1: float, w: float, cols: int = 3, pitch: float = 11.0, title: str = "LEGEND") -> float:
+def _esc_line(v, x, y):
+    ST.Paper(v).line([(x, y), (x + SW, y)], "C-ESCP-GENL", 0.4, ST.BLACK)
+
+
+def _section(v, x, y):
+    P = ST.Paper(v)
+    P.line([(x + 4.0, y), (x + SW - 4.0, y)], "C-ANNO-NOTE", 0.35, ST.BLACK, "DASHED")
+    for xx in (x + 2.0, x + SW - 2.0):
+        P.circle(xx, y, 2.0, "C-ANNO-NOTE", 0.3, ST.BLACK, ST.WHITE)
+        P.text(xx, y, "A", 2.0, "MIDDLE_CENTER", bold=True, layer="C-ANNO-NOTE")
+
+
+def _callout(v, x, y):
+    P = ST.Paper(v)
+    P.poly([(x, y - 2.0), (x + 11.0, y - 2.0), (x + 11.0, y + 2.0), (x, y + 2.0)], "C-ANNO-CALL", ST.WHITE, edge=ST.BLACK, edge_lw=0.25)
+    P.line([(x + 11.0, y), (x + 15.0, y), (x + SW - 1.0, y - 2.0)], "C-ANNO-CALL", 0.25, ST.BLACK)
+    P.circle(x + SW - 1.0, y - 2.0, 0.8, "C-ANNO-CALL", 0.1, ST.BLACK, ST.BLACK)
+
+
+def _dimension(v, x, y):
+    P = ST.Paper(v)
+    P.line([(x, y), (x + SW, y)], "C-ANNO-DIMS", 0.25, ST.BLACK)
+    for xx, sg in ((x, 1), (x + SW, -1)):
+        P.line([(xx, y - 2.5), (xx, y + 2.5)], "C-ANNO-DIMS", 0.13, ST.BLACK)
+        P.poly([(xx, y), (xx + sg * 2.6, y + 0.5), (xx + sg * 2.6, y - 0.5)], "C-ANNO-DIMS", ST.BLACK)
+    P.text(x + SW / 2, y + 0.8, "3.0m", ST.TXT.SMALL, "BOTTOM_CENTER", layer="C-ANNO-DIMS")
+
+
+def _spot(v, x, y):
+    P = ST.Paper(v)
+    P.line([(x + 3.0, y + 0.8), (x + 4.6, y + 0.8)], "C-TOPO-SPOT", 0.1, (0.62, 0.62, 0.62))
+    P.line([(x + 3.8, y), (x + 3.8, y + 1.6)], "C-TOPO-SPOT", 0.1, (0.62, 0.62, 0.62))
+    P.text(x + 3.8, y - 0.2, "265.50", ST.TXT.SMALL, "TOP_CENTER", layer="C-TOPO-SPOT", color=(0.2, 0.2, 0.2))
+
+
+def _north(v, x, y):
+    P = ST.Paper(v)
+    cx = x + 6.0
+    P.circle(cx, y, 3.2, "C-ANNO-NRTH", 0.25, ST.BLACK)
+    P.line([(cx, y - 2.2), (cx, y + 3.0)], "C-ANNO-NRTH", 0.25, ST.BLACK)
+    P.poly([(cx, y + 3.0), (cx - 1.0, y + 0.8), (cx + 1.0, y + 0.8)], "C-ANNO-NRTH", ST.BLACK)
+
+
+def _swept(v, x, y):
+    ST.Paper(v).line([(x, y), (x + SW, y)], "C-DRIV-TURN", 0.25, (0.9, 0.45, 0.0))
+
+
+def _symbol(fn):
+    return lambda v, x, y: fn(v, x + SW / 2, y) if v.paper else None
+
+
+def _tree(v, x, y):
+    ST.tree_canopy(v, x + SW / 2, y, 2.6)
+
+
+def _svc(v, x, y):
+    ST.Paper(v).line([(x, y), (x + SW, y)], "C-UTIL-OTHR", 0.25, ST.BLACK)
+
+
+def _svc_prop(v, x, y):
+    ST.Paper(v).line([(x, y), (x + SW, y)], "C-UTIL-OTHR", 0.25, ST.BLACK, "DASHED")
+
+
+def entries_for(site=None, swept: bool = False) -> list[tuple]:
+    """Legend entries for the sheet set: the base conventions, plus an entry for every other symbol or line the set draws from this site's data
+    (driveway centreline and chainage ticks, section mark, spot levels, ESC linework, service symbols and lines, swept path)."""
+    out = list(ENTRIES)
+    out.append((_callout, "CALL-OUT: BOX, LEADER AND DOT OR ARROW"))
+    out.append((_dimension, "DIMENSION (EXTENSION LINES AND ARROWS)"))
+    out.append((_north, "NORTH POINT (ROTATED WITH THE VIEW)"))
+    if site is None:
+        return out
+    if getattr(site, "drive_cl", None) is not None:
+        out.append((_centreline, "DRIVEWAY CENTRELINE AND CHAINAGE TICKS (SA3 CENTRELINE)"))
+    if getattr(site, "tin", None) is not None:
+        out.append((_section, "SECTION LINE AND SECTION LETTER"))
+    if getattr(site, "spots", None):
+        out.append((_spot, "SPOT LEVEL (DEM POST, m AHD, INDICATIVE)"))
+    if getattr(site, "esc", None) is not None:
+        out.append((_esc_line, "SEDIMENT FENCE, FENCE RETURN, DIVERSION AND LIMIT OF WORKS (INDICATIVE)"))
+    if swept:
+        out.append((_swept, "SWEPT PATH OF THE DESIGN VEHICLE (PLATFORM DATA)"))
+    seen: set = set()
+    inp = getattr(site, "inp", None)
+    for sv in (getattr(inp, "services", None) or []):
+        from app.agents.sa5_cad_dxf.planset.sheets_ref import _symbol as _sym_for
+        from shapely import wkt as swkt
+        g = swkt.loads(sv.geometry_wkt)
+        if g.geom_type == "Point":
+            fn = _sym_for(sv)
+            if fn is not None and fn not in seen:
+                seen.add(fn)
+                out.append((_symbol(fn), {"hyd": "HYDRANT (AS SUPPLIED)", "water_meter": "WATER METER (AS SUPPLIED)", "tpit": "TELECOMMUNICATIONS PIT (AS SUPPLIED)", "grate": "STORMWATER PIT OR GRATE (AS SUPPLIED)"}.get(fn.__name__, "SERVICE SYMBOL (AS SUPPLIED)")))
+        else:
+            key = "prop" if sv.is_proposed else "exist"
+            if key not in seen:
+                seen.add(key)
+                out.append((_svc_prop, "PROPOSED SERVICE LINE (AS SUPPLIED)") if sv.is_proposed else (_svc, "EXISTING SERVICE LINE (AS SUPPLIED, LOCATION NOT VERIFIED)"))
+    return out
+
+
+def legend_height(cols: int, pitch: float = 11.0, n: int | None = None) -> float:
+    return 12.0 + math.ceil((len(ENTRIES) if n is None else n) / cols) * pitch
+
+
+def draw_legend(v: View, x0: float, y1: float, w: float, cols: int = 3, pitch: float = 11.0, title: str = "LEGEND", entries=None) -> float:
     """Boxed legend with its top-left at (x0, y1) in paper mm; returns the y of the bottom of the box."""
     P = ST.Paper(v)
-    rows = math.ceil(len(ENTRIES) / cols)
-    h = legend_height(cols, pitch)
+    entries = list(ENTRIES) if entries is None else list(entries)
+    rows = math.ceil(len(entries) / cols)
+    h = legend_height(cols, pitch, len(entries))
     y0 = y1 - h
     P.line([(x0, y0), (x0 + w, y0), (x0 + w, y1), (x0, y1)], "C-ANNO-NOTE", 0.35, ST.BLACK, closed=True)
     P.text(x0 + 4.0, y1 - 3.0, title, 4.0, "TOP_LEFT", bold=True, layer="C-ANNO-NOTE")
     cw = (w - 8.0) / cols
-    for i, (fn, label) in enumerate(ENTRIES):
+    for i, (fn, label) in enumerate(entries):
         c, r = divmod(i, rows)
         x = x0 + 4.0 + c * cw
         y = y1 - 15.0 - r * pitch - SH / 2 + 3.0
         fn(v, x, y)
-        for k, ln in enumerate(fonts.wrap(label, 2.5, cw - SW - 8.0)[:2]):
-            P.text(x + SW + 3.0, y + 1.3 - k * 3.4, ln, 2.5, "MIDDLE_LEFT", layer="C-ANNO-NOTE")
+        for k, ln in enumerate(fonts.wrap(label, ST.TXT.BODY, cw - SW - 8.0)[:2]):
+            P.text(x + SW + 3.0, y + 1.3 - k * 3.4, ln, ST.TXT.BODY, "MIDDLE_LEFT", layer="C-ANNO-NOTE")
     return y0

@@ -68,6 +68,7 @@ def dim_linear(v: View, a, b, text: str, off_mm: float = 6.0, side=None, h: floa
     P.text(tx, ty, text, h, "MIDDLE_CENTER", ang, color=color, layer=layer)
     if reserve:
         v.occ.append(box)
+        v.tbox.append((tx - ex - 0.3, ty - ey - 0.3, tx + ex + 0.3, ty + ey + 0.3))
     return box
 
 

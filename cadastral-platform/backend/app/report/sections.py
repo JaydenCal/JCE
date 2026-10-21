@@ -42,6 +42,16 @@ class Ctx:
     figures: list[dict] = field(default_factory=list)
     sec_no: int = 0
     sections: list[tuple[str, str]] = field(default_factory=list)
+    maps: list = field(default_factory=list)            # app.report.maps.PlanMap, numbered from map_base + 1 (built before the story so earlier text can refer to them)
+    map_base: int = 3                                    # figures numbered before the planning maps section: the cover (1) and the site page (2, 3)
+
+    def map_for(self, key: str):
+        return next((m for m in self.maps if m.key == key), None)
+
+    def map_ref(self, key: str) -> str | None:
+        """'Figure n' for the planning map of a layer (or 'zoning'); None when the run has no such map."""
+        m = self.map_for(key)
+        return f"Figure {m.number}" if m else None
 
     def sec(self, title: str) -> str:
         self.sec_no += 1
@@ -63,6 +73,12 @@ class Ctx:
 
     def f(self, key: str) -> Finding | None:
         return next((x for x in self.findings if x.key == key), None)
+
+
+def _ref(ctx: "Ctx", key: str) -> str:
+    """' (refer Figure n, Title)' for the planning map of a layer, or '' when the run has none."""
+    m = ctx.map_for(key)
+    return f" (refer Figure {m.number}, {m.title})" if m else ""
 
 
 def _chip_cell(f: Finding):
@@ -470,18 +486,21 @@ def site_page(ctx: Ctx) -> list:
     f_lot = ctx.f("nsw_lot_size_map")
     ev = ctx.inp.civil or {}
     rows = [("Lot / plan", ctx.lot_label + f"   ({m.get('lotplan', '')})"), ("Council (LGA)", ctx.lga or "Not determined"),
-            ("Zone", zone_text(ctx) + (" (from the NSW LEP zoning layer)" if ctx.zone else "")),
+            ("Zone", zone_text(ctx) + (" (from the NSW LEP zoning layer)" if ctx.zone else "") + _ref(ctx, "zoning")),
             ("Site area", fmt.area(m.get("area_m2")) + " calculated from the boundary" + (f"; registered area {fmt.area(m['area_registered'])}" if m.get("area_registered") else "; registered area not available")),
             ("Frontage", frontage_text(ctx))]
     for key, lab in (("nsw_lot_size_map", "Minimum lot size"), ("nsw_fsr_map", "Floor space ratio"), ("nsw_height_map", "Maximum height")):
         v = control_value(ctx.findings, key)
         f = ctx.f(key)
         src = f"  ({f.currency.lower()})" if f and f.status in ("mapped", "notmapped") else ""
-        rows.append((lab, ("No control mapped on this lot in the LEP layer" if v == "not mapped" else v) + src if v else "Not checked"))
+        val = ("No control mapped on this lot in the LEP layer" if v == "not mapped" else v) + src if v else "Not checked"
+        rows.append((lab, val + _ref(ctx, key)))
     rows.append(("Zone objectives", "Not available in this report: the zone objectives and land use table from the LEP were not loaded. Read them in the LEP."))
     flags = [x for x in (m.get("flags") or []) if x]
     if "multi_zone" in flags:
         rows.append(("Note", "The lot touches more than one zone or map class. Confirm which controls apply."))
+    elif "multi_zone_in_saved_live_run" in flags:
+        rows.append(("Note", "The saved live run flagged this lot as possibly multi-zone. The offline data hold one simplified zone attribute. Confirm the zones with the council."))
     fl.append(kv_table(rows))
     sepp = ctx.f("nsw_sepp_area")
     if sepp and sepp.status == "mapped":
@@ -551,6 +570,9 @@ def constraint_table(ctx: Ctx) -> list:
             res.append(Paragraph(fmt.esc("Note: " + f.caveat), S["cellm"]))
         if f.status == "clear" and f.key == "nsw_flood":
             res = [Paragraph(f"<b>{fmt.esc(f.short)}</b>", S["cellb"]), Paragraph(fmt.esc(f.headline), S["cell"]), Paragraph(fmt.esc("Note: " + f.caveat), S["cellm"])]
+        mref = ctx.map_for(f.key)
+        if mref:
+            res.append(Paragraph(fmt.esc(f"Map: refer Figure {mref.number}, {mref.title}."), S["cellm"]))
         rows.append([_chip_cell(f), res, P(_dist_text(f), "cell"), src])
     t = grid_table(["Status", "Layer and result", "Distance / overlap", "Source and data currency"], rows, [27 * mm, 77 * mm, 26 * mm, CW - 130 * mm])
     fl.append(t)
@@ -663,6 +685,9 @@ def layer_page(ctx: Ctx, f: Finding, idx: int, total: int) -> list:
     fl.append(KeepTogether([fig.flowable(), cap, P("<b>Buffer.</b> " + fmt.esc(sc_text), "caption", raw=True)]))
     # result for this lot
     res = [P(f.headline, "body")]
+    if ctx.map_for(f.key):
+        m_ = ctx.map_for(f.key)
+        res.append(P(f"Planning map: refer Figure {m_.number}, {m_.title}, in the Planning maps section. It shows the mapped polygons of this layer around the lot, with their source.", "muted"))
     if f.rows:
         rows = []
         for r in f.rows[:5]:

@@ -139,7 +139,7 @@ def _rl_text(lv: float, interval: float) -> str:
     return f"{lv:.2f}" if interval < 1 else f"{lv:.1f}"
 
 
-def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = False) -> int:
+def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = False, lab_h: float = 1.9) -> int:
     conts = s.ex_cont if which == "ex" else s.pr_cont
     layer = "C-TOPO-EXST" if which == "ex" else "C-TOPO-PROP"
     col = (0.5, 0.5, 0.5) if which == "ex" else MAGENTA
@@ -180,12 +180,12 @@ def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = Fa
                 q = piece.interpolate(min(1, t + 0.04), normalized=True)
                 r = piece.interpolate(max(0, t - 0.04), normalized=True)
                 ang = math.degrees(math.atan2(q.y - r.y, q.x - r.x))
-                if v.label(p.x, p.y, _rl_text(c.level, s.interval), 1.9, ang, color=lab_col, layer="C-ANNO-CNTR", halo=True, nudges=False):
+                if v.label(p.x, p.y, _rl_text(c.level, s.interval), lab_h, ang, color=lab_col, layer="C-ANNO-CNTR", halo=True, nudges=False):
                     break
     return n
 
 
-def spot_levels_sparse(v: View, s: Site, near, gap_mm: float = 22.0, maxn: int = 8, avoid=None) -> int:
+def spot_levels_sparse(v: View, s: Site, near, gap_mm: float = 22.0, maxn: int = 8, avoid=None, h: float = 2.4) -> int:
     """Design-sheet spot levels: a few DEM posts near ``near`` (driveway), at least ``gap_mm`` of paper apart, each label kept clear of everything
     already reserved (call-outs, panels, other labels).  Contours stay on the existing-site sheet; spot levels are NOT drawn on C100."""
     from shapely.geometry import Point as _P, box as _box
@@ -200,10 +200,10 @@ def spot_levels_sparse(v: View, s: Site, near, gap_mm: float = 22.0, maxn: int =
         px, py = v.tp(x, y)
         if any(math.hypot(px - a, py - b) < gap_mm for a, b in taken):
             continue
-        if block is not None and _box(*v._box(px, py - 1.6, f"{z:.2f}", 2.4, "TOP_CENTER", 0.0, False)).union(_P(px, py).buffer(1.0)).intersects(block):
+        if block is not None and _box(*v._box(px, py - 1.6, f"{z:.2f}", h, "TOP_CENTER", 0.0, False)).union(_P(px, py).buffer(1.0)).intersects(block):
             continue
         lx, ly = v.tm(px, py - 1.6)                                                      # 1.6 mm below the post on the PAPER
-        if v.label(lx, ly, f"{z:.2f}", 2.4, -v.twist, anchor="TOP_CENTER", color=(0.2, 0.2, 0.2), layer="C-TOPO-SPOT", halo=True, nudges=False):       # upright on the paper whatever the view twist
+        if v.label(lx, ly, f"{z:.2f}", h, -v.twist, anchor="TOP_CENTER", color=(0.2, 0.2, 0.2), layer="C-TOPO-SPOT", halo=True, nudges=False):       # upright on the paper whatever the view twist
             v.line([v.tm(px - 0.8, py), v.tm(px + 0.8, py)], "C-TOPO-SPOT", lw=0.1, color=LGREY, anno=True)
             v.line([v.tm(px, py - 0.8), v.tm(px, py + 0.8)], "C-TOPO-SPOT", lw=0.1, color=LGREY, anno=True)
             taken.append((px, py))
