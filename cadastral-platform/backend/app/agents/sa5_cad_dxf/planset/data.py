@@ -63,6 +63,8 @@ class PlansetInput:
     show_dwelling: bool = False                                  # ref style only: draw the dwelling footprint, hatch, call-out, setbacks and FFL (house design is another tool)
     job: str = ""                                                # job number for the reference-style drawing number (JCE-{job}-CV-1xxx); empty shows XXX
     cadastre_fetch: Callable[[Polygon], Any] | None = None       # window (MGA polygon) -> CadastreWindow: lots in and around the viewport, so the DCDB fills it edge to edge
+    building: Any = None                                         # stage 8: app.design.building_place.Placement (the typical house placed to the cited setbacks); drawn on C000, C101, C200, C300, C310, C400, C500
+    dbyd: Any = None                                             # stage 8: app.sitedata.dbyd.DbydView (verified services to draw and the status table); None = no DBYD data
     rules: list = field(default_factory=list)                    # requirements-resolver / --rules-json entries (setbacks etc.) cited on the general notes sheet
 
 
@@ -125,6 +127,7 @@ class Site:
     cad_cache: list = field(default_factory=list)        # [(window Polygon, complete, note)] of the cadastre windows already fetched
     cad_complete: bool | None = None                     # None = no window fetch hook, True = every window fetched in full, False = a window came back partial or failed
     cad_note: str = ""
+    placement: Any = None                                # app.design.building_place.Placement when a building was placed
     view_twist: float | None = None                      # set-wide plan view twist (degrees counter-clockwise), decided once from the lot
 
     @property
@@ -219,7 +222,11 @@ def build_site(inp: PlansetInput) -> Site:
 
     # ---- proposed building ---------------------------------------------------------------------------------
     fp, src, lab = None, "", ""
-    if inp.overlay is not None and getattr(inp.overlay, "footprint_wkt", None):
+    plc = inp.building if (inp.building is not None and getattr(inp.building, "placed", False)) else None
+    if plc is not None:
+        fp, src = plc.footprint, plc.source
+        lab = f"PROPOSED DWELLING, {plc.source}"
+    elif inp.overlay is not None and getattr(inp.overlay, "footprint_wkt", None):
         fp, src = _big(swkt.loads(inp.overlay.footprint_wkt)), "SA7 PLAN OVERLAY"
         lab = f"PROPOSED {DEV_NAME.get(dev, 'STRUCTURE')} (FROM ARCHITECT PLAN, ALIGNMENT APPROXIMATE)"
     elif inp.footprint_wkt:
@@ -235,7 +242,7 @@ def build_site(inp: PlansetInput) -> Site:
                 fp, src, lab = _big(swkt.loads(w)), "SA8 LAYOUT", f"PROPOSED {DEV_NAME.get(dev, 'STRUCTURE')} (SA8 LAYOUT)"
         except Exception:  # noqa: BLE001
             pass
-        if fp is None and env is not None:
+        if fp is None and env is not None and plc is None:
             d0 = PRESET_DIMS.get(dev, (12.0, 9.0))
             fp = place_building(env, lot, cl, d0, extra=[(d0[0] * .8, d0[1] * .85)] if dev in ("dwelling_house", "dual_occupancy") else [])
             if fp is not None:
@@ -261,6 +268,7 @@ def build_site(inp: PlansetInput) -> Site:
     big = lot.area > 20000
     site = Site(inp, lot, nb, env, fp, src, lab, None, "", cl, dpoly, xo, tp, tin, tin_src, spots, None, None, None, None, cites, dev,
                 DEV_NAME.get(dev, dev.upper()), big, [s for s in lot_c.segments if s.is_front], {}, notes, missing)
+    site.placement = plc
     # road names per segment
     names = []
     for n in lot_c.road_names:
@@ -306,6 +314,13 @@ def _design(site: Site) -> None:
         return
     z = tin.z_at(*np.array(fp.exterior.coords).T)
     zin = [v for v in z if np.isfinite(v)]
+    plc = site.placement
+    if plc is not None:
+        if zin:
+            plc.ground_range = (round(float(min(zin)), 2), round(float(np.mean(zin)), 2), round(float(max(zin)), 2))
+        if not (inp.ffl_value is not None and inp.ffl_label):      # FFL only from a cited rule and a flood level; never from the ground under the footprint
+            site.ffl, site.ffl_note = None, plc.ffl_note
+            return
     if inp.ffl_value is not None and inp.ffl_label:
         site.ffl, site.ffl_note = float(inp.ffl_value), inp.ffl_label
     elif zin:

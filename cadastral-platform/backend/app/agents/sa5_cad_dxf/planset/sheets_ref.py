@@ -386,6 +386,8 @@ def _services(v: View, s: Site, missing: list[str], which: tuple | None = None) 
 
 
 def _ffl_lines(s: Site) -> list[str]:
+    if s.placement is not None:
+        return [f"FFL RL {s.ffl:.2f} m AHD" if s.ffl is not None else "FINISHED FLOOR LEVEL TBC (SEE BUILDING PANEL)"]
     if s.ffl is None:
         return []
     if s.inp.ffl_value is not None and s.inp.ffl_label:

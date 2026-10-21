@@ -505,6 +505,37 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                 f"{len(rs.rules)} cited rules for '{dev.rule_dwelling_type}'; unresolved: {', '.join(rs.unresolved) or 'none'}; "
                 + "; ".join(rs.warnings[:2]) + ("" if rs.rules or e.get("SA2_DCP_DOCS") else " (set SA2_DCP_DOCS to ingest a council DCP PDF)"))
 
+    # ---- building (stage 8): the Plan Studio typical house placed to the CITED setbacks; the garage door becomes the driveway target (SA3 moves the driveway to meet it)
+    placement = None
+    if getattr(args, "building", None):
+        try:
+            from app.design.building_place import cited_setbacks, edges_from_lot_context, load_house, place_house
+            if dev.value != "dwelling_house":
+                rep.add("building placement", SKIPPED, f"the typical house is a dwelling house; development type {dev.value} has no building placed (no footprint invented)")
+            else:
+                house = load_house(args.building)
+                lot_poly, lot_edges = edges_from_lot_context(lot)
+                council_b = getattr(args, "council", None) or lga_arg or lot.lga_name or ""
+                zone_b = params.get("zone_code") or lot.zone_code
+                cited_b = cited_setbacks(council_b, zone_b, dev.value)
+                from app.design.building_place import cited_requirement
+                placement = place_house(house, lot_poly, lot_edges, cited_b, freeboard=cited_requirement(council_b, zone_b, "flood.freeboard_m"),
+                                        flood_level_m=getattr(args, "flood_level_ahd", None))
+                rep.facts["building"] = placement.to_dict()
+                rep.facts["building"]["house_provenance"] = house.provenance
+                if placement.placed:
+                    if placement.garage_door_xy is not None:
+                        for tgt in (params, rr.params):
+                            tgt.setdefault("driveway", {})["garage_xy"] = [float(placement.garage_door_xy[0]), float(placement.garage_door_xy[1])]
+                    rep.add("building placement", OK if placement.all_met and not placement.flags else UNRESOLVED,
+                            f"{placement.source}: {house.summary()}; " + (f"{len(placement.flags)} flag(s): " + " | ".join(placement.flags) if placement.flags else "every cited setback met")
+                            + "; FFL " + (f"{placement.ffl_m:g} m AHD" if placement.ffl_m is not None else "TBC"))
+                else:
+                    rep.add("building placement", UNRESOLVED, placement.reason)
+        except Exception as ex:  # noqa: BLE001
+            rep.add("building placement", FAILED, _err(ex))
+            placement = None
+
     # ---- ENV (envelope + driveway)
     env_out = None
     if sa2 is not None:
@@ -610,7 +641,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                         from app.agents.sa10_esc.models import Sa10EscInput
                         def esc_run(site):  # noqa: E306
                             tpts = [tuple(float(c) for c in q) for q in (site.spots or (site.tin.vertices.tolist() if site.tin is not None else []))]       # the DEM points the plans use: SA10 fits the fall direction to them
-                            return m.Sa10Esc().run(Sa10EscInput(lot=lot_pl, development_type=dev, footprint_wkt=site.footprint.wkt if (site.footprint is not None and getattr(site.inp, "show_dwelling", False)) else None,        # the preset footprint is illustrative and is not drawn: the ESC layout must not depend on it
+                            return m.Sa10Esc().run(Sa10EscInput(lot=lot_pl, development_type=dev, footprint_wkt=site.footprint.wkt if (site.footprint is not None and (getattr(site.inp, "show_dwelling", False) or getattr(site, "placement", None) is not None)) else None,        # the preset footprint is illustrative and is not drawn: the ESC layout must not depend on it
                                                                  driveway=env_out.driveway, services=sa4.to_cad_services(), terrain_points=tpts, output_dir=str(out)))
                 except Exception:  # noqa: BLE001
                     esc_run = None
@@ -618,7 +649,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                                    driveway_checks=list(env_out.checks), services=sa4.to_cad_services(), rwt=sa4.to_cad_rwt(), terrain=R.get("SA3"), survey_points=pts, dem_fetch=dem,
                                    levels_accuracy_m=getattr(args, "levels_accuracy_m", None), ffl_value=ffl_value if ffl_lab else None, ffl_label=ffl_lab,
                                    imagery=provider_from_env("NSW"), esc_runner=esc_run, unresolved=list(env_out.envelope.unresolved_elements),
-                                   address=args.address or "", cadastre_fetch=cad_fetch,
+                                   address=args.address or "", cadastre_fetch=cad_fetch, building=placement,
                                    rules=list((raw_rules.get("rules", []) if isinstance(raw_rules, dict) else raw_rules) or []))
                 res = build_planset(pin, out, "planset", style=getattr(args, "planset_style", "legacy"),
                                     only=[x for x in (getattr(args, "planset_sheets", None) or "").split(",") if x.strip()] or None)
@@ -834,6 +865,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--flood-event", default="1% AEP", help="flood planning event the level refers to (default 1%% AEP)")
     p.add_argument("--freeboard-m", type=float, help="freeboard override (user_entered); default = cited flood.freeboard_m for the LGA else UNRESOLVED")
     p.add_argument("--report", action="store_true", help="also write site_report.pdf/.json (Site Assessment and Planning Constraints Report; live NSW aerials unless IMAGERY_PROVIDER is set)")
+    p.add_argument("--building", help="Plan Studio project file (.planstudio.json) of the house to place on the lot to the cited setbacks (stage 8); e.g. tests/fixtures/planstudio_house_single.planstudio.json")
     p.add_argument("--title")
     p.add_argument("--out", default="out/run_site")
     return p

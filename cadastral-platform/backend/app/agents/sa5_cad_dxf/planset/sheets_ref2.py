@@ -18,6 +18,7 @@ from shapely import affinity
 from shapely.geometry import LineString, Point, Polygon, box as sbox
 from shapely.ops import unary_union
 
+from app.agents.sa5_cad_dxf.planset import building_draw as BD
 from app.agents.sa5_cad_dxf.planset import callout as CO
 from app.agents.sa5_cad_dxf.planset import cadwin
 from app.agents.sa5_cad_dxf.planset import lga_notes as LN
@@ -47,6 +48,7 @@ TXT = ST.TXT
 RED = (0.72, 0.1, 0.1)
 AMBER = (0.72, 0.45, 0.05)
 DISCL = SO.DISCL
+PAD_TBC = "finished floor level TBC (no cited flood level in the data), so no pad level, cut, fill or batter is assumed or calculated"
 NO_DWELLING = "building design (the building is not part of this plan set and no building footprint or level is drawn)"
 DEM_NOTE_REF = "INDICATIVE, DERIVED FROM 5 m DEM"
 SWEPT_TBC = "SWEPT PATH: TO BE CONFIRMED AT DETAILED DESIGN"
@@ -56,6 +58,11 @@ BAND_STATION = "BACK OF KERB AND GUTTER BAND (GROUND, ASSUMED)"
 BDY_STATION = "PROPERTY BOUNDARY (GROUND)"
 DRIVEWAY_SHEETS = ("C101", "C400", "C420")
 LAYOVER_REF = ["LAYOVER DIMENSIONS (SEE C420)", "FULL SCHEDULE, SOURCES AND TYPICAL SECTIONS ON C420"]      # the layover is dimensioned in full on its own sheet
+
+
+def draws_dwelling(s: Site) -> bool:
+    """A dwelling is drawn when a building was placed (stage 8) or the legacy opt-in is set."""
+    return bool(s.placement is not None or s.inp.show_dwelling)
 
 
 def _dedupe(xs) -> list[str]:
@@ -525,7 +532,7 @@ def _svc_missing(s: Site) -> list[str]:
 
 def c101(ctx: RefCtx) -> Sheet:
     s = ctx.site
-    fp = s.footprint if s.inp.show_dwelling else None
+    fp = s.footprint if draws_dwelling(s) else None
     b = start(ctx, "C101", [], [], want_xover=True)
     front, drv, std, xg = b.front, b.drv, b.std, b.xg
     rows = list(road_rows(s, xg, front, b.pave))
@@ -535,7 +542,7 @@ def c101(ctx: RefCtx) -> Sheet:
         rows.append("adjoining lots (cadastre query returned none)")
     if xg.kerb_line is None and "kerb line" not in " ".join(rows):
         rows.append("kerb line and road edge")
-    if s.inp.show_dwelling and fp is None:
+    if draws_dwelling(s) and fp is None:
         rows.append("proposed structure footprint (no SA7 overlay, SA8 layout or envelope large enough for the preset)")
     rows += _svc_missing(s)
     if rows:
@@ -543,12 +550,17 @@ def c101(ctx: RefCtx) -> Sheet:
         front, drv, std, xg = b.front, b.drv, b.std, b.xg
     v = b.v
     draw_xover(b, "proposed", dims=True)
+    pl = s.placement if (s.placement is not None and s.placement.placed) else None
     if fp is not None:
-        ST.hatch_fill(v, fp, "proposed")
+        BD.draw_outline(v, s) if pl is not None else ST.hatch_fill(v, fp, "proposed")
         b.hard.append(fp)
+    lost_dims: list[str] = []
     if fp is not None:
         avoid = unary_union([g for g in b.hard if g is not None and not g.is_empty] or [Point(1e9, 1e9)])
-        D.building_setbacks(v, s, text_h=2.5, off_mm=4.0, color=ST.BLACK, mask=True, avoid=avoid)
+        if pl is not None:
+            lost_dims = BD.draw_setback_dims(b, [to_paper(v, s.drive_poly).buffer(0.5)] if s.drive_poly is not None else [], keep_clear=unary_union([g for g in (s.drive_poly, s.crossover) if g is not None]) if s.drive_poly is not None else None)
+        else:
+            D.building_setbacks(v, s, text_h=2.5, off_mm=4.0, color=ST.BLACK, mask=True, avoid=avoid)
     nsv, svc_pending = _services(v, s, [])
     if s.inp.rwt is not None:
         x, y = s.inp.rwt.location_xy
@@ -556,8 +568,20 @@ def c101(ctx: RefCtx) -> Sheet:
     ph = fonts.wrap(codes.SETBACK_PLACEHOLDER, TXT.BODY, 96.0, True)
     hh = 4.0 + 3.4 * len(ph)
     pr = (PLAN_RECT[2] - 106.0, PLAN_RECT[3] - 70.0 - hh, PLAN_RECT[2] - 4.0, PLAN_RECT[3] - 70.0)
-    finish(b, "PROPOSED SITE PLAN", reserve=[pr] if fp is None else ())
+    col, bpanels = None, []
+    if pl is not None:
+        bpanels = BD.panels(s)
+        PW = 124.0
+        heights = [PN.table_height(p_[2], PW, cols=BD.COLS) if p_[0] == "table" else PN.panel_height(p_[2], PW, title=p_[1]) for p_ in bpanels]
+        col = PN.column(b, heights, PW)
+    finish(b, "PROPOSED SITE PLAN", reserve=[pr] if fp is None else (col or ()))
     keep = b.keep
+    if col:
+        for p_, r_ in zip(bpanels, col):
+            (PN.draw_table(v, r_, p_[1], p_[2], cols=BD.COLS, red_when=BD.row_failed, bold_col=2) if p_[0] == "table" else PN.draw_panel(v, r_, p_[1], p_[2], warn=p_[3]))
+    elif pl is not None:                                               # no clear column: the same panels wherever the sheet is free
+        for p_ in bpanels:
+            text_panel(b, p_[1], [" ".join(map(str, r_)) for r_ in p_[2]] if p_[0] == "table" else p_[2], 124.0, warn=(p_[0] == "text" and p_[3]))
     if fp is None:
         PP = ST.Paper(v)
         PP.poly([(pr[0], pr[1]), (pr[2], pr[1]), (pr[2], pr[3]), (pr[0], pr[3])], "C-DATA-NONE", ST.WHITE, edge=RED, edge_lw=0.35)
@@ -569,7 +593,7 @@ def c101(ctx: RefCtx) -> Sheet:
         place(b, LAYOVER_REF, xg.frontage.xy(xg.centre_s - xg.width_m * 0.3, xg.body_len_m * 0.4), avoid=hard)
     if fp is not None:
         c = fp.representative_point()
-        place(b, [s.fp_label, f"AREA {fp.area:.0f} m2  ({D._dim_text(fp)})"] + _ffl_lines(s), (c.x, c.y), avoid=hard)
+        place(b, [s.fp_label, f"FOOTPRINT AREA {fp.area:.0f} m2" + ("" if pl is not None else f"  ({D._dim_text(fp)})")] + _ffl_lines(s), (c.x, c.y), avoid=hard)
     if s.drive_poly is not None and s.drive_cl is not None and drv is not None:
         cl_in = s.drive_cl.intersection(s.lot)
         seg = max(getattr(cl_in, "geoms", [cl_in]), key=lambda g: g.length) if not cl_in.is_empty else None
@@ -588,6 +612,8 @@ def c101(ctx: RefCtx) -> Sheet:
         mid = ((sg.start_xy[0] + sg.end_xy[0]) / 2, (sg.start_xy[1] + sg.end_xy[1]) / 2)
         place(b, [f"AREA {s.inp.lot.area_m2_calculated:,.0f} m2 (CALCULATED FROM CADASTRE)"], mid, "arrow", avoid=hard)
     notes = [codes.SETBACK_PLACEHOLDER + "."] if fp is None else []
+    if lost_dims:
+        notes.append(f"SETBACK DIMENSION NOT PLACED ON THE PLAN ({', '.join(lost_dims)}): SEE THE BUILDING SETBACKS SCHEDULE")
     return seal(b, notes)
 
 
@@ -730,11 +756,11 @@ def _section_panel(b: Base, ew) -> None:
 
 def c200(ctx: RefCtx) -> Sheet:
     s = ctx.site
-    pad_ok = bool(s.inp.show_dwelling and s.cutfill is not None)
+    pad_ok = bool(draws_dwelling(s) and s.cutfill is not None)
     ew = driveway_earthworks(s)
     rows = []
     if not pad_ok:
-        rows.append("building pad cut, fill, batters and volumes: depend on the " + NO_DWELLING)
+        rows.append("building pad cut, fill, batters and volumes: " + (PAD_TBC if s.placement is not None else "depend on the " + NO_DWELLING))
     if s.tin is None:
         rows.append("existing levels: no survey or DEM levels supplied")
     elif ew is None:
@@ -761,6 +787,8 @@ def c200(ctx: RefCtx) -> Sheet:
         if s.pad is not None:
             v.geom(s.pad, "C-EART-PADD", lw=0.3, color=D.BLUE)
     draw_xover(b, "proposed")
+    if s.placement is not None:
+        BD.draw_light(b)
     if ew is not None:                                           # same convention: red cut hatch, green fill hatch
         for kind, g in ew["zones"]:
             col = (0.85, 0.15, 0.1) if kind == "cut" else (0.1, 0.6, 0.2)
@@ -774,6 +802,10 @@ def c200(ctx: RefCtx) -> Sheet:
         place(b, ["DRIVEWAY EARTHWORKS (INDICATIVE, DEM)", f"CUT {ew['cut']:,.1f} m3, FILL {ew['fill']:,.1f} m3", "RED HATCH CUT, GREEN HATCH FILL"], (c.x, c.y), avoid=b.hard)
         _section_panel(b, ew)
     pave_callout(b)
+    if s.placement is not None and s.footprint is not None:
+        c_ = s.footprint.representative_point()
+        gr = s.placement.ground_range
+        place(b, BD.label_lines(s, ["FINISHED FLOOR LEVEL TBC: NO PAD CUT OR FILL CALCULATED"] + ([f"EXISTING GROUND UNDER FOOTPRINT RL {gr[0]:.2f} TO {gr[2]:.2f} m AHD (INDICATIVE 5 m DEM)"] if gr else [])), (c_.x, c_.y), avoid=b.hard)
     extra = []
     if pad_ok:
         extra.append(f"PAD CUT {s.cutfill.cut_volume_m3:,.1f} m3, FILL {s.cutfill.fill_volume_m3:,.1f} m3, NET {s.cutfill.net_volume_m3:+,.1f} m3 (INDICATIVE, 5 m DEM)")
@@ -785,7 +817,10 @@ def c200(ctx: RefCtx) -> Sheet:
 # ====================================================================================================== C300 stormwater
 def c300(ctx: RefCtx) -> Sheet:
     s = ctx.site
-    rows = ["roof catchment, downpipes, pits and discharge route: depend on the " + NO_DWELLING]
+    if s.placement is not None:
+        rows = ["downpipe positions, pits, pipe sizes and grades and the roof discharge route: not designed (hydraulic designer; no roof drainage layout exists for the typical house)"]
+    else:
+        rows = ["roof catchment, downpipes, pits and discharge route: depend on the " + NO_DWELLING]
     if s.tin is None:
         rows.append("overland flow arrows: no survey or DEM levels supplied")
     st_exist = [x for x in s.inp.services if x.service == "stormwater"]
@@ -803,6 +838,8 @@ def c300(ctx: RefCtx) -> Sheet:
     b = start(ctx, "C300", rows, notes)
     v = b.v
     draw_xover(b, "proposed")
+    if s.placement is not None:
+        BD.draw_light(b, door=False)
     if s.tin is not None:
         w = v.model_window()
         gx = np.linspace(w[0] + 30 / v.k, w[2] - 30 / v.k, 14)
@@ -810,7 +847,7 @@ def c300(ctx: RefCtx) -> Sheet:
         for x in gx:
             for y in gy:
                 p = Point(x, y)
-                if not s.lot.buffer(-1.0).contains(p) or (s.drive_poly is not None and s.drive_poly.buffer(2).contains(p)):
+                if not s.lot.buffer(-1.0).contains(p) or (s.drive_poly is not None and s.drive_poly.buffer(2).contains(p)) or (s.footprint is not None and s.footprint.buffer(2).contains(p)):
                     continue
                 d = SP.downslope(s, (x, y))
                 if d:
@@ -820,6 +857,10 @@ def c300(ctx: RefCtx) -> Sheet:
         x, y = s.inp.rwt.location_xy
         v.fill(Point(x, y).buffer(s.inp.rwt.diameter_m / 2), "C-UTIL-RWTK", ST.WHITE, 1.0, edge=ST.BLACK, edge_lw=ST.REF.outline_lw)
     finish(b, "STORMWATER")
+    if s.placement is not None and s.footprint is not None:
+        ra = BD.roof_area_m2(s.placement)
+        c_ = s.footprint.representative_point()
+        place(b, BD.label_lines(s, ([f"ROOF PLAN AREA TO THE EAVES {ra:,.0f} m2 (CATCHMENT, INDICATIVE)"] if ra else []) + ["ROOF WATER TO THE LEGAL POINT OF DISCHARGE: NOT DESIGNED"]), (c_.x, c_.y), avoid=b.hard)
     if dn:                                                                       # visible on the plan, not only in the notes panel
         text_panel(b, "DRAINAGE DISCHARGE (INDICATIVE)", [dn], 120.0, warn=True)
     CX.callouts_crossover(v, b.xg, b.std, b.keep, [], [s.lot], kerb_only=True, short_kerb=True, must_avoid=list(getattr(b, 'kerb_geoms', [])))
@@ -831,13 +872,18 @@ def c300(ctx: RefCtx) -> Sheet:
 def c310(ctx: RefCtx) -> Sheet:
     s = ctx.site
     ex_w = [x for x in s.inp.services if x.service in ("water", "sewer") and not x.is_proposed]
-    rows = ["proposed water service and sewer house connection: depend on the " + NO_DWELLING]
+    if s.placement is not None:
+        rows = ["proposed water service and sewer house connection: not designed (position, size and cover to be determined by the water and sewer authority from the dwelling design)"]
+    else:
+        rows = ["proposed water service and sewer house connection: depend on the " + NO_DWELLING]
     if not ex_w:
         rows.append("existing water main, sewer main and junction: none supplied; EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / DBYD")
     notes = cited(s, ("water.min_cover_m", "sewer.junction_min_diameter_mm", "sewer.house_connection_min_cover_m", "util.build_over_sewer_policy"))
     notes.append("LOCATE ALL SERVICES BY DBYD AND POTHOLING BEFORE EXCAVATION.")
     b = start(ctx, "C310", rows, notes)
     draw_xover(b, "proposed")
+    if s.placement is not None:
+        BD.draw_light(b, door=False)
     _n, pending = _services(b.v, s, [], ("water", "sewer"))
     finish(b, "WATER AND SEWER")
     CX.callouts_crossover(b.v, b.xg, b.std, b.keep, [], [s.lot], kerb_only=True, short_kerb=True, must_avoid=list(getattr(b, 'kerb_geoms', [])))
@@ -974,6 +1020,8 @@ def c400(ctx: RefCtx) -> Sheet:
         step = 5.0 if (s.drive_cl.length > 12 and b.scale > 50) else 2.0
         ch_plan, lost = plan_chainage(b, step)                          # chainage labels reserved first: the dimensions and call-outs route around them
     draw_xover(b, "proposed", dims=True)
+    if s.placement is not None:
+        BD.draw_light(b)
     swept = False
     if has:
         swept = swept_ok(s, xg)
@@ -1463,6 +1511,7 @@ def _esc_target(g) -> tuple[float, float]:
 
 
 NOT_DRAWN_TITLE = "NOT DRAWN: POSITION TO BE CONFIRMED ONCE THE BUILDING FOOTPRINT IS KNOWN"
+NOT_DRAWN_TITLE_FP = "NOT DRAWN: NO POSITION OUTSIDE THE DWELLING WITH THE CITED CLEARANCES IN THIS LAYOUT"
 
 
 def esc_not_drawn_schedule(s, out) -> list[str]:
@@ -1511,6 +1560,8 @@ def c500(ctx: RefCtx) -> Sheet:
     b = start(ctx, "C500", rows, notes)
     v = b.v
     draw_xover(b, "proposed")
+    if s.placement is not None:
+        BD.draw_light(b, door=False)
     pend = []
     conflict = esc_flow_conflict(s, out) if out is not None else None
     if out is not None:
@@ -1545,7 +1596,7 @@ def c500(ctx: RefCtx) -> Sheet:
         if flags:
             panels.append(("ESC FLAGS", flags, True))
         if sched:
-            panels.append((NOT_DRAWN_TITLE, sched, True))
+            panels.append((NOT_DRAWN_TITLE_FP if s.placement is not None else NOT_DRAWN_TITLE, sched, True))
         panels.append(("ESC LAYOUT BASIS AND ASSUMPTIONS", basis, False))
     PW = 132.0
     col = PN.column(b, [PN.panel_height(p_[1], PW, title=p_[0]) for p_ in panels], PW, sides=("right", "left")) if panels else None      # one tidy column, reserved before any label is placed
@@ -1839,6 +1890,8 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
         lv.geom(p, "C-PROP-ADJN", lw=0.13, color=ST.FENCE)
     lv.fill(s.lot, "C-PROP-BDY", (1, 0.9, 0.5), 0.5)
     ST.boundary(lv, s.lot)
+    if s.placement is not None and s.footprint is not None:
+        lv.fill(s.footprint, "A-BLDG-PROP", (0.75, 0.75, 0.75), 1.0, edge=ST.BLACK, edge_lw=0.2)
     lv.reserve((vr[2] - 40.0, vr[3] - 40.0, vr[2], vr[3]))
     lv.reserve((vr[0], vr[1], vr[0] + 30.0, vr[1] + 12.0))
     lot_labels(lv, s)
