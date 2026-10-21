@@ -61,3 +61,12 @@ constraints_report.pdf/json; `scripts/run_site.py --report` also writes site_rep
 - Synthetic variant: `app/report/demo.py` and `scripts/demo_maps.py --out DIR [--soee-from-run RUN]` (polygons, multi-zone, RU1 and R2 labels, not checked panels). SYNTHETIC DEMO DATA only.
 - Tests: tests/test_report_maps.py (27 tests). Fixed on review: the extra bookmark "Planning maps (figures)" pointed at a page without the heading (removed).
 - Weaknesses: the offline Lot 2 run has no zone polygons (attribute only) and approximate fixture layer geometry, so only live runs prove polygon zoning and the multi-zone flag on real data. Live SA1 polygon retention is tested with a mock service only. Legend share is the area share of the loaded polygons. A thin class (e.g. 1 percent of the lot) can be too small to see. Each figure is half width, so long source lines wrap to 4 lines. QLD layers have no titles or colours (generic "Map" titles, base colour from the palette).
+
+
+## Stage 8 (21/10/2026)
+- The cover carries the verification block (TO BE VERIFIED BY A SUITABLY QUALIFIED PERSON, tick box, name, signature, date; `sections.py`, `app.common.statement`). `explain.AI_STATEMENT` is now None: no AI statement in any footer or page. The limitations section keeps a factual sentence that the report is to be verified by a suitably qualified person. `build.py` writes the sidecar `verification` object.
+- Scope line reads "Site works, with an indicative typical house". The civil summary has a "Building (indicative typical house)" block (source, house, footprint, FFL, cited setback table with provided values and Met or Not met, flags as formal sentences from `building_place.plain_flags`).
+- Report maps use the placed footprint when a building is supplied.
+- Services and rainwater tank: when a BYDA registry is supplied (`run_site.py --dbyd-project`) the page shows the job, responses, plan validity, the status table, the verified or draft counts, the expiry warning and the project-only note (`dbyd_block`). SYNTHETIC data print a SYNTHETIC DEMO DATA callout.
+- Tests: `tests/test_report_stage4.py` (verification on the cover only, no AI statement on any page), `tests/test_report_maps.py`.
+- Weakness: the Lot 2 report has no BYDA data, so existing services are "not confirmed".

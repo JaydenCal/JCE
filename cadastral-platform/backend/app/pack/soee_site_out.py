@@ -34,7 +34,7 @@ def status_style(txt: str) -> tuple[str, str]:
         return ("#8a5a12", "#f7ecd3")
     return STATUS_HEX.get(txt.split(" (")[0], ("#1e2024", "#ffffff"))
 TAG_HEX = {"NOT CHECKED": "#4a5160", "UNRESOLVED": "#2d5a96", "NOT REVIEWED, UNRESOLVED": "#2d5a96", "DATA NOT AVAILABLE": "#a63a2b", "NOT ASSESSED": "#6b6e75",
-           "ASSUMED / PLATFORM DEFAULT": "#b4601a", "ASSUMED": "#b4601a", "INDICATIVE, 5 m DEM": "#8a5a12", "BUILDING DESIGN BY OTHERS": "#6b6e75", "TYPICAL HOUSE, INDICATIVE": "#8a5a12", "OFFLINE FIXTURE": "#a63a2b",
+           "ASSUMED / PLATFORM DEFAULT": "#b4601a", "ASSUMED": "#b4601a", "INDICATIVE, 5 m DEM": "#8a5a12", "BUILDING DESIGN BY OTHERS": "#6b6e75", "TYPICAL HOUSE, INDICATIVE": "#8a5a12", "OFFLINE FIXTURE": "#a63a2b", "SYNTHETIC DEMO DATA": "#a63a2b",
            "MAPPED OR INTERSECTS": "#a63a2b", "WITHIN BUFFER": "#b4601a", "NOT INTERSECTED BY THE DATA LOADED": "#5b5f66"}
 TOC_SKIP = ("Section 4.15(1)",)     # the nine section 4.15 sub headings are not listed in the contents (the list must fit on one page)
 SMALL_TABLE_ROWS = 6              # a table of this many rows or fewer is kept on one page
@@ -94,8 +94,8 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
         "cellh": ParagraphStyle("ch", parent=st["cellb"], fontSize=7.6, leading=9.6, textColor=colors.white),
         "cellb": ParagraphStyle("cb", parent=st["cellb"], fontSize=7.9, leading=10.2),
         "cap": ParagraphStyle("cap", parent=st["caption"], fontSize=7.4, spaceBefore=1, spaceAfter=6),
-        "toc0": ParagraphStyle("toc0", fontName="Plex-Medium", fontSize=8.8, leading=10.4, textColor=INK, spaceBefore=1.2),
-        "toc1": ParagraphStyle("toc1", fontName="Plex", fontSize=7.5, leading=8.2, textColor=INK, leftIndent=12),
+        "toc0": ParagraphStyle("toc0", fontName="Plex-Medium", fontSize=8.8, leading=10.4, textColor=INK, spaceBefore=0.5),
+        "toc1": ParagraphStyle("toc1", fontName="Plex", fontSize=7.5, leading=8.0, textColor=INK, leftIndent=12),
     }
 
     def _verification_box(sty_):

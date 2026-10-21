@@ -83,6 +83,7 @@ REQUIRED_TOPICS: dict[str, list[tuple[str, tuple[str, ...]]]] = {
 BUILDING_DOC_RE = re.compile(r"BASIX|CARPORT|GARAGE|HOT WATER|RAINWATER TANK|SECONDARY DWELLING|HOUSING SEPP|10/50|VEGETATION CLEARING|BUSHFIRE", re.I)
 
 SETBACK_GROUP = "BUILDING SETBACKS (REFERENCE ONLY, BUILDING NOT SHOWN)"
+SETBACK_GROUP_PLACED = "BUILDING SETBACKS (CITED; THE TYPICAL HOUSE IS PLACED TO THESE, SEE C101)"       # stage 8: heading when a building is drawn
 DOC_GROUP = "STANDARDS AND DOCUMENTS CITED"
 GROUP_ORDER = ["GENERAL", "SURVEY AND EXISTING SERVICES", "EARTHWORKS AND EROSION AND SEDIMENT CONTROL", "DRIVEWAY AND CROSSOVER",
                "STORMWATER AND FLOOD", SETBACK_GROUP, "STANDARDS AND APPROVALS", DOC_GROUP]
@@ -183,4 +184,6 @@ def build_notes(site, council_name: str | None = None) -> tuple[str, list[tuple[
         for label, keys in items:
             ln = _cite_line(cites, label, keys)
             groups[grp].append(ln or unresolved(label, council))
-    return council, [(k, v) for k, v in ((k, [x for x in groups[k] if x]) for k in GROUP_ORDER) if v]
+    pl = getattr(site, "placement", None)
+    head = {SETBACK_GROUP: SETBACK_GROUP_PLACED} if (pl is not None and getattr(pl, "placed", False)) else {}
+    return council, [(head.get(k, k), v) for k, v in ((k, [x for x in groups[k] if x]) for k in GROUP_ORDER) if v]

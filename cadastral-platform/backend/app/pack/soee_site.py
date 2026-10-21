@@ -49,6 +49,7 @@ T_DNA, T_ASSUMED, T_NA = "DATA NOT AVAILABLE", "ASSUMED / PLATFORM DEFAULT", "NO
 T_ASSUMED1 = "ASSUMED"                              # an assumption that is not a platform default value (for example that the lot is vacant)
 T_IND = "INDICATIVE, 5 m DEM"                       # a level or a value derived from the sourced 5 m digital elevation model (not an assumption)
 T_BLD, T_FIX = "BUILDING DESIGN BY OTHERS", "OFFLINE FIXTURE"
+T_SYN = "SYNTHETIC DEMO DATA"                        # stage 8: invented BYDA responses used to exercise the software (never a real response)
 T_TYP = "TYPICAL HOUSE, INDICATIVE"                   # stage 8: the dwelling is the Plan Studio typical house placed to the cited setbacks (not a design for the lot)
 OPEN_TAGS = (T_NC, T_UNRES, T_NOTREV, T_DNA, T_NA)
 
@@ -1128,7 +1129,12 @@ def _s2(b: _Build, d: _Data) -> None:
     else:
         b.p("Existing ground levels: no survey or DEM levels were available in this run. Contours, earthworks and long sections could not be drawn.", "data:planset.terrain", T_DNA)
     b.p("Existing buildings, trees, fences and easements are not in the run data. They must be confirmed by a title search, the registered easements and a site inspection.", "planset:sheets[C100].data_missing", T_DNA)
-    b.p("Existing underground services are not in the run data. A Before You Dig Australia (BYDA) enquiry is needed. Asset owners hold the data and answer each enquiry.", "planset:sheets[C100].data_missing", T_DNA)
+    dy0 = d.w.get("dbyd")
+    if dy0:
+        b.p(f"Existing underground services are not confirmed. BYDA job {dy0.get('job_number') or 'not stated'} returned {dy0.get('n_received', 0)} of {dy0.get('n_owners', 0)} asset owner responses; "
+            f"{dy0.get('n_verified', 0)} traced service(s) are verified by a person and drawn, and every other existing service is not confirmed (section 3.7.1). Not checked is not clear.", "data:dbyd.registry", T_NC)
+    else:
+        b.p("Existing underground services are not in the run data. A Before You Dig Australia (BYDA) enquiry is needed. Asset owners hold the data and answer each enquiry.", "planset:sheets[C100].data_missing", T_DNA)
     b.p("The lot is assumed to be vacant. This has not been confirmed by a records check or a site inspection.", "scope:site_works_only", T_ASSUMED1)
     a = d.w.get("aerial")
     if a and a.get("capture_date"):
@@ -1374,7 +1380,7 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
         if dy.get("expiry_warning"):
             b.p(dy["expiry_warning"], "data:dbyd.registry", T_UNRES)
         if dy.get("synthetic"):
-            b.p("SYNTHETIC DEMO DATA: the BYDA responses and services in this document are invented to exercise the software. They are not real services.", "data:dbyd.registry", T_FIX)
+            b.p("The BYDA responses and services in this document are invented to exercise the software. They are not real services.", "data:dbyd.registry", T_SYN)
         b.p("Asset owner plans are for this project only and are not reproduced in this document. Every service location is indicative and is to be confirmed by potholing before any excavation.", "platform:method")
 
     b.h2("3.8 Site constraints shown on the plan set")

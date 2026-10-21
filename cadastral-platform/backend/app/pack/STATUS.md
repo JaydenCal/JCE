@@ -46,3 +46,12 @@ Scope is SITE WORKS ONLY (crossover and layover, driveway, earthworks, stormwate
 - `run_soee.py` passes `maps_dir` when `<run>/planning_maps` exists.
 - Tests: tests/test_soee_site.py (7 new map tests). Two older tests (`test_esc_not_drawn_items_...`, `test_runner_reads_the_final_plan_set_run`) fail because the SA10 layout now places stockpile and laydown items (the plan set agent's work in progress: `esc["not_drawn"]` is empty). They are not touched here.
 - Weaknesses: the SoEE appendix numbers its figures differently from the site report (stated in the appendix). The last appendix page can carry one figure with white space. The PDF stranded heading check is a text heuristic. DOCX pagination was checked only through LibreOffice.
+
+
+## Stage 8 (21/10/2026): SoEE describes the typical house, DBYD, verification box
+- Scope is still the site works, now with an indicative typical house: the Plan Studio typical house placed to the cited setbacks (`TYPICAL HOUSE, INDICATIVE` tag, source "Plan Studio typical house (indicative)", `building_place.py`). Section 1.5 states the house, its setbacks (cited minimum, provided, result), the garage control that is NOT MET and the floor level TBC. The compliance table uses the same figures. Roof water: catchment area only, the discharge route is not designed (no invented pipe sizes). SA10 is rerun outside the footprint. `scripts/run_soee.py --building` (default fixture, `none` to remove).
+- The cover carries the verification block (PDF and DOCX); the AI statement is removed from the cover, every footer and every other page. Section 1 and document control keep the factual method statement (values extracted by an AI model, validated by software, not verified by a person).
+- Section 2.2 and new section 3.7.1 "Before You Dig (BYDA) responses" (table of owners, response status, plans received, draft and verified counts, validity, expiry warning, project-only statement; SYNTHETIC DEMO DATA tag for synthetic data). `run_soee.py --dbyd-project`.
+- Contents list tightened so it stays on one page (spaceBefore 0.5, small leading 8.0).
+- Tests: `tests/test_soee_site.py` (verification block on the cover only, no AI statement on any PDF or DOCX page).
+- Weaknesses: the Lot 2 SoEE has no BYDA data ("not confirmed"); garage control fails for the template and is reported as FAIL.

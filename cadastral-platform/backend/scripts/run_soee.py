@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the JCESITE Statement of Environmental Effects (site works only) for a run.
+"""Build the JCESITE Statement of Environmental Effects (site works, with an indicative typical house) for a run.
 
 JCESITE is a platform product and is NOT affiliated with JCE Infrastructure.  The output is a draft to be verified by a suitably qualified person (the cover carries the verification block).
 
@@ -16,14 +16,15 @@ network every layer is NOT CHECKED, which is the honest result for an unqueried 
     python3 scripts/run_soee.py --out /home/claude/work/out/stage5/soee/variants/all_not_checked --variant all_not_checked
     python3 scripts/run_soee.py --out DIR --from-run DIR/run        # rebuild documents from a previous run's cached inputs (no pipeline)
 
-run_site.py gives SA10 the DEM levels the plans use (terrain_points) and no building footprint (no dwelling is drawn), so the ESC layout follows the DEM fall and the
-stabilised access is 15.0 m.  This script reads the same run: the plan set input and result, the Site the plan set was drawn from (generate.LAST_SITE, so the SoEE reads the
+Stage 8: the Plan Studio typical house (``--building``, default tests/fixtures/planstudio_house_single.planstudio.json, ``none`` to leave it out) is placed to the cited
+setbacks and SA10 lays the ESC out around its footprint; ``--dbyd-project DIR`` adds the project's BYDA registry (scripts/dbyd_import.py) to the plan set and section 3.7.1.
+run_site.py gives SA10 the DEM levels the plans use (terrain_points).  This script reads the same run: the plan set input and result, the Site the plan set was drawn from (generate.LAST_SITE, so the SoEE reads the
 same levels, fall and discharge note as sheets C300 and C500), the project name printed on the title blocks, the SA10 output files and the plan set PDF (gap markers).
 
 Writes soee.pdf, soee.docx, soee.json (sidecar: every statement with its source), page PNGs (pages/) and docx_check/ (the DOCX rendered by LibreOffice).
 Appendix A (planning maps) uses the map PNGs the site report wrote to ``<run>/planning_maps`` (one per planning control or constraint, plus the land zoning);
 the statements in sections 2, 4 and 5 refer to those figures.
-Does not edit run_site.py, app/report or the plan set package.  The SoEE text is assembled by software (no language model writes it); the requirement values in the
+The SoEE text is assembled by software (no language model writes it); the requirement values in the
 knowledge files were extracted by an AI model from the cited documents (quotes and pages validated, not verified by a person).
 """
 from __future__ import annotations
