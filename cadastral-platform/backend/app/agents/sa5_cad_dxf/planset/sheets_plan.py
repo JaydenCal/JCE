@@ -323,12 +323,21 @@ def downslope(s: Site, p: tuple[float, float]) -> tuple[float, float] | None:
     return (-float(zx) / n, -float(zy) / n)
 
 
+def paper_dir(v: View, d) -> tuple[float, float]:
+    """A model-space direction as a paper-space direction: rotated by the view rotation (the same turn View.tp applies to a point)."""
+    if v.paper:
+        return float(d[0]), float(d[1])
+    return d[0] * v._c - d[1] * v._s, d[0] * v._s + d[1] * v._c
+
+
 def arrow(v: View, p, d, L_mm=7.0, layer="C-UTIL-FLOW", color=D.STORM, lw=0.25, dash=None) -> None:
+    """Arrow from model point p along the model direction d, L_mm long ON PAPER.  The direction is rotated with the view, so a rotated plan shows the true fall."""
     px, py = v.tp(*p)
-    qx, qy = px + d[0] * L_mm, py + d[1] * L_mm
+    dx, dy = paper_dir(v, d)
+    qx, qy = px + dx * L_mm, py + dy * L_mm
     v.line([v.tm(px, py), v.tm(qx, qy)], layer, False, lw, dash, color, anno=True)
-    nx, ny = -d[1], d[0]
-    v.line([v.tm(qx - d[0] * 1.8 + nx * 0.8, qy - d[1] * 1.8 + ny * 0.8), v.tm(qx, qy), v.tm(qx - d[0] * 1.8 - nx * 0.8, qy - d[1] * 1.8 - ny * 0.8)],
+    nx, ny = -dy, dx
+    v.line([v.tm(qx - dx * 1.8 + nx * 0.8, qy - dy * 1.8 + ny * 0.8), v.tm(qx, qy), v.tm(qx - dx * 1.8 - nx * 0.8, qy - dy * 1.8 - ny * 0.8)],
            layer, False, lw, None, color, anno=True)
 
 

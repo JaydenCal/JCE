@@ -274,6 +274,8 @@ def callouts_crossover(view: View, g: CrossoverGeom, standard_label: str | None 
     """Call-outs for the crossover (with the council standard statement) and for the assumed kerb line.  Both are must-carry: when no slot
     is free they fall back to a numbered tag with the text in the notes panel."""
     fr = g.frontage
+    if g.present:
+        view.leader_avoid = [view.to_paper_geom(g.polys[k_]) for k_ in ("wing_a", "wing_b") if g.polys.get(k_) is not None and g.polys[k_].area > 1e-6]
     if g.present and not kerb_only:
         tgt = fr.xy(g.centre_s + g.width_m * 0.25, g.body_len_m * 0.7)
         place_callout(view, ["PROPOSED CROSSOVER", f"WIDTH {_fmt_m(g.width_m)} (PLATFORM DEFAULT)"] + list(extra) + [standard_text(standard_label)], tgt, "dot", keep_out,

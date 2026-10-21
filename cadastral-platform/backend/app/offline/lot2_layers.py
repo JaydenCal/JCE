@@ -57,6 +57,8 @@ def _feature(g: BaseGeometry, **attrs) -> Feature:
 
 def _place_at_distance(shape: BaseGeometry, direction: tuple[float, float], target: float) -> BaseGeometry:
     """Translate ``shape`` along ``direction`` until its distance to the lot is ``target`` metres."""
+    c = _lot.centroid                              # start the shape on the lot centroid (the shape is built at the origin, hundreds of kilometres away in MGA)
+    shape = translate(shape, c.x - shape.centroid.x, c.y - shape.centroid.y)
     lo, hi = 0.0, 600.0
     for _ in range(60):
         mid = (lo + hi) / 2

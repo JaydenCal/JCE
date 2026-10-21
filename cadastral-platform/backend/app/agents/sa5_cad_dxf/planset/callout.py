@@ -155,6 +155,10 @@ def find_slot(view: View, w: float, ht: float, t, keep_out=(), avoid=(), strict:
                     ln = LineString([(ax, p1[1]), p1, t])
                     if leader_conflicts(view, ln, box):
                         continue                                 # a leader NEVER crosses an earlier leader, and an earlier leader never runs through the new box
+                    if strict and view.leader_avoid and any(ln.difference(Point(t).buffer(1.2)).intersects(g) for g in view.leader_avoid):
+                        continue                                 # nor through the layover wings
+                    if strict and view.dim_geoms and any(ln.difference(Point(t).buffer(1.2)).intersects(g) for g in view.dim_geoms):
+                        continue                                 # a leader does not cross or graze a dimension line or its extension lines
                     if any(ln.difference(Point(t).buffer(1.2)).intersects(shp_box(*o)) for o in view.tbox):
                         continue                                 # a leader never runs through text already placed (bearings, distances, names, chainage, dimension figures)
                     if strict > 1 and any(ln.difference(Point(t).buffer(1.2)).intersects(shp_box(*o)) for o in view.occ if not _is_own(o, box)):

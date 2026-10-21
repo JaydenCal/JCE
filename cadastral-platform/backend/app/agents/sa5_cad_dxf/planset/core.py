@@ -78,6 +78,8 @@ class View:
         self.tbox: list[tuple[float, float, float, float]] = []     # paper-mm boxes of placed TEXT only (labels, dimension figures): leaders and other linework never cross them
         self.dropped = 0
         self.dim_lines: list[tuple] = []            # paper-mm dimension lines drawn so far ((x1, y1), (x2, y2)); a new dimension never shares one
+        self.dim_geoms: list = []                   # paper-mm LineStrings of every dimension line and extension line drawn (a leader never crosses them)
+        self.leader_avoid: list = []                # paper-mm polygons a call-out leader must not cross (the layover wings)
         self.avoid_lines: list = []                 # paper-mm LineStrings (driveway centreline) that dimension text must not sit on
         self.callout_boxes: list[tuple] = []        # paper-mm boxes of call-outs drawn so far (planset.callout)
         self.fallback_notes: list[str] = []         # must-carry call-out text that could not be placed (rendered in the notes panel)
@@ -182,6 +184,7 @@ class View:
              bold: bool = False, italic: bool = False, color=None, layer: str = "C-ANNO-NOTE", halo: bool = False) -> None:
         if not s:
             return
+        s = fonts.units(s)
         if not self.paper and self.clip and not self.inside(x, y):
             return
         h = max(h, MIN_TEXT_MM)

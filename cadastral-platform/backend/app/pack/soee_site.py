@@ -154,6 +154,17 @@ def cite_ref(r: Requirement) -> str:
     s = r.source
     return f"{T(s.document_title)}, {T(s.section_ref or 'section not recorded')}, page {s.page}"
 
+def _confirm_label(key: str, el: dict) -> str:
+    """Readable text for a requirement key still to be confirmed.  The group of the key (for example "stockpile") is replaced by the element's own type when the two differ,
+    because SA10 applies one cited rule to several element types (a laydown area uses the stockpile setback key) and the table must not call a laydown area a stockpile."""
+    tail = key.split(".", 1)[-1]
+    group, _, rest = tail.partition(".")
+    kind = str(el.get("kind") or "").strip().lower()
+    if rest and kind and kind not in (group, "topsoil") and group in ("stockpile", "topsoil") and kind != "fence":
+        tail = f"{kind}.{rest}"
+    return sentence_case(re.sub(r"_m$", "", tail).replace(".", ": ").replace("_", " ")).rstrip(".")
+
+
 def _esc_whole_lot_text(esc: dict) -> str:
     """Sentence for items SA10 drew at an unresolved position (whole lot search), from its warning and element status; '' when there are none."""
     wl = [x.lower() for x in esc.get("whole_lot") or []]
@@ -1201,7 +1212,7 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
         rows = []
         for e_ in els:
             q = f"{e_['quantity']:g} {e_['unit']}" if e_.get("quantity") is not None else "not stated"
-            conf = "; ".join(sentence_case(re.sub(r"_m$", "", k.split(".", 1)[-1]).replace(".", ": ").replace("_", " ")).rstrip(".") for k in (e_.get("confirm") or [])) or "none recorded"
+            conf = "; ".join(_confirm_label(k, e_) for k in (e_.get("confirm") or [])) or "none recorded"
             rows.append(([e_["id"], T(e_["label"]).replace(" - ", ", "), q, "UNRESOLVED" if e_.get("status") == "unresolved" else "CITED VALUES FOUND", conf], f"data:sa10.esc[{e_['id']}]"))
         b.table(["Item", "Control", "Quantity", "Status", "Still to be confirmed"], rows, [0.7, 2.0, 0.9, 1.3, 2.4], status_col=3,
                 caption="Status is the SA10 result: UNRESOLVED means that at least one value for the control was not found in the cited guidance. CITED VALUES FOUND does not mean the control is adequate.")
@@ -1731,7 +1742,9 @@ def _appendix_maps(b: _Build, d: _Data) -> None:
     lot = d.lot_label
     for f in d.figs.values():
         rec = f["rec"]
-        cap = f"Figure {f['no']}. {f['title']} for {lot}. {rec.get('result') or ''}".rstrip(". ") + ". " + (rec.get("summary") or "").strip()
+        # the result chip is repeated in the caption only for a drawn map: the other states open their summary with the result in capitals
+        res_ = (rec.get("result") or "") if rec.get("state") == "map" else ""
+        cap = f"Figure {f['no']}. {f['title']} for {lot}. {res_}".rstrip(". ") + ". " + (rec.get("summary") or "").strip()
         if rec.get("extent") and rec.get("state") != "not_checked":
             cap = cap.rstrip(".") + f". Figure extent {rec['extent']}."
         if rec.get("synthetic"):

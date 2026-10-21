@@ -312,9 +312,14 @@ def _share_text(pct: float) -> str:
     return "not on lot" if pct <= 0 else ("less than 1% of lot" if pct < LEGEND_SHARE_MIN else f"{pct:.0f}% of lot")
 
 
-def _base_figure(inp, lot, imagery, width_pt: float, neighbours) -> FG.MapFigure:
-    return FG.make_map(lot, ctx_m=MAP_CONTEXT_M, width=width_pt, height=width_pt * MAP_ASPECT, srid=inp.srid, imagery=imagery, layers=[], neighbours=neighbours,
-                       show_labels=False, compact=True, max_px=1100)
+def _base_figure(inp, lot, imagery, width_pt: float, neighbours, extra=None, ctx_m: float = MAP_CONTEXT_M) -> FG.MapFigure:
+    return FG.make_map(lot, ctx_m=ctx_m, width=width_pt, height=width_pt * MAP_ASPECT, srid=inp.srid, imagery=imagery, layers=[], neighbours=neighbours,
+                       show_labels=False, compact=True, max_px=1100, extra_extent=extra)
+
+
+def _aerial_line(base: FG.MapFigure) -> str:
+    return (f"Aerial base: {fmt.clean(base.attribution) or 'attribution not recorded'}. Imagery date {fmt.hdate(base.capture_date, 'not published')}."
+            if base.image else "No aerial base: this run has no imagery provider.")
 
 
 def _fixture(inp) -> bool:
@@ -324,22 +329,25 @@ def _fixture(inp) -> bool:
 def build_plan_maps(inp, findings, lot: BaseGeometry, imagery, *, demo: bool, base_no: int, width_pt: float) -> list[PlanMap]:
     """One PlanMap for the zoning and one for every layer finding, numbered from ``base_no`` in ORDER."""
     base = _base_figure(inp, lot, imagery, width_pt, inp.neighbours)
-    aerial_line = (f"Aerial base: {fmt.clean(base.attribution) or 'attribution not recorded'}. Imagery date {fmt.hdate(base.capture_date, 'not published')}."
-                   if base.image else "No aerial base: this run has no imagery provider.")
+    aerial_line = _aerial_line(base)
     fixture = _fixture(inp)
     by_key = {f.key: f for f in findings}
     keys = ["zoning"] + [k for k in ORDER if k != "zoning" and k in by_key] + [f.key for f in findings if f.key not in ORDER]
+    keys = [k for k in keys if k == "zoning" or by_key[k].status != "unchecked"] + [k for k in keys if k != "zoning" and by_key[k].status == "unchecked"]   # short panels last: they pair up and leave no half empty page
     maps: list[PlanMap] = []
     for i, key in enumerate(keys):
         n = base_no + i
-        pm = _zoning_map(inp, lot, base, n, aerial_line, fixture, demo) if key == "zoning" else _layer_map(inp, by_key[key], lot, base, n, aerial_line, fixture, demo)
+        pm = _zoning_map(inp, lot, base, n, aerial_line, fixture, demo) if key == "zoning" else _layer_map(inp, by_key[key], lot, base, n, aerial_line, fixture, demo, imagery, width_pt)
         pm.synthetic = demo
         maps.append(pm)
     return maps
 
 
-def _figure(base: FG.MapFigure, layers, coverage, ring=None, lot_tag=None) -> FG.MapFigure:
-    return replace(base, layers=layers, coverage=coverage, buffer_ring=ring, legend=False, note="", lot_tag=lot_tag, compact=True)
+NO_FEATURE_FLAG = "NO FEATURE IN THE DATA LOADED: NOT A CLEARANCE"
+
+
+def _figure(base: FG.MapFigure, layers, coverage, ring=None, lot_tag=None, flag=None) -> FG.MapFigure:
+    return replace(base, layers=layers, coverage=coverage, buffer_ring=ring, legend=False, note="", lot_tag=lot_tag, compact=True, flag=flag)
 
 
 def _legend_tail(base: FG.MapFigure, ring_label: str | None, hatch: bool) -> list[LegendItem]:
@@ -435,7 +443,7 @@ def _outside(fig: FG.MapFigure) -> bool:
     return not (cx0 <= x0 and cy0 <= y0 and cx1 >= x1 and cy1 >= y1)
 
 
-def _layer_map(inp, f, lot, base, n, aerial_line, fixture, demo) -> PlanMap:
+def _layer_map(inp, f, lot, base, n, aerial_line, fixture, demo, imagery=None, width_pt: float = 0.0) -> PlanMap:
     title = map_title(f.key, f.short)
     chip, ck = f.chip, CHIP_KIND.get(f.status, "unchecked")
     if f.status == "unchecked":
@@ -456,11 +464,22 @@ def _layer_map(inp, f, lot, base, n, aerial_line, fixture, demo) -> PlanMap:
             lines = ["MAP NOT AVAILABLE: GEOMETRY NOT KEPT FOR THIS RUN", f"The layer reports a mapped feature for the lot ({f.chip.upper()}) but no geometry was kept, so it cannot be drawn.",
                      "Re-run the constraint check to draw this map. The result stands as reported."]
             return PlanMap(f.key, title, n, "no_geometry", chip, ck, None, [], [], source, lines, [], "MAP NOT AVAILABLE: GEOMETRY NOT KEPT FOR THIS RUN.", False)
-        fig = _figure(base, [], cov, ring)
+        fig = _figure(base, [], cov, ring, flag=NO_FEATURE_FLAG)
         banners = [(NO_FEATURE_BANNER, "info")] + ([(FIXTURE_RESULT_BANNER, "warn")] if fixture else []) + ([("Limit of this layer: " + fmt.clean(f.caveat), "limit")] if f.caveat else [])
         legend = [LegendItem("No mapped feature of this layer in the area loaded", None, "#737373", "none")] + _legend_tail(base, ring_label, _outside(fig))
         sent = "NOT INTERSECTED BY THE DATA LOADED: no mapped feature in the area loaded around the lot."
         return PlanMap(f.key, title, n, "no_features", chip, ck, fig, legend, banners, source, [], [], sent, bool(base.image))
+    if feats and not any(g.intersects(box(*base.window)) for g, _ in feats) and width_pt:
+        # every mapped feature lies beyond the standard extent: widen the extent to take in the nearest one (a map that hides its feature reads as clear)
+        near = min((g for g, _ in feats), key=lambda g: lot.distance(g))
+        part = near.intersection(box(*cov)) if near.intersects(box(*cov)) else near
+        try:
+            wide = _base_figure(inp, lot, imagery, width_pt, inp.neighbours, extra=[part if not part.is_empty else near], ctx_m=MAP_CONTEXT_M * 0.8)
+            base = wide
+            aerial_line = _aerial_line(wide)
+            source = layer_source_line(f, [fmt.clean(i) for i in insts], demo) + " " + aerial_line
+        except Exception:  # noqa: BLE001
+            pass
     cats: dict[str, dict] = {}
     for g, a in feats:
         lab, tag, srt = category_of(f.key, a)

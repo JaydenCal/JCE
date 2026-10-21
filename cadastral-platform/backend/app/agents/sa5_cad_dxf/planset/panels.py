@@ -37,9 +37,14 @@ def _lines(lines, w: float, h: float = TXT.BODY) -> list[tuple[str, bool]]:
     return out[:-1] if out else out
 
 
-def panel_height(lines, w: float, h: float = TXT.BODY) -> float:
+def _title_lines(title: str, w: float) -> list[str]:
+    return fonts.wrap(up(title), TXT.LABEL, w - 2 * PAD, bold=True) if title else [""]
+
+
+def panel_height(lines, w: float, h: float = TXT.BODY, title: str = "") -> float:
     ls = _lines(lines, w, h)
-    return TITLE_H + sum(PITCH if t else 0.9 for t, _c in ls) + PAD
+    extra = (len(_title_lines(title, w)) - 1) * (TXT.LABEL + 1.2)
+    return TITLE_H + extra + sum(PITCH if t else 0.9 for t, _c in ls) + PAD
 
 
 def draw_panel(v: View, rect, title: str, lines, warn: bool = False, h: float = TXT.BODY, layer: str = "C-ANNO-NOTE") -> float:
@@ -48,8 +53,10 @@ def draw_panel(v: View, rect, title: str, lines, warn: bool = False, h: float = 
     P = Paper(v)
     col = RED if warn else None
     P.poly([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], layer, WHITE, edge=RED if warn else (0, 0, 0), edge_lw=0.35 if warn else 0.25)
-    P.text(x0 + PAD, y1 - 1.2, up(title), TXT.LABEL, "TOP_LEFT", bold=True, color=col, layer=layer)
-    yy = y1 - TITLE_H + 0.4
+    tl = _title_lines(title, x1 - x0)
+    for i, t_ in enumerate(tl):
+        P.text(x0 + PAD, y1 - 1.2 - i * (TXT.LABEL + 1.2), t_, TXT.LABEL, "TOP_LEFT", bold=True, color=col, layer=layer)
+    yy = y1 - TITLE_H + 0.4 - (len(tl) - 1) * (TXT.LABEL + 1.2)
     for t, cont in _lines(lines, x1 - x0, h):
         if not t:
             yy -= 0.9

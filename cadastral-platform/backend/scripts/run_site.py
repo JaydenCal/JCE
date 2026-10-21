@@ -455,6 +455,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         rep.add("SA5 DXF + PDF plan", SKIPPED, "needs ENV and SA4 outputs")
 
     # ---- multi-sheet civil plan set (PDF + DXF)
+    ps_civil: dict | None = None                          # driveway earthworks and steepest profile grade from the plan set (None when no plan set was built in this run)
     if getattr(args, "planset", False):
         if env_out is not None and sa4 is not None and args.acknowledge:
             try:
@@ -501,6 +502,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                 res = build_planset(pin, out, "planset", style=getattr(args, "planset_style", "legacy"),
                                     only=[x for x in (getattr(args, "planset_sheets", None) or "").split(",") if x.strip()] or None)
                 rep.add("SA5 plan set", OK, f"{len(res['sheets'])} sheets; font {res['font']}; DXF audit errors {res['dxf_stats'].get('audit_errors')}", [res["pdf"], res["dxf"]])
+                ps_civil = _planset_civil()            # the same driveway earthworks and profile grade the plan set sheets and the SoEE use
             except Exception as ex:  # noqa: BLE001
                 import traceback
                 traceback.print_exc()
@@ -548,7 +550,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         in9 = Sa9Input(
             lot=lot_with_envelope(sa1, env_out) if env_out is not None else lot, footprint_wkt=footprint_wkt,
             output_dir=str(out), development_type=dev, flood_ffl_text=flood_text,
-            project_title=rr.project_title, flags=list(sa1.flags or []), civil=_civil_summary(R, rep.facts, fchk, env_out, sa4),
+            project_title=rr.project_title, flags=list(sa1.flags or []), civil=_civil_summary(R, rep.facts, fchk, env_out, sa4, ps_civil, bool(getattr(args, 'planset', False))),
             zone_map=zone_map_from_sa1(sa1))     # zone polygons for the land zoning map (none in the offline fixture: the map says so)
         if getattr(args, "report", False):       # reproducible re-render input: re-run SA9 on this file to rebuild the report
             (out / "sa9_input.json").write_text(in9.model_dump_json(indent=1))
@@ -571,7 +573,39 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
     return _finish(rep, out)
 
 
-def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4) -> dict | None:
+def _planset_civil() -> dict | None:
+    """Driveway earthworks and the steepest driveway profile grade, read with the plan set helpers from the site the plan set just drew (so the report, the plan set and
+    the SoEE state the same figures).  None if the helpers are not available or the plan set drew no driveway."""
+    try:
+        from app.agents.sa5_cad_dxf.planset import generate as G
+        from app.agents.sa5_cad_dxf.planset import sheets_ref2 as S2
+        site = G.LAST_SITE
+        if site is None:
+            return None
+        out: dict[str, Any] = {}
+        ew = S2.driveway_earthworks(site)
+        if ew:
+            out["driveway_cut_m3"], out["driveway_fill_m3"] = float(ew["cut"]), float(ew["fill"])
+        p = S2.ref_profile(site)
+        if p is not None:
+            g = [c for c in p["checks"] if c.name == "max_grade" and c.value is not None]
+            if g:
+                out["driveway_max_grade_pct"] = float(g[0].value)
+        return out or None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _accuracy_text(acc: float | None, source: str | None) -> str:
+    """Vertical accuracy for the report.  A figure the service did not state is a placeholder: say so in words (never "5 m (unknown (placeholder))")."""
+    if acc is None:
+        return "UNKNOWN: not stated by the service"
+    if not source or "placeholder" in str(source).lower() or "unknown" in str(source).lower():
+        return f"UNKNOWN: not stated by the service. A {acc:g} m placeholder is used only so that uncertainty is not understated. It is not a stated figure"
+    return f"{acc:g} m ({source})"
+
+
+def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4, ps: dict | None = None, planset_run: bool = False) -> dict | None:
     """Plain dict for the report's civil page. Only what exists; nothing is invented."""
     cv: dict[str, Any] = {}
     t3 = R.get("SA3")
@@ -580,9 +614,12 @@ def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4) -> dict | None:
         tin = t3.tin
         cv["terrain"] = {"source": prov.get("source") or t3.source, "points": prov.get("points"), "min_z": tin.min_z, "max_z": tin.max_z,
                          "copyright": prov.get("copyright", ""), "dem_5m": "5M" in str(prov.get("source", "")).upper(),
-                         "accuracy_text": (f"{t3.vertical_accuracy_m:g} m ({prov.get('vertical_accuracy_source', 'stated')})" if t3.vertical_accuracy_m is not None else "Unknown")}
+                         "accuracy_text": _accuracy_text(t3.vertical_accuracy_m, prov.get("vertical_accuracy_source"))}
         if t3.cut_fill is not None:
             cv["earthworks"] = t3.cut_fill.model_dump()
+    cv["planset_built"] = planset_run
+    if ps:
+        cv["planset"] = ps
     if fchk is not None:
         cv["ffl"] = fchk.model_dump()
     if env_out is not None and getattr(env_out, "driveway", None) is not None:

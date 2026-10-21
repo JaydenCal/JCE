@@ -6,6 +6,7 @@ import math
 
 from shapely.geometry import LineString, Polygon
 
+from app.agents.sa5_cad_dxf.planset import draw as D
 from app.agents.sa5_cad_dxf.planset import fonts
 from app.agents.sa5_cad_dxf.planset import sections as SEC
 from app.agents.sa5_cad_dxf.planset import style as ST
@@ -155,6 +156,16 @@ def _swept(v, x, y):
     ST.Paper(v).line([(x, y), (x + SW, y)], "C-DRIV-TURN", 0.25, (0.9, 0.45, 0.0))
 
 
+def _flow(v, x, y):
+    P = ST.Paper(v)
+    P.line([(x + 3.0, y), (x + SW - 3.0, y)], "C-UTIL-FLOW", 0.25, D.STORM)
+    P.line([(x + SW - 6.0, y + 1.6), (x + SW - 3.0, y), (x + SW - 6.0, y - 1.6)], "C-UTIL-FLOW", 0.25, D.STORM)
+
+
+def _lot_highlight(v, x, y):
+    v.fill(_rect(x, y), "C-PROP-BDY", (1, 0.9, 0.5), 0.5, edge=ST.BLACK, edge_lw=0.25)
+
+
 def _symbol(fn):
     return lambda v, x, y: fn(v, x + SW / 2, y) if v.paper else None
 
@@ -178,12 +189,15 @@ def entries_for(site=None, swept: bool = False) -> list[tuple]:
     out.append((_callout, "CALL-OUT: BOX, LEADER AND DOT OR ARROW"))
     out.append((_dimension, "DIMENSION (EXTENSION LINES AND ARROWS)"))
     out.append((_north, "NORTH POINT (ROTATED WITH THE VIEW)"))
+    out.append((_lot_highlight, "SUBJECT LOT HIGHLIGHT (COVER SHEET SITE PLAN)"))
     if site is None:
         return out
     if getattr(site, "drive_cl", None) is not None:
         out.append((_centreline, "DRIVEWAY CENTRELINE AND CHAINAGE TICKS (SA3 CENTRELINE)"))
     if getattr(site, "tin", None) is not None:
         out.append((_section, "SECTION LINE AND SECTION LETTER"))
+    if getattr(site, "tin", None) is not None:
+        out.append((_flow, "OVERLAND FLOW DIRECTION (DOWNSLOPE OF THE 5 m DEM, INDICATIVE)"))
     if getattr(site, "spots", None):
         out.append((_spot, "SPOT LEVEL (DEM POST, m AHD, INDICATIVE)"))
     if getattr(site, "esc", None) is not None:
@@ -231,3 +245,15 @@ def draw_legend(v: View, x0: float, y1: float, w: float, cols: int = 3, pitch: f
         for k, ln in enumerate(fonts.wrap(label, ST.TXT.BODY, cw - SW - 8.0)[:2]):
             P.text(x + SW + 3.0, y + 1.3 - k * 3.4, ln, ST.TXT.BODY, "MIDDLE_LEFT", layer="C-ANNO-NOTE")
     return y0
+
+
+# Every drawn layer element (DISC-ELEM of the JCS scheme) is either keyed to the legend entry (swatch function) that shows it or listed with the reason it needs none.
+# tests/test_planset_stage7.py checks the drawn layers of the real run against these two tables.
+LEGEND_COVERS = {
+    "SITE-BNDY": "_boundary", "SITE-BNDD": "_boundary", "SITE-ADJN": "_adjoining", "SITE-KERB": "_kerb", "SITE-ROAD": "_road", "SITE-XOVR": "_layover", "SITE-DRVW": "_driveway",
+    "SITE-CONT": "_contour", "SITE-EART": "_cut", "SITE-STRM": "_flow", "SITE-DRVC": "_centreline", "SITE-ESCP": "_esc", "ANNO-CALL": "_callout", "ANNO-DIMS": "_dimension",
+    "ANNO-NRTH": "_north", "ANNO-DATA": "_none", "ANNO-DETL": "_existing",
+}
+NO_LEGEND = {
+    "ANNO-NOTE": "text and note boxes", "SITE-LOTS": "lot labels (text)", "FRAM-TABL": "revision and register tables", "FRAM-TTLB": "frame and title block",
+}

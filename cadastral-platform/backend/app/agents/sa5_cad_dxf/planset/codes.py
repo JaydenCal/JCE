@@ -72,7 +72,7 @@ ELEMENTS: dict[tuple[str, str], tuple[int, float, str, str, tuple[str, ...]]] = 
     ("SITE", "WATR"): (5, 0.18, "CONTINUOUS", "Water service (schematic or supplied)", ("C-UTIL-WATR",)),
     ("SITE", "SEWR"): (6, 0.18, "CONTINUOUS", "Sewer (schematic or supplied)", ("C-UTIL-SEWR",)),
     ("SITE", "DRVC"): (7, 0.18, "CONTINUOUS", "Driveway centreline, chainage, turning path and long section", ("C-DRIV-CNTR", "C-DRIV-TURN", "C-DRIV-LONG", "C-DRIV-EXGD")),
-    ("SITE", "ESCP"): (3, 0.25, "CONTINUOUS", "Erosion and sediment control elements (SA10)", ("C-ESCP-GENL", "C-ESCP-*")),
+    ("SITE", "ESCP"): (3, 0.25, "CONTINUOUS", "Erosion and sediment control elements (SA10)", ("C-ESCP-GENL", "C-ESCP-*", "C-ESC-*")),
     ("ANNO", "DETL"): (7, 0.25, "CONTINUOUS", "Typical detail and section linework", ("C-DETL-LINE",)),
     ("ANNO", "CALL"): (7, 0.25, "CONTINUOUS", "Call-out boxes, leaders and tags", ("C-ANNO-CALL",)),
     ("ANNO", "DIMS"): (7, 0.18, "CONTINUOUS", "Dimensions and boundary lengths", ("C-ANNO-DIMS", "C-ANNO-BRNG")),

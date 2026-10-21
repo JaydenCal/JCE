@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from app.agents.sa5_cad_dxf.planset import fonts
 from app.agents.sa5_cad_dxf.planset.core import A3, LegendEntry, Sheet, View
 from app.agents.sa5_cad_dxf.planset.logo import GOLD, logo_in_box
+from app.agents.sa5_cad_dxf.planset.style import dmy
 
 STRIP_X0, STRIP_X1 = 335.0, 410.0
 AREA = (10.0, 10.0, 332.0, 287.0)
@@ -125,7 +126,7 @@ def draw_frame(sheet: Sheet, proj: Proj, index: int, total: int, main_scale_text
     for k in (1, 2):
         v.line([(X0, yb + k * h / 3), (X1, yb + k * h / 3)], "C-ANNO-TTLB", False, 0.18)
     v.line([(mid, yb), (mid, yb + h)], "C-ANNO-TTLB", False, 0.18)
-    rows = [("SCALE (A3)", main_scale_text, "DATE", proj.date), ("DRAWN", proj.drawn, "CHECKED", proj.checked), ("SHEET SIZE", "A3 LANDSCAPE", "JOB No.", "")]
+    rows = [("SCALE (A3)", main_scale_text, "DATE", dmy(proj.date)), ("DRAWN", proj.drawn, "CHECKED", proj.checked), ("SHEET SIZE", "A3 LANDSCAPE", "JOB No.", "")]
     for i, (l1, v1, l2, v2) in enumerate(rows):
         top = yb + h - i * h / 3
         _lbl(v, X0 + 1.5, top - 0.8, l1, v1, 2.8)
@@ -188,6 +189,7 @@ def draw_frame(sheet: Sheet, proj: Proj, index: int, total: int, main_scale_text
         v.text(cols[i] + 1.2, yb + h - rh / 2, t, 1.8, "MIDDLE_LEFT", bold=True, layer="C-ANNO-TABL")
     for r, row in enumerate(proj.revisions[:3]):
         for i, t in enumerate(row):
+            t = dmy(t)
             v.text(cols[i] + 1.2, yb + h - rh * (r + 1.5), t, 2.0, "MIDDLE_LEFT", layer="C-ANNO-TABL")
     yb += h
 

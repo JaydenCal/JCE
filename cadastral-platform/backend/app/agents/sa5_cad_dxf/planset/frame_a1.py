@@ -28,9 +28,9 @@ SMALL, LABEL_H = 2.2, 2.2
 
 
 def fmt_date(s: str) -> str:
-    """DD.MM.YY from an ISO date; other text is returned unchanged."""
+    """DD/MM/YYYY from an ISO date; other text is returned unchanged."""
     try:
-        return dt.date.fromisoformat(str(s)[:10]).strftime("%d.%m.%y")
+        return dt.date.fromisoformat(str(s)[:10]).strftime("%d/%m/%Y")
     except (ValueError, TypeError):
         return str(s or "")
 

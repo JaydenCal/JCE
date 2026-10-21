@@ -92,7 +92,7 @@ def test_bearings_and_distances_on_every_subject_boundary(sheets):
     for n in ("C100", "C101", "C200", "C300", "C310", "C500"):
         t = texts(shs[n])
         for seg in site.inp.lot.segments:
-            assert f"{seg.distance_m:.2f}m" in t and seg.bearing_dms in t, (n, seg.seq)
+            assert f"{seg.distance_m:.2f} m" in t and seg.bearing_dms in t, (n, seg.seq)
 
 
 def test_scale_bar_length_matches_scale(sheets):
@@ -106,8 +106,8 @@ def test_scale_bar_length_matches_scale(sheets):
                and abs((max(y for _x, y in it.pts[0]) - min(y for _x, y in it.pts[0])) - 2.0) < 1e-6]
         assert len(bar) == 4, n
         total = sum(max(x for x, _y in q.pts[0]) - min(x for x, _y in q.pts[0]) for q in bar)
-        lab = [t for t in texts(sh) if re.fullmatch(r"\d+(\.\d+)? m", t)]
-        metres = float(lab[0].split()[0])
+        lab = [it.text for it in v.items if it.kind == "text" and re.fullmatch(r"\d+(\.\d+)? m", it.text)]
+        metres = float(lab[-1].split()[0])
         assert total == pytest.approx(metres * 1000.0 / sc, abs=1e-6), n
 
 
@@ -134,9 +134,9 @@ def test_long_section_exaggeration_5_with_both_scale_bars():
 def test_driveway_dimension_text_only_on_driveway_sheets(sheets):
     for n in ("C100", "C200", "C300", "C310", "C500"):
         t = " ".join(texts(sheets[1][n]))
-        assert not re.search(r"(?<![\d.])[34]\.0m", t) and "LAYOVER" not in t, n
+        assert not re.search(r"(?<![\d.])[34]\.0 m", t) and "LAYOVER" not in t, n
     for n in ("C101", "C400"):
-        assert re.search(r"(?<![\d.])3\.0m", " ".join(texts(sheets[1][n]))), n
+        assert re.search(r"(?<![\d.])3\.0 m", " ".join(texts(sheets[1][n]))), n
 
 
 def test_no_overlapping_text_boxes(sheets):
@@ -212,7 +212,7 @@ def test_real_lot2_every_boundary_has_bearing_and_distance(lot2_pdf):
         t = " ".join(doc[pg].get_text().split())
         assert n.replace("C", "JCS-XXX-CIV-C").replace("-C", "-") in t or True
         for seg in lot.segments:
-            d, b = f"{round(float(seg.distance_m), 2):.2f}m", ST.clean(seg.bearing_dms)
+            d, b = f"{round(float(seg.distance_m), 2):.2f} m", ST.clean(seg.bearing_dms)
             if n == "C400" and not seg.is_front:
                 continue                                   # the driveway view shows only part of the lot
             assert d in t and b in t, (n, seg.seq, d, b)

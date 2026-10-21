@@ -84,6 +84,7 @@ class Layout:
     drive_axis: tuple[float, float] = (0.0, 0.0)
     bp: tuple[float, float] = (0.0, 0.0)
     diversion_lines: list = field(default_factory=list)
+    not_placed: list[dict] = field(default_factory=list)           # items with no position meeting the cited clearances outside the building envelope: NOT drawn
 
 
 def _wkt(g: BaseGeometry) -> str:
@@ -294,7 +295,7 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
          .difference(unary_union(svc_excl) if svc_excl else Polygon()).difference(unary_union(tree_geoms) if tree_geoms else Polygon()))
     # Search areas for the activity areas.  With a real building footprint the building is always excluded.  With none (only the building envelope, which is not
     # a building) the first search keeps clear of the envelope; when no position there meets the cited clearances the WHOLE lot inside the fence line is searched
-    # and an item placed that way is marked unresolved and says so ("+lot" tier), so it is re-checked when the building is set out.
+    # as a FEASIBILITY CHECK only ("+lot" tier): an item that fits only where the building may be built is reported as NOT DRAWN (with that finding), never drawn.
     F_whole = (lot.buffer(-(P.boundary_inset_m + P.low_margin_m)).difference(access.buffer(1.0))
                .difference(unary_union(svc_excl) if svc_excl else Polygon()).difference(unary_union(tree_geoms) if tree_geoms else Polygon()))
     anchor = access.centroid
@@ -377,7 +378,7 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
             ]
     if dt is not DevelopmentType.shed:
         spec.append(("WC1", "toilet", "Portable toilet", "toilet", ("esc.amenities.staff_facilities_contain_effluent",)))
-    lot_wide: list[str] = []
+    phantom: list = []
     for id_, kind, label, sk, keys in spec:
         size = kind_sizes[sk]
         if kind == "washout":
@@ -386,11 +387,26 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
             r, tier = place(sk, size, id_, kind, label, need_hazard=False)
         else:
             r, tier = place(sk, size, id_, kind, label)
-        placed[id_] = (r, tier)
+        feasible_lot = False
         if r is not None and tier.endswith("+lot"):
-            lot_wide.append(label)
+            # The whole-lot search is a FEASIBILITY CHECK only: a position that exists only where the building may be built is not a position, so the item is not drawn.
+            feasible_lot = True
+            if id_ in ("SP1", "TS1", "LD1"):
+                phantom.append(r)                      # stays reserved for the other two of the three, so the check is joint
+            else:
+                occupied.remove(r)
+            r, tier = None, "none"
+        placed[id_] = (r, tier)
+        if id_ == "LD1":
+            for ph in phantom:                         # the feasibility reservations never constrain the items that are drawn
+                occupied.remove(ph)
         if r is None:
-            L.warnings.append(f"{label}: no position satisfies the cited clearances inside the lot; not drawn. To be confirmed by the designer/certifier.")
+            if feasible_lot:
+                L.warnings.append(f"{label}: no position outside the building envelope satisfies the cited clearances; not drawn. A position meeting them exists only where the building may be built "
+                                  "(whole lot checked), so it is to be confirmed once the building footprint is known.")
+            else:
+                L.warnings.append(f"{label}: no position satisfies the cited clearances inside the lot; not drawn. To be confirmed by the designer/certifier.")
+            L.not_placed.append({"id": id_, "label": label, "kind": kind, "size_m": [float(size[0]), float(size[1])], "whole_lot_feasible": feasible_lot, "req_keys": list(keys)})
             for k in keys:
                 rq.get(k)
             L.elem_used[id_] = ["placement"]
@@ -398,11 +414,6 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
         unres: list[str] = []
         notes = [f"Footprint {size[0]:g} x {size[1]:g} m (layout assumption), long axis along the contour."]
         status = "resolved"
-        if tier.endswith("+lot"):
-            tier = tier[:-4]
-            status = "unresolved"
-            notes.append("No building footprint was supplied and no position outside the building envelope meets the cited clearances, so the whole lot was searched: this item may sit where "
-                         "the building will be. Re-check its position against the building when it is set out.")
         if kind in ("stockpile", "topsoil", "laydown"):
             unres.append("esc.stockpile.setback_from_lot_boundary_m")
             if tier.startswith("minimum"):
@@ -430,10 +441,6 @@ def build_layout(inp: Sa10EscInput, rq: ReqView) -> Layout:
         elif kind == "toilet":
             unres.append("esc.amenities.toilet_location_setback"); status = "unresolved"
         add(id_, kind, r, label, status, list(keys), unres, notes, r.area, "m2")
-
-    if lot_wide:
-        L.warnings.append(f"No building footprint was supplied and no position outside the building envelope meets the cited clearances: {', '.join(x.lower() for x in lot_wide)} placed by "
-                          "searching the whole lot (they may sit where the building will be). Re-check against the building when it is set out.")
 
     # ---- limit of works / disturbed area
     items = [r for r, _ in placed.values() if r is not None]

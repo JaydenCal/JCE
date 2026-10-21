@@ -101,8 +101,9 @@ def test_esc_conflict_with_the_dem_is_flagged_red_and_downslope_labels_are_remov
     t = stext(sh)
     assert "DOES NOT MATCH THE DEM FALL" in t and "DOWNSLOPE LABELS REMOVED" in t
     assert "NO LEVELS PASSED TO SA10" in t
-    # DOWNSLOPE may only appear in the flag itself, never in a call-out
-    assert t.count("DOWNSLOPE") == 1, t.count("DOWNSLOPE")
+    # DOWNSLOPE may only appear in the flag itself (and the cited NOT DRAWN schedule), never in a call-out
+    callouts = " ".join(it.text for v in sh.views for it in v.items if it.kind == "text" and it.layer.startswith("JCS-ANNO-CALL"))
+    assert "DOWNSLOPE" not in callouts and t.count("DOWNSLOPE") >= 1
     flag = [it for v in sh.views for it in v.items if it.kind == "text" and "DOES NOT MATCH THE DEM FALL" in it.text]
     assert flag and all(it.color is not None for it in flag)    # red
 
@@ -123,7 +124,7 @@ def test_access_is_drawn_at_the_cited_length(real):
     assert abs(side[1] - float(c.value)) < 0.3
     assert S2.esc_access_shortfall(real.site, out) is None
     assert "SHORTER THAN THE CITED" not in real.text["C500"]
-    assert f"LENGTH {float(c.value):.1f}m" in real.text["C500"]
+    assert f"LENGTH {float(c.value):.1f} m" in real.text["C500"]
 
 
 def test_access_shorter_than_the_cited_length_gets_a_red_flag_with_the_cited_value(real):
@@ -135,7 +136,7 @@ def test_access_shorter_than_the_cited_length_gets_a_red_flag_with_the_cited_val
     sh = S2.c500(ctx)
     t = stext(sh)
     assert "SHORTER THAN THE CITED 15 m" in t or "SHORTER THAN THE CITED 15 M" in t.upper()
-    assert "STABILISED ACCESS DRAWN 6.0m LONG" in t
+    assert "STABILISED ACCESS DRAWN 6.0 m LONG" in t
     red = [it for v in sh.views for it in v.items if it.kind == "text" and "SHORTER THAN THE CITED" in it.text]
     assert red and all(it.color is not None for it in red)
 
@@ -144,7 +145,7 @@ def test_access_shorter_than_the_cited_length_gets_a_red_flag_with_the_cited_val
 def test_c400_offset_dimension_names_the_driveway_centreline_and_width_is_on_its_own_line(real):
     t = real.text["C400"]
     assert "OFFSET FROM BOUNDARY CORNER TO DRIVEWAY CENTRELINE" in t
-    assert "3.0m" in t
+    assert "3.0 m" in t
     v = real.sheets["C400"].views[0]
     assert collide.dim_line_overlaps(v) == []
     assert collide.dim_text_on_lines(v) == []
@@ -319,9 +320,9 @@ def test_width_and_flare_are_platform_defaults_in_every_place_they_are_printed(r
         assert vals[k]["src"].startswith("PLATFORM DEFAULT") and vals[k]["placeholder"] is False, k
     assert vals["wing"]["placeholder"] is True and vals["band"]["placeholder"] is True
     t = real.text["C420"]
-    for lab in ("LAYOVER WIDTH AT KERB 4.0m (PLATFORM DEFAULT", "FLARE 0.5m (PLATFORM DEFAULT", "DRIVEWAY WIDTH 3.0m (PLATFORM DEFAULT"):
+    for lab in ("LAYOVER WIDTH AT KERB 4.0 m (PLATFORM DEFAULT", "FLARE 0.5 m (PLATFORM DEFAULT", "DRIVEWAY WIDTH 3.0 m (PLATFORM DEFAULT"):
         assert lab in t, lab
-    assert real.text["C400"].count("WIDTH 3.0m (PLATFORM DEFAULT") >= 1
+    assert real.text["C400"].count("WIDTH 3.0 m (PLATFORM DEFAULT") >= 1
 
 
 def test_a_selected_council_standard_changes_the_provenance_text():
@@ -338,8 +339,8 @@ def test_a_selected_council_standard_changes_the_provenance_text():
 # ====================================================================================================== 13 PLACEHOLDER vs TBC, council names in full
 def test_drafting_conventions_read_placeholder_and_tbc_is_for_council_values(real):
     t = real.text["C420"]
-    assert "WING LENGTH 1.0m (PLACEHOLDER)" in t and "KERB AND GUTTER BAND 0.5m (PLACEHOLDER)" in t
-    assert "WING LENGTH 1.0m (TBC" not in t and "BAND 0.5m (TBC" not in t
+    assert "WING LENGTH 1.0 m (PLACEHOLDER)" in t and "KERB AND GUTTER BAND 0.5 m (PLACEHOLDER)" in t
+    assert "WING LENGTH 1.0 m (TBC" not in t and "BAND 0.5 m (TBC" not in t
     assert "TBC (COUNCIL STANDARD DRAWING GOVERNS, NOT SELECTED)" in t
 
 

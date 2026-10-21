@@ -742,25 +742,25 @@ def test_stabilised_access_length_row(doc, run):
     assert _row(S.build_site_soee(inp3), "Stabilised site access length")["status"] == "UNRESOLVED"
 
 
-def test_esc_whole_lot_items_are_reported_as_drawn_at_an_unresolved_position(doc, run):
-    """SA10 now draws the soil stockpile, topsoil stockpile and laydown by searching the whole lot and marks them unresolved: nothing is 'not drawn'."""
+def test_esc_items_without_a_position_outside_the_building_envelope_are_reported_not_drawn(doc, run):
+    """The whole-lot search in SA10 is a feasibility check only: the soil stockpile, topsoil stockpile and laydown are NOT drawn on C500 and the SoEE says so."""
     d, cache = run
     esc = cache["works"]["esc"]
-    wl = [x.lower() for x in esc["whole_lot"]]
-    assert esc["not_drawn"] == [] and len(wl) == 3 and any("stockpile" in x for x in wl) and any("laydown" in x for x in wl)
-    status = {str(e["label"]).lower(): e["status"] for e in esc["elements"]}
-    assert all(any(n in lab and st == "unresolved" for lab, st in status.items()) for n in wl)       # derived from the element status, not hard coded
+    nd = [x.split(":")[0].strip().lower() for x in esc["not_drawn"]]
+    assert len(nd) == 3 and any("stockpile" in x for x in nd) and any("laydown" in x for x in nd)
+    assert esc["whole_lot"] == []
+    labels = [str(e["label"]).lower() for e in esc["elements"]]
+    assert not any("stockpile" in x or "laydown" in x for x in labels)          # no element is drawn for them
     for sec in ("3", "5"):
         t = _section_text(doc, sec)
-        assert "Drawn on C500 at an unresolved position" in t, sec
-        assert "to be confirmed once the building footprint is known" in t.lower(), sec
-        assert "Not drawn on C500" not in t, sec
-        for x in wl:
+        assert "Not drawn on C500" in t, sec
+        assert "Drawn on C500 at an unresolved position" not in t, sec
+        for x in nd:
             assert x in t, (sec, x)
     (_s, tg), = _tables(doc, "Item", "Data gap")
-    row = next(r for r in tg.rows if "Drawn on C500 at an unresolved position" in r[1])
+    row = next(r for r in tg.rows if "Not drawn on the erosion and sediment control layout" in r[1])
     assert "C500" in row[2]
-    assert not any("Not drawn on the erosion and sediment control layout" in r[1] for r in tg.rows)
+    assert not any("Drawn on C500 at an unresolved position" in r[1] for r in tg.rows)
 
 
 def test_esc_items_sa10_still_drops_keep_the_not_drawn_wording(run):
@@ -972,7 +972,7 @@ def test_runner_reads_the_final_plan_set_run(run):
     assert w["planset_project"].upper() == "LOT 2 DP227508 SITE WORKS"
     esc = w["esc"]
     assert esc["flow_assumed"] is False and esc["access_length_m"] == pytest.approx(15.0, abs=0.06)
-    assert esc["not_drawn"] == [] and len(esc["whole_lot"]) == 3          # SA10 +lot tier: drawn at an unresolved position, none dropped
+    assert len(esc["not_drawn"]) == 3 and esc["whole_lot"] == []          # SA10 whole-lot search is a feasibility check only: the three items are not drawn
     assert w["terrain"]["fall_basis"] == "planset.terrain_notes.dem_fall"
     assert 1.5 < w["terrain"]["avg_fall_pct"] < 4.0 and 30 < w["terrain"]["fall_bearing_deg"] < 70
     assert w["driveway"]["swept_path_drawn"] is False
@@ -1055,3 +1055,23 @@ def test_soee_synthetic_demo_stamp(run, tmp_path):
     pdf = pymupdf.open(res["pdf"])
     assert all("SYNTHETIC DEMO DATA" in p.get_text() for p in pdf)
     assert json.loads(Path(res["json"]).read_text())["document"]["synthetic_demo"] is True
+
+
+def test_soee_esc_table_labels_a_laydown_item_by_its_own_type():
+    assert S._confirm_label("esc.stockpile.setback_from_lot_boundary_m", {"kind": "laydown"}) == "Laydown: setback from lot boundary"
+    assert S._confirm_label("esc.stockpile.setback_from_lot_boundary_m", {"kind": "stockpile"}) == "Stockpile: setback from lot boundary"
+    assert S._confirm_label("esc.stockpile.setback_from_lot_boundary_m", {"kind": "topsoil"}) == "Stockpile: setback from lot boundary"
+    assert S._confirm_label("esc.sediment_fence.offset_from_stockpile_m", {"kind": "fence"}) == "Sediment fence: offset from stockpile"
+
+
+def test_soee_map_captions_do_not_double_the_result(map_doc):
+    for b in next(s for s in map_doc.sections if s.number == "Appendix A").blocks:
+        if b.kind == "figure":
+            t = b.stmts[0].text
+            assert not re.search(r"(?i)\b(not mapped|not intersected)\. NOT INTERSECTED", t), t
+            assert not re.search(r"(?i)not checked\. MAP NOT AVAILABLE", t), t
+
+
+def test_soee_and_report_state_the_same_bush_fire_distance(map_doc):
+    t = " ".join(s.text for s in map_doc.statements())
+    assert "54 m from the nearest mapped bush fire prone land" in t and "Next nearest: Vegetation Category 3, 84 m" in t

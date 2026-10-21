@@ -347,7 +347,7 @@ def summary_findings(ctx: Ctx) -> list[tuple[str, str, str]]:
         if v and v != "not mapped":
             bits.append(f"{lab} {v}")
         elif v == "not mapped":
-            bits.append(f"no mapped {lab} control")
+            bits.append(f"{lab}: not intersected by the data loaded (no control mapped on the lot)")
     if bits:
         extra = " Two lot size classes are mapped over the lot; confirm which applies with council." if len((ctx.f("nsw_lot_size_map") or Finding("", "", "", "", "", "", 0)).rows) > 1 else ""
         out.append(("mapped", "Zoning and planning controls", "The lot is " + "; ".join(bits) + "." + extra))
@@ -493,7 +493,7 @@ def site_page(ctx: Ctx) -> list:
         v = control_value(ctx.findings, key)
         f = ctx.f(key)
         src = f"  ({f.currency.lower()})" if f and f.status in ("mapped", "notmapped") else ""
-        val = ("No control mapped on this lot in the LEP layer" if v == "not mapped" else v) + src if v else "Not checked"
+        val = ("NOT INTERSECTED BY THE DATA LOADED: no control mapped on this lot in the LEP layer loaded" if v == "not mapped" else v) + src if v else "Not checked"
         rows.append((lab, val + _ref(ctx, key)))
     rows.append(("Zone objectives", "Not available in this report: the zone objectives and land use table from the LEP were not loaded. Read them in the LEP."))
     flags = [x for x in (m.get("flags") or []) if x]
@@ -547,8 +547,7 @@ def _dist_text(f: Finding) -> str:
     if f.status == "affected":
         return f"Overlap {fmt.area(r.overlap_area_m2)} ({r.pct_of_lot:.0f}% of lot)"
     if f.status == "nearby":
-        veg = [x for x in f.rows if x.name != "Vegetation Buffer"] or f.rows
-        d = min((x.distance_m for x in veg), default=r.nearest_distance_m or 0)
+        d = min((x.distance_m for x in f.rows), default=r.nearest_distance_m or 0)
         return f"{d:.0f} m from the lot; inside the {f.buffer_m:.0f} m screening distance"
     if f.status == "mapped":
         return f"{r.pct_of_lot:.0f}% of lot" if r.pct_of_lot < 99.5 else "Whole lot"
@@ -662,7 +661,6 @@ def layer_page(ctx: Ctx, f: Finding, idx: int, total: int) -> list:
                     style=TableStyle([("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("LEFTPADDING", (0, 0), (-1, -1), 0), ("TOPPADDING", (0, 0), (-1, -1), 0)])))
     fl.append(Spacer(1, 1.5 * mm))
     layers = []
-    nonbuf = [r for r in f.rows if r.name != "Vegetation Buffer"]
     groups: dict[str, list] = {}
     for r in f.rows:
         groups.setdefault(r.name, []).append(r.geom)
@@ -671,12 +669,12 @@ def layer_page(ctx: Ctx, f: Finding, idx: int, total: int) -> list:
         s, fc = ("#b4601a", "#f2b24a") if nm == "Vegetation Buffer" else palette[i % len(palette)]
         layers.append(Layer(nm, gs, s, fc, 0.30 if nm == "Vegetation Buffer" else 0.40))
     ring = (lot.buffer(f.buffer_m), f"{f.buffer_m:.0f} m screening buffer") if f.buffer_m and f.status in ("nearby", "affected") else None
-    pair = nearest_pair(lot, [r.geom for r in (nonbuf or f.rows)]) if f.status == "nearby" else None
+    pair = nearest_pair(lot, [r.geom for r in f.rows]) if f.status == "nearby" else None
     measure = (pair[1], pair[2], f"d = {pair[0]:.0f} m") if pair and pair[0] > 1 else None
     ctxm = min(300, max(110, f.buffer_m * 1.45))
     fig = make_map(lot, ctx_m=ctxm, width=CW, height=60 * mm, srid=ctx.inp.srid, imagery=ctx.imagery, layers=layers, neighbours=ctx.inp.neighbours,
                    footprint=None, buffer_ring=ring, measure=measure, show_labels=False, compact=False,
-                   extra_extent=[pair and _wkt.loads(f"POINT({pair[2][0]} {pair[2][1]})")] if pair else None)
+                   extra_extent=[_wkt.loads(f"POINT({pair[1][0]} {pair[1][1]})"), _wkt.loads(f"POINT({pair[2][0]} {pair[2][1]})")] if pair else None)
     n = ctx.next_fig()
     ctx.figures.append(_fig_record(n, f.short, fig))
     cur = f.currency.lower() if f.currency else ""
@@ -763,11 +761,13 @@ def civil_section(ctx: Ctx) -> list | None:
     fl.append(Table([[Chip("Unverified", "unresolved"), P("Based on public data and defaults. Not survey, engineering design or certification.", "muted")]],
                     colWidths=[26 * mm, CW - 26 * mm], style=TableStyle([("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("LEFTPADDING", (0, 0), (-1, -1), 0)])))
     fl.append(Spacer(1, 2 * mm))
+    ps = cv.get("planset") or {}
+    fl.append(P("Plan set in this run: " + ("built; the driveway earthworks and grade below are the plan set figures." if cv.get("planset_built") else "not built; no driveway profile, earthworks or grade was computed for this report."), "muted"))
     tr = cv.get("terrain")
     if tr:
         rows = [("Source", tr.get("source", "-")), ("Points sampled", str(tr.get("points", "-"))),
                 ("Ground range", f"RL {tr['min_z']:.1f} to {tr['max_z']:.1f} m AHD ({tr['max_z'] - tr['min_z']:.1f} m relief across the lot)" if tr.get("min_z") is not None else "-"),
-                ("Vertical accuracy", ("ASSUMED / PLATFORM DEFAULT: " if "placeholder" in str(tr.get("accuracy_text", "")).lower() else "") + str(tr.get("accuracy_text", "Unknown")))]
+                ("Vertical accuracy", str(tr.get("accuracy_text", "UNKNOWN")))]
         fl += [P("Terrain", "h2"), kv_table(rows)]
         if tr.get("dem_5m"):
             fl.append(Spacer(1, 1.5 * mm))
@@ -779,8 +779,15 @@ def civil_section(ctx: Ctx) -> list | None:
                 ("Net", f"{ew['net_volume_m3']:+.0f} m³ (positive = export)"), ("Topsoil strip", f"{ew['topsoil_strip_m3']:.0f} m³"),
                 ("Uncertainty", f"plus or minus {ew['volume_uncertainty_m3']:.0f} m³")]
         fl += [kv_table(rows), P("Cut and fill volumes are indicative estimates from third-party terrain data (5 m DEM) and must not be used for pricing or earthworks without independent verification.", "muted")]
+    elif ps.get("driveway_cut_m3") is not None:
+        fl.append(kv_table([("Driveway cut", f"{ps['driveway_cut_m3']:,.1f} m³"), ("Driveway fill", f"{ps['driveway_fill_m3']:,.1f} m³")]))
+        fl.append(P("INDICATIVE. Existing 5 m DEM levels against the platform driveway profile, as stated on the plan set (the same figures as the plan set and the SoEE). "
+                    "The level at the driveway end is a PLATFORM DEFAULT, not a design level. No building pad is included.", "muted"))
+    elif cv.get("planset_built"):
+        fl.append(P("NOT AVAILABLE: the plan set was built in this run but gave no driveway earthworks figure.", "body"))
     else:
-        fl.append(P("Not calculated: no earthworks design was supplied and the terrain model is a coarse 5 m DEM.", "body"))
+        fl.append(P("Not calculated in this run: no plan set was built (so no driveway profile was drawn) and no earthworks design was supplied. The plan set and the SoEE give driveway "
+                    "earthworks when they are built from a run that includes the plan set. The terrain model is a coarse 5 m DEM.", "body"))
     dv = cv.get("driveway")
     fl.append(P("Driveway and crossover", "h2"))
     if dv:
@@ -788,7 +795,7 @@ def civil_section(ctx: Ctx) -> list | None:
         mn = next((r for r in ctx.inp.requirements if r["key"] == "driveway.min_width_m"), None)
         mx = next((r for r in ctx.inp.requirements if r["key"] == "driveway.max_width_m"), None)
         dflt = "" if dv.get("council_standard_label") else " (ASSUMED / PLATFORM DEFAULT design value, no cited source)"
-        rows = [("Design width", f"{w:.1f} m{dflt}"), ("Design vehicle", f"{dv.get('design_vehicle', '-')}{dflt}"), ("Maximum grade", f"{dv['max_grade_pct']:.1f}%" if dv.get("max_grade_pct") is not None else "Not computed (no survey levels along the route)"),
+        rows = [("Design width", f"{w:.1f} m{dflt}"), ("Design vehicle", f"{dv.get('design_vehicle', '-')}{dflt}"), ("Maximum grade", f"{dv['max_grade_pct']:.1f}%" if dv.get("max_grade_pct") is not None else (f"{ps['driveway_max_grade_pct']:.2f}% steepest profile grade from the 5 m DEM (plan set, platform screening only, INDICATIVE)" if ps.get("driveway_max_grade_pct") is not None else "Not computed in this run" + ("" if cv.get("planset_built") else " (no plan set built, so no profile along the route)"))),
                 ("Standard", dv.get("council_standard_label") or "ASSUMED / PLATFORM DEFAULT: AS/NZS 2890.1 used; council standard not applied")]
         if mn and mx:
             ok = mn["value"] <= w <= mx["value"]

@@ -235,7 +235,7 @@ def pavement_layers(v, P, tv: TypicalValues, x0: float, x1: float, ytop: float, 
 LAYBACK_RISE, LAYBACK_RUN, GUTTER_RUN = 5.0, 9.0, 8.0         # graphic proportions only (mm at S = 1), not design values
 
 
-def kerb_gutter_profile(v, P, tv: TypicalValues, x: float, y: float, s: float = 1.0) -> dict:
+def kerb_gutter_profile(v, P, tv: TypicalValues, x: float, y: float, s: float = 1.0, depth: float | None = None) -> dict:
     """LAID-BACK (layback) kerb and gutter profile, schematic, concrete stipple: the gutter lip at (x, y), a flat gutter, then the layback face rising
     at a flat angle to the top of kerb, where the driveway layover begins.  There is no barrier upstand.  The proportions are graphic only (the
     council standard drawing governs).  Returns key points."""
@@ -243,10 +243,11 @@ def kerb_gutter_profile(v, P, tv: TypicalValues, x: float, y: float, s: float = 
     xl0 = x + GUTTER_RUN * f                                     # foot of the layback
     xt = xl0 + LAYBACK_RUN * f                                   # top of the layback
     top = y + LAYBACK_RISE * f
-    prof = [(x, y), (xl0, y), (xt, top), (xt + 2.0 * f, top), (xt + 2.0 * f, y - 10 * f), (x, y - 10 * f)]
+    dp = 10.0 * f if depth is None else depth                    # the kerb body runs down to the top of the base course when the caller gives its level
+    prof = [(x, y), (xl0, y), (xt, top), (xt + 2.0 * f, top), (xt + 2.0 * f, y - dp), (x, y - dp)]
     stipple(v, prof)
     P.line([(x, y), (xl0, y), (xt, top), (xt + 2.0 * f, top)], L_LINE, 0.5, ST.BLACK)
-    return {"lip": (x, y), "foot": (xl0, y), "face_top": (xt, top), "back": (xt + 2.0 * f, top), "bot": (xt + 2.0 * f, y - 10 * f), "x1": xt + 2.0 * f, "top": top}
+    return {"lip": (x, y), "foot": (xl0, y), "face_top": (xt, top), "back": (xt + 2.0 * f, top), "bot": (xt + 2.0 * f, y - dp), "x1": xt + 2.0 * f, "top": top}
 
 
 # ------------------------------------------------------------------------------------------------------------------- detail drawings (each in a box)
@@ -282,32 +283,33 @@ def detail_kerb_layover(v, P, tv: TypicalValues, r: tuple, foot: list | None = N
     x0, y0, x1, y1 = r
     W = x1 - x0
     yb = title(v, P, x0, y1, W, "KERB AND GUTTER, LAYOVER SECTION", "TYPICAL, NOT TO SCALE")
-    S = max(1.0, min(2.2, (yb - (y0 + 24.0)) / 100.0))
-    yb = shift(r, yb, 96.0 * S, 24.0)
-    yg = yb - 50.0 * S                                                         # gutter lip level
+    # the drawing and its call-outs occupy 26 S + 79 mm (top call-out 5 S + 48 above the gutter lip, layback call-out 21 S + 31 below it): S fills the cell
+    S = max(1.0, min(3.0, ((yb - (y0 + 24.0)) - 79.0) / 26.0))
+    yg = yb - 2.0 - 5.0 * S - 48.0                                             # gutter lip level
     xr0, xk = x0 + 6.0, x0 + 0.26 * W
     road_top = yg - 2.0
     th = 7.0 * S
+    xb = x1 - max(0.07 * W, 30.0)                                              # property boundary, near the right edge of the cell
     grey(v, [(xr0, road_top), (xk, yg), (xk, yg - th), (xr0, road_top - th)], ST.BITUMEN)
     grey(v, [(xr0, road_top - th), (xk, yg - th), (xk, yg - 2 * th), (xr0, road_top - 2 * th)], GREY_BASE)
     grey(v, [(xr0, road_top - 2 * th), (xk, yg - 2 * th), (xk, yg - 3 * th), (xr0, road_top - 3 * th)], GREY_SUB)
     hatch(v, [(xr0, road_top - 3 * th), (xk, yg - 3 * th), (xk, yg - 3 * th - 9), (xr0, road_top - 3 * th - 9)], "existing")
-    k = kerb_gutter_profile(v, P, tv, xk, yg, S)
-    xb = x1 - max(0.07 * W, 30.0)                                          # property boundary, near the right edge of the cell
+    k = kerb_gutter_profile(v, P, tv, xk, yg, S, depth=th)                       # kerb body down to the top of the base course
     yv = k["top"]                                                          # the layover starts at the top of the layback (no upstand)
     ybnd = yv + (0.0 if fall is None else (-6.0 if fall < 0 else 6.0))
     m = tv.material()
-    e = 8.0 * S
-    slab = [(k["x1"], yv), (xb, ybnd), (xb, ybnd - e), (k["x1"], yv - e)]
+    ybot = yg - th                                                         # the layover slab sits on the same base course as the road: no void under the kerb
+    slab = [(k["x1"], yv), (xb, ybnd), (xb, ybot), (k["x1"], ybot)]
     if m == "concrete":
         stipple(v, slab)
     elif m == "bitumen":
         grey(v, slab, ST.BITUMEN)
     else:
         grey(v, slab, PLAIN)                                               # layover surface type not selected: plain, no stipple
-    grey(v, [(k["x1"], yv - e), (xb, ybnd - e), (xb, ybnd - 2 * e), (k["x1"], yv - 2 * e)], GREY_BASE if m else PLAIN)
-    hatch(v, [(k["x1"], yv - 2 * e), (xb, ybnd - 2 * e), (xb, ybnd - 2 * e - 10.0), (k["x1"], yv - 2 * e - 10.0)], "existing")
-    P.line([(xb, max(yv, ybnd) + 14.0), (xb, ybnd - 2 * e - 12.0)], L_LINE, 0.3, ST.BLACK, dash="DASHED")
+    grey(v, [(xk, yg - th), (xb, yg - th), (xb, yg - 2 * th), (xk, yg - 2 * th)], GREY_BASE if m else PLAIN)          # base course continues under the kerb and the layover
+    grey(v, [(xk, yg - 2 * th), (xb, yg - 2 * th), (xb, yg - 3 * th), (xk, yg - 3 * th)], GREY_SUB if m else PLAIN)
+    hatch(v, [(xk, yg - 3 * th), (xb, yg - 3 * th), (xb, yg - 3 * th - 9), (xk, yg - 3 * th - 9)], "existing")
+    P.line([(xb, max(yv, ybnd) + 14.0), (xb, yg - 3 * th - 12.0)], L_LINE, 0.3, ST.BLACK, dash="DASHED")
     P.text(xb, max(yv, ybnd) + 15.5, "PROPERTY BOUNDARY", ST.TXT.BODY, "BOTTOM_CENTER", layer=L_NOTE)
     grade = {None: "LAYOVER GRADE " + tv.text("crossfall", "%"), -1: "LAYOVER GRADE FALLS TOWARDS THE LOT (DIAGRAMMATIC)", 1: "LAYOVER GRADE RISES TO THE BOUNDARY (DIAGRAMMATIC)"}[fall]
     if fall is None:
@@ -319,7 +321,7 @@ def detail_kerb_layover(v, P, tv: TypicalValues, r: tuple, foot: list | None = N
     dim_v(P, k["foot"][0] - 3.0 * S, yg, k["top"], "", 1)
     P.text(k["foot"][0] - 3.0 * S - 2.0, yg + LAYBACK_RISE * S / 2, f"LAYBACK HEIGHT {tv.text('kerb_height', 'mm')}", ST.TXT.BODY, "MIDDLE_RIGHT", layer=L_DIM)
     dim_h(P, yg + LAYBACK_RISE * S + 7.0, xk, k["foot"][0], f"GUTTER {gutter_w_text or TBC}", ST.TXT.BODY, below=False)
-    callout(v, P, ["LAYBACK KERB AND GUTTER", f"CONCRETE ASSUMED, PROFILE {tv.text('kerb_type')}", "GUTTER LIP RUNS INTO THE LAYBACK"], (xk + 4.0, yg - 12.0 * S - 8.0), (xk + 14.0 * S, yg + 1.0), 52.0)
+    callout(v, P, ["LAYBACK KERB AND GUTTER", f"CONCRETE ASSUMED, PROFILE {tv.text('kerb_type')}", "GUTTER LIP RUNS INTO THE LAYBACK"], (xk + 4.0, yg - 3 * th - 9.0 - 8.0), (xk + 14.0 * S, yg - 1.0), 52.0)
     lay = "DRIVEWAY LAYOVER" if m is None else ("DRIVEWAY LAYOVER SLAB" if m == "concrete" else "DRIVEWAY LAYOVER")
     lay2 = NOT_SELECTED if m is None else ("CONCRETE" if m == "concrete" else "BITUMEN OR ASPHALT")
     callout(v, P, [lay, lay2, f"T = {tv.text('slab' if m == 'concrete' else 'wearing', 'mm')}"], (k["x1"] + 8.0, max(yv, ybnd) + 34.0), (k["x1"] + 24.0, yv - 2.0), 54.0)

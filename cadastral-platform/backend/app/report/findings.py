@@ -116,6 +116,14 @@ def _rows(key: str, lot: BaseGeometry, r: LayerResult) -> list[FeatureRow]:
     return out
 
 
+def nearest_classes(rows: list[FeatureRow]) -> list[tuple[str, float]]:
+    """Each mapped class (feature name) with the distance of its nearest feature from the lot, nearest first.  Taken from the data; no class is preferred."""
+    best: dict[str, float] = {}
+    for x in rows:
+        best[x.name] = min(x.distance_m, best.get(x.name, x.distance_m))
+    return sorted(best.items(), key=lambda kv: (kv[1], kv[0]))
+
+
 def _dedupe(rows: list[FeatureRow]) -> list[FeatureRow]:
     seen, out = set(), []
     for r in sorted(rows, key=lambda x: (x.distance_m, -x.overlap_m2)):
@@ -137,11 +145,14 @@ def _headline(key: str, status: str, short: str, rows: list[FeatureRow], r: Laye
             return f"The whole lot is within mapped {low}."
         return f"{r.pct_of_lot:.0f}% of the lot ({fmt.area(r.overlap_area_m2)}) is within mapped {low}."
     if status == "nearby":
-        veg = [x for x in rows if x.name != "Vegetation Buffer"] or rows
-        d = min(x.distance_m for x in veg) if veg else (r.nearest_distance_m or 0)
-        what = {"nsw_bushfire": "bush fire prone vegetation"}.get(key, f"mapped {low}")
-        nm = f" ({veg[0].name})" if key == "nsw_bushfire" and veg else ""
-        return (f"The lot is {d:.0f} m from the nearest {what}{nm}. No mapped area overlaps the lot, but this feature is within the "
+        grp = nearest_classes(rows)                       # (class name, nearest distance) for every mapped class in range, nearest first (any class counts)
+        d = grp[0][1] if grp else (r.nearest_distance_m or 0)
+        what = {"nsw_bushfire": "mapped bush fire prone land"}.get(key, f"mapped {low}")
+        nm = f" ({grp[0][0]})" if grp and grp[0][0] != "Mapped area" else ""
+        more = ""
+        if len(grp) > 1:
+            more = " Next nearest: " + "; ".join(f"{n}, {x:.0f} m" for n, x in grp[1:]) + "."
+        return (f"The lot is {d:.0f} m from the nearest {what}{nm}.{more} No mapped area overlaps the lot, but the nearest feature is within the "
                 f"{buffer_m:.0f} m screening distance (a platform screening setting), so the result is WITHIN BUFFER.")
     if status == "clear":
         if r.nearest_distance_m is None:
@@ -175,7 +186,7 @@ def build_findings(results: list[LayerResult], triggers: list[TriggerResult], lo
             else:
                 status, chip = "nearby", "Within buffer"
         else:
-            status, chip = ("notmapped", "Not mapped") if r.key in C.CONTROL_KEYS else ("clear", "Not intersected")
+            status, chip = ("notmapped", "Not intersected") if r.key in C.CONTROL_KEYS else ("clear", "Not intersected")
         why = ""
         if status == "unchecked":
             e = r.error or ""

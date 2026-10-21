@@ -48,7 +48,7 @@ class Sa10Esc:
         sql.write_text(insert_sql())
         unresolved = [{"key": k, "prompt": msg, "used_by": [i for i, ks in L.elem_used.items() if k in ks]} for k, msg in sorted(rq.missing.items())]
         out = Sa10EscOutput(elements=L.elements, flow=L.flow, quantities={**L.quantities, "sheet_scale": info["scale"]},
-                            resolved_keys=sorted(rq.used), unresolved=unresolved, assumptions=L.assumptions, warnings=warnings, files=files)
+                            resolved_keys=sorted(rq.used), unresolved=unresolved, assumptions=L.assumptions, warnings=warnings, not_placed=list(L.not_placed), files=files)
         rpt = out_dir / f"{stem}_report.md"
         out.files["report"] = str(rpt)
         outputs.write_report(p, L, rq, out, rpt)

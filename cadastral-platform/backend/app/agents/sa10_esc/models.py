@@ -104,5 +104,6 @@ class Sa10EscOutput(M):
     unresolved: list[dict[str, Any]]            # {key, prompt, used_by}
     assumptions: list[str]
     warnings: list[str]
+    not_placed: list[dict[str, Any]] = []        # {id, label, kind, size_m, whole_lot_feasible, req_keys}: items NOT drawn (no position meets the cited clearances outside the building envelope)
     files: dict[str, str]
     disclaimer: str = DISCLAIMER

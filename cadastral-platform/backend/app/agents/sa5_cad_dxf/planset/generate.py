@@ -34,7 +34,7 @@ def _aerial(inp: PlansetInput, ext, out_dir: Path, name: str, long_px: int = 180
         p = out_dir / name
         p.write_bytes(r.data)
         m = r.meta
-        return Aerial(str(p), tuple(ext), f"Aerial imagery: {m.attribution or m.source}, {m.capture_date or 'date unavailable'}; verify terms before commercial use")
+        return Aerial(str(p), tuple(ext), f"Aerial imagery: {re.sub(r'^\s*imagery:\s*', '', str(m.attribution or m.source), flags=re.I)}, {m.capture_date or 'date unavailable'}; verify terms before commercial use")
     except Exception as ex:  # noqa: BLE001
         print(f"aerial fetch failed: {type(ex).__name__}: {ex}")
         return None

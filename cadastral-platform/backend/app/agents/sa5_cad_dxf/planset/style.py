@@ -7,6 +7,8 @@ Symbol drawers work in paper mm so they look the same on any paper size; they ar
 """
 from __future__ import annotations
 
+import re
+
 import math
 from dataclasses import dataclass
 
@@ -96,9 +98,17 @@ LW_FINE, LW_STD, LW_HEAVY = 0.13, 0.25, 0.5      # the three line weights used f
 core.CUSTOM_DASH[DASH_BDY] = (REF.dash_len, -REF.dash_len)
 
 
+_ISO_DATE = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
+
+
+def dmy(s: str) -> str:
+    """ISO dates (YYYY-MM-DD) written DD/MM/YYYY."""
+    return _ISO_DATE.sub(lambda m: f"{m.group(3)}/{m.group(2)}/{m.group(1)}", str(s))
+
+
 def clean(s: str) -> str:
-    """No em or en dashes in any rendered text."""
-    return str(s).replace("—", "-").replace("–", "-").replace("−", "-")
+    """No em or en dashes in any rendered text, and dates as DD/MM/YYYY."""
+    return dmy(str(s).replace("—", "-").replace("–", "-").replace("−", "-"))
 
 
 class Paper:
@@ -227,14 +237,23 @@ def tree_canopy(v: View, x: float, y: float, r_m: float) -> None:
     p.line([(px, py - 1.0), (px, py + 1.0)], "C-SITE-SYMB", 0.18, BLACK)
 
 
-def label_masked(v: View, x: float, y: float, s: str, h: float, rot_deg: float, layer: str = "C-ANNO-NOTE", color=None, bold: bool = False, pad: float = 0.9) -> bool:
-    """Model-point label on a white mask (as the reference does) if it fits and clears earlier labels; no halo."""
+def label_box(v: View, x: float, y: float, s: str, h: float, rot_deg: float, bold: bool = False) -> tuple:
+    """Paper box of a label_masked label (to test and reserve it before it is drawn)."""
+    rot = v.paper_rot(rot_deg) if not v.paper else core.upright(rot_deg)
+    px, py = v.tp(x, y)
+    return v._box(px, py, clean(s), h, "MIDDLE_CENTER", rot, bold)
+
+
+def label_masked(v: View, x: float, y: float, s: str, h: float, rot_deg: float, layer: str = "C-ANNO-NOTE", color=None, bold: bool = False, pad: float = 0.9, reserved: bool = False) -> bool:
+    """Model-point label on a white mask (as the reference does) if it fits and clears earlier labels; no halo.  ``reserved``: its box was reserved earlier
+    (``label_box`` + ``v.occ``), so it is drawn without the free test."""
     s, rot = clean(s), (v.paper_rot(rot_deg) if not v.paper else core.upright(rot_deg))        # rot_deg is a MODEL direction; rot the upright paper angle
     px, py = v.tp(x, y)
     box = v._box(px, py, s, h, "MIDDLE_CENTER", rot, bold)
-    if not v.free(box):
-        return False
-    v.occ.append(box)
+    if not reserved:
+        if not v.free(box):
+            return False
+        v.occ.append(box)
     v.tbox.append(box)
     v._mask(px, py, fonts.text_width(s, h, bold) + 2 * pad, h + 2 * pad, rot, layer)
     v.text(x, y, s, h, "MIDDLE_CENTER", v.model_rot(rot) if not v.paper else rot, bold, color=color, layer=layer, halo=False)
@@ -261,7 +280,7 @@ def scale_bar_ref(v: View, x: float, y: float, scale: int, paper_label: str = "A
     """Four-segment scale bar, lower-left at PAPER (x, y); returns the bar length in mm."""
     p = Paper(v)
     best = 1
-    for n in (1, 2, 5, 10, 20, 25, 50, 100, 200, 500):
+    for n in (1, 2, 4, 8, 20, 40, 100, 200, 400):                          # bar lengths whose four steps are round figures
         if n * 1000.0 / scale <= 90.0:
             best = n
     L = best * 1000.0 / scale

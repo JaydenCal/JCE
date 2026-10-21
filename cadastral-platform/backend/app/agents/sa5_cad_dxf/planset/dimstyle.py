@@ -56,6 +56,9 @@ def dim_linear(v: View, a, b, text: str, off_mm: float = 6.0, side=None, h: floa
         return box
     v.dim_lines.append(((q1[0] - ux * tail, q1[1] - uy * tail), (q2[0] + ux * tail, q2[1] + uy * tail)))
     P = Paper(v)
+    v.dim_geoms.append(LineString([(q1[0] - ux * tail, q1[1] - uy * tail), (q2[0] + ux * tail, q2[1] + uy * tail)]))
+    for p, q in ((a, q1), (b, q2)):
+        v.dim_geoms.append(LineString([(p[0] + nx * sg * 1.0, p[1] + ny * sg * 1.0), (q[0] + nx * sg * 1.8, q[1] + ny * sg * 1.8)]))
     for p, q in ((a, q1), (b, q2)):                                  # extension lines: a small gap off the feature, a little past the dimension line
         P.line([(p[0] + nx * sg * 1.0, p[1] + ny * sg * 1.0), (q[0] + nx * sg * 1.8, q[1] + ny * sg * 1.8)], layer, 0.13, color)
     P.line([(q1[0] - ux * tail, q1[1] - uy * tail), (q2[0] + ux * tail, q2[1] + uy * tail)], layer, 0.18, color)

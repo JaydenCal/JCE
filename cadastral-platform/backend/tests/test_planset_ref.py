@@ -148,7 +148,7 @@ def test_dwelling_not_drawn_by_default_with_setback_placeholder(built, built_dw)
     assert "FFL" not in t_off.upper() and "FOOTPRINT" not in t_off.upper() and "AREA 140" not in t_off
     assert codes.SETBACK_PLACEHOLDER in t_off
     assert [it for v in on.views for it in v.items if it.layer == "A-BLDG-PROP"] and codes.SETBACK_PLACEHOLDER not in t_on
-    assert "30.00m" in t_off and "0°00'00\"" in t_off and "3.0m" in t_off                                          # boundary lengths and crossover width kept
+    assert "30.00 m" in t_off and "0°00'00\"" in t_off and "3.0 m" in t_off                                          # boundary lengths and crossover width kept
     assert "ASSUMED KERB LINE" in t_off and "NORTH POINT" in t_off and "SCALE 1:" in t_off
 
 
@@ -158,7 +158,7 @@ def test_frame_blank_checked_and_job_number():
     proj = Proj("T", date="2026-01-01", brand=Brand(), datum=["Units: metres. Not a survey."], revisions=[("A", "PRELIMINARY ISSUE", "2026-01-01", "JCS")], job="123")
     v = draw_frame_a1(sh, proj, 1, 1, "1:100 @ A1")
     tx = _texts(v.items)
-    assert "JCS-123-CIV-101" in tx and STAMP in tx and "01.01.26" in tx and "1:100 @ A1" in tx
+    assert "JCS-123-CIV-101" in tx and STAMP in tx and "01/01/2026" in tx and "1:100 @ A1" in tx
     assert not [it for it in v.items if it.kind == "text" and it.pts[0][0] >= 795.6 and 34.0 <= it.pts[0][1] <= 50.0]      # CHECKED and APPROVED values are blank
     assert any("NOT A SURVEY" in t.upper() for t in tx)                                                                    # datum and disclaimer notes kept
 
@@ -193,7 +193,7 @@ def _on_edge(p, b, tol=1e-6):
 @pytest.mark.parametrize("target_paper, expect", [((470.0, 330.0), "right"), ((200.0, 330.0), "left"), ((330.0, 480.0), "top"), ((330.0, 250.0), "bottom")])
 def test_callout_leader_leaves_box_edge_and_ends_at_target(target_paper, expect):
     v = View("m", (20, 90, 830, 580), centre=(1000.0, 2000.0), scale=100)
-    c = CO.callout(v, ["proposed crossover", "width 3.0m", "council standard drawing governs"], (300.0, 360.0), v.tm(*target_paper), "auto", "dot")
+    c = CO.callout(v, ["proposed crossover", "width 3.0 m", "council standard drawing governs"], (300.0, 360.0), v.tm(*target_paper), "auto", "dot")
     assert c is not None and c.side == expect
     assert _on_edge(c.start, c.box) and c.leader[0] == c.start
     assert math.dist(c.leader[-1], target_paper) < 1e-6
@@ -204,7 +204,7 @@ def test_callout_leader_leaves_box_edge_and_ends_at_target(target_paper, expect)
     drawn = [[v.tp(*p) for p in it.pts] for it in v.items if it.kind == "line" and it.layer == "C-ANNO-CALL" and not it.closed]
     assert any(len(d) == len(c.leader) and all(math.dist(a, b) < 1e-6 for a, b in zip(d, c.leader)) for d in drawn)
     tx = [it for it in v.items if it.kind == "text"]
-    assert [t.text for t in tx][:2] == ["PROPOSED CROSSOVER", "WIDTH 3.0m"]                       # UPPERCASE, SI unit symbol kept
+    assert [t.text for t in tx][:2] == ["PROPOSED CROSSOVER", "WIDTH 3.0 m"]                       # UPPERCASE, SI unit symbol kept
     assert tx[-1].anchor == "BOTTOM_RIGHT" and tx[-1].text == "COUNCIL STANDARD DRAWING GOVERNS"          # last line right-aligned
 
 
@@ -248,7 +248,7 @@ def test_crossover_without_driveway_and_without_frontage():
     assert CX.KERB_ASSUMED_TEXT in notes and CX.NO_DRIVEWAY_TEXT in notes
     assert not [it for it in v.items if it.layer == "C-ROAD-CONC"]                  # nothing drawn for a crossover that has no data
     CX.callouts_crossover(v, g)
-    assert "ASSUMED KERB LINE" in _texts(v.items) and "BOUNDARY TO KERB 4.0m (PLATFORM DEFAULT, NOT SURVEYED)" in _texts(v.items)
+    assert "ASSUMED KERB LINE" in _texts(v.items) and "BOUNDARY TO KERB 4.0 m (PLATFORM DEFAULT, NOT SURVEYED)" in _texts(v.items)
     none = CX.build_crossover(None, lot, None, 4.0)
     assert not none.present and none.kerb_line is None and none.note
 
@@ -263,7 +263,7 @@ def test_crossover_assumed_kerb_label_and_council_standard_wording():
     CX.layover_dims(v, g)                                                            # dimensions are drawn on driveway sheets only, by layover_dims
     CX.callouts_crossover(v, g, None)
     tx = _texts(v.items)
-    assert "ASSUMED KERB LINE" in tx and "COUNCIL STANDARD DRAWING GOVERNS (NOT SELECTED)" in tx and "3.0m" in tx
+    assert "ASSUMED KERB LINE" in tx and "COUNCIL STANDARD DRAWING GOVERNS (NOT SELECTED)" in tx and "3.0 m" in tx
     assert CX.standard_resolved("Hornsby Council Driveway Design Guide") and not CX.standard_resolved(None) and not CX.standard_resolved("default (AS/NZS 2890.1) used")
 
 
@@ -398,7 +398,7 @@ def test_must_carry_survives_a_full_sheet(tmp_path, monkeypatch):
     monkeypatch.setattr(CO, "nudge_box", lambda *a, **k: None)
     res = build_planset(_inp(driveway=_driveway(), footprint_wkt=FOOTPRINT), tmp_path, style="ref", only=["C101"])
     txt = pymupdf.open(res["pdf"])[0].get_text()
-    for needle in ("ASSUMED KERB LINE", "COUNCIL STANDARD DRAWING GOVERNS (NOT SELECTED)", "BOUNDARY TO KERB 4.0M (PLATFORM DEFAULT, NOT SURVEYED)", "T1"):
+    for needle in ("ASSUMED KERB LINE", "COUNCIL STANDARD DRAWING GOVERNS (NOT SELECTED)", "BOUNDARY TO KERB 4.0 m (PLATFORM DEFAULT, NOT SURVEYED)", "T1"):
         assert needle in txt, needle
 
 

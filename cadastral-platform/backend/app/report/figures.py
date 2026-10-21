@@ -55,6 +55,7 @@ class MapFigure:
     coverage: tuple[float, float, float, float] | None = None   # area the layer data covers; the rest of the window is hatched "no data loaded"
     legend: bool = True                                          # False: the caller draws its own legend outside the map
     lot_tag: str | None = None                                   # text printed inside the lot outline
+    flag: str | None = None                                      # in-frame warning band (e.g. NO FEATURE IN THE DATA LOADED: NOT A CLEARANCE), so a cropped image cannot read as clear
 
     @property
     def extent_text(self) -> str:
@@ -341,6 +342,12 @@ def draw_map(c, f: MapFigure, ox: float, oy: float) -> None:
         c.setFillColor(colors.Color(0.65, 0.23, 0.17, alpha=0.88)); c.rect(ox, oy + H - 24 if f.note else oy + H - 12, W - 28, 12, stroke=0, fill=1)
         c.setFillColor(colors.white); c.setFont("Mono-Medium", 6.6)
         c.drawString(ox + 5, (oy + H - 20.6) if f.note else (oy + H - 8.6), STAMP)
+    if f.flag:
+        off = (12 if STAMP else 0) + (12 if f.note else 0)
+        fw = c.stringWidth(f.flag, "Mono-Medium", 6.2) + 10
+        c.setFillColor(colors.Color(1, 1, 1, alpha=0.93)); c.rect(ox, oy + H - 12 - off, min(fw, W - 28), 12, stroke=0, fill=1)
+        c.setStrokeColor(colors.HexColor("#a63a2b")); c.setLineWidth(0.8); c.rect(ox, oy + H - 12 - off, min(fw, W - 28), 12, stroke=1, fill=0)
+        c.setFillColor(colors.HexColor("#a63a2b")); c.setFont("Mono-Medium", 6.2); c.drawString(ox + 5, oy + H - 8.4 - off, f.flag)
     if f.note:
         c.setFillColor(colors.Color(1, 1, 1, alpha=0.92)); c.rect(ox, oy + H - 12, W - 28, 12, stroke=0, fill=1)
         c.setFillColor(T.MUTED); c.setFont("Plex-Italic", 6.2); c.drawString(ox + 5, oy + H - 8.5, clean(f.note)[:150])
@@ -373,6 +380,12 @@ def _fit_window_to_coverage(img: bytes, win, aspect: float, lot: BaseGeometry, e
     new = (cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2)
     if new[0] > lb[0] - 1 or new[1] > lb[1] - 1 or new[2] < lb[2] + 1 or new[3] < lb[3] + 1:
         return "partial"
+    for g in extra or []:                       # a measured feature or the end of a distance leader must stay inside the shrunken window too
+        if g is None:
+            continue
+        b = g.bounds
+        if b[0] < new[0] + 2 or b[1] < new[1] + 2 or b[2] > new[2] - 2 or b[3] > new[3] - 2:
+            return "partial"
     return new
 
 

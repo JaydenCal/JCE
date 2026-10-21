@@ -290,7 +290,7 @@ def place_panel(b: Base, w: float, h: float):
 
 
 def text_panel(b: Base, title: str, lines, w: float = 100.0, warn: bool = False, h_text: float = TXT.BODY):
-    h = PN.panel_height(lines, w, h_text)
+    h = PN.panel_height(lines, w, h_text, title)
     r = place_panel(b, w, h)
     if r is None:
         for ln in [title] + list(lines):
@@ -392,6 +392,9 @@ def _check_text(ch) -> str:
     unit = {"%": "%", "percent": "%", "m": " m", "mm": " mm"}.get(ch.unit, f" {ch.unit}" if ch.unit else "")
     val = "VALUE NOT EVALUATED" if ch.value is None else f"VALUE {ch.value:g}{unit}"
     lim = "" if ch.limit is None else f", PLATFORM SCREENING LIMIT {ch.limit:g}{unit}"
+    if nm == "b85_scraping_clearance":
+        val = "MINIMUM CLEARANCE NOT EVALUATED" if ch.value is None else f"MINIMUM CLEARANCE {ch.value:g}{unit}"
+        lim = "" if ch.limit is None else f", PLATFORM SCREENING LIMIT AT LEAST {ch.limit:g}{unit} CLEARANCE (NO SCRAPING)"
     res = "NOT EVALUATED" if ch.passed is None else ("WITHIN THE PLATFORM LIMIT" if ch.passed else "EXCEEDS THE PLATFORM LIMIT")
     return f"{what}: {val}{lim}: {res}."
 
@@ -866,45 +869,83 @@ def _chainage_stations(L: float, step: float) -> list[float]:
     return ds
 
 
-def chainage_labels(b: Base, step: float) -> list[str]:
-    """Chainage ticks and labels along the driveway centreline, placed BEFORE the call-outs so that no leader runs through a label.  Each station tries
-    both sides of the line at several offsets and small shifts along it; the end of the driveway is labelled along the line.  Returns the labels that
-    found no free place (never dropped silently: the caller prints them on the sheet)."""
+def plan_chainage(b: Base, step: float) -> tuple[list, list[str]]:
+    """Choose and RESERVE the chainage label positions along the driveway centreline (before the dimensions, so they route around the labels, not the
+    other way round).  Each station tries both sides of the line at several offsets and shifts of at most 4 mm along it (a label stays on its station);
+    the end of the driveway is labelled along the line.  Returns (plan, lost): ``lost`` are the labels that found no free place (never dropped silently:
+    the caller prints them on the sheet)."""
     s, v = b.s, b.v
     cl = s.drive_cl
     L = cl.length
+    plan: list = []
     lost: list[str] = []
+    from shapely.geometry import box as _bx
+    blocking = [to_paper(v, s.lot.boundary)]                                           # linework drawn later (boundary, kerb and gutter lines): a label never sits on it
+    xg_ = b.xg
+    if xg_.kerb_line is not None:
+        fr_ = xg_.frontage
+        blocking += [to_paper(v, LineString([fr_.xy(-40.0, off), fr_.xy(fr_.length + 40.0, off)])) for off in (xg_.kerb_offset_m, xg_.kerb_offset_m - xg_.band_w_m)]
+    corridor = None                                                                  # where the driveway width dimension at the property boundary will be drawn: no label here
+    try:
+        ib = cl.intersection(s.lot.boundary)
+        if not ib.is_empty and s.drive_poly is not None:
+            pb = ib if ib.geom_type == "Point" else min(getattr(ib, "geoms", [ib]), key=lambda g_: cl.project(g_))
+            db = cl.project(pb)
+            dpp = to_paper(v, s.drive_poly.intersection(s.lot))
+            rc = list(dpp.minimum_rotated_rectangle.exterior.coords)
+            hw_ = min(math.dist(rc[0], rc[1]), math.dist(rc[1], rc[2])) / 2 + 2.0          # half the driveway width on the sheet, plus a margin
+            p0, p1 = to_paper(v, cl.interpolate(max(0.0, db - 0.1))), to_paper(v, cl.interpolate(min(L, db + 0.1)))
+            c0 = to_paper(v, pb)
+            ax, ay = (p1.x - p0.x), (p1.y - p0.y)
+            al = math.hypot(ax, ay) or 1.0
+            ax, ay = ax / al, ay / al
+            corridor = Polygon([(c0.x - ax * 2.0 - ay * hw_, c0.y - ay * 2.0 + ax * hw_), (c0.x + ax * 20.0 - ay * hw_, c0.y + ay * 20.0 + ax * hw_),
+                                (c0.x + ax * 20.0 + ay * hw_, c0.y + ay * 20.0 - ax * hw_), (c0.x - ax * 2.0 + ay * hw_, c0.y - ay * 2.0 - ax * hw_)])
+    except Exception:
+        corridor = None
     for d in _chainage_stations(L, step):
         p = cl.interpolate(min(d, L))
         p0, q = cl.interpolate(max(0.0, min(d, L) - 0.1)), cl.interpolate(min(L, d + 0.1))
         a = math.atan2(q.y - p0.y, q.x - p0.x)
         ux, uy, nx, ny = math.cos(a), math.sin(a), -math.sin(a), math.cos(a)
-        hh = 1.6 / v.k
-        v.line([(p.x - nx * hh, p.y - ny * hh), (p.x + nx * hh, p.y + ny * hh)], "C-DRIV-CNTR", False, 0.25, "CONTINUOUS", anno=False)
         end = abs(d - L) < 1e-6
         txt = f"CH {d:g}"
-        ok = False
+        hit = None
         if end:
             txt = f"DRIVEWAY END, CH {d:.1f}"
             tw = fonts.text_width(txt, ST.TXT.BODY)
-            for off in (0.0, 5.0, -5.0):
-                lx = p.x + ux * (tw / 2 + 3.0) / v.k + nx * off / v.k
-                ly = p.y + uy * (tw / 2 + 3.0) / v.k + ny * off / v.k
-                if ST.label_masked(v, lx, ly, txt, ST.TXT.BODY, math.degrees(a), layer="C-ANNO-DIMS"):
-                    ok = True
-                    break
+            cands = [(p.x + ux * (tw / 2 + 3.0) / v.k + nx * off / v.k, p.y + uy * (tw / 2 + 3.0) / v.k + ny * off / v.k, math.degrees(a)) for off in (0.0, 5.0, -5.0)]
         else:
-            for off in (6.5, -6.5, 10.0, -10.0, 13.5, -13.5):
-                for sh in (0.0, 3.0, -3.0, 6.0, -6.0, 12.0, 15.0, 9.0, -9.0, -12.0, -15.0):
-                    lx = p.x + nx * off / v.k + ux * sh / v.k
-                    ly = p.y + ny * off / v.k + uy * sh / v.k
-                    if ST.label_masked(v, lx, ly, txt, ST.TXT.BODY, math.degrees(a) + 90, layer="C-ANNO-DIMS"):
-                        ok = True
-                        break
-                if ok:
-                    break
-        if not ok:
+            cands = [(p.x + nx * off / v.k + ux * sh / v.k, p.y + ny * off / v.k + uy * sh / v.k, math.degrees(a) + 90)
+                     for off in (6.5, -6.5, 10.0, -10.0, 13.5, -13.5, 17.0, -17.0) for sh in (0.0, 2.0, -2.0, 4.0, -4.0)]
+        for lx, ly, rot in cands:
+            box = ST.label_box(v, lx, ly, txt, ST.TXT.BODY, rot)
+            if v.free((box[0] - 1.2, box[1] - 1.2, box[2] + 1.2, box[3] + 1.2)) and not any(_bx(*box).buffer(-0.25).intersects(g_) for g_ in blocking) and not (corridor is not None and _bx(*box).intersects(corridor)):          # a little clear space round the label
+                v.occ.append((box[0] - 1.2, box[1] - 1.2, box[2] + 1.2, box[3] + 1.2))
+                hit = (txt, lx, ly, rot)
+                break
+        if hit is None:
             lost.append(txt)
+        plan.append((d, p, a, hit))
+    return plan, lost
+
+
+def draw_chainage(b: Base, plan: list) -> None:
+    """Draw the ticks and the labels reserved by ``plan_chainage``."""
+    v = b.v
+    for d, p, a, hit in plan:
+        ux, uy, nx, ny = math.cos(a), math.sin(a), -math.sin(a), math.cos(a)
+        hh = 1.6 / v.k
+        v.line([(p.x - nx * hh, p.y - ny * hh), (p.x + nx * hh, p.y + ny * hh)], "C-DRIV-CNTR", False, 0.25, "CONTINUOUS", anno=False)
+        if hit is not None:
+            txt, lx, ly, rot = hit
+            ST.label_masked(v, lx, ly, txt, ST.TXT.BODY, rot, layer="C-ANNO-DIMS", reserved=True)
+
+
+def chainage_labels(b: Base, step: float) -> list[str]:
+    """Plan, reserve and draw in one go (used where nothing is drawn between the two steps).  Returns the labels that found no place."""
+    plan, lost = plan_chainage(b, step)
+    draw_chainage(b, plan)
     return lost
 
 
@@ -925,11 +966,15 @@ def c400(ctx: RefCtx) -> Sheet:
             notes.append(fl)
     b = start(ctx, "C400", rows, notes, want_xover=True, focus="drive")
     v, xg = b.v, b.xg
+    step = 2.0
+    ch_plan: list = []
+    lost: list[str] = []
     if has:
         v.avoid_lines = [to_paper(v, s.drive_cl)]                       # dimension figures never sit on the driveway centreline
+        step = 5.0 if (s.drive_cl.length > 12 and b.scale > 50) else 2.0
+        ch_plan, lost = plan_chainage(b, step)                          # chainage labels reserved first: the dimensions and call-outs route around them
     draw_xover(b, "proposed", dims=True)
     swept = False
-    step = 2.0
     if has:
         swept = swept_ok(s, xg)
         if swept:
@@ -957,27 +1002,26 @@ def c400(ctx: RefCtx) -> Sheet:
         if not swept:
             panels.append(("text", "SWEPT PATH", [SWEPT_TBC, "THE PLATFORM PATH IS NOT DRAWN: IT DOES NOT FORM ONE CLEAN PATH INSIDE THE LOT, VERGE AND ROAD."], True))
         panels.append(("text", CHECK_TITLE, profile_check_lines(s), False))
-    heights = [PN.table_height(p_[2], PW) if p_[0] == "table" else PN.panel_height(p_[2], PW) for p_ in panels]
+    heights = [PN.table_height(p_[2], PW) if p_[0] == "table" else PN.panel_height(p_[2], PW, title=p_[1]) for p_ in panels]
     col = PN.column(b, heights, PW) if panels else None
     finish(b, "DRIVEWAY PLAN", reserve=col or ())
     if col:
         for p_, r_ in zip(panels, col):
             (PN.draw_table(v, r_, p_[1], p_[2], red_when=_row_is_flag) if p_[0] == "table" else PN.draw_panel(v, r_, p_[1], p_[2], warn=p_[3]))
     keep = b.keep
-    lost: list[str] = []
     if has:
-        lost = chainage_labels(b, step)                                  # before the call-outs: leaders then route around every chainage label
+        draw_chainage(b, ch_plan)                                        # reserved before the dimensions: leaders and dimensions route around every chainage label
     if b.xg.present:
-        if has and s.drive_cl is not None:
-            cl_in = s.drive_cl.intersection(s.lot)
-            seg = max(getattr(cl_in, "geoms", [cl_in]), key=lambda g: g.length) if not cl_in.is_empty else None
-            if seg is not None and seg.geom_type == "LineString" and seg.length > 0:
-                m = seg.interpolate(0.5, normalized=True)
-                lines = ["PROPOSED DRIVEWAY", "MATERIAL TO BE CONFIRMED", f"WIDTH {drv.width_m:.1f}m (PLATFORM DEFAULT)"]
-                if drv.max_grade_pct is not None:
-                    lines.append(f"MAX GRADE {drv.max_grade_pct:.1f}% (PLATFORM SCREENING LIMIT)")
-                place(b, lines, (m.x, m.y), avoid=b.hard)
-        CX.callouts_crossover(v, xg, b.std, keep, list(b.hard), [s.lot], must_avoid=list(b.kerb_geoms), extra=["LAYOVER DIMENSIONS (SEE C420)"])
+        CX.callouts_crossover(v, xg, b.std, keep, list(b.hard), [s.lot], must_avoid=list(b.kerb_geoms), extra=["LAYOVER DIMENSIONS (SEE C420)"])       # first: it has the fewest free slots
+    if b.xg.present and has and s.drive_cl is not None:
+        cl_in = s.drive_cl.intersection(s.lot)
+        seg = max(getattr(cl_in, "geoms", [cl_in]), key=lambda g: g.length) if not cl_in.is_empty else None
+        if seg is not None and seg.geom_type == "LineString" and seg.length > 0:
+            m = seg.interpolate(0.5, normalized=True)
+            lines = ["PROPOSED DRIVEWAY", "MATERIAL TO BE CONFIRMED", f"WIDTH {drv.width_m:.1f}m (PLATFORM DEFAULT)"]
+            if drv.max_grade_pct is not None:
+                lines.append(f"MAX GRADE {drv.max_grade_pct:.1f}% (PLATFORM SCREENING LIMIT)")
+            place(b, lines, (m.x, m.y), avoid=b.hard)
     if not col and has:                                                  # no clear column: the old behaviour, panels wherever the sheet is free
         for p_ in panels:
             text_panel(b, p_[1], [r_[0] for r_ in p_[2]] if p_[0] == "table" else p_[2], PW, warn=(p_[0] == "text" and p_[3]))
@@ -1156,9 +1200,9 @@ def c410(ctx: RefCtx) -> Sheet:
     if proposed:
         v.text(hx(tg), low - 14.0, "DESIGN LEVEL (PLATFORM PROFILE)", TXT.BODY, "TOP_CENTER", layer=Lc, color=(0.85, 0, 0), halo=True)
     # scale bars -------------------------------------------------------------------------------------------------------------------------
-    mh = next(m for m in (1, 2, 5, 10) if m * 1000.0 / hs >= 25.0)
+    mh = next((m for m in (1, 2, 4, 8, 20, 40) if m * 1000.0 / hs >= 25.0), 100)
     lh = mh * 1000.0 / hs
-    mv = max([m for m in (0.05, 0.1, 0.25, 0.5, 1, 2, 5) if m * 1000.0 / vs <= 80.0] or [0.05])      # largest round length that stays a compact bar
+    mv = max([m for m in (0.04, 0.2, 0.4, 1, 2, 4, 8) if m * 1000.0 / vs <= 80.0] or [0.04])         # bar length whose four steps are round figures (0.05, 0.1, 0.25, 0.5, 1, 2 m)
     _bar(v, xr + 14.0, Yd + 6.0, mv * 1000.0 / vs, mv, False, f"VERTICAL SCALE 1:{vs:g} @ A1")
     title_strip(sh, sh.title.upper(), f"H 1:{hs}  V 1:{vs:g} @ A1    H 1:{a3_scale(hs)}  V 1:{a3_scale(vs):g} @ A3", hs, notes=([] if proposed else ["EXISTING GROUND ONLY: PROPOSED LEVELS NOT AVAILABLE."]))
     sh.scale_text = f"H 1:{hs} V 1:{vs:g}"
@@ -1176,7 +1220,7 @@ def c410(ctx: RefCtx) -> Sheet:
         lines.append(fl + ".")
     lines.append(f"EXISTING GROUND {DEM_NOTE_REF}. KERB LINE, GUTTER BAND ({CX._fmt_m(gw)}) AND PROPERTY BOUNDARY POSITIONS ARE ASSUMED GROUND POINTS (KERB NOT SURVEYED).")
     pw = min(165.0, VIEW_RECT[2] - 2.0 - (xr + 12.0))               # notes column to the right of the profile (the chart keeps the full width)
-    h_ = PN.panel_height(lines, pw)
+    h_ = PN.panel_height(lines, pw, title="NOTES AND " + CHECK_TITLE)
     ptop = CONTENT_Y1 - 2.0
     PN.draw_panel(v, (xr + 12.0, ptop - h_, xr + 12.0 + pw, ptop), "NOTES AND " + CHECK_TITLE, lines)
     # plan strip aligned to the chainage of the profile (lateral extent diagrammatic) ---------------------------------------------
@@ -1402,8 +1446,6 @@ def _esc_lines(el, out, conflict, pit_missing: bool) -> list[str]:
         lines = fonts.wrap(txt, TXT.BODY, 52.0)
     if el.kind in ("fence", "diversion") and el.quantity:
         lines.append(f"LENGTH {el.quantity:.0f}m")
-    if el.kind in ("stockpile", "topsoil", "laydown") and any("whole lot was searched" in n for n in el.notes):
-        lines.append("POSITION UNRESOLVED, SEE BASIS PANEL")                  # placed by a whole lot search: it may sit where the building will be
     return [x for x in lines if x]
 
 
@@ -1420,6 +1462,47 @@ def _esc_target(g) -> tuple[float, float]:
     return m.x, m.y
 
 
+NOT_DRAWN_TITLE = "NOT DRAWN: POSITION TO BE CONFIRMED ONCE THE BUILDING FOOTPRINT IS KNOWN"
+
+
+def esc_not_drawn_schedule(s, out) -> list[str]:
+    """Boxed schedule lines for the activity areas SA10 could not place outside the building envelope: size (layout assumption), the cited clearances and the cited
+    sediment control requirement, each from the cited requirement set.  Never a position.  Empty when every item was placed."""
+    c = s.cites
+    rows: list[str] = []
+    hz_min, hz_pref = c.get("esc.stockpile.min_distance_from_hazard_m"), c.get("esc.stockpile.preferred_distance_from_hazard_m")
+    for it in (getattr(out, "not_placed", None) or []):
+        L, W = it["size_m"]
+        parts = [f"{it['label'].upper()} ({it['id']}): FOOTPRINT {L:g} x {W:g}m (LAYOUT ASSUMPTION, NOT A CITED VALUE)."]
+        if it["kind"] in ("stockpile", "topsoil", "laydown"):
+            if hz_min is not None and hz_pref is not None:
+                parts.append(f"CLEARANCE FROM HAZARD AREAS AT LEAST {PH.num(hz_min)}, {PH.num(hz_pref)} PREFERRED {PH.short_ref(hz_min)}.")
+            elif hz_min is not None:
+                parts.append(f"CLEARANCE FROM HAZARD AREAS AT LEAST {PH.num(hz_min)} {PH.short_ref(hz_min)}.")
+            else:
+                parts.append("CITED CLEARANCE FROM HAZARD AREAS NOT AVAILABLE: NOT CHECKED, NOT CLEAR.")
+        if it["kind"] in ("stockpile", "topsoil"):
+            fc = c.get("esc.stockpile.upslope_diversion_and_downslope_filter")
+            if fc is not None:
+                parts.append(f"SEDIMENT CONTROL IMMEDIATELY DOWNSLOPE {PH.short_ref(fc)}.")
+            dn = c.get("esc.stockpile.avoid_downslope_of_construction")
+            if dn is not None:
+                parts.append(f"NOT DOWNSLOPE OF THE CONSTRUCTION {PH.short_ref(dn)}.")
+        elif it["kind"] == "laydown":
+            fp = c.get("esc.stockpile.not_on_footpath_or_road_reserve")
+            if fp is not None:
+                parts.append(f"NOT ON THE FOOTPATH OR WITHIN THE ROAD RESERVE {PH.short_ref(fp)}.")
+        if it.get("whole_lot_feasible"):
+            parts.append("A POSITION MEETING THE CLEARANCES EXISTS ONLY WHERE THE BUILDING MAY BE BUILT (WHOLE LOT CHECKED).")
+        else:
+            parts.append("NO POSITION MEETING THE CLEARANCES WAS FOUND ON THE LOT.")
+        rows.append(" ".join(parts))
+    sp = c.get("esc.sediment_fence.post_spacing_m")
+    if rows and sp is not None:
+        rows.append(f"SEDIMENT FENCE ALONG THE DOWNSLOPE SIDE OF EACH, STAR PICKETS USUALLY {PH.num(sp)} APART {PH.short_ref(sp)}. TYPICAL DETAIL: C600.")
+    return rows
+
+
 def c500(ctx: RefCtx) -> Sheet:
     s = ctx.site
     out = s.esc
@@ -1434,7 +1517,7 @@ def c500(ctx: RefCtx) -> Sheet:
         from shapely import wkt as swkt
         for el in out.elements:
             g = swkt.loads(el.geometry_wkt)
-            v.geom(g, el.layer, lw=0.4)
+            v.geom(g, el.layer, lw=0.4, color=ST.BLACK)
             if g.geom_type in ("Polygon", "MultiPolygon"):
                 v.fill(g, el.layer, (0.4, 0.7, 0.4), 0.35)
             pend.append((el, g))
@@ -1448,7 +1531,10 @@ def c500(ctx: RefCtx) -> Sheet:
         sh_ = esc_access_shortfall(s, out)
         if sh_:
             flags.append(f"STABILISED ACCESS DRAWN {sh_[0]:.1f}m LONG, SHORTER THAN THE CITED {PH.num(sh_[2])} {PH.short_ref(sh_[2])}: THE LOT DOES NOT ALLOW THE CITED LENGTH IN THIS LAYOUT. TO BE RESOLVED BY THE ESCP PREPARER.")
+        sched = esc_not_drawn_schedule(s, out)
         for w in out.warnings:
+            if "not drawn" in w.lower() and sched and any(w.lower().startswith(it["label"].lower() + ":") for it in out.not_placed):
+                continue                                                            # listed with its size, clearances and fence in the NOT DRAWN schedule
             (flags if "not drawn" in w.lower() else basis).append(_up(w))
         if dem:
             basis.insert(0, f"LOT FALL {dem['pct']:.1f} PERCENT TOWARDS BEARING {dem['bearing']:.0f} DEG (INDICATIVE, 5 m DEM, PLANE FIT TO {dem.get('n', 0)} LEVELS)")
@@ -1458,9 +1544,11 @@ def c500(ctx: RefCtx) -> Sheet:
         basis += [_up(x) for x in list(out.assumptions[:2])]
         if flags:
             panels.append(("ESC FLAGS", flags, True))
+        if sched:
+            panels.append((NOT_DRAWN_TITLE, sched, True))
         panels.append(("ESC LAYOUT BASIS AND ASSUMPTIONS", basis, False))
     PW = 132.0
-    col = PN.column(b, [PN.panel_height(p_[1], PW) for p_ in panels], PW, sides=("right", "left")) if panels else None      # one tidy column, reserved before any label is placed
+    col = PN.column(b, [PN.panel_height(p_[1], PW, title=p_[0]) for p_ in panels], PW, sides=("right", "left")) if panels else None      # one tidy column, reserved before any label is placed
     finish(b, "EROSION AND SEDIMENT CONTROL", reserve=col or ())
     if col:
         for p_, r_ in zip(panels, col):
@@ -1789,7 +1877,7 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
     yb = y - 12.0
     src = [("CADASTRE", "STATE CADASTRE (DCDB). BOUNDARIES, LOT NUMBERS AND PLAN NUMBERS ARE NOT A SURVEY."),
            ("LEVELS", "5 m DEM, INDICATIVE ONLY. DETAIL SURVEY AT THE DETAILED DESIGN STAGE." if s.tin is not None else "NO LEVELS SUPPLIED: NOT DRAWN."),
-           ("AERIAL", ST.clean(s.aerial_site.note).upper() if s.aerial_site is not None else "NO AERIAL IMAGE SUPPLIED."),
+           ("AERIAL", re.sub(r"^AERIAL IMAGERY:\s*", "", ST.clean(s.aerial_site.note).upper()) if s.aerial_site is not None else "NO AERIAL IMAGE SUPPLIED."),
            ("SERVICES", "SUPPLIED SERVICES ARE DRAWN AS SUPPLIED (INDICATIVE)." if s.inp.services else "NONE SUPPLIED: LOCATE BY DIAL BEFORE YOU DIG AND POTHOLING."),
            ("ASSUMED ITEMS", "KERB, ROAD EXTENT AND LAYOVER VALUES ARE ASSUMED OR PLACEHOLDERS WHERE MARKED."),
            ("CODES", "DRAWING NUMBER JCS-{JOB}-CIV-{NNN}. LAYERS JCS-{DISCIPLINE}-{ELEMENT}-{TYPE}, THE SAME IN THE DXF."),
