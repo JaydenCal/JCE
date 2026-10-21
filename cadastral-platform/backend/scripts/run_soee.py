@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the JCESITE Statement of Environmental Effects (site works only) for a run.
 
-JCESITE is a platform product and is NOT affiliated with JCE Infrastructure.  The output is an AI GENERATED DRAFT.
+JCESITE is a platform product and is NOT affiliated with JCE Infrastructure.  The output is a draft to be verified by a suitably qualified person (the cover carries the verification block).
 
 Default: the OFFLINE Lot 2 DP227508 fixture (no network), with the same inputs as
 
@@ -39,6 +39,7 @@ BACKEND = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BACKEND))
 
 DEFAULT_RULES = "/home/claude/work/out/rules/R2_dwelling_house.json"
+DEFAULT_BUILDING = str(BACKEND / "tests" / "fixtures" / "planstudio_house_single.planstudio.json")
 
 
 def _load_run_site():
@@ -49,7 +50,7 @@ def _load_run_site():
     return mod
 
 
-def run_pipeline(run_dir: Path, rules_json: str, variant: str, development_type: str = "dwelling_house") -> dict:
+def run_pipeline(run_dir: Path, rules_json: str, variant: str, development_type: str = "dwelling_house", building: str | None = None, extra_args: list[str] | None = None) -> dict:
     """Run the offline Lot 2 pipeline into ``run_dir`` and return the cached inputs (works dict, constraints, run steps)."""
     import app.agents.sa5_cad_dxf.planset as PS
     from app.pack.soee_site import extract_site_works
@@ -72,6 +73,9 @@ def run_pipeline(run_dir: Path, rules_json: str, variant: str, development_type:
                 "--planset", "--planset-style", "ref", "--out", str(run_dir)]
         if rules_json:
             args += ["--rules-json", rules_json]
+        if building:
+            args += ["--building", building]
+        args += list(extra_args or [])
         rc = rs.main(args)
     finally:
         PS.build_planset = orig
@@ -93,6 +97,8 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default="out/soee")
     ap.add_argument("--rules-json", default=DEFAULT_RULES if Path(DEFAULT_RULES).exists() else None)
+    ap.add_argument("--building", default=DEFAULT_BUILDING if Path(DEFAULT_BUILDING).exists() else None,
+                    help="Plan Studio project file of the typical house to place on the lot (stage 8); 'none' places no building")
     ap.add_argument("--variant", choices=["fixture", "all_not_checked"], default="fixture")
     ap.add_argument("--from-run", help="reuse the cached inputs (soee_inputs.json, constraints_report.json, run_steps.json) of an earlier run directory")
     ap.add_argument("--job", default="", help="job number for the document and drawing numbers (default XXX)")
@@ -109,7 +115,7 @@ def main(argv: list[str] | None = None) -> int:
     run_dir = Path(a.from_run) if a.from_run else out / "run"
     if not a.from_run:
         run_dir.mkdir(parents=True, exist_ok=True)
-        cache = run_pipeline(run_dir, a.rules_json, a.variant)
+        cache = run_pipeline(run_dir, a.rules_json, a.variant, building=None if a.building in (None, "none") else a.building)
     else:
         cache = load_cache(run_dir)
     cp = run_dir / "constraints_report.json"

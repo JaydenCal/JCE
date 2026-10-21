@@ -12,7 +12,7 @@ Rules for everything in this module:
 from __future__ import annotations
 
 SOURCE_NOT_RECORDED = "SOURCE NOT RECORDED"
-AI_STATEMENT = "AI GENERATED DRAFT. NOT CHECKED OR CERTIFIED. MUST BE CHECKED AND VERIFIED BY A QUALIFIED PERSON BEFORE ANY USE."
+AI_STATEMENT = None          # stage 8: no AI statement in the report; the cover carries the verification block (app.common.statement)
 SETTINGS_FILE = "app/agents/sa9_constraints/layers.py"          # internal reference only; never printed in the report
 SETTINGS_NAME = "the platform screening settings"
 LOAD_MARGIN_M = 150      # check_layer(..., margin=150.0): data is loaded this far around the lot (platform setting in intersect.py)

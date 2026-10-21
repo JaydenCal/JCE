@@ -524,6 +524,9 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                 rep.facts["building"] = placement.to_dict()
                 rep.facts["building"]["house_provenance"] = house.provenance
                 if placement.placed:
+                    rep.facts["building"]["footprint_area_m2"] = round(placement.footprint.area, 1)
+                    rep.facts["building"]["roof_area_m2"] = round(placement.roof.area, 1) if getattr(placement, "roof", None) is not None else None
+                if placement.placed:
                     if placement.garage_door_xy is not None:
                         for tgt in (params, rr.params):
                             tgt.setdefault("driveway", {})["garage_xy"] = [float(placement.garage_door_xy[0]), float(placement.garage_door_xy[1])]
@@ -666,6 +669,8 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
 
     # ---- SA6 (the registry's SA6 is a stub; the real generator is called directly)
     footprint_wkt = None
+    if placement is not None and placement.placed:                       # the placed typical house is the footprint of the site report maps (stage 8)
+        footprint_wkt = placement.footprint.wkt
     if env_out is not None and sa4 is not None:
         try:
             blds, note = [], ""
@@ -711,7 +716,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         in9 = Sa9Input(
             lot=lot_with_envelope(sa1, env_out) if env_out is not None else lot, footprint_wkt=footprint_wkt,
             output_dir=str(out), development_type=dev, flood_ffl_text=flood_text,
-            project_title=rr.project_title, flags=list(sa1.flags or []), civil=_civil_summary(R, rep.facts, fchk, env_out, sa4, ps_civil, bool(getattr(args, 'planset', False))),
+            project_title=rr.project_title, flags=list(sa1.flags or []), civil=_civil_summary(R, rep.facts, fchk, env_out, sa4, ps_civil, bool(getattr(args, 'planset', False)), building=(rep.facts.get('building') if (rep.facts.get('building') or {}).get('placed') else None)),
             zone_map=zone_map_from_sa1(sa1))     # zone polygons for the land zoning map (none in the offline fixture: the map says so)
         if getattr(args, "report", False):       # reproducible re-render input: re-run SA9 on this file to rebuild the report
             (out / "sa9_input.json").write_text(in9.model_dump_json(indent=1))
@@ -766,7 +771,7 @@ def _accuracy_text(acc: float | None, source: str | None) -> str:
     return f"{acc:g} m ({source})"
 
 
-def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4, ps: dict | None = None, planset_run: bool = False) -> dict | None:
+def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4, ps: dict | None = None, planset_run: bool = False, building: dict | None = None) -> dict | None:
     """Plain dict for the report's civil page. Only what exists; nothing is invented."""
     cv: dict[str, Any] = {}
     t3 = R.get("SA3")
@@ -779,6 +784,8 @@ def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4, ps: dict | None = N
         if t3.cut_fill is not None:
             cv["earthworks"] = t3.cut_fill.model_dump()
     cv["planset_built"] = planset_run
+    if building:
+        cv["building"] = {k: v for k, v in building.items() if k != "footprint_wkt"}
     if ps:
         cv["planset"] = ps
     if fchk is not None:

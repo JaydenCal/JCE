@@ -13,6 +13,7 @@ from reportlab.platypus import BaseDocTemplate, Frame, NextPageTemplate, PageBre
 from shapely import wkt
 
 from app.report import fmt, theme as T
+from app.common.statement import VERIFY_FIELDS, VERIFY_STATEMENT
 from app.report import sections as S
 from app.agents.sa5_cad_dxf.planset import codes as PS_CODES
 from app.report import explain as EX
@@ -138,7 +139,7 @@ def build_site_report(inp: SiteReportInputs, maps_dir: Path | None = None) -> tu
         for line in (" · ".join(det[:3]), " · ".join(det[3:])):
             if line.strip():
                 c.drawString(T.LM, yy, line); yy -= 3.6 * mm
-        c.setFillColor(T.GOLD); c.setFont("Mono-Medium", 7); c.drawRightString(w - T.RM, h - 14 * mm, "AI GENERATED DRAFT, INDICATIVE")
+        c.setFillColor(T.GOLD); c.setFont("Mono-Medium", 7); c.drawRightString(w - T.RM, h - 14 * mm, "INDICATIVE")
         c.setFillColor(colors.HexColor("#c9c6bb")); c.setFont("Mono", 6.4)
         c.drawRightString(w - T.RM, h - 19 * mm, date_s)
         c.drawRightString(w - T.RM, h - 23 * mm, "REV A")
@@ -155,7 +156,7 @@ def build_site_report(inp: SiteReportInputs, maps_dir: Path | None = None) -> tu
         c.drawString(T.LM + 25 * mm, h - 15.8 * mm, str(m.get("project_title") or "").upper()[:70])
         c.setFont("Mono-Medium", 6); c.setFillColor(T.GOLD)
         c.drawRightString(w - T.RM, h - 12.3 * mm, TITLE.upper())
-        c.setFillColor(T.MUTED); c.setFont("Mono", 6); c.drawRightString(w - T.RM, h - 15.8 * mm, f"{date_s}  ·  AI GENERATED DRAFT, INDICATIVE")
+        c.setFillColor(T.MUTED); c.setFont("Mono", 6); c.drawRightString(w - T.RM, h - 15.8 * mm, f"{date_s}  ·  INDICATIVE")
         c.setStrokeColor(T.GOLD); c.setLineWidth(0.9); c.line(T.LM, h - 19.6 * mm, w - T.RM, h - 19.6 * mm)
         c.restoreState()
 
@@ -163,11 +164,6 @@ def build_site_report(inp: SiteReportInputs, maps_dir: Path | None = None) -> tu
         w = T.PAGE_W
         c.saveState()
         c.setStrokeColor(T.RULE); c.setLineWidth(0.5); c.line(T.LM, 15 * mm, w - T.RM, 15 * mm)
-        size = 5.9
-        while stringWidth(EX.AI_STATEMENT, "Mono-Medium", size) > T.CW and size > 4.5:
-            size -= 0.1
-        c.setFont("Mono-Medium", size); c.setFillColor(colors.HexColor("#a63a2b"))
-        c.drawString(T.LM, 11.6 * mm, EX.AI_STATEMENT)
         c.setFont("Mono", 5.6); c.setFillColor(T.MUTED)
         c.drawString(T.LM, 8.6 * mm, "NOT A S10.7 PLANNING CERTIFICATE OR COUNCIL PROPERTY REPORT. INDICATIVE ONLY. NOT CHECKED IS NOT CLEAR.")
         c.drawString(T.LM, 5.8 * mm, f"{brand.name}  ·  {lot_label.upper()}  ·  {date_s}" + ("  ·  SYNTHETIC DEMO DATA" if demo else ""))
@@ -202,7 +198,7 @@ def build_site_report(inp: SiteReportInputs, maps_dir: Path | None = None) -> tu
     cnt: dict[str, int] = {}
     for f in findings:
         cnt[f.status] = cnt.get(f.status, 0) + 1
-    js = {"title": TITLE, "status": "AI generated draft, indicative", "meta": {**{k: v for k, v in m.items()}, "lga_name": lga, "lot_label": lot_label},
+    js = {"title": TITLE, "status": "indicative, to be verified by a suitably qualified person", "meta": {**{k: v for k, v in m.items()}, "lga_name": lga, "lot_label": lot_label},
           "pages": pages_n, "counts": cnt, "unresolved_items": S.count_unresolved(ctx),
           "findings": [{"key": f.key, "label": f.short, "status": f.status, "headline": f.headline, "currency": f.currency, "source": f.source_name,
                         "features": [{"name": r.name, "distance_m": r.distance_m, "overlap_m2": r.overlap_m2} for r in f.rows], "has_page": f.has_page,
@@ -210,6 +206,6 @@ def build_site_report(inp: SiteReportInputs, maps_dir: Path | None = None) -> tu
           "triggers": [t.model_dump() for t in inp.triggers], "figures": ctx.figures, "planning_maps": pm_rec,
           "requirements_shown": [r["key"] for r in S.relevant_requirements(inp.requirements, zone, dev_key)],
           "pathway": "provided" if inp.pathway is not None else "not run", "civil": bool(inp.civil), "legal": S.LEGAL,
-          "brand": {"company": brand.name, "tagline": brand.tagline}, "ai_statement": EX.AI_STATEMENT,
+          "brand": {"company": brand.name, "tagline": brand.tagline}, "verification": {"statement": VERIFY_STATEMENT, "fields": list(VERIFY_FIELDS), "on": "cover only"},
           "sections": [{"number": n, "title": t} for n, t in ctx.sections]}
     return pdf, js

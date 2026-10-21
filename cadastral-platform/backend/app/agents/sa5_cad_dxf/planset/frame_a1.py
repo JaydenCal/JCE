@@ -45,9 +45,30 @@ AI_RED = (0.72, 0.0, 0.0)
 
 
 def _ai_notes_h(x0: float = NOTES_X0) -> tuple[list[str], float]:
-    """Wrapped AI statement lines and the height of its box on the notes panel."""
-    ls = fonts.wrap(codes.AI_STATEMENT, AI_NOTE_H, BX1 - x0 - 12.0, True)
-    return ls, 3.0 * len(ls) + 2.6
+    """Stage 8: the AI statement is no longer drawn on the notes panel (the verification block is on the cover only); kept as a zero height box."""
+    return [], 0.0
+
+
+def verification_block(v, x0: float, y0: float, x1: float, y1: float, big: bool = False) -> None:
+    """The cover verification block inside the paper-mm rectangle: heading label, tick box with the statement, then a signature box divided into NAME, SIGNATURE and DATE.
+    Blank by design: a person fills it in.  Layer JCS-FRAM-AICK-* (the layer code of the earlier AI CHECK field)."""
+    L = "JCS-FRAM-AICK-TEXT"
+    ln = "JCS-FRAM-AICK-LINE"
+    v.text(x0 + 1.0, y1 - 1.0, codes.VERIFY_LABEL, 3.0 if big else 2.0, "TOP_LEFT", color=LABEL_GREY, layer=L)
+    tb = 10.0 if big else 7.0
+    th = 5.2 if big else 3.6
+    bx, by = x0 + 4.0, y1 - (7.0 if big else 5.0) - tb
+    v.line([(bx, by), (bx + tb, by), (bx + tb, by + tb), (bx, by + tb), (bx, by)], ln, False, 0.35)
+    v.text(bx + tb + 3.0, by + tb / 2.0 + (3.4 if big else 3.0), codes.VERIFY_TEXT, _fit(codes.VERIFY_TEXT, x1 - bx - tb - 8.0, th), "MIDDLE_LEFT", bold=True, layer=L)
+    v.text(bx + tb + 3.0, by + tb / 2.0 - (3.0 if big else 2.2), "TICK WHEN VERIFIED", 2.5 if big else 2.0, "MIDDLE_LEFT", color=LABEL_GREY, layer=L)
+    sx0, sx1, sy0, sy1 = x0 + 4.0, x1 - 4.0, y0 + 3.0, by - 3.0
+    v.line([(sx0, sy0), (sx1, sy0), (sx1, sy1), (sx0, sy1), (sx0, sy0)], ln, False, 0.35)
+    wd = sx1 - sx0
+    xs = [sx0, sx0 + wd * 0.33, sx0 + wd * 0.78, sx1]
+    for xx in xs[1:-1]:
+        v.line([(xx, sy0), (xx, sy1)], ln, False, 0.25)
+    for xx, nm in zip(xs[:-1], codes.VERIFY_FIELD_NAMES):
+        v.text(xx + 1.2, sy1 - 1.0, nm, 2.8 if big else 2.0, "TOP_LEFT", color=LABEL_GREY, layer=L)
 
 
 SHEET_NOTES = "SHEET NOTES"
@@ -150,13 +171,8 @@ def draw_frame_a1(sheet: Sheet, proj: Proj, index: int, total: int, scale_text: 
             v.text(120.0, yy, clean(t), _fit(clean(t), X_CO - 123.0, 3.0), "BOTTOM_LEFT", layer=_L)
             yy -= 4.6
     line([(BX0, 54.0), (X_CO, 54.0)])
-    label(BX0, 54.0, codes.AI_CHECK_LABEL)
-    box(BX0 + 4.0, 30.0, BX0 + 14.0, 40.0, 0.35, "JCS-FRAM-AICK-LINE")                    # blank tick box for the checker
-    v.text(BX0 + 18.0, 35.0, "TICK WHEN CHECKED", 2.2, "MIDDLE_LEFT", color=LABEL_GREY, layer=_L)
-    for i, lab in enumerate(("CHECKED BY (NAME)", "DATE")):
-        x0 = BX0 + 4.0 + i * 108.0
-        line([(x0, 18.0), (x0 + (100.0 if i == 0 else 60.0) , 18.0)])
-        v.text(x0, 14.5, lab, 2.0, "TOP_LEFT", color=LABEL_GREY, layer=_L)
+    if getattr(sheet, "number", "") == "C000":                                   # the verification block: the cover only (stage 8)
+        verification_block(v, BX0, BY0, X_CO, 54.0)
 
     # ---- project / client / drawing title -----------------------------------------------------------------------------
     label(X_CO, TB_TOP, "PROJECT")
@@ -204,12 +220,6 @@ def draw_frame_a1(sheet: Sheet, proj: Proj, index: int, total: int, scale_text: 
     v.text((805.0 + BX1) / 2, 66.0, clean(sheet.revision), 8.0, "MIDDLE_CENTER", bold=True, color=WHITE, layer=_L)
     label(X_RT, 56.0, "STATUS")
     value(X_RT + 1.5, 48.3, STAMP, 3.6, 743.4 - X_RT - 4)
-    ai_ls = fonts.wrap(codes.AI_STATEMENT, 2.2, 743.4 - X_RT - 12.0, True)
-    ai_top = 45.6
-    ai_bot = ai_top - (2.9 * len(ai_ls) + 2.2)
-    v.fill(Polygon([(X_RT + 1.5, ai_bot), (741.9, ai_bot), (741.9, ai_top), (X_RT + 1.5, ai_top)]), "JCS-FRAM-AICK-HATCH", WHITE, 1.0, anno=True, edge=AI_RED, edge_lw=0.6)
-    for i, t in enumerate(ai_ls):
-        v.text(X_RT + 3.5, ai_top - 1.3 - 2.9 * i, t, 2.2, "TOP_LEFT", bold=True, color=AI_RED, layer="JCS-FRAM-AICK-TEXT")
     label(743.4, 56.0, "DATE")
     value(744.9, 37.5, fmt_date(proj.date), 4.0, 779.0 - 743.4 - 3)
     label(779.0, 56.0, "DRAWN")
@@ -227,11 +237,8 @@ def draw_frame_a1(sheet: Sheet, proj: Proj, index: int, total: int, scale_text: 
     rect, lines = notes_layout(proj, sheet.notes, getattr(sheet, "tag_notes", ()), min_x0=getattr(sheet, "strip_end", 392.0) + 8.0)
     v.fill(Polygon([(rect[0], rect[1]), (rect[2], rect[1]), (rect[2], rect[3]), (rect[0], rect[3])]), _L, WHITE, 1.0, anno=True, edge=BLACK, edge_lw=0.25)
     v.text(rect[0] + 2.0, rect[3] - 1.2, "DATUM AND ACCURACY NOTES", 2.2, "TOP_LEFT", bold=True, layer=_L)
-    ai_ls2, ai_h = _ai_notes_h(rect[0])
+    ai_h = 0.0
     ay1 = rect[3] - 4.3
-    v.fill(Polygon([(rect[0] + 2.0, ay1 - ai_h), (rect[2] - 2.0, ay1 - ai_h), (rect[2] - 2.0, ay1), (rect[0] + 2.0, ay1)]), "JCS-FRAM-AICK-HATCH", WHITE, 1.0, anno=True, edge=AI_RED, edge_lw=0.6)
-    for i, t in enumerate(ai_ls2):
-        v.text(rect[0] + 4.5, ay1 - 1.3 - 3.0 * i, t, AI_NOTE_H, "TOP_LEFT", bold=True, color=AI_RED, layer="JCS-FRAM-AICK-TEXT")
     for i, t in enumerate(lines):
         if t:
             v.text(rect[0] + 2.0, ay1 - ai_h - 3.0 - 2.6 * i, t, 2.0, "TOP_LEFT", bold=(t == SHEET_NOTES), layer=_L)

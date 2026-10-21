@@ -139,16 +139,52 @@ def _rl_text(lv: float, interval: float) -> str:
     return f"{lv:.2f}" if interval < 1 else f"{lv:.1f}"
 
 
-def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = False, lab_h: float = 1.9) -> int:
+LABEL_ALL_MAX = 24            # at most this many contours in the view and every one is labelled; above it only the index (major) contours are
+
+
+def _label_slots(piece, v: View, text: str, h: float, n_max: int, avoid=None) -> list[tuple[float, float, float]]:
+    """Candidate label positions (model x, y, model baseline angle) along a contour piece: a run of the line at least as long as the label plus clearance, nearly straight
+    under the label (so the text lies along the contour without crossing it), outside ``avoid`` (model geometry such as the dwelling) and away from the piece ends."""
+    bx = v._box(0.0, 0.0, text, max(h, 1.8), "MIDDLE_CENTER", 0.0, False)
+    wl = bx[2] - bx[0]                                                       # label width on paper, mm
+    L = piece.length * v.k                                                   # paper mm
+    if L < wl + 10.0:
+        return []
+    half = (wl / 2.0 + 1.0) / v.k                                            # model m
+    out = []
+    for t in (0.5, 0.35, 0.65, 0.22, 0.78, 0.12, 0.88):
+        d = piece.length * t
+        if d - half < 0 or d + half > piece.length:
+            continue
+        p = piece.interpolate(d)
+        q, r = piece.interpolate(d + half), piece.interpolate(d - half)
+        ang = math.degrees(math.atan2(q.y - r.y, q.x - r.x))
+        m1 = piece.interpolate(d + half / 2.0)
+        m0 = piece.interpolate(d - half / 2.0)
+        a1 = math.degrees(math.atan2(m1.y - m0.y, m1.x - m0.x))
+        if abs((a1 - ang + 180.0) % 360.0 - 180.0) > 20.0:                  # bends under the label: try elsewhere
+            continue
+        if avoid is not None and avoid.distance(p) < half + 0.4:
+            continue
+        out.append((p.x, p.y, ang))
+        if len(out) >= n_max:
+            break
+    return out
+
+
+def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = False, lab_h: float = 1.9, avoid=None, label_all: bool | None = None) -> int:
+    """Contours with RL labels (m AHD, numeric) along the line, upright on the paper, never colliding (``View.label`` checks the reserved boxes and earlier labels).
+    Index (major) contours are labelled always; the other (minor) contours are labelled as well while there are at most LABEL_ALL_MAX in the view, so a plan at a large
+    scale labels every contour and a small scale labels the major contours only.  ``avoid`` is model geometry (the dwelling) that labels must not sit on.  ``light``: lighter lines."""
     conts = s.ex_cont if which == "ex" else s.pr_cont
     layer = "C-TOPO-EXST" if which == "ex" else "C-TOPO-PROP"
-    col = (0.5, 0.5, 0.5) if which == "ex" else MAGENTA
-    lab_col = (0.35, 0.35, 0.35) if which == "ex" else MAGENTA
+    col = ((0.55, 0.55, 0.55) if light else (0.5, 0.5, 0.5)) if which == "ex" else MAGENTA
+    lab_col = (0.2, 0.2, 0.2) if which == "ex" else MAGENTA
     win = v.window_poly()
     zone = None
     if which == "pr" and s.pad is not None and s.surf is not None:
         zone = s.pad.buffer(36)
-    n = 0
+    drawn = []
     for c in conts:
         ln = LineString(c.pts).simplify(0.04)
         if ln.length * v.k < 6:
@@ -165,24 +201,32 @@ def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = Fa
             g = ln.intersection(mask)
             if g.is_empty:
                 continue
-        lw = (0.28 if c.index else 0.13) if which == "ex" else (0.4 if c.index else 0.2)
+        lw = (0.35 if c.index else 0.18) if which == "ex" else (0.4 if c.index else 0.2)
         v.geom(g, layer, lw=lw, color=col if which == "ex" else None, dash=None)
-        n += 1
-        if labels and (c.index or s.interval >= 1.0 or which == "ex" and len(conts) <= 8):
+        drawn.append((c, ln))
+    if labels:
+        vis_n = sum(1 for _c, ln in drawn if ln.intersects(win))
+        every = (vis_n <= LABEL_ALL_MAX) if label_all is None else label_all
+        order = sorted(drawn, key=lambda cl: (not cl[0].index, cl[0].level))        # major contours get the free positions first
+        for c, ln in order:
+            if not (c.index or every):
+                continue
             vis = ln.intersection(win.buffer(-8 / v.k))
             if vis.is_empty:
                 continue
-            piece = max(getattr(vis, "geoms", [vis]), key=lambda x: x.length) if vis.geom_type != "LineString" else vis
-            if piece.geom_type != "LineString" or piece.length * v.k < 24:
-                continue
-            for t in (0.5, 0.3, 0.7):
-                p = piece.interpolate(t, normalized=True)
-                q = piece.interpolate(min(1, t + 0.04), normalized=True)
-                r = piece.interpolate(max(0, t - 0.04), normalized=True)
-                ang = math.degrees(math.atan2(q.y - r.y, q.x - r.x))
-                if v.label(p.x, p.y, _rl_text(c.level, s.interval), lab_h, ang, color=lab_col, layer="C-ANNO-CNTR", halo=True, nudges=False):
+            pieces = [x for x in getattr(vis, "geoms", [vis]) if x.geom_type == "LineString"]
+            text = _rl_text(c.level, s.interval)
+            placed = 0
+            for piece in sorted(pieces, key=lambda x: -x.length):
+                wanted = 1 + (1 if piece.length * v.k > 220.0 else 0)           # a long run is labelled twice
+                for x, y, ang in _label_slots(piece, v, text, lab_h, 6, avoid):
+                    if v.label(x, y, text, lab_h, ang, color=lab_col, layer="C-ANNO-CNTR", halo=True, nudges=False):
+                        placed += 1
+                        if placed >= wanted:
+                            break
+                if placed >= wanted:
                     break
-    return n
+    return len(drawn)
 
 
 def spot_levels_sparse(v: View, s: Site, near, gap_mm: float = 22.0, maxn: int = 8, avoid=None, h: float = 2.4) -> int:

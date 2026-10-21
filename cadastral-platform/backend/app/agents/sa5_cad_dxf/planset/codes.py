@@ -10,7 +10,7 @@ import re
 from dataclasses import dataclass
 
 from app.agents.sa5_cad_dxf.layers import LayerDef
-from app.common.statement import AI_DRAFT_STATEMENT
+from app.common.statement import AI_DRAFT_STATEMENT, VERIFY_FIELDS, VERIFY_STATEMENT, VERIFY_TICK, VERIFY_TITLE
 
 
 # ---- platform brand ---------------------------------------------------------------------------------------------------------
@@ -30,8 +30,10 @@ class PlatformBrand:
 
 PLATFORM_BRAND = PlatformBrand()
 
-AI_STATEMENT = AI_DRAFT_STATEMENT          # one platform-wide definition: app/common/statement.py
-AI_CHECK_LABEL = "AI CHECK"
+AI_STATEMENT = AI_DRAFT_STATEMENT          # kept for the non-document producers (3D scene, API); NOT drawn on any plan sheet since stage 8
+VERIFY_LABEL = VERIFY_TITLE                # the verification block (C000 only): statement, tick box, name / signature / date
+AI_CHECK_LABEL = VERIFY_LABEL
+VERIFY_TEXT, VERIFY_TICK_TEXT, VERIFY_FIELD_NAMES = VERIFY_STATEMENT, VERIFY_TICK, VERIFY_FIELDS
 SETBACK_PLACEHOLDER = "SETBACK DIMENSIONS: PLACEHOLDER (BUILDING DESIGN NOT SUPPLIED)"
 
 # ---- drawing numbers --------------------------------------------------------------------------------------------------------
@@ -85,7 +87,7 @@ ELEMENTS: dict[tuple[str, str], tuple[int, float, str, str, tuple[str, ...]]] = 
     ("FRAM", "GRID"): (8, 0.11, "CONTINUOUS", "Zone grid ticks and references", ("C-ANNO-GRID",)),
     ("FRAM", "TABL"): (7, 0.18, "CONTINUOUS", "Revision table", ("C-ANNO-TABL",)),
     ("FRAM", "STMP"): (1, 0.35, "CONTINUOUS", "Status stamp", ("C-ANNO-STMP",)),
-    ("FRAM", "AICK"): (1, 0.35, "CONTINUOUS", "AI statement box and AI CHECK field", ()),
+    ("FRAM", "AICK"): (1, 0.35, "CONTINUOUS", "Verification block (cover only)", ()),
     ("VIEW", "VPRT"): (7, 0.13, "CONTINUOUS", "Layout viewport (non-plotting frame)", ("C-ANNO-VPRT",)),
 }
 VIEWPORT_LAYER = "JCS-VIEW-VPRT-NONE"

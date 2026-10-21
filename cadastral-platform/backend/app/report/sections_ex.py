@@ -11,7 +11,7 @@ from app.report import fmt, theme as T
 from app.report.acks import ACK_TEXT
 from app.report.blocks import KS, Bookmark, Chip, P, block, callout, grid_table, st
 from app.report.diagrams import BufferDiagram
-from app.report.sections import LEGAL, NOT_CLEAR, Ctx, _chip_cell, _dist_text, _sh, ai_banner, screening_info
+from app.report.sections import LEGAL, NOT_CLEAR, Ctx, _chip_cell, _dist_text, _sh, screening_info
 
 CW = T.CW
 
@@ -24,8 +24,11 @@ def _dots(items: list[str]) -> list:
 def how_to_read(ctx: Ctx) -> list:
     fl = _sh(ctx, "How to read this report", "What the report is, what it is not, and what each result means in plain words.")
     fl += [P("WHAT THIS REPORT IS", "label"), KS(2)] + _dots(EX.ABOUT_IS)
-    fl += [Spacer(1, 2 * mm), P("WHAT THIS REPORT IS NOT", "label"), KS(2)] + _dots(EX.ABOUT_IS_NOT)
-    fl += [Spacer(1, 2 * mm), ai_banner(), Spacer(1, 3 * mm)]
+    is_not = list(EX.ABOUT_IS_NOT)
+    if (ctx.inp.civil or {}).get("building"):                    # stage 8: a typical house is drawn on the plans and described in the civil summary
+        is_not[-1] = "Site works with an indicative typical house. The house is not a design for this lot and no building has been assessed in this report."
+    fl += [Spacer(1, 2 * mm), P("WHAT THIS REPORT IS NOT", "label"), KS(2)] + _dots(is_not)
+    fl += [Spacer(1, 3 * mm)]
     rows = []
     for term, kind, words in EX.RESULT_TERMS:
         chip = Chip(term.split(" (")[0].replace("NOT INTERSECTED BY THE DATA LOADED", "Not intersected").replace("ASSUMED / PLATFORM DEFAULT", "Assumed"), kind, h=10, size=5.6)
@@ -185,11 +188,11 @@ def data_limits(ctx: Ctx) -> list:
     nc = [f for f in ctx.findings if f.status == "unchecked"]
     nchk = ["Layers not queried in this run: " + ("; ".join(f.short.lower() for f in nc) + ". Not checked is not clear." if nc else "none."),
             "Not covered at all: easements, covenants, underground services, council flood studies, local council overlays and DCP maps, unless stated in a result above.",
-            "Not assessed: any building, footprint, floor level, setback or approval pathway."]
+            ("Not assessed: the building height, floor level (TBC), bushfire, BASIX and the approval pathway. The typical house is indicative and is not a design for this lot." if (ctx.inp.civil or {}).get("building") else "Not assessed: any building, footprint, floor level, setback or approval pathway.")]
     fl += _dots(nchk)
     fl.append(callout(NOT_CLEAR, "red"))
 
-    fl += [Spacer(1, 3.5 * mm), KeepTogether([P("E. SIGN OFF AND QUALIFIED PERSON", "label"), KS(2)] + _dots(EX.SIGN_OFF) + [Spacer(1, 2 * mm), ai_banner()])]
+    fl += [Spacer(1, 3.5 * mm), KeepTogether([P("E. SIGN OFF AND QUALIFIED PERSON", "label"), KS(2)] + _dots(EX.SIGN_OFF))]
 
     fl += [Spacer(1, 3.5 * mm), P("F. ACKNOWLEDGEMENTS", "label"), KS(2)]
     acks = [a for a in ctx.inp.acknowledgements if a in ACK_TEXT]

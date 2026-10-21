@@ -343,6 +343,27 @@ class Placement:
                                  "note": self.garage_rule.note} if self.garage_rule else None)}
 
 
+def plain_flags(bd: dict) -> list[str]:
+    """The placement flags as formal sentences in ordinary case (for the report and the SoEE), built from the structured rows of ``Placement.to_dict()`` so the
+    figures are the plan figures.  A control that is not met, and a control that could not be checked, are stated; nothing is said of a control that is met."""
+    out: list[str] = []
+    for r in bd.get("rows") or []:
+        if r.get("informational"):
+            continue
+        lab = str(r["label"]).lower()
+        if r.get("met") is None:
+            out.append(f"The {lab} setback could not be checked: the cited value is unresolved for this zone. Not checked is not clear.")
+        elif not r["met"]:
+            out.append(f"The {lab} setback is not met: {r['actual_m']:.2f} m is provided and the cited minimum is {r['cite_value']}.")
+    g = bd.get("garage_rule")
+    if g is not None and not g.get("met"):
+        req = g.get("required_m")
+        fwd = g["actual_m"] < 0
+        out.append("The garage control is not met: the cited control requires the garage " + (f"{req:g} m " if req is not None else "") + "behind the front building line, and the garage is "
+                   + (f"{abs(g['actual_m']):.2f} m forward of it" if fwd else f"{g['actual_m']:.2f} m behind it") + ". The typical house does not meet this control and the layout is not changed to hide this.")
+    return out
+
+
 def _outward_normal(lot: Polygon, ln: LineString) -> tuple[float, float]:
     c = ln.coords
     d = _unit((c[-1][0] - c[0][0], c[-1][1] - c[0][1]))

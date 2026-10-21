@@ -7,7 +7,7 @@ Rules:
     source document, section and page.  Nothing is defaulted.
   * a topic with no resolved requirement is written as
     ``COUNCIL REQUIREMENT: <TOPIC> UNRESOLVED, CONFIRM WITH <LGA NAME> COUNCIL``.
-  * the AI-generated and needs-checking statement is always included.
+  * no AI statement is drawn on these notes (stage 8): the verification block is on the cover sheet only.
 """
 from __future__ import annotations
 
@@ -15,9 +15,6 @@ import re
 
 from app.agents.sa5_cad_dxf.planset import phrases as PH
 from app.agents.sa5_cad_dxf.planset import style as ST
-
-AI_STATEMENT = ("THIS PLAN SET IS AN INDICATIVE AI-GENERATED DRAFT. IT HAS NOT BEEN CHECKED BY A QUALIFIED PERSON AND MUST BE CHECKED, "
-                "VERIFIED AND CERTIFIED BY A QUALIFIED PERSON BEFORE ANY USE. IT IS NOT FOR CONSTRUCTION.")
 
 # group -> list of (label, requirement keys that may supply it).  The first resolved key is shown with its citation.
 CITED_TOPICS: dict[str, list[tuple[str, tuple[str, ...]]]] = {
@@ -129,15 +126,22 @@ def _rule_lines(rules: list) -> list[str]:
     return out
 
 
+def _building_note(site) -> str:
+    pl = getattr(site, "placement", None)
+    if pl is None or not getattr(pl, "placed", False):
+        return "THE BUILDING DESIGN IS NOT PART OF THIS PLAN SET: NO BUILDING FOOTPRINT OR FLOOR LEVEL IS DRAWN."
+    return (f"THE BUILDING SHOWN IS THE {pl.source}: A TYPICAL HOUSE PLACED ON THE LOT TO THE CITED SETBACKS, NOT A DESIGN FOR THIS LOT. FINISHED FLOOR LEVEL IS "
+            + (f"RL {pl.ffl_m:.2f} m AHD." if pl.ffl_m is not None else "TBC (NOT ASSUMED)."))
+
+
 def build_notes(site, council_name: str | None = None) -> tuple[str, list[tuple[str, list[str]]]]:
     """(council display name, [(group heading, [note text, ...]), ...]).  Notes are unnumbered; the sheet numbers them."""
     cites = site.cites
     council = lga_name(council_name or getattr(site.inp, "council_name", None), getattr(site.inp.lot, "lga_name", None), getattr(cites, "council_name", None))
     groups: dict[str, list[str]] = {g: [] for g in GROUP_ORDER}
     g = groups["GENERAL"]
-    g += [AI_STATEMENT,
-          "THESE DRAWINGS ARE NOT A DEVELOPMENT APPLICATION, CONSTRUCTION CERTIFICATE OR BUILDING APPROVAL.",
-          "THE BUILDING DESIGN IS NOT PART OF THIS PLAN SET: NO BUILDING FOOTPRINT OR FLOOR LEVEL IS DRAWN.",
+    g += ["THESE DRAWINGS ARE NOT A DEVELOPMENT APPLICATION, CONSTRUCTION CERTIFICATE OR BUILDING APPROVAL.",
+          (_building_note(site)),
           "ITEMS LABELLED ASSUMED OR PLATFORM DEFAULT ARE NOT SURVEYED OR CONFIRMED. ITEMS LABELLED PLACEHOLDER OR TBC ARE DRAFTING CONVENTIONS, NOT DESIGN VALUES. DATA NOT AVAILABLE MEANS NOT CHECKED, NOT CLEAR.",
           "DIMENSIONS IN METRES. LEVELS IN METRES AHD."]
     g.append(f"HORIZONTAL DATUM GDA2020 / MGA (EPSG:{site.inp.lot.mga_srid}). VERTICAL DATUM AHD FROM THE NSW 5 m DEM WHERE LEVELS ARE SHOWN: INDICATIVE, VERTICAL ACCURACY NOT STATED BY THE SERVICE.")
@@ -146,7 +150,7 @@ def build_notes(site, council_name: str | None = None) -> tuple[str, list[tuple[
            "DETAIL SURVEY IS UNDERTAKEN AT THE DETAILED DESIGN STAGE. CONTOURS, LEVELS AND THE KERB LINE ARE INDICATIVE UNTIL THEN.",
            "NO EXISTING SERVICE LOCATIONS WERE SUPPLIED. LOCATE ALL SERVICES (DIAL BEFORE YOU DIG) AND POTHOLE BEFORE EXCAVATION. DEPTHS ARE NEVER INFERRED."]
     e = groups["EARTHWORKS AND EROSION AND SEDIMENT CONTROL"]
-    e += ["DRIVEWAY CUT AND FILL IS INDICATIVE (5 m DEM AGAINST THE PLATFORM DRIVEWAY PROFILE). BUILDING PAD EARTHWORKS ARE NOT PART OF THIS PLAN SET.",
+    e += ["DRIVEWAY CUT AND FILL IS INDICATIVE (5 m DEM AGAINST THE PLATFORM DRIVEWAY PROFILE). " + ("NO BUILDING PAD LEVEL IS ASSUMED (FINISHED FLOOR LEVEL TBC): PAD EARTHWORKS ARE NOT CALCULATED." if getattr(getattr(site, "placement", None), "placed", False) else "BUILDING PAD EARTHWORKS ARE NOT PART OF THIS PLAN SET."),
           "BATTER SLOPES SHOWN ON THE TYPICAL SECTIONS ARE LABELLED 1:N TBC UNLESS A COUNCIL VALUE IS CITED BELOW. GEOTECHNICAL ADVICE IS REQUIRED."]
     d = groups["DRIVEWAY AND CROSSOVER"]
     d += ["THE COUNCIL STANDARD DRAWING GOVERNS THE VEHICLE CROSSING (NOT SELECTED). LAYOVER DIMENSIONS ARE PLACEHOLDERS WHERE MARKED.",

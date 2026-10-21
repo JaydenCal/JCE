@@ -37,7 +37,8 @@ from app.report.sections import UNRESOLVED_TOPICS
 BACKEND = Path(__file__).resolve().parents[2]
 KNOW = BACKEND / "knowledge"
 
-AI_STATEMENT = PC.AI_STATEMENT
+from app.common.statement import VERIFY_STATEMENT          # noqa: E402  stage 8: the cover verification statement (no AI statement in the document)
+AI_STATEMENT = None
 BRAND = PC.PLATFORM_BRAND
 BUILDING_BY_OTHERS = "BUILDING DESIGN BY OTHERS, TO BE COMPLETED BY THE APPLICANT"
 DOC_TITLE = "STATEMENT OF ENVIRONMENTAL EFFECTS"
@@ -48,6 +49,7 @@ T_DNA, T_ASSUMED, T_NA = "DATA NOT AVAILABLE", "ASSUMED / PLATFORM DEFAULT", "NO
 T_ASSUMED1 = "ASSUMED"                              # an assumption that is not a platform default value (for example that the lot is vacant)
 T_IND = "INDICATIVE, 5 m DEM"                       # a level or a value derived from the sourced 5 m digital elevation model (not an assumption)
 T_BLD, T_FIX = "BUILDING DESIGN BY OTHERS", "OFFLINE FIXTURE"
+T_TYP = "TYPICAL HOUSE, INDICATIVE"                   # stage 8: the dwelling is the Plan Studio typical house placed to the cited setbacks (not a design for the lot)
 OPEN_TAGS = (T_NC, T_UNRES, T_NOTREV, T_DNA, T_NA)
 
 # One statement of method, used on the cover page notes, in document control and in the limitations (they must not disagree).
@@ -426,6 +428,18 @@ def extract_site_works(inp, planset_result: dict | None, *, probe_imagery: bool 
         except Exception as ex:  # noqa: BLE001
             note(f"plan set site data not rebuilt ({type(ex).__name__}: {ex})")
 
+    # ---- building (stage 8): the Plan Studio typical house placed to the cited setbacks.  Only a PLACED building is read; the dict is the placement as drawn on C101
+    try:
+        pl_ = getattr(site, "placement", None) if site is not None else None
+        if pl_ is not None and pl_.placed:
+            bd_ = pl_.to_dict()
+            bd_["footprint_area_m2"] = _f(pl_.footprint.area)
+            bd_["roof_area_m2"] = _f(pl_.roof.area) if getattr(pl_, "roof", None) is not None else None
+            bd_.pop("footprint_wkt", None)
+            w["building"] = bd_
+    except Exception as ex:  # noqa: BLE001
+        note(f"building placement not read ({type(ex).__name__}: {ex})")
+
     # ---- terrain (existing ground, 5 m DEM or survey)
     ter: dict[str, Any] = {"available": False}
     if site is not None and site.tin is not None:
@@ -623,7 +637,7 @@ class SiteSoee:
     compliance: list[dict]
     open_items: dict
     mode: str = "deterministic"
-    ai_statement: str = AI_STATEMENT
+    building_line: str = "BUILDING DESIGN BY OTHERS, TO BE COMPLETED BY THE APPLICANT"
 
     def statements(self) -> list[Stmt]:
         out = []
@@ -635,7 +649,7 @@ class SiteSoee:
         return out
 
     def to_text(self) -> str:
-        out = [self.title, self.site, self.council, self.date, f"Revision {self.revision}", self.status, self.ai_statement, ""]
+        out = [self.title, self.site, self.council, self.date, f"Revision {self.revision}", self.status, VERIFY_STATEMENT, ""]
         for s in self.sections:
             out.append(f"{s.number} {s.title}")
             for b in s.blocks:
@@ -719,6 +733,7 @@ class _Data:
         self.sel = {k: v for k, v in self.sel.items() if v}
         self.fixture = "offline_fixture" in (self.meta.get("flags") or []) or "offline_fixture" in (self.lot.get("flags") or [])
         self.figs = _figures(inp)
+        self.bld = self.w.get("building") if (self.w.get("building") or {}).get("placed") else None
 
     def fig(self, key: str) -> dict | None:
         return self.figs.get(key)
@@ -951,8 +966,70 @@ def build_site_soee(inp: SoeeSiteInputs) -> SiteSoee:
             "map_figures": len(d.figs), "synthetic_demo": bool(inp.synthetic_demo),
             "planning_maps": [{"figure": f["no"], "key": f["key"], "title": f["title"], "state": f["rec"].get("state"), "result": f["rec"].get("result"), "png": Path(f["png"]).name,
                                "synthetic": bool(f["rec"].get("synthetic"))} for f in d.figs.values()]}
-    return SiteSoee(DOC_TITLE, doc_no, site_label, d.locality, d.council, dmy(inp.today), inp.revision, "DRAFT", b.sections, meta, comp, open_items)
+    bl = BUILDING_BY_OTHERS if d.bld is None else "Plan Studio typical house (indicative), placed to the cited setbacks. It is not a design for this lot (section 1.5)."
+    return SiteSoee(DOC_TITLE, doc_no, site_label, d.locality, d.council, dmy(inp.today), inp.revision, "DRAFT", b.sections, meta, comp, open_items, building_line=bl)
 
+
+
+# ---- the building statements (stage 8): BUILDING_BY_OTHERS wording when no building was placed, else the Plan Studio typical house (indicative)
+def _src_label(bd: dict) -> str:
+    """The building source as a sentence fragment: Plan Studio typical house (indicative)."""
+    src = (bd.get("source") or "Plan Studio typical house (indicative)").strip()
+    return re.sub(r"(?i)plan studio", "Plan Studio", src.capitalize()) if src.isupper() else src
+
+
+def _ffl_note(bd: dict) -> str:
+    n = (bd.get("ffl_note") or "").strip()
+    if n.startswith("FFL TBC: "):
+        n = n[len("FFL TBC: "):]
+    return (n[:1].upper() + n[1:]) if n else ""
+
+
+def _ffl_text(d) -> str:
+    bd = d.bld
+    if bd.get("ffl_m") is not None:
+        return f"The finished floor level of the typical house is RL {bd['ffl_m']:.2f} m AHD. {_ffl_note(bd)}".strip()
+    return f"The finished floor level of the typical house is TBC (to be confirmed). {_ffl_note(bd)}".strip()
+
+
+def _bi(d, no_text: str, yes_text: str, source: str, yes_tag: str = T_TYP, no_tag: str = T_BLD) -> tuple:
+    """(text, source, tag) for one statement about the building: the BUILDING_BY_OTHERS wording when no building was placed, else ``yes_text`` (the typical house)."""
+    if d.bld is None:
+        return (no_text, source, no_tag)
+    return (yes_text, source, yes_tag)
+
+
+def _building_section(b, d) -> None:
+    """1.5 Building shown on the plans: what the house is, where it came from, the cited setbacks with provided values and PASS or FAIL, the garage control, the finished floor level."""
+    bd = d.bld
+    b.h2("1.5 Building shown on the plans (indicative)")
+    b.p(f"The dwelling drawn on sheets C000 to C500 is the {_src_label(bd)}. {bd['house']}. It is a typical template from the Plan Studio design tool and is not a design for this lot. "
+        "It is placed on the lot to the cited setbacks below and oriented to the street frontage, so that the driveway, earthworks, stormwater and erosion and sediment control plans can be drawn around it.", "planset:sheets[C101] (building placement)", T_TYP)
+    rows = []
+    for r in bd["rows"]:
+        if r.get("informational"):
+            continue
+        if r["met"] is None:
+            st_, req = "UNRESOLVED", "UNRESOLVED"
+        else:
+            st_, req = ("PASS" if r["met"] else "FAIL"), r["cite_value"]
+        rows.append(([r["label"].lower().capitalize() if r["label"].isupper() else r["label"], req, f"{r['actual_m']:.2f} m", st_], f"planset:sheets[C101] (building placement); {r['cite']}"))
+    gr = bd.get("garage_rule")
+    if gr:
+        fwd = gr["actual_m"] < 0
+        rows.append((["Garage behind the front building line", gr.get("required_m") is not None and f"{gr['required_m']:g} m behind" or "UNRESOLVED",
+                      f"{abs(gr['actual_m']):.2f} m " + ("forward" if fwd else "behind"), "PASS" if gr["met"] else "FAIL"], f"planset:sheets[C101] (building placement); {gr['cite']}"))
+    if rows:
+        b.table(["Control", "Cited minimum", "Provided", "Result"], rows, [2.2, 1.4, 1.2, 1.0], status_col=3,
+                caption="Setbacks measured from the cadastral boundary to the nearest part of the dwelling. The cited values and their sources are in the plan set (sheet C101). A FAIL is reported and the layout is not changed to hide it.")
+    from app.design.building_place import plain_flags
+    for f in plain_flags(bd):
+        b.p(f, "planset:sheets[C101] (building placement flags)", T_TYP)
+    b.p(_ffl_text(d), "planset:sheets[C101] (building placement)", T_UNRES if bd.get("ffl_m") is None else T_TYP)
+    gr_ = bd.get("ground_range")
+    if gr_:
+        b.p(f"The existing ground under the footprint ranges from RL {gr_[0]:.2f} to {gr_[2]:.2f} m AHD (mean {gr_[1]:.2f}), from the 5 m DEM. A detail survey is required.", "planset:sheets[C101] (building placement)", T_IND)
+    b.p("The roof water is not designed: the downpipe positions, pits, pipe sizes and the discharge route are for a hydraulic designer, and the legal point of discharge is to be confirmed with the council.", "planset:sheets[C300]", T_NA)
 
 # ---- 1 Introduction
 def _s1(b: _Build, d: _Data, doc_no: str, gaps: list[dict]) -> None:
@@ -960,10 +1037,12 @@ def _s1(b: _Build, d: _Data, doc_no: str, gaps: list[dict]) -> None:
     b.h2("1.1 Purpose")
     b.p(f"This draft Statement of Environmental Effects (SoEE) describes the civil and site works shown on the JCESITE plan set for {d.lot_label}, {d.locality} NSW, in the area of {d.council}.", "data:sa1.lot")
     b.p("It sets out the works shown, the planning framework and the matters for consideration under section 4.15 of the Environmental Planning and Assessment Act 1979 (EP&A Act), so far as the data held by the platform allow.", "platform:method")
-    b.p(f"The scope is site works only. {BUILDING_BY_OTHERS}. No dwelling floor area, height, setback, floor level or BASIX content is stated or assumed in this document.", "scope:site_works_only", T_BLD)
+    b.p(*_bi(d, f"The scope is site works only. {BUILDING_BY_OTHERS}. No dwelling floor area, height, setback, floor level or BASIX content is stated or assumed in this document.",
+             "The scope is the civil and site works. An indicative typical house (Plan Studio) is placed on the lot to the cited setbacks so that the site works can be drawn around it (section 1.5). "
+             "It is not a design for this lot. No height, BASIX content or finished floor level is assumed.", "scope:site_works_only"))
     b.p("Each statement is traced to a data field or a cited document. Where the data do not support a statement, this document says so (DATA NOT AVAILABLE, NOT CHECKED, NOT REVIEWED or UNRESOLVED). Nothing has been assumed in place of missing data, except values labelled ASSUMED or ASSUMED / PLATFORM DEFAULT. Values labelled INDICATIVE, 5 m DEM come from the sourced elevation model and are not a survey.", "platform:method")
     b.p(METHOD_TEXT, "platform:method")
-    b.p("This is an AI generated draft. It carries that label because the requirement values it uses were extracted by an AI model and the platform that prepared it is AI assisted. It has not been checked or certified. It is not a planning assessment, an approval or advice, and it does not state that the proposal complies or will be approved.", "platform:method")
+    b.p("This draft has not been verified by a person. It is to be verified by a suitably qualified person before any use. It is not a planning assessment, an approval or advice, and it does not state that the proposal complies or will be approved.", "platform:method")
     b.h2("1.2 Plans this statement accompanies")
     pj = d.w.get("planset_project")
     b.p("This statement accompanies the JCESITE civil plan set listed below" + (f" (project name on the title blocks: {pj})" if pj else "") + ". The drawing number uses the placeholder XXX until a job number is set. The last column gives the number of data gaps listed against the sheet in section 3.9, with the item numbers.", "planset:codes", cite=None)
@@ -992,7 +1071,9 @@ def _s1(b: _Build, d: _Data, doc_no: str, gaps: list[dict]) -> None:
                ("Not a survey. Lot boundaries come from the cadastre and are indicative.", "platform:app.report.explain.ABOUT_IS_NOT"),
                ("Not legal advice or planning advice, and not a section 10.7 planning certificate or council property report.", "platform:app.report.explain.ABOUT_IS_NOT"),
                ("Not a complete list of constraints. Only the layers listed in section 5.11 were screened.", "platform:method"),
-               (f"Site works only. {BUILDING_BY_OTHERS}.", "scope:site_works_only", T_BLD)])
+               _bi(d, f"Site works only. {BUILDING_BY_OTHERS}.", "Site works, with an indicative typical house placed on the lot (section 1.5). The house is not a design for this lot.", "scope:site_works_only")])
+    if d.bld is not None:
+        _building_section(b, d)
 
 
 # ---- 2 Site description
@@ -1113,7 +1194,7 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
                ("Earthworks, cut and fill and batters (C200 and C600).", "planset:codes"), ("Stormwater (C300).", "planset:codes"),
                ("Erosion and sediment control (C500).", "planset:codes"), ("Water and sewer connections, indicative (C310).", "planset:codes"),
                ("Site constraints (C100, C101 and the JCESITE site report).", "planset:codes")])
-    b.p(f"The dwelling is not part of the works described here. {BUILDING_BY_OTHERS}.", "scope:site_works_only", T_BLD)
+    b.p(*_bi(d, f"The dwelling is not part of the works described here. {BUILDING_BY_OTHERS}.", "The dwelling shown is the Plan Studio typical house (indicative), placed on the lot to the cited setbacks (section 1.5). It is not a design for this lot and its construction is not part of the works described here.", "scope:site_works_only"))
 
     b.h2("3.2 Vehicle crossover and layover")
     if drv.get("present"):
@@ -1181,7 +1262,7 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
         items.append(("Earthworks quantities need existing levels, which were not available in this run.", "data:planset.terrain", T_DNA))
     if "section_aa" in ((d.w.get("sheet_features") or {}).get("C200") or []):
         items.append(("Drawing C200 shows a typical driveway cut and fill section (SECTION A-A) across the driveway. It is derived from the 5 m DEM against the platform driveway profile and is not a design.", "planset:sheets[C200] (text printed on the sheet)", T_IND))
-    items.append((f"Building pad cut, fill, batters and volumes depend on the building design. {BUILDING_BY_OTHERS}.", "planset:sheets[C200].data_missing", T_BLD))
+    items.append(_bi(d, f"Building pad cut, fill, batters and volumes depend on the building design. {BUILDING_BY_OTHERS}.", ("Building pad cut, fill, batters and volumes are not calculated because the finished floor level of the typical house is TBC (to be confirmed). No pad level is assumed." if d.bld and d.bld.get("ffl_m") is None else "Building pad cut and fill follow the finished floor level of the typical house (sheet C200)."), "planset:sheets[C200].data_missing", T_UNRES))
     items.append(("Batter slopes are not drawn as values. The typical details on C600 show batters as TBC because no council or cited batter slope was found.", "planset:sheets[C600]", T_UNRES))
     ts = d.r("esc.topsoil.strip_depth_min_mm")
     tx = d.r("esc.topsoil.strip_depth_max_mm")
@@ -1196,7 +1277,7 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
     dis = discharge_item(ter)
     items.append(dis or ("The legal point of stormwater discharge is not in the run data. It must be confirmed with the council.", "planset:sheets[C001]", T_UNRES))
     items += [
-        (f"Roof catchment, downpipes, pits and the discharge route depend on the building design. {BUILDING_BY_OTHERS}.", "planset:sheets[C300].data_missing", T_BLD),
+        _bi(d, f"Roof catchment, downpipes, pits and the discharge route depend on the building design. {BUILDING_BY_OTHERS}.", "The roof of the typical house has a plan area of " + (f"{d.bld['roof_area_m2']:,.0f} m2 to the eaves" if d.bld and d.bld.get("roof_area_m2") else "not stated") + ". Downpipes, pits, pipe sizes and the discharge route are not designed.", "planset:sheets[C300].data_missing", T_UNRES),
         ("Existing council stormwater assets are not in the run data. They must be confirmed from council records and the BYDA response.", "planset:sheets[C300].data_missing", T_DNA),
         ("No rainwater tank was supplied. Any BASIX or council tank requirement is to be confirmed.", "data:planset.services.rwt_supplied", T_DNA) if not w.get("services", {}).get("rwt_supplied") else
         ("A rainwater tank was supplied to the plan set.", "data:planset.services.rwt_supplied"),
@@ -1254,7 +1335,7 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
     b.bullets([
         ("No existing water main, sewer main or junction was supplied. Existing service locations must be confirmed from council records and the BYDA response before any excavation.", "planset:sheets[C310].data_missing", T_DNA) if not sv.get("count") else
         (f"{sv['count']} service line(s) were supplied to the plan set.", "data:planset.services"),
-        (f"The proposed water service and sewer house connection depend on the building design. {BUILDING_BY_OTHERS}.", "planset:sheets[C310].data_missing", T_BLD),
+        _bi(d, f"The proposed water service and sewer house connection depend on the building design. {BUILDING_BY_OTHERS}.", "The proposed water service and sewer house connection to the typical house are not designed. Their position, size and cover are for the water and sewer authority.", "planset:sheets[C310].data_missing", T_NA),
         ("Electricity, gas and telecommunications connections are not in the run data.", "data:planset.services", T_DNA),
         ("Connections shown on the plan set are indicative and are not a servicing strategy.", "planset:sheets[C310]"),
     ])
@@ -1313,7 +1394,7 @@ def _s4(b: _Build, d: _Data, blocked: list[dict], inp: SoeeSiteInputs) -> None:
             mc_ = next((bn for bn in ((d.fig(lkey) or {}).get("rec", {}).get("banners") or []) if bn.startswith("MORE THAN ONE MAPPED CLASS")), "")
             if mc_:
                 tl_ += " " + mc_.rstrip(".") + "."
-            items.append((tl_ + " This map bears on the building design and on subdivision, not on the site works, and is not assessed here. " + BUILDING_BY_OTHERS + ".", src_, tag_))
+            items.append((tl_ + (" This map bears on the building design and on subdivision, not on the site works, and is not assessed here. " + BUILDING_BY_OTHERS + "." if d.bld is None else " This map bears on the building and on subdivision. The typical house is indicative and the map is not assessed against it."), src_, tag_))
     b.bullets(items)
     b.h2(heads["a_ii"])
     b.p("Proposed environmental planning instruments that are or have been the subject of public consultation are not covered by any data source held by the platform. Confirm with the council.", "platform:no_data_source", T_NC)
@@ -1332,7 +1413,7 @@ def _s4(b: _Build, d: _Data, blocked: list[dict], inp: SoeeSiteInputs) -> None:
     esc = d.r("esc.escp.prepared_by_suitably_qualified_person")
     if esc:
         items.append((f"{T(esc.source.document_title)}, {T(esc.source.authority)}{vtxt(esc.source.version)}, was read for erosion and sediment control guidance.", f"doc:{T(esc.source.document_title)} page {esc.source.page}", "", cite_dict(esc)))
-    items.append(("Council DCP controls for the building (setbacks, parking, site coverage and similar) are outside the site works scope. " + BUILDING_BY_OTHERS + ".", "scope:site_works_only", T_BLD))
+    items.append(_bi(d, "Council DCP controls for the building (setbacks, parking, site coverage and similar) are outside the site works scope. " + BUILDING_BY_OTHERS + ".", "Council DCP controls for the building other than the cited setbacks in section 1.5 (parking, site coverage and similar) are not assessed here.", "scope:site_works_only", T_NA))
     b.bullets(items)
     b.h2(heads["a_iiia"])
     b.p("Planning agreements (section 7.4 of the EP&A Act) are not covered by any data source held by the platform. Confirm with the council.", "platform:no_data_source", T_NC)
@@ -1396,7 +1477,7 @@ def _s5(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, lrows: list[dict], 
     b.bullets([
         (_with_ref(d, "zoning", f"The site is {d.lot_label}, about {num(lot.get('area_m2_calculated'), 0)} m2, zone {lot.get('zone_code') or 'not returned'}, with a road frontage to {', '.join(lot.get('road_names') or ['a road not named in the data'])}."), "data:sa1.lot"),
         (f"The lot adjoins {len([n for n in lot.get('neighbours', []) if not n['is_road']])} lots in the data. The use of adjoining land and the existing streetscape are not in the run data.", "data:sa1.lot.neighbours", T_DNA),
-        (f"Overshadowing, privacy, bulk and scale relate to the building. {BUILDING_BY_OTHERS}.", "scope:site_works_only", T_BLD),
+        _bi(d, f"Overshadowing, privacy, bulk and scale relate to the building. {BUILDING_BY_OTHERS}.", "Overshadowing, privacy, bulk and scale relate to the building. The typical house is indicative and these matters are not assessed.", "scope:site_works_only", T_NA),
         ("The site works are at ground level (driveway, crossover, earthworks and drainage). Visual effects of the works on the streetscape are not assessed in this draft.", "platform:method", T_NA),
     ])
     # 5.2
@@ -1413,7 +1494,7 @@ def _s5(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, lrows: list[dict], 
         items.append(("No driveway or crossover result was available in this run.", "planset:sheets[C400]", T_DNA))
     items.append(("Traffic generation, sight distance and the condition of the receiving road are not in the run data.", "platform:no_data_source", T_NA))
     items.append(_form("The council form asks about vehicle access to a public road, traffic generation, the road the site is accessed from and the formation of the existing access. The run data hold none of these answers.", "ACCESS AND TRAFFIC", 2, T_DNA))
-    items.append((f"Parking and garage location relate to the building. {BUILDING_BY_OTHERS}.", "scope:site_works_only", T_BLD))
+    items.append(_bi(d, f"Parking and garage location relate to the building. {BUILDING_BY_OTHERS}.", "The typical house has an attached garage and the driveway is planned to the garage door (sheet C101). The garage control and the result are stated in section 1.5. Parking is not otherwise assessed.", "scope:site_works_only"))
     b.bullets(items)
     # 5.3
     b.h2(f"5.3 {nm[2]}")
@@ -1438,7 +1519,7 @@ def _s5(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, lrows: list[dict], 
     items = []
     if ter.get("available") and ew.get("driveway_cut_m3") is not None:
         items.append((f"Driveway earthworks quantities are: cut {ew['driveway_cut_m3']:,.1f} m3 and fill {ew['driveway_fill_m3']:,.1f} m3 (INDICATIVE, 5 m DEM against a platform driveway profile).", "data:planset.earthworks", T_IND))
-    items.append((f"Building pad earthworks are not included. {BUILDING_BY_OTHERS}.", "planset:sheets[C200].data_missing", T_BLD))
+    items.append(_bi(d, f"Building pad earthworks are not included. {BUILDING_BY_OTHERS}.", "Building pad earthworks are not calculated because the finished floor level of the typical house is TBC.", "planset:sheets[C200].data_missing", T_UNRES))
     th = d.r("site.slope_geotech_threshold_pct")
     if th and ter.get("available"):
         ok = ter["max_gradient_pct"] <= th.value + 1e-9
@@ -1468,12 +1549,12 @@ def _s5(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, lrows: list[dict], 
         items.append((f"The council has adopted the {ap.value:g}% annual exceedance probability (AEP) flood plus {fb.value:g} m freeboard as its flood planning level. [{cite_ref(fb)}]", f"doc:{T(fb.source.document_title)} page {fb.source.page} ({fb.key}, {ap.key})", "", cite_dict(fb)))
     items.append(("The lot specific flood planning level and flood extent are not in the run data. A flood certificate or flood information must be requested from the council. UNRESOLVED.", "knowledge:unresolved flood.lot_specific_fpl", T_UNRES))
     items.append(("The Gunnedah and Carroll Floodplain Management Plan is a scanned image without a text layer, so it could not be read: NOT REVIEWED, UNRESOLVED.", "knowledge:manifest[gunnedah_carroll_fmp_1999]", T_NOTREV))
-    items.append((f"Floor levels relate to the building. {BUILDING_BY_OTHERS}.", "scope:site_works_only", T_BLD))
+    items.append(_bi(d, f"Floor levels relate to the building. {BUILDING_BY_OTHERS}.", _ffl_text(d) if d.bld else "", "scope:site_works_only", T_UNRES if (d.bld and d.bld.get("ffl_m") is None) else T_TYP))
     b.bullets(items)
     # 5.6
     b.h2(f"5.6 {nm[5]}")
     items = [_layer_item(d, "nsw_bushfire"),
-             ("Bushfire attack level, asset protection zone, access and water supply requirements are not stated: Planning for Bush Fire Protection was not obtained. They apply principally to the building. " + BUILDING_BY_OTHERS + ".", "knowledge:manifest[nsw_pbp_2019]", T_NOTREV)]
+             ("Bushfire attack level, asset protection zone, access and water supply requirements are not stated: Planning for Bush Fire Protection was not obtained. They apply principally to the building. " + (BUILDING_BY_OTHERS + "." if d.bld is None else "The typical house is indicative and no bushfire assessment is made for it."), "knowledge:manifest[nsw_pbp_2019]", T_NOTREV)]
     b.bullets(items)
     # 5.7
     b.h2(f"5.7 {nm[6]}")
@@ -1671,7 +1752,7 @@ def _s6(b: _Build, d: _Data, comp: list[dict], cnt: dict) -> None:
         req = r["requirement"] + (f" [{r['cite_ref']}" + (f": \"{r['quote']}\"" if r["quote"] else "") + "]" if r["cite_ref"] else "")
         rows.append(([r["control"], req, r["data"] + (f". {r['basis']}" if r["basis"] else ""), r["status"]], r["source"]))
     b.table(["Control", "Requirement and source", "Data and basis", "Status"], rows, [1.4, 2.5, 2.2, 1.25], status_col=3)
-    b.p("Controls for the building (setbacks, height, floor space, parking, site coverage, landscaping, floor level and BASIX) are not in this table. " + BUILDING_BY_OTHERS + ".", "scope:site_works_only", T_BLD)
+    b.p(*_bi(d, "Controls for the building (setbacks, height, floor space, parking, site coverage, landscaping, floor level and BASIX) are not in this table. " + BUILDING_BY_OTHERS + ".", "Controls for the building other than the cited setbacks (section 1.5), that is height, floor space, parking, site coverage, landscaping, floor level and BASIX, are not in this table.", "scope:site_works_only", T_NA))
 
 
 # ---- 7 Conclusion
@@ -1681,7 +1762,7 @@ def _s7(b: _Build, d: _Data, cnt: dict, lc: dict, blocked: list[dict]) -> dict:
     b.p("This draft describes the civil and site works shown on the JCESITE plan set and sets out, from the data held by the platform, the matters for consideration under section 4.15 of the EP&A Act.", "platform:method")
     b.p(f"On the data held, {_plural(cnt['PASS'], 'control passes', 'controls pass')} a numeric comparison and {cnt['FAIL']} fail{'s' if cnt['FAIL'] == 1 else ''}. {_plural(cnt['NOT TRIGGERED'], 'threshold control is', 'threshold controls are')} not triggered and {cnt['TRIGGERED']} {'is' if cnt['TRIGGERED'] == 1 else 'are'} triggered. {_plural(cnt['UNRESOLVED'], 'control is', 'controls are')} unresolved, of {sum(cnt.values())} controls in all. {n_nc} of {n_layers} screening layers {'is' if n_nc == 1 else 'are'} NOT CHECKED. {_plural(len(blocked), 'source document was', 'source documents were')} NOT REVIEWED (table 4.1).", "platform:compliance.counts; data:sa9.layers")
     b.p("The data do not establish that the proposed works comply with the controls or that the site is suitable. Whether the works are acceptable is a matter for the consent authority after assessment by qualified persons.", "platform:method")
-    b.p(f"The building is outside this statement. {BUILDING_BY_OTHERS}.", "scope:site_works_only", T_BLD)
+    b.p(*_bi(d, f"The building is outside this statement. {BUILDING_BY_OTHERS}.", "The typical house is indicative and is not assessed by this statement. The applicant's dwelling design replaces it.", "scope:site_works_only", T_NA))
     b.h2("7.1 Open items for the applicant and qualified persons")
     items = [("Obtain a section 10.7 planning certificate and confirm the zone, permissibility, mapped controls and the layers reported above.", "platform:method")]
     if n_nc:
@@ -1692,7 +1773,7 @@ def _s7(b: _Build, d: _Data, cnt: dict, lc: dict, blocked: list[dict]) -> dict:
               ("Select the council standard crossing drawing and driveway materials, and confirm the driveway grade control with the council.", "knowledge:unresolved driveway.max_grade_pct"),
               ("Have an erosion and sediment control plan prepared by a suitably qualified person, and obtain geotechnical advice for the earthworks and batters.", "planset:sheets[C500].data_missing"),
               ("Obtain and review the documents listed in section 4.1 as NOT REVIEWED, and update this statement.", "knowledge:manifest"),
-              ("Complete the social and economic and public interest matters and the building related matters. " + BUILDING_BY_OTHERS + ".", "scope:site_works_only", T_BLD),
+              _bi(d, "Complete the social and economic and public interest matters and the building related matters. " + BUILDING_BY_OTHERS + ".", "Complete the social and economic and public interest matters and the building related matters for the actual dwelling design, which replaces the typical house.", "scope:site_works_only", T_NA),
               ("Have a qualified person check and verify every statement in this document before any use.", "platform:method")]
     b.bullets(items)
     return {"layers_not_checked": n_nc, "documents_not_reviewed": [s["id"] for s in blocked], "controls_unresolved": [r["control"] for r in _compliance(d) if r["status"] == "UNRESOLVED"]}
@@ -1709,7 +1790,7 @@ def _s8(b: _Build, d: _Data, blocked: list[dict]) -> None:
         (METHOD_TEXT + " Some values were extracted at a confidence below 1 (recorded in the accompanying data file, soee.json).", "knowledge:requirements.json"),
         (f"{_plural(len(blocked), 'source document', 'source documents')} could not be obtained or could not be read, and {'was' if len(blocked) == 1 else 'were'} NOT REVIEWED (section 4.1). The LEP, the Regulation and the relevant SEPPs have not been read.", "knowledge:manifest", T_NOTREV),
         ("The values drawn on the plan set that are marked PLATFORM DEFAULT, PLACEHOLDER or ASSUMED (driveway width, design vehicle, kerb position, layover widths and flare, driveway end level) are not a design and are not a council selection.", "planset:sheets", T_ASSUMED),
-        (f"The building is designed by others with a separate tool. {BUILDING_BY_OTHERS}.", "scope:site_works_only", T_BLD),
+        _bi(d, f"The building is designed by others with a separate tool. {BUILDING_BY_OTHERS}.", "The building shown is the Plan Studio typical house (indicative), not a design for this lot. The applicant's dwelling design replaces it.", "scope:site_works_only"),
     ] + ([("The constraint layer results were rebuilt from a saved live run and are not queried live. Geometry is approximate.", "data:sa9.meta.flags", T_FIX)] if d.fixture else []))
 
 

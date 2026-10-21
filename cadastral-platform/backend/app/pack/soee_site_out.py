@@ -12,7 +12,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from app.pack.soee_site import AI_STATEMENT, BRAND, BUILDING_BY_OTHERS, METHOD_TEXT, SiteSoee, Stmt, Table, T
+from app.common.statement import VERIFY_FIELDS, VERIFY_STATEMENT, VERIFY_TITLE
+from app.pack.soee_site import BRAND, BUILDING_BY_OTHERS, METHOD_TEXT, SiteSoee, Stmt, Table, T
 from app.report import fmt
 
 # status word -> (text colour, fill colour) for table cells
@@ -33,7 +34,7 @@ def status_style(txt: str) -> tuple[str, str]:
         return ("#8a5a12", "#f7ecd3")
     return STATUS_HEX.get(txt.split(" (")[0], ("#1e2024", "#ffffff"))
 TAG_HEX = {"NOT CHECKED": "#4a5160", "UNRESOLVED": "#2d5a96", "NOT REVIEWED, UNRESOLVED": "#2d5a96", "DATA NOT AVAILABLE": "#a63a2b", "NOT ASSESSED": "#6b6e75",
-           "ASSUMED / PLATFORM DEFAULT": "#b4601a", "ASSUMED": "#b4601a", "INDICATIVE, 5 m DEM": "#8a5a12", "BUILDING DESIGN BY OTHERS": "#6b6e75", "OFFLINE FIXTURE": "#a63a2b",
+           "ASSUMED / PLATFORM DEFAULT": "#b4601a", "ASSUMED": "#b4601a", "INDICATIVE, 5 m DEM": "#8a5a12", "BUILDING DESIGN BY OTHERS": "#6b6e75", "TYPICAL HOUSE, INDICATIVE": "#8a5a12", "OFFLINE FIXTURE": "#a63a2b",
            "MAPPED OR INTERSECTS": "#a63a2b", "WITHIN BUFFER": "#b4601a", "NOT INTERSECTED BY THE DATA LOADED": "#5b5f66"}
 TOC_SKIP = ("Section 4.15(1)",)     # the nine section 4.15 sub headings are not listed in the contents (the list must fit on one page)
 SMALL_TABLE_ROWS = 6              # a table of this many rows or fewer is kept on one page
@@ -52,7 +53,7 @@ def write_json(doc: SiteSoee, path: Path) -> Path:
     for s in doc.statements():
         stm.append({"id": s.id, "section": s.section, "kind": s.kind, "tag": s.tag or None, "text": s.text, "source": s.source, "citation": s.cite})
     payload = {"document": {"title": doc.title, "number": doc.number, "site": doc.site, "council": doc.council, "date": doc.date, "revision": doc.revision,
-                            "status": doc.status, "ai_statement": doc.ai_statement, "platform": BRAND.name, "scope": "SITE WORKS ONLY", "building": BUILDING_BY_OTHERS,
+                            "status": doc.status, "verification": {"statement": VERIFY_STATEMENT, "fields": list(VERIFY_FIELDS), "on": "cover only"}, "platform": BRAND.name, "scope": "SITE WORKS ONLY", "building": doc.building_line,
                             "mode": doc.mode, "synthetic_demo": bool(doc.meta.get("synthetic_demo")), "text_written_by_language_model": False, "requirement_values_extracted_by_ai_model": True,
                             "requirement_values_verified_by_person": False, "method": METHOD_TEXT},
                "meta": doc.meta, "compliance": doc.compliance, "open_items": doc.open_items,
@@ -96,6 +97,23 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
         "toc0": ParagraphStyle("toc0", fontName="Plex-Medium", fontSize=8.8, leading=10.4, textColor=INK, spaceBefore=1.2),
         "toc1": ParagraphStyle("toc1", fontName="Plex", fontSize=7.5, leading=8.2, textColor=INK, leftIndent=12),
     }
+
+    def _verification_box(sty_):
+        """Cover verification block (stage 8): the statement, a tick box and blank NAME, SIGNATURE and DATE boxes for the person who verifies."""
+        from app.report.blocks import CheckBox
+        inner = CW - 18
+        head = RTable([[Paragraph(f'<font name="Plex-Bold" size="7.6" color="#6b6e75">{e(VERIFY_TITLE)}</font>', sty_["cell"]), ""],
+                       [CheckBox(), Paragraph(f'<font name="Plex-Bold" size="11">{e(VERIFY_STATEMENT)}</font>', sty_["body"])]], colWidths=[12 * mm, inner - 12 * mm])
+        head.setStyle(TableStyle([("SPAN", (0, 0), (1, 0)), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("LEFTPADDING", (0, 0), (-1, -1), 0), ("TOPPADDING", (0, 0), (-1, -1), 2),
+                                  ("BOTTOMPADDING", (0, 0), (-1, -1), 2)]))
+        ws = [inner * 0.34, inner * 0.40, inner * 0.26]
+        sig = RTable([[Paragraph(f'<font name="Plex" size="7.6" color="#6b6e75">{e(f)}</font>', sty_["cell"]) for f in VERIFY_FIELDS], ["", "", ""]], colWidths=ws, rowHeights=[6 * mm, 15 * mm])
+        sig.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 0.9, INK), ("INNERGRID", (0, 0), (-1, -1), 0.5, INK), ("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 4),
+                                 ("TOPPADDING", (0, 0), (-1, -1), 2)]))
+        outer = RTable([[head], [sig]], colWidths=[CW])
+        outer.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1.2, INK), ("LEFTPADDING", (0, 0), (-1, -1), 9), ("RIGHTPADDING", (0, 0), (-1, -1), 9), ("TOPPADDING", (0, 0), (-1, -1), 8),
+                                   ("BOTTOMPADDING", (0, 0), (-1, -1), 9)]))
+        return outer
 
     def tagged(s: Stmt) -> str:
         if s.tag:
@@ -142,12 +160,6 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
             self.setStrokeColor(RULE)
             self.setLineWidth(0.5)
             self.line(LM, 21 * mm, W - RM, 21 * mm)
-            self.setFont("Plex-Bold", 6.9)
-            self.setFillColor(colors.HexColor("#a63a2b"))
-            y = 17.6 * mm
-            for ln in simpleSplit(doc.ai_statement, "Plex-Bold", 6.9, CW):
-                self.drawCentredString(W / 2, y, ln)
-                y -= 3.1 * mm
             self.setFont("Plex", 6.8)
             self.setFillColor(MUTED)
             left = f"{doc.number}   {doc.status}   Revision {doc.revision}   {doc.date}"
@@ -222,21 +234,18 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
     story.append(Paragraph(BRAND.tagline, ParagraphStyle("tg", fontName="Mono", fontSize=8.5, leading=11, textColor=GOLD, spaceAfter=10)))
     story.append(Spacer(1, 20 * mm))
     story.append(Paragraph(e(doc.title), ParagraphStyle("ct", fontName="Jost-Bold", fontSize=27, leading=31, textColor=INK, spaceAfter=3)))
-    story.append(Paragraph("SITE WORKS ONLY", ParagraphStyle("cs", fontName="Mono-Medium", fontSize=9, leading=12, textColor=GOLD, spaceBefore=5, spaceAfter=14)))
+    story.append(Paragraph("SITE WORKS ONLY" if doc.building_line == BUILDING_BY_OTHERS else "SITE WORKS AND AN INDICATIVE TYPICAL HOUSE", ParagraphStyle("cs", fontName="Mono-Medium", fontSize=9, leading=12, textColor=GOLD, spaceBefore=5, spaceAfter=14)))
     story.append(Paragraph(e(doc.site), ParagraphStyle("csite", fontName="Jost-Medium", fontSize=17, leading=21, textColor=INK, spaceAfter=2)))
     story.append(Paragraph(e(doc.council), ParagraphStyle("cc", fontName="Plex", fontSize=11, leading=15, textColor=INK, spaceAfter=14)))
     cov = [[Paragraph(e(k), sty["cellb"]), Paragraph(e(v), sty["cell"])] for k, v in
            [("Date", doc.date), ("Revision", doc.revision), ("Status", doc.status), ("Document number", doc.number),
             ("Scope", "Civil and site works: crossover and layover, driveway, earthworks, stormwater, erosion and sediment control, indicative services, site constraints"),
-            ("Building", BUILDING_BY_OTHERS)]]
+            ("Building", doc.building_line)]]
     ct = RTable(cov, colWidths=[38 * mm, CW - 38 * mm])
     ct.setStyle(TableStyle([("LINEBELOW", (0, 0), (-1, -1), 0.4, RULE), ("VALIGN", (0, 0), (-1, -1), "TOP"), ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 4)]))
     story.append(ct)
     story.append(Spacer(1, 14 * mm))
-    box = RTable([[Paragraph(f'<font name="Plex-Bold" color="#a63a2b">{e(doc.ai_statement)}</font>', ParagraphStyle("ai", fontName="Plex-Bold", fontSize=10, leading=14))]], colWidths=[CW])
-    box.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1.2, colors.HexColor("#a63a2b")), ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#fbeeea")),
-                             ("LEFTPADDING", (0, 0), (-1, -1), 9), ("RIGHTPADDING", (0, 0), (-1, -1), 9), ("TOPPADDING", (0, 0), (-1, -1), 8), ("BOTTOMPADDING", (0, 0), (-1, -1), 8)]))
-    story.append(box)
+    story.append(_verification_box(sty))
     if doc.meta.get("synthetic_demo"):
         story.append(Spacer(1, 4 * mm))
         story.append(P(f'<font name="Plex-Bold" color="#a63a2b">{DEMO_STAMP}.</font> {e("The constraint layers and planning maps in this document are invented to exercise the drawing code. They describe no real site and must not be used.")}', "cap"))
@@ -250,7 +259,7 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
     story.append(Spacer(1, 2 * mm))
     ctl = [("Title", doc.title + " (site works only)"), ("Site", doc.site), ("Council", doc.council), ("Document number", doc.number), ("Status", doc.status),
            ("Revision", doc.revision), ("Date", doc.date), ("Prepared by", f"{BRAND.name} (software, deterministic text from data and cited documents)"),
-           ("Plan set", "JCESITE civil plan set, drawings JCS-XXX-CIV-000 to JCS-XXX-CIV-600 (section 1.2)"), ("Building", BUILDING_BY_OTHERS),
+           ("Plan set", "JCESITE civil plan set, drawings JCS-XXX-CIV-000 to JCS-XXX-CIV-600 (section 1.2)"), ("Building", doc.building_line),
            ("Method", METHOD_TEXT)]
     rows = [[Paragraph(e(k), sty["cellb"]), Paragraph(e(v), sty["cell"])] for k, v in ctl]
     ctt = RTable(rows, colWidths=[38 * mm, CW - 38 * mm])
@@ -263,13 +272,7 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
                 colWidths=[22 * mm, 28 * mm, CW - 22 * mm - 28 * mm - 30 * mm, 30 * mm])
     rv.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), INK), ("BOX", (0, 0), (-1, -1), 0.5, RULE), ("LINEBELOW", (0, 1), (-1, -1), 0.4, RULE), ("VALIGN", (0, 0), (-1, -1), "TOP"),
                             ("LEFTPADDING", (0, 0), (-1, -1), 4), ("TOPPADDING", (0, 0), (-1, -1), 3), ("BOTTOMPADDING", (0, 0), (-1, -1), 3)]))
-    chk = RTable([[Paragraph(f'<font name="Plex-Bold">AI CHECK</font>', sty["cell"]), Paragraph("[   ]  Checked and verified by a qualified person", sty["cell"])],
-                  [Paragraph("Checked by", sty["cell"]), Paragraph("______________________________________   Date  ____ / ____ / ________", sty["cell"])],
-                  [Paragraph("Qualification", sty["cell"]), Paragraph("______________________________________", sty["cell"])]],
-                 colWidths=[28 * mm, CW - 28 * mm])
-    chk.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 0.8, INK), ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 6), ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
-    story.append(KeepTogether([rv, Spacer(1, 7 * mm), Paragraph("AI check and sign off", sty["h2"]),
-                               Paragraph("The tick box stays empty until a qualified person has checked every statement and source in this document.", sty["body"]), chk]))
+    story.append(KeepTogether([rv]))
     story.append(PageBreak())
 
     # ---- contents
@@ -321,11 +324,9 @@ def write_pdf(doc: SiteSoee, path: Path) -> Path:
                     story.append(KeepTogether(parts))              # a small table is not split across a page break
                 else:
                     story += parts
-    story.append(Spacer(1, 6 * mm))
-    story.append(P(f'<font name="Plex-Bold" color="#a63a2b">{e(doc.ai_statement)}</font>', "body"))
 
     d = Doc(str(path), pagesize=(W, H), leftMargin=LM, rightMargin=RM, topMargin=TM, bottomMargin=BM, title=f"{doc.title} {doc.site}", author=BRAND.name,
-            subject="AI generated draft. Not checked or certified.")
+            subject="Indicative. To be verified by a suitably qualified person.")
     d.addPageTemplates([PageTemplate(id="main", frames=[Frame(LM, BM, CW, H - TM - BM, leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0, id="f")])])
     d.multiBuild(story, canvasmaker=Numbered)
     return path
@@ -504,8 +505,7 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
         p = f.paragraphs[0]
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.paragraph_format.space_after = Pt(2)
-        run(p, doc.ai_statement, bold=True, color="A63A2B", size=7)
-        p2 = f.add_paragraph()
+        p2 = p
         p2.paragraph_format.space_after = Pt(0)
         run(p2, f"{doc.number}   {doc.status}   Revision {doc.revision}   {doc.date}   ", size=7.5, color="6B6E75")
         if doc.meta.get("synthetic_demo"):
@@ -535,7 +535,7 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
     p = d.add_paragraph()
     run(p, doc.title, bold=True, size=26)
     p = d.add_paragraph()
-    run(p, "SITE WORKS ONLY", bold=True, size=10, color="A8842F")
+    run(p, "SITE WORKS ONLY" if doc.building_line == BUILDING_BY_OTHERS else "SITE WORKS AND AN INDICATIVE TYPICAL HOUSE", bold=True, size=10, color="A8842F")
     p = d.add_paragraph()
     run(p, doc.site, bold=True, size=16)
     p = d.add_paragraph()
@@ -544,18 +544,25 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
     borders(cov)
     for k, v in [("Date", doc.date), ("Revision", doc.revision), ("Status", doc.status), ("Document number", doc.number),
                  ("Scope", "Civil and site works: crossover and layover, driveway, earthworks, stormwater, erosion and sediment control, indicative services, site constraints"),
-                 ("Building", BUILDING_BY_OTHERS)]:
+                 ("Building", doc.building_line)]:
         cs = cov.add_row().cells
         cell_text(cs[0], k, bold=True, size=9.5)
         cell_text(cs[1], v, size=9.5)
         row_props(cov.rows[-1])
     fixed(cov, [38, CWmm - 38])
     d.add_paragraph()
-    box = d.add_table(rows=1, cols=1)
-    borders(box, "A63A2B")
-    shade(box.rows[0].cells[0], "FBEEEA")
-    cell_text(box.rows[0].cells[0], doc.ai_statement, bold=True, color="A63A2B", size=11)
-    fixed(box, [CWmm])
+    vb = d.add_table(rows=3, cols=3)
+    borders(vb, "1E2024")
+    vb.rows[0].cells[0].merge(vb.rows[0].cells[2])
+    cell_text(vb.rows[0].cells[0], VERIFY_TITLE, bold=True, size=8, color="6B6E75")
+    vb.rows[1].cells[0].merge(vb.rows[1].cells[2])
+    cell_text(vb.rows[1].cells[0], "[   ]  " + VERIFY_STATEMENT, bold=True, size=12)
+    for i_, nm_ in enumerate(VERIFY_FIELDS):
+        cell_text(vb.rows[2].cells[i_], nm_, size=8, color="6B6E75")
+    row_props(vb.rows[0])
+    row_props(vb.rows[1])
+    vb.rows[2].height = Pt(46)
+    fixed(vb, [CWmm * 0.34, CWmm * 0.40, CWmm * 0.26])
     if doc.meta.get("synthetic_demo"):
         d.add_paragraph().paragraph_format.space_after = Pt(2)
         p = d.add_paragraph()
@@ -572,7 +579,7 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
     d.add_heading("Document control", 1)
     rows = [("Title", doc.title + " (site works only)"), ("Site", doc.site), ("Council", doc.council), ("Document number", doc.number), ("Status", doc.status),
             ("Revision", doc.revision), ("Date", doc.date), ("Prepared by", f"{BRAND.name} (software, deterministic text from data and cited documents)"),
-            ("Plan set", "JCESITE civil plan set, drawings JCS-XXX-CIV-000 to JCS-XXX-CIV-600 (section 1.2)"), ("Building", BUILDING_BY_OTHERS),
+            ("Plan set", "JCESITE civil plan set, drawings JCS-XXX-CIV-000 to JCS-XXX-CIV-600 (section 1.2)"), ("Building", doc.building_line),
             ("Method", METHOD_TEXT)]
     t = d.add_table(rows=0, cols=2)
     borders(t)
@@ -594,19 +601,6 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
     for ri_, r_ in enumerate(rv.rows):
         row_props(r_, header=(ri_ == 0))
     fixed(rv, [22, 28, 94, 30])
-    hh = d.add_heading("AI check and sign off", 2)
-    p = d.add_paragraph()
-    p.paragraph_format.keep_with_next = True
-    run(p, "The tick box stays empty until a qualified person has checked every statement and source in this document.")
-    ck = d.add_table(rows=3, cols=2)
-    borders(ck, "1E2024")
-    vals = [("AI CHECK", "[   ]  Checked and verified by a qualified person"), ("Checked by", "______________________________________   Date  ____ / ____ / ________"),
-            ("Qualification", "______________________________________")]
-    for i, (a, b) in enumerate(vals):
-        cell_text(ck.rows[i].cells[0], a, bold=(i == 0), size=9.5, keep=(i < 2))
-        cell_text(ck.rows[i].cells[1], b, size=9.5, keep=(i < 2))
-        row_props(ck.rows[i])
-    fixed(ck, [28, CWmm - 28])
     page_break()
 
     # contents (static; page numbers are in the PDF)
@@ -674,11 +668,9 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
                         p.paragraph_format.keep_with_next = True      # no single item of a list alone at the foot or head of a page
             elif b.kind == "table" and b.table:
                 add_table(b.table)
-    p = d.add_paragraph()
-    run(p, doc.ai_statement, bold=True, color="A63A2B")
     d.core_properties.title = f"{doc.title} {doc.site}"
     d.core_properties.author = BRAND.name
-    d.core_properties.subject = "AI generated draft. Not checked or certified."
+    d.core_properties.subject = "Indicative. To be verified by a suitably qualified person."
     d.save(str(path))
     return path
 

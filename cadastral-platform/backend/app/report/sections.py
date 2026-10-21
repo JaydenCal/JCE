@@ -242,13 +242,24 @@ def _src_cell(r: dict) -> list:
 
 
 # ------------------------------------------------------------------ 1 cover content (drawn partly on canvas)
-def ai_banner(width: float = CW) -> Table:
-    """The AI statement as a boxed notice (cover and how-to-read page)."""
-    t = Table([[Paragraph(f'<font name="Mono-Medium" size="6.5" color="#a63a2b">{fmt.esc(EX.AI_STATEMENT)}</font>', st()["body"])]], colWidths=[width])
-    t.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1.1, colors.HexColor("#a63a2b")), ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f6e1dd")),
-                           ("LEFTPADDING", (0, 0), (-1, -1), 8), ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-                           ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 6)]))
-    return t
+def verification_box(width: float = CW) -> Table:
+    """The verification block (cover only, stage 8): the statement, a tick box, and NAME, SIGNATURE and DATE boxes left blank for the person who verifies."""
+    from app.common.statement import VERIFY_FIELDS, VERIFY_STATEMENT, VERIFY_TICK, VERIFY_TITLE
+    S = st()
+    inner_w = width - 16
+    head = [[P(VERIFY_TITLE, "labelm"), ""],
+            [CheckBox(), Paragraph(f'<font name="Mono-Medium" size="8.5" color="#1a1a1a">{fmt.esc(VERIFY_STATEMENT)}</font>', S["body"])]]
+    t0 = Table(head, colWidths=[12 * mm, inner_w - 12 * mm])
+    t0.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("SPAN", (0, 0), (1, 0)), ("LEFTPADDING", (0, 0), (-1, -1), 0), ("TOPPADDING", (0, 0), (-1, -1), 2),
+                            ("BOTTOMPADDING", (0, 0), (-1, -1), 2)]))
+    ws = [inner_w * 0.34, inner_w * 0.40, inner_w * 0.26]
+    sig = Table([[P(f.upper() + (" (TICK WHEN " + VERIFY_TICK + ")" if False else ""), "labelm") for f in VERIFY_FIELDS], ["", "", ""]], colWidths=ws, rowHeights=[5 * mm, 13 * mm])
+    sig.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 0.9, T.INK), ("INNERGRID", (0, 0), (-1, -1), 0.5, T.INK), ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                             ("LEFTPADDING", (0, 0), (-1, -1), 4), ("TOPPADDING", (0, 0), (-1, -1), 2)]))
+    outer = Table([[t0], [sig]], colWidths=[width])
+    outer.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1.1, T.INK), ("BACKGROUND", (0, 0), (-1, -1), colors.white), ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                               ("RIGHTPADDING", (0, 0), (-1, -1), 8), ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 8)]))
+    return outer
 
 
 def cover_flow(ctx: Ctx) -> list:
@@ -265,8 +276,8 @@ def cover_flow(ctx: Ctx) -> list:
     tl = (getattr(ctx.brand, "tagline", "") or "").lower().replace("ai-", "AI-")
     produced = ctx.brand.name + (f" ({tl[:1].upper() + tl[1:] if not tl.startswith('AI-') else tl})" if tl else "")
     rows = [("Project", m.get("project_title") or f"{ctx.lot_label}"), ("Lot / plan", ctx.lot_label), ("Council (LGA)", ctx.lga or "Not determined"),
-            ("Zone", zone_text(ctx)), ("Site area", fmt.area(area) if area else "Not stated"), ("Scope", "Site only"),
-            ("Report date", fmt.hdate_long(m.get("date"))), ("Status", "AI generated draft, indicative"), ("Produced by", produced)]
+            ("Zone", zone_text(ctx)), ("Site area", fmt.area(area) if area else "Not stated"), ("Scope", "Site works, with an indicative typical house" if (ctx.inp.civil or {}).get("building") else "Site only"),
+            ("Report date", fmt.hdate_long(m.get("date"))), ("Status", "Indicative, to be verified"), ("Produced by", produced)]
     cells = []
     for i in range(0, len(rows), 3):
         row = []
@@ -280,7 +291,7 @@ def cover_flow(ctx: Ctx) -> list:
     if ctx.meta.get("synthetic_demo"):
         fl += [t, Spacer(1, 2 * mm), callout("SYNTHETIC DEMO DATA. The layer results in this file are invented to test the layout. They are not real findings for any lot.", "red")]
         t = Spacer(1, 0)
-    fl += [t, Spacer(1, 3 * mm), ai_banner(), Spacer(1, 2 * mm),
+    fl += [t, Spacer(1, 3 * mm), verification_box(), Spacer(1, 2 * mm),
            P("Indicative only. Mapping data is unverified. This is not a section 10.7 planning certificate or a council property report. "
              "Read How to read this report before relying on any result.", "muted")]
     return fl
@@ -753,6 +764,50 @@ def requirements_section(ctx: Ctx) -> list:
 
 
 # ------------------------------------------------------------------ 7 civil
+
+def building_block(ctx: Ctx, bd: dict) -> list:
+    """Civil summary: the dwelling placed on the lot (stage 8), from the building data: the Plan Studio typical house (indicative), the cited setbacks with provided values and
+    results, the garage control and the finished floor level.  Nothing here is a design for the lot."""
+    fl = [P("Building (indicative typical house)", "h2")]
+    src = bd.get("source") or "Plan Studio typical house (indicative)"
+    if src.isupper():
+        import re as _re
+        src = _re.sub(r"(?i)plan studio", "Plan Studio", src.capitalize())
+    rows = [("Source", f"{src}. A typical template from the Plan Studio design tool, not a design for this lot. Placed to the cited setbacks and oriented to the street frontage."),
+            ("House", str(bd.get("house") or "Not stated")),
+            ("Footprint", (f"{bd['footprint_area_m2']:,.0f} m² (outline of the dwelling, garage and roofed alfresco)" if bd.get("footprint_area_m2") else "Not stated")
+             + (f"; roof plan area to the eaves {bd['roof_area_m2']:,.0f} m²" if bd.get("roof_area_m2") else ""))]
+    ffl_note = (bd.get("ffl_note") or "").strip()
+    if ffl_note.startswith("FFL TBC: "):
+        ffl_note = ffl_note[9:]
+    ffl_note = ffl_note[:1].upper() + ffl_note[1:]
+    rows.append(("Finished floor level", (f"RL {bd['ffl_m']:.2f} m AHD. " if bd.get("ffl_m") is not None else "TBC (to be confirmed). ") + ffl_note))
+    gr_ = bd.get("ground_range")
+    if gr_:
+        rows.append(("Existing ground", f"RL {gr_[0]:.2f} to {gr_[2]:.2f} m AHD under the footprint (mean {gr_[1]:.2f}), from the 5 m DEM. A detail survey is required."))
+    fl.append(kv_table(rows))
+    trs = []
+    for r in bd.get("rows") or []:
+        if r.get("informational"):
+            continue
+        res = "Not checked" if r.get("met") is None else ("Met" if r["met"] else "Not met")
+        trs.append([P(r["label"].lower().capitalize() if r["label"].isupper() else r["label"], "cell"), P(r.get("cite_value") if r.get("met") is not None else "UNRESOLVED", "cell"),
+                    P(f"{r['actual_m']:.2f} m", "cellb"), P(res, "cellb")])
+    g = bd.get("garage_rule")
+    if g:
+        fwd = g["actual_m"] < 0
+        trs.append([P("Garage behind the front building line", "cell"), P((f"{g['required_m']:g} m behind" if g.get("required_m") is not None else "UNRESOLVED"), "cell"),
+                    P(f"{abs(g['actual_m']):.2f} m " + ("forward" if fwd else "behind"), "cellb"), P("Met" if g.get("met") else "Not met", "cellb")])
+    if trs:
+        fl += [Spacer(1, 1.5 * mm), grid_table(["Boundary or control", "Cited minimum", "Provided", "Result"], trs, [68 * mm, 36 * mm, 28 * mm, T.CW - 132 * mm])]
+        fl.append(P("Setbacks are measured from the cadastral boundary to the nearest part of the dwelling. The cited values, sources and pages are on plan set sheet C101. "
+                    "A result of Not met is reported and the layout is not changed to hide it.", "muted"))
+    from app.design.building_place import plain_flags
+    for f in plain_flags(bd):
+        fl.append(callout(f, "red"))
+    fl.append(Spacer(1, 2 * mm))
+    return fl
+
 def civil_section(ctx: Ctx) -> list | None:
     cv = ctx.inp.civil
     if not cv:
@@ -761,6 +816,8 @@ def civil_section(ctx: Ctx) -> list | None:
     fl.append(Table([[Chip("Unverified", "unresolved"), P("Based on public data and defaults. Not survey, engineering design or certification.", "muted")]],
                     colWidths=[26 * mm, CW - 26 * mm], style=TableStyle([("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("LEFTPADDING", (0, 0), (-1, -1), 0)])))
     fl.append(Spacer(1, 2 * mm))
+    if cv.get("building"):
+        fl += building_block(ctx, cv["building"])
     ps = cv.get("planset") or {}
     fl.append(P("Plan set in this run: " + ("built; the driveway earthworks and grade below are the plan set figures." if cv.get("planset_built") else "not built; no driveway profile, earthworks or grade was computed for this report."), "muted"))
     tr = cv.get("terrain")

@@ -51,6 +51,7 @@ DISCL = SO.DISCL
 PAD_TBC = "finished floor level TBC (no cited flood level in the data), so no pad level, cut, fill or batter is assumed or calculated"
 NO_DWELLING = "building design (the building is not part of this plan set and no building footprint or level is drawn)"
 DEM_NOTE_REF = "INDICATIVE, DERIVED FROM 5 m DEM"
+CONTOUR_NOTE = "EXISTING CONTOURS: LABELS ARE RL m AHD, INDEX (MAJOR) CONTOURS HEAVIER, " + DEM_NOTE_REF
 SWEPT_TBC = "SWEPT PATH: TO BE CONFIRMED AT DETAILED DESIGN"
 DRIVE_END = "DRIVEWAY END (PLATFORM DEFAULT LEVEL, NOT DESIGNED)"
 KERB_STATION = "KERB LINE (GROUND, ASSUMED)"
@@ -58,6 +59,28 @@ BAND_STATION = "BACK OF KERB AND GUTTER BAND (GROUND, ASSUMED)"
 BDY_STATION = "PROPERTY BOUNDARY (GROUND)"
 DRIVEWAY_SHEETS = ("C101", "C400", "C420")
 LAYOVER_REF = ["LAYOVER DIMENSIONS (SEE C420)", "FULL SCHEDULE, SOURCES AND TYPICAL SECTIONS ON C420"]      # the layover is dimensioned in full on its own sheet
+
+
+def draw_ctrs(b, light: bool = True) -> int:
+    """Existing contours with RL labels (stage 8: on every plan sheet), labels clear of the dwelling and of everything already reserved."""
+    s, v = b.s, b.v
+    if s.tin is None:
+        return 0
+    contour_sets(s, v.model_window())
+    return D.contours(v, s, "ex", lab_h=2.3, light=light, avoid=s.footprint if s.placement is not None else None)
+
+
+def ctr_notes(s: Site) -> list[str]:
+    return [CONTOUR_NOTE] if s.tin is not None else []
+
+
+def building_status_text(s: Site) -> str:
+    """Cover line for the building: what is drawn and where it came from (stage 8), or that none is."""
+    pl = s.placement
+    if pl is None or not pl.placed:
+        return "NOT PART OF THIS SET: NO BUILDING FOOTPRINT, SETBACK OR FLOOR LEVEL IS DRAWN."
+    ffl = f"FINISHED FLOOR LEVEL RL {pl.ffl_m:.2f} m AHD" if pl.ffl_m is not None else "FINISHED FLOOR LEVEL TBC"
+    return f"{pl.source}: A TYPICAL HOUSE PLACED TO THE CITED SETBACKS, NOT A DESIGN FOR THIS LOT. {ffl}."
 
 
 def draws_dwelling(s: Site) -> bool:
@@ -501,11 +524,11 @@ def c100(ctx: RefCtx) -> Sheet:
     if len(rows) != len(b0.rows):                                    # the missing-road row changes the panel: rebuild with it
         b0 = start(ctx, "C100", rows, [], want_xover=False)
     b = b0
-    b.pre = ([f"EXISTING CONTOURS: {DEM_NOTE_REF}"] if s.tin is not None else [])
+    b.pre = ([CONTOUR_NOTE] if s.tin is not None else [])
     v = b.v
     if s.tin is not None:
         contour_sets(s, v.model_window())
-        D.contours(v, s, "ex", lab_h=TXT.SMALL)                       # contours only: spot levels are not shown on the existing site plan
+        D.contours(v, s, "ex", lab_h=2.3)                       # contours only: spot levels are not shown on the existing site plan
     draw_xover(b, "existing")
     missing: list[str] = []
     _n, pending = _services(v, s, missing)
@@ -533,7 +556,7 @@ def _svc_missing(s: Site) -> list[str]:
 def c101(ctx: RefCtx) -> Sheet:
     s = ctx.site
     fp = s.footprint if draws_dwelling(s) else None
-    b = start(ctx, "C101", [], [], want_xover=True)
+    b = start(ctx, "C101", [], ctr_notes(s), want_xover=True)
     front, drv, std, xg = b.front, b.drv, b.std, b.xg
     rows = list(road_rows(s, xg, front, b.pave))
     if drv is None or s.drive_poly is None:
@@ -546,9 +569,10 @@ def c101(ctx: RefCtx) -> Sheet:
         rows.append("proposed structure footprint (no SA7 overlay, SA8 layout or envelope large enough for the preset)")
     rows += _svc_missing(s)
     if rows:
-        b = start(ctx, "C101", rows, [], want_xover=True)
+        b = start(ctx, "C101", rows, ctr_notes(s), want_xover=True)
         front, drv, std, xg = b.front, b.drv, b.std, b.xg
     v = b.v
+    draw_ctrs(b)
     draw_xover(b, "proposed", dims=True)
     pl = s.placement if (s.placement is not None and s.placement.placed) else None
     if fp is not None:
@@ -769,7 +793,7 @@ def c200(ctx: RefCtx) -> Sheet:
     if pad_ok:
         notes.append("BATTERS 1V:2H CUT AND 1V:3H FILL ARE ASSUMED. GEOTECHNICAL ADVICE REQUIRED.")
     if s.tin is not None:
-        notes.append("EXISTING CONTOURS: " + DEM_NOTE_REF)
+        notes.append(CONTOUR_NOTE)
     if ew is not None:
         notes.append("DRIVEWAY CUT AND FILL: EXISTING 5 m DEM AGAINST THE PLATFORM DRIVEWAY PROFILE (LEVEL AT THE DRIVEWAY END IS A PLATFORM DEFAULT). INDICATIVE.")
     b = start(ctx, "C200", rows, notes, want_xover=False)
@@ -777,7 +801,7 @@ def c200(ctx: RefCtx) -> Sheet:
     v = b.v
     if s.tin is not None:
         contour_sets(s, v.model_window())
-        D.contours(v, s, "ex", lab_h=TXT.SMALL)
+        D.contours(v, s, "ex", lab_h=2.3)
     if pad_ok:
         from shapely import wkt as swkt
         for z in s.cutfill.zones:
@@ -835,8 +859,9 @@ def c300(ctx: RefCtx) -> Sheet:
         notes.append(dn)
     if s.inp.rwt is None:
         notes.append("RAINWATER TANK: NONE SUPPLIED (ANY COUNCIL REQUIREMENT TO BE CONFIRMED)")
-    b = start(ctx, "C300", rows, notes)
+    b = start(ctx, "C300", rows, notes + ctr_notes(s))
     v = b.v
+    draw_ctrs(b)
     draw_xover(b, "proposed")
     if s.placement is not None:
         BD.draw_light(b, door=False)
@@ -880,7 +905,8 @@ def c310(ctx: RefCtx) -> Sheet:
         rows.append("existing water main, sewer main and junction: none supplied; EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / DBYD")
     notes = cited(s, ("water.min_cover_m", "sewer.junction_min_diameter_mm", "sewer.house_connection_min_cover_m", "util.build_over_sewer_policy"))
     notes.append("LOCATE ALL SERVICES BY DBYD AND POTHOLING BEFORE EXCAVATION.")
-    b = start(ctx, "C310", rows, notes)
+    b = start(ctx, "C310", rows, notes + ctr_notes(s))
+    draw_ctrs(b)
     draw_xover(b, "proposed")
     if s.placement is not None:
         BD.draw_light(b, door=False)
@@ -1010,8 +1036,9 @@ def c400(ctx: RefCtx) -> Sheet:
         fl = falls_to_lot_note(s)
         if fl:
             notes.append(fl)
-    b = start(ctx, "C400", rows, notes, want_xover=True, focus="drive")
+    b = start(ctx, "C400", rows, notes + ctr_notes(s), want_xover=True, focus="drive")
     v, xg = b.v, b.xg
+    draw_ctrs(b)
     step = 2.0
     ch_plan: list = []
     lost: list[str] = []
@@ -1557,8 +1584,9 @@ def c500(ctx: RefCtx) -> Sheet:
     out = s.esc
     rows = [] if out is not None else ["ESCP DATA PENDING: the SA10 erosion and sediment control layout was not available in this run; controls will be drawn when SA10 output is supplied"]
     notes = ["ESCP TO BE REVIEWED AND CERTIFIED BY A SUITABLY QUALIFIED PERSON", (PH.sentence(s.cites, "esc.escp.prepared_by_suitably_qualified_person") or "")]
-    b = start(ctx, "C500", rows, notes)
+    b = start(ctx, "C500", rows, notes + ctr_notes(s))
     v = b.v
+    draw_ctrs(b)
     draw_xover(b, "proposed")
     if s.placement is not None:
         BD.draw_light(b, door=False)
@@ -1718,7 +1746,7 @@ def _is_red(lines: list[str]) -> bool:
 
 
 def c001(ctx: RefCtx, others: list[Sheet]) -> Sheet:
-    """General notes for the LGA: the AI statement in a red banner, grouped notes under dark heading bars, numbered, flowed over three columns on A1
+    """General notes for the LGA: grouped notes under dark heading bars, numbered, flowed over three columns on A1
     at the largest body size that fits (one size for all notes), then the legend.  Council named and cited from data; nothing defaulted."""
     s = ctx.site
     sh = Sheet("C001", codes.SHEET_TITLES["C001"], "", paper=A1, north=None, scale_text="NTS")
@@ -1729,21 +1757,10 @@ def c001(ctx: RefCtx, others: list[Sheet]) -> Sheet:
     reg = register_rows(others)
     if reg:
         groups = groups + [("DATA AND ASSUMPTIONS REGISTER (BY SHEET)", reg)]
-    ai = None
-    if groups and groups[0][1] and groups[0][1][0] == LN.AI_STATEMENT:      # the AI statement is carried by the banner (not repeated as a numbered note)
-        ai = LN.AI_STATEMENT
-        groups = [(groups[0][0], groups[0][1][1:])] + list(groups[1:])
     title = f"GENERAL NOTES FOR {council}"
     P.text(CONTENT_X0, CONTENT_Y1 - 1.0, title, 4.6, "TOP_LEFT", bold=True, layer="C-ANNO-NOTE")
     P.line([(CONTENT_X0, CONTENT_Y1 - 7.6), (CONTENT_X0 + fonts.text_width(title, 4.6, True), CONTENT_Y1 - 7.6)], "C-ANNO-NOTE", 0.7, (0.80, 0.08, 0.08))
     ytop = CONTENT_Y1 - 12.0
-    if ai:                                                             # banner: the one statement every reader must see first
-        wr = fonts.wrap(ai, 3.6, CONTENT_X1 - CONTENT_X0 - 10.0, True)
-        bh = 5.0 + 5.0 * len(wr)
-        P.poly([(CONTENT_X0, ytop - bh), (CONTENT_X1, ytop - bh), (CONTENT_X1, ytop), (CONTENT_X0, ytop)], "C-DATA-NONE", (1.0, 0.96, 0.96), edge=RED, edge_lw=0.5)
-        for k, w in enumerate(wr):
-            P.text(CONTENT_X0 + 5.0, ytop - 3.2 - 5.0 * k, w, 3.6, "TOP_LEFT", bold=True, color=RED, layer="C-DATA-NONE")
-        ytop -= bh + 5.0
     from app.agents.sa5_cad_dxf.planset import legend as LG
     lg_cols, lg_pitch = 3, 11.0
     lg_swept = False
@@ -1832,7 +1849,7 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
     cx = 426.0
     v.text(cx, 578.0, pb.name, 22.0, "TOP_CENTER", bold=True, layer="C-ANNO-TTLB")
     v.text(cx, 551.0, pb.tagline, 4.0, "TOP_CENTER", layer="C-ANNO-TTLB", color=ST.LABEL_GREY)
-    cap = _spaced("CIVIL SITE PLANNING DRAWINGS") + "   " + _spaced("(AI GENERATED DRAFT)")
+    cap = _spaced("CIVIL SITE PLANNING DRAWINGS")
     v.text(cx, 536.0, cap, _fit(cap, 640.0, 4.2), "TOP_CENTER", layer="C-ANNO-TTLB")
     title = ST.clean(pj.title).upper()
     th = _fit(title, 740.0, 17.0, True, 6.0)
@@ -1934,7 +1951,7 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
            ("SERVICES", "SUPPLIED SERVICES ARE DRAWN AS SUPPLIED (INDICATIVE)." if s.inp.services else "NONE SUPPLIED: LOCATE BY DIAL BEFORE YOU DIG AND POTHOLING."),
            ("ASSUMED ITEMS", "KERB, ROAD EXTENT AND LAYOVER VALUES ARE ASSUMED OR PLACEHOLDERS WHERE MARKED."),
            ("CODES", "DRAWING NUMBER JCS-{JOB}-CIV-{NNN}. LAYERS JCS-{DISCIPLINE}-{ELEMENT}-{TYPE}, THE SAME IN THE DXF."),
-           ("BUILDING", "NOT PART OF THIS SET: NO BUILDING FOOTPRINT, SETBACK OR FLOOR LEVEL IS DRAWN.")]
+           ("BUILDING", building_status_text(s))]
     rows_ = []
     for k_, t_ in src:
         rows_.append((k_, fonts.wrap(t_, TXT.BODY, rx1 - rx0 - 46.0)))
@@ -1948,5 +1965,10 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
             for i_, ln in enumerate(w):
                 v.text(rx0 + 42.0, yy_ - 3.9 * i_, ln, TXT.BODY, "TOP_LEFT", layer="C-ANNO-TABL")
             yy_ -= len(w) * 3.9 + 2.2
+        vb_top = yb - hbox - 10.0                                        # the verification block, large, under the data sources (the cover only)
+        if vb_top - 62.0 > 104.0:
+            from app.agents.sa5_cad_dxf.planset.frame_a1 import verification_block
+            P.line([(rx0, vb_top - 62.0), (rx1, vb_top - 62.0), (rx1, vb_top), (rx0, vb_top)], "JCS-FRAM-AICK-LINE", 0.5, ST.BLACK, closed=True)
+            verification_block(v, rx0, vb_top - 62.0, rx1, vb_top, big=True)
     sh.notes = ["PRELIMINARY ISSUE: NOT FOR CONSTRUCTION"]
     return sh
