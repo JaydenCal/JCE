@@ -20,7 +20,7 @@ JCESITE is not affiliated with JCE Infrastructure. These changes supersede the e
 
 - The template garage projects 6.0 m forward of the dwelling front wall. The layout is not changed to hide this. It is flagged on C000, C101, in the report civil summary and in the SoEE (section 1.5 and the compliance table).
 - Finished floor level: TBC. The cited rule sets habitable floor levels at or above the Flood Planning Level (1% AEP flood level plus 0.5 m freeboard). No flood level is in the data and no cited minimum height above ground exists, so no level is assumed. Existing ground under the footprint is RL 264.78 to 265.46 m AHD (5 m DEM, indicative).
-- Footprint 280 m2, roof plan area to the eaves 314 m2. The eaves reach into the front setback by 0.4 m (information only: no cited eave rule exists).
+- Footprint 280 m2, roof plan area to the eaves 314 m2. The eaves reach into the front setback by 0.4 m (information only: there is no eave rule as such; the cited DCP articulation encroachment of 0.5 m is the allowance the 0.4 m eave falls within, DCP 2025 Table 2, p.38).
 - Plan sheets: outline and rows on C000 (cover site plan and BUILDING line), C101 (outline, setback dimensions, "BUILDING SETBACKS (CITED)" table, "SETBACK SOURCES", FFL and flags panels), C200, C300, C310, C400 and C500. C100 stays existing only. The driveway (SA3) is re-planned to the garage door. SA10 (ESC) places stockpiles and laydown outside the footprint (no "NOT DRAWN" schedule on C500).
 - Roof water: C300 says the roof catchment area to the eaves (indicative) and "ROOF WATER TO THE LEGAL POINT OF DISCHARGE: NOT DESIGNED". No downpipe, pit or pipe size is drawn. The template rainwater tank is not placed.
 - Report: civil summary "Building (indicative typical house)" with the setback table. SoEE: section 1.5 and every section that read "building by others" now describes the dwelling from the building data with the tag TYPICAL HOUSE, INDICATIVE. `app/design/building_place.plain_flags` turns the structured rows into formal sentences.
@@ -39,7 +39,7 @@ Modules: `app/integrations/byda/folder_import.py` (importer), `traces.py` (trace
 
 Command (writes only to `<project>/dbyd/`):
 
-    python3 scripts/dbyd_import.py import --project /home/claude/work/sitedata/henrys            # BYDA folder -> <project>/dbyd
+    python3 scripts/dbyd_import.py import --project <project>            # BYDA folder -> <project>/dbyd
     python3 scripts/dbyd_import.py import --project <project> --dry-run                           # read and report only
     python3 scripts/dbyd_import.py trace  --project <project> --owner "Essential Energy" --service electricity --pts "E,N;E,N" --by "Name" --page 87
     python3 scripts/dbyd_import.py verify --project <project> --id <id> --by "Name"
@@ -53,22 +53,12 @@ Command (writes only to `<project>/dbyd/`):
 - Tracing never promotes by itself. `trace` creates a DRAFT. Only `verify` with a person's name (names such as auto, system, claude, importer are refused) makes a service drawable; `reject` needs a name and a reason. Depths are never inferred.
 - Sheets: C100 and C310 draw VERIFIED services only, each labelled with the owner, the plan date and LOCATION INDICATIVE, CONFIRM BY POTHOLING (C300 draws verified stormwater). C310 carries the "EXISTING SERVICES STATUS (BYDA)" table (owner, response status, plans received and what they are made of, draft and verified counts, valid until, expired in red) and a summary panel with an expiry warning (expired, or within `NEAR_DAYS` = 7). The cover SERVICES line, the report (Services and rainwater tank) and the SoEE (sections 2.2 and 3.7.1) state the same counts. With no registry the sheets say EXISTING SERVICES NOT CONFIRMED; with responses but nothing verified they say how many responses were received and that none is drawn.
 - Plans are project only. Split plans are stored by `DbydStore` in `<project>/dbyd/plans` and are never written to outputs, the repository or another site; `.gitignore` is not relied on (the project folder is outside the repository). The registry holds no enquirer contact details.
-- Real file run (`/home/claude/work/sitedata/henrys/BYDA/plans/BYDA Responses - Enquiry 54497312.pdf`, 143 pages, job 54497312, plans expire 12/11/2026): five owners split from the parsed table.
-
-| Owner | Pages | Plan file | Made of | Georeferenced | Validity stated |
-| --- | --- | --- | --- | --- | --- |
-| APA Group Gas Networks | 4 to 78 | 280958389.pdf, pages 6 to 37 | 1 vector page, 27 raster pages | no | 30 days |
-| Essential Energy | 79 to 87 | plot161063859420181199519.pdf, page 87 | 1 vector page | no | 28 days |
-| NBN Co NswAct | 88 to 118 | 280958385_...pdf, pages 90 to 112 | 23 raster pages | no | 28 days |
-| Tamworth Regional Council | 119 to 135 | ASSET 280958387.pdf, pages 121 to 135 | 15 vector pages | yes, embedded GeoPDF on 15 pages (lat/long about -31.03, 150.89; coordinate system text says GDA94 MGA zone 55) | 30 days |
-| Telstra NSW North | 136 to 143 | no plan (280958388.dwf excluded by BYDA) | text only | not applicable | 60 days |
-
-  The other pages are response bodies, safety notices, legends and guidelines (text). Nothing is traced or verified: all traced counts are zero and no service is drawn from the real plans. Tamworth Regional Council's plan is vector and georeferenced, so it is the best candidate for assisted tracing (its coordinate system text says MGA zone 55 although 150.9 E is in zone 56: use the embedded latitude and longitude and check before any use); APA and NBN are raster (a person traces them); Essential Energy is one vector page.
-- Tests use SYNTHETIC data only (`tests/byda_synthetic.py`: invented owners, job 99000001, stamped "SYNTHETIC TEST DATA"; every drawing, status table and document built from it says SYNTHETIC DEMO DATA). One test reads the real file read-only (dry run, skipped when absent).
+- Real enquiry (local only): one real combined BYDA response was split in a dry run on the developer's machine. Its details (job number, owners' page spans, plan file names, georeference coordinates) are deliberately not recorded here or in the tests. What it showed: five owners were split from the parsed page table; the plans were a mix of vector pages, raster pages and one excluded file (text only); one council plan was vector with an embedded GeoPDF whose coordinate system text did not match its own coordinates (use the embedded latitude and longitude and check before any use). Nothing was traced or verified: all traced counts were zero and no service was drawn from the real plans. The plans stay in the project folder, outside the repository.
+- Tests use SYNTHETIC data only (`tests/byda_synthetic.py`: invented owners, job 99000001, stamped "SYNTHETIC TEST DATA"; every drawing, status table and document built from it says SYNTHETIC DEMO DATA). No test reads a real BYDA file.
 
 ## 5. Tests
 
-`tests/test_stage8_building_dbyd.py` (26 tests): placement values and sources, footprint clearance by geometry, unmet garage rule and TBC floor level stated, setback dimensions and sources on C101, outline on the building sheets and none on C100, no dwelling without a building, SA10 outside the footprint, contour labels on every plan sheet with no text collisions, verification box on the covers only, DBYD import, split, idempotence, dry run, validity and expiry, trace and verify rules, drawn and undrawn services, status table, real file dry run. Existing tests that asserted the old AI statement were updated.
+`tests/test_stage8_building_dbyd.py` (25 tests): placement values and sources, footprint clearance by geometry, unmet garage rule and TBC floor level stated, setback dimensions and sources on C101, outline on the building sheets and none on C100, no dwelling without a building, SA10 outside the footprint, contour labels on every plan sheet with no text collisions, verification box on the covers only, DBYD import, split, idempotence, dry run, validity and expiry, trace and verify rules, drawn and undrawn services, status table, synthetic multi-owner splits. Existing tests that asserted the old AI statement were updated.
 
 ## 6. Known weaknesses
 

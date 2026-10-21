@@ -54,7 +54,7 @@ class Sa3Driveway:
         n = np.array(lay.inward_normal)
         xy_at = lambda s: tuple(bp + n * (s - req.kerb_to_boundary_m))  # noqa: E731
         st = pf.build_stations(req.levels, req.kerb_to_boundary_m, gd, sampler=req.tin_sampler, xy_at=xy_at)
-        pchecks = pf.check_profile(st, std, strict=req.requirements is not None and not req.use_placeholders)
+        pchecks = pf.check_profile(st, std, strict=req.requirements is not None and not req.use_placeholders, vehicle=req.vehicle)
         checks += pchecks
         mg = next((c.value for c in pchecks if c.name == "max_grade"), None)
 

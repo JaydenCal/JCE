@@ -91,7 +91,8 @@ def test_accessor_and_other_council(typ):
     assert typ.present and typ.get("sd107.slab.thickness_min").mm == 125.0
     t = typ.get("sd107.slab.thickness_min")
     assert "SD-107" in t.ref and not t.verify
-    assert typ.verify_keys() and all(typ.get(k).confidence <= 0.7 for k in typ.verify_keys())
+    assert all(typ.get(k).confidence <= 0.7 for k in typ.verify_keys())          # stage 8c: the section values were checked on the sheet (0.75 to 0.95), none is flagged VERIFY any more
+    assert all(0.0 < typ.get(k).confidence < 1.0 for k in typ.by_key if k.startswith("sd107.section."))
     assert typ.not_published("rd010") and typ.not_published("kerb", "profile")
     assert typ.get("notfound.kerb.profile_dimensions_height_gutter_width_lip") is None            # not published: never a value
     other = Typicals("Narrabri Shire Council")
@@ -108,7 +109,7 @@ def test_cited_crossing_values(typ):
 # ====================================================================================================== the sheets
 def test_c600_is_the_sd107_typical_details_sheet(lot2):
     t = lot2.pages["C600"]
-    for s in ("TYPICAL VEHICLE CROSSOVER (GUNNEDAH SHIRE COUNCIL SD-107 REV A)", "GSC SD-107 REV A", TD.RD003_TEXT, "VERIFY AGAINST SD-107", "SL82", "R16", "NOTE 7", "NOTE 9",
+    for s in ("TYPICAL VEHICLE CROSSOVER (GUNNEDAH SHIRE COUNCIL SD-107 REV A)", "GSC SD-107 REV A", TD.RD003_TEXT, "READING CONFIDENCE BELOW 1.0", "SL82", "R16", "NOTE 7", "NOTE 9",
               "TABLE 2-I", "OSD", "TOPSOIL", "80%"):
         assert s in t.upper().replace("‑", "-"), s
     assert "CONFLICT" in t.upper() and "C.1.4" in t.upper() and "TABLE 2-H" in t.upper()

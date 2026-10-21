@@ -18,6 +18,16 @@ TRANSITION_M = 2.0             # VERIFY: transition length the above limits are 
 B85_TEMPLATE = dict(wheelbase=2.8, front_oh=0.94, rear_oh=1.17, clear_mid=0.10, clear_oh=0.10)  # VERIFY
 
 
+def vehicle_template(vehicle: str = "B85") -> tuple[dict, str]:
+    """Scraping template (wheelbase, overhangs) of the named design vehicle from the platform vehicle table; B85 when the name is not in it.  The mid and overhang clearances are the
+    platform values (VERIFY against AS/NZS 2890.1)."""
+    from .swept import VEHICLES
+    v = VEHICLES.get(vehicle)
+    if v is None or v.name == "B85":
+        return B85_TEMPLATE, "B85"
+    return dict(B85_TEMPLATE, wheelbase=v.wheelbase, front_oh=v.front_oh, rear_oh=v.rear_oh), v.name
+
+
 def build_stations(levels: dict[str, float], verge_m: float, garage_dist_m: float, gutter_w: float = 0.45,
                    sampler: Callable[[float, float], float] | None = None, xy_at: Callable[[float], tuple[float, float]] | None = None
                    ) -> list[tuple[float, float, str]]:
@@ -85,7 +95,7 @@ def scraping_margin(z: Callable[[float], float], s_lo: float, s_hi: float, tpl=B
 
 
 def check_profile(stations: list[tuple[float, float, str]], std: CouncilDrivewayStandard = DEFAULT_STANDARD,
-                  transition_len_m: float | None = None, strict: bool = False, max_span_m: float | None = None) -> list[CheckItem]:
+                  transition_len_m: float | None = None, strict: bool = False, max_span_m: float | None = None, vehicle: str = "B85") -> list[CheckItem]:
     items: list[CheckItem] = []
     if len(stations) < 2:
         return [CheckItem(name="profile", passed=None, note="insufficient levels supplied; profile not checked")]
@@ -110,7 +120,8 @@ def check_profile(stations: list[tuple[float, float, str]], std: CouncilDriveway
             ok = need <= transition_len_m + 1e-9
             note += f"; provided {transition_len_m:.1f} m"
         items.append(CheckItem(name=f"change_of_grade@{st[i][2]}", passed=ok, value=round(abs(d), 2), limit=lim, unit="%", note=note))
-    margin = scraping_margin(_interp(st), st[0][0], st[-1][0], max_span_m=max_span_m)
-    items.append(CheckItem(name="b85_scraping_clearance", passed=margin >= 0, value=round(margin, 3), limit=0.0, unit="m",
-                           note="B85 template, forward and reverse; min underbody-to-ground gap (negative = scrape). Not certification."))
+    tpl, vname = vehicle_template(vehicle)
+    margin = scraping_margin(_interp(st), st[0][0], st[-1][0], tpl=tpl, max_span_m=max_span_m)
+    items.append(CheckItem(name="b85_scraping_clearance", passed=margin >= 0, value=round(margin, 3), limit=0.0, unit="m",       # name kept for stored results; the note names the vehicle
+                           note=f"{vname} template, forward and reverse; min underbody-to-ground gap (negative = scrape). Not certification."))
     return items

@@ -426,7 +426,7 @@ def test_ffl_dbyd_and_driveway_wording(tmp_path):
     sh = SR.c101_ref(SR.RefCtx(site, _proj(inp, site, inp.brand, "2026-01-01")))
     tx = "\n".join(_texts(sh.views[0].items))
     assert "(CONCRETE)" not in tx and "MATERIAL TO BE CONFIRMED" in tx
-    assert "LOCATION INDICATIVE, CONFIRM BY DBYD AND POTHOLING" in tx + " ".join(sh.tag_notes)                        # in a call-out, or as a tag note when the sheet is full
+    assert "LOCATION INDICATIVE, CONFIRM BY BYDA AND POTHOLING" in tx + " ".join(sh.tag_notes)                        # in a call-out, or as a tag note when the sheet is full
     assert any("POLE" in m.upper() and "NO SYMBOL" in m.upper() for m in sh.data_missing)
 
 

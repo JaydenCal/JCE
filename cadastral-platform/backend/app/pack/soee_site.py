@@ -54,9 +54,9 @@ T_TYP = "TYPICAL HOUSE, INDICATIVE"                   # stage 8: the dwelling is
 OPEN_TAGS = (T_NC, T_UNRES, T_NOTREV, T_DNA, T_NA)
 
 # One statement of method, used on the cover page notes, in document control and in the limitations (they must not disagree).
-METHOD_TEXT = ("The text of this statement is assembled by software from the project data and from cited documents, using fixed wording. No language model writes the text. "
-               "Each statement is traced to a data field or to a cited document and page (soee.json). The requirement values used here (limits, dimensions and thresholds) were extracted by an AI model "
-               "from the cited documents. The quotes and page numbers were validated by software against the documents. The values have not been verified by a person.")
+METHOD_TEXT = ("The text of this statement is assembled by software from the project data and from cited documents, using fixed wording. "
+               "Each statement is traced to a data field or to a cited document and page (soee.json). The quotes and page numbers behind the requirement values used here "
+               "(limits, dimensions and thresholds) were validated by software against the documents.")
 
 # EP&A Act section 4.15(1) headings (the Act text itself was NOT obtained in this run).
 S415 = [
@@ -75,7 +75,7 @@ MATTERS = ["Context and setting", "Access and traffic", "Stormwater", "Earthwork
            "Services", "Social and economic", "Site suitability", "Public interest"]
 
 ACRONYMS = {"dbyd": "BYDA", "dcdb": "DCDB", "escp": "ESCP", "dem": "DEM", "ahd": "AHD", "lga": "LGA", "sa3": "SA3", "sa4": "SA4", "sa10": "SA10", "bca": "BCA",
-            "s88b": "s88B", "b85": "B85", "ffl": "FFL", "rl": "RL", "gda2020": "GDA2020", "mga": "MGA", "bysa": "BYDA", "byda": "BYDA"}
+            "s88b": "s88B", "b85": "B85", "b99": "B99", "gsc": "GSC", "sd": "SD", "dcp": "DCP", "lep": "LEP", "rd003": "RD003", "rd0010": "RD0010", "rd011": "RD011", "rd002": "RD002", "ffl": "FFL", "rl": "RL", "gda2020": "GDA2020", "mga": "MGA", "bysa": "BYDA", "byda": "BYDA"}
 
 
 # ---------------------------------------------------------------------------------------------------------------------- text helpers
@@ -86,12 +86,23 @@ DEV_WORDS = [                                   # internal or tooling wording ->
 ]
 
 
+UNIT_FIXES = [(r"(?<=\d) ?m2\b", " m²"), (r"(?<=\d) ?m3\b", " m³"), (r"\bMPA\b", "MPa"), (r"\bKPA\b", "kPa"), (r"\bL/S/HA\b", "L/s/ha"), (r"\bL/S\b", "L/s"),
+              (r"\bl/s/ha\b", "L/s/ha"), (r"\bl/s\b", "L/s"), (r"\bmpa\b", "MPa"), (r"\bkpa\b", "kPa")]
+
+
+def units_fix(t: str) -> str:
+    """SI symbols as written on the drawings: 25 MPa, L/s/ha, m² and m³ (the superscripts are kept)."""
+    for rx, to in UNIT_FIXES:
+        t = re.sub(rx, to, t)
+    return t
+
+
 def T(s: Any) -> str:
-    """Single text choke point: no em or en dashes, m2 and m3 written plainly, internal tool names and run wording replaced by plain wording."""
+    """Single text choke point: no em or en dashes, SI unit symbols (m², m³, MPa, L/s/ha), internal tool names and run wording replaced by plain wording."""
     t = fmt.clean(s).replace("²", "2").replace("³", "3").replace("’", "'").replace("‘", "'")
     for rx, to in DEV_WORDS:
         t = re.sub(rx, to, t)
-    return t
+    return units_fix(t)
 
 
 def sentence_case(s: str) -> str:
@@ -102,7 +113,8 @@ def sentence_case(s: str) -> str:
     if s == s.upper():
         low = s.lower()
         low = re.sub(r"[a-z0-9]+", lambda m: ACRONYMS.get(m.group(0), m.group(0)), low)
-        s = low[:1].upper() + low[1:]
+        s = units_fix(low[:1].upper() + low[1:])
+        s = re.sub(r"\b[Rr]ev ([a-z])\b", lambda m_: "Rev " + m_.group(1).upper(), s)
     else:
         s = re.sub(r"\bDcdb\b", "DCDB", s)
         s = re.sub(r"\.\s+not checked, not clear\.?$", ". Not checked is not clear.", s)
@@ -514,6 +526,22 @@ def extract_site_works(inp, planset_result: dict | None, *, probe_imagery: bool 
     drv = inp.driveway
     d: dict[str, Any] = {"present": drv is not None}
     if drv is not None and site is not None:
+        _dvc = None
+        try:
+            _dvc = site.cites.typ.design_vehicle()
+        except Exception:  # noqa: BLE001
+            _dvc = None
+        d.update(design_vehicle_source=None)
+        if _dvc is not None and _dvc[0] == drv.design_vehicle:     # readable form: document title and edition, clause, page
+            d["design_vehicle_source"] = _dvc[1].ref_long
+        try:   # the council crossing standard drawing when the council's typical details are on file (SD-107 for Gunnedah): the crossing is drawn to it
+            from app.agents.sa5_cad_dxf.planset import crossover as _CX
+            _cc = _CX.cited_crossing(site.cites.typ)
+            if _cc is not None:
+                _dd = site.cites.typ.docs.get("sd107", {})
+                d["crossing_cited"] = {"label": _cc.label, "title": _dd.get("title", ""), "edition": _dd.get("edition", "")}
+        except Exception as ex:  # noqa: BLE001
+            note(f"cited crossing not read ({type(ex).__name__})")
         d.update(width_m=_f(drv.width_m), design_vehicle=drv.design_vehicle, council_standard_label=drv.council_standard_label, max_grade_pct=_f(drv.max_grade_pct),
                  kerb_user_supplied=drv.kerb_to_boundary_user_supplied, length_m=_f(site.drive_cl.length) if site.drive_cl is not None else None,
                  crossings=1 if site.crossover is not None else 0)
@@ -1061,7 +1089,7 @@ def _s1(b: _Build, d: _Data, doc_no: str, gaps: list[dict]) -> None:
              "It is not a design for this lot. No height, BASIX content or finished floor level is assumed.", "scope:site_works_only"))
     b.p("Each statement is traced to a data field or a cited document. Where the data do not support a statement, this document says so (DATA NOT AVAILABLE, NOT CHECKED, NOT REVIEWED or UNRESOLVED). Nothing has been assumed in place of missing data, except values labelled ASSUMED or ASSUMED / PLATFORM DEFAULT. Values labelled INDICATIVE, 5 m DEM come from the sourced elevation model and are not a survey.", "platform:method")
     b.p(METHOD_TEXT, "platform:method")
-    b.p("This draft has not been verified by a person. It is to be verified by a suitably qualified person before any use. It is not a planning assessment, an approval or advice, and it does not state that the proposal complies or will be approved.", "platform:method")
+    b.p("This draft is not a planning assessment, an approval or advice, and it does not state that the proposal complies or will be approved.", "platform:method")
     b.h2("1.2 Plans this statement accompanies")
     pj = d.w.get("planset_project")
     b.p("This statement accompanies the JCESITE civil plan set listed below" + (f" (project name on the title blocks: {pj})" if pj else "") + ". The drawing number uses the placeholder XXX until a job number is set. The last column gives the number of data gaps listed against the sheet in section 3.9, with the item numbers.", "planset:codes", cite=None)
@@ -1172,6 +1200,15 @@ def width_basis(drv: dict) -> tuple[str, bool]:
     return (sentence_case(src).rstrip(".") if src else "Platform default"), (not src) or "DEFAULT" in src.upper()
 
 
+def _veh_sentence(drv: dict) -> str:
+    """The design vehicle: the council's cited vehicle (Engineering Standards 2.8.7) where the data has it, else the platform default."""
+    v = T(drv.get("design_vehicle") or "not recorded")
+    src = drv.get("design_vehicle_source")
+    if src:
+        return f"The design vehicle is the {v} vehicle required by the council ({T(src).rstrip('.')})."
+    return f"The design vehicle {v} is a platform default, not a council selection."
+
+
 def crossing_standard(drv: dict) -> str | None:
     """The council crossing standard drawing selected on the plan set, or None when none is selected.  AS/NZS 2890.1 is an off-street parking standard and is
     never reported as the crossing standard."""
@@ -1229,13 +1266,22 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
         b.table(["Dimension", "Value (m)", "Basis"], rows, [2.4, 1.0, 3.0], caption="Dimensions are drawn on C420. A PLATFORM DEFAULT is a value set by the platform. It is not derived from a council requirement and must be confirmed. A drafting convention is a drawing default, not a council dimension.")
         items = [("The crossover is drawn from the SA3 driveway result. The kerb and gutter line is drawn ASSUMED unless surveyed.", "planset:C101", T_ASSUMED)]
         std = crossing_standard(drv)
-        if std:
+        cc_ = drv.get("crossing_cited")
+        if cc_:
+            ttl = f"{T(cc_['title'])}, {T(cc_['edition'])}" if cc_.get("title") else T(cc_["label"])
+            items.append((f"Council crossing standard drawing: {sentence_case(cc_['label']).rstrip('.')} ({ttl}). The crossing, layover, section and notes are drawn to it (C420, C600).", "data:planset.driveway.crossing_cited"))
+            items.append(("The council has not published the kerb and gutter profile drawing RD003 or the layback drawings RD0010 and RD011. They are not drawn and no value is assumed for them (obtain from council).", "data:planset.driveway.crossing_cited", T_UNRES))
+        elif std:
             items.append((f"Council crossing standard drawing: {std}.", "data:planset.driveway.council_standard_label"))
         else:
             items.append(("Council crossing standard drawing: NOT SELECTED. The council standard drawing governs the vehicle crossing and layover. AS/NZS 2890.1 is the Australian Standard for off-street parking and is not a council crossing standard.", "data:planset.driveway.council_standard_label", T_UNRES))
         if d.r("access.crossing_standard"):
             items.append(_cited(d, "access.crossing_standard", "The council requires access from the public road to the property boundary to comply with its standard access drawings and the dimensions of AS 2890", T_UNRES))
-        items.append(("Crossover pavement type and thickness are not selected: per council standard drawing, to be confirmed.", "planset:sheets[C420]", T_UNRES))
+        if cc_:
+            items.append(("Crossing pavement is the SD-107 section (125 mm minimum concrete slab, SL82 fabric with 30 to 40 mm top cover, F'c 25 MPa, 50 mm compacted base course).", "planset:sheets[C420]; planset:sheets[C600]"))
+            items.append(("Pavement thickness and sub-grade design for the on-lot driveway are not stated in the council documents (obtain from council).", "planset:sheets[C600]", T_UNRES))
+        else:
+            items.append(("Crossover pavement type and thickness are not selected: per council standard drawing, to be confirmed.", "planset:sheets[C420]", T_UNRES))
         b.bullets(items)
     else:
         b.p("No driveway or crossover result was available in this run.", "planset:sheets[C400]", T_DNA)
@@ -1243,7 +1289,7 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
     b.h2("3.3 Driveway")
     if drv.get("present"):
         wb, wdef = width_basis(drv)
-        items = [(f"Driveway width {num(drv['width_m'], 1)} m. Basis recorded on the plan set: {wb[:1].lower() + wb[1:]}. The design vehicle {T(drv.get('design_vehicle') or 'not recorded')} is a platform value. Neither is a council selection.", "data:planset.driveway; planset:C420.layover_values[drive]", T_ASSUMED if wdef else "")]
+        items = [(f"Driveway width {num(drv['width_m'], 1)} m. Basis recorded on the plan set: {wb[:1].lower() + wb[1:]}. {_veh_sentence(drv)} The width is not a council selection.", "data:planset.driveway; planset:C420.layover_values[drive]", T_ASSUMED if wdef else "")]
         if drv.get("length_m"):
             items.append((f"Centreline length from the kerb or road edge to the driveway end: {num(drv['length_m'], 1)} m.", "data:planset.driveway.length_m"))
         items.append(("Driveway material is not selected (to be confirmed).", "planset:sheets[C400]", T_UNRES))
@@ -1256,7 +1302,7 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
                 if nm_ == "max_grade":
                     nm = "Steepest grade along the driveway profile"
                 elif nm_ == "b85_scraping_clearance":
-                    nm = "Underbody scraping clearance of the B85 vehicle over the profile"
+                    nm = f"Underbody scraping clearance of the {drv.get('design_vehicle') or 'B85'} vehicle over the profile"
                 elif nm_.startswith("change_of_grade@"):
                     nm = "Change of grade at " + sentence_case(nm_.split("@", 1)[1]).rstrip(".").lower()
                 else:
@@ -1528,7 +1574,7 @@ def _s5(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, lrows: list[dict], 
     items = []
     if drv.get("present"):
         wb, wdef = width_basis(drv)
-        items.append((f"One vehicle crossover and one driveway are shown (C400, C420), with a driveway width of {num(drv['width_m'], 1)} m and a {T(drv.get('design_vehicle') or '')} design vehicle (platform values).", "data:planset.driveway", T_ASSUMED if wdef else ""))
+        items.append((f"One vehicle crossover and one driveway are shown (C400, C420), with a driveway width of {num(drv['width_m'], 1)} m (platform value). {_veh_sentence(drv)}", "data:planset.driveway", T_ASSUMED if wdef else ""))
         wmin, wmax = d.r("driveway.min_width_m"), d.r("driveway.max_width_m")
         if wmin and wmax:
             ok = wmin.value - 1e-9 <= drv["width_m"] <= wmax.value + 1e-9
@@ -1741,8 +1787,11 @@ def _compliance(d: _Data) -> list[dict]:
     add("Crossing to corner allotment boundary (minimum)", f"at least {cc.value:g} m" if cc else nofound("corner separation"), cc, "not determined", "The lot data show one road frontage, but corner allotment status is not confirmed by a records check.", "UNRESOLVED", f"doc:{T(cc.source.document_title)} page {cc.source.page} ({cc.key})" if cc else "knowledge:unresolved driveway.min_separation_m")
     ck = d.r("driveway.min_crossing_kerb_separation_m")
     add("Kerb separation between crossings (minimum)", f"at least {ck.value:g} m" if ck else nofound("kerb separation"), ck, "not determined", "Neighbouring crossings are not in the run data.", "UNRESOLVED", f"doc:{T(ck.source.document_title)} page {ck.source.page} ({ck.key})" if ck else "knowledge:unresolved driveway.min_crossing_kerb_separation_m")
-    textctl("Access to comply with council standard drawings and AS 2890", "access.crossing_standard", "no council standard drawing selected", "Council crossing standard drawing: NOT SELECTED. AS/NZS 2890.1 is the Australian Standard for off-street parking and is not a council crossing standard.")
-    textctl("Internal driveway surface", "access.internal_surface", "material not selected", "Allowed materials are listed by the control.")
+    if drv.get("crossing_cited"):
+        textctl("Access to comply with council standard drawings and AS 2890", "access.crossing_standard", f"crossing drawn to {sentence_case(drv['crossing_cited']['label'])}", "The crossing is drawn to the council standard drawing SD-107 (C420, C600). The platform does not check the on-lot driveway against AS/NZS 2890.1. The kerb and gutter profile RD003 and the layback drawings RD0010 and RD011 are not published.")
+    else:
+        textctl("Access to comply with council standard drawings and AS 2890", "access.crossing_standard", "no council standard drawing selected", "Council crossing standard drawing: NOT SELECTED. AS/NZS 2890.1 is the Australian Standard for off-street parking and is not a council crossing standard.")
+    textctl("Internal driveway surface", "access.internal_surface", "on-lot driveway material not selected", "Allowed materials are listed by the control.")
     mg = d.r("driveway.max_grade_pct")
     steep = next((c for c in drv.get("profile_checks", []) if c["name"] == "max_grade" and c["value"] is not None), None)
     add("Driveway maximum grade", f"at most {mg.value:g} {mg.unit}" if mg else nofound("driveway maximum grade"), mg,
@@ -1770,14 +1819,16 @@ def _compliance(d: _Data) -> list[dict]:
     textctl("Building over or near a council sewer main", "util.build_over_sewer_policy", "no sewer main location in the data", "The policy document was not obtained.")
     esc_ = w.get("esc", {})
     ar = d.r("esc.access.min_length_m")
+    ar2 = d.r("esc.access.min_length_building_sites_m")
+    ar_txt = (f"at least {ar.value:g} m (Blue Book, page {ar.source.page})" + (f" and at least {ar2.value:g} m (Building Sites guideline 2024, page {ar2.source.page})" if ar2 else "")) if ar else ""
     alen = esc_.get("access_length_m")
     if ar and alen is not None and esc_.get("shown_on_plan"):
         ok = alen + 0.05 >= ar.value                          # the same 0.05 m tolerance as the plan set uses for this check
-        add("Stabilised site access length (minimum)", f"at least {ar.value:g} m", ar, f"{alen:.1f} m drawn on C500",
+        add("Stabilised site access length (minimum)", ar_txt, ar, f"{alen:.1f} m drawn on C500",
             "Length of the stabilised access in the SA10 layout, INDICATIVE (0.05 m tolerance)." + ("" if ok else " The drawn access is shorter than the cited minimum, and the lot may not allow the cited length in this layout.") + " To be resolved by the ESCP preparer.",
             "PASS (INDICATIVE LAYOUT, TO BE CONFIRMED)" if ok else "FAIL", f"doc:{T(ar.source.document_title)} page {ar.source.page} ({ar.key}); file:escp_*.geojson", key="access_length", value=alen, limit=ar.value)
     else:
-        add("Stabilised site access length (minimum)", f"at least {ar.value:g} m" if ar else nofound("stabilised access length"), ar, "no stabilised access length in the data", "The ESC layout is not shown on C500 or has no access element.", "UNRESOLVED", f"doc:{T(ar.source.document_title)} page {ar.source.page} ({ar.key})" if ar else "knowledge:unresolved esc.access.min_length_m", key="access_length")
+        add("Stabilised site access length (minimum)", ar_txt if ar else nofound("stabilised access length"), ar, "no stabilised access length in the data", "The ESC layout is not shown on C500 or has no access element.", "UNRESOLVED", f"doc:{T(ar.source.document_title)} page {ar.source.page} ({ar.key})" if ar else "knowledge:unresolved esc.access.min_length_m", key="access_length")
     textctl("Erosion and sediment control plan prepared by a suitably qualified person", "esc.escp.prepared_by_suitably_qualified_person", "ESCP not provided (C500 shows ESCP DATA PENDING)" if not w.get("esc", {}).get("shown_on_plan") else "ESCP layout shown on C500, not yet certified", "TO BE COMPLETED BY THE APPLICANT.")
     add("Batter slopes for cut and fill", nofound("batter slopes"), None, "not shown as values (C600 shows TBC)", "Geotechnical advice is required.", "UNRESOLVED", "planset:sheets[C600]")
     return rows
@@ -1832,7 +1883,7 @@ def _s8(b: _Build, d: _Data, blocked: list[dict]) -> None:
         ("Levels come from a 5 m DEM. They are indicative, are not a survey and are too coarse for detailed earthworks. Boundaries come from the cadastre and are not a survey.", "data:run.levels_provenance", T_IND),
         (METHOD_TEXT + " Some values were extracted at a confidence below 1 (recorded in the accompanying data file, soee.json).", "knowledge:requirements.json"),
         (f"{_plural(len(blocked), 'source document', 'source documents')} could not be obtained or could not be read, and {'was' if len(blocked) == 1 else 'were'} NOT REVIEWED (section 4.1). The LEP, the Regulation and the relevant SEPPs have not been read.", "knowledge:manifest", T_NOTREV),
-        ("The values drawn on the plan set that are marked PLATFORM DEFAULT, PLACEHOLDER or ASSUMED (driveway width, design vehicle, kerb position, layover widths and flare, driveway end level) are not a design and are not a council selection.", "planset:sheets", T_ASSUMED),
+        ("The values drawn on the plan set that are marked PLATFORM DEFAULT, PLACEHOLDER or ASSUMED (driveway width, kerb position, driveway end level, and the design vehicle where the council data does not name one) are not a design and are not a council selection.", "planset:sheets", T_ASSUMED),
         _bi(d, f"The building is designed by others with a separate tool. {BUILDING_BY_OTHERS}.", "The building shown is the Plan Studio typical house (indicative), not a design for this lot. The applicant's dwelling design replaces it.", "scope:site_works_only"),
     ] + ([("The constraint layer results were rebuilt from a saved live run and are not queried live. Geometry is approximate.", "data:sa9.meta.flags", T_FIX)] if d.fixture else []))
 

@@ -24,19 +24,28 @@ BLOCKING = ("BNDY", "BNDD", "KERB", "DIMS", "DETL", "EART", "BATR")
 STRIP_TOP = 123.0
 
 
-@pytest.fixture(scope="module")
-def real(tmp_path_factory):
+def _run(out, extra=()):
     from scripts.run_site import build_parser, run_site
-    out = tmp_path_factory.mktemp("lot2_round2")
     args = build_parser().parse_args(["--offline", "lot2", "--lotplan", "2//DP227508", "--development-type", "dwelling_house", "--levels", "nsw",
                                       "--rules-json", str(ROOT / "tests/fixtures/R2_dwelling_house_rules.json"), "--acknowledge", "--planset", "--planset-only",
-                                      "--planset-style", "ref", "--out", str(out)])
+                                      "--planset-style", "ref", "--out", str(out), *extra])
     run_site(args)
     pdf = next(out.rglob("planset.pdf"))
     dxf = next(out.rglob("planset.dxf"))
     doc = pymupdf.open(pdf)
     pages = [" ".join(p.get_text().split()) for p in doc]
     return SimpleNs(sheets=dict(G.LAST_SHEETS), proj=G.LAST_PROJ, pages=pages, dxf=dxf, out=out)
+
+
+@pytest.fixture(scope="module")
+def real(tmp_path_factory):
+    return _run(tmp_path_factory.mktemp("lot2_round2"))
+
+
+@pytest.fixture(scope="module")
+def real_ffl(tmp_path_factory):
+    """The same run with a user entered 1% AEP flood level, so a finished floor level (flood level plus freeboard) and a driveway end level exist: the cut and fill section is drawn."""
+    return _run(tmp_path_factory.mktemp("lot2_round2_ffl"), ("--flood-level-ahd", "265.5"))
 
 
 class SimpleNs:
@@ -70,7 +79,8 @@ def test_real_run_text_does_not_sit_on_blocking_linework(real):
         assert hits == [], (n, v.name, hits[:5])
 
 
-def test_c200_section_is_inside_its_frame_with_attached_extension_lines(real):
+def test_c200_section_is_inside_its_frame_with_attached_extension_lines(real_ffl):
+    real = real_ffl
     sec = [v for v in real.sheets["C200"].views if v.name == "section"]
     assert len(sec) == 1
     v = sec[0]
@@ -118,6 +128,7 @@ def test_platform_screening_is_not_presented_as_compliance(real):
         assert "NOT A COUNCIL COMPLIANCE CHECK" in t and "PLATFORM SCREENING" in t
         assert not re.search(r"\bPASS(ED)?\b|\bFAIL(ED)?\b|MAX_GRADE|LIMIT 25\.0", t), i
         assert "UNRESOLVED" in t or "COUNCIL MAXIMUM DRIVEWAY GRADE" in t
+        assert "NOT EVALUATED" in t or "NOT AVAILABLE" in t              # no driveway end level is supplied or assumed: the checks are said not to have run
 
 
 def test_scale_reason_text_and_nts_follow_the_actual_scale(real):
@@ -125,7 +136,7 @@ def test_scale_reason_text_and_nts_follow_the_actual_scale(real):
     m = re.search(r"SO THE SUBJECT FITS AT 1:(\d+)", c400)
     assert m and int(m.group(1)) == 50                  # C400 is drawn at 1:50, so the reason says 1:50, never 1:100
     assert "AS SHOWN" not in c001 and " NTS" in c001
-    assert "1:n" not in " ".join(real.pages) and ("T = TBC" in real.pages[11] or "VERIFY AGAINST SD-107" in real.pages[11])          # C600: TBC legend (no council typicals) or the cited details (stage 8b)
+    assert "1:n" not in " ".join(real.pages) and ("T = TBC" in real.pages[11] or "READING CONFIDENCE BELOW 1.0" in real.pages[11])          # C600: TBC legend (no council typicals) or the cited details (stage 8b)
 
 
 def test_title_block_text_is_uppercase(real):

@@ -235,19 +235,20 @@ def hook(c, pid, body=b'{"enquiryId": "enq-1"}', **hdr):
 def test_webhook_needs_a_fresh_timestamp_and_rejects_a_repeated_delivery_id(api):
     c, tmp, pid, f, app = api
     lodge(c, pid)
-    now = int(time.time())
+    def at(offset: int) -> str:                               # the server clock is read when each request is sent, so a slow run cannot move a case across the five minute limit
+        return str(int(time.time()) + offset)
     assert hook(c, pid).status_code == 202
     h = fresh_headers()
     assert c.post(f"/integrations/byda/webhook/{pid}", content=b"{}", headers=h).status_code == 202
     again = c.post(f"/integrations/byda/webhook/{pid}", content=b"{}", headers=h)                       # the very same delivery
     assert again.status_code == 409 and again.json()["code"] == "WEBHOOK_REPLAY"
-    same_id_new_time = c.post(f"/integrations/byda/webhook/{pid}", content=b"{}", headers={**h, "X-JCE-Webhook-Timestamp": str(now + 5)})
+    same_id_new_time = c.post(f"/integrations/byda/webhook/{pid}", content=b"{}", headers={**h, "X-JCE-Webhook-Timestamp": at(5)})
     assert same_id_new_time.status_code == 409
     assert hook(c, pid, **{"X-JCE-Webhook-Timestamp": None}).status_code == 401                          # a timestamp is required
     assert hook(c, pid, **{"X-JCE-Webhook-Timestamp": "yesterday"}).status_code == 401
-    assert hook(c, pid, **{"X-JCE-Webhook-Timestamp": str(now - 301)}).json()["code"] == "WEBHOOK_STALE"
-    assert hook(c, pid, **{"X-JCE-Webhook-Timestamp": str(now + 301)}).status_code == 401
-    assert hook(c, pid, **{"X-JCE-Webhook-Timestamp": str(now - 240)}).status_code == 202                 # inside five minutes
+    assert hook(c, pid, **{"X-JCE-Webhook-Timestamp": at(-310)}).json()["code"] == "WEBHOOK_STALE"
+    assert hook(c, pid, **{"X-JCE-Webhook-Timestamp": at(310)}).status_code == 401
+    assert hook(c, pid, **{"X-JCE-Webhook-Timestamp": at(-200)}).status_code == 202                 # inside five minutes
     assert hook(c, pid, **{"X-JCE-Webhook-Delivery-Id": None}).json()["code"] == "WEBHOOK_DELIVERY_ID_REQUIRED"
     assert hook(c, pid, **{"X-JCE-Webhook-Delivery-Id": "has space"}).status_code == 401
     iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())

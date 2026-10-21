@@ -78,7 +78,7 @@ PANEL_X0S = (611.0, 560.0, 510.0, 460.0, 410.0, 360.0)
 
 def _panel(proj: Proj, notes, tags, reserve: int, x0: float):
     lines: list[str] = []
-    w = BX1 - x0 - 4
+    w = BX1 - x0 - 6                                                      # 2 mm in from the box on the left, 4 mm on the right: a line never touches the border (stage 8c)
     if proj.datum:                                                       # one paragraph (UPPERCASE) instead of one line per datum item
         lines += fonts.wrap(" ".join(clean(t) for t in proj.datum).upper(), 2.0, w)
     notes = [clean(n).upper() for n in notes if n]

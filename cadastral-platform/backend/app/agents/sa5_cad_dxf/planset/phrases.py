@@ -53,6 +53,7 @@ SENT = {
     "esc.sediment_fence.post_spacing_m": lambda c, k: f"SEDIMENT FENCE STAR PICKETS ARE USUALLY {num(c)} APART",
     "esc.sediment_fence.trench_depth_mm": lambda c, k: f"THE SEDIMENT FENCE TRENCH IS {num(c)} DEEP ON THE UPSLOPE SIDE",
     "esc.access.min_length_m": lambda c, k: f"STABILISED SITE ACCESS IS AT LEAST {num(c)} LONG",
+    "esc.access.min_length_building_sites_m": lambda c, k: f"THE STABILISED SITE ENTRY AND EXIT POINT IS AT LEAST {num(c)} LONG",
     "esc.access.min_width_m": lambda c, k: f"STABILISED SITE ACCESS IS AT LEAST {num(c)} WIDE",
     "esc.escp.prepared_by_suitably_qualified_person": lambda c, k: "THE ESCP IS TO BE PREPARED BY A SUITABLY QUALIFIED PERSON",
     "esc.inspection.min_frequency": lambda c, k: f"ESC MEASURES ARE TO BE INSPECTED {_txt(c)}",

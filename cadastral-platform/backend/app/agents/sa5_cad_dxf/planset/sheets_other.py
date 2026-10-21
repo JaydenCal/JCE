@@ -34,7 +34,7 @@ def c400(ctx: Ctx) -> Sheet:
     s = ctx.site
     w = _drv_window(ctx)
     sc, ce = w if w else (200, ctx.centre)
-    sh = Sheet("C400", "Driveway and crossover plan", f"B85 swept path / turning circle | 1:{sc} @ A3", scale_text=f"1:{sc}")
+    sh = Sheet("C400", "Driveway and crossover plan", f"{(s.inp.driveway.design_vehicle if s.inp.driveway is not None else 'B85')} swept path / turning circle | 1:{sc} @ A3", scale_text=f"1:{sc}")
     v = sh.add(View("main", (10, 10, 332, 287), ce, sc, frame=True)) if False else sh.add(View("main", MAIN, ce, sc, frame=True))
     D.aerial(v, s, 0.7) if False else None
     D.neighbours(v, s, h=2.4)
@@ -87,7 +87,7 @@ def c400(ctx: Ctx) -> Sheet:
     north_scale(v, Ctx(s, ctx.proj, sc, ce, ce, 1000))
     sh.legend = [LE("LOT BOUNDARY", "line", (0, 0.5, 0.1), 0.5, layer="C-PROP-BDY"), LE("DRIVEWAY / CROSSOVER", "fill", (0, 0, 0), 0.3, fill=(0.8, 0.8, 0.8), layer="C-DRIV-XOVR"),
                  LE("DRIVEWAY CENTRELINE + CHAINAGE TICKS", "line", (0.4, 0, 0.6), 0.13, "CENTER", layer="C-DRIV-CNTR"),
-                 LE("B85 TURNING PATH / CIRCLE", "line", (0.9, 0.45, 0), 0.25, "DASHDOT", layer="C-DRIV-TURN"), LE("PROPOSED STRUCTURE", "fill", D.BLUE, 0.5, fill=(0.78, 0.84, 1.0), layer="A-BLDG-SLAB")]
+                 LE(f"{(s.inp.driveway.design_vehicle if s.inp.driveway is not None else 'B85')} TURNING PATH / CIRCLE", "line", (0.9, 0.45, 0), 0.25, "DASHDOT", layer="C-DRIV-TURN"), LE("PROPOSED STRUCTURE", "fill", D.BLUE, 0.5, fill=(0.78, 0.84, 1.0), layer="A-BLDG-SLAB")]
     lines.append("Longitudinal section: C410. Crossover details: C420. " + DISCL)
     side_notes(sh, "NOTES", lines, y_top=287)
     return sh
@@ -185,7 +185,7 @@ def c410(ctx: Ctx) -> Sheet:
     lines = ["Proposed levels: gutter, kerb and boundary taken at existing ground (no verge regrading assumed); garage threshold at FFL (" + ("illustrative" if "ILLUSTRATIVE" in s.ffl_note else "design") + f" RL {s.ffl:.2f}). Existing ground " + DEM_NOTE + "."]
     for ch in p["checks"]:
         lines.append(f"{ch.name}: {'PASS' if ch.passed else ('FAIL' if ch.passed is False else 'NOT EVALUATED')}" + ("" if ch.value is None else f" value {ch.value} {ch.unit}") + (f" (limit {ch.limit})" if ch.limit is not None else "") + f". {ch.note}")
-    lines.append("B85 SCRAPING / GROUND CLEARANCE: SCREENING ONLY (AS/NZS 2890.1 template method, unverified); not certification. Transitions/vertical curves shown in check notes are minimum lengths to be detailed by the designer.")
+    lines.append(f"{(s.inp.driveway.design_vehicle if s.inp.driveway is not None else 'B85')} SCRAPING / GROUND CLEARANCE: SCREENING ONLY (AS/NZS 2890.1 template method, unverified); not certification. Transitions/vertical curves shown in check notes are minimum lengths to be detailed by the designer.")
     dv = View("notes", (0, 0, 420, 297))
     D.panel(dv, 20, 14, 322, 62, "CHECKS AND NOTES", lines, 2.0)
     sh.add(dv)
@@ -343,7 +343,7 @@ def c700(ctx: Ctx, all_sheets: list[Sheet]) -> Sheet:
             ("DATUM AND ACCURACY", ["Horizontal: GDA2020 / MGA " + f"(EPSG:{s.inp.lot.mga_srid}).", "Vertical: AHD from the NSW 5 m DEM when levels are shown; vertical accuracy NOT STATED by the service. Contours/spot levels are INDICATIVE; detail survey required."]),
             ("EARTHWORKS", ["Strip topsoil and stockpile for reuse (cited 100-150 mm: " + (s.cites.line("esc.topsoil.strip_depth_max_mm") or "n/a") + ").", "Batters 1V:2H cut / 1V:3H fill are assumed; geotechnical advice required. Compact fill per designer specification, to be confirmed."]),
             ("DRAINAGE", [s.cites.line("stormwater.designed_per_eng_standards") or "Stormwater to be designed per council standards, to be confirmed.", "Drainage on C300 is schematic; sizes and levels by a hydraulic designer."]),
-            ("SERVICES", ["Locate all services via DBYD and potholing before excavation. Water / sewer per C310 (schematic).", s.cites.line("sewer.junction_min_diameter_mm") or ""]),
+            ("SERVICES", ["Locate all services via BYDA and potholing before excavation. Water / sewer per C310 (schematic).", s.cites.line("sewer.junction_min_diameter_mm") or ""]),
             ("DRIVEWAY / CROSSOVER", [s.cites.line("access.crossing_standard") or "Crossing per council standard drawing.", "Pavement thickness: per council standard drawing, to be confirmed. B85 checks are screening only."]),
             ("EROSION AND SEDIMENT CONTROL", [s.cites.line("esc.escp.prepared_by_suitably_qualified_person") or "ESCP by a suitably qualified person.", s.cites.line("esc.inspection.min_frequency") or ""]),
             ("DATA AND ASSUMPTIONS REGISTER", [f"{x.number}: " + ("; ".join(x.data_missing) if x.data_missing else "no missing data") for x in all_sheets])]
@@ -389,7 +389,7 @@ def c000(ctx: Ctx, sheets: list[Sheet], font_note: str) -> Sheet:
         yy -= 5.2
     v.line([(x0, yy + 3), (x0 + 150, yy + 3)], "C-ANNO-TABL", False, 0.25)
     D.panel(v, 14, 14, 168, yy - 3, "ABBREVIATIONS AND NOTES", [
-        "AHD Australian Height Datum | DBYD Dial Before You Dig | DEM digital elevation model | DP deposited plan | ESCP erosion and sediment control plan | FFL finished floor level",
+        "AHD Australian Height Datum | BYDA Before You Dig Australia | DEM digital elevation model | DP deposited plan | ESCP erosion and sediment control plan | FFL finished floor level",
         "GDA2020 Geocentric Datum of Australia 2020 | MGA Map Grid of Australia | RL reduced level | RWT rainwater tank | TBC to be confirmed | NTS not to scale",
         "Symbols and line types are listed in the legend on each sheet.", DISCL, "Text: " + font_note], 2.0)
     # locality plan
@@ -411,7 +411,7 @@ def c000(ctx: Ctx, sheets: list[Sheet], font_note: str) -> Sheet:
     D.panel(v, 172, 14, 330, 146, "GENERAL NOTES", [
         "1. This plan set is PRELIMINARY and indicative; not for construction.", "2. Boundaries from the NSW cadastre (not a survey). Adjoining lot labels from the cadastre lot layer.",
         "3. Levels / contours are derived from the NSW 5 m DEM and are INDICATIVE; detail survey required before design.", "4. Proposed structure footprint and FFL are ILLUSTRATIVE unless stated as from an architect plan.",
-        "5. Services shown are schematic; existing services to be confirmed from council records / DBYD.", "6. Cited requirements show their source document and page; items without a citation are assumptions marked TO BE CONFIRMED.",
+        "5. Services shown are schematic; existing services to be confirmed from council records / BYDA.", "6. Cited requirements show their source document and page; items without a citation are assumptions marked TO BE CONFIRMED.",
         "7. Aerial imagery: NSW Spatial Services; verify terms before commercial use.", "8. Sheets with missing inputs show a DATA NOT AVAILABLE panel; nothing is invented."], 2.1)
     sh.legend = [LE("LOT BOUNDARY", "line", (0, 0.5, 0.1), 0.5, layer="C-PROP-BDY"), LE("ADJOINING LOT BOUNDARY", "line", (0.35, 0.35, 0.35), 0.13, layer="C-PROP-ADJN"),
                  LE("PROPOSED STRUCTURE", "fill", D.BLUE, 0.5, fill=(0.78, 0.84, 1.0), layer="A-BLDG-SLAB"), LE("BUILDING ENVELOPE", "line", (0.8, 0.1, 0.1), 0.3, layer="C-ZONE-ENVL"),

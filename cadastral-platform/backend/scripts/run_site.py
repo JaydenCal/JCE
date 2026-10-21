@@ -300,7 +300,19 @@ def apply_requirements_context(res, lot, rep: "Report") -> None:
         except UnresolvedRequirement:
             shown[k] = "UNRESOLVED (no LGA rule loaded and no platform default)"
             unresolved.append(k)
+    superseded: dict[str, str] = {}
+    try:        # the council's own OSD rules (Engineering Standards 3.10) replace the platform stormwater defaults: no numeric PSD is given, so the default is not a council value
+        from app.agents.sa5_cad_dxf.planset.typicals import Typicals
+        T_ = Typicals(res.lga_name or lot.lga_name or "")
+        for k, tk in (("stormwater.psd_l_s", "eng.stormwater.osd_permissible_discharge"), ("stormwater.osd_required", "eng.stormwater.osd_trigger")):
+            t_ = T_.get(tk)
+            if t_ is not None and k in defaults:
+                superseded[k] = f"SUPERSEDED for {res.lga_name or lot.lga_name} by {t_.ref}: {t_.value} (no numeric value is given, so the platform value is not a council value)"
+                shown[k] += f" [{superseded[k]}]"
+    except Exception:  # noqa: BLE001 - never stops a run
+        pass
     rep.facts["stormwater_requirements"] = shown
+    rep.facts["stormwater_defaults_superseded"] = superseded
     rep.facts["platform_defaults"] = defaults
     rep.add("Stormwater requirements", UNRESOLVED if (defaults or unresolved) else OK,
             "; ".join(f"{k} = {v}" for k, v in shown.items()))
@@ -516,6 +528,19 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         rep.add("DBYD registry", OK if dbyd_view is not None and dbyd_view.n_verified else UNRESOLVED,
                 (f"BYDA job {dbyd_view.job_number}: {dbyd_view.n_owners} owners, {dbyd_view.n_plans} with plans, {dbyd_view.n_draft} draft, {dbyd_view.n_verified} verified" + (f"; {dbyd_view.expiry_warning()}" if dbyd_view.expiry_warning() else ""))
                 if dbyd_view is not None else f"no registry in {args.dbyd_project}: EXISTING SERVICES NOT CONFIRMED")
+
+    # ---- design vehicle (stage 8c): the council's cited design vehicle (Gunnedah Engineering Standards 2.8.7: B99) replaces the B85 platform default; B85 stays only where the council data has none
+    try:
+        from app.agents.sa5_cad_dxf.planset.typicals import Typicals as _Typ
+        _dv = _Typ(getattr(args, "council", None) or lga_arg or lot.lga_name or "").design_vehicle()
+    except Exception:  # noqa: BLE001
+        _dv = None
+    if _dv is not None:
+        for tgt in (params, rr.params):
+            tgt.setdefault("driveway", {})["vehicle"] = _dv[0]
+        rep.facts["design_vehicle"] = {"code": _dv[0], "basis": "COUNCIL REQUIREMENT", "source": _dv[1].ref_long}
+    else:
+        rep.facts["design_vehicle"] = {"code": "B85", "basis": "PLATFORM DEFAULT", "source": None}
 
     # ---- building (stage 8): the Plan Studio typical house placed to the CITED setbacks; the garage door becomes the driveway target (SA3 moves the driveway to meet it)
     placement = None
@@ -822,6 +847,8 @@ def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4, ps: dict | None = N
         cv["ffl"] = fchk.model_dump()
     if env_out is not None and getattr(env_out, "driveway", None) is not None:
         cv["driveway"] = env_out.driveway.model_dump()
+        _dvs = facts.get("design_vehicle") or {}
+        cv["driveway"]["design_vehicle_source"] = _dvs.get("source") if _dvs.get("code") == cv["driveway"].get("design_vehicle") else None
     if sa4 is not None:
         cv["services"] = {"assets": len(sa4.assets), "connections": len(sa4.connections),
                           "rwt_text": (f"{sa4.rwt.tank_volume_l} L tank (unverified)" if getattr(sa4, "rwt", None) is not None and hasattr(sa4.rwt, "tank_volume_l") else None)}

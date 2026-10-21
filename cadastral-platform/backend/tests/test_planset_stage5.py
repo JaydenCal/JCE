@@ -52,7 +52,7 @@ def test_cover_has_data_sources_and_status_box(real):
     assert "DATA SOURCES AND STATUS" in t
     for k in ("CADASTRE", "LEVELS", "AERIAL", "SERVICES", "ASSUMED ITEMS", "CODES", "BUILDING"):
         assert k in t, k
-    assert "NOT A SURVEY" in t and "LOCATE BY DIAL BEFORE YOU DIG" in t
+    assert "NOT A SURVEY" in t and "LOCATE BY BEFORE YOU DIG AUSTRALIA (BYDA)" in t
 
 
 def test_notes_sheet_has_legend_with_every_entry(real):

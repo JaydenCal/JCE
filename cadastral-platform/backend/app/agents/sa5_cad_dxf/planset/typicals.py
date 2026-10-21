@@ -17,6 +17,26 @@ SD = "sd107."
 ENG = "eng."
 
 
+_CONNECTORS = {"and", "or", "of", "to", "the", "for", "a", "an", "in", "on", "by", "with", "at", "from", "as"}
+
+
+def clip_clause(cl: str, n: int = 30) -> str:
+    """Clause heading shortened for a crowded citation without leaving a dangling word or an open bracket: a bracketed part goes first, then whole words, and the
+    result never ends in 'and', 'of', 'to' and so on ('2.8.7 Vehicular crossings and accesses' -> '2.8.7 Vehicular crossings')."""
+    if len(cl) <= n:
+        return cl
+    cl2 = re.sub(r"\s*\([^)]*\)", "", cl).strip()
+    if len(cl2) <= n and cl2:
+        return cl2
+    cut = cl2[:n]
+    if len(cl2) > n and not cl2[n].isspace():
+        cut = cut.rsplit(" ", 1)[0] if " " in cut else cut
+    words = cut.split()
+    while len(words) > 1 and (words[-1].lower().strip(",;:") in _CONNECTORS or "(" in words[-1]):
+        words.pop()
+    return " ".join(words).rstrip(" +=-,;:")
+
+
 @dataclass
 class Typical:
     key: str
@@ -86,14 +106,27 @@ class Typical:
         return f"{self.short}, {cl}, p.{self.page}" if self.page else f"{self.short}, {cl}"
 
     @property
+    def ref_long(self) -> str:
+        """Readable citation for running text: 'Gunnedah Shire Council Engineering Design Minimum Standards for Subdivisions and Development (Version 1, April 2025), 2.8.7 Vehicular crossings and accesses, p.44'."""
+        cl = re.sub(r"\s+", " ", (self.clause or "").strip())
+        ed = self.doc.get("edition", "")
+        head = f"{self.doc.get('title', self.short)} ({ed})" if ed else self.doc.get("title", self.short)
+        return head + (f", {cl}" if cl else "") + (f", p.{self.page}" if self.page and self.doc_id != "sd107" else "")
+
+    @property
     def ref_short(self) -> str:
         """Short citation for crowded details: 'GSC ENGINEERING STANDARDS V1 (APR 2025) 2.8.2, p.43'."""
         tag = self.doc.get("tag") or self.short
-        cl = re.split(r"[,;]", re.sub(r"\s+", " ", (self.clause or "").strip()))[0].strip()
-        cl = cl if len(cl) <= 30 else cl[:30].rsplit(" ", 1)[0]
+        cl = clip_clause(re.split(r"[,;]", re.sub(r"\s+", " ", (self.clause or "").strip()))[0].strip())
         if self.doc_id == "sd107":
             return f"{tag}, {cl}"
         return f"{tag} {cl}, p.{self.page}" if self.page else f"{tag} {cl}"
+
+    def ref_at(self, clause: str, page: int | None = None) -> str:
+        """Short citation of ONE clause of a multi-clause entry ('GSC ENGINEERING STANDARDS V1 (APR 2025) 4.7.7.4, p.119'); the page defaults to the entry's own."""
+        tag = self.doc.get("tag") or self.short
+        pg = page if page is not None else self.page
+        return f"{tag} {clause}, p.{pg}" if pg else f"{tag} {clause}"
 
     @property
     def vtext(self) -> str:
@@ -106,6 +139,26 @@ class Typical:
     @property
     def tag(self) -> str:
         return ("VERIFY AGAINST " + ("SD-107" if self.doc_id == "sd107" else self.short)) if self.verify else ""
+
+
+def refs_short(ts) -> str:
+    """Short citations of several entries in ONE bracket: the document tag is named once per document ('GSC ENGINEERING STANDARDS V1 (APR 2025) 3.9, p.87; 3.11.1 Table 3-D, p.100')
+    and an identical citation is given once."""
+    out: list[str] = []
+    seen_tags: set[str] = set()
+    seen_full: set[str] = set()
+    for t in ts:
+        r = t.ref_short
+        if r in seen_full:
+            continue
+        seen_full.add(r)
+        tag = t.doc.get("tag") or t.short
+        if tag in seen_tags and r.startswith(tag):
+            r = r[len(tag):].strip(" ,")
+        seen_tags.add(tag)
+        if r not in out:
+            out.append(r)
+    return "; ".join(out)
 
 
 class Typicals:
@@ -157,6 +210,13 @@ class Typicals:
 
     def not_published(self, *needles: str) -> list[Typical]:
         return [t for k, t in self.missing.items() if all(n in k for n in needles)]
+
+    def design_vehicle(self) -> tuple[str, "Typical"] | None:
+        """The design vehicle the council requires every lot access to serve (Engineering Standards 2.8.7: B99), with its citation; None when the data has none (the caller then
+        keeps the B85 PLATFORM DEFAULT)."""
+        t = self.get("eng.crossing.design_vehicle")
+        m = re.search(r"\bB\d{2}\b", str(t.value)) if t is not None else None
+        return (m.group(0), t) if m else None
 
     def verify_keys(self) -> list[str]:
         return [k for k, t in self.by_key.items() if t.verify]

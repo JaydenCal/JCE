@@ -144,12 +144,12 @@ def c100(ctx: Ctx) -> Sheet:
               "ADJOINING LOTS labelled LOT / DP from the cadastre lot layer." + ("" if s.neighbours else " NO ADJOINING LOT DATA RETURNED."),
               "ROAD NAMES from the NSW roads layer; kerb, pavement and verge levels not surveyed.",
               "EASEMENTS: none identified in the supplied data. A title search / s88B instrument is required." if True else "",
-              "EXISTING SERVICES: " + (f"{nsv} asset(s) supplied (DBYD/council) are drawn." if nsv else "EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / DBYD. None drawn (not invented)."),
+              "EXISTING SERVICES: " + (f"{nsv} asset(s) supplied (BYDA/council) are drawn." if nsv else "EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / BYDA. None drawn (not invented)."),
               "TREES / VEGETATION: none supplied; see aerial for indicative canopy only."]
     if not s.neighbours:
         sh.data_missing.append("adjoining lots (cadastre query returned none)")
     if not nsv:
-        sh.data_missing.append("existing services: DBYD / council records")
+        sh.data_missing.append("existing services: BYDA / council records")
     if not s.aerial_site:
         sh.data_missing.append("aerial underlay (imagery provider disabled/failed)")
     side_notes(sh, "NOTES", lines)
@@ -436,8 +436,8 @@ def c300(ctx: Ctx) -> Sheet:
     if st_exist:
         lines.append(f"{len(st_exist)} existing stormwater asset(s) supplied are drawn.")
     else:
-        lines.append("EXISTING COUNCIL STORMWATER ASSETS: not supplied; to be confirmed from council records / DBYD.")
-        sh.data_missing.append("existing stormwater assets: council records / DBYD")
+        lines.append("EXISTING COUNCIL STORMWATER ASSETS: not supplied; to be confirmed from council records / BYDA.")
+        sh.data_missing.append("existing stormwater assets: council records / BYDA")
     north_scale(v, ctx)
     aerial_credit(v, s)
     key_plan(ctx, v, sh)
@@ -495,14 +495,14 @@ def c310(ctx: Ctx) -> Sheet:
         else:
             D.no_data(v, (MAIN[0] + 4, MAIN[3] - 52, MAIN[0] + 135, MAIN[3] - 5), "WATER / SEWER CONNECTIONS NOT DRAWN.",
                       (f"Nearest frontage is {dist:.0f} m from the structure (rural / large lot); " if dist is not None else "No frontage identified; ") +
-                      "availability of reticulated water / sewer is unknown. Needed: council water & sewer records / DBYD and a servicing decision (reticulated, tank, on-site sewage management).")
-            sh.data_missing.append("water / sewer connection points (council records / DBYD; servicing strategy)")
+                      "availability of reticulated water / sewer is unknown. Needed: council water & sewer records / BYDA and a servicing decision (reticulated, tank, on-site sewage management).")
+            sh.data_missing.append("water / sewer connection points (council records / BYDA; servicing strategy)")
     if ex_w:
         lines.append(f"{len(ex_w)} existing water/sewer asset(s) supplied are drawn.")
     else:
-        v.text_p(MAIN[0] + 4, MAIN[3] - 5, "EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / DBYD", 3.0, "TOP_LEFT", 0, True, color=D.RED, layer="C-DATA-NONE", halo=True)
-        lines.append("EXISTING WATER MAIN, SEWER MAIN AND JUNCTION: location not supplied. EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / DBYD. Nothing is drawn or assumed.")
-        sh.data_missing.append("existing water / sewer assets: DBYD / council records")
+        v.text_p(MAIN[0] + 4, MAIN[3] - 5, "EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / BYDA", 3.0, "TOP_LEFT", 0, True, color=D.RED, layer="C-DATA-NONE", halo=True)
+        lines.append("EXISTING WATER MAIN, SEWER MAIN AND JUNCTION: location not supplied. EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / BYDA. Nothing is drawn or assumed.")
+        sh.data_missing.append("existing water / sewer assets: BYDA / council records")
     c = s.cites
     for k, lab in (("water.min_cover_m", "Water min cover (carriageway)"), ("water.min_cover_m.footway_reserve", "Water min cover (footway)"),
                    ("sewer.junction_min_diameter_mm", "Sewer junction"), ("sewer.house_connection_min_cover_m", "House connection cover"),
@@ -510,14 +510,14 @@ def c310(ctx: Ctx) -> Sheet:
         t = c.line(k, lab)
         if t:
             lines.append("CITED: " + t)
-    lines.append("Services are indicative. Locate all services by DBYD and physical location (potholing) before excavation.")
+    lines.append("Services are indicative. Locate all services by BYDA and physical location (potholing) before excavation.")
     north_scale(v, ctx)
     aerial_credit(v, s)
     key_plan(ctx, v, sh)
     sh.legend = base_legend(s) + [
         LE("PROPOSED WATER SERVICE (SCHEMATIC)", "line", D.WATER, 0.5, "DASHED", layer="C-UTIL-WATR"),
         LE("PROPOSED SEWER CONNECTION (SCHEMATIC)", "line", D.SEWER, 0.5, "DASHED", layer="C-UTIL-SEWR"),
-        LE("EXISTING SERVICES (DBYD): NONE SUPPLIED", "line", (0.5, 0.5, 0.5), 0.25, layer="C-UTIL-OTHR"),
+        LE("EXISTING SERVICES (BYDA): NONE SUPPLIED", "line", (0.5, 0.5, 0.5), 0.25, layer="C-UTIL-OTHR"),
         LE("PROPOSED STRUCTURE", "fill", D.BLUE, 0.5, fill=(0.78, 0.84, 1.0), layer="A-BLDG-SLAB")]
     side_notes(sh, "NOTES", lines)
     return sh

@@ -409,13 +409,15 @@ def detail_sediment_fence(v, P, tv: TypicalValues, r: tuple) -> None:
     hatch(v, [(x0 + 6.0, yg - 6.0), (x1 - 6.0, yg - 6.0), (x1 - 6.0, yg - 20.0), (x0 + 6.0, yg - 20.0)], "existing")
     P.line([(x0 + 6.0, yg), (x1 - 6.0, yg)], L_LINE, 0.6, ST.BLACK)
     xp = (x0 + x1) / 2
-    P.line([(xp, yg - 14.0), (xp, yg + 34.0)], L_LINE, 0.9, ST.BLACK)                     # post
-    P.line([(xp + 3.0, yg - 6.0), (xp + 3.0, yg + 32.0)], L_LINE, 0.5, (0.1, 0.4, 0.1))      # fabric, downslope side
-    P.line([(xp + 3.0, yg - 6.0), (xp + 14.0, yg - 6.0)], L_LINE, 0.5, (0.1, 0.4, 0.1))
-    P.line([(xp + 14.0, yg - 6.0), (xp + 14.0, yg)], L_LINE, 0.3, ST.BLACK, dash="DASHED")
-    callout(v, P, ["STAR PICKET / POST", "SPACING " + tv.text("esc.sediment_fence.post_spacing_m")], (x0 + 4.0, yg + 40.0), (xp, yg + 24.0), 46.0)
-    callout(v, P, ["GEOTEXTILE FABRIC", "FABRIC HEIGHT " + TBC], (xp + 8.0, yg + 40.0), (xp + 3.0, yg + 28.0), 46.0)
-    callout(v, P, ["TRENCH, BACKFILLED AND COMPACTED", "DEPTH " + tv.text("esc.sediment_fence.trench_depth_mm")], (xp + 18.0, yg - 12.0), (xp + 14.0, yg - 3.0), 52.0)
+    # Blue Book SD 6-8: the trench is cut on the UPSLOPE line, the picket stands at the downslope edge of the trench, the fabric lies on the upslope face of the picket and is entrenched
+    P.line([(xp, yg - 14.0), (xp, yg + 34.0)], L_LINE, 0.9, ST.BLACK)                     # post (downslope edge of the trench)
+    P.line([(xp - 3.0, yg - 6.0), (xp - 3.0, yg + 32.0)], L_LINE, 0.5, (0.1, 0.4, 0.1))      # fabric, upslope face of the post
+    P.line([(xp - 3.0, yg - 6.0), (xp - 14.0, yg - 6.0)], L_LINE, 0.5, (0.1, 0.4, 0.1))      # fabric turned into the trench toward the upslope
+    P.line([(xp - 14.0, yg - 6.0), (xp - 14.0, yg)], L_LINE, 0.3, ST.BLACK, dash="DASHED")   # trench, backfilled and compacted
+    P.line([(xp - 14.0, yg - 6.0), (xp, yg - 6.0)], L_LINE, 0.3, ST.BLACK, dash="DASHED")
+    callout(v, P, ["STAR PICKET / POST", "SPACING " + tv.text("esc.sediment_fence.post_spacing_m")], (xp + 8.0, yg + 40.0), (xp, yg + 24.0), 46.0)
+    callout(v, P, ["GEOTEXTILE FABRIC", "FABRIC ON UPSLOPE SIDE OF POSTS", "FABRIC HEIGHT " + TBC], (x0 + 4.0, yg + 44.0), (xp - 3.0, yg + 28.0), 52.0)
+    callout(v, P, ["TRENCH ON THE UPSLOPE LINE, BACKFILLED AND COMPACTED", "DEPTH " + tv.text("esc.sediment_fence.trench_depth_mm")], (x0 + 4.0, yg - 12.0), (xp - 9.0, yg - 3.0), 60.0)
     P.text(x0 + 8.0, yg + 3.0, "UPSLOPE", ST.TXT.BODY, "BOTTOM_LEFT", layer=L_NOTE, bold=True)
     P.text(x1 - 8.0, yg + 3.0, "DOWNSLOPE", ST.TXT.BODY, "BOTTOM_RIGHT", layer=L_NOTE, bold=True)
 
@@ -426,16 +428,15 @@ def detail_access(v, P, tv: TypicalValues, r: tuple) -> None:
     yb = shift(r, yb, 80.0)
     yg = yb - 44.0
     xa0, xa1 = x0 + 10.0, x1 - 62.0
-    hatch(v, [(xa0 - 4.0, yg - 8.0), (xa1 + 4.0, yg - 8.0), (xa1 + 4.0, yg - 22.0), (xa0 - 4.0, yg - 22.0)], "existing")
-    grey(v, [(xa0, yg - 3.0), (xa1, yg - 3.0), (xa1, yg - 8.0), (xa0, yg - 8.0)], (0.9, 0.9, 0.9))
-    grey(v, [(xa0, yg + 5.0), (xa1, yg + 5.0), (xa1, yg - 3.0), (xa0, yg - 3.0)], GREY_BASE)
-    P.line([(xa0 - 4.0, yg - 8.0), (xa1 + 4.0, yg - 8.0)], L_LINE, 0.4, (0.1, 0.1, 0.1), dash="DASHED")
+    hatch(v, [(xa0 - 4.0, yg - 3.0), (xa1 + 4.0, yg - 3.0), (xa1 + 4.0, yg - 22.0), (xa0 - 4.0, yg - 22.0)], "existing")        # existing ground
+    grey(v, [(xa0, yg + 5.0), (xa1, yg + 5.0), (xa1, yg - 3.0), (xa0, yg - 3.0)], GREY_BASE)                                        # aggregate, 200 thick
+    P.line([(xa0 - 4.0, yg - 3.0), (xa1 + 4.0, yg - 3.0)], L_LINE, 0.7, (0.1, 0.1, 0.1), dash="DASHED")                          # needle-punched geotextile under the aggregate
     dim_v(P, xa1 + 8.0, yg - 3.0, yg + 5.0, "", 1)
     P.text(xa1 + 10.0, yg + 1.0, "THICKNESS " + tv.text("esc.access.thickness_mm"), ST.TXT.BODY, "MIDDLE_LEFT", layer=L_DIM)
     dim_h(P, yg - 28.0, xa0, xa1, "LENGTH " + tv.text("esc.access.min_length_m") + "   WIDTH " + tv.text("esc.access.min_width_m"), ST.TXT.BODY)
-    callout(v, P, ["AGGREGATE", "MAX SIZE " + tv.text("esc.access.max_aggregate_mm")], (x0 + 4.0, yg + 38.0), (xa0 + 24.0, yg + 2.0), 46.0)
-    callout(v, P, ["GEOTEXTILE UNDERLAY", tv.text("esc.access.geotextile_underlay")], (x0 + 70.0, yg + 38.0), (xa0 + 50.0, yg - 5.5), 54.0)
-    callout(v, P, ["ROAD / SITE BOUNDARY"], (xa1 - 36.0, yg + 18.0), (xa1, yg + 5.0), 36.0)
+    callout(v, P, ["AGGREGATE", "MAX SIZE " + tv.text("esc.access.max_aggregate_mm")], (x0 + 4.0, yg + 38.0), (xa0 + 14.0, yg + 1.0), 46.0)                 # leader ends in the aggregate layer
+    callout(v, P, ["GEOTEXTILE UNDERLAY", tv.text("esc.access.geotextile_underlay")], (xa1 + 8.0, yg - 14.0), (xa1 - 10.0, yg - 3.0), x1 - 3.0 - (xa1 + 8.0))     # leader ends on the dashed geotextile line
+    callout(v, P, ["ROAD / SITE BOUNDARY"], (xa1 - 16.0, yg + 22.0), (xa1, yg + 4.0), 30.0)                                                              # the end of the access at the boundary
 
 
 def detail_trench(v, P, tv: TypicalValues, r: tuple) -> None:

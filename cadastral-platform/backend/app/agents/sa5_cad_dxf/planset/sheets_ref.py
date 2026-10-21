@@ -30,7 +30,7 @@ SUBJECT_MARGIN_MM = 20.0      # paper margin around the subject lot, crossover a
 PAVEMENT_TEXT = "ASSUMED ROAD PAVEMENT EXTENT"
 PAVEMENT_BASIS = "(ROAD RESERVE LIMITS FROM CADASTRE)"
 PAVEMENT_MISSING = "road pavement extent not shown: no survey or road reserve data"
-DBYD_TEXT = "LOCATION INDICATIVE, CONFIRM BY DBYD AND POTHOLING"
+BYDA_TEXT = "LOCATION INDICATIVE, CONFIRM BY BYDA AND POTHOLING"
 NEIGHBOUR_MARGIN_MM = SUBJECT_MARGIN_MM       # kept for older imports
 
 
@@ -105,6 +105,7 @@ def _lot_label(v: View, p, lines: list[str]) -> bool:
         return False
     v.occ.append(box)
     v.tbox.append(box)
+    v._mask(px, py, w - 0.6, hh - 0.6, 0.0, "C-ANNO-LOTN")                 # a contour or a service line that crosses the lot label is masked behind it (stage 8c)
     P = ST.Paper(v)
     if len(lines) == 2:
         P.text(px, py + 0.8, lines[0], hs[0], "BOTTOM_CENTER", layer="C-ANNO-LOTN")
@@ -336,8 +337,8 @@ def title_strip(sh: Sheet, title: str, scale_line: str, bar_scale: int | None = 
         bx = x0 + max(tw, sw, 40.0) + 34.0
         if notes:
             bx = max(bx, x0 + 300.0)
-        ST.scale_bar_ref(v, bx, top - 12.5, bar_scale)
-        strip_end = max(strip_end, bx + 56.0)                 # graduated bar and its labels
+        bl = ST.scale_bar_ref(v, bx, top - 12.5, bar_scale)
+        strip_end = max(strip_end, bx + bl + 16.0)            # graduated bar, its end label and the white mask behind it: the datum and notes box starts beyond this (stage 8c)
     sh.strip_end = strip_end                                   # the datum and notes panel stays right of the strip text
     return v
 
@@ -380,7 +381,7 @@ def _services(v: View, s: Site, missing: list[str], which: tuple | None = None) 
         if sv.is_proposed:
             ST.label_masked(v, c.x, c.y, txt, 2.5, 0, "C-ANNO-SERV")
         else:
-            pending.append(([txt, DBYD_TEXT], (c.x, c.y)))
+            pending.append(([txt, BYDA_TEXT], (c.x, c.y)))
         n += 1
     return n, pending
 

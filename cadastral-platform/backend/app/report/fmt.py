@@ -13,6 +13,14 @@ _SPACED_DASH = re.compile(r"\s+[\u2013\u2014\u2012\u2015]\s+|\s*\u2014\s*")
 _ANY_DASH = re.compile(r"[\u2013\u2014\u2012\u2015]")
 
 
+_MONTHS = {m: i for i, m in enumerate(["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"], 1)}
+_LONG_DATE = re.compile(r"\b(\d{1,2}) (" + "|".join(_MONTHS) + r") (\d{4})\b", re.I)
+
+
+def _dmy_long(m) -> str:
+    return f"{int(m[1]):02d}/{_MONTHS[m[2].lower()]:02d}/{m[3]}"
+
+
 def clean(s) -> str:
     """Normalise text for the report. Em and en dashes never reach the PDF: numeric ranges become 'a to b', a spaced dash becomes a comma."""
     s = "" if s is None else str(s)
@@ -20,6 +28,7 @@ def clean(s) -> str:
         s = s.replace(k, v)
     s = _RANGE_DASH.sub(r"\1 to \2", s)
     s = _SPACED_DASH.sub(", ", s)
+    s = _LONG_DATE.sub(_dmy_long, s)                       # 18 June 2025 -> 18/06/2025 (DD/MM/YYYY everywhere)
     return _ANY_DASH.sub("-", s)
 
 

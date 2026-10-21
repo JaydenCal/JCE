@@ -41,7 +41,7 @@ DOCS = {
                   edition="Rev A, 01/08/2023", tag="GSC SD-107 REV A", kind="standard drawing", pdf=SD_PDF, page_convention="single sheet (page 1)"),
     "eng": dict(short="GSC ENGINEERING DESIGN MINIMUM STANDARDS (VERSION 1, APRIL 2025)", title="Gunnedah Shire Council Engineering Design Minimum Standards for Subdivisions and Development",
                 authority="Gunnedah Shire Council", edition="Version 1, April 2025", tag="GSC ENGINEERING STANDARDS V1 (APR 2025)", kind="standard", pdf=ENG_PDF, page_convention='printed "Page n of 166"'),
-    "dcp": dict(short="GSC DCP 2025", title="Gunnedah Shire Council Development Control Plan 2025", authority="Gunnedah Shire Council", edition="DCP 2025 (adopted 18 June 2025)",
+    "dcp": dict(short="GSC DCP 2025", title="Gunnedah Shire Council Development Control Plan 2025", authority="Gunnedah Shire Council", edition="adopted 18/06/2025",
                 tag="GSC DCP 2025", kind="development control plan", pdf=None, page_convention="PDF page index (printed page = PDF page - 6), as requirements.json"),
 }
 TOPIC_SHORT = {"crossover_driveway": "crossover", "kerb_and_gutter": "kerb", "footpath_verge": "verge", "driveway_pavement": "pavement",
@@ -233,7 +233,7 @@ def main() -> int:
                 e["source_url"] = reqs[rk]["source"].get("source_url") or e["source_url"]
             ver.update(ok=ok, quote_found=ok)
         elif did == "sd107":
-            ver["method"] = "SD-107 text (pdftotext), quotes and numbers"
+            ver["method"] = "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)"
             qf = all(nrm(q) in sd_text or nrm(q) in sd_layout for q in e["quote"]) if e["quote"] else None
             nums = numbers_of(c["value"])
             if not nums:                                      # description values: every number in the value text must be on the sheet

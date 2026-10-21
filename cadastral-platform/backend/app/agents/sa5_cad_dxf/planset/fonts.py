@@ -79,12 +79,16 @@ def face(bold: bool = False, italic: bool = False) -> str:
 
 _UNIT_RE = re.compile(r"(?<![\w.])(\d+(?:\.\d+)?) ?(MM|mm|M2|m2|M3|m3|M|m)(?![\w\u00b2\u00b3/])")
 _MAHD_RE = re.compile(r"\bM AHD\b")
+_SUP = {"m2": "m\u00b2", "m3": "m\u00b3"}             # 956 m², 1.1 m³ (the SI superscripts, not "m2")
+_SYMS = [(re.compile(r"\bMPA\b"), "MPa"), (re.compile(r"\bKPA\b"), "kPa"), (re.compile(r"\bL/S/HA\b"), "L/s/ha"), (re.compile(r"\bL/S\b"), "L/s")]
 
 
 def units(s: str) -> str:
     """One unit convention on every sheet: a space between the number and a LOWER CASE SI symbol (4.0 m, 150 mm, 956 m2, 1.1 m3) and m AHD, whatever case the
     rest of the text is in (drawing text is UPPERCASE, SI symbols are not)."""
-    s = _UNIT_RE.sub(lambda m: f"{m.group(1)} {m.group(2).lower()}", s)
+    s = _UNIT_RE.sub(lambda m: f"{m.group(1)} {_SUP.get(m.group(2).lower(), m.group(2).lower())}", s)
+    for rx, to in _SYMS:
+        s = rx.sub(to, s)
     return _MAHD_RE.sub("m AHD", s)
 
 
@@ -93,7 +97,7 @@ def text_width(s: str, h_mm: float, bold: bool = False) -> float:
     return stringWidth(units(s).replace("\x00", " "), face(bold), h_mm / CAP_RATIO)
 
 
-_NUM_UNIT = re.compile(r"(\d) (mm|m2|m3|m)(?![\w])")
+_NUM_UNIT = re.compile(r"(\d) (mm|m\u00b2|m\u00b3|m)(?![\w])")
 
 
 def wrap(s: str, h_mm: float, width_mm: float, bold: bool = False) -> list[str]:

@@ -328,7 +328,7 @@ def test_one_unit_convention_on_every_sheet(real):
 
 def test_units_normaliser_cases():
     from app.agents.sa5_cad_dxf.planset import fonts
-    assert fonts.units("CUT 1.1 M3, FILL 0.0 M3 (M AHD) 5 M DEM 75 MM 4.0m 10.10 m 956 m2") == "CUT 1.1 m3, FILL 0.0 m3 (m AHD) 5 m DEM 75 mm 4.0 m 10.10 m 956 m2"
+    assert fonts.units("CUT 1.1 M3, FILL 0.0 M3 (M AHD) 5 M DEM 75 MM 4.0m 10.10 m 956 m2") == "CUT 1.1 m³, FILL 0.0 m³ (m AHD) 5 m DEM 75 mm 4.0 m 10.10 m 956 m²"           # stage 8c: m² and m³ are the printed superscripts
     assert fonts.units("DP227508 A1 1:50 P.25 SA3 C400") == "DP227508 A1 1:50 P.25 SA3 C400"
     assert fonts.wrap("LOT FALL 5 m DEM AND MORE TEXT HERE 150 MM THICK", 2.5, 30)[0].endswith("5 m DEM")
 
@@ -377,10 +377,12 @@ def test_scale_bars_use_round_steps():
     assert d <= {0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 25.0}, d
 
 
-def test_b85_check_line_reads_as_a_clearance_not_a_zero_limit(real):
-    t = _flat(real.text["C400"])
-    assert "PLATFORM SCREENING LIMIT AT LEAST 0 m CLEARANCE (NO SCRAPING)" in t
-    assert "SCREENING LIMIT 0 m:" not in t
+def test_b85_check_line_reads_as_a_clearance_not_a_zero_limit():
+    from app.agents.sa3_driveway.models import CheckItem
+    t = S2._check_text(CheckItem(name="b85_scraping_clearance", passed=True, value=0.05, limit=0.0, unit="m", note="B85 template"))
+    assert "PLATFORM SCREENING LIMIT AT LEAST 0 m CLEARANCE (NO SCRAPING)" in t and "SCREENING LIMIT 0 m:" not in t
+    t99 = S2._check_text(CheckItem(name="b85_scraping_clearance", passed=True, value=0.05, limit=0.0, unit="m", note="B99 template"))
+    assert "B99" in t99 and "B85" not in t99                                       # stage 8c: the vehicle named on the line is the one that was run
 
 
 def test_kerb_section_has_no_void_under_the_layback():

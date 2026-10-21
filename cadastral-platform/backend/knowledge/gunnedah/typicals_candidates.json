@@ -88,7 +88,7 @@
   "page": "1 (single sheet)",
   "quote_or_description": "Read from the rendered drawing (500 dpi crops), not inferred. Measured perpendicular to the kerb from the back-of-layback line to the lip line where the 600 splay starts. Splay diagonal is therefore 600 along x by 300 deep in plan (1 in 2).",
   "url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
-  "confidence": 0.8
+  "confidence": 0.9
  },
  {
   "topic": "crossover_driveway",
@@ -138,9 +138,9 @@
   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
   "drawing_or_clause": "SD-107 section, left dimension '190'",
   "page": "1 (single sheet)",
-  "quote_or_description": "Read from the rendered drawing (500 dpi crops), not inferred. Vertical dimension of concrete at the road-side edge (excludes the dotted 50 mm base course drawn below).",
+  "quote_or_description": "Read from the rendered drawing (500 dpi crops), not inferred. Vertical dimension of concrete at the road-side edge (excludes the dotted 50 mm base course drawn below). Reviewer confirmed at 600 dpi (21/10/2026).",
   "url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
-  "confidence": 0.8
+  "confidence": 0.9
  },
  {
   "topic": "crossover_driveway",
@@ -151,9 +151,9 @@
   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
   "drawing_or_clause": "SD-107 section, dimension '40'",
   "page": "1 (single sheet)",
-  "quote_or_description": "Read from the rendered drawing (500 dpi crops), not inferred. Top surface falls 40 mm from the road-side edge level to the flowline notch at the nominal kerb line (extension lines read at edge level and flowline level).",
+  "quote_or_description": "Read from the rendered drawing (500 dpi crops), not inferred. Top surface falls 40 mm from the road-side edge level to the flowline at the nominal kerb line; a near-vertical lip then rises back to about edge level. Reviewer confirmed at 600 dpi (21/10/2026).",
   "url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
-  "confidence": 0.7
+  "confidence": 0.9
  },
  {
   "topic": "crossover_driveway",
@@ -164,22 +164,22 @@
   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
   "drawing_or_clause": "SD-107 section, dimension '60'",
   "page": "1 (single sheet)",
-  "quote_or_description": "Read from the rendered drawing (500 dpi crops), not inferred. Top of the layback at the back (expansion joint) is 60 mm above the road-side edge level (extension lines read at edge level and back-of-layback top).",
+  "quote_or_description": "Read from the rendered drawing (500 dpi crops), not inferred. Top of the layback at the back (expansion joint) is 60 mm above the road-side edge level. Reviewer confirmed at 600 dpi (21/10/2026).",
   "url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
-  "confidence": 0.7
+  "confidence": 0.9
  },
  {
   "topic": "crossover_driveway",
   "key": "section.layback_rise_flowline_to_back_derived",
-  "value": 100,
-  "unit": "mm over 450 mm (about 22%, 1 in 4.5)",
+  "value": "60 mm rise over 450 mm run",
+  "unit": "",
   "source_title": "GSC Standard Drawing SD-107 Vehicle Access Urban Residential",
   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
-  "drawing_or_clause": "SD-107 section, derived: 40 + 60 over 450",
+  "drawing_or_clause": "SD-107 section: dimension '60' over the 450 layback run (rise measured above the top of the lip)",
   "page": "1 (single sheet)",
-  "quote_or_description": "DERIVED by Claude (not a drawn dimension): 40 mm fall + 60 mm rise = 100 mm from flowline to back of layback over the 450 run. Scaled off the drawing: about 101 mm over 462 mm.",
+  "quote_or_description": "Derived from two drawn dimensions: the layback rises 60 mm above road-side edge level over 450 mm, measured from the top of the lip at the nominal kerb line to the expansion joint (about 13%). It is not 100 mm over 450 mm.",
   "url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
-  "confidence": 0.6
+  "confidence": 0.8
  },
  {
   "topic": "crossover_driveway",
@@ -188,16 +188,16 @@
   "unit": "mm",
   "source_title": "GSC Standard Drawing SD-107 Vehicle Access Urban Residential",
   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",
-  "drawing_or_clause": "SD-107 section, label 'R25'",
+  "drawing_or_clause": "SD-107 section, label 'R25' (rounded arris at the top of the step at the nominal kerb line)",
   "page": "1 (single sheet)",
-  "quote_or_description": "Read from the rendered drawing (500 dpi crops), not inferred. R25 leader ends at the flowline notch where the gutter crossing meets the layback surface. Radius of that vertex.",
+  "quote_or_description": "Read from the rendered drawing (500 dpi crops), not inferred. R25 rounded arris at the top of the near-vertical step (lip) at the nominal kerb line, where the surface returns to about road-side edge level before the layback rises. Reviewer confirmed at 600 dpi (21/10/2026).",
   "url": "https://www.gunnedah.nsw.gov.au/files/assets/public/v/2/images/gunnedahshirecouncil/council/council-information/all-council-application-forms/drainage-driveways-application-forms/standard-drawing-vehicle-access-urban-residential.pdf",
-  "confidence": 0.6
+  "confidence": 0.9
  },
  {
   "topic": "crossover_driveway",
   "key": "section.profile_description",
-  "value": "Road-side edge: vertical face 190 mm deep, top surface falling 40 mm toward the nominal kerb line, R25 flowline notch (there is a short near-vertical step up at the kerb line), layback rising straight to the expansion joint 450 behind, then slab at 1.5-2.5% pathway crossfall to the boundary; base course drawn 50 mm thick and stepping up under the layback; SL82 fabric draped with the slab",
+  "value": "Road-side edge: vertical face 190 mm deep, top surface falling 40 mm to the flowline at the nominal kerb line, near-vertical lip rising back to about edge level with an R25 rounded arris at its top, layback rising straight 60 mm over 450 mm to the expansion joint, then slab at 1.5-2.5% pathway crossfall to the boundary; base course drawn 50 mm thick and stepping up under the layback; SL82 fabric draped with the slab",
   "unit": "",
   "source_title": "GSC Standard Drawing SD-107 Vehicle Access Urban Residential",
   "edition": "Rev A, 01/08/2023 (title block); margin stamp 'A3 - 20/02/23 REV.A'; A3",

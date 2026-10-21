@@ -38,7 +38,7 @@ def stext(sh) -> str:
     return " ".join(it.text for v in sh.views for it in v.items if it.kind == "text")
 
 
-def _run_real(out, generic: bool):
+def _run_real(out, generic: bool, extra=()):
     from scripts.run_site import build_parser, run_site
     mp = pytest.MonkeyPatch()
     if generic:                                       # a council WITHOUT typical-detail data: the generic crossover, kerb and C600 behaviour (stage 8b keeps it for such councils)
@@ -46,7 +46,7 @@ def _run_real(out, generic: bool):
         mp.setattr(TY, "KNOW", out / "no_knowledge")
     args = build_parser().parse_args(["--offline", "lot2", "--lotplan", "2//DP227508", "--development-type", "dwelling_house", "--levels", "nsw",
                                       "--rules-json", str(ROOT / "tests/fixtures/R2_dwelling_house_rules.json"), "--acknowledge", "--planset", "--planset-only",
-                                      "--planset-style", "ref", "--out", str(out)])
+                                      "--planset-style", "ref", "--out", str(out), *extra])
     try:
         run_site(args)
     finally:
@@ -58,6 +58,12 @@ def _run_real(out, generic: bool):
 @pytest.fixture(scope="module")
 def real(tmp_path_factory):
     return _run_real(tmp_path_factory.mktemp("lot2_stage5b"), True)
+
+
+@pytest.fixture(scope="module")
+def real_ffl(tmp_path_factory):
+    """A council without typical-detail data, with a user entered flood level: a finished floor level and a driveway end level exist, so the C200 section and the C410 design line are drawn."""
+    return _run_real(tmp_path_factory.mktemp("lot2_stage5b_ffl"), True, ("--flood-level-ahd", "265.5"))
 
 
 @pytest.fixture(scope="module")
@@ -160,7 +166,7 @@ def test_access_shorter_than_the_cited_length_gets_a_red_flag_with_the_cited_val
 # ====================================================================================================== 4 C400 dimensions
 def test_c400_offset_dimension_names_the_driveway_centreline_and_width_is_on_its_own_line(real):
     t = real.text["C400"]
-    assert "OFFSET FROM BOUNDARY CORNER TO DRIVEWAY CENTRELINE" in t
+    assert "BOUNDARY CORNER TO DRIVEWAY CENTRELINE" in t
     assert "3.0 m" in t
     v = real.sheets["C400"].views[0]
     assert collide.dim_line_overlaps(v) == []
@@ -184,7 +190,8 @@ def test_no_dimension_line_overlaps_on_any_sheet(real):
 
 
 # ====================================================================================================== 5 C410 no invented verge design
-def test_c410_states_no_verge_design_and_the_design_line_is_the_existing_surface(real):
+def test_c410_states_no_verge_design_and_the_design_line_is_the_existing_surface(real_ffl):
+    real = real_ffl
     assert S2.NO_VERGE_DESIGN in real.text["C410"].replace("  ", " ") or "NO VERGE DESIGN: DESIGN LINE SHOWN AS EXISTING SURFACE" in real.text["C410"]
     p = S2.ref_profile(real.site)
     for t, z, nm in p["st"]:
@@ -267,7 +274,8 @@ def test_esc_text_helper_removes_spaced_dashes_and_slashes():
 
 
 # ====================================================================================================== 9 section marker
-def test_section_marker_is_on_the_plan_at_the_section_chainage(real):
+def test_section_marker_is_on_the_plan_at_the_section_chainage(real_ffl):
+    real = real_ffl
     sh = real.sheets["C200"]
     plan, sec = sh.views[0], [v for v in sh.views if v.name == "section"][0]
     ew = S2.driveway_earthworks(real.site)
@@ -397,3 +405,52 @@ def test_council_initialism_inside_a_cited_value_is_written_in_full():
     assert PH._expand_council_initials("GSC Engineering Design Minimum Standards", "Gunnedah Shire Council") == "Gunnedah Shire Council Engineering Design Minimum Standards"
     assert PH._expand_council_initials("Tamworth Standards", None) == "Tamworth Standards"
     assert refs.Cite("k", 1, "m", "Doc", 3, "4.7 Service connections - locations (water)", "").ref == "Doc, 4.7 Service connections, locations (water), p.3"
+
+
+# ====================================================================================================== stage 8c: review fixes on the drawn sheets (Gunnedah with its typical details)
+def _all_text(real) -> str:
+    return " ".join(real.text.values())
+
+
+def test_8c_crossing_notes_cite_sd107_and_keep_only_the_real_gaps(real_cited):
+    t = _all_text(real_cited)
+    assert "VEHICLE CROSSING TO GSC SD-107 REV A" in real_cited.text["C001"]
+    for stale in ("NOT SELECTED", "COUNCIL STANDARD DRAWING GOVERNS", "Gsc sd-107", "GSC DCP 2025 (DCP 2025"):
+        assert stale not in t, stale
+    c1 = real_cited.text["C001"]
+    for gap in ("RD003", "RD0010", "RD011"):
+        assert gap in c1, gap
+    assert "DRIVEWAY MAXIMUM GRADE UNRESOLVED" in c1
+
+
+def test_8c_design_vehicle_is_b99_everywhere_it_is_named(real_cited):
+    assert "B99" in real_cited.text["C400"] and "B85" not in real_cited.text["C400"]
+    assert "B99" in real_cited.text["C001"] and "B85" not in real_cited.text["C001"]
+
+
+def test_8c_c410_draws_the_typical_line_and_no_defaulted_end_level(real_cited):
+    t = real_cited.text["C410"]
+    assert "TYPICAL LEVEL (SD-107)" in t and "COUNCIL TYPICAL LINE (SD-107), INDICATIVE" in t
+    assert "BACK OF LAYBACK (E.J.)" in t and "PROPERTY BOUNDARY" in t
+    assert "PROPOSED DRIVEWAY LEVELS NOT AVAILABLE" in t and "DESIGN LEVEL (PLATFORM PROFILE)" not in t
+    assert "COUNCIL REQUIREMENT: DRIVEWAY MAXIMUM GRADE UNRESOLVED" in t or "COUNCIL MAXIMUM DRIVEWAY GRADE" in t
+
+
+def test_8c_c420_splay_depth_is_named_to_the_back_of_kerb_and_the_boundary_joint_is_called_out(real_cited):
+    t = real_cited.text["C420"]
+    assert "SPLAY DEPTH 0.3 m (BACK OF LAYBACK TO BACK OF KERB" in t
+    assert t.count("E.J. AT THE") >= 2 and "PROPERTY BOUNDARY" in t
+
+
+def test_8c_c500_stabilised_access_cites_both_minimum_lengths(real_cited):
+    t = real_cited.text["C500"]
+    assert re.search(r"15 m \(BLUE BOOK", t) and re.search(r"3 m \(BUILDING SITES|3 m \(ESC GUIDELINES FOR BUILDING SITES", t)
+    assert "P.19" in t and "P.163" in t
+
+
+def test_8c_c600_pavement_bullet_is_a_sentence_and_citations_are_not_clipped(real_cited):
+    t = real_cited.text["C600"]
+    assert "DRIVEWAYS (ALL INTERNAL VEHICLE ACCESS AND MANOEUVRING AREAS) ARE TO BE CONCRETE, BITUMEN, INTERLOCKING PAVERS OR ASPHALT" in t
+    assert "2.8.7 VEHICULAR CROSSINGS AND," not in t and "SD-107 SECTION (NOMINAL KERB" not in t
+    assert "[GSC ENGINEERING STANDARDS V1 (APR 2025) 4.7.7.4, P.119]" in t or "4.7.7.4, P.119" in t
+    assert "ADOPTED 18/06/2025" in real_cited.text["C600"] or "ADOPTED 18/06/2025" in _all_text(real_cited)

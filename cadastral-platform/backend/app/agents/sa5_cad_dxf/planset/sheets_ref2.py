@@ -27,6 +27,7 @@ from app.agents.sa5_cad_dxf.planset import panels as PN
 from app.agents.sa5_cad_dxf.planset import phrases as PH
 from app.agents.sa5_cad_dxf.planset import sections as SEC
 from app.agents.sa5_cad_dxf.planset import typical_details as TD
+from app.agents.sa5_cad_dxf.planset.typicals import refs_short
 from app.agents.sa5_cad_dxf.planset.terrain_notes import dem_fall, drainage_discharge_note, fall_vs_street  # noqa: F401
 from app.agents.sa5_cad_dxf.planset import viewport as VP
 from app.agents.sa5_cad_dxf.planset import codes
@@ -58,12 +59,13 @@ SWEPT_TBC = "SWEPT PATH: TO BE CONFIRMED AT DETAILED DESIGN"
 DRIVE_END = "DRIVEWAY END (PLATFORM DEFAULT LEVEL, NOT DESIGNED)"
 KERB_STATION = "KERB LINE (GROUND, ASSUMED)"
 BAND_STATION = "BACK OF KERB AND GUTTER BAND (GROUND, ASSUMED)"
+BAND_STATION_CITED = "BACK OF LAYBACK (E.J.)"            # SD-107: the expansion joint at the back of the layback, the same station as the layback run on C420
 BDY_STATION = "PROPERTY BOUNDARY (GROUND)"
 DRIVEWAY_SHEETS = ("C101", "C400", "C420")
 LAYOVER_REF = ["LAYOVER DIMENSIONS (SEE C420)", "FULL SCHEDULE, SOURCES AND TYPICAL SECTIONS ON C420"]      # the layover is dimensioned in full on its own sheet
 
 
-def draw_ctrs(b, light: bool = True, column_w: float = 0.0) -> int:
+def draw_ctrs(b, light: bool = True, column_w: float = 0.0, labels: bool = True, lines: bool = True, extra_avoid=None) -> int:
     """Existing contours with RL labels (stage 8: on every plan sheet), labels clear of the dwelling and of everything already reserved."""
     s, v = b.s, b.v
     if s.tin is None:
@@ -71,7 +73,8 @@ def draw_ctrs(b, light: bool = True, column_w: float = 0.0) -> int:
     contour_sets(s, v.model_window())
     R = v.rect
     strips = ((R[0], R[1], R[0] + column_w + 6.0, R[3]), (R[2] - column_w - 6.0, R[1], R[2], R[3])) if column_w else ()          # the data-panel column goes against either edge: keep labels out of both
-    return D.contours(v, s, "ex", lab_h=D.CONTOUR_LAB_H, light=light, avoid=s.footprint if s.placement is not None else None, no_label_rects=strips)
+    av = [g for g in ([s.footprint] if s.placement is not None else []) + list(extra_avoid or []) if g is not None and not g.is_empty]
+    return D.contours(v, s, "ex", labels=labels, lab_h=D.CONTOUR_LAB_H, light=light, avoid=unary_union(av) if av else None, no_label_rects=strips, lines=lines)
 
 
 def ctr_notes(s: Site) -> list[str]:
@@ -378,8 +381,10 @@ def ref_profile(s: Site):
     if len(ex) < 3:
         return None
     exz = lambda t: float(np.interp(t, [e[0] for e in ex], [e[1] for e in ex]))   # noqa: E731
-    st = [(0.0, exz(0.0), KERB_STATION), (gw, exz(gw), BAND_STATION), (sb, exz(sb), BDY_STATION)]
-    proposed = s.ffl is not None
+    cit_ = getattr(xg, "cited", None)
+    st = [(0.0, exz(0.0), KERB_STATION), (gw, exz(gw), BAND_STATION_CITED if cit_ is not None else BAND_STATION), (sb, exz(sb), BDY_STATION)]
+    # a driveway END level is never defaulted: only a supplied or cited finished floor level gives one (the illustrative mean ground under a footprint does not)
+    proposed = s.ffl is not None and "ILLUSTRATIVE" not in str(getattr(s, "ffl_note", "") or "").upper()
     if proposed:
         st.append((L, float(s.ffl), DRIVE_END))
     out, last = [], -9.0
@@ -388,15 +393,44 @@ def ref_profile(s: Site):
             continue
         out.append((t, z, nm))
         last = t
-    p = {"ex": ex, "st": out, "L": L, "sb": sb, "gw": gw, "proposed": proposed and len(out) >= 3, "exz": exz, "checks": []}
+    p = {"ex": ex, "st": out, "L": L, "sb": sb, "gw": gw, "proposed": proposed and len(out) >= 3, "exz": exz, "checks": [], "typ": _typical_line(s, cit_, exz, gw, sb)}
     if p["proposed"]:
         from app.agents.sa3_driveway.profile import check_profile
-        p["checks"] = check_profile(out)
+        p["checks"] = check_profile(out, vehicle=(s.inp.driveway.design_vehicle if s.inp.driveway is not None else "B85"))
         ts, zs = [o[0] for o in out], [o[1] for o in out]
         p["design"] = lambda t: float(np.interp(t, ts, zs))     # noqa: E731
     else:
         p["design"] = None
     return p
+
+
+def _typical_line(s: Site, cit, exz, gw: float, sb: float):
+    """The council typical longitudinal line of the vehicle crossing (SD-107 section), from the ASSUMED kerb RL (existing ground at chainage 0) to the property boundary:
+    the near-vertical lip rises back to edge level (the 40 fall), the layback rises 60 over its 450 run to the expansion joint, then the pathway crossfall (1.5 to 2.5 percent,
+    rising away from the kerb) to the boundary.  Indicative: no verge is designed and no driveway end level is given.  None when the council data lacks any of these values."""
+    T = getattr(getattr(s, "cites", None), "typ", None)
+    if cit is None or T is None or sb <= gw + 0.05 or abs(gw - cit.layback_run_m) > 1e-6:
+        return None
+    lip, rise, cf = (T.get("sd107.section.gutter_crossing_fall_edge_to_flowline"), T.get("sd107.section.layback_top_above_road_side_edge"), T.get("sd107.crossfall.pathway_crossing"))
+    back = T.get("eng.crossing.layback_back_height")
+    if lip is None or rise is None or cf is None or lip.mm is None or rise.mm is None or cf.rng is None:
+        return None
+    z0 = exz(0.0)
+    z_lip = z0 + lip.mm / 1000.0
+    z_ej = z_lip + rise.mm / 1000.0
+    lo, hi = cf.rng
+    mid = (lo + hi) / 2.0
+
+    def at(t: float, pct: float = mid) -> float | None:
+        if t < -1e-9 or t > sb + 1e-9:
+            return None
+        if t <= 1e-9:
+            return z0
+        if t <= gw:
+            return z_lip + (z_ej - z_lip) * t / gw
+        return z_ej + pct / 100.0 * (t - gw)
+    return {"z0": z0, "z_lip": z_lip, "z_ej": z_ej, "t_ej": gw, "sb": sb, "pcts": (lo, mid, hi), "at": at, "lip": lip, "rise": rise, "crossfall": cf, "back": back,
+            "run": cit.layback_run_m}
 
 
 NO_VERGE_DESIGN = "NO VERGE DESIGN: DESIGN LINE SHOWN AS EXISTING SURFACE FROM THE KERB LINE TO THE PROPERTY BOUNDARY"
@@ -415,6 +449,11 @@ def verge_fall(s: Site) -> int | None:
 CHECK_TITLE = "PLATFORM SCREENING CHECKS (NOT A COUNCIL COMPLIANCE CHECK)"
 
 
+def _veh_of(ch) -> str:
+    m = re.match(r"\s*(B\d\d)\b", str(getattr(ch, 'note', '') or ''))
+    return m.group(1) if m else "B85"
+
+
 def _check_text(ch) -> str:
     """Readable platform screening line: what was screened, the value and the PLATFORM limit (never PASS or FAIL against a council requirement)."""
     nm = ch.name
@@ -423,7 +462,7 @@ def _check_text(ch) -> str:
     elif nm.startswith("change_of_grade"):
         what = "CHANGE OF GRADE AT " + nm.split("@", 1)[-1].replace("_", " ").upper()
     elif nm == "b85_scraping_clearance":
-        what = "B85 UNDERBODY CLEARANCE ALONG THE PROFILE, FORWARD AND REVERSE"
+        what = f"{_veh_of(ch)} UNDERBODY CLEARANCE ALONG THE PROFILE, FORWARD AND REVERSE"
     else:
         what = nm.replace("_", " ").upper()
     unit = {"%": "%", "percent": "%", "m": " m", "mm": " mm"}.get(ch.unit, f" {ch.unit}" if ch.unit else "")
@@ -436,11 +475,11 @@ def _check_text(ch) -> str:
     return f"{what}: {val}{lim}: {res}."
 
 
-def _council_grade_line(s: Site) -> str:
+def _council_grade_line(s: Site, screened: bool = True) -> str:
     c = s.cites.get("driveway.max_grade_pct") or s.cites.get("access.driveway_max_grade_pct")
     council = LN.lga_name(getattr(s.inp, "council_name", None), getattr(s.inp.lot, "lga_name", None), getattr(s.cites, "council_name", None))
     if c is not None:
-        return f"COUNCIL MAXIMUM DRIVEWAY GRADE {PH.num(c)} {PH.short_ref(c)}: THE SCREENING RESULT ABOVE IS NOT A CHECK AGAINST IT."
+        return f"COUNCIL MAXIMUM DRIVEWAY GRADE {PH.num(c)} {PH.short_ref(c)}: " + ("THE SCREENING RESULT ABOVE IS NOT A CHECK AGAINST IT." if screened else "NOT CHECKED, NO PROFILE LEVELS.")
     return f"COUNCIL REQUIREMENT: DRIVEWAY MAXIMUM GRADE UNRESOLVED, CONFIRM WITH {council}"
 
 
@@ -448,9 +487,9 @@ def profile_check_lines(s: Site) -> list[str]:
     """ONE status source for C400 and C410: the SA3 profile checks run on the C410 profile, written as PLATFORM SCREENING (not council compliance)."""
     p = ref_profile(s)
     if p is None:
-        return ["PROFILE CHECKS NOT EVALUATED: NO DRIVEWAY CENTRELINE OR EXISTING LEVELS"]
+        return ["PROFILE CHECKS NOT EVALUATED: NO DRIVEWAY CENTRELINE OR EXISTING LEVELS", _council_grade_line(s, False)]
     if not p["proposed"]:
-        return ["PROFILE CHECKS NOT EVALUATED: NO DRIVEWAY END LEVEL (PLATFORM DEFAULT) AVAILABLE"]
+        return ["PROFILE CHECKS NOT EVALUATED: NO DRIVEWAY END LEVEL SUPPLIED (NONE IS ASSUMED)", _council_grade_line(s, False)]
     return [_check_text(ch) for ch in p["checks"]] + [_council_grade_line(s)]
 
 
@@ -524,7 +563,7 @@ def c100(ctx: RefCtx) -> Sheet:
     if s.tin is None:
         rows.append("existing contours and spot levels: no survey or DEM levels supplied (run with levels nsw or supply a detail survey)")
     if not s.inp.services and DD.n_drawn(s) == 0:
-        rows += (DD.rows_missing(s) if DD.view_of(s) is not None else ["existing services: none supplied; location to be confirmed from council records and DBYD"])
+        rows += (DD.rows_missing(s) if DD.view_of(s) is not None else ["existing services: none supplied; location to be confirmed from council records and BYDA"])
     rows.append("existing buildings, trees, fences and easements: not in the supplied data (confirm by title search and s88B instrument)")
     b0 = start(ctx, "C100", rows, DD.notes_for(s), want_xover=False)
     rows += road_rows(s, b0.xg, b0.front, b0.pave)
@@ -852,7 +891,7 @@ def services_status_text(s) -> str:
     dv = DD.view_of(s)
     if dv is not None:
         return " ".join(dv.summary_lines()[:1] + [dv.not_confirmed_text() + "."] + ([dv.expiry_warning()] if dv.expiry_warning() else []) + (["SYNTHETIC DEMO DATA: NOT REAL SERVICES."] if dv.synthetic else []) + ["LOCATE BY POTHOLING."])
-    return "SUPPLIED SERVICES ARE DRAWN AS SUPPLIED (INDICATIVE)." if s.inp.services else "NONE SUPPLIED: LOCATE BY DIAL BEFORE YOU DIG AND POTHOLING."
+    return "SUPPLIED SERVICES ARE DRAWN AS SUPPLIED (INDICATIVE)." if s.inp.services else "NONE SUPPLIED: LOCATE BY BEFORE YOU DIG AUSTRALIA (BYDA) AND POTHOLING."
 
 
 # ====================================================================================================== C300 stormwater
@@ -867,7 +906,7 @@ def inter_allotment_notes(s: Site) -> list[str]:
         return []
     pipe = t_pipe.value.split(" (")[0] if isinstance(t_pipe.value, str) else t_pipe.value
     out = [f"INTER-ALLOTMENT DRAINAGE ONLY WHERE GRAVITY TO THE STREET IS NOT POSSIBLE: PIPE {pipe} mm MIN (150 mm FOR ONE LOT), GRATED INLET PIT AT THE LOWEST POINT WITH A 150 mm JUNCTION, "
-           f"EASEMENT {t_ease.value} m [{t_pipe.ref_short}; {t_ease.ref_short}]. DETAIL ON C600."]
+           f"EASEMENT {t_ease.value} m [{refs_short([t_pipe, t_ease])}]. DETAIL ON C600."]
     return [ST.clean(n).upper() for n in out]
 
 
@@ -881,7 +920,7 @@ def c300(ctx: RefCtx) -> Sheet:
         rows.append("overland flow arrows: no survey or DEM levels supplied")
     st_exist = [x for x in s.inp.services if x.service == "stormwater"]
     if not st_exist and DD.n_drawn(s, ("stormwater",)) == 0:
-        rows.append("existing council stormwater assets: none supplied; confirm from council records and DBYD" if DD.view_of(s) is None else "existing stormwater assets: none verified from the BYDA responses (see C310); confirm from council records and by potholing")
+        rows.append("existing council stormwater assets: none supplied; confirm from council records and BYDA" if DD.view_of(s) is None else "existing stormwater assets: none verified from the BYDA responses (see C310); confirm from council records and by potholing")
     notes = ["ALL DRAINAGE IS TO BE DESIGNED BY A HYDRAULIC DESIGNER. NOTHING HERE IS A DRAINAGE DESIGN."]
     notes += cited(s, ("stormwater.designed_per_eng_standards", "stormwater.osd_roof_plumbing_design_aep_pct"))
     if s.tin is not None:
@@ -938,10 +977,10 @@ def c310(ctx: RefCtx) -> Sheet:
     else:
         rows = ["proposed water service and sewer house connection: depend on the " + NO_DWELLING]
     if not ex_w and DD.n_drawn(s, ("water", "sewer")) == 0:
-        rows.append("existing water main, sewer main and junction: none supplied; EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / DBYD" if DD.view_of(s) is None
+        rows.append("existing water main, sewer main and junction: none supplied; EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / BYDA" if DD.view_of(s) is None
                     else "existing water main, sewer main and junction: none verified from the BYDA responses; EXISTING SERVICE LOCATION NOT CONFIRMED, CONFIRM BY POTHOLING")
     notes = cited(s, ("water.min_cover_m", "sewer.junction_min_diameter_mm", "sewer.house_connection_min_cover_m", "util.build_over_sewer_policy"))
-    notes.append("LOCATE ALL SERVICES BY DBYD AND POTHOLING BEFORE EXCAVATION.")
+    notes.append("LOCATE ALL SERVICES BY BYDA AND POTHOLING BEFORE EXCAVATION.")
     b = start(ctx, "C310", rows, notes + ctr_notes(s) + DD.notes_for(s))
     draw_ctrs(b)
     draw_xover(b, "proposed")
@@ -963,7 +1002,7 @@ def c310(ctx: RefCtx) -> Sheet:
 
 
 # ====================================================================================================== C400 driveway plan
-def _vehicle_lines(name: str) -> list[str]:
+def _vehicle_lines(name: str, cited=None) -> list[str]:
     """Design vehicle from the platform's own vehicle table (SA3 swept path module); DATA NOT AVAILABLE when the vehicle is not in it."""
     try:
         from app.agents.sa3_driveway import swept as sw
@@ -972,9 +1011,11 @@ def _vehicle_lines(name: str) -> list[str]:
         v = None
     if v is None:
         return [f"DESIGN VEHICLE {ST.clean(name).upper()}: DATA NOT AVAILABLE (NOT IN THE PLATFORM VEHICLE DATA)"]
-    return [f"DESIGN VEHICLE {v.name} (AS/NZS 2890.1)", f"OVERALL LENGTH {v.length:.2f}m", f"OVERALL WIDTH {v.width:.2f}m", f"WHEELBASE {v.wheelbase:.2f}m",
+    head = (f"DESIGN VEHICLE {v.name} (AS/NZS 2890.1), REQUIRED BY THE COUNCIL: {ST.clean(cited[1].ref_short).upper()}" if cited is not None and cited[0] == v.name
+            else f"DESIGN VEHICLE {v.name} (AS/NZS 2890.1)")
+    return [head, f"OVERALL LENGTH {v.length:.2f}m", f"OVERALL WIDTH {v.width:.2f}m", f"WHEELBASE {v.wheelbase:.2f}m",
             f"FRONT OVERHANG {v.front_oh:.2f}m", f"REAR OVERHANG {v.rear_oh:.2f}m", f"MINIMUM TURNING RADIUS {v.min_turn_radius:.2f}m (PLATFORM VALUE, TO BE VERIFIED)",
-            "SOURCE: PLATFORM VEHICLE DATA (FLAGGED TO VERIFY AGAINST THE STANDARD)"]
+            "VEHICLE DIMENSIONS: PLATFORM VEHICLE DATA (FLAGGED TO VERIFY AGAINST THE STANDARD)" + ("" if cited is not None and cited[0] == v.name else "; THE DESIGN VEHICLE ITSELF IS A PLATFORM DEFAULT")]
 
 
 def _chainage_stations(L: float, step: float) -> list[float]:
@@ -1105,7 +1146,7 @@ def c400(ctx: RefCtx) -> Sheet:
         for lab, p1, p2 in [d_ for d_ in drv.dimensions if not re.search(r"GARAGE|DWELLING|FFL|HOUSE", d_[0].upper()) and not (xg.present and ("CROSSOVER WIDTH" in d_[0].upper() or abs(math.dist(d_[1], d_[2]) - drv.width_m) < 0.02 or re.fullmatch(r"\d+(\.\d+)?\s*M", d_[0].strip().upper())))]:      # no building wording or values (site only); SA3 driveway dimensions: placed clear of the driveway, each other and the other labels
             txt = f"{lab} {math.dist(p1, p2):.2f} m" if not any(ch.isdigit() for ch in lab) else lab
             if "OFFSET" in lab.upper():                                   # SA3 offset: boundary corner to the crossover centre at the boundary, i.e. the driveway centreline
-                txt = f"OFFSET FROM BOUNDARY CORNER TO DRIVEWAY CENTRELINE {math.dist(p1, p2):.2f} m"
+                txt = f"BOUNDARY CORNER TO DRIVEWAY CENTRELINE {math.dist(p1, p2):.2f} m"             # shorter than the 4.7 m dimension line it labels
             if "OFFSET" in lab.upper():                                   # runs along the boundary to the centre of the driveway: may cross the pale driveway fill, never the stipple; clear of the width dimensions
                 dark = [to_paper(v, xg.polys[k_]).buffer(0.3) for k_ in ("body", "wing_a", "wing_b", "band") if xg.present and xg.polys.get(k_) is not None and xg.polys[k_].area > 1e-6]
                 dim_best(v, v.tp(*p1), v.tp(*p2), CO.prep([txt])[0], (14.0, 20.0, 27.0, 35.0, 45.0), ((0, 1), (0, -1), (1, 0), (-1, 0)), ST.TXT.BODY, dark)
@@ -1116,7 +1157,7 @@ def c400(ctx: RefCtx) -> Sheet:
     PW = 132.0
     if has:
         panels.append(("table", "DRIVEWAY AND CROSSOVER SCHEDULE", driveway_schedule(s, xg, front=b.front)))
-        panels.append(("text", "DESIGN VEHICLE", _vehicle_lines(drv.design_vehicle), False))
+        panels.append(("text", "DESIGN VEHICLE", _vehicle_lines(drv.design_vehicle, s.cites.typ.design_vehicle()), False))
         if not swept:
             panels.append(("text", "SWEPT PATH", [SWEPT_TBC, "THE PLATFORM PATH IS NOT DRAWN: IT DOES NOT FORM ONE CLEAN PATH INSIDE THE LOT, VERGE AND ROAD."], True))
         panels.append(("text", CHECK_TITLE, profile_check_lines(s), False))
@@ -1171,11 +1212,61 @@ def driveway_schedule(s: Site, xg: CX.CrossoverGeom, front=None) -> list[tuple]:
     p = ref_profile(s)
     if p is not None and p["proposed"]:
         rows.append(("DRIVEWAY END LEVEL", f"RL {p['st'][-1][1]:.2f}", "PLATFORM DEFAULT, NOT DESIGNED (m AHD)"))
-    rows.append(("WING LENGTH, KERB AND GUTTER BAND", "SEE C420", "DRAFTING CONVENTIONS (PLACEHOLDER)"))
+    if xg.cited is not None:                    # SD-107 values, each cited (C420 draws and dimensions them)
+        for key, lab in (("wing", "SPLAY DEPTH, BACK OF LAYBACK TO BACK OF KERB"), ("flare", "SPLAY ALONG KERB, EACH SIDE"), ("band", "LAYBACK RUN BEHIND NOMINAL KERB LINE")):
+            r_ = lv.get(key)
+            if r_ is not None:
+                rows.append((lab, CX._fmt_m(r_["m"]), r_["src"]))
+    else:
+        rows.append(("WING LENGTH, KERB AND GUTTER BAND", "SEE C420", "DRAFTING CONVENTIONS (PLACEHOLDER)"))
     return rows
 
 
 # ====================================================================================================== C410 long section
+def _typical_notes(s: Site, ty: dict, exz) -> list[str]:
+    lo, mid, hi = ty["pcts"]
+    out = [f"COUNCIL TYPICAL LINE (SD-107), INDICATIVE: FROM THE ASSUMED KERB RL {ty['z0']:.2f} (FLOWLINE AT THE NOMINAL KERB LINE) THE LIP RISES {ty['lip'].vtext}, THE LAYBACK RISES "
+           f"{ty['rise'].vtext} OVER ITS {ty['run'] * 1000:g} RUN TO THE E.J. AT RL {ty['z_ej']:.2f}, THEN {mid:g}% (MID OF THE CITED {lo:g} TO {hi:g}% PATHWAY CROSSFALL) TO THE PROPERTY BOUNDARY "
+           f"[{ty['rise'].ref_short.upper()}]."]
+    if ty.get("back") is not None:
+        out.append(f"BACK OF LAYBACK RL {ty['z_ej']:.2f} IS {ty['z_ej'] - ty['z0']:.2f} m ABOVE THE KERB RL {ty['z0']:.2f}: NOT LOWER THAN THE KERB [{ty['back'].ref_short.upper()}].")
+    zb, ze = ty["at"](ty["sb"]), exz(ty["sb"])
+    dz = zb - ze
+    out.append(f"AT THE PROPERTY BOUNDARY THE TYPICAL LINE RL {zb:.2f} IS {abs(dz):.2f} m {'ABOVE' if dz > 0.005 else ('BELOW' if dz < -0.005 else 'LEVEL WITH')} EXISTING GROUND RL {ze:.2f}"
+               + (": THE VERGE WOULD HAVE TO BE FILLED OR REGRADED TO MEET IT. NO VERGE DESIGN IS DONE." if abs(dz) > 0.005 else "."))
+    return out
+
+
+def _typical_on_chart(v: View, ty: dict, hx, zy, exz, Lc: str, ticks: list, hs: float) -> None:
+    """COUNCIL TYPICAL LINE (SD-107), INDICATIVE: kerb line to the property boundary only, from the assumed kerb RL (see ``_typical_line``), the 1.5 and 2.5 percent limits
+    dashed beyond the expansion joint, and the level difference to existing ground at the boundary."""
+    red = (0.85, 0.0, 0.0)
+    t_ej, sb = ty["t_ej"], ty["sb"]
+    lo, mid, hi = ty["pcts"]
+    v.line([(hx(0.0), zy(ty["z0"])), (hx(0.0), zy(ty["z_lip"])), (hx(t_ej), zy(ty["z_ej"])), (hx(sb), zy(ty["at"](sb)))], Lc, False, 0.7, color=red)
+    for pct in (lo, hi):
+        v.line([(hx(t_ej), zy(ty["z_ej"])), (hx(sb), zy(ty["at"](sb, pct)))], Lc, False, 0.15, "DASHED", color=red)
+    # label centred in the widest gap between two station ticks on the typical line, so no tick runs through it
+    need = fonts.text_width("COUNCIL TYPICAL LINE (SD-107), INDICATIVE", TXT.BODY) + 6.0
+    tt = sorted(t for t in ticks if t_ej - 1e-9 <= t <= sb + 1e-9)
+    gaps = [((a_ + b_) / 2, (b_ - a_) * 1000.0 / hs) for a_, b_ in zip(tt, tt[1:])]
+    ok = [g_ for g_ in gaps if g_[1] >= need]
+    tl = max(ok, key=lambda g_: g_[1])[0] if ok else (t_ej + sb) / 2
+    v.text(hx(tl), zy(ty["at"](min(sb, tl + need / 2.0 * hs / 1000.0), hi)) + 3.0, "COUNCIL TYPICAL LINE (SD-107), INDICATIVE", TXT.BODY, "BOTTOM_CENTER", layer=Lc, color=red, halo=True)
+    # level difference to existing ground at the property boundary
+    zb, ze = ty["at"](sb), exz(sb)
+    xb = hx(sb) + 3.0
+    v.line([(xb, zy(ze)), (xb, zy(zb))], Lc, False, 0.25, color=red)
+    for zz in (ze, zb):
+        v.line([(xb - 1.2, zy(zz)), (xb + 1.2, zy(zz))], Lc, False, 0.25, color=red)
+    dz = zb - ze
+    word = "ABOVE" if dz > 0.005 else ("BELOW" if dz < -0.005 else "LEVEL WITH")
+    d_lo, d_hi = sorted((ty["at"](sb, lo) - ze, ty["at"](sb, hi) - ze))
+    txt = [f"AT THE BOUNDARY: TYPICAL LINE RL {zb:.2f} IS {abs(dz):.2f} m {word}", f"EXISTING GROUND RL {ze:.2f} ({abs(d_lo):.2f} TO {abs(d_hi):.2f} m FOR {lo:g} TO {hi:g}%)"]
+    for i, ln in enumerate(txt):
+        v.text(xb + 3.0, (zy(ze) + zy(zb)) / 2 + (1.8 - 3.6 * i), ln, TXT.BODY, "MIDDLE_LEFT", layer=Lc, color=red, halo=True)
+
+
 def _bar(sv: View, x: float, y: float, length: float, metres: float, horizontal: bool, label: str) -> None:
     P = ST.Paper(sv)
     n = 4
@@ -1216,9 +1307,10 @@ def c410(ctx: RefCtx) -> Sheet:
         return sh
     ex, st, L, gw, proposed = p["ex"], p["st"], p["L"], p["gw"], p["proposed"]
     des, exz = p["design"], p["exz"]
-    zs = [e[1] for e in ex] + [x[1] for x in st]
+    ty = p.get("typ")
+    zs = [e[1] for e in ex] + [x[1] for x in st] + ([ty["z_lip"], ty["z_ej"], ty["at"](ty["sb"], ty["pcts"][2])] if ty else [])
     zmin, zmax = min(zs), max(zs)
-    datum = math.floor((zmin - 0.25) * 4) / 4.0
+    datum = math.floor((zmin - 0.1) * 20 + 1e-9) / 20.0
     # vertical budget: plan strip at the top, data bands on the bottom of the content area, the chart (profile and station labels) between them.  The scale
     # is the largest that fits the width and this budget; any height left over goes to the strip and the data bands, so no band is left empty.
     CY1, CY0 = CONTENT_Y1 - 2.0, CONTENT_Y0 + 2.0
@@ -1230,7 +1322,7 @@ def c410(ctx: RefCtx) -> Sheet:
 
     def need_h(vs_: float) -> float:
         """Height above the datum line needed by the profile and the top-aligned station labels (each label sits above its own station point)."""
-        return max((max(zz, exz(t_)) - datum) * 1000.0 / vs_ + 8.0 + lab_ws[t_] for t_, zz, nm in st) + 3.0
+        return max((max(zz, exz(t_), (ty["at"](t_, ty["pcts"][2]) or 0.0) if ty else 0.0) - datum) * 1000.0 / vs_ + 8.0 + lab_ws[t_] for t_, zz, nm in st) + 3.0
     hs, vs, ex_ = 200, 40, 5
     fit_ = False
     for hs_ in (10, 20, 25, 50, 100, 200):                              # smallest denominator that fits: the largest drawing, using the sheet width
@@ -1253,12 +1345,12 @@ def c410(ctx: RefCtx) -> Sheet:
     zy = lambda z: Yd + (z - datum) * 1000.0 / vs      # noqa: E731
     Lc = "C-DRIV-LONG"
     xr = hx(L + 0.5)
-    rows_ = ("DESIGN LEVEL", "EXISTING LEVEL", "CUT/FILL DEPTH", "CHAINAGE")
+    rows_ = ("TYPICAL LEVEL (SD-107)" if ty else "DESIGN LEVEL", "EXISTING LEVEL", "CUT/FILL DEPTH", "CHAINAGE")
     ybot = Yd - ROWH * len(rows_)
     # datum, VERT EXAG and RL grid ---------------------------------------------------------------------------------------------
     v.text(28.0, Yd + 8.0, f"VERT EXAG {ex_:g}", TXT.LABEL, "BOTTOM_LEFT", bold=True, layer=Lc)
     v.text(28.0, Yd + 2.5, f"DATUM RL {datum:.3f}", TXT.LABEL, "BOTTOM_LEFT", bold=True, layer=Lc)
-    z = datum + 0.5
+    z = math.ceil(datum / 0.5 + 1e-9) * 0.5
     while zy(z) <= sy0 - 6.0:                                          # RL grid up to the plan strip
         v.line([(X0 - 2, zy(z)), (xr, zy(z))], "C-ANNO-TABL", False, 0.05, color=(0.8, 0.8, 0.8))
         v.text(X0 - 3, zy(z), f"{z:.2f}", TXT.BODY, "MIDDLE_RIGHT", layer=Lc)
@@ -1283,7 +1375,7 @@ def c410(ctx: RefCtx) -> Sheet:
     for t in pts:
         x = hx(t)
         zex = exz(t)
-        zde = des(t) if proposed else None
+        zde = des(t) if proposed else (ty["at"](t) if ty else None)
         ytop = lab_base(t) - 1.5 if t in lab_ws else zy(max(zex, zde if zde is not None else zex))
         v.line([(x, Yd), (x, ytop)], Lc, False, 0.1, "DASHED", color=(0.45, 0.45, 0.45))        # ticks break at the data bands (text sits there)
         for k_ in range(len(rows_) + 1):
@@ -1293,8 +1385,8 @@ def c410(ctx: RefCtx) -> Sheet:
             v.text(x, Yd - i * ROWH - ROWH / 2, tx, TXT.BODY, "MIDDLE_CENTER", 90.0, layer="C-ANNO-TABL")
     # profile -----------------------------------------------------------------------------------------------------------------------
     v.line([(hx(t), zy(zz)) for t, zz in ex], "C-DRIV-EXGD", False, 0.35, color=(0.3, 0.3, 0.3))
-    gx0, gx1 = hx(0.0), hx(gw)
-    v.fill(Polygon([(gx0, Yd), (gx1, Yd), (gx1, Yd + 3.0), (gx0, Yd + 3.0)]), Lc, (0.55, 0.55, 0.55), 0.8, anno=True)
+    if ty:
+        _typical_on_chart(v, ty, hx, zy, exz, Lc, pts, hs)
     if proposed:
         v.line([(hx(t), zy(zz)) for t, zz, _n in st], Lc, False, 0.7, color=(0.85, 0, 0))
         for (t0, z0_, _a), (t1, z1, _b) in zip(st, st[1:]):
@@ -1327,13 +1419,20 @@ def c410(ctx: RefCtx) -> Sheet:
     # status, checks, notes ---------------------------------------------------------------------------------------------------------------
     lines = []
     dna_ = None
+    veh_ = s.inp.driveway.design_vehicle if s.inp.driveway is not None else "B85"
     if not proposed:
-        dna_ = ("PROPOSED LEVELS NOT AVAILABLE.", "No driveway end level (platform default) is available, so the design line, grades and B85 checks are not drawn.")
-        sh.data_missing.append("proposed driveway levels and checks: driveway end level (platform default) not available")
+        dna_ = ("PROPOSED DRIVEWAY LEVELS NOT AVAILABLE.", f"No driveway end level is supplied and none is assumed, so the driveway design line, its grades and the {veh_} checks are not drawn."
+                + (" The council typical line covers the kerb line to the property boundary only." if ty else ""))
+        sh.data_missing.append("proposed driveway levels and checks: no driveway end level supplied (none is assumed)")
+        lines.append(_council_grade_line(s, False))
+        if ty:
+            lines += _typical_notes(s, ty, exz)
     else:
         lines += profile_check_lines(s)
         lines.append(NO_VERGE_DESIGN + ".")
-        lines.append(f"DRIVEWAY END LEVEL RL {st[-1][1]:.2f} IS A PLATFORM DEFAULT: NO BUILDING LEVEL IS DESIGNED.")
+        lines.append(f"DRIVEWAY END LEVEL RL {st[-1][1]:.2f} IS THE SUPPLIED FINISHED FLOOR LEVEL: NO BUILDING LEVEL IS DESIGNED HERE.")
+        if ty:
+            lines += _typical_notes(s, ty, exz)
     fl = falls_to_lot_note(s)
     if fl:
         lines.append(fl + ".")
@@ -1490,7 +1589,7 @@ def c420(ctx: RefCtx) -> Sheet:
         dim_best(v, M(sa - f, lip), M(sb + f, lip), f"OVERALL WIDTH AT KERB {CX._fmt_m(w + 2 * f)} ({lab}: {cit.overall_min_m * 1000:g} MIN TO {cit.overall_max_m * 1000:g} MAX)", ((Dk + xg.road_side_m - lip) * k + 14.0, (Dk + xg.road_side_m - lip) * k + 22.0), (down,), TXT.BODY, [])
         dim_best(v, M(sb, lip), M(sb + f, lip), f"SPLAY {CX._fmt_m(f)} ({lab})", ((Dk + xg.road_side_m - lip) * k + 6.0, (Dk + xg.road_side_m - lip) * k + 10.0), (down,), TXT.BODY, [])
         s_e = sa if sgn > 0 else sb
-        dim_best(v, M(s_e, avail), M(s_e, lip), f"SPLAY DEPTH {CX._fmt_m(xg.wing_len_m)} ({lab})", (f * k + 9.0, f * k + 16.0), (left,), TXT.BODY, [])
+        dim_best(v, M(s_e, avail), M(s_e, lip), f"SPLAY DEPTH {CX._fmt_m(xg.wing_len_m)} (BACK OF LAYBACK TO BACK OF KERB; {lab})", (f * k + 9.0, f * k + 16.0), (left,), TXT.BODY, [])
         s_l = sc0 - sgn * (w / 2 + f + 0.5)
         dim_best(v, M(s_l, 0), M(s_l, Dk), f"BOUNDARY TO KERB {CX._fmt_m(Dk)}", (9.0, 16.0), (left,), TXT.BODY, [])
         s_r = sc0 + sgn * (w / 2 + f + 0.2)
@@ -1529,6 +1628,7 @@ def c420(ctx: RefCtx) -> Sheet:
     else:
         CO.place_callout(v, ["NOMINAL KERB LINE", CX.KERB_ASSUMED_TEXT, f"GUTTER CROSSING {CX._fmt_m(xg.road_side_m)} EACH SIDE ({lab})"], M(s_r + sgn * 0.5, Dk), "arrow", keep, must=True)
         CO.place_callout(v, ["E.J. AT THE BACK OF THE LAYBACK (SD-107 NOTE 7)", "R16 DOWELS 300 LONG AT 300 CENTRES, BOND BREAK TO ONE HALF OF EACH DOWEL"], M(sc0 + sgn * w * 0.3, avail - 0.07), "dot", keep, must=True)
+        CO.place_callout(v, ["E.J. AT THE PROPERTY BOUNDARY (SD-107 NOTE 7)", "R16 DOWELS 300 LONG AT 300 CENTRES, BOND BREAK TO ONE HALF OF EACH DOWEL"], M(sc0 - sgn * w * 0.3, 0.0), "dot", keep, must=True)
     CO.place_callout(v, ["PROPOSED LAYOVER (VEHICLE CROSSING)", CX.standard_text(std)], M(sc0 + sgn * w * 0.25, xg.body_len_m * 0.6), "dot", keep, must=True)
     if cit is None:
         # right column: statement, schedule, typical cross section (the same panel and table look as the other sheets) -------------------------------
@@ -1611,6 +1711,23 @@ def esc_flow_conflict(s: Site, out) -> dict | None:
     if fl.assumed or diff > 30.0:
         return {"sa10": fl.bearing_deg, "dem": dem["bearing"], "diff": diff, "assumed": bool(fl.assumed)}
     return None
+
+
+def access_min_lines(s: Site) -> list[str]:
+    """Both cited minimum lengths of the stabilised access: the Blue Book (15 m) and the Building Sites guideline 2024 (3 m).  Each with its own citation; nothing when neither is cited."""
+    out = []
+    for k, who in (("esc.access.min_length_m", "BLUE BOOK"), ("esc.access.min_length_building_sites_m", "BUILDING SITES GUIDELINE 2024")):
+        c = s.cites.get(k)
+        if c is not None and isinstance(c.value, (int, float)):
+            out.append(f"STABILISED ACCESS MINIMUM LENGTH {PH.num(c)} ({who}) {PH.short_ref(c)}")
+    return out
+
+
+def access_bs_clause(s: Site, drawn: float) -> str:
+    c = s.cites.get("esc.access.min_length_building_sites_m")
+    if c is None or not isinstance(c.value, (int, float)):
+        return ""
+    return f" AND {'MEETS' if drawn + 0.05 >= float(c.value) else 'IS SHORTER THAN'} THE {PH.num(c)} OF THE BUILDING SITES GUIDELINE 2024 {PH.short_ref(c)}"
 
 
 def esc_access_shortfall(s: Site, out) -> tuple[float, float, object] | None:
@@ -1704,7 +1821,7 @@ def c500(ctx: RefCtx) -> Sheet:
     notes = ["ESCP TO BE REVIEWED AND CERTIFIED BY A SUITABLY QUALIFIED PERSON", (PH.sentence(s.cites, "esc.escp.prepared_by_suitably_qualified_person") or "")]
     b = start(ctx, "C500", rows, notes + ctr_notes(s))
     v = b.v
-    draw_ctrs(b)
+    draw_ctrs(b, labels=False)                       # lines now; the labels go on last, clear of the ESC symbols and of their call-out boxes (stage 8c)
     draw_xover(b, "proposed")
     if s.placement is not None:
         BD.draw_light(b, door=False)
@@ -1727,7 +1844,7 @@ def c500(ctx: RefCtx) -> Sheet:
                          f"BEARING {conflict['dem']:.0f} DEG (DIFFERENCE {conflict['diff']:.0f} DEG). FENCES AND DIVERSION MAY NOT SIT ON THE LOW SIDE: RE-RUN OR CHECK BEFORE USE. DOWNSLOPE LABELS REMOVED.")
         sh_ = esc_access_shortfall(s, out)
         if sh_:
-            flags.append(f"STABILISED ACCESS DRAWN {sh_[0]:.1f}m LONG, SHORTER THAN THE CITED {PH.num(sh_[2])} {PH.short_ref(sh_[2])}: THE LOT DOES NOT ALLOW THE CITED LENGTH IN THIS LAYOUT. TO BE RESOLVED BY THE ESCP PREPARER.")
+            flags.append(f"STABILISED ACCESS DRAWN {sh_[0]:.1f}m LONG, SHORTER THAN THE CITED {PH.num(sh_[2])} (BLUE BOOK) {PH.short_ref(sh_[2])}{access_bs_clause(s, sh_[0])}: THE LOT DOES NOT ALLOW THE CITED LENGTH IN THIS LAYOUT. TO BE RESOLVED BY THE ESCP PREPARER.")
         sched = esc_not_drawn_schedule(s, out)
         for w in out.warnings:
             if "not drawn" in w.lower() and sched and any(w.lower().startswith(it["label"].lower() + ":") for it in out.not_placed):
@@ -1737,6 +1854,7 @@ def c500(ctx: RefCtx) -> Sheet:
             basis.insert(0, f"LOT FALL {dem['pct']:.1f} PERCENT TOWARDS BEARING {dem['bearing']:.0f} DEG (INDICATIVE, 5 m DEM, PLANE FIT TO {dem.get('n', 0)} LEVELS)")
         elif out.flow.assumed:
             basis.insert(0, f"FALL DIRECTION ASSUMED TOWARDS THE ROAD (BEARING {out.flow.bearing_deg:.0f} DEG): NO LEVELS AVAILABLE TO THE ESCP LAYOUT")
+        basis += access_min_lines(s)
         basis.append(f"ELEMENTS FROM SA10: {len(out.elements)} (INDICATIVE LAYOUT, TO BE CONFIRMED BY THE ESCP PREPARER)")
         basis += [_up(x) for x in list(out.assumptions[:2])]
         if flags:
@@ -1760,6 +1878,7 @@ def c500(ctx: RefCtx) -> Sheet:
         for el, g in sorted(pend, key=lambda eg: ESC_ORDER.get(eg[0].kind, 9)):
             pm = any("not supplied" in n.lower() and "pit" in n.lower() for n in el.notes)
             place(b, _esc_lines(el, out, conflict, pm), _esc_target(g), "dot", must=True, avoid=list(b.hard) + ctl, short_first=46.0)
+    draw_ctrs(b, lines=False, extra_avoid=[g.buffer(1.2) for _e, g in pend])
     return seal(b)
 
 
@@ -1827,7 +1946,7 @@ def c600_generic(ctx: RefCtx) -> Sheet:
     specs = [
         ("1", SEC.detail_sediment_fence, [cl("esc.sediment_fence.post_spacing_m", "Post spacing"), cl("esc.sediment_fence.trench_depth_mm", "Trench depth (upslope)"),
                                            cl("esc.sediment_fence.return_interval_m", "Returns"), cl("esc.sediment_fence.joint_overlap_mm", "Joint overlap")]),
-        ("2", SEC.detail_access, [cl("esc.access.min_length_m", "Min length"), cl("esc.access.min_width_m", "Min width"), cl("esc.access.thickness_mm", "Thickness"),
+        ("2", SEC.detail_access, [cl("esc.access.min_length_m", "Min length (Blue Book)"), cl("esc.access.min_length_building_sites_m", "Min length (Building Sites 2024)"), cl("esc.access.min_width_m", "Min width"), cl("esc.access.thickness_mm", "Thickness"),
                                    cl("esc.access.max_aggregate_mm", "Max aggregate"), cl("esc.access.geotextile_underlay", "Underlay")]),
         ("3", SEC.detail_trench, [cl("water.min_cover_m", "Water cover"), cl("sewer.house_connection_min_cover_m", "Sewer house connection cover"), cl("esc.trench.max_open_days", "Trench open (days)")]),
         ("4", SEC.detail_batter_cut, []),
@@ -2088,11 +2207,14 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
     v.line([(rx0, y), (rx0, top - 9.0)], "C-ANNO-TABL", False, 0.25)
     # ---- DATA SOURCES AND STATUS: what this set is built from (each line follows the data actually supplied) --------------------------------------
     yb = y - 12.0
+    _cc = CX.cited_crossing(getattr(getattr(s, "cites", None), "typ", None))
+    _sd_label = f"{_cc.label}" if _cc is not None else ""
     src = [("CADASTRE", "STATE CADASTRE (DCDB). BOUNDARIES, LOT NUMBERS AND PLAN NUMBERS ARE NOT A SURVEY."),
            ("LEVELS", "5 m DEM, INDICATIVE ONLY. DETAIL SURVEY AT THE DETAILED DESIGN STAGE." if s.tin is not None else "NO LEVELS SUPPLIED: NOT DRAWN."),
            ("AERIAL", re.sub(r"^AERIAL IMAGERY:\s*", "", ST.clean(s.aerial_site.note).upper()) if s.aerial_site is not None else "NO AERIAL IMAGE SUPPLIED."),
            ("SERVICES", services_status_text(s)),
-           ("ASSUMED ITEMS", "KERB, ROAD EXTENT AND LAYOVER VALUES ARE ASSUMED OR PLACEHOLDERS WHERE MARKED."),
+           ("ASSUMED ITEMS", ("KERB AND ROAD EXTENT ARE ASSUMED. THE CROSSING FOLLOWS " + _sd_label + " (C420, C600); ON-LOT DRIVEWAY PAVEMENT, KERB PROFILE RD003 AND LAYBACK DRAWINGS RD0010 AND RD011 ARE NOT PUBLISHED.")
+            if _sd_label else "KERB, ROAD EXTENT AND LAYOVER VALUES ARE ASSUMED OR PLACEHOLDERS WHERE MARKED."),
            ("CODES", "DRAWING NUMBER JCS-{JOB}-CIV-{NNN}. LAYERS JCS-{DISCIPLINE}-{ELEMENT}-{TYPE}, THE SAME IN THE DXF."),
            ("BUILDING", building_status_text(s))]
     rows_ = []

@@ -19,7 +19,7 @@ LOAD_MARGIN_M = 150      # check_layer(..., margin=150.0): data is loaded this f
 
 # ---------------------------------------------------------------------------------------------------------------- how to read
 ABOUT_IS = [
-    "An indicative, AI assisted draft that screens one lot against a fixed list of mapped planning and hazard layers.",
+    "An indicative draft that screens one lot against a fixed list of mapped planning and hazard layers.",
     "A written companion to the JCESITE plan set, explaining what each mapped layer is, why it may matter and what to do next.",
     "A prompt for questions to put to council, authorities and qualified people.",
 ]

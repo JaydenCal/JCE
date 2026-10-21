@@ -67,7 +67,7 @@ def dim_linear(v: View, a, b, text: str, off_mm: float = 6.0, side=None, h: floa
         base = (q[0] + ux * sgn * ARROW_LEN, q[1] + uy * sgn * ARROW_LEN)
         P.poly([q, (base[0] - uy * ARROW_HALF, base[1] + ux * ARROW_HALF), (base[0] + uy * ARROW_HALF, base[1] - ux * ARROW_HALF)], layer, color)
     if mask:
-        v._mask(tx, ty, tw + 1.2, h + 0.8, ang, layer)
+        v._mask(tx, ty, tw + 1.8, h + 1.6, ang, layer)
     P.text(tx, ty, text, h, "MIDDLE_CENTER", ang, color=color, layer=layer)
     if reserve:
         v.occ.append(box)

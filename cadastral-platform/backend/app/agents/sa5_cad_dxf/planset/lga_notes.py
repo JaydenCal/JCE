@@ -35,6 +35,7 @@ CITED_TOPICS: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("SEDIMENT FENCE POST SPACING", ("esc.sediment_fence.post_spacing_m",)),
         ("SEDIMENT FENCE TRENCH DEPTH", ("esc.sediment_fence.trench_depth_mm",)),
         ("STABILISED ACCESS, MINIMUM LENGTH", ("esc.access.min_length_m",)),
+        ("STABILISED ACCESS, MINIMUM LENGTH (BUILDING SITES GUIDELINE)", ("esc.access.min_length_building_sites_m",)),
         ("STABILISED ACCESS, MINIMUM WIDTH", ("esc.access.min_width_m",)),
         ("ESCP PREPARED BY A SUITABLY QUALIFIED PERSON", ("esc.escp.prepared_by_suitably_qualified_person",)),
         ("ESC INSPECTION FREQUENCY", ("esc.inspection.min_frequency",)),
@@ -87,6 +88,15 @@ SETBACK_GROUP_PLACED = "BUILDING SETBACKS (CITED; THE TYPICAL HOUSE IS PLACED TO
 DOC_GROUP = "STANDARDS AND DOCUMENTS CITED"
 GROUP_ORDER = ["GENERAL", "SURVEY AND EXISTING SERVICES", "EARTHWORKS AND EROSION AND SEDIMENT CONTROL", "DRIVEWAY AND CROSSOVER",
                "STORMWATER AND FLOOD", SETBACK_GROUP, "STANDARDS AND APPROVALS", DOC_GROUP]
+
+
+def _crossing(site):
+    """(CitedCrossing or None, design vehicle (code, Typical) or None) from the council typicals; the sd107 data resolves the standard drawing, the 2.8.7 key the vehicle."""
+    typ = getattr(getattr(site, "cites", None), "typ", None)
+    if typ is None or not getattr(typ, "present", False):
+        return None, None
+    from app.agents.sa5_cad_dxf.planset import crossover as CX
+    return CX.cited_crossing(typ), typ.design_vehicle()
 
 
 def lga_name(council_name: str | None, lot_lga: str | None, cites_council: str | None = None) -> str:
@@ -149,13 +159,22 @@ def build_notes(site, council_name: str | None = None) -> tuple[str, list[tuple[
     s_ = groups["SURVEY AND EXISTING SERVICES"]
     s_ += ["CADASTRAL BOUNDARIES AND ADJOINING LOTS ARE FROM THE STATE CADASTRE AND ARE NOT A SURVEY. ENGAGE A REGISTERED SURVEYOR.",
            "DETAIL SURVEY IS UNDERTAKEN AT THE DETAILED DESIGN STAGE. CONTOURS, LEVELS AND THE KERB LINE ARE INDICATIVE UNTIL THEN.",
-           "NO EXISTING SERVICE LOCATIONS WERE SUPPLIED. LOCATE ALL SERVICES (DIAL BEFORE YOU DIG) AND POTHOLE BEFORE EXCAVATION. DEPTHS ARE NEVER INFERRED."]
+           "NO EXISTING SERVICE LOCATIONS WERE SUPPLIED. LOCATE ALL SERVICES (BEFORE YOU DIG AUSTRALIA, BYDA) AND POTHOLE BEFORE EXCAVATION. DEPTHS ARE NEVER INFERRED."]
     e = groups["EARTHWORKS AND EROSION AND SEDIMENT CONTROL"]
     e += ["DRIVEWAY CUT AND FILL IS INDICATIVE (5 m DEM AGAINST THE PLATFORM DRIVEWAY PROFILE). " + ("NO BUILDING PAD LEVEL IS ASSUMED (FINISHED FLOOR LEVEL TBC): PAD EARTHWORKS ARE NOT CALCULATED." if getattr(getattr(site, "placement", None), "placed", False) else "BUILDING PAD EARTHWORKS ARE NOT PART OF THIS PLAN SET."),
           "BATTER SLOPES SHOWN ON THE TYPICAL SECTIONS ARE LABELLED 1:N TBC UNLESS A COUNCIL VALUE IS CITED BELOW. GEOTECHNICAL ADVICE IS REQUIRED."]
     d = groups["DRIVEWAY AND CROSSOVER"]
-    d += ["THE COUNCIL STANDARD DRAWING GOVERNS THE VEHICLE CROSSING (NOT SELECTED). LAYOVER DIMENSIONS ARE PLACEHOLDERS WHERE MARKED.",
-          "THE KERB LINE IS ASSUMED. BOUNDARY TO KERB DISTANCE IS A PLATFORM DEFAULT UNLESS USER SUPPLIED. B85 CHECKS ARE SCREENING ONLY.",
+    cit, dv = _crossing(site)
+    if cit is not None:
+        d.append(f"VEHICLE CROSSING TO {cit.label} (C420, C600). ON-LOT DRIVEWAY PAVEMENT, THE KERB AND GUTTER PROFILE RD003 AND THE LAYBACK DRAWINGS RD0010 AND RD011 ARE NOT PUBLISHED: OBTAIN FROM COUNCIL.")
+    else:
+        d.append("THE COUNCIL STANDARD DRAWING GOVERNS THE VEHICLE CROSSING (NOT SELECTED). LAYOVER DIMENSIONS ARE PLACEHOLDERS WHERE MARKED.")
+    veh = getattr(getattr(site.inp, "driveway", None), "design_vehicle", None) or "B85"
+    if dv is not None and dv[0] == veh:
+        vtxt = f"THE DESIGN VEHICLE IS {veh}, AS REQUIRED BY THE COUNCIL [{ST.clean(dv[1].ref_short).upper()}]. {veh} CHECKS ARE SCREENING ONLY."
+    else:
+        vtxt = f"THE DESIGN VEHICLE {veh} IS A PLATFORM DEFAULT. {veh} CHECKS ARE SCREENING ONLY."
+    d += ["THE KERB LINE IS ASSUMED. BOUNDARY TO KERB DISTANCE IS A PLATFORM DEFAULT UNLESS USER SUPPLIED. " + vtxt,
           "THE SWEPT PATH IS SHOWN ONLY WHERE THE PLATFORM PATH IS ONE CLEAN PATH INSIDE THE LOT, VERGE AND ROAD, OTHERWISE IT IS TO BE CONFIRMED AT DETAILED DESIGN."]
     st = groups["STORMWATER AND FLOOD"]
     st += ["STORMWATER SHOWN IS LIMITED TO WHAT THE DATA SUPPORT. SIZES AND LEVELS TO BE DESIGNED BY A HYDRAULIC DESIGNER."]
@@ -170,6 +189,8 @@ def build_notes(site, council_name: str | None = None) -> tuple[str, list[tuple[
         sb.append(unresolved("BUILDING SETBACKS", council))
     sa = groups["STANDARDS AND APPROVALS"]
     sa.append(f"ALL WORK TO COMPLY WITH THE REQUIREMENTS OF {council} AND THE CURRENT AUSTRALIAN STANDARDS. THE COUNCIL REQUIREMENTS ABOVE ARE SUMMARIES, CHECK THE SOURCE DOCUMENT.")
+    if getattr(getattr(cites, "typ", None), "present", False):
+        sa.append("PAGE NUMBERS IN CITATIONS: DEVELOPMENT CONTROL PLAN PAGES ARE PDF PAGE NUMBERS. ENGINEERING STANDARDS PAGES ARE THE PRINTED PAGE NUMBERS.")
     docs = [x.upper() for x in cites.doc_list() if not BUILDING_DOC_RE.search(x)]
     if docs:
         groups[DOC_GROUP] += docs
@@ -182,6 +203,8 @@ def build_notes(site, council_name: str | None = None) -> tuple[str, list[tuple[
                 groups[grp].append(ln)
     for grp, items in REQUIRED_TOPICS.items():
         for label, keys in items:
+            if cit is not None and label == "VEHICLE CROSSING STANDARD DRAWING NUMBER":
+                continue                    # resolved: the SD-107 line above names the drawing
             ln = _cite_line(cites, label, keys)
             groups[grp].append(ln or unresolved(label, council))
     pl = getattr(site, "placement", None)

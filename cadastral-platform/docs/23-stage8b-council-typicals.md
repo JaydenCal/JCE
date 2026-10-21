@@ -21,7 +21,7 @@ An entry at confidence 0.7 or lower prints "VERIFY AGAINST SD-107". A key that i
 ## 3. Citation validation
 
 Quotes are found in the cited document after normalisation (curly quotes, wrapped table text, page footers), the page is inside the document, the numeric value appears in the quote or page.
-SD-107 dimensions are read off the drawing (the clause names the view) and its notes 1 to 15 are verbatim. Table check marks are read from the rendered page. 132 entries, 0 failures.
+For SD-107 the number check is a presence check only: each number must appear somewhere on the sheet text, and the check does not test where the number sits on the drawing or that it labels the dimension it is used for. The dimensions are read off the drawing (the clause names the view, confidence 0.7 to 0.9) and a person must confirm them against the PDF; its notes 1 to 15 are verbatim. Table check marks are read from the rendered page. 132 entries, 0 failures.
 
 ## 4. Known conflicts and gaps
 

@@ -178,7 +178,7 @@ def _label_slots(piece, v: View, text: str, h: float, n_max: int, avoid=None) ->
 
 
 def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = False, lab_h: float = CONTOUR_LAB_H, avoid=None, label_all: bool | None = None,
-             no_label_rects=()) -> int:
+             no_label_rects=(), lines: bool = True) -> int:
     """Contours with RL labels (m AHD, numeric) along the line, upright on the paper, never colliding (``View.label`` checks the reserved boxes and earlier labels).
     Index (major) contours are labelled always; the other (minor) contours are labelled as well while there are at most LABEL_ALL_MAX in the view, so a plan at a large
     scale labels every contour and a small scale labels the major contours only.  ``avoid`` is model geometry (the dwelling) that labels must not sit on.  ``light``: lighter lines."""
@@ -208,7 +208,8 @@ def contours(v: View, s: Site, which: str, labels: bool = True, light: bool = Fa
             if g.is_empty:
                 continue
         lw = (CONTOUR_LW_MAJOR if c.index else CONTOUR_LW_MINOR) if which == "ex" else (0.5 if c.index else 0.25)
-        v.geom(g, layer, lw=lw, color=col if which == "ex" else None, dash=None)
+        if lines:                                                    # ``lines=False`` labels the contours only (the lines were drawn earlier; used to label after the sheet's own symbols are placed)
+            v.geom(g, layer, lw=lw, color=col if which == "ex" else None, dash=None)
         drawn.append((c, ln))
     if labels:
         vis_n = sum(1 for _c, ln in drawn if ln.intersects(win))
@@ -374,7 +375,7 @@ def drive(v: View, s: Site, label: bool = True) -> None:
     if label and s.drive_poly is not None:
         m = s.drive_cl.interpolate(0.5, normalized=True)
         w = s.inp.driveway.width_m
-        v.callout((m.x, m.y), ["PROPOSED DRIVEWAY & CROSSOVER", f"WIDTH {w:.1f} m  (B85 design vehicle)"], 2.2, layer="C-DRIV-XOVR",
+        v.callout((m.x, m.y), ["PROPOSED DRIVEWAY & CROSSOVER", f"WIDTH {w:.1f} m  ({s.inp.driveway.design_vehicle} design vehicle)"], 2.2, layer="C-DRIV-XOVR",
                   prefer=[(12, -12), (-60, -12), (12, 12)])
 
 

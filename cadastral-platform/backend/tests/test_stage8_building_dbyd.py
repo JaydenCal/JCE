@@ -1,7 +1,7 @@
 """Stage 8 (21/10/2026): the typical house placed on Lot 2 DP227508 to the CITED Gunnedah setbacks, contour labels on the plans, DBYD (Before You Dig) Phase 0 and the verification box.
 
 Checked on the REAL offline Lot 2 run (in-process run_site) and on SYNTHETIC BYDA data (tests/byda_synthetic.py: invented owners, job and plans, stamped SYNTHETIC; no real plan is used
-or copied).  The one test that reads the real Henrys Lane BYDA download is skipped when the file is absent and never writes anything.
+or copied).  No test reads a real BYDA file.
 """
 import json
 import re
@@ -27,7 +27,6 @@ from app.offline import lot2 as L2
 ROOT = Path(__file__).resolve().parents[1]
 HOUSE = ROOT / "tests/fixtures/planstudio_house_single.planstudio.json"
 PLAN_SHEETS = ("C100", "C101", "C200", "C300", "C310", "C400", "C500")
-REAL_BYDA = Path("/home/claude/work/sitedata/henrys/BYDA/plans/BYDA Responses - Enquiry 54497312.pdf")
 
 
 class NS:
@@ -362,26 +361,5 @@ def test_cover_services_row_reports_the_byda_state(dbyd_runs):
 
 
 def test_without_a_byda_registry_the_sheets_say_services_are_not_confirmed(lot2):
-    assert "NONE SUPPLIED: LOCATE BY DIAL BEFORE YOU DIG" in lot2.pages["C000"]
+    assert "NONE SUPPLIED: LOCATE BY BEFORE YOU DIG AUSTRALIA (BYDA)" in lot2.pages["C000"]
     assert re.search(r"EXISTING SERVICES?[^.]{0,80}(NONE SUPPLIED|NOT CONFIRMED)", lot2.pages["C310"], re.I) or "NONE SUPPLIED" in lot2.pages["C310"].upper()
-
-
-# ====================================================================================================== the real Henrys Lane download (read only; skipped when absent)
-@pytest.mark.skipif(not REAL_BYDA.exists(), reason="real BYDA response not present on this machine")
-def test_real_combined_pdf_is_split_by_its_own_page_table_dry_run(tmp_path):
-    byda = tmp_path / "BYDA" / "plans"
-    byda.mkdir(parents=True)
-    (byda / REAL_BYDA.name).symlink_to(REAL_BYDA)
-    res = FI.import_folder(tmp_path, write=False)
-    reg = res.registry
-    spans = {o["owner"]: tuple(o["section_pages"]) for o in reg["owners"]}
-    assert spans == {"APA Group Gas Networks": (4, 78), "Essential Energy": (79, 87), "NBN Co NswAct": (88, 118), "Tamworth Regional Council": (119, 135), "Telstra NSW North": (136, 143)}
-    assert reg["job_number"] == "54497312" and reg["enquiry_valid_until"] == "2026-11-12" and reg["sources"][0]["pages"] == 143
-    by = {o["owner"]: o for o in reg["owners"]}
-    assert any(f.get("georef") for f in by["Tamworth Regional Council"]["files"])
-    assert by["Essential Energy"]["page_counts"]["vector"] == 5 or by["Essential Energy"]["page_counts"].get("vector")
-    assert any(f.get("excluded") for f in by["Telstra NSW North"]["files"])
-    assert TraceStore(tmp_path).features() == []                                                          # nothing traced, nothing verified
-    blob = json.dumps(reg)
-    assert "@" not in blob                                                                                 # no e-mail addresses (personal contact details) in the registry
-    assert not (tmp_path / "dbyd").exists()

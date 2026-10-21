@@ -2,8 +2,8 @@
 """DBYD Phase 0 command line (stage 8): import a project's BYDA folder, and record, verify or reject traced services.  JCESITE is NOT affiliated with JCE Infrastructure.
 
     # import <project>/BYDA (combined BYDA responses PDF and/or <owner>/ folders and byda_status.md) into <project>/dbyd
-    python3 scripts/dbyd_import.py import --project /home/claude/work/sitedata/henrys
-    python3 scripts/dbyd_import.py import --project /home/claude/work/sitedata/henrys --dry-run      # read and report, store nothing
+    python3 scripts/dbyd_import.py import --project <project>
+    python3 scripts/dbyd_import.py import --project <project> --dry-run      # read and report, store nothing
 
     # a person traces a service over an owner plan (always a DRAFT), then verifies or rejects it
     python3 scripts/dbyd_import.py trace  --project P --owner "Essential Energy" --service electricity --pts "238460,6569500;238470,6569510" --by "J Smith" --page 87

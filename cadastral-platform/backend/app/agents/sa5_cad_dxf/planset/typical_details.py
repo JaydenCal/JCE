@@ -335,7 +335,16 @@ def sd107_section(P, T, r) -> dict:
     sub = 60.0                                                                      # sub-grade hatch depth (graphic)
     ytop_draw = yb - 58.0                                                           # top of the slab at the boundary end
     F = Fr(xleft + road * kx, ytop_draw - (r60 + rise) * ky, kx, ky)
-    top = [(-road, 0.0), (-road * 0.16, -f40 * 0.5), (-road * 0.035, -f40), (0.0, -f40), (run, r60), (xb, r60 + rise)]
+    # SD-107 section 1 (checked at 600 dpi): the road-side edge is level 0; the surface falls 40 straight to the flowline at the nominal kerb line, a near-vertical lip rises back to about edge
+    # level with an R25 rounded arris at its top, and the layback then rises straight (60 above edge level) over the 450 run to the E.J.
+    eps = 8.0                                                                       # horizontal lean of the lip, mm (graphic: the lip is near vertical)
+    rr_ = float(T.get(SD + "section.flowline_radius").mm or 25.0) if T.get(SD + "section.flowline_radius") is not None else 25.0
+    ang_ = math.atan2(r60, run)                                                     # slope of the layback
+    t_len = rr_ * math.tan((math.pi - (math.pi / 2 + ang_ + math.atan2(eps, f40))) / 2.0)   # tangent length of the arris fillet
+    cxa, cya = eps + rr_ * 0.98, -t_len * 0.98                                      # fillet centre (graphic approximation of the R25 arc)
+    arc = [(cxa + rr_ * math.cos(math.radians(th)), cya + rr_ * math.sin(math.radians(th))) for th in (180.0, 160.0, 140.0, 120.0, 100.0)]
+    arris_top = arc[-1]
+    top = [(-road, 0.0), (0.0, -f40), (eps * 0.4, -f40 * 0.45)] + arc + [(run, r60), (xb, r60 + rise)]
     bot_edge = -e190
     bottom = [(xb, r60 + rise - slab), (run, r60 - slab), (run * 0.30, bot_edge + (r60 - slab - bot_edge) * 0.55), (-road * 0.12, bot_edge), (-road, bot_edge)]
     P.v.fill(Polygon([F.p(*q) for q in top + bottom]), "C-DETL-LINE", (0.9, 0.9, 0.9), 1.0, None, None, True, pattern="AR-CONC", edge=ST.BLACK, edge_lw=0.5, stipple=ST.LIGHT_STIPPLE_MM * 0.7)
@@ -364,23 +373,19 @@ def sd107_section(P, T, r) -> dict:
     arrow_dim_h(P, yg, F.p(-road, 0)[0], xk, n0(road), ext_from=F.p(0, 0)[1] + 2.0)
     arrow_dim_h(P, yg, xk, F.p(run, 0)[0], n0(run), ext_from=F.p(0, r60)[1] + 2.0)
     tx(P, xk, yg + 5.6, "GUTTER CROSSING", anchor="BOTTOM_CENTER")
-    # ---- left dimensions: 190, 40 (fall to the flowline) and 60 (layback top above the road-side edge), numbers and VERIFY tags on the left ----------
+    # ---- left dimensions, one column each as SD-107 draws them: 40 (fall to the flowline), 60 (layback top above the road-side edge) and 190 (concrete depth at the road-side edge) ----
     xe0 = F.p(-road, 0)[0]
-    arrow_dim_v(P, xe0 - 6.0, F.p(0, bot_edge)[1], F.p(0, 0)[1], "", ext_to=xe0)
-    tx(P, xe0 - 8.0, F.p(0, bot_edge / 2)[1], n0(e190), anchor="MIDDLE_RIGHT")
-    for kk, (val, y_a, y_b, key) in enumerate(((f40, -f40, 0.0, "section.gutter_crossing_fall_edge_to_flowline"), (r60, 0.0, r60, "section.layback_top_above_road_side_edge"))):
-        xd = xe0 - 6.0 - 0.0
-        arrow_dim_v(P, xe0 - 6.0 if kk == 0 else xe0 - 6.0, F.p(0, y_a)[1], F.p(0, y_b)[1], "", ext_to=xe0 if kk == 0 else F.p(run, 0)[0])
+    col40, col60, col190 = xe0 - 6.0, xe0 - 17.0, xe0 - 28.0
+    for xcol, val, y_a, y_b, key, xto in ((col40, f40, -f40, 0.0, "section.gutter_crossing_fall_edge_to_flowline", xe0), (col60, r60, 0.0, r60, "section.layback_top_above_road_side_edge", F.p(run, 0)[0]),
+                                          (col190, e190, bot_edge, 0.0, "section.slab_thickness_at_road_side_edge_of_gutter_crossing", xe0)):
+        arrow_dim_v(P, xcol, F.p(0, y_a)[1], F.p(0, y_b)[1], "", ext_to=xto)
         tg = vtag(T, SD + key)
-        tx(P, xe0 - 8.0, F.p(0, (y_a + y_b) / 2)[1], n0(val) + (tg if tg else ""), anchor="MIDDLE_RIGHT", color=RED if tg else None, h=TXT.BODY)
+        tx(P, xcol - 1.8, F.p(0, (y_a + y_b) / 2)[1], n0(val) + (tg if tg else ""), anchor="MIDDLE_RIGHT", color=RED if tg else None, h=TXT.BODY)
     rt = T.get(SD + "section.flowline_radius")
     if rt is not None and rt.mm:
-        px, py = F.p(-road * 0.035, -f40)
-        xr_ = xe0 - 8.0                                                                # in the left column (right anchored), clear of every extension and centre line
-        tx(P, xr_, py + 24.0, f"R{n0(rt.mm)}", anchor="BOTTOM_RIGHT", color=RED if rt.verify else None)
-        if rt.verify:
-            tx(P, xr_, py + 21.2, rt.tag, anchor="BOTTOM_RIGHT", color=RED, h=TXT.SMALL)
-        leader(P, (xr_ + 1.0, py + 20.0), (px, py + 0.8), dot=False)
+        ax, ay = F.p(*arris_top)
+        tx(P, ax + 4.5, ay + 8.0, f"R{n0(rt.mm)}" + (" " + rt.tag if rt.verify else ""), anchor="BOTTOM_LEFT", color=RED if rt.verify else None)
+        leader(P, (ax + 5.5, ay + 7.4), (ax, ay), dot=True)
     xe = F.p(xb, 0)[0]
     arrow_dim_v(P, xe + 7.0, F.p(0, r60 + rise - slab)[1], F.p(0, r60 + rise)[1], "", ext_to=xe)
     tx(P, xe + 9.0, F.p(0, r60 + rise - slab / 2)[1], f"{n0(slab)} MIN", anchor="MIDDLE_LEFT")
@@ -409,7 +414,7 @@ def sd107_section(P, T, r) -> dict:
     addrow("CONCRETE DEPTH AT THE ROAD-SIDE EDGE", SD + "section.slab_thickness_at_road_side_edge_of_gutter_crossing")
     addrow("FALL FROM THE EDGE TO THE FLOWLINE", SD + "section.gutter_crossing_fall_edge_to_flowline")
     addrow("LAYBACK TOP ABOVE THE ROAD-SIDE EDGE", SD + "section.layback_top_above_road_side_edge")
-    addrow("FLOWLINE RADIUS", SD + "section.flowline_radius", f"R{n0(rt.mm)}" if rt is not None and rt.mm else None)
+    addrow("LIP ARRIS RADIUS (TOP OF STEP AT NOMINAL KERB LINE)", SD + "section.flowline_radius", f"R{n0(rt.mm)}" if rt is not None and rt.mm else None)
     addrow("LAYBACK RUN BEHIND THE NOMINAL KERB LINE", SD + "layback.run_behind_nominal_kerb_line")
     addrow("SLAB THICKNESS (MINIMUM)", SD + "slab.thickness_min")
     addrow("PATHWAY CROSSFALL", SD + "crossfall.pathway_crossing", f"{cf.rng[0]:g} TO {cf.rng[1]:g} PERCENT")
@@ -523,7 +528,7 @@ def pavement_detail(P, T, r) -> None:
              (f"{n0(base)} BASE COURSE AND COMPACTED SUB-GRADE (NOTE 6)", (xb + sec_w * 0.3, ya_top - (t_p + t_b + t_c + base / 2) * k))] if "65" in n12 and "SL72" in n12 else []
     ylast_b = side_labels(P, items, xl2, ya_top + 4.0, x1 - xl2 - 3.0)
     # ---- statements ----------------------------------------------------------------------------------------------------------------------------
-    ys = min(ya_top - (slab + base) * k - hs - 6.0, ylast_a - 1.0, ylast_b - 1.0)
+    ys = min(ya_top - (slab + base) * k - hs - 6.0, ya_top - (t_p + t_b + t_c + base) * k - hs - 6.0, ylast_a - 1.0, ylast_b - 1.0)       # below the taller pavers section as well
     fin = notes.get(13)
     dcp = T.get("dcp.pavement.surface_materials")
     nf = T.not_published("pavement_design")
@@ -531,7 +536,8 @@ def pavement_detail(P, T, r) -> None:
     if fin:
         lines.append(f"NOTE 13: {fin}")
     if dcp is not None:
-        lines.append(f"{dcp.quote[0] if dcp.quote else dcp.value}. [{dcp.ref_short}]")
+        q_ = dcp.quote[0] if dcp.quote else str(dcp.value)
+        lines.append((f"DRIVEWAYS (ALL INTERNAL VEHICLE ACCESS AND MANOEUVRING AREAS) {q_}" if q_.lower().startswith("are to be") else q_) + f". [{dcp.ref_short}]")
     if nf:
         lines.append("PAVEMENT THICKNESS AND SUB-GRADE DESIGN FOR THE ON-LOT DRIVEWAY ARE NOT STATED IN THE COUNCIL DOCUMENTS (NOT FOUND, OBTAIN FROM COUNCIL). THE SD-107 SECTION APPLIES TO THE CROSSING WITHIN THE ROAD RESERVE")
     bullets(P, x0 + 4.0, ys, W - 8.0, lines, y_min=y0 + 11.0)
@@ -593,7 +599,7 @@ def kerb_detail(P, T, r) -> None:
     add("DRIVEWAY RISERS", "eng.crossing.driveway_risers", "NOT PERMITTED")
     e190, r60, r25 = T.get(SD + "section.slab_thickness_at_road_side_edge_of_gutter_crossing"), T.get(SD + "section.layback_top_above_road_side_edge"), T.get(SD + "section.flowline_radius")
     if e190 is not None:
-        rows.append(("GUTTER CROSSING (WHAT SD-107 SHOWS)", f"{n0(e190.mm)} AT THE ROAD-SIDE EDGE; 450 EACH SIDE OF THE NOMINAL KERB LINE; LAYBACK TOP {n0(r60.mm) if r60 else '?'} ABOVE THE EDGE" + (" VERIFY AGAINST SD-107" if r60 is not None and r60.verify else "") + (f"; R{n0(r25.mm)} FLOWLINE VERIFY AGAINST SD-107" if r25 is not None and r25.verify else ""), "GSC SD-107 REV A, SECTION 1"))
+        rows.append(("GUTTER CROSSING (WHAT SD-107 SHOWS)", f"{n0(e190.mm)} AT THE ROAD-SIDE EDGE; 450 EACH SIDE OF THE NOMINAL KERB LINE; LAYBACK TOP {n0(r60.mm) if r60 else '?'} ABOVE THE EDGE" + (" VERIFY AGAINST SD-107" if r60 is not None and r60.verify else "") + (f"; R{n0(r25.mm)} ARRIS AT THE TOP OF THE LIP" if r25 is not None else ""), "GSC SD-107 REV A, SECTION 1"))
     table_rows(P, T, x0 + 3.0, y, W - 6.0, rows, (0.26, 0.48, 0.26), y_min=y0 + 4.0)
 
 
@@ -621,7 +627,7 @@ def drainage_detail(P, T, r) -> None:
     xp = ax0 + pw * 0.45
     P.line([(xp, yl_b + 9.0), (xp, yl_b + 5.0), (xp, ky)], L_LINE, 0.9, (0.1, 0.1, 0.5))
     P.poly([(xp - 1.2, ky + 2.5), (xp + 1.2, ky + 2.5), (xp, ky)], L_LINE, (0.1, 0.1, 0.5))
-    P.text(xp + 2.0, yl_b + 2.0, "PIPE TO KERB OUTLET", TXT.SMALL, "MIDDLE_LEFT", layer=L_NOTE)
+    P.text(xp + 2.0, yl_b + 5.0, "PIPE TO KERB OUTLET", TXT.SMALL, "MIDDLE_LEFT", layer=L_NOTE)
     # ---- B. inter-allotment ---------------------------------------------------------------------------------------------------------------
     xb = x0 + pw + 9.0 + 4.0
     yb2 = yb - 5.0
@@ -640,8 +646,8 @@ def drainage_detail(P, T, r) -> None:
     P.line([(bx0 + (bx1 - bx0) * 0.38, yt2 - 16.0), ((xe0 + xe1) / 2, yt2 - hh + 12.0)], L_LINE, 0.5, (0.1, 0.1, 0.5))
     ez = T.get("eng.inter_allotment.easement_width")
     P.text((xe0 + xe1) / 2, yt2 - hh + 2.2, f"EASEMENT {ez.vtext.upper().replace(' M', ' m') if ez else ''}", TXT.SMALL, "TOP_CENTER", layer=L_NOTE)
-    P.text(xe0 - 1.5, yt2 - hh + 12.0, "GRATED INLET PIT", TXT.SMALL, "MIDDLE_RIGHT", layer=L_NOTE)
-    P.text(xe0 - 1.5, yt2 - hh + 9.0, "AT LOWEST POINT", TXT.SMALL, "MIDDLE_RIGHT", layer=L_NOTE)
+    P.text(xe1 + 1.5, yt2 - hh + 13.5, "GRATED INLET PIT", TXT.SMALL, "MIDDLE_LEFT", layer=L_NOTE)          # right of the easement strip: the roof pipe arrives from the left
+    P.text(xe1 + 1.5, yt2 - hh + 10.5, "AT LOWEST POINT", TXT.SMALL, "MIDDLE_LEFT", layer=L_NOTE)
     # ---- cited statements ---------------------------------------------------------------------------------------------------------------------
     y = yt2 - hh - 6.0
     pipe, lot, evt, free, ex, pd, osd = (T.get("eng.inter_allotment." + k) for k in ("min_pipe_diameter", "lot_inlet", "design_event", "pit_freeboard", "exclusions", "pit_drawings", "pipe_larger_than"))
@@ -691,7 +697,11 @@ def osd_detail(P, T, r) -> None:
     for key, pre in (("osd_small_development_definition", "SMALL DEVELOPMENT: "), ("osd_trigger", "OSD MAY BE REQUIRED: "), ("osd_permissible_discharge", "DISCHARGE: "), ("osd_tank_rules", "TANKS: "),
                      ("osd_underground_tank", "UNDERGROUND TANK: "), ("osd_above_ground_paved_ponding", "ABOVE GROUND: ")):
         t = g(key)
-        if t is not None:
+        if t is not None and key == "osd_above_ground_paved_ponding" and "; landscaped" in str(t.value):       # two clauses: ponding depth 3.10.6.1, landscaped OSD 3.10.6.2
+            a_, b_ = str(t.value).split("; landscaped", 1)
+            lines.append(pre + a_.upper() + f" [{t.ref_at('3.10.6.1')}]")
+            lines.append("LANDSCAPED OSD" + b_.upper() + f" [{t.ref_at('3.10.6.2')}]")
+        elif t is not None:
             lines.append(pre + str(t.value).upper() + f" [{t.ref_short}]")
     lines.append("NO DISCHARGE RATE (L/s) OR STORAGE VOLUME IS GIVEN IN THE COUNCIL DOCUMENTS FOR A SMALL DEVELOPMENT: BY DESIGN, NOT STATED HERE")
     bullets(P, x0 + 4.0, y, W - 8.0, lines, h=TXT.LABEL, y_min=y0 + 3.0)
@@ -773,9 +783,10 @@ def verge_detail(P, T, r) -> None:
         lines.append("TABLE 2-I NOTE 2: ELECTRICAL ALLOCATION 1000 MM IN WIDTH AND EXTENT FROM THE PROPERTY BOUNDARY (OVERLAPS THE OTHER CORRIDORS AS TABULATED)")
     ws, sj = T.get("eng.stormwater.water_service"), T.get("eng.stormwater.sewer_junction")
     if ws is not None:
-        lines.append("WATER SERVICE: " + str(ws.value).upper() + f" [{ws.ref_short}]")
+        lines.append("WATER SERVICE: " + str(ws.value).upper() + f" [{ws.ref_at('4.5.12', 110)}; {ws.ref_at('4.7.7.4', 119)} (COVER)]")
     if sj is not None:
         lines.append("SEWER: " + str(sj.value).upper() + f" [{sj.ref_short}]")
+    lines.append(f"FOOTWAY CROSSFALL {cfx.rng[0]:g} TO {cfx.rng[1]:g} PERCENT TO THE CARRIAGEWAY, KERB TO THE ADJACENT PROPERTY BOUNDARY [{cfx.ref_short}]")
     if cfp is not None:
         lines.append(f"PAVED FOOTPATH CROSSFALL {cfp.value.replace(' to ', ' TO ')} PERCENT [{cfp.ref_short}]")
     lines.append(G001_TEXT)
@@ -827,7 +838,8 @@ def status_notes_detail(P, T, r, extra=()) -> None:
     W = x1 - x0
     mx, wd = T.get("eng.table2H.max_crossings_per_frontage"), T.get("eng.table2H.access_width_residential")
     lines = ["ALL DETAILS ARE TYPICAL, NOT TO SCALE. COUNCIL STANDARD DRAWINGS GOVERN",
-             "EVERY VALUE SHOWN IS FROM THE CITED DOCUMENT, WITH ITS CITATION. A VALUE MARKED VERIFY AGAINST SD-107 WAS READ FROM THE DRAWN SHEET (CONFIDENCE 0.7 OR LOWER): CONFIRM IT ON THE COUNCIL PDF",
+             ("EVERY VALUE SHOWN IS FROM THE CITED DOCUMENT, WITH ITS CITATION. A VALUE MARKED VERIFY AGAINST SD-107 WAS READ FROM THE DRAWN SHEET (CONFIDENCE 0.7 OR LOWER): CONFIRM IT ON THE COUNCIL PDF" if T.verify_keys() else
+              "EVERY VALUE SHOWN IS FROM THE CITED DOCUMENT, WITH ITS CITATION. THE SD-107 DIMENSIONS READ OFF THE DRAWING (NOT STATED IN ITS NOTES) CARRY A READING CONFIDENCE BELOW 1.0 IN THE COUNCIL DATA FILE: CONFIRM THEM ON THE COUNCIL PDF"),
              "SD-107 LABELS THE SL82 FABRIC 'SEE NOTE 7'; THE REINFORCEMENT IS SPECIFIED IN ITS NOTE 9 AND IS SHOWN WITH NOTE 9"]
     if mx is not None:
         lines.append(CONFLICT_NOTE.replace("2 CROSSINGS PER STREET FRONTAGE", f"{n0(mx.number)} CROSSINGS PER STREET FRONTAGE" if mx.number else "2 CROSSINGS PER STREET FRONTAGE") + f" [{mx.ref_short}]")
@@ -885,7 +897,7 @@ def c600_fill(v, P, s, T, tv, cells) -> None:
     footer(P, cells["fence"], [x for x in (cl("esc.sediment_fence.post_spacing_m", "POST SPACING"), cl("esc.sediment_fence.trench_depth_mm", "TRENCH DEPTH (UPSLOPE)"),
                                            cl("esc.sediment_fence.return_interval_m", "RETURNS"), cl("esc.sediment_fence.joint_overlap_mm", "JOINT OVERLAP")) if x], h=TXT.SMALL)
     SEC.detail_access(v, P, tv, cells["access"])
-    footer(P, cells["access"], [x for x in (cl("esc.access.min_length_m", "MIN LENGTH"), cl("esc.access.min_width_m", "MIN WIDTH"), cl("esc.access.thickness_mm", "THICKNESS"),
+    footer(P, cells["access"], [x for x in (cl("esc.access.min_length_m", "MIN LENGTH (BLUE BOOK)"), cl("esc.access.min_length_building_sites_m", "MIN LENGTH (BUILDING SITES 2024)"), cl("esc.access.min_width_m", "MIN WIDTH"), cl("esc.access.thickness_mm", "THICKNESS"),
                                             cl("esc.access.max_aggregate_mm", "MAX AGGREGATE"), cl("esc.access.geotextile_underlay", "UNDERLAY")) if x], h=TXT.SMALL)
     esc_notes_detail(P, T, cells["esc"])
     status_notes_detail(P, T, cells["status"])

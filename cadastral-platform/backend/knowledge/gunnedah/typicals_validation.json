@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-21T09:11:11Z",
+ "generated_at": "2026-10-21T10:37:37Z",
  "entries": 132,
  "resolved": 122,
  "not_found": 10,
@@ -8,7 +8,7 @@
   {
    "key": "sd107.crossing.width_at_property_boundary_min",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -16,7 +16,7 @@
   {
    "key": "sd107.crossing.width_at_property_boundary_max",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -24,7 +24,7 @@
   {
    "key": "sd107.crossing.width_between_splays_min",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -32,7 +32,7 @@
   {
    "key": "sd107.crossing.overall_width_at_kerb_incl_splays_min",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -40,7 +40,7 @@
   {
    "key": "sd107.crossing.overall_width_at_kerb_incl_splays_max",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -48,7 +48,7 @@
   {
    "key": "sd107.layback.splay_length_along_kerb_each_side",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -56,7 +56,7 @@
   {
    "key": "sd107.layback.splay_depth_back_of_layback_to_lip_line",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -64,7 +64,7 @@
   {
    "key": "sd107.layback.lip_line_to_nominal_kerb_line",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -72,7 +72,7 @@
   {
    "key": "sd107.gutter_crossing.width_each_side_of_nominal_kerb_line",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -80,7 +80,7 @@
   {
    "key": "sd107.layback.run_behind_nominal_kerb_line",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -88,7 +88,7 @@
   {
    "key": "sd107.section.slab_thickness_at_road_side_edge_of_gutter_crossing",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -96,7 +96,7 @@
   {
    "key": "sd107.section.gutter_crossing_fall_edge_to_flowline",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -104,7 +104,7 @@
   {
    "key": "sd107.section.layback_top_above_road_side_edge",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -112,7 +112,7 @@
   {
    "key": "sd107.section.layback_rise_flowline_to_back_derived",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -120,7 +120,7 @@
   {
    "key": "sd107.section.flowline_radius",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -128,7 +128,7 @@
   {
    "key": "sd107.section.profile_description",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -136,7 +136,7 @@
   {
    "key": "sd107.slab.thickness_min",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -144,7 +144,7 @@
   {
    "key": "sd107.slab.reinforcement",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -152,7 +152,7 @@
   {
    "key": "sd107.slab.reinforcement_top_cover",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -160,7 +160,7 @@
   {
    "key": "sd107.slab.concrete_strength",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -168,7 +168,7 @@
   {
    "key": "sd107.slab.finish",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": null,
    "page": 1
@@ -176,7 +176,7 @@
   {
    "key": "sd107.slab.base_course",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -184,7 +184,7 @@
   {
    "key": "sd107.crossfall.pathway_crossing",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1
@@ -192,7 +192,7 @@
   {
    "key": "sd107.joints.expansion_joint_locations",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": null,
    "page": 1
@@ -200,7 +200,7 @@
   {
    "key": "sd107.joints.dowels_along_expansion_joint",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -208,7 +208,7 @@
   {
    "key": "sd107.joints.bars_into_existing_kerb_and_gutter",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -216,7 +216,7 @@
   {
    "key": "sd107.joints.contraction_joint",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": null,
    "page": 1
@@ -224,7 +224,7 @@
   {
    "key": "sd107.kerb.existing_kerb_and_gutter",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": null,
    "page": 1
@@ -232,7 +232,7 @@
   {
    "key": "sd107.crossing.entry_angle_to_road_centreline",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -240,7 +240,7 @@
   {
    "key": "sd107.crossing.entry_angle_min_with_council_approval",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -248,7 +248,7 @@
   {
    "key": "sd107.verge.unused_crossings",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": null,
    "page": 1
@@ -256,7 +256,7 @@
   {
    "key": "sd107.footpath.existing_threshold",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -264,7 +264,7 @@
   {
    "key": "sd107.pavers.option",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -272,7 +272,7 @@
   {
    "key": "sd107.crossover.approval",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -280,7 +280,7 @@
   {
    "key": "sd107.crossover.clearance_template",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -288,7 +288,7 @@
   {
    "key": "sd107.crossover.maintenance",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": true,
    "value_found": true,
    "page": 1
@@ -296,7 +296,7 @@
   {
    "key": "sd107.crossover.drawing_scales",
    "ok": true,
-   "method": "SD-107 text (pdftotext), quotes and numbers",
+   "method": "SD-107 text (pdftotext): quotes found; each number is PRESENT somewhere on the sheet (a presence check only: it does not check where the number sits on the drawing)",
    "quote_found": null,
    "value_found": true,
    "page": 1

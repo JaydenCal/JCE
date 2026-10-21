@@ -602,8 +602,17 @@ def place_house(house: HouseModel, lot: Polygon, edges: list[Edge], cited: dict[
                 ref = next((r for r in pl.rows if r.edge_seq == e.seq and not r.informational), None)
                 p, q = _nearest(pl.roof, e.line)
                 d = pl.roof.distance(e.line)
-                pl.rows.append(SetbackRow((ref.label if ref else e.label) + " TO ROOF EAVE", e.seq, e.kind, None, d, None, "NO CITED EAVE REQUIREMENT", "", "", p, q,
-                                          "INFORMATION ONLY (EAVE OVERHANG FROM THE PLAN STUDIO FILE)", True))
+                art = cited.get("articulation")
+                ov = getattr(pl.house, "eave_overhang_m", None) if pl.house is not None else None
+                if art is not None:        # no eave rule as such: the DCP articulation encroachment is the cited allowance that an eave of that overhang falls within
+                    inside = ov is not None and ov <= art.value + 1e-9
+                    note = ((f"EAVE OVERHANG {ov:.2f} m (PLAN STUDIO FILE) " + ("IS WITHIN" if inside else "EXCEEDS") + f" THE CITED {art.vtext.upper()} ARTICULATION ENCROACHMENT"
+                             + (f" ({art.rule.upper()})" if art.rule else "")) if ov is not None else "EAVE OVERHANG NOT IN THE PLAN STUDIO FILE")
+                    pl.rows.append(SetbackRow((ref.label if ref else e.label) + " TO ROOF EAVE", e.seq, e.kind, None, d, None, art.ref, art.vtext, art.quote, p, q,
+                                              "INFORMATION ONLY: " + note, True))
+                else:
+                    pl.rows.append(SetbackRow((ref.label if ref else e.label) + " TO ROOF EAVE", e.seq, e.kind, None, d, None, "NO CITED EAVE REQUIREMENT", "", "", p, q,
+                                              "INFORMATION ONLY (EAVE OVERHANG FROM THE PLAN STUDIO FILE)", True))
     # ---- garage behind the front building line (cited, measured)
     gb = cited.get("garage_behind")
     if pl.garage is not None and gb is not None and pl.dwelling is not None:

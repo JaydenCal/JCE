@@ -385,7 +385,7 @@ def layover_values(g: "CrossoverGeom", front=None) -> list[dict]:
         out = [
             dict(key="w_bdy", label="LAYOVER WIDTH AT BOUNDARY", m=g.width_m, src=wsrc, placeholder=False),
             dict(key="w_kerb", label="LAYOVER WIDTH AT KERB", m=g.width_m + 2 * g.flare_m, src=lab, placeholder=False),
-            dict(key="wing", label="SPLAY DEPTH (BACK OF LAYBACK TO LIP LINE)", m=g.wing_len_m, src=lab, placeholder=False),
+            dict(key="wing", label="SPLAY DEPTH (BACK OF LAYBACK TO BACK OF KERB)", m=g.wing_len_m, src=lab, placeholder=False),
             dict(key="flare", label="SPLAY ALONG KERB (EACH SIDE)", m=g.flare_m, src=lab, placeholder=False),
         ]
         if g.drive_width_m:

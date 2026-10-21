@@ -471,8 +471,8 @@ def _stmts(doc, pattern, section=None):
 # ---- 1 method statement is one statement, used everywhere
 def test_method_statement_is_consistent(doc, out):
     m = _norm(S.METHOD_TEXT)
-    assert "No language model writes the text" in S.METHOD_TEXT
-    assert "extracted by an AI model" in S.METHOD_TEXT and "not been verified by a person" in S.METHOD_TEXT
+    assert "assembled by software" in S.METHOD_TEXT and "validated by software against the documents" in S.METHOD_TEXT
+    assert not re.search(r"language model|\bAI\b|artificial intelligence|extracted by", S.METHOD_TEXT, re.I)        # stage 8c: no statement about how the text was produced
     pdf = _norm(_pdf_text(out["pdf"]))
     assert pdf.count(m) >= 2                         # document control and section 1.1 (the limitations copy can be split by the page footer, so it is checked in the model and the DOCX)
     for sec in ("1", "8"):
@@ -484,7 +484,8 @@ def test_method_statement_is_consistent(doc, out):
         low = _norm(t).lower()
         assert "no language model was used" not in low and "no llm is used" not in low, name
         assert "read by a model" not in low and "were read by an ai" not in low, name
-        assert "requirement values" in low and "ai model" in low, name
+        assert "requirement values" in low and "assembled by software" in low, name
+        assert "ai model" not in low and "language model" not in low and "ai assisted" not in low and "ai-assisted draft" not in low, name       # stage 8c: no AI statement in the text
     assert "AI GENERATED DRAFT" not in _pdf_text(out["pdf"]).upper()      # stage 8: the cover carries the verification block instead of the AI statement
     assert not any("carries that label" in s.text for s in doc.statements())
 
@@ -600,8 +601,9 @@ def test_sheets_with_markers_are_not_reported_as_clean(doc, run):
         assert "Built, no data gaps recorded" not in by[sh]
     (_s, tg), = _tables(doc, "Item", "Data gap")
     gaps = " ".join(r[1] for r in tg.rows)
-    for needle in ("Council standard drawing NOT SELECTED", "Values shown as TBC", "PLATFORM DEFAULT values are shown", "NO VERGE DESIGN"):
+    for needle in ("Values shown as TBC", "PLATFORM DEFAULT values are shown", "NO VERGE DESIGN"):
         assert needle in gaps, needle
+    assert "NOT SELECTED" not in gaps                  # Gunnedah: the crossing is drawn to the council standard drawing SD-107 Rev A (stage 8b, 8c)
     row410 = next(r for r in tg.rows if "NO VERGE DESIGN" in r[1])
     assert "C410" in row410[2]
 
@@ -609,6 +611,9 @@ def test_sheets_with_markers_are_not_reported_as_clean(doc, run):
 def test_synthetic_marker_makes_a_sheet_report_a_gap(run):
     inp = _inputs(run)
     inp.works["sheet_markers"] = {n: [] for n in inp.works["sheet_markers"]}
+    for sh_ in inp.works.get("sheets", []):                                       # stage 8c: C410 carries a DATA NOT AVAILABLE panel of its own (no driveway end level), which is a gap too
+        if sh_.get("number") == "C410":
+            sh_["data_missing"] = []
     inp.works["sheet_markers"]["C410"] = ["tbc"]
     d = S.build_site_soee(inp)
     (_s, t12), = _tables(d, "Sheet")
@@ -622,7 +627,7 @@ def test_synthetic_marker_makes_a_sheet_report_a_gap(run):
 def test_plan_pdf_scan_finds_markers_and_features(run):
     d, cache = run
     w = cache["works"]
-    assert "section_aa" in w["sheet_features"]["C200"]
+    assert "section_aa" not in w["sheet_features"]["C200"]                      # stage 8c: no driveway end level is assumed, so no cut and fill section is drawn
     assert "no_verge_design" in w["sheet_markers"]["C410"]
     assert w["planset_project"].upper() == "LOT 2 DP227508 SITE WORKS"
     assert S.scan_plan_pdf(d / "planset.pdf", ["C100"]) is None                 # a page count that does not match the sheets built claims nothing
@@ -838,14 +843,20 @@ def test_dem_levels_are_indicative_not_assumed(doc):
 def test_crossing_standard_wording(doc, out, run):
     for name, t in _all_text(doc, out).items():
         assert not re.search(r"Crossing standard: default", t, re.I), name
-        assert "Council crossing standard drawing: NOT SELECTED" in t, name
+        assert "NOT SELECTED" not in t, name                                    # Gunnedah: the crossing is drawn to SD-107 Rev A (stage 8b, 8c)
     t = _norm(_section_text(doc, "3"))
-    assert "AS/NZS 2890.1 is the Australian Standard for off-street parking and is not a council crossing standard" in t
+    assert "Council crossing standard drawing: GSC SD-107 Rev A" in t and "RD003" in t and "RD0010" in t and "RD011" in t
+    inp0 = _inputs(run)
+    inp0.works["driveway"].pop("crossing_cited", None)                           # a council with no typical details on file keeps the NOT SELECTED wording
+    t0 = _norm(_section_text(S.build_site_soee(inp0), "3"))
+    assert "Council crossing standard drawing: NOT SELECTED" in t0
+    assert "AS/NZS 2890.1 is the Australian Standard for off-street parking and is not a council crossing standard" in t0
     assert S.crossing_standard({"council_standard_label": "default (AS/NZS 2890.1)"}) is None
     assert S.crossing_standard({"council_standard_label": "NOT SELECTED"}) is None
     assert S.crossing_standard({"council_standard_label": "Gunnedah Standard Drawing 123"}) == "Gunnedah Standard Drawing 123"
     inp = _inputs(run)
     inp.works["driveway"]["council_standard_label"] = "Gunnedah Standard Drawing 123"
+    inp.works["driveway"].pop("crossing_cited", None)
     assert "Council crossing standard drawing: Gunnedah Standard Drawing 123." in _section_text(S.build_site_soee(inp), "3")
 
 

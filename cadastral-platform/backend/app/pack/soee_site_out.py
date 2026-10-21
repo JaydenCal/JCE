@@ -556,7 +556,7 @@ def write_docx(doc: SiteSoee, path: Path) -> Path:
     vb.rows[0].cells[0].merge(vb.rows[0].cells[2])
     cell_text(vb.rows[0].cells[0], VERIFY_TITLE, bold=True, size=8, color="6B6E75")
     vb.rows[1].cells[0].merge(vb.rows[1].cells[2])
-    cell_text(vb.rows[1].cells[0], "[   ]  " + VERIFY_STATEMENT, bold=True, size=12)
+    cell_text(vb.rows[1].cells[0], "\u2610  " + VERIFY_STATEMENT, bold=True, size=12)
     for i_, nm_ in enumerate(VERIFY_FIELDS):
         cell_text(vb.rows[2].cells[i_], nm_, size=8, color="6B6E75")
     row_props(vb.rows[0])
