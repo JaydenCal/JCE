@@ -104,6 +104,7 @@ def test_esc_assumptions_are_in_a_panel_not_the_datum_notes(real):
 
 # ---------------------------------------------------------------------------------------------------------------- spot levels, dashes
 def test_spot_levels_on_the_driveway_sheet_are_upright(real):
+    """Spot levels are horizontal.  Contour labels (stage 8) run along their line but are never upside down: they read left to right or bottom to top."""
     n = list(real.sheets).index("C400")
     page = real.doc[n]
     found = 0
@@ -111,8 +112,10 @@ def test_spot_levels_on_the_driveway_sheet_are_upright(real):
         for ln in b.get("lines", []):
             txt = "".join(s["text"] for s in ln["spans"]).strip()
             if re.fullmatch(r"\d{3}\.\d\d", txt):
-                found += 1
-                assert abs(ln["dir"][0] - 1.0) < 1e-3 and abs(ln["dir"][1]) < 1e-3, (txt, ln["dir"])
+                dx, dy = ln["dir"]
+                assert dx > -1e-3 and (dx > 1e-3 or dy <= 1e-3), (txt, ln["dir"])           # readable, never upside down
+                if abs(dx - 1.0) < 1e-3 and abs(dy) < 1e-3:
+                    found += 1
     assert found >= 1
 
 
@@ -122,8 +125,10 @@ def test_no_em_or_en_dashes_in_any_rendered_text(real):
 
 
 def test_no_spot_levels_on_c100(real):
-    n = list(real.sheets).index("C100")
-    assert not re.findall(r"\b\d{3}\.(?!00\b)\d\d\b", real.pages[n])
+    """C100 shows contours with their RL labels (stage 8) and no spot levels: every RL text on C100 is on the contour label layer."""
+    sh = real.sheets["C100"]
+    rl = [it for v in sh.views for it in v.items if it.kind == "text" and re.fullmatch(r"\d{3}\.\d\d", it.text)]
+    assert rl and all("CONT" in it.layer.upper() or "CNTR" in it.layer.upper() for it in rl), {it.layer for it in rl}
 
 
 # ---------------------------------------------------------------------------------------------------------------- SA1 window completeness

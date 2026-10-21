@@ -20,7 +20,6 @@ sys.path.insert(0, str(BACKEND))
 from app.pack import soee_site as S  # noqa: E402
 from app.pack import soee_site_out as O  # noqa: E402
 
-AI = S.AI_STATEMENT
 BLD = S.BUILDING_BY_OTHERS
 TODAY = date(2026, 10, 14)
 
@@ -127,28 +126,41 @@ def test_dates_are_dd_mm_yyyy(doc, out):
         assert not re.search(r"\b\d{4}-\d{2}-\d{2}\b", t), f"ISO date in {name}"
 
 
-# ---------------------------------------------------------------------------------------------------------------- AI statement
-def test_ai_statement_on_every_pdf_page(out):
+# ---------------------------------------------------------------------------------------------------------------- verification box (stage 8)
+from app.common.statement import AI_DRAFT_STATEMENT, VERIFY_FIELDS, VERIFY_STATEMENT  # noqa: E402
+
+
+def test_verification_box_on_the_pdf_cover_only_and_no_ai_statement(out):
     pages = O.page_texts(out["pdf"])
     assert len(pages) > 5
-    for i, t in enumerate(pages, 1):
-        assert AI in _norm(t), f"PDF page {i}"
+    cover = _norm(pages[0]).upper()
+    assert VERIFY_STATEMENT in cover and all(f in cover for f in VERIFY_FIELDS)
     assert "STATEMENT OF ENVIRONMENTAL EFFECTS" in pages[0] and "DRAFT" in pages[0]
+    for i, t in enumerate(pages, 1):
+        n = _norm(t).upper()
+        assert "AI GENERATED DRAFT" not in n and AI_DRAFT_STATEMENT not in n, f"PDF page {i}"
+        if i > 1:
+            assert "SIGNATURE" not in n, f"PDF page {i}"                           # the signature box is on the cover only (section 1.1 states the limitation in words)
 
 
-def test_ai_statement_in_docx_footer_and_cover(out):
+def test_verification_box_in_docx_cover_only_and_no_ai_in_footer(out):
     from docx import Document
     d = Document(str(out["docx"]))
     for s in d.sections:
-        assert AI in " ".join(p.text for p in s.footer.paragraphs)
-    assert AI in _docx_text(out["docx"])
+        assert "AI GENERATED" not in " ".join(p.text for p in s.footer.paragraphs).upper()
+        assert VERIFY_STATEMENT not in " ".join(p.text for p in s.footer.paragraphs).upper()
+    txt = _docx_text(out["docx"])
+    assert VERIFY_STATEMENT in txt.upper() and txt.upper().count("SIGNATURE") == 1 and "AI GENERATED DRAFT" not in txt.upper()
 
 
-def test_ai_statement_on_every_docx_page(out):
+def test_no_ai_statement_on_any_docx_page(out):
     if out["docx_pdf"] is None:
         pytest.skip("LibreOffice not installed")
-    for i, t in enumerate(O.page_texts(out["docx_pdf"]), 1):
-        assert AI in _norm(t), f"DOCX page {i}"
+    pages = O.page_texts(out["docx_pdf"])
+    for i, t in enumerate(pages, 1):
+        n = _norm(t).upper()
+        assert "AI GENERATED DRAFT" not in n, f"DOCX page {i}"
+        assert ("SIGNATURE" in n) == (i == 1), f"DOCX page {i}"
 
 
 # ---------------------------------------------------------------------------------------------------------------- style
@@ -473,8 +485,8 @@ def test_method_statement_is_consistent(doc, out):
         assert "no language model was used" not in low and "no llm is used" not in low, name
         assert "read by a model" not in low and "were read by an ai" not in low, name
         assert "requirement values" in low and "ai model" in low, name
-    assert "AI GENERATED DRAFT" in _pdf_text(out["pdf"])                 # the cover label stays, and section 1.1 explains why it is used
-    assert any("carries that label" in s.text for s in doc.statements())
+    assert "AI GENERATED DRAFT" not in _pdf_text(out["pdf"]).upper()      # stage 8: the cover carries the verification block instead of the AI statement
+    assert not any("carries that label" in s.text for s in doc.statements())
 
 
 # ---- 2 every count is derived from the rendered list

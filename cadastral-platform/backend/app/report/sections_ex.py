@@ -187,7 +187,7 @@ def data_limits(ctx: Ctx) -> list:
     fl += [Spacer(1, 3.5 * mm), P("D. WHAT WAS NOT CHECKED", "label"), KS(2)]
     nc = [f for f in ctx.findings if f.status == "unchecked"]
     nchk = ["Layers not queried in this run: " + ("; ".join(f.short.lower() for f in nc) + ". Not checked is not clear." if nc else "none."),
-            "Not covered at all: easements, covenants, underground services, council flood studies, local council overlays and DCP maps, unless stated in a result above.",
+            ("Not covered at all: easements, covenants, council flood studies, local council overlays and DCP maps, unless stated in a result above. Underground services are covered only by the BYDA responses and the verified services in the Civil summary." if (ctx.inp.civil or {}).get("dbyd") else "Not covered at all: easements, covenants, underground services, council flood studies, local council overlays and DCP maps, unless stated in a result above."),
             ("Not assessed: the building height, floor level (TBC), bushfire, BASIX and the approval pathway. The typical house is indicative and is not a design for this lot." if (ctx.inp.civil or {}).get("building") else "Not assessed: any building, footprint, floor level, setback or approval pathway.")]
     fl += _dots(nchk)
     fl.append(callout(NOT_CLEAR, "red"))

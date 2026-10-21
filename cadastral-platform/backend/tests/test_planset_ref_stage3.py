@@ -66,7 +66,7 @@ def test_notes_sheet_is_sheet_2(tmp_path):
     allt = " ".join(" ".join(p.get_text().split()) for p in doc)
     assert "SURVEY REQUIRED" not in allt.upper() and "JCE INFRASTRUCTURE" not in allt.upper() and "ABN" not in allt and "—" not in allt and "–" not in allt
     cover = "".join(doc[0].get_text().split())
-    assert "CIVILSITEPLANNINGDRAWINGS(AIGENERATEDDRAFT)" in cover and "DRAWINGREGISTER" in cover and cover.count("JCS-XXX-CIV-") >= 12
+    assert "CIVILSITEPLANNINGDRAWINGS" in cover and "AIGENERATEDDRAFT" not in cover and "TOBEVERIFIEDBYASUITABLYQUALIFIEDPERSON" in cover and "DRAWINGREGISTER" in cover and cover.count("JCS-XXX-CIV-") >= 12
     assert res["dxf_stats"]["audit_errors"] == 0
 
 

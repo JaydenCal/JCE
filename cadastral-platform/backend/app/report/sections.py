@@ -765,6 +765,28 @@ def requirements_section(ctx: Ctx) -> list:
 
 # ------------------------------------------------------------------ 7 civil
 
+def dbyd_block(ctx: Ctx, dy: dict) -> list:
+    """Civil summary: the Before You Dig (BYDA) responses, owner by owner: response status, plans received, traced (draft) and verified counts, and the date the plans stop being valid."""
+    S = st()
+    fl = [P("Before You Dig (BYDA) responses", "label"), KS(2)]
+    rows = [("BYDA job", dy.get("job_number") or "Not stated"), ("Responses", (dy.get("responses_text") or f"{dy.get('n_received', 0)} of {dy.get('n_owners', 0)} owners responded")),
+            ("Plans valid until", fmt.hdate_long(dy["enquiry_valid_until"]) if dy.get("enquiry_valid_until") else "Not stated"),
+            ("Services", f"{dy.get('n_verified', 0)} verified, {dy.get('n_draft', 0)} traced and not yet verified (draft). Only verified services are drawn on the plans.")]
+    fl.append(kv_table(rows))
+    trs = [[P(c, "cell") for c in r] for r in dy.get("rows") or []]
+    if trs:
+        fl += [Spacer(1, 1.5 * mm), grid_table(list(dy.get("header") or []), trs, [44 * mm, 22 * mm, 42 * mm, 14 * mm, 18 * mm, T.CW - 140 * mm])]
+    if dy.get("expiry_warning"):
+        fl.append(callout(dy["expiry_warning"], "red"))
+    if not dy.get("n_verified"):
+        fl.append(callout("No existing service is verified, so none is shown on the plans. Existing services are not confirmed. Not checked is not clear.", "red"))
+    if dy.get("synthetic"):
+        fl.append(callout("SYNTHETIC DEMO DATA: these responses and services are invented to exercise the software. They are not real services.", "red"))
+    fl.append(P("Asset owner plans are for this project only. Every service location is indicative: confirm by potholing before any excavation.", "muted"))
+    fl.append(Spacer(1, 2 * mm))
+    return fl
+
+
 def building_block(ctx: Ctx, bd: dict) -> list:
     """Civil summary: the dwelling placed on the lot (stage 8), from the building data: the Plan Studio typical house (indicative), the cited setbacks with provided values and
     results, the garage control and the finished floor level.  Nothing here is a design for the lot."""
@@ -862,7 +884,10 @@ def civil_section(ctx: Ctx) -> list | None:
         fl.append(P("No driveway was designed for this run.", "body"))
     sv = cv.get("services") or {}
     fl.append(P("Services and rainwater tank", "h2"))
-    rows = [("Existing services", f"{sv.get('assets', 0)} service assets entered" + ("; no BYDA plans were supplied, so existing underground services are unknown" if not sv.get("assets") else "; all unverified")),
+    dy = cv.get("dbyd")
+    if dy:
+        fl += dbyd_block(ctx, dy)
+    rows = [("Existing services", f"{sv.get('assets', 0)} service assets entered" + (("; no BYDA plans were supplied, so existing underground services are unknown" if not dy else "; see the BYDA table above for the responses received") if not sv.get("assets") else "; all unverified")),
             ("Proposed connections", f"{sv.get('connections', 0)}"),
             ("Rainwater tank", sv.get("rwt_text") or "Not sized in this run")]
     fl += [kv_table(rows), P("Service positions and depths are indicative. Obtain current BYDA plans and physically locate services (potholing) before any excavation.", "muted")]

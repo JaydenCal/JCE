@@ -99,6 +99,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--rules-json", default=DEFAULT_RULES if Path(DEFAULT_RULES).exists() else None)
     ap.add_argument("--building", default=DEFAULT_BUILDING if Path(DEFAULT_BUILDING).exists() else None,
                     help="Plan Studio project file of the typical house to place on the lot (stage 8); 'none' places no building")
+    ap.add_argument("--dbyd-project", help="project folder with the DBYD registry (<folder>/dbyd from scripts/dbyd_import.py): the plan set and the SoEE then report the BYDA responses and draw VERIFIED services only")
     ap.add_argument("--variant", choices=["fixture", "all_not_checked"], default="fixture")
     ap.add_argument("--from-run", help="reuse the cached inputs (soee_inputs.json, constraints_report.json, run_steps.json) of an earlier run directory")
     ap.add_argument("--job", default="", help="job number for the document and drawing numbers (default XXX)")
@@ -115,7 +116,8 @@ def main(argv: list[str] | None = None) -> int:
     run_dir = Path(a.from_run) if a.from_run else out / "run"
     if not a.from_run:
         run_dir.mkdir(parents=True, exist_ok=True)
-        cache = run_pipeline(run_dir, a.rules_json, a.variant, building=None if a.building in (None, "none") else a.building)
+        cache = run_pipeline(run_dir, a.rules_json, a.variant, building=None if a.building in (None, "none") else a.building,
+                             extra_args=(["--dbyd-project", a.dbyd_project] if a.dbyd_project else None))
     else:
         cache = load_cache(run_dir)
     cp = run_dir / "constraints_report.json"

@@ -151,7 +151,7 @@ def test_notes_name_the_council_from_data_and_cite_it():
     for h in ("GENERAL", "SURVEY AND EXISTING SERVICES", "EARTHWORKS AND EROSION AND SEDIMENT CONTROL", "DRIVEWAY AND CROSSOVER", "STORMWATER AND FLOOD", "STANDARDS AND APPROVALS"):
         assert h in heads
     allt = " ".join(t for _g, ts in groups for t in ts)
-    assert LN.AI_STATEMENT in allt and "CHECKED" in LN.AI_STATEMENT and "AI-GENERATED" in LN.AI_STATEMENT
+    assert "AI-GENERATED" not in allt and "AI GENERATED" not in allt                                      # stage 8: no AI statement in the general notes (the cover carries the verification block)
     assert "SEDIMENT FENCE STAR PICKETS ARE USUALLY 2.5" in allt and "[ESC GUIDELINES" in allt            # cited value and source
     assert "SETBACK: 6.5 M OR THE AVERAGE" in allt and "DEVELOPMENT CONTROL PLAN 2025" in allt
     assert "COUNCIL REQUIREMENT: DRIVEWAY MAXIMUM GRADE UNRESOLVED, CONFIRM WITH GUNNEDAH SHIRE COUNCIL" in allt
@@ -163,7 +163,7 @@ def test_notes_for_an_lga_without_a_knowledge_file_are_unresolved_and_named_from
     assert council == "NOWHEREVILLE COUNCIL"
     allt = " ".join(t for _g, ts in groups for t in ts)
     assert "CONFIRM WITH NOWHEREVILLE COUNCIL" in allt and "GUNNEDAH" not in allt
-    assert "COUNCIL REQUIREMENT: BUILDING SETBACKS UNRESOLVED" in allt and LN.AI_STATEMENT in allt
+    assert "COUNCIL REQUIREMENT: BUILDING SETBACKS UNRESOLVED" in allt and "AI GENERATED" not in allt
 
 
 def test_c001_is_numbered_inside_the_frame_with_no_orphan_heading():
@@ -284,7 +284,7 @@ def test_lot2_fits_at_1_to_100_rotated_in_pdf_and_dxf(lot2):
 def test_lot2_c001_names_the_council_and_c100_has_no_spot_levels(lot2):
     doc = pymupdf.open(str(lot2 / "planset.pdf"))
     t = " ".join(doc[1].get_text().split())
-    assert "GUNNEDAH SHIRE COUNCIL" in t and "UNRESOLVED, CONFIRM WITH GUNNEDAH SHIRE COUNCIL" in t and "AI-GENERATED" in t
+    assert "GUNNEDAH SHIRE COUNCIL" in t and "UNRESOLVED, CONFIRM WITH GUNNEDAH SHIRE COUNCIL" in t and "AI-GENERATED" not in t
     d = ezdxf.readfile(str(lot2 / "planset.dxf"))
     spots = [e for e in d.layouts.get("C100") if e.dxftype() == "TEXT" and "CONT" not in e.dxf.layer and re.fullmatch(r"\d{3}\.\d+", e.dxf.text)]      # contour labels stay
     assert not spots

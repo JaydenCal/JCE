@@ -505,6 +505,18 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                 f"{len(rs.rules)} cited rules for '{dev.rule_dwelling_type}'; unresolved: {', '.join(rs.unresolved) or 'none'}; "
                 + "; ".join(rs.warnings[:2]) + ("" if rs.rules or e.get("SA2_DCP_DOCS") else " (set SA2_DCP_DOCS to ingest a council DCP PDF)"))
 
+    # ---- DBYD (stage 8): the project's BYDA registry and traced services (verified ones are drawn, drafts never); no registry means EXISTING SERVICES NOT CONFIRMED
+    dbyd_view = None
+    if getattr(args, "dbyd_project", None):
+        from app.integrations.byda.view import load_view
+        dbyd_view = load_view(args.dbyd_project)
+        rep.facts["dbyd"] = ({"job_number": dbyd_view.job_number, "owners": dbyd_view.n_owners, "plans_received": dbyd_view.n_plans, "draft": dbyd_view.n_draft,
+                              "verified": dbyd_view.n_verified, "enquiry_valid_until": dbyd_view.enquiry_valid_until, "synthetic": dbyd_view.synthetic}
+                             if dbyd_view is not None else {"registry": "none found in " + str(args.dbyd_project)})
+        rep.add("DBYD registry", OK if dbyd_view is not None and dbyd_view.n_verified else UNRESOLVED,
+                (f"BYDA job {dbyd_view.job_number}: {dbyd_view.n_owners} owners, {dbyd_view.n_plans} with plans, {dbyd_view.n_draft} draft, {dbyd_view.n_verified} verified" + (f"; {dbyd_view.expiry_warning()}" if dbyd_view.expiry_warning() else ""))
+                if dbyd_view is not None else f"no registry in {args.dbyd_project}: EXISTING SERVICES NOT CONFIRMED")
+
     # ---- building (stage 8): the Plan Studio typical house placed to the CITED setbacks; the garage door becomes the driveway target (SA3 moves the driveway to meet it)
     placement = None
     if getattr(args, "building", None):
@@ -652,7 +664,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
                                    driveway_checks=list(env_out.checks), services=sa4.to_cad_services(), rwt=sa4.to_cad_rwt(), terrain=R.get("SA3"), survey_points=pts, dem_fetch=dem,
                                    levels_accuracy_m=getattr(args, "levels_accuracy_m", None), ffl_value=ffl_value if ffl_lab else None, ffl_label=ffl_lab,
                                    imagery=provider_from_env("NSW"), esc_runner=esc_run, unresolved=list(env_out.envelope.unresolved_elements),
-                                   address=args.address or "", cadastre_fetch=cad_fetch, building=placement,
+                                   address=args.address or "", cadastre_fetch=cad_fetch, building=placement, dbyd=dbyd_view,
                                    rules=list((raw_rules.get("rules", []) if isinstance(raw_rules, dict) else raw_rules) or []))
                 res = build_planset(pin, out, "planset", style=getattr(args, "planset_style", "legacy"),
                                     only=[x for x in (getattr(args, "planset_sheets", None) or "").split(",") if x.strip()] or None)
@@ -716,7 +728,7 @@ def run_site(args: argparse.Namespace, env: dict[str, str] | None = None, fetche
         in9 = Sa9Input(
             lot=lot_with_envelope(sa1, env_out) if env_out is not None else lot, footprint_wkt=footprint_wkt,
             output_dir=str(out), development_type=dev, flood_ffl_text=flood_text,
-            project_title=rr.project_title, flags=list(sa1.flags or []), civil=_civil_summary(R, rep.facts, fchk, env_out, sa4, ps_civil, bool(getattr(args, 'planset', False)), building=(rep.facts.get('building') if (rep.facts.get('building') or {}).get('placed') else None)),
+            project_title=rr.project_title, flags=list(sa1.flags or []), civil=_civil_summary(R, rep.facts, fchk, env_out, sa4, ps_civil, bool(getattr(args, 'planset', False)), building=(rep.facts.get('building') if (rep.facts.get('building') or {}).get('placed') else None), dbyd=dbyd_view),
             zone_map=zone_map_from_sa1(sa1))     # zone polygons for the land zoning map (none in the offline fixture: the map says so)
         if getattr(args, "report", False):       # reproducible re-render input: re-run SA9 on this file to rebuild the report
             (out / "sa9_input.json").write_text(in9.model_dump_json(indent=1))
@@ -771,7 +783,7 @@ def _accuracy_text(acc: float | None, source: str | None) -> str:
     return f"{acc:g} m ({source})"
 
 
-def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4, ps: dict | None = None, planset_run: bool = False, building: dict | None = None) -> dict | None:
+def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4, ps: dict | None = None, planset_run: bool = False, building: dict | None = None, dbyd=None) -> dict | None:
     """Plain dict for the report's civil page. Only what exists; nothing is invented."""
     cv: dict[str, Any] = {}
     t3 = R.get("SA3")
@@ -786,6 +798,11 @@ def _civil_summary(R: dict, facts: dict, fchk, env_out, sa4, ps: dict | None = N
     cv["planset_built"] = planset_run
     if building:
         cv["building"] = {k: v for k, v in building.items() if k != "footprint_wkt"}
+    if dbyd is not None:
+        cv["dbyd"] = {"job_number": dbyd.job_number, "enquiry_valid_until": dbyd.enquiry_valid_until, "lodged": dbyd.lodged, "responses_text": dbyd.responses_text, "synthetic": dbyd.synthetic,
+                      "expiry_warning": dbyd.expiry_warning_plain(), "header": list(dbyd.status_header(upper=False)), "rows": [list(r) for r in dbyd.status_rows(upper=False)], "n_owners": dbyd.n_owners,
+                      "n_received": dbyd.n_received, "n_plans": dbyd.n_plans, "n_draft": dbyd.n_draft, "n_verified": dbyd.n_verified, "summary": dbyd.summary_lines(),
+                      "enquiry_days_left": dbyd.enquiry_days_left(), "not_confirmed": dbyd.not_confirmed_text()}
     if ps:
         cv["planset"] = ps
     if fchk is not None:
@@ -873,6 +890,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--freeboard-m", type=float, help="freeboard override (user_entered); default = cited flood.freeboard_m for the LGA else UNRESOLVED")
     p.add_argument("--report", action="store_true", help="also write site_report.pdf/.json (Site Assessment and Planning Constraints Report; live NSW aerials unless IMAGERY_PROVIDER is set)")
     p.add_argument("--building", help="Plan Studio project file (.planstudio.json) of the house to place on the lot to the cited setbacks (stage 8); e.g. tests/fixtures/planstudio_house_single.planstudio.json")
+    p.add_argument("--dbyd-project", help="project folder that holds the DBYD registry (<folder>/dbyd/owners.json from scripts/dbyd_import.py) and the traced services; verified services are drawn on C100 and C310, "
+                                          "drafts never, and the services status table is added (stage 8)")
     p.add_argument("--title")
     p.add_argument("--out", default="out/run_site")
     return p

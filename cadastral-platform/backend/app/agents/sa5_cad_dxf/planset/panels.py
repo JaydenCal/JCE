@@ -124,6 +124,8 @@ def column(b, heights, w: float, gap: float = 3.0, margin: float = 4.0, sides=("
             continue
         if any(subj.intersects(sbox(*r)) for r in rects):
             continue
+        if getattr(b, "rows", None) and getattr(b, "panel", None) is not None and any(sbox(*b.panel).buffer(3.0).intersects(sbox(*r)) for r in rects):
+            continue                                                  # the DATA NOT AVAILABLE panel is drawn later in finish(): the column must not sit on it
         if any(not v.free((r[0] - 2, r[1] - 2, r[2] + 2, r[3] + 2)) for r in rects):
             continue
         return rects

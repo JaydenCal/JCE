@@ -19,6 +19,7 @@ from shapely.geometry import LineString, Point, Polygon, box as sbox
 from shapely.ops import unary_union
 
 from app.agents.sa5_cad_dxf.planset import building_draw as BD
+from app.agents.sa5_cad_dxf.planset import dbyd_draw as DD
 from app.agents.sa5_cad_dxf.planset import callout as CO
 from app.agents.sa5_cad_dxf.planset import cadwin
 from app.agents.sa5_cad_dxf.planset import lga_notes as LN
@@ -67,7 +68,7 @@ def draw_ctrs(b, light: bool = True) -> int:
     if s.tin is None:
         return 0
     contour_sets(s, v.model_window())
-    return D.contours(v, s, "ex", lab_h=2.3, light=light, avoid=s.footprint if s.placement is not None else None)
+    return D.contours(v, s, "ex", lab_h=TXT.BODY, light=light, avoid=s.footprint if s.placement is not None else None)
 
 
 def ctr_notes(s: Site) -> list[str]:
@@ -516,23 +517,26 @@ def c100(ctx: RefCtx) -> Sheet:
     rows = []
     if s.tin is None:
         rows.append("existing contours and spot levels: no survey or DEM levels supplied (run with levels nsw or supply a detail survey)")
-    if not s.inp.services:
-        rows.append("existing services: none supplied; location to be confirmed from council records and DBYD")
+    if not s.inp.services and DD.n_drawn(s) == 0:
+        rows += (DD.rows_missing(s) if DD.view_of(s) is not None else ["existing services: none supplied; location to be confirmed from council records and DBYD"])
     rows.append("existing buildings, trees, fences and easements: not in the supplied data (confirm by title search and s88B instrument)")
-    b0 = start(ctx, "C100", rows, [], want_xover=False)
+    b0 = start(ctx, "C100", rows, DD.notes_for(s), want_xover=False)
     rows += road_rows(s, b0.xg, b0.front, b0.pave)
     if len(rows) != len(b0.rows):                                    # the missing-road row changes the panel: rebuild with it
-        b0 = start(ctx, "C100", rows, [], want_xover=False)
+        b0 = start(ctx, "C100", rows, DD.notes_for(s), want_xover=False)
     b = b0
-    b.pre = ([CONTOUR_NOTE] if s.tin is not None else [])
+    b.pre = ([CONTOUR_NOTE] if s.tin is not None else []) + DD.notes_for(s)
     v = b.v
     if s.tin is not None:
         contour_sets(s, v.model_window())
-        D.contours(v, s, "ex", lab_h=2.3)                       # contours only: spot levels are not shown on the existing site plan
+        D.contours(v, s, "ex", lab_h=TXT.BODY)                     # contours only: spot levels are not shown on the existing site plan
     draw_xover(b, "existing")
     missing: list[str] = []
     _n, pending = _services(v, s, missing)
+    pending = list(pending) + DD.draw_verified(b)                     # verified BYDA services only (owner, plan date, location indicative)
     finish(b, "EXISTING SITE PLAN")
+    if DD.view_of(s) is not None:
+        text_panel(b, "EXISTING SERVICES (BYDA)", DD.status_lines(DD.view_of(s)), 110.0, warn=DD.view_of(s).n_verified == 0)
     CX.callouts_crossover(v, b.xg, b.std, b.keep, [], [s.lot], kerb_only=True, short_kerb=True, must_avoid=list(getattr(b, 'kerb_geoms', [])))
     for lines_, pt_ in pending:
         place(b, lines_, pt_)
@@ -801,7 +805,7 @@ def c200(ctx: RefCtx) -> Sheet:
     v = b.v
     if s.tin is not None:
         contour_sets(s, v.model_window())
-        D.contours(v, s, "ex", lab_h=2.3)
+        D.contours(v, s, "ex", lab_h=TXT.BODY)
     if pad_ok:
         from shapely import wkt as swkt
         for z in s.cutfill.zones:
@@ -838,6 +842,13 @@ def c200(ctx: RefCtx) -> Sheet:
     return sh
 
 
+def services_status_text(s) -> str:
+    dv = DD.view_of(s)
+    if dv is not None:
+        return " ".join(dv.summary_lines()[:1] + [dv.not_confirmed_text() + "."] + ([dv.expiry_warning()] if dv.expiry_warning() else []) + (["SYNTHETIC DEMO DATA: NOT REAL SERVICES."] if dv.synthetic else []) + ["LOCATE BY POTHOLING."])
+    return "SUPPLIED SERVICES ARE DRAWN AS SUPPLIED (INDICATIVE)." if s.inp.services else "NONE SUPPLIED: LOCATE BY DIAL BEFORE YOU DIG AND POTHOLING."
+
+
 # ====================================================================================================== C300 stormwater
 def c300(ctx: RefCtx) -> Sheet:
     s = ctx.site
@@ -848,8 +859,8 @@ def c300(ctx: RefCtx) -> Sheet:
     if s.tin is None:
         rows.append("overland flow arrows: no survey or DEM levels supplied")
     st_exist = [x for x in s.inp.services if x.service == "stormwater"]
-    if not st_exist:
-        rows.append("existing council stormwater assets: none supplied; confirm from council records and DBYD")
+    if not st_exist and DD.n_drawn(s, ("stormwater",)) == 0:
+        rows.append("existing council stormwater assets: none supplied; confirm from council records and DBYD" if DD.view_of(s) is None else "existing stormwater assets: none verified from the BYDA responses (see C310); confirm from council records and by potholing")
     notes = ["ALL DRAINAGE IS TO BE DESIGNED BY A HYDRAULIC DESIGNER. NOTHING HERE IS A DRAINAGE DESIGN."]
     notes += cited(s, ("stormwater.designed_per_eng_standards", "stormwater.osd_roof_plumbing_design_aep_pct"))
     if s.tin is not None:
@@ -877,7 +888,8 @@ def c300(ctx: RefCtx) -> Sheet:
                 d = SP.downslope(s, (x, y))
                 if d:
                     SP.arrow(v, (x, y), d)
-    _services(v, s, [], ("stormwater",))
+    _n_sw, sw_pending = _services(v, s, [], ("stormwater",))
+    sw_pending = list(sw_pending) + DD.draw_verified(b, ("stormwater",))     # verified BYDA stormwater only
     if s.inp.rwt is not None:
         x, y = s.inp.rwt.location_xy
         v.fill(Point(x, y).buffer(s.inp.rwt.diameter_m / 2), "C-UTIL-RWTK", ST.WHITE, 1.0, edge=ST.BLACK, edge_lw=ST.REF.outline_lw)
@@ -888,6 +900,8 @@ def c300(ctx: RefCtx) -> Sheet:
         place(b, BD.label_lines(s, ([f"ROOF PLAN AREA TO THE EAVES {ra:,.0f} m2 (CATCHMENT, INDICATIVE)"] if ra else []) + ["ROOF WATER TO THE LEGAL POINT OF DISCHARGE: NOT DESIGNED"]), (c_.x, c_.y), avoid=b.hard)
     if dn:                                                                       # visible on the plan, not only in the notes panel
         text_panel(b, "DRAINAGE DISCHARGE (INDICATIVE)", [dn], 120.0, warn=True)
+    for lines_, pt_ in sw_pending:
+        place(b, lines_, pt_)
     CX.callouts_crossover(v, b.xg, b.std, b.keep, [], [s.lot], kerb_only=True, short_kerb=True, must_avoid=list(getattr(b, 'kerb_geoms', [])))
     pave_callout(b)
     return seal(b)
@@ -901,17 +915,24 @@ def c310(ctx: RefCtx) -> Sheet:
         rows = ["proposed water service and sewer house connection: not designed (position, size and cover to be determined by the water and sewer authority from the dwelling design)"]
     else:
         rows = ["proposed water service and sewer house connection: depend on the " + NO_DWELLING]
-    if not ex_w:
-        rows.append("existing water main, sewer main and junction: none supplied; EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / DBYD")
+    if not ex_w and DD.n_drawn(s, ("water", "sewer")) == 0:
+        rows.append("existing water main, sewer main and junction: none supplied; EXISTING SERVICE LOCATION TO BE CONFIRMED FROM COUNCIL RECORDS / DBYD" if DD.view_of(s) is None
+                    else "existing water main, sewer main and junction: none verified from the BYDA responses; EXISTING SERVICE LOCATION NOT CONFIRMED, CONFIRM BY POTHOLING")
     notes = cited(s, ("water.min_cover_m", "sewer.junction_min_diameter_mm", "sewer.house_connection_min_cover_m", "util.build_over_sewer_policy"))
     notes.append("LOCATE ALL SERVICES BY DBYD AND POTHOLING BEFORE EXCAVATION.")
-    b = start(ctx, "C310", rows, notes + ctr_notes(s))
+    b = start(ctx, "C310", rows, notes + ctr_notes(s) + DD.notes_for(s))
     draw_ctrs(b)
     draw_xover(b, "proposed")
     if s.placement is not None:
         BD.draw_light(b, door=False)
     _n, pending = _services(b.v, s, [], ("water", "sewer"))
+    pending = list(pending) + DD.draw_verified(b)                     # verified BYDA services only, every owner and service type
     finish(b, "WATER AND SEWER")
+    dv_ = DD.view_of(s)
+    if dv_ is not None:                                                # the services status table: owners, response, plans, traced and verified counts, validity
+        if DD.table_panel(b, "EXISTING SERVICES STATUS (BYDA)", DD.table_rows(dv_), 160.0) is None:
+            b.sh.data_missing.append("services status table: no free place on the sheet")
+        text_panel(b, "BYDA SUMMARY", DD.status_lines(dv_), 110.0, warn=dv_.n_verified == 0 or dv_.expiry_warning() is not None)
     CX.callouts_crossover(b.v, b.xg, b.std, b.keep, [], [s.lot], kerb_only=True, short_kerb=True, must_avoid=list(getattr(b, 'kerb_geoms', [])))
     for lines_, pt_ in pending:
         place(b, lines_, pt_)
@@ -1283,8 +1304,9 @@ def c410(ctx: RefCtx) -> Sheet:
     sh.scale_text = f"H 1:{hs} V 1:{vs:g}"
     # status, checks, notes ---------------------------------------------------------------------------------------------------------------
     lines = []
+    dna_ = None
     if not proposed:
-        PN.no_data(v, (X0 - 4.0, sy0 - 64.0, X0 + 360.0, sy0 - 4.0), "PROPOSED LEVELS NOT AVAILABLE.", "No driveway end level (platform default) is available, so the design line, grades and B85 checks are not drawn.")
+        dna_ = ("PROPOSED LEVELS NOT AVAILABLE.", "No driveway end level (platform default) is available, so the design line, grades and B85 checks are not drawn.")
         sh.data_missing.append("proposed driveway levels and checks: driveway end level (platform default) not available")
     else:
         lines += profile_check_lines(s)
@@ -1298,6 +1320,9 @@ def c410(ctx: RefCtx) -> Sheet:
     h_ = PN.panel_height(lines, pw, title="NOTES AND " + CHECK_TITLE)
     ptop = CONTENT_Y1 - 2.0
     PN.draw_panel(v, (xr + 12.0, ptop - h_, xr + 12.0 + pw, ptop), "NOTES AND " + CHECK_TITLE, lines)
+    if dna_ is not None:                                              # the data not available box sits under the notes, in the right column: the chart keeps its whole height
+        hp_ = PN.panel_height([dna_[0], dna_[1]], pw)
+        PN.no_data(v, (xr + 12.0, ptop - h_ - 4.0 - hp_, xr + 12.0 + pw, ptop - h_ - 4.0), dna_[0], dna_[1])
     # plan strip aligned to the chainage of the profile (lateral extent diagrammatic) ---------------------------------------------
     _plan_strip(v, s, X0, xr, hx, sy0, sy1, L, gw, p["sb"])
     sh.notes = ["LONGITUDINAL SECTION ALONG THE SA3 DRIVEWAY CENTRELINE. CHAINAGE 0 IS THE KERB LINE.", "LEVELS ARE DEM-DERIVED AND INDICATIVE."] + ([fl] if fl else []) + strip_note
@@ -1948,7 +1973,7 @@ def c000(ctx: RefCtx, sheets: list[Sheet], font_note: str) -> Sheet:
     src = [("CADASTRE", "STATE CADASTRE (DCDB). BOUNDARIES, LOT NUMBERS AND PLAN NUMBERS ARE NOT A SURVEY."),
            ("LEVELS", "5 m DEM, INDICATIVE ONLY. DETAIL SURVEY AT THE DETAILED DESIGN STAGE." if s.tin is not None else "NO LEVELS SUPPLIED: NOT DRAWN."),
            ("AERIAL", re.sub(r"^AERIAL IMAGERY:\s*", "", ST.clean(s.aerial_site.note).upper()) if s.aerial_site is not None else "NO AERIAL IMAGE SUPPLIED."),
-           ("SERVICES", "SUPPLIED SERVICES ARE DRAWN AS SUPPLIED (INDICATIVE)." if s.inp.services else "NONE SUPPLIED: LOCATE BY DIAL BEFORE YOU DIG AND POTHOLING."),
+           ("SERVICES", services_status_text(s)),
            ("ASSUMED ITEMS", "KERB, ROAD EXTENT AND LAYOVER VALUES ARE ASSUMED OR PLACEHOLDERS WHERE MARKED."),
            ("CODES", "DRAWING NUMBER JCS-{JOB}-CIV-{NNN}. LAYERS JCS-{DISCIPLINE}-{ELEMENT}-{TYPE}, THE SAME IN THE DXF."),
            ("BUILDING", building_status_text(s))]

@@ -440,6 +440,17 @@ def extract_site_works(inp, planset_result: dict | None, *, probe_imagery: bool 
     except Exception as ex:  # noqa: BLE001
         note(f"building placement not read ({type(ex).__name__}: {ex})")
 
+    # ---- DBYD (stage 8): the BYDA responses and the verified services (drafts are counted, never described as services)
+    try:
+        dv_ = getattr(inp, "dbyd", None)
+        if dv_ is not None:
+            w["dbyd"] = {"job_number": dv_.job_number, "enquiry_valid_until": dv_.enquiry_valid_until, "lodged": dv_.lodged, "responses_text": dv_.responses_text, "synthetic": dv_.synthetic,
+                         "expiry_warning": dv_.expiry_warning_plain(), "header": list(dv_.status_header(upper=False)), "rows": [list(r) for r in dv_.status_rows(upper=False)],
+                         "n_owners": dv_.n_owners, "n_received": dv_.n_received, "n_plans": dv_.n_plans, "n_draft": dv_.n_draft, "n_verified": dv_.n_verified,
+                         "enquiry_days_left": dv_.enquiry_days_left(), "verified_services": [{"owner": f.get("owner"), "service": f.get("service"), "plan_date": f.get("plan_date")} for f in dv_.verified]}
+    except Exception as ex:  # noqa: BLE001
+        note(f"DBYD view not read ({type(ex).__name__}: {ex})")
+
     # ---- terrain (existing ground, 5 m DEM or survey)
     ter: dict[str, Any] = {"available": False}
     if site is not None and site.tin is not None:
@@ -978,6 +989,13 @@ def _src_label(bd: dict) -> str:
     return re.sub(r"(?i)plan studio", "Plan Studio", src.capitalize()) if src.isupper() else src
 
 
+def dmy_iso(iso: str | None) -> str:
+    try:
+        return date.fromisoformat(str(iso)[:10]).strftime("%d/%m/%Y")
+    except (ValueError, TypeError):
+        return str(iso or "not stated")
+
+
 def _ffl_note(bd: dict) -> str:
     n = (bd.get("ffl_note") or "").strip()
     if n.startswith("FFL TBC: "):
@@ -1333,12 +1351,31 @@ def _s3(b: _Build, d: _Data, drv: dict, ter: dict, ew: dict, gaps: list[dict]) -
     b.h2("3.7 Services connections (indicative)")
     sv = w.get("services", {})
     b.bullets([
-        ("No existing water main, sewer main or junction was supplied. Existing service locations must be confirmed from council records and the BYDA response before any excavation.", "planset:sheets[C310].data_missing", T_DNA) if not sv.get("count") else
+        ("No existing water main, sewer main or junction was supplied. Existing service locations must be confirmed from council records and the BYDA response before any excavation.", "planset:sheets[C310].data_missing", T_DNA) if not (sv.get("count") or (w.get("dbyd") or {}).get("n_verified")) else
         (f"{sv['count']} service line(s) were supplied to the plan set.", "data:planset.services"),
         _bi(d, f"The proposed water service and sewer house connection depend on the building design. {BUILDING_BY_OTHERS}.", "The proposed water service and sewer house connection to the typical house are not designed. Their position, size and cover are for the water and sewer authority.", "planset:sheets[C310].data_missing", T_NA),
         ("Electricity, gas and telecommunications connections are not in the run data.", "data:planset.services", T_DNA),
         ("Connections shown on the plan set are indicative and are not a servicing strategy.", "planset:sheets[C310]"),
     ])
+    dy = w.get("dbyd")
+    if dy:
+        b.h2("3.7.1 Before You Dig (BYDA) responses")
+        vu = dmy_iso(dy.get("enquiry_valid_until")) if dy.get("enquiry_valid_until") else "not stated"
+        b.p(f"BYDA job {dy.get('job_number') or 'not stated'}: {dy.get('responses_text') or str(dy.get('n_received')) + ' of ' + str(dy.get('n_owners')) + ' asset owner responses received'}. "
+            f"The plans are valid until {vu}. {dy.get('n_plans', 0)} of {dy.get('n_owners', 0)} asset owners supplied plans.", "data:dbyd.registry")
+        if dy.get("rows"):
+            b.table(list(dy["header"]), [(r, "data:dbyd.registry") for r in dy["rows"]], [1.5, 1.0, 1.7, 0.6, 0.8, 1.1],
+                    caption="Response status, plans received, services traced (draft) and verified, and the date each owner's plans stop being valid (the earlier of the owner's stated period and the enquiry validity).")
+        if dy.get("n_verified"):
+            b.p(f"{dy['n_verified']} traced service(s) were verified by a person and are drawn on sheets C100 and C310 with the asset owner, the plan date and the statement that the location is indicative and to be confirmed by potholing. "
+                "All other existing services are not confirmed.", "data:dbyd.traces")
+        else:
+            b.p(f"No existing service is verified ({dy.get('n_draft', 0)} traced as draft), so none is drawn. Existing services are not confirmed. Not checked is not clear.", "data:dbyd.traces", T_NC)
+        if dy.get("expiry_warning"):
+            b.p(dy["expiry_warning"], "data:dbyd.registry", T_UNRES)
+        if dy.get("synthetic"):
+            b.p("SYNTHETIC DEMO DATA: the BYDA responses and services in this document are invented to exercise the software. They are not real services.", "data:dbyd.registry", T_FIX)
+        b.p("Asset owner plans are for this project only and are not reproduced in this document. Every service location is indicative and is to be confirmed by potholing before any excavation.", "platform:method")
 
     b.h2("3.8 Site constraints shown on the plan set")
     b.p("The plan set shows the cadastral boundaries, adjoining lots, an assumed kerb line, existing contours from the 5 m DEM and the items above. Mapped planning and hazard layers are screened in section 5 and in the JCESITE site report.", "planset:sheets[C100]")

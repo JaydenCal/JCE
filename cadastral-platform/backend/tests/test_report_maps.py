@@ -54,8 +54,7 @@ def test_polygon_maps_have_category_legend_with_lot_share_and_labels(demo_built)
     assert any("% of lot" in l for l in z["legend"]) and "Lot boundary (subject lot)" in z["legend"] and "Adjoining lots" in z["legend"]
     assert {c["class"].split(" ")[0] for c in z["on_lot"]} == {"R2", "RU1"}
     assert recs["nsw_lot_size_map"]["state"] == "map" and len(recs["nsw_lot_size_map"]["on_lot"]) == 2
-    t = demo_built["pages"][7]
-    assert "RU1" in t and "R2" in t
+    assert any("RU1" in t and "R2" in t for t in demo_built["pages"])                                 # the zoning figure page names both zones (the page number moves with the cover layout)
 
 
 def test_multi_zone_lot_is_flagged_on_the_figure(demo_built):
@@ -205,7 +204,7 @@ def test_captions_keep_with_figure_and_no_stranded_headings(demo_built):
             assert "Figure 4" in " ".join(demo_built["pages"][i:i + 2])
     for i, pg in enumerate(demo_built["doc"]):
         lines = [l for l in pg.get_text().split("\n") if l.strip()]
-        body = [l for l in lines if not l.startswith(("AI GENERATED", "NOT A S10.7", "NOT A 510.7", "JCESITE", "PAGE "))]
+        body = [l for l in lines if not l.startswith(("NOT A S10.7", "NOT A 510.7", "JCESITE", "PAGE "))]
         assert not (body and re.match(r"^\d\d / SECTION$", body[-1])), i                      # a section label as the last line of a page
 
 

@@ -80,12 +80,20 @@ def test_jce_brand_object_is_ignored():
     assert "jce infrastructure" not in txt
 
 
-def test_ai_statement_on_cover_and_every_page_footer(built):
+def test_verification_box_on_the_cover_only_and_no_ai_statement_on_any_page(built):
+    """Stage 8 (21/10/2026): TO BE VERIFIED BY A SUITABLY QUALIFIED PERSON with a tick box and name, signature and date fields on the cover; no AI statement anywhere else."""
+    from app.common.statement import AI_DRAFT_STATEMENT, VERIFY_FIELDS, VERIFY_STATEMENT
     assert len(built["pages"]) > 5
+    cover = _flat(built["pages"][0]).upper()
+    assert VERIFY_STATEMENT in cover and all(f in cover for f in VERIFY_FIELDS)
+    assert cover.count(VERIFY_STATEMENT) == 1
     for i, t in enumerate(built["pages"], 1):
-        assert EX.AI_STATEMENT in _flat(t), f"page {i} lacks the AI statement"
-    assert EX.AI_STATEMENT in _flat(built["pages"][0])           # cover (banner and footer)
-    assert _flat(built["pages"][0]).count(EX.AI_STATEMENT) >= 2
+        flat = _flat(t).upper()
+        assert "AI GENERATED DRAFT" not in flat and AI_DRAFT_STATEMENT not in flat, f"page {i} carries the old AI statement"
+        if i > 1:
+            assert VERIFY_STATEMENT not in flat, f"page {i} repeats the verification statement"
+    assert EX.AI_STATEMENT is None
+    assert built["js"]["verification"]["statement"] == VERIFY_STATEMENT and built["js"]["verification"]["on"] == "cover only"
 
 
 def test_no_em_or_en_dashes_in_report_text(built):

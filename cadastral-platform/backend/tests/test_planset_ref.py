@@ -105,17 +105,16 @@ def test_platform_brand_only_no_jce_identity(tmp_path):
     assert codes.PLATFORM_BRAND.abn == "" and codes.PLATFORM_BRAND.website == ""
 
 
-def test_ai_statement_boxed_on_title_block_and_notes_panel(built):
+def test_no_ai_statement_on_a_plan_sheet_frame_and_the_title_block_keeps_its_fields(built):
+    """Stage 8 (21/10/2026): the AI statement is gone from the title block and the notes panel of every sheet; the verification block is on the cover only."""
     from app.agents.sa5_cad_dxf.planset import codes
     _, res, sh, frame = built
     assert codes.AI_STATEMENT == codes.AI_STATEMENT.upper()
     flat = " ".join(" ".join(_texts(frame.items)).split())
-    ai = [it for it in frame.items if it.kind == "text" and it.layer == "JCS-FRAM-AICK-TEXT"]
-    assert " ".join(" ".join(t.text for t in ai if t.pts[0][1] < 88).split()) == codes.AI_STATEMENT          # title block status area
-    assert " ".join(" ".join(t.text for t in ai if t.pts[0][1] >= 88).split()) == codes.AI_STATEMENT         # sheet notes panel
-    assert [it for it in frame.items if it.kind == "fill" and it.layer == "JCS-FRAM-AICK-HATCH" and it.edge]     # boxed
-    assert STAMP in flat and "AI CHECK" in flat and "CHECKED" in flat and "APPROVED" in flat
-    assert " ".join(" ".join(pymupdf.open(res["pdf"])[0].get_text().split()).split()).count("AI GENERATED DRAFT,") >= 2
+    assert not [it for it in frame.items if it.layer == "JCS-FRAM-AICK-TEXT"]                           # no verification or AI box on a non-cover sheet
+    assert "AI GENERATED DRAFT" not in flat and codes.VERIFY_TEXT not in flat
+    assert STAMP in flat and "CHECKED" in flat and "APPROVED" in flat
+    assert "AI GENERATED DRAFT" not in " ".join(" ".join(pymupdf.open(res["pdf"])[0].get_text().split()).split())
 
 
 def test_drawing_number_scheme_and_sheet_table():
@@ -440,7 +439,7 @@ def full_set(tmp_path_factory):
     return inp, res
 
 
-def test_all_twelve_sheets_a1_branding_ai_statement_jcs_layers(full_set):
+def test_all_twelve_sheets_a1_branding_verification_on_cover_only_jcs_layers(full_set):
     from app.agents.sa5_cad_dxf.planset import codes
     _, res = full_set
     assert [x[0] for x in res["sheets"]] == list(codes.SHEET_NNN)
@@ -449,7 +448,10 @@ def test_all_twelve_sheets_a1_branding_ai_statement_jcs_layers(full_set):
     for i, pg in enumerate(doc):
         assert abs(pg.rect.width - 841 / 25.4 * 72) < 1.0 and abs(pg.rect.height - 594 / 25.4 * 72) < 1.0
         t = " ".join(pg.get_text().split())
-        assert "JCESITE" in t and "AI GENERATED DRAFT," in t and "AI CHECK" in t and f"JCS-XXX-CIV-{list(codes.SHEET_NNN.values())[i]}" in t
+        assert "JCESITE" in t and "AI GENERATED DRAFT" not in t and f"JCS-XXX-CIV-{list(codes.SHEET_NNN.values())[i]}" in t
+        assert (codes.VERIFY_TEXT in t) == (i == 0), i                                                          # the verification block is on the cover (sheet 1) only
+        if i == 0:
+            assert "SIGNATURE" in t and "NAME" in t and "DATE" in t
         assert not any(d in t for d in DASHES) and "JCE INFRASTRUCTURE" not in t.upper()
     d = ezdxf.readfile(res["dxf"])
     assert len(d.audit().errors) == 0 and res["dxf_stats"]["audit_errors"] == 0
