@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>3D viewer test page</title>
+  <meta name="robots" content="noindex">
+  <!-- Standalone page for the 3D viewer on the white app theme. Query: sample=lHouse|twoStorey|shed|extension, catalogue=1, view=walk, edit=1 -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../../vendor/three/build/three.module.js",
+      "three/addons/": "../../vendor/three/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --ps-bg: #ffffff; --ps-panel: #ffffff; --ps-text: #1b2430; --ps-muted: #5a6676;
+      --ps-accent: #1f6feb; --ps-accent-ink: #ffffff; --ps-border: #d2d8df;
+      --ps-warn: #b26a00; --ps-danger: #b3261e;
+      --ps-font-ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+      --ps-font-label: system-ui, sans-serif; --ps-font-mono: ui-monospace, monospace;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --ps-bg: #12171d; --ps-panel: #1c232c; --ps-text: #e8edf2; --ps-muted: #9aa6b4;
+        --ps-accent: #6aa5ff; --ps-accent-ink: #0b1a30; --ps-border: #2e3844;
+        --ps-warn: #f0b04a; --ps-danger: #ff8a80;
+      }
+    }
+    html, body { margin: 0; height: 100%; background: var(--ps-bg); color: var(--ps-text); font-family: var(--ps-font-ui); }
+    #stage { position: fixed; inset: 0; }
+  </style>
+</head>
+<body>
+  <div id="stage"></div>
+  <script type="module">
+    import { createStore } from '../../src/model/store.js';
+    import { createViewer3D } from '../../src/viewer3d/viewer.js';
+    import { SAMPLES } from '../../src/viewer3d/samples.js';
+
+    const q = new URLSearchParams(location.search);
+    const make = SAMPLES[q.get('sample')] || SAMPLES.lHouse;
+
+    let catalogue = null;
+    let opCatalogue = null;
+    if (q.get('catalogue') === '1') {
+      try {
+        const [furn, fin] = await Promise.all([
+          import('../../src/catalogue/furniture.js'),
+          import('../../src/catalogue/finishes.js'),
+        ]);
+        catalogue = { getFurniture: furn.getFurniture, finishes: fin };
+        opCatalogue = { getFurniture: furn.getFurniture, validateFinish: fin.validateFinish };
+      } catch (e) {
+        console.warn('Catalogue unavailable', e.message);
+      }
+    }
+
+    const store = createStore(make(), { opContext: opCatalogue ? { catalogue: opCatalogue } : {} });
+    const viewer = createViewer3D(document.getElementById('stage'), store, { catalogue });
+    store.setUI({ view: q.get('view') === 'walk' ? 'walk' : '3d' });
+    viewer.setActive(true);
+    // Screen position of a world point, for driving clicks in browser tests.
+    const toScreen = (x, y, z) => {
+      const p = viewer.camera.position.clone().set(x, y, z).project(viewer.camera);
+      const r = document.getElementById('stage').getBoundingClientRect();
+      return [Math.round(r.left + ((p.x + 1) / 2) * r.width), Math.round(r.top + ((1 - p.y) / 2) * r.height)];
+    };
+    if (q.get('edit') === '1') viewer.setEdit(true);
+    window.__test = { store, viewer, catalogue, toScreen };
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Plan Studio</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="Draw a floor plan, see it in 3D and walk through it. Houses, granny flats, units, sheds and extensions.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="./styles.css">
+  <!-- Prototype: vendor files are served from ./vendor (self-hosted). Production: bundle and self-host the same versions. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/build/three.module.js",
+      "three/addons/": "./vendor/three/examples/jsm/",
+      "pdfjs-dist": "./vendor/pdfjs/build/pdf.min.mjs"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app" class="ps-app"><p class="ps-boot">Loading Plan Studio</p></div>
+  <noscript>Plan Studio needs JavaScript to run.</noscript>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>

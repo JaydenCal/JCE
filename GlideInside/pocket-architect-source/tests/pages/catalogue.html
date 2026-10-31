@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalogue check</title>
+<!-- Visual check page for src/catalogue. Query: ?show=finishes,furniture,3d,templates &only=<template id> &scale=1.4 -->
+<script type="importmap">
+{ "imports": { "three": "../../vendor/three/build/three.module.js" } }
+</script>
+<style>
+  :root { color-scheme: light; --ink: #1f2933; --muted: #5d6b79; --line: #d7dde3; --bg: #f6f4ef; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px 20px 40px; background: var(--bg); color: var(--ink); font: 13px/1.4 system-ui, sans-serif; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 22px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cell { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 4px; }
+  .cell canvas { display: block; }
+  .cell .cap { font-size: 11px; color: var(--muted); text-align: center; padding-top: 2px; }
+  .pal { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .sw { width: 74px; text-align: center; font-size: 10px; color: var(--muted); }
+  .sw i { display: block; height: 34px; border-radius: 4px; border: 1px solid rgba(0,0,0,.15); margin-bottom: 2px; }
+  .plans { display: flex; flex-wrap: wrap; gap: 14px; }
+  .plan { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 8px; }
+  .plan h3 { margin: 0 0 4px; font-size: 13px; }
+  .plan p { margin: 0 0 6px; color: var(--muted); font-size: 12px; max-width: 760px; }
+  .lint { color: #a1301c; font-size: 12px; margin: 4px 0 0; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>Plan Studio catalogue check</h1>
+<div id="root"></div>
+<script type="module">
+import * as THREE from 'three';
+import { catalogue } from '../../src/catalogue/index.js';
+import { lintProject } from '../../src/catalogue/tpl/lint.js';
+import * as G from '../../src/model/geometry.js';
+
+const q = new URLSearchParams(location.search);
+const show = (q.get('show') || 'finishes,furniture,3d,templates').split(',');
+const only = q.get('only');
+const planScale = Number(q.get('scale')) || 1;
+const root = document.getElementById('root');
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const section = (title) => { const h = el('h2', null, title); root.appendChild(h); const d = el('div'); root.appendChild(d); return d; };
+const INK = '#1f2933';
+
+// ---------------------------------------------------------------- finishes
+if (show.includes('finishes')) {
+  const box = section('Finishes');
+  for (const [name, list] of Object.entries(catalogue.finishes.COLOURS)) {
+    box.appendChild(el('div', null, `<b>${name}</b> (${list.length})`));
+    const row = el('div', 'pal');
+    for (const c of list) row.appendChild(el('div', 'sw', `<i style="background:${c.hex}"></i>${c.name}`));
+    box.appendChild(row);
+  }
+}
+
+// ---------------------------------------------------------------- furniture symbols
+const SYM = 210;
+function symbolCell(it) {
+  const cell = el('div', 'cell');
+  const cv = document.createElement('canvas');
+  cv.width = SYM; cv.height = SYM;
+  const ctx = cv.getContext('2d');
+  const s = Math.min((SYM - 24) / it.w, (SYM - 24) / it.d);
+  ctx.translate(SYM / 2, SYM / 2);
+  ctx.scale(s, s);
+  ctx.strokeStyle = INK; ctx.fillStyle = '#fbfaf6'; ctx.lineWidth = 1.5 / s;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.save(); ctx.strokeStyle = '#e1b2a8'; ctx.lineWidth = 1 / s; ctx.strokeRect(-it.w / 2, -it.d / 2, it.w, it.d); ctx.restore();
+  it.draw2d(ctx, it.w, it.d);
+  cell.appendChild(cv);
+  cell.appendChild(el('div', 'cap', `${it.id}<br>${it.w} x ${it.d} x ${it.h}`));
+  return cell;
+}
+if (show.includes('furniture')) {
+  const box = section(`Furniture plan symbols (${catalogue.FURNITURE.length})`);
+  for (const cat of catalogue.CATEGORIES) {
+    box.appendChild(el('div', null, `<b>${cat}</b>`));
+    const g = el('div', 'grid');
+    for (const it of catalogue.FURNITURE.filter((f) => f.category === cat)) g.appendChild(symbolCell(it));
+    box.appendChild(g);
+  }
+}
+
+// ---------------------------------------------------------------- furniture 3D
+if (show.includes('3d')) {
+  const box = section('Furniture 3D models');
+  const g = el('div', 'grid');
+  box.appendChild(g);
+  const S = 190;
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha: false });
+  renderer.setSize(S, S);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.setClearColor(0xe8ecef);
+  const scene = new THREE.Scene();
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8f94, 1.6));
+  const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+  sun.position.set(3, 6, 4);
+  scene.add(sun);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: 0xd9d2c3, roughness: 1 }));
+  floor.rotation.x = -Math.PI / 2;
+  scene.add(floor);
+  const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  for (const it of catalogue.FURNITURE) {
+    const model = it.build3d(THREE, { w: it.w, d: it.d, h: it.h });
+    scene.add(model);
+    const bb = new THREE.Box3().setFromObject(model);
+    const c = bb.getCenter(new THREE.Vector3());
+    const r = bb.getSize(new THREE.Vector3()).length() / 2;
+    const dir = new THREE.Vector3(0.75, 0.8, 1.15).normalize();
+    cam.position.copy(c).addScaledVector(dir, (r / Math.sin(THREE.MathUtils.degToRad(15))) * 1.05);
+    cam.lookAt(c);
+    renderer.render(scene, cam);
+    const cv = document.createElement('canvas');
+    cv.width = S; cv.height = S;
+    cv.getContext('2d').drawImage(renderer.domElement, 0, 0);
+    scene.remove(model);
+    let meshes = 0; model.traverse((o) => { if (o.isMesh) meshes++; });
+    const cell = el('div', 'cell');
+    cell.appendChild(cv);
+    cell.appendChild(el('div', 'cap', `${it.id} (${meshes} meshes)`));
+    g.appendChild(cell);
+  }
+}
+
+// ---------------------------------------------------------------- template plans
+function wallPoly(w, grow = 0) {
+  const d = G.wallDir(w); const n = G.wallNormal(w); const t = w.thickness / 2 + grow;
+  return [G.add(w.a, G.mul(n, t)), G.add(w.b, G.mul(n, t)), G.add(w.b, G.mul(n, -t)), G.add(w.a, G.mul(n, -t))];
+}
+const path = (ctx, pts) => { ctx.beginPath(); pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y))); ctx.closePath(); };
+const ROOM_FILL = { garage: '#e7e9ec', workshop: '#e7e9ec', bathroom: '#dfeaf0', ensuite: '#dfeaf0', wc: '#dfeaf0', laundry: '#e4eef0', hall: '#f3efe6', entry: '#f3efe6', robe: '#efe8dc', bedroom: '#f6efe2', kitchen: '#f3ead6', living: '#f2ecde', family: '#f2ecde', dining: '#f3ead6' };
+
+function drawOpening(ctx, w, o, px) {
+  const d = G.wallDir(w); const n = G.wallNormal(w); const t = w.thickness;
+  const c = G.pointOnWall(w, o.offset); const hw = o.width / 2;
+  const P = (u, v) => G.add(G.add(c, G.mul(d, u)), G.mul(n, v));
+  path(ctx, [P(-hw, -t / 2 - 2), P(hw, -t / 2 - 2), P(hw, t / 2 + 2), P(-hw, t / 2 + 2)]);
+  ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.lineWidth = px; ctx.lineCap = 'butt';
+  const seg = (a, b) => { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); };
+  if (o.kind === 'window') {
+    ctx.strokeStyle = '#1d6fb8';
+    for (const v of [-t / 2, 0, t / 2]) seg(P(-hw, v), P(hw, v));
+    seg(P(-hw, -t / 2), P(-hw, t / 2)); seg(P(hw, -t / 2), P(hw, t / 2));
+  } else if (o.kind === 'door') {
+    ctx.strokeStyle = '#7a3e12';
+    if (o.style === 'cavity') { ctx.setLineDash([px * 4, px * 3]); seg(P(-hw, 0), P(hw, 0)); ctx.setLineDash([]); return; }
+    const hu = o.hinge === 'a' ? -hw : hw; const s = o.side >= 0 ? 1 : -1;
+    const H = P(hu, 0); const tip = P(hu, s * o.width);
+    ctx.lineWidth = px * 1.5; seg(H, tip); ctx.lineWidth = px;
+    const a0 = Math.atan2(n.y * s, n.x * s); const a1 = Math.atan2(d.y * (hu < 0 ? 1 : -1), d.x * (hu < 0 ? 1 : -1));
+    let da = a1 - a0; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
+    ctx.beginPath(); ctx.arc(H.x, H.y, o.width, a0, a0 + da, da < 0); ctx.stroke();
+  } else if (o.kind === 'sliding_door') {
+    ctx.strokeStyle = '#1d6fb8';
+    seg(P(-hw, -t / 4), P(0, -t / 4)); seg(P(0, t / 4), P(hw, t / 4)); seg(P(-hw, 0), P(hw, 0));
+  } else if (o.kind === 'garage_door' || o.kind === 'roller_door') {
+    ctx.strokeStyle = '#444'; ctx.setLineDash([px * 6, px * 4]); ctx.lineWidth = px * 2; seg(P(-hw, 0), P(hw, 0)); ctx.setLineDash([]);
+  }
+}
+
+function drawLevel(ctx, project, level, px, catalogue) {
+  const rooms = level.rooms;
+  for (const r of rooms) {
+    path(ctx, r.polygon);
+    ctx.fillStyle = r.outdoor ? '#e5eddc' : (ROOM_FILL[r.type] || '#f4f1ea'); ctx.fill();
+    if (r.outdoor) { ctx.strokeStyle = '#9aa88a'; ctx.lineWidth = px; ctx.setLineDash([px * 5, px * 4]); ctx.stroke(); ctx.setLineDash([]); }
+  }
+  for (const f of level.furniture) {
+    const it = catalogue.getFurniture(f.item); if (!it) continue;
+    const w = f.w ?? it.w; const d = f.d ?? it.d;
+    ctx.save(); ctx.translate(f.x, f.y); ctx.rotate((f.rotation * Math.PI) / 180);
+    ctx.strokeStyle = '#4a5560'; ctx.fillStyle = f.item === 'rug' ? '#ece5d6' : '#fbfaf6'; ctx.lineWidth = px; ctx.lineJoin = 'round';
+    it.draw2d(ctx, w, d); ctx.restore();
+  }
+  for (const s of level.stairs) {
+    ctx.save(); ctx.translate(s.x, s.y); ctx.rotate((s.rotation * Math.PI) / 180);
+    ctx.strokeStyle = '#555'; ctx.fillStyle = '#fff'; ctx.lineWidth = px;
+    ctx.fillRect(-s.width / 2, -s.length / 2, s.width, s.length); ctx.strokeRect(-s.width / 2, -s.length / 2, s.width, s.length);
+    const n = Math.round(s.length / 250);
+    for (let i = 1; i < n; i++) { ctx.beginPath(); ctx.moveTo(-s.width / 2, -s.length / 2 + (i * s.length) / n); ctx.lineTo(s.width / 2, -s.length / 2 + (i * s.length) / n); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(0, s.length / 2 - 150); ctx.lineTo(0, -s.length / 2 + 150); ctx.lineTo(-120, -s.length / 2 + 400); ctx.moveTo(0, -s.length / 2 + 150); ctx.lineTo(120, -s.length / 2 + 400); ctx.stroke();
+    ctx.restore();
+  }
+  for (const w of level.walls) {
+    path(ctx, wallPoly(w));
+    ctx.fillStyle = w.status === 'existing' ? '#8b9096' : w.status === 'demolish' ? '#fff' : '#20262d'; ctx.fill();
+    if (w.status === 'demolish') { ctx.strokeStyle = '#d33'; ctx.lineWidth = px * 1.5; ctx.setLineDash([px * 5, px * 3]); ctx.stroke(); ctx.setLineDash([]); }
+  }
+  for (const o of level.openings) drawOpening(ctx, level.walls.find((w) => w.id === o.wallId), o, px);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for (const r of rooms) {
+    const c = G.polygonCentroid(r.polygon);
+    const bb = G.bbox(r.polygon);
+    const fs = Math.max(11 * px, Math.min(15 * px, bb.w / 9));
+    ctx.fillStyle = '#0d3b66'; ctx.font = `600 ${fs}px system-ui, sans-serif`;
+    ctx.fillText(r.name, c.x, c.y - fs * 0.15);
+    ctx.fillStyle = '#5d6b79'; ctx.font = `${fs * 0.8}px system-ui, sans-serif`;
+    ctx.fillText(`${G.roomAreaM2(r).toFixed(1)} m2`, c.x, c.y + fs * 0.95);
+  }
+  for (const t of project.site.tanks) {
+    ctx.beginPath(); ctx.arc(t.x, t.y, t.diameter / 2, 0, Math.PI * 2);
+    ctx.fillStyle = '#c9d6dd'; ctx.fill(); ctx.strokeStyle = '#34505f'; ctx.lineWidth = px * 1.5; ctx.stroke();
+    ctx.fillStyle = '#34505f'; ctx.font = `${12 * px}px system-ui, sans-serif`; ctx.fillText(`${t.capacityL.toLocaleString('en-AU')} L`, t.x, t.y);
+  }
+}
+
+if (show.includes('templates')) {
+  const box = section('Template ground plans');
+  const wrap = el('div', 'plans'); box.appendChild(wrap);
+  for (const t of catalogue.templates) {
+    if (only && t.id !== only) continue;
+    const t0 = performance.now();
+    let project;
+    try { project = t.create(); } catch (e) { wrap.appendChild(el('div', 'plan', `<h3>${t.id}</h3><div class="lint">create() failed: ${e.message}</div>`)); console.error(t.id, e); continue; }
+    const card = el('div', 'plan');
+    const rooms = project.levels.reduce((s, l) => s + l.rooms.filter((r) => !r.outdoor).reduce((a, r) => a + G.roomAreaM2(r), 0), 0);
+    card.appendChild(el('h3', null, `${t.name} (${t.id}) - ${project.levels.length} level(s), indoor ${rooms.toFixed(1)} m2, ${Math.round(performance.now() - t0)} ms`));
+    card.appendChild(el('p', null, t.description));
+    const bb = G.projectBounds(project);
+    if (!bb) { card.appendChild(el('div', 'cap', 'Empty project (no rooms)')); wrap.appendChild(card); continue; }
+    const pad = 900;
+    const Wmm = bb.w + pad * 2; const Hmm = bb.h + pad * 2;
+    const target = (project.levels.length > 1 ? 560 : 900) * planScale;
+    const s = target / Wmm;
+    const levels = el('div', 'grid'); card.appendChild(levels);
+    for (const lvl of project.levels) {
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(Wmm * s); cv.height = Math.round(Hmm * s);
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
+      ctx.save(); ctx.scale(s, s); ctx.translate(-bb.minX + pad, -bb.minY + pad);
+      ctx.strokeStyle = '#e8ebee'; ctx.lineWidth = 1 / s;
+      for (let x = Math.ceil(bb.minX / 1000) * 1000; x <= bb.maxX; x += 1000) { ctx.beginPath(); ctx.moveTo(x, bb.minY - pad); ctx.lineTo(x, bb.maxY + pad); ctx.stroke(); }
+      for (let y = Math.ceil(bb.minY / 1000) * 1000; y <= bb.maxY; y += 1000) { ctx.beginPath(); ctx.moveTo(bb.minX - pad, y); ctx.lineTo(bb.maxX + pad, y); ctx.stroke(); }
+      drawLevel(ctx, project, lvl, 1.2 / s, catalogue);
+      ctx.restore();
+      ctx.fillStyle = '#0d3b66'; ctx.font = '600 13px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.fillText(`${lvl.name} (${lvl.rooms.length} rooms, ${lvl.openings.length} openings, ${lvl.furniture.length} furniture)`, 8, 16);
+      const cell = el('div', 'cell'); cell.appendChild(cv); levels.appendChild(cell);
+    }
+    const issues = lintProject(project, catalogue);
+    if (issues.length) card.appendChild(el('div', 'lint', `Lint (${issues.length}):\n` + issues.join('\n')));
+    else card.appendChild(el('div', 'cap', 'Lint: clean'));
+    wrap.appendChild(card);
+  }
+}
+document.title = 'Catalogue check ready';
+</script>
+</body>
+</html>

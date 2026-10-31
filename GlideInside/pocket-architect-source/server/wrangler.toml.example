@@ -1,0 +1,44 @@
+# Cloudflare Workers configuration for the Plan Studio API (reference deployment).
+# Copy to wrangler.toml (in the project root, next to package.json) and edit the marked lines.
+# Secrets are NOT set here. Use `wrangler secret put NAME` (see server/README.md).
+
+name = "plan-studio-api"
+main = "server/worker.js"
+compatibility_date = "2026-09-01"
+# jsPDF and three.js use a few Node built-ins when they build exports.
+compatibility_flags = ["nodejs_compat"]
+
+# Serve the API on the same site as the app, so the browser needs no CORS: /api/* goes to this Worker.
+# Edit the zone and pattern. Remove the block to use the workers.dev address instead (then set apiBase in the app).
+# routes = [{ pattern = "example.com.au/api/*", zone_name = "example.com.au" }]
+
+# Reads docs/SCOPE.md 11.6. Plain values only. Anything secret goes in `wrangler secret put`.
+[vars]
+SITE_URL = "https://example.com.au"                        # EDIT: the site origin. Used for CORS.
+APP_URL = "https://example.com.au/floor-plan-designer/app/" # EDIT: where Stripe sends people after paying
+ANTHROPIC_MODEL = "claude-haiku-5-5"                       # confirm the model ID before go-live
+PRICE_IN_PER_MTOK_USD = "0.10"
+PRICE_OUT_PER_MTOK_USD = "0.50"
+AI_MAX_OUTPUT_TOKENS = "1500"
+AI_MAX_CONTEXT_TOKENS = "40000"
+CREDIT_USD = "0.001"
+PLAN_PACK_CREDITS = "500"
+WARN_THRESHOLDS = "0.5,0.8,0.95"
+LARGE_REQUEST_CREDITS = "10"
+AI_RATE_PER_MIN = "6"
+AI_RATE_PER_DAY = "150"
+AI_DAILY_CAP_USD = "5"
+AI_MONTHLY_CAP_USD = "50"
+FX_AUD_PER_USD = "1.67"
+PLAN_PACK_PRICE_CENTS = "3000"                             # used when STRIPE_PRICE_ID is empty
+ENTITLEMENT_DAYS = "365"
+EXPORT_MAX_PROJECT_BYTES = "2000000"
+# Printed on the PDF title block (default to src/config.js when empty).
+STRIPE_PRICE_ID = ""                                       # optional: a Stripe price for the Plan Pack
+
+# D1 (SQLite). Create it with `wrangler d1 create plan-studio`, paste the id below,
+# then apply the schema: `wrangler d1 execute plan-studio --remote --file server/schema.sql`
+[[d1_databases]]
+binding = "DB"
+database_name = "plan-studio"
+database_id = "REPLACE-WITH-THE-ID-FROM-wrangler-d1-create"

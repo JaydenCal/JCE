@@ -1,0 +1,19 @@
+{
+  "name": "plan-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser floor plan and 3D home design tool (free tier) with premium AI edits and exports",
+  "scripts": {
+    "test": "node --test tests/",
+    "serve": "python3 -m http.server 8100"
+  },
+  "dependencies": {
+    "jspdf": "^4.2.1",
+    "pdfjs-dist": "^4.10.38",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

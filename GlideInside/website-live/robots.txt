@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /plan-studio/app/
+Disallow: /plan-studio/launch/
+
+Sitemap: https://glideinside.com.au/sitemap.xml

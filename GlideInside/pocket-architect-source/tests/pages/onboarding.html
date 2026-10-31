@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Onboarding check</title>
+  <!-- Loads the full app and the onboarding module. Query: ?hint=<tool id> shows one hint; ?gallery=1 lists every animation; ?fresh=0 keeps storage. -->
+  <link rel="stylesheet" href="../../styles.css">
+  <script type="importmap">
+  { "imports": { "three": "../../vendor/three/build/three.module.js", "three/addons/": "../../vendor/three/examples/jsm/", "pdfjs-dist": "../../vendor/pdfjs/build/pdf.min.mjs" } }
+  </script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #app { height: 100%; }
+    .gal { display: grid; grid-template-columns: repeat(auto-fill, 260px); gap: 12px; padding: 16px; background: var(--ps-bg); }
+    .gal figure { margin: 0; font: 12px var(--ps-font-ui); color: var(--ps-text); }
+  </style>
+</head>
+<body>
+  <div id="app" class="ps-app"><p class="ps-boot">Loading Plan Studio</p></div>
+  <script type="module">
+    const q = new URLSearchParams(location.search);
+    if (q.get('fresh') !== '0') { try { localStorage.clear(); } catch {} }
+    if (q.get('gallery')) {
+      const { injectCss } = await import('../../src/ui/onboarding/css.js');
+      const { createAnim, HINT_TITLE } = await import('../../src/ui/onboarding/anims.js');
+      injectCss();
+      const root = document.getElementById('app');
+      root.className = 'gal';
+      root.replaceChildren();
+      const t = Number(q.get('gallery')) > 1 ? 0 : -1;
+      for (const id of Object.keys(HINT_TITLE)) {
+        const f = document.createElement('figure');
+        f.append(createAnim(id).svg, id);
+        root.append(f);
+      }
+    } else {
+      await import('../../src/app.js');
+      const wait = () => new Promise((r) => setTimeout(r, 50));
+      while (!window.__ps) await wait();
+      await wait();
+      if (!window.__ps.onboarding) {
+        // The shell does not call the module yet: do what app.js will do at the end of boot.
+        const m = await import('../../src/ui/onboarding/index.js');
+        m.initOnboarding(window.__ps);
+      }
+      window.__onboardingReady = true;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Premium layer test page</title>
+  <!-- Plan Pack UI on a sample design. Everything is local: a mock server answers /api, nothing is sent anywhere.
+       Query flags (this page only):
+         state=locked (default) | soon | probe | devgrant | entitled | warn | exhausted | revoked | dev
+         soon: no back end (health fails). probe: premiumEnabled false but health answers ok. devgrant: probe plus the development grant
+         open=upgrade | exports | restore | return | details
+         slow  makes the mock assistant take 4 s. dark  forces the dark theme.
+       smoke: python3 tools/smoke.py tests/pages/premium.html?state=entitled --out /tmp/claude-0/premium.png -->
+  <link rel="stylesheet" href="../../styles.css">
+  <script type="importmap">
+  { "imports": { "three": "../../vendor/three/build/three.module.js", "three/addons/": "../../vendor/three/examples/jsm/", "pdfjs-dist": "../../vendor/pdfjs/build/pdf.min.mjs" } }
+  </script>
+  <style>
+    html, body { height: 100%; }
+    body { margin: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .tp-top { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; padding: 8px 12px; background: var(--ps-panel); border-bottom: 1px solid var(--ps-border-strong); }
+    .tp-top strong { font-family: var(--ps-font-label); font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .tp-spacer { flex: 1 1 0; }
+    .tp-tag { padding: 2px 8px; border: 1px solid var(--ps-border-strong); border-radius: 999px; color: var(--ps-muted); font-size: 12px; }
+    .tp-main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 328px; }
+    .tp-plan { position: relative; min-width: 0; padding: 12px; overflow: auto; background: var(--ps-canvas); }
+    .tp-plan svg { width: 100%; max-height: 62vh; background: var(--ps-canvas); border: 1px solid var(--ps-border); border-radius: 5px; }
+    .tp-plan .room { fill: var(--ps-room-b); stroke: var(--ps-line); stroke-width: 60; }
+    .tp-plan .room.outdoor { fill: var(--ps-room-outdoor); }
+    .tp-plan text { font: 400 280px var(--ps-font-ui); fill: var(--ps-ink); }
+    .tp-row { display: flex; align-items: center; gap: 8px; margin: 10px 0 0; flex-wrap: wrap; }
+    .tp-log { margin: 10px 0 0; padding: 8px 10px; max-height: 120px; overflow: auto; background: var(--ps-panel); border: 1px solid var(--ps-border); border-radius: 5px; font: 12px var(--ps-font-mono); white-space: pre-wrap; }
+    .tp-panel { display: flex; flex-direction: column; min-height: 0; background: var(--ps-panel); border-left: 1px solid var(--ps-border); }
+    .tp-panel-head { padding: 8px 12px; border-bottom: 1px solid var(--ps-border); font-family: var(--ps-font-label); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ps-muted); }
+    .tp-panel-body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; }
+    @media (max-width: 899.98px) {
+      .tp-main { display: flex; flex-direction: column; }
+      .tp-plan { flex: 1 1 0; min-height: 0; }
+      .tp-panel { flex: 0 1 auto; border-left: 0; border-top: 1px solid var(--ps-border-strong); max-height: 58%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="tp-top">
+    <strong>Premium layer</strong>
+    <span class="tp-tag" id="tp-state"></span>
+    <span class="tp-spacer"></span>
+    <div class="ps-premium-slot" id="tp-topbar"></div>
+  </header>
+  <div class="tp-main">
+    <section class="tp-plan" aria-label="Sample design">
+      <svg id="tp-svg" viewBox="-500 -500 11000 8600" role="img" aria-label="Plan of the sample design"></svg>
+      <div class="tp-row">
+        <button class="ps-btn" id="tp-undo" type="button">Undo</button>
+        <button class="ps-btn" id="tp-redo" type="button">Redo</button>
+        <span id="tp-undo-label" class="tp-tag"></span>
+      </div>
+      <pre class="tp-log" id="tp-log" aria-label="Events"></pre>
+    </section>
+    <aside class="tp-panel" aria-label="Design panel">
+      <div class="tp-panel-head">Assistant</div>
+      <div class="tp-panel-body"><div id="tp-ai"></div></div>
+    </aside>
+  </div>
+  <div class="ps-modal-root" id="tp-modals"></div>
+
+  <script type="module">
+    import { createStore } from '../../src/model/store.js';
+    import { createProject } from '../../src/model/schema.js';
+    import { CONFIG } from '../../src/config.js';
+    import { createPremium } from '../../src/premium/premium.js';
+
+    const q = new URLSearchParams(location.search);
+    const mode = q.get('state') || 'locked';
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const logEl = document.getElementById('tp-log');
+    const log = (line) => { logEl.textContent += `${line}\n`; logEl.scrollTop = logEl.scrollHeight; };
+    if (q.has('dark')) document.documentElement.dataset.theme = 'dark';
+    document.getElementById('tp-state').textContent = `state: ${mode}`;
+
+    let catalogue = null;
+    try { catalogue = (await import('../../src/catalogue/index.js')).catalogue; } catch (e) { console.warn('catalogue not available', e); }
+
+    // A sample design built only through operations -----------------------------------------------------------------
+    const PROJECT_ID = 'p_testpage';
+    const store = createStore(createProject({ id: PROJECT_ID, name: 'Smith residence', type: 'house' }), { opContext: { catalogue } });
+    store.run('add_room', { name: 'Living', type: 'living', x: 0, y: 0, width: 6000, depth: 4500 });
+    store.run('add_room', { name: 'Kitchen', type: 'kitchen', x: 6000, y: 0, width: 4000, depth: 4500 });
+    store.run('add_room', { name: 'Deck', type: 'deck', x: 0, y: 4500, width: 6000, depth: 3000 });
+    store.run('add_opening', { kind: 'window', x: 3000, y: 0, width: 1800 });
+    store.run('add_opening', { kind: 'door', x: 6000, y: 2250, width: 900 });
+    store.run('set_finish', { target: 'roof', colour: 'steel-off-white' });
+    window.__ps = { store };
+
+    function drawPlan() {
+      const svg = document.getElementById('tp-svg');
+      const ns = 'http://www.w3.org/2000/svg';
+      svg.replaceChildren();
+      for (const r of store.project.levels[0].rooms) {
+        const pts = r.polygon.map((p) => `${p.x},${p.y}`).join(' ');
+        const poly = document.createElementNS(ns, 'polygon');
+        poly.setAttribute('points', pts);
+        poly.setAttribute('class', `room${r.outdoor ? ' outdoor' : ''}`);
+        svg.append(poly);
+        const xs = r.polygon.map((p) => p.x); const ys = r.polygon.map((p) => p.y);
+        const t = document.createElementNS(ns, 'text');
+        t.setAttribute('x', Math.min(...xs) + 200); t.setAttribute('y', Math.min(...ys) + 520);
+        t.textContent = r.name || r.type;
+        svg.append(t);
+      }
+      const roof = store.project.finishes.roof;
+      document.getElementById('tp-undo-label').textContent = `${store.undoLabel() ? `Undo: ${store.undoLabel()}` : 'Nothing to undo'} | roof ${roof?.colour || 'none'}`;
+    }
+    store.on('project', drawPlan);
+    drawPlan();
+    document.getElementById('tp-undo').onclick = () => { store.undo(); };
+    document.getElementById('tp-redo').onclick = () => { store.redo(); };
+
+    // Mock server --------------------------------------------------------------------------------------------------------
+    const downloads = [];
+    const events = [];
+    window.addEventListener('ps:analytics', (e) => { events.push(e.detail); log(`event ${e.detail.event} ${JSON.stringify(e.detail.props)}`); });
+
+    const credits = { total: 500, used: mode === 'exhausted' ? 500 : mode === 'warn' ? 473 : 188 };
+    const warned = new Set(mode === 'warn' ? [0.5, 0.8] : []);
+    const requests = [];
+    const bodies = [];
+    let entitlementPolls = 0;
+    const b64u = (o) => btoa(JSON.stringify(o)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const fakeToken = () => `${b64u({ eid: 'ent_test0001', pid: PROJECT_ID, exp: Math.floor(Date.now() / 1000) + 86400 * 300 })}.c2ln`;
+    const bal = () => ({ total: credits.total, used: credits.used, remaining: credits.total - credits.used, warnLevel: 0 });
+    const respond = (body, status = 200, headers = {}) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', ...headers } });
+    const fail = (code, message, status, extra = {}) => respond({ error: { code, message, ...extra }, code, message, ...extra }, status);
+
+    function cannedReply(message) {
+      const level = store.project.levels[0];
+      const deck = level.rooms.find((r) => /deck/i.test(r.name || r.type));
+      if (/roof|charcoal|dark/i.test(message)) return { reply: 'Done. The roof is now charcoal.', ops: [{ op: 'set_finish', args: { target: 'roof', colour: 'steel-charcoal' } }], charge: 2 };
+      if (/deck/i.test(message) && deck) return { reply: 'I extended the deck 1 m to the south.', ops: [{ op: 'resize_room', args: { id: deck.id, side: 'south', delta: 1000 } }], charge: 2 };
+      if (/study/i.test(message)) return { reply: 'I added a 3 by 3 m study to the east of the kitchen.', ops: [{ op: 'add_room', args: { name: 'Study', type: 'study', x: 10000, y: 0, width: 3000, depth: 3000 } }], charge: 3 };
+      if (/flip|mirror/i.test(message)) return { reply: 'I flipped the plan left to right.', ops: [{ op: 'mirror_plan', args: { axis: 'left_right' } }], charge: 1 };
+      if (/oops|bad/i.test(message)) return { reply: 'I tried two changes.', ops: [{ op: 'set_finish', args: { target: 'roof', colour: 'steel-charcoal' } }, { op: 'resize_room', args: { id: 'r_missing', side: 'north', delta: 500 } }], charge: 2 };
+      return { reply: 'Which wall do you want to change?', ops: [], charge: 1 };
+    }
+
+    async function mockFetch(url, init = {}) {
+      const u = new URL(url, location.href);
+      const path = u.pathname.replace(/^.*\/api/, '');
+      const body = init.body ? JSON.parse(init.body) : null;
+      const authed = /^Bearer \S+/.test(init.headers?.authorization || '');
+      requests.push({ method: init.method || 'GET', path, body: body && Object.keys(body) });
+      bodies.push({ path, body, auth: init.headers?.authorization || null });
+      await sleep(60);
+      if (path === '/health') return mode === 'soon' ? fail('NOT_FOUND', 'No such endpoint.', 404) : respond({ ok: true, aiPaused: false, ...(mode === 'devgrant' ? { devGrant: true } : {}) });
+      if (path === '/checkout') return respond({ url: 'https://checkout.stripe.com/c/pay/cs_test_mock' });
+      if (path === '/entitlement') {
+        if (u.searchParams.get('dev') === '1') return respond({ token: fakeToken(), credits: bal(), projectId: u.searchParams.get('project'), receipt: 'ent_dev0001', dev: true });
+        entitlementPolls += 1;
+        if (entitlementPolls < 3) return fail('NOT_ENTITLED', 'Your payment has not been confirmed yet.', 404, { pending: true });
+        return respond({ token: fakeToken(), credits: bal(), projectId: PROJECT_ID, receipt: 'ent_test0001', expiresAt: new Date(Date.now() + 86400000 * 300).toISOString() });
+      }
+      if (path === '/entitlement/restore') {
+        if (!/@/.test(body.email) || !/^(cs_|ent_|pi_)/.test(body.sessionOrReceipt)) return fail('NOT_ENTITLED', 'We could not find a Plan Pack with those details.', 403);
+        return respond({ token: fakeToken(), projectId: PROJECT_ID, credits: bal(), receipt: 'ent_test0001', expiresAt: new Date(Date.now() + 86400000 * 300).toISOString() });
+      }
+      if (!authed) return fail('UNAUTHORISED', 'Your Plan Pack could not be verified. Restore your purchase to continue.', 401);
+      if (mode === 'revoked') return fail('NOT_ENTITLED', 'This Plan Pack has been refunded.', 403);
+      if (path === '/credits') return respond({ ...bal(), reserved: 0 });
+      if (path === '/ai/estimate') {
+        const large = /large|huge|everything/i.test(body.message);
+        return respond({ estimatedCredits: large ? 14 : 3, remaining: bal().remaining, requiresConfirm: large });
+      }
+      if (path === '/ai/edit') {
+        await sleep(q.has('slow') ? 4000 : 600);
+        const large = /large|huge|everything/i.test(body.message);
+        if (large && body.confirmLarge !== true) return fail('CONFIRM_REQUIRED', 'This change may use a large number of credits.', 409, { estimatedCredits: 14, remaining: bal().remaining });
+        if (/pause/i.test(body.message)) return fail('AI_PAUSED', 'The assistant is paused for now.', 503);
+        if (/rate/i.test(body.message)) return fail('RATE_LIMITED', 'Slow down.', 429, { retryAfter: 12 });
+        if (/offline/i.test(body.message)) throw new TypeError('Failed to fetch');
+        if (bal().remaining <= 0) return fail('CREDITS_EXHAUSTED', 'All AI credits in this Plan Pack have been used.', 402, { remaining: 0, estimatedCredits: 3 });
+        const out = cannedReply(body.message);
+        const before = credits.used;
+        credits.used = Math.min(credits.total, credits.used + (large ? 14 : out.charge));
+        let warning = null;
+        for (const level of [0.5, 0.8, 0.95]) {
+          if (before / credits.total < level && credits.used / credits.total >= level && !warned.has(level)) {
+            warned.add(level);
+            warning = { level, usedPercent: Math.round((credits.used / credits.total) * 100), remaining: bal().remaining };
+          }
+        }
+        return respond({ reply: out.reply, ops: out.ops, rejected: [], credits: { charged: credits.used - before, ...bal() }, warning });
+      }
+      const exp = /^\/export\/(\w+)$/.exec(path);
+      if (exp) {
+        const names = { pdf: 'smith-residence-plans.pdf', dxf: 'smith-residence.dxf', glb: 'smith-residence.glb', obj: 'smith-residence-obj.zip' };
+        return new Response(new Blob([`mock ${exp[1]} file`]), { status: 200, headers: { 'content-type': 'application/octet-stream', 'content-disposition': `attachment; filename="${names[exp[1]]}"` } });
+      }
+      return fail('NOT_FOUND', 'No such endpoint.', 404);
+    }
+
+    // The premium layer ---------------------------------------------------------------------------------------------------
+    const forced = ['entitled', 'warn', 'exhausted', 'revoked'].includes(mode);
+    try { for (const k of Object.keys(localStorage)) if (k.startsWith('ps.ent.') || k.startsWith('ps.ai.warned.')) localStorage.removeItem(k); } catch { /* ignore */ }
+    if (forced) { try { localStorage.setItem(`ps.ent.${PROJECT_ID}`, fakeToken()); } catch { /* ignore */ } }
+    if (q.get('open') === 'return') {
+      history.replaceState(null, '', `${location.pathname}?${new URLSearchParams({ ...Object.fromEntries(q), checkout: 'success', session_id: 'cs_test_return', project: PROJECT_ID })}`);
+    }
+
+    const config = { ...CONFIG, premiumEnabled: !['soon', 'probe', 'devgrant'].includes(mode), devUnlock: mode === 'dev' || mode === 'devgrant' };
+    const premium = createPremium(store, {
+      mounts: { topbar: document.getElementById('tp-topbar'), aiPanel: document.getElementById('tp-ai'), modalRoot: document.getElementById('tp-modals') },
+      config,
+      catalogue,
+      getViewer: null,
+      fetchImpl: mockFetch,
+      navigate: (url) => { log(`navigate ${url}`); window.__navigated = url; },
+      timing: { intervalMs: 300, timeoutMs: 6000 },
+      saveFile: (blob, name) => { downloads.push({ name, size: blob.size }); log(`download ${name} (${blob.size} bytes)`); },
+    });
+    window.__tp = { store, premium, downloads, events, requests, bodies, credits, mode };
+
+    const open = q.get('open');
+    if (open === 'upgrade') premium.openUpgrade();
+    else if (open === 'exports') premium.openExports();
+    else if (open === 'restore') premium.openRestore();
+    else if (open === 'details') document.querySelector('.psp-chip')?.click();
+    document.title = 'Premium layer test page (ready)';
+  </script>
+</body>
+</html>
