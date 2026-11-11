@@ -1,4 +1,4 @@
-<#
+﻿<#
   Glide Inside and Pocket Architect: STAGING deploy. Re-runnable (run it again after any new merge or a fresh zip).
 
   Run from PowerShell:   .\GlideInside\staging\deploy-staging.ps1     (git checkout)
@@ -50,7 +50,7 @@ $nameLine = $lines | Where-Object { $_ -match '^name\s*=' } | Select-Object -Fir
 if ($nameLine -notmatch '^name\s*=\s*"pocket-architect-staging"$') { Fail "The Worker name in wrangler.staging.toml is not pocket-architect-staging ($nameLine)." }
 if ($lines | Where-Object { $_ -match '^(routes?|zone_name|zone_id|pattern|custom_domain)\b|\[\[routes\]\]|\[routes\]|\[\[env\.' }) { Fail 'wrangler.staging.toml contains a route or zone. Staging must use workers.dev only.' }
 if ($lines -notcontains 'workers_dev = true') { Fail 'workers_dev = true is required.' }
-if ($raw -match 'pocket-architect-api|fccdf1f7|glideinside\.com\.au/|"pocket-architect"|"pocket-architect-files"') { Fail 'wrangler.staging.toml refers to the live Worker, D1 database or R2 bucket.' }
+if (($lines -join "`n") -match 'pocket-architect-api|fccdf1f7|glideinside\.com\.au/|"pocket-architect"|"pocket-architect-files"') { Fail 'wrangler.staging.toml refers to the live Worker, D1 database or R2 bucket.' }
 if ($lines -notcontains "database_name = `"$DbName`"") { Fail "The D1 database in the config must be $DbName." }
 if ($lines -notcontains "bucket_name = `"$BucketName`"") { Fail "The R2 bucket in the config must be $BucketName." }
 if ($lines | Where-Object { $_ -match '^(STRIPE_|RESEND_|ANTHROPIC_)' }) { Fail 'Staging must not have Stripe, Resend or Anthropic settings.' }
