@@ -11,7 +11,8 @@ import { monthKey, NEW_LOGIN_FEE_CENTS } from '../../src/portal/billing.js';
 import { HttpError, json, readJson, clientIp, bearerToken } from './http.js';
 import { hashPassword, verifyPassword, dummyVerify, newSessionToken, sha256Hex, secretEqual } from './password.js';
 import { aiSnapshot, addTopUp, aiToken, reconcileTopUps, orgPoolIds } from './portal-ai.js';
-import { usageForMonth, runMonth, isMonthlyRunTime, contactComplete, MONTH_RE } from './portal-billing.js';
+import { usageForMonth, runMonth, isMonthlyRunTime, contactComplete, topUpRows, stripeCall, ensureCustomer, MONTH_RE } from './portal-billing.js';
+import { readTrialConfig, orgState, accountView, trialEndFor, extendedEnd, parseTrialRequest, notifyOwner, trialNoClients, trialNoTopUps, readOnlyError, TRIAL_EXTENSION_DAYS, TERMS_VERSION } from './trial.js';
 
 export const COOKIE = 'gi_session';
 const DAY = 86400000;
@@ -54,8 +55,9 @@ export function abnValid(abn) {
 }
 const fmtAbn = (d) => `${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5, 8)} ${d.slice(8)}`;
 
-export function createPortal({ store, pstore, config, fetchImpl, now = () => Date.now(), loadTemplates = () => import('../../src/catalogue/templates.js') }) {
+export function createPortal({ store, pstore, config, fetchImpl, env = {}, now = () => Date.now(), loadTemplates = () => import('../../src/catalogue/templates.js') }) {
   const iso = (ms = now()) => new Date(ms).toISOString();
+  const trialConfig = readTrialConfig(env);
 
   // Cookies, CSRF, sessions -------------------------------------------------------------------------------------------------
   const sessionCookie = (token, maxAgeSec) => `${COOKIE}=${token}; Path=/api; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAgeSec}`;
@@ -80,7 +82,7 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
   }
 
   /** The signed in user and org, or throws. `need` is a permission; the forced password change blocks everything else. */
-  async function auth(r, { need = null, allowChange = false } = {}) {
+  async function auth(r, { need = null, allowChange = false, allowReadOnly = false } = {}) {
     const token = cookies(r.request)[COOKIE];
     if (!token || token.length > 100) throw new HttpError('UNAUTHORISED', 'Please sign in.');
     const idHash = await sha256Hex(token);
@@ -103,7 +105,10 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     }
     if (user.mustChangePassword && !allowChange) throw new HttpError('PASSWORD_CHANGE_REQUIRED', 'Choose a new password before you continue.');
     if (need && !PERMS[user.role].includes(need)) throw new HttpError('FORBIDDEN', 'Your role does not allow that.');
-    return { user, org, idHash };
+    // After the free trial (or when the owner sets it) an account is read only: reads work, every state changing request is refused.
+    const state = orgState(org, nowMs);
+    if (state.readOnly && !allowReadOnly && !SAFE_METHODS.has(r.request.method)) throw readOnlyError(state);
+    return { user, org, idHash, state };
   }
 
   // Views -------------------------------------------------------------------------------------------------------------------
@@ -118,7 +123,7 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     id: u.id, name: u.name, email: u.email || '', username: u.username, role: u.role, status: u.status, mustChangePassword: !!u.mustChangePassword,
     createdAt: u.createdAt, lastSignInAt: u.lastSignInAt || null, tempPasswordExpiresAt: u.mustChangePassword ? u.tempPasswordExpiresAt || null : null, ...(ai ? { ai } : {}),
   });
-  const exportsFor = (user, org) => (isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj'] : ['pdf']);
+  const exportsFor = (user, org) => (orgState(org, now()).canExport ? (isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj'] : ['pdf']) : []);
   const houseView = (h) => ({
     id: h.id, orgId: h.orgId, name: h.name, description: h.description || '', source: h.sourceType === 'glide' ? { type: 'glide', ref: h.sourceRef } : { type: 'saved' },
     createdAt: h.createdAt, updatedAt: h.updatedAt, createdBy: h.createdBy, archived: !!h.archived, ...(h.stats || {}), stats: h.stats || null, thumbnail: h.thumbnail || null,
@@ -237,9 +242,11 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
 
   async function meBody(user, org) {
     const ai = await aiFor(org, user);
+    const st = orgState(org, now());
     return {
       user: publicUser(user, ai), org: publicOrg(org, user.role), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai,
-      canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true, enquiry: isStaff(user) || org.allowClientEnquiries !== false, exports: exportsFor(user, org),
+      canTopUp: st.canTopUp && (isStaff(user) || !!org.allowClientTopUps), plansIncluded: true, enquiry: !st.readOnly && (isStaff(user) || org.allowClientEnquiries !== false), exports: exportsFor(user, org),
+      account: accountView(org, now()),
     };
   }
 
@@ -249,7 +256,7 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
   }
 
   async function changePassword(r) {
-    const { user, idHash } = await auth(r, { allowChange: true });
+    const { user, idHash } = await auth(r, { allowChange: true, allowReadOnly: true });
     const body = await readJson(r.request, 4096);
     const key = `u:${user.username}`;
     const f = await pstore.getFailure(key);
@@ -396,7 +403,8 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     return json(await Promise.all(users.map((u) => clientView(org, u, { projectCounts, billedIds }))));
   }
   async function issueClient(r) {
-    const { org } = await auth(r, { need: 'clients.write' });
+    const { org, state } = await auth(r, { need: 'clients.write' });
+    if (!state.canIssueClients) throw trialNoClients();
     const b = await readJson(r.request, 8192);
     const access = await cleanAccess(org.id, b.houseAccess);
     const { user, credentials } = await createAccount(org, { firstName: b.firstName, email: b.email, role: 'client', lotAddress: b.lotAddress, houseAccess: access });
@@ -420,7 +428,8 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     return json(await clientView(org, { ...u, ...patch }));
   }
   async function resetClient(r, id) {
-    const { org } = await auth(r, { need: 'clients.write' });
+    const { org, state } = await auth(r, { need: 'clients.write' });
+    if (!state.canIssueClients) throw trialNoClients();
     return json(await issueTemp(await ownClient(org, id)));
   }
   async function deleteClient(r, id) {
@@ -441,7 +450,8 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     return json({ exportedAt: iso(), client: { id: u.id, name: u.name, username: u.username, email: u.email || '', lotAddress: u.lotAddress || '' }, projects });
   }
   async function setStatus(r, id, kind, status) {
-    const { user: me, org } = await auth(r, { need: kind === 'client' ? 'clients.write' : 'team.write' });
+    const { user: me, org, state } = await auth(r, { need: kind === 'client' ? 'clients.write' : 'team.write' });
+    if (kind === 'client' && status === 'active' && !state.canIssueClients) throw trialNoClients();
     const u = kind === 'client' ? await ownClient(org, id) : await ownStaff(org, id);
     if (status === 'disabled' && u.id === me.id) throw new HttpError('CONFLICT', 'You cannot disable your own login.');
     if (status === 'disabled' && u.role === 'admin' && !(await pstore.countActiveAdmins(org.id, u.id))) throw new HttpError('CONFLICT', 'There must be at least one active admin.');
@@ -515,7 +525,7 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     return json(billingContact(org));
   }
   async function setContact(r) {
-    const { org } = await auth(r, { need: 'billing.write' });
+    const { org } = await auth(r, { need: 'billing.write', allowReadOnly: true });
     const b = await readJson(r.request, 4096);
     const mail = text(b.email, 'Billing email', { required: true, max: 120 }).toLowerCase();
     if (!emailOk(mail)) throw new HttpError('BAD_REQUEST', 'That email address does not look right.');
@@ -532,7 +542,8 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     return json(await aiFor(org, user));
   }
   async function aiTopUp(r) {
-    const { user, org } = await auth(r);
+    const { user, org, state } = await auth(r);
+    if (state.isTrial) throw trialNoTopUps();
     if (!isStaff(user) && !org.allowClientTopUps) throw new HttpError('TOPUPS_DISABLED', 'Your builder has turned off AI credit top-ups.');
     if ((await store.hitRate(`topup:${org.id}:${user.id}`, 3600, now())) > 10) throw new HttpError('RATE_LIMITED', 'Too many top-ups in the last hour.', { retryAfter: 600 });
     const topUp = await addTopUp({ store, config, org, user, nowMs: now(), randomId: rid });
@@ -635,18 +646,211 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     const given = bearerToken(request);
     if (!given || !(await secretEqual(given, config.adminToken))) throw new HttpError('UNAUTHORISED', 'Not authorised.');
   }
+  /** Creates the organisation row only (a unique short code is picked). Returns the org, or throws CONFLICT. */
+  async function makeOrg({ name, shortCode, extra = {} }) {
+    const base = (shortCode || name.replace(/[^A-Za-z]/g, '').slice(0, 3)).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'ORG';
+    let code = base;
+    for (let n = 2; await pstore.getOrgByShortCode(code); n += 1) code = `${base}${n}`;
+    const org = { id: rid('org'), name, shortCode: code, displayName: name, logoDataUrl: null, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: true, allowClientCadExports: false, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
+    if (!(await pstore.createOrg(org))) throw new HttpError('CONFLICT', 'That organisation already exists.');
+    return org;
+  }
   async function createOrg(r) {
     await adminAuth(r.request);
     const b = await readJson(r.request, 4096);
     const name = text(b.name, 'name', { required: true, max: 120 });
-    const base = (text(b.shortCode, 'shortCode', { max: 6 }) || name.replace(/[^A-Za-z]/g, '').slice(0, 3)).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'ORG';
-    let shortCode = base;
-    for (let n = 2; await pstore.getOrgByShortCode(shortCode); n += 1) shortCode = `${base}${n}`;
-    const org = { id: rid('org'), name, shortCode, displayName: name, logoDataUrl: null, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: true, allowClientCadExports: false, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso() };
-    if (!(await pstore.createOrg(org))) throw new HttpError('CONFLICT', 'That organisation already exists.');
+    const org = await makeOrg({ name, shortCode: text(b.shortCode, 'shortCode', { max: 6 }) });
     const { user, credentials } = await createAccount(org, { firstName: b.adminFirstName, email: b.adminEmail, role: 'admin' });
     return json({ org: publicOrg(org, 'admin'), admin: publicUser(user), credentials }, 201);
   }
+
+  // Free trial: the public request form and the owner's admin routes ----------------------------------------------------------
+  const requestView = (q) => ({ id: q.id, createdAt: q.createdAt, status: q.status === 'deciding' ? 'pending' : q.status, companyLegalName: q.companyLegalName, abn: q.abn, tradingName: q.tradingName || '', firstName: q.firstName, lastName: q.lastName, email: q.email, mobile: q.mobile, region: q.region, homesPerYear: q.homesPerYear ?? null, howHeard: q.howHeard || '', consentAt: q.consentAt, termsVersion: q.termsVersion || '', notifyStatus: q.notifyStatus || '', decidedAt: q.decidedAt || null, decisionNote: q.decisionNote || '', orgId: q.orgId || null });
+
+  /** POST /portal/trial-request (public). Honeypot field `website`, validated, rate limited, stored as pending, owner notified (never the builder). */
+  async function trialRequest(r) {
+    const body = await readJson(r.request, 8192);
+    const done = { ok: true, message: 'Thanks, we will be in touch within one business day.' };
+    if (typeof body.website === 'string' && body.website.trim()) return json(done); // bots fill the hidden field: pretend it worked
+    const t = parseTrialRequest(body, { abnValid });
+    const nowMs = now();
+    const ip = clientIp(r.request);
+    if ((await store.hitRate(`trial:ip:${ip}`, 3600, nowMs)) > 5 || (await store.hitRate(`trial:email:${t.email}`, 86400, nowMs)) > 3) {
+      throw new HttpError('RATE_LIMITED', 'You have sent several requests already. Please wait before sending another, or email hello@glideinside.com.au.', { retryAfter: 3600 });
+    }
+    if (await pstore.findOpenTrialRequestByAbn(t.abn)) return json(done); // already received: no duplicate row and no second email
+    const q = { id: rid('tr'), createdAt: iso(nowMs), status: 'pending', ...t, consentAt: iso(nowMs), termsVersion: TERMS_VERSION, ipHash: (await sha256Hex(`gi-trial:${ip}`)).slice(0, 16), notifyStatus: null, decidedAt: null, decisionNote: null, orgId: null };
+    await pstore.createTrialRequest(q);
+    const n = await notifyOwner({ request: q, trialConfig, config, fetchImpl });
+    await pstore.updateTrialRequest(q.id, { notifyStatus: n.sent ? 'sent' : n.skipped ? 'skipped' : 'failed' });
+    return json(done, 201);
+  }
+
+  async function adminRequests(r) {
+    await adminAuth(r.request);
+    const status = r.url.searchParams.get('status');
+    if (status && !['pending', 'approved', 'declined'].includes(status)) throw new HttpError('BAD_REQUEST', 'status must be pending, approved or declined.');
+    return json((await pstore.listTrialRequests(status || null)).map(requestView));
+  }
+
+  async function adminApprove(r, id) {
+    await adminAuth(r.request);
+    const q = await pstore.getTrialRequest(id);
+    if (!q) throw new HttpError('NOT_FOUND', 'No such trial request.');
+    if (q.status !== 'pending') throw new HttpError('CONFLICT', `That request is already ${q.status === 'deciding' ? 'being approved' : q.status}.`);
+    if (await pstore.emailExists(q.email.toLowerCase())) throw new HttpError('CONFLICT', 'That email address already has a login. Decline this request or ask the builder for a different email address.');
+    const nowMs = now();
+    if (!(await pstore.claimTrialRequest(id, { decidedAt: iso(nowMs) }))) throw new HttpError('CONFLICT', 'That request has just been decided.');
+    try {
+      const name = q.tradingName || q.companyLegalName;
+      const org = await makeOrg({ name, extra: { legalName: q.companyLegalName, abn: q.abn, billingName: `${q.firstName} ${q.lastName}`, billingEmail: q.email.toLowerCase(), billingPhone: q.mobile } });
+      await pstore.saveOrgAccount(org.id, { status: 'trial', trialStartedAt: iso(nowMs), trialEndsAt: trialEndFor(nowMs), trialExtendedDays: 0, requestId: q.id });
+      const { user, credentials } = await createAccount(org, { firstName: q.firstName, email: q.email, role: 'admin' });
+      await pstore.updateTrialRequest(id, { status: 'approved', orgId: org.id });
+      const full = await pstore.getOrg(org.id);
+      return json({ request: requestView({ ...q, status: 'approved', orgId: org.id, decidedAt: iso(nowMs) }), org: await adminOrgView(full), admin: publicUser(user), credentials, signInUrl: `${config.siteUrl || r.url.origin}/portal/` }, 201);
+    } catch (e) {
+      await pstore.updateTrialRequest(id, { status: 'pending', decidedAt: null });
+      throw e;
+    }
+  }
+
+  async function adminDecline(r, id) {
+    await adminAuth(r.request);
+    const b = await readJson(r.request, 2048).catch(() => ({}));
+    const q = await pstore.getTrialRequest(id);
+    if (!q) throw new HttpError('NOT_FOUND', 'No such trial request.');
+    if (q.status !== 'pending') throw new HttpError('CONFLICT', `That request is already ${q.status === 'deciding' ? 'being approved' : q.status}.`);
+    const patch = { status: 'declined', decidedAt: iso(), decisionNote: text(b.note, 'Note', { max: 500 }) };
+    await pstore.updateTrialRequest(id, patch);
+    return json(requestView({ ...q, ...patch }));
+  }
+
+  /** One row for the owner's admin page: state, first admin, client logins issued, AI use this month and invoices. */
+  async function adminOrgView(org) {
+    const nowMs = now();
+    const month = monthKey(nowMs);
+    const staff = await pstore.listUsers(org.id, true);
+    const clients = await pstore.listUsers(org.id, false);
+    const issues = await pstore.listLoginIssues(org.id);
+    let used = 0;
+    for (const u of [...staff, ...clients]) used += (await aiLight(org, u)).used;
+    const topUps = (await topUpRows(store, org.id)).filter((t) => monthKey(t.createdAt) === month).length;
+    const admin = staff.filter((u) => u.role === 'admin').sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0];
+    return {
+      id: org.id, name: org.name, shortCode: org.shortCode, legalName: org.legalName || '', abn: org.abn || '', createdAt: org.createdAt, requestId: org.requestId || null,
+      account: accountView(org, nowMs), trialExtendedDays: org.trialExtendedDays || 0, convertedAt: org.convertedAt || null, convertedHow: org.convertedHow || null,
+      admin: admin ? { id: admin.id, name: admin.name, username: admin.username, email: admin.email || '', mustChangePassword: !!admin.mustChangePassword, lastSignInAt: admin.lastSignInAt || null } : null,
+      billingContact: billingContact(org), staffCount: staff.length,
+      clientLogins: { generated: clients.length, issued: issues.length, firstSignedIn: clients.filter((c) => c.firstSignInAt).length },
+      ai: { month, monthlyCap: org.aiMonthlyCap, creditsUsed: used, topUps },
+      invoices: (await pstore.listInvoices(org.id)).map((i) => ({ id: i.id, number: i.number, month: i.month, status: i.status, totalCents: i.totalCents, issuedAt: i.issuedAt, error: i.error || null })),
+    };
+  }
+  async function adminOrgs(r) {
+    await adminAuth(r.request);
+    return json(await Promise.all((await pstore.listOrgs()).map(adminOrgView)));
+  }
+  async function adminOrg(r, id) {
+    const org = await pstore.getOrg(id);
+    if (!org) throw new HttpError('NOT_FOUND', 'No such organisation.');
+    return org;
+  }
+  async function adminExtend(r, id) {
+    await adminAuth(r.request);
+    const org = await adminOrg(r, id);
+    if (org.status === 'active') throw new HttpError('CONFLICT', 'That organisation is already on a paid account, so there is no trial to extend.');
+    const nowMs = now();
+    const patch = { status: 'trial', trialEndsAt: extendedEnd(org, nowMs), trialExtendedDays: (org.trialExtendedDays || 0) + TRIAL_EXTENSION_DAYS, trialStartedAt: org.trialStartedAt || iso(nowMs) };
+    await pstore.updateOrg(org.id, patch);
+    return json(await adminOrgView({ ...org, ...patch }));
+  }
+  async function adminConvert(r, id) {
+    await adminAuth(r.request);
+    const org = await adminOrg(r, id);
+    const b = await readJson(r.request, 2048).catch(() => ({}));
+    const patch = { status: 'active', convertedAt: org.convertedAt || iso(), convertedHow: org.convertedHow || 'manual', ownerNote: text(b.note, 'Note', { max: 500 }) || org.ownerNote || null };
+    await pstore.updateOrg(org.id, patch);
+    return json(await adminOrgView({ ...org, ...patch }));
+  }
+  /** A new temporary password for the org's first admin (the first one is shown once, so this is the way out if it is lost). */
+  async function adminResetAdmin(r, id) {
+    await adminAuth(r.request);
+    const org = await adminOrg(r, id);
+    const admin = (await pstore.listUsers(org.id, true)).filter((u) => u.role === 'admin').sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0];
+    if (!admin) throw new HttpError('NOT_FOUND', 'That organisation has no admin login.');
+    return json({ admin: publicUser(admin), ...(await issueTemp(admin)) });
+  }
+
+  // Card details: Stripe Checkout in setup mode (TEST keys only until the owner approves live billing) -----------------------------
+  async function billingSetup(r) {
+    const { org } = await auth(r, { need: 'billing.write', allowReadOnly: true });
+    if (!contactComplete(org)) throw new HttpError('BAD_REQUEST', 'Save your legal business name, ABN and billing email first. They are needed on your tax invoices.');
+    const customer = await ensureCustomer({ config, pstore, fetchImpl, org });
+    const origin = config.siteOrigin || r.url.origin;
+    const session = await stripeCall({
+      config, fetchImpl, path: '/checkout/sessions',
+      form: {
+        mode: 'setup', customer, 'payment_method_types[0]': 'card', client_reference_id: org.id, locale: 'en-AU',
+        'metadata[org_id]': org.id, 'metadata[purpose]': 'gi_card_setup', 'setup_intent_data[metadata][org_id]': org.id,
+        success_url: `${origin}/portal/?billing=success&session_id={CHECKOUT_SESSION_ID}#/billing`, cancel_url: `${origin}/portal/?billing=cancel#/billing`,
+      },
+    });
+    if (!session?.url) throw new HttpError('BILLING_UNAVAILABLE', 'Stripe did not return a payment page. Try again shortly.');
+    return json({ url: session.url, id: session.id });
+  }
+
+  /**
+   * checkout.session.completed with mode "setup": store the card as the customer's default payment method and make the org active.
+   * Called by the webhook (app.js) and by /billing/setup/confirm. Idempotent.
+   */
+  async function completeCardSetup(session) {
+    const orgId = session?.metadata?.org_id || session?.client_reference_id;
+    const org = orgId ? await pstore.getOrg(orgId) : null;
+    if (!org) return 'ignored: no organisation on the session';
+    const customer = typeof session.customer === 'string' ? session.customer : session.customer?.id;
+    if (!customer || org.stripeCustomerId !== customer) return 'ignored: customer does not match the organisation'; // billingSetup saved this customer on the org
+    const siId = typeof session.setup_intent === 'string' ? session.setup_intent : session.setup_intent?.id;
+    if (!siId) return 'ignored: no setup intent';
+    const si = await stripeCall({ config, fetchImpl, method: 'GET', path: `/setup_intents/${encodeURIComponent(siId)}?expand[]=payment_method` });
+    if (si?.status !== 'succeeded') return `ignored: setup intent ${si?.status}`;
+    const pm = si.payment_method;
+    const pmId = typeof pm === 'string' ? pm : pm?.id;
+    if (!pmId) return 'ignored: no payment method';
+    await stripeCall({ config, fetchImpl, path: `/customers/${encodeURIComponent(customer)}`, form: { 'invoice_settings[default_payment_method]': pmId }, idempotencyKey: `gi-defpm-${customer}-${pmId}` });
+    const d = session.customer_details || {};
+    const patch = {
+      status: 'active', paymentMethodId: pmId, cardBrand: pm?.card?.brand || null, cardLast4: pm?.card?.last4 || null, cardAddedAt: iso(),
+      convertedAt: org.convertedAt || iso(), convertedHow: org.convertedHow || 'card', stripeCustomerId: org.stripeCustomerId || customer,
+      // Billing contact: what Stripe collected fills any gap; the details the builder saved are never overwritten.
+      billingName: org.billingName || d.name || null, billingEmail: org.billingEmail || d.email || null, billingPhone: org.billingPhone || d.phone || null,
+    };
+    await pstore.updateOrg(org.id, patch);
+    return 'card saved, account active';
+  }
+  async function billingSetupConfirm(r) {
+    const { org } = await auth(r, { need: 'billing.write', allowReadOnly: true });
+    const b = await readJson(r.request, 1024);
+    const id = typeof b.sessionId === 'string' ? b.sessionId : '';
+    if (!/^cs_[A-Za-z0-9_]{6,200}$/.test(id)) throw new HttpError('BAD_REQUEST', 'sessionId is not valid.');
+    const session = await stripeCall({ config, fetchImpl, method: 'GET', path: `/checkout/sessions/${id}` }).catch((e) => {
+      if (e?.extra?.status === 404) return null;
+      throw e;
+    });
+    if (session?.mode !== 'setup' || session?.status !== 'complete' || (session.metadata?.org_id || session.client_reference_id) !== org.id) throw new HttpError('NOT_FOUND', 'That card setup was not found or is not finished.');
+    const outcome = await completeCardSetup(session);
+    return json({ ok: true, outcome, account: accountView(await pstore.getOrg(org.id), now()) });
+  }
+
+  /** For app.js: refuse AI and top-up requests of an org that is read only (or, for top-ups, still on the free trial). */
+  async function gate(orgId, kind) {
+    const org = orgId ? await pstore.getOrg(orgId) : null;
+    if (!org) return;
+    const st = orgState(org, now());
+    if (st.readOnly) throw readOnlyError(st);
+    if (kind === 'topup' && st.isTrial) throw trialNoTopUps();
+  }
+
   async function runMonthRoute(r) {
     await adminAuth(r.request);
     const b = await readJson(r.request, 1024).catch(() => ({}));
@@ -677,6 +881,10 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     ['POST', `/team/${ID}/disable`, (r, id) => setStatus(r, id, 'staff', 'disabled')], ['POST', `/team/${ID}/enable`, (r, id) => setStatus(r, id, 'staff', 'active')],
     ['PUT', '/org/branding', setBranding], ['PATCH', '/org/settings', setSettings],
     ['POST', '/admin/orgs', createOrg, { token: true }],
+    ['POST', '/billing/setup', billingSetup], ['POST', '/billing/setup/confirm', billingSetupConfirm],
+    ['POST', '/trial-request', trialRequest, { noCsrf: true }],
+    ['GET', '/admin/trial-requests', adminRequests, { token: true }], ['POST', `/admin/trial-requests/${ID}/approve`, adminApprove, { token: true }], ['POST', `/admin/trial-requests/${ID}/decline`, adminDecline, { token: true }],
+    ['GET', '/admin/orgs', adminOrgs, { token: true }], ['POST', `/admin/orgs/${ID}/extend-trial`, adminExtend, { token: true }], ['POST', `/admin/orgs/${ID}/convert`, adminConvert, { token: true }], ['POST', `/admin/orgs/${ID}/reset-admin`, adminResetAdmin, { token: true }],
   ].map(([method, p, handler, opts]) => ({ method, re: new RegExp(`^${p}$`), handler, opts: opts || {} }));
 
   /** Handles /portal/* (path is the part after /api). Returns null when the path is not a portal path. */
@@ -688,7 +896,8 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     if (!path.startsWith('/portal/')) return null;
     const sub = path.slice('/portal'.length);
     // Builder and client logins stay closed until PORTAL_ENABLED=1 (public launch first). Creating organisations is an admin job and stays open.
-    if (!config.portalEnabled && sub !== '/admin/orgs') throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not open yet.');
+    const alwaysOpen = sub === '/trial-request' || sub.startsWith('/admin/'); // requests are collected, and the owner works, before logins open
+    if (!config.portalEnabled && !alwaysOpen) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not open yet.');
     const r = { request, url, setCookie: null };
     let matchedPath = false;
     for (const rt of ROUTES) {
@@ -696,7 +905,7 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
       if (!m) continue;
       matchedPath = true;
       if (rt.method !== request.method) continue;
-      if (!rt.opts.token) checkCsrf(request, url); // bearer token routes carry no cookie, so there is nothing to forge
+      if (!rt.opts.token && !rt.opts.noCsrf) checkCsrf(request, url); // bearer token routes carry no cookie, so there is nothing to forge
       const res = await rt.handler(r, ...m.slice(1).map(decode));
       if (r.setCookie) res.headers.append('set-cookie', r.setCookie);
       return res;
@@ -712,5 +921,5 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     return runMonth({ pstore, store, config, fetchImpl, now });
   }
 
-  return { route, scheduled, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
+  return { route, scheduled, gate, completeCardSetup, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
 }

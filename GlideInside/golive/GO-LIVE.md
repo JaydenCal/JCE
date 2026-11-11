@@ -2,7 +2,7 @@
 
 Prepared 11/11/2026. Nothing in this pack has been deployed or uploaded. No live key was used and no email was sent.
 
-What goes live: Find my block (live NSW and QLD services), setbacks, the AI helper (A$35 Plan Pack), the redesigned website, and Send to JCE (email through Resend to enquiries@jceinfrastructure.com.au). The builder and client portal stays closed.
+What goes live: Find my block (live NSW and QLD services), setbacks, the AI helper (A$35 Plan Pack), the redesigned website, and Send to JCE (email through Resend to enquiries@jceinfrastructure.com.au). The builder portal opens with a free 14 day trial (see "Builder portal and free trial" below).
 
 Plain rules for this pack:
 - Do the steps in order. Do not skip Step 0.
@@ -82,7 +82,8 @@ New variables (already in the repo `wrangler.toml` under `[vars]`, so the deploy
 | `SELLER_NAME` | `JCE Infrastructure Pty Ltd trading as Glide Inside` |
 | `SELLER_ABN` | `29 699 165 663` |
 | `PLAN_PACK_PRICE_CENTS` | `3500` (only used if `STRIPE_PRICE_ID` is empty) |
-| `PORTAL_ENABLED` | `0` (portal stays closed) |
+| `PORTAL_ENABLED` | `1` (builder portal open, free trial) |
+| `TRIAL_NOTIFY` / `TRIAL_NOTIFY_TO` | `1` / `hello@glideinside.com.au` (owner email about trial requests) |
 
 Important: if `STRIPE_PRICE_ID` is set, the price shown at Stripe checkout comes from that Stripe price, not from the Worker. Open **Stripe (test mode) > Product catalogue > Plan Pack** and check the price is A$35.00. If it is A$30.00, create a new A$35 price, copy its `price_...` id and run `npx wrangler secret put STRIPE_PRICE_ID`.
 
@@ -141,7 +142,7 @@ Do **not** upload `subdivision/` (page, `assets/estate/`, `demo/`). The page put
 7. **Purge Cloudflare cache.** The site is proxied, so old pages are cached. Cloudflare dashboard, `glideinside.com.au`, **Caching > Configuration > Purge Everything**, **Purge Everything**.
 8. Open https://glideinside.com.au/ in a private window. The hero must say "Setbacks drawn from council or state code rules". https://glideinside.com.au/plans/ must not say "Free to draw" near the top. The Pricing tab title must not show the price.
 
-The sitemap no longer lists terms and privacy (both are noindex). The portal pages (`/portal/`) are not in this upload on purpose. `site.config.js` is unchanged: `portalLive` stays `false`.
+The sitemap no longer lists terms and privacy (both are noindex). The portal pages (`/portal/`) and `site.config.js` (`portalLive` true) are part of the portal launch: see "Builder portal and free trial".
 
 ## 9. /subdivision/: keep the live page, swap only the header and footer
 
@@ -213,9 +214,22 @@ Worker:
 
 The Plan Pack uses the Stripe test keys you set on 15/10/2026, so customers cannot really pay yet. When you decide to take real money: create the A$35 Plan Pack price in Stripe **live** mode, create the live webhook `https://glideinside.com.au/api/stripe/webhook` for `checkout.session.completed`, `checkout.session.async_payment_succeeded` and `charge.refunded`, then run `npx wrangler secret put STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` and `STRIPE_PRICE_ID` with the live values and redeploy. Say the word and Claude will write the click by click steps.
 
-## When the builder portal launches later
+## Builder portal and free trial (switched on 11/11/2026)
 
-Set `PORTAL_ENABLED = "1"`, `portalLive: true` in `site.config.js`, `portalEnabled` and `REVIEW_BUILD` stay as the config says and rebuild. The portal sign in uses cookies, which work because the API is on the same site (`glideinside.com.au/api`). The portal needs month end invoicing with Stripe test keys only until you give written go-ahead.
+The repo now has the portal ON: `PORTAL_ENABLED = "1"` in `wrangler.toml`, `portalLive`, `portalEnabled: true` and `portalMock: false` in `website-live/site.config.js` (REVIEW_BUILD stays false, mocks off). The built app page `plan-studio/app/index.html` now loads `../../site.config.js` so Pocket Architect sees the same switches. Builders ask for a free 14 day trial on `/for-builders/#trial`; you approve each one. Nothing here has been deployed.
+
+Do these in order, after Steps 0 to 7 above:
+
+1. **Schema.** Re-run `server/schema.sql` (Step 2). It adds two tables, `trial_requests` and `org_accounts`, plus the portal tables if they are not there yet. Additive and safe to repeat.
+2. **Secrets already needed:** `ADMIN_TOKEN` (Step 3) and `STRIPE_SECRET_KEY` (a TEST key). `RESEND_API_KEY` also sends you the trial request email.
+3. **New variables** (in `wrangler.toml`): `TRIAL_NOTIFY = "1"` (set `"0"` to stop the email) and `TRIAL_NOTIFY_TO = "hello@glideinside.com.au"` (your own address; empty means no email). The email goes to you only. The builder is never emailed.
+4. **Stripe webhook.** In the Stripe dashboard (test mode) the endpoint `https://glideinside.com.au/api/stripe/webhook` must also receive `checkout.session.completed` for card setup. It is the same event the Plan Pack uses, so if that is already ticked there is nothing to add. Check the `STRIPE_WEBHOOK_SECRET` matches.
+5. **Monthly billing cron.** `[triggers] crons = ["0 19 * * *", "0 20 * * *"]` is already in `wrangler.toml`. It runs daily and the code only acts at 06:00 on the 1st, Sydney time (`L` is not valid in a Cloudflare cron). Charges go to a saved card automatically; with no card, Stripe emails an invoice. Test keys only until you give the written go-ahead for live billing.
+6. Deploy the Worker (Step 6) and upload the website (Step 8). The new files are `trial-terms.html`, `for-builders/index.html`, `pricing/index.html`, `portal/` (including `portal/admin/`), `site.config.js` and `plan-studio/app/index.html`. Purge the Cloudflare cache.
+
+**The admin page.** Open `https://glideinside.com.au/portal/admin/` (not linked anywhere, noindex). Paste your `ADMIN_TOKEN` once; it is kept in that browser tab only and forgotten when you close it or press Lock. It lists trial requests (pending, approved, declined) and builder accounts (trial, trial ended, active, read only) with client logins issued, AI use and invoices. **Approve** creates the account and shows the username and temporary password once, with Copy: you pass them on yourself. **Decline** keeps a note. **Extend 7 days**, **Convert to paid** (for someone who pays you another way) and **New admin password** are on each account.
+
+**Test it first (test mode):** submit the form with an ABN that passes the checksum, approve it on the admin page, sign in at `/portal/` with the login, try Generate account (refused during the trial), press Add billing details and pay with `4242 4242 4242 4242`, then Generate account works. Rollback: set `PORTAL_ENABLED = "0"` and redeploy; logins close, trial requests and the admin page keep working.
 
 ## Files in this folder
 

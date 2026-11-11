@@ -213,3 +213,46 @@ Differences from the first draft:
 - `enquiryJce` stays public (no cookie needed), so `allowClientEnquiries` is enforced by the screens only.
 
 Going live: (1) apply `server/schema.sql`; (2) set the secrets and variables in `server/README.md`; (3) create the first organisation; (4) in the site config set `GI_CONFIG.portalEnabled = true` and `GI_CONFIG.portalMock = false` (or build with `REVIEW_BUILD = false`, the default, and no mock), run `node tools/sync-portal.mjs` to refresh `website-live/portal/src`, and set `PORTAL_ENABLED=1` on the Worker; (5) live Stripe only with the owner's written go-ahead.
+
+## 14. Free builder trial (11/11/2026)
+
+Builders ask for a free 14 day trial on `/for-builders/#trial`. The owner approves each request on the private admin page `/portal/admin/`; approval creates the organisation and its first admin login. Code: `server/lib/trial.js` (rules, validation, owner email), `server/lib/portal.js` (routes), `src/portal/ui/trial-ui.js` and `src/portal/ui/admin-app.js` (screens), tests in `tests/trial.test.mjs`.
+
+**Account states.** `me().account.status` is `trial`, `trial_ended`, `active` or `read_only`. They live in the new table `org_accounts` (an org with no row is a legacy `active` org, so the ADMIN_TOKEN create-org job is unchanged). `trial` past `trial_ends_at` is treated as `trial_ended` at request time, so no cron is needed.
+
+**Dates.** The approval day is day 1. `trial_ends_at` is 00:00 Sydney on the day 14 calendar days after the approval date (approved 11/11/2026: read only from 00:00 on 25/11/2026, last full day 24/11/2026). Daylight saving safe (`sydneyDayStartPlus` in `src/portal/billing.js`). Extending adds 7 calendar days from the current end (or from today when already ended). Builder data is kept 90 days after a trial ends.
+
+**Rules.**
+
+| State | Staff | Client logins | AI top-ups | Writes | Exports |
+|---|---|---|---|---|---|
+| trial | everything else | issue, reset, enable refused: `403 TRIAL_NO_CLIENTS` | refused: `403 TRIAL_NO_TOPUPS` (portal and `/api/ai/topup`); monthly cap applies | allowed | `["pdf","dxf","glb","obj"]` |
+| trial_ended, read_only | sign in, view, open projects, save billing details, start card setup | refused | refused | every non GET route: `403 READ_ONLY` (also AI edit, AI token) | `[]`, `enquiry` false |
+| active | everything | allowed | allowed | allowed | normal |
+
+Routes still open while read only: sign in/out, password change, `PUT /billing/contact`, `POST /billing/setup`, `POST /billing/setup/confirm`.
+
+**New routes.**
+
+| Route | Auth | Purpose |
+|---|---|---|
+| `POST /api/portal/trial-request` | none (public, no CSRF header needed) | `{ companyLegalName, abn, tradingName?, firstName, lastName, email, mobile, region, homesPerYear?, howHeard?, consent: true, website: "" }`. `website` is the honeypot. ABN checksum validated. Rate limit 5 per IP per hour and 3 per email per day (`429 RATE_LIMITED`). A second request with an ABN that already has a pending or approved request answers the same success and stores nothing. Stored in `trial_requests` as `pending`. Answers `{ ok: true, message: "Thanks, we will be in touch within one business day." }`. Works while `PORTAL_ENABLED` is 0. |
+| `GET /api/portal/admin/trial-requests?status=` | bearer `ADMIN_TOKEN` | pending, approved, declined |
+| `POST .../admin/trial-requests/:id/approve` | bearer | creates the org (billing details prefilled from the request) and first admin; returns `credentials` once. `409` if already decided or the email already has a login |
+| `POST .../admin/trial-requests/:id/decline` | bearer | `{ note }` |
+| `GET /api/portal/admin/orgs` | bearer | each org: account state, first admin, client logins issued, AI use this month, invoices |
+| `POST .../admin/orgs/:id/extend-trial` | bearer | +7 days; `409` for an active org |
+| `POST .../admin/orgs/:id/convert` | bearer | manual convert to paid (`{ note? }`) |
+| `POST .../admin/orgs/:id/reset-admin` | bearer | new temporary password for the first admin, shown once |
+| `POST /api/portal/billing/setup` | cookie, `billing.write` | Stripe Checkout Session in `setup` mode (card only); needs legal name, ABN and billing email saved. Returns `{ url }` |
+| `POST /api/portal/billing/setup/confirm` | cookie, `billing.write` | `{ sessionId }`. Runs the same completion as the webhook when the customer returns before it arrives |
+
+**Card capture.** The Stripe webhook already receives `checkout.session.completed`. For `mode: "setup"` the server reads the SetupIntent, sets the payment method as the customer's `invoice_settings.default_payment_method`, stores it on the org (brand and last 4 are shown, the id is never sent to the browser), sets the org `active` and fills any missing billing contact from Stripe's customer details. No new webhook event is needed.
+
+**Monthly billing.** An org with a saved card gets a `charge_automatically` invoice with `default_payment_method`, finalized and paid at once (`POST /invoices/:id/pay`, off session); Stripe does not email it. A declined card leaves the invoice `due` with the reason in `error` (shown on the admin page). An org without a card is invoiced as before (`send_invoice`, 14 days). Tax invoice rules are unchanged: seller JCE Infrastructure Pty Ltd trading as Glide Inside, ABN 29 699 165 663; buyer legal name and ABN; the invoice snapshot adds `payment: { method: "card" | "invoice", brand, last4 }`. Test mode only; a live key is refused unless `STRIPE_LIVE_BILLING_APPROVED` is set.
+
+**Owner email.** On a new request, one email to `TRIAL_NOTIFY_TO` (default hello@glideinside.com.au) through Resend: subject `Trial request: <company>`, the details and a link to `/portal/admin/`. Skipped silently when `TRIAL_NOTIFY=0`, `RESEND_API_KEY` is unset or `TRIAL_NOTIFY_TO` is empty. A failure never loses the request. The builder is never emailed by the server.
+
+**Tables** (additive, in `server/schema.sql`): `trial_requests`, `org_accounts`.
+
+**me().** Adds `account` `{ status, trialStartedAt, trialEndsAt, daysLeft, lastTrialDay, readOnly, canIssueClients, canTopUp, cardOnFile, card, dataKeptUntil }`. `canTopUp`, `exports` and `enquiry` follow the state.

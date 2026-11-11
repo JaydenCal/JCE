@@ -276,7 +276,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const user = db.users.find((u) => u.id === sessionUserId());
       if (!user || user.status !== 'active') return null;
       const org = db.orgs.find((o) => o.id === user.orgId);
-      return { user: publicUser(user, org), org: publicOrg(org), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai: aiBalance(user, org), canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true, enquiry: isStaff(user) || org.allowClientEnquiries !== false, exports: isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj'] : ['pdf'] };
+      return { user: publicUser(user, org), org: publicOrg(org), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai: aiBalance(user, org), canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true, enquiry: isStaff(user) || org.allowClientEnquiries !== false, exports: isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj'] : ['pdf'], account: { status: 'active', trialStartedAt: null, trialEndsAt: null, daysLeft: 0, lastTrialDay: null, readOnly: false, canIssueClients: true, canTopUp: true, cardOnFile: false, card: null, dataKeptUntil: null } };
     },
     async changePassword({ currentPassword, newPassword } = {}) {
       await wait();
@@ -604,6 +604,13 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     async getBillingContact() {
       await wait();
       return clone(ctx('billing.read').org.billingContact);
+    },
+    // Card details go through Stripe Checkout on the real server. The mock has no Stripe, so it says so.
+    async startBillingSetup() {
+      throw new ApiError('BILLING_UNAVAILABLE', 'Card details are not available in the review mock. They use Stripe Checkout on the live site.');
+    },
+    async confirmBillingSetup() {
+      throw new ApiError('BILLING_UNAVAILABLE', 'Card details are not available in the review mock.');
     },
     async setBillingContact({ name, email, phone, legalName, abn } = {}) {
       await wait();

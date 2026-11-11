@@ -113,3 +113,22 @@
 @media(max-width:560px){.pp-titleblock{grid-template-columns:1fr}.pp-titleblock>div{border-right:0;border-bottom:1px solid var(--ink)}}
 @media print{.site-header,.site-footer,.pp-brandbar,.pp-main,.pp-dialog-head,.pp-dialog-foot{display:none!important}.pp-scrim{position:static;background:none;padding:0;display:block}.pp-dialog{box-shadow:none;max-height:none}.pp-dialog-body{overflow:visible}body{background:#fff}}
 @media(prefers-reduced-motion:no-preference){.pp-house{transition:border-color .15s}.pp-house:hover{border-color:var(--accent)}}
+/* free trial banner, locked client logins, account card */
+.pp-trial{display:grid;grid-template-columns:auto 1fr auto;gap:16px 20px;align-items:center;background:#f6ecdf;border:1px solid var(--accent-soft);border-radius:var(--r);padding:14px 18px;margin:0 0 20px}
+.pp-trial-days{display:grid;place-items:center;min-width:64px;padding:6px 10px;background:var(--card);border:1px solid var(--accent-soft);border-radius:12px;text-align:center;line-height:1.1}
+.pp-trial-days strong{font-size:28px;color:var(--accent)}.pp-trial-days span{font-size:12px;color:var(--muted)}
+.pp-trial-text strong{font-size:16px}.pp-trial-text p{margin:4px 0 0;font-size:14px;color:#5b3015;max-width:78ch}
+.pp-trial--ended{background:#fbeeea;border-color:#e4b3a3}.pp-trial--ended .pp-trial-days{color:#7a2a14;border-color:#e4b3a3}.pp-trial--ended .pp-trial-text p{color:#7a2a14}
+.pp-notice--lock{align-items:center;flex-wrap:wrap}.pp-notice--lock>div{flex:1 1 320px}.pp-notice--lock p{margin:4px 0 0;font-weight:500}
+.pp-account p{margin:0 0 10px}.pp-account .pp-actions{padding:0;margin-top:12px}.pp-account--ended{border-color:#e4b3a3}
+@media (max-width:720px){.pp-trial{grid-template-columns:1fr}.pp-trial-days{justify-self:start;grid-auto-flow:column;gap:8px}}
+/* owner admin page */
+.pp-adm-list{display:grid;gap:14px;margin:16px 0 0}.pp-adm-req .pp-card-head{margin-bottom:10px}
+.pp-adm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 24px;margin:0 0 14px}
+.pp-adm-kv{display:grid;gap:1px}.pp-adm-kv span{font-size:12px;color:var(--muted)}.pp-adm-kv strong{font-size:14px;word-break:break-word}
+.pp-adm-err{color:#7a2a14}
+/* review fixes: primary small buttons keep white text on the accent fill; one Actions menu per client row */
+.pp-btn--sm.pp-btn--primary{background:var(--accent);border-color:var(--accent);color:#fff}.pp-btn--sm.pp-btn--primary:hover{background:#8d4524;border-color:#8d4524;color:#fff}
+.pp-menu{position:relative;display:inline-block}.pp-menu summary{list-style:none;cursor:pointer}.pp-menu summary::-webkit-details-marker{display:none}
+.pp-menu-list{position:absolute;right:0;z-index:20;min-width:190px;margin-top:4px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);display:grid;gap:2px}
+.pp-menu-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 10px;border:0;border-radius:6px;background:none;font:600 14px var(--font);color:var(--ink);cursor:pointer}.pp-menu-item:hover{background:var(--scene)}.pp-menu-item--danger{color:#9b2c1a}

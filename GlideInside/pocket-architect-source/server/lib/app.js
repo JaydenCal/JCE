@@ -33,7 +33,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   // Builder and client portal (lib/portal.js). It needs a portal store: D1 in production (the Worker passes one), memory in tests
   // and local development. Other stores (Upstash) cannot hold it, so those hosts answer 503 PORTAL_NOT_CONFIGURED.
   const pstore = portalStore !== undefined ? portalStore : ['memory', 'file'].includes(store.kind) ? createMemoryPortalStore() : null;
-  const portal = pstore ? createPortal({ store, pstore, config, fetchImpl: doFetch, now, ...(loadTemplates ? { loadTemplates } : {}) }) : null;
+  const portal = pstore ? createPortal({ store, pstore, config, fetchImpl: doFetch, env, now, ...(loadTemplates ? { loadTemplates } : {}) }) : null;
 
   let toolsCache = null;
   let catalogueCache = null;
@@ -98,7 +98,9 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (!event?.id || !event?.type) throw new HttpError('BAD_REQUEST', 'Webhook event is incomplete.');
     if (!(await store.claimWebhookEvent(event.id, event.type, iso()))) return json({ received: true, duplicate: true });
     try {
-      const outcome = await stripe.handleStripeEvent({ event, store, config, now });
+      // A card saved through Checkout in setup mode belongs to the builder portal, not to a Plan Pack.
+      const setup = event.type === 'checkout.session.completed' && event.data?.object?.mode === 'setup';
+      const outcome = setup ? (portal ? await portal.completeCardSetup(event.data.object) : 'ignored: portal not configured') : await stripe.handleStripeEvent({ event, store, config, now });
       console.log(JSON.stringify({ event: 'stripe_webhook', id: event.id, type: event.type, outcome }));
       return json({ received: true });
     } catch (e) {
@@ -256,7 +258,10 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
 
   async function accountFor(request) {
     const org = await readOrgToken(request, { config, now });
-    if (org) return orgAccount(org);
+    if (org) {
+      await portal?.gate(org.oid, 'ai'); // a read only account (trial over, no card) cannot use the AI helper
+      return orgAccount(org);
+    }
     return packAccount(await authenticate(request, { store, config, now }));
   }
 
@@ -379,6 +384,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   async function aiTopUp(request) {
     const org = await readOrgToken(request, { config, now });
     if (!org) throw new HttpError('NOT_ENTITLED', 'Top-ups are for builder and client logins.');
+    await portal?.gate(org.oid, 'topup'); // no top-ups during the free trial; none when read only
     if (!(await topUpAllowed(org))) throw new HttpError('TOPUP_DISABLED', 'Top-ups are turned off for your organisation. Ask your builder.');
     const nowMs = now();
     if ((await store.hitRate(`topup:${org.oid}:${org.lid}`, 3600, nowMs)) > 10) throw new HttpError('RATE_LIMITED', 'Too many top-ups in the last hour.', { retryAfter: 600 });
@@ -394,6 +400,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   async function aiTopUpSetting(request) {
     const org = await readOrgToken(request, { config, now });
     if (!org || org.role !== 'builder') throw new HttpError('NOT_ENTITLED', 'Only a builder login can change this.');
+    await portal?.gate(org.oid, 'write');
     const body = await readJson(request, 1024);
     if (typeof body.enabled !== 'boolean') throw new HttpError('BAD_REQUEST', 'enabled must be true or false.');
     const createdAt = iso();

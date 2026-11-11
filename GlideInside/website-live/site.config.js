@@ -14,10 +14,13 @@ window.GI_CONFIG = {
   premiumEnabled: true,
   orderUrl: "mailto:hello@glideinside.com.au?subject=Glide%20Inside%20enquiry",
   planOrderUrl: "mailto:hello@glideinside.com.au?subject=Pocket%20Architect%20enquiry",
-  // Builder accounts launch after the public Find my block tool. Register interest and demo links are mailto until a form exists.
-  builderInterestUrl: "mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20register%20interest",
+  // Builder accounts are open with a free 14 day trial (11/11/2026). The trial form is on /for-builders/#trial. The demo link is mailto.
+  builderInterestUrl: "mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20register%20interest", // no longer used by the pages; kept for old links
+  trialUrl: "for-builders/#trial",
   builderDemoUrl: "mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20book%20a%20demo",
-  portalLive: false,              // true shows the Builder login and Client login links (/portal/). Keep false until the portal is live.
+  portalLive: true,               // true shows the Builder login and Client login links (/portal/). LIVE from 11/11/2026 (the Worker needs PORTAL_ENABLED=1).
+  portalEnabled: true,            // the portal page and Pocket Architect client mode read this (src/config.js). REVIEW_BUILD stays false and the mock is off.
+  portalMock: false,              // never true on the live site: the real Worker routes are used
   subdivisionOrderUrl: "mailto:hello@glideinside.com.au?subject=Subdivision%20quote%20request", // or a quote form inside the app
   // Tracking (leave empty until the owner creates the accounts; see docs/marketing/TRACKING.md)
   ga4Id: "G-8TLHQ55DN4",                      // GA4 Measurement ID, for example "G-XXXXXXXXXX". Empty = no analytics loaded.

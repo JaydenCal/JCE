@@ -99,3 +99,21 @@ export function monthStartMs(key) {
 
 /** GST included in a GST-inclusive total (one eleventh), rounded to the nearest cent. */
 export const gstOfTotal = (totalCents) => Math.round(totalCents / 11);
+
+/** Instant (ms) of 00:00 Sydney on the calendar day y-m-d (month 1-12). Days outside the month roll over, so day + 14 is safe. */
+export function sydneyDayStartMs(y, m, d) {
+  const t0 = Date.UTC(y, m - 1, d); // the same calendar day at 00:00 UTC; Sydney midnight is 10 to 11 hours before this
+  for (let t = t0 - 14 * 3600000; t <= t0 + 3600000; t += 3600000) {
+    const p = sydneyParts(t);
+    const ref = Date.UTC(p.year, p.month - 1, p.day);
+    if (ref === t0 && p.hour === 0) return t;
+  }
+  throw new Error(`sydneyDayStartMs: no start found for ${y}-${m}-${d}`);
+}
+
+/** 00:00 Sydney on the day `days` calendar days after the Sydney day that contains `ms` (daylight saving safe). */
+export function sydneyDayStartPlus(ms, days) {
+  const p = sydneyParts(ms);
+  const t = new Date(Date.UTC(p.year, p.month - 1, p.day + days));
+  return sydneyDayStartMs(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate());
+}
