@@ -237,6 +237,8 @@ export function frontageRoadName(lot, facts = null) {
   if (ranked[0].d < 150000) return ranked[0].name;
   return addr || ranked[0].name;
 }
+/** A rural holding (large or rural zoned): the road in front of it is a sealed road with no kerb, gutter or footpath. */
+export const isRuralLot = (lot) => !!lot && ((lot.areaM2 || lot.registeredAreaM2 || 0) >= 40000 || /^(RU|RLQ|E[1-4]|RUR)/i.test(String(lot.zoning?.code || lot.zone?.code || '')) || false);
 const ROAD_NAME = (lot, facts = null) => frontageRoadName(lot, facts);
 
 /**
@@ -288,6 +290,7 @@ export function drawSitePlan(doc, ctx) {
 
   // 3. Road reserve: footpath, kerb, gutter, pavement hatched along the road, concrete footpath, red PHANTOM centreline
   const roadBoxes = [];
+  const rural = isRuralLot(lot);
   for (const r of facts.reserve) {
     const L = r.lines;
     const quad = (A, B) => [A[0], A[1], B[1], B[0]];
@@ -296,9 +299,9 @@ export function drawSitePlan(doc, ctx) {
     const bit = clipPolygon(quad(L.kerb, L.farKerb).map(T), rect);
     if (bit.length > 2) hatch(doc, bit, aerial ? 'roadAerial' : 'road', { angle: ang });
     const fp = clipPolygon(quad(L.footpathNear, L.footpathFar).map(T), rect);
-    if (fp.length > 2) hatch(doc, fp, 'footpath', { angle: ang + 90 });
+    if (fp.length > 2 && !rural) hatch(doc, fp, 'footpath', { angle: ang + 90 });
     doc.setLineDashPattern([], 0);
-    for (const [key, w, col] of [['footpathNear', 0.14, PEN.grey], ['footpathFar', 0.14, PEN.grey], ['kerb', 0.4, aerial ? [255, 255, 255] : PEN.road], ['gutter', 0.14, PEN.grey], ['farGutter', 0.14, PEN.grey], ['farKerb', 0.4, aerial ? [255, 255, 255] : PEN.road]]) {
+    for (const [key, w, col] of rural ? [] : [['footpathNear', 0.14, PEN.grey], ['footpathFar', 0.14, PEN.grey], ['kerb', 0.4, aerial ? [255, 255, 255] : PEN.road], ['gutter', 0.14, PEN.grey], ['farGutter', 0.14, PEN.grey], ['farKerb', 0.4, aerial ? [255, 255, 255] : PEN.road]]) {
       doc.setDrawColor(...col);
       doc.setLineWidth(w);
       clippedPolyline(doc, L[key].map(T), rect, false);
@@ -464,7 +467,7 @@ export function drawSitePlan(doc, ctx) {
     const sideOut = G.dot(readUp, G.sub(mid, centre)) > 0 ? 1 : -1;
     const spec = (txt, side, bold, off) => (f) => () => {
       const m = G.lerp(a, b, f);
-      return alongLabel(doc, txt, m, dir, side * off, { size: TXT.label, colour: bcol, bold, halo: HALO });
+      return alongLabel(doc, txt, m, dir, side * off, { size: TXT.label, colour: aerial ? [30, 30, 34] : bcol, bold, halo: HALO });
     };
     const offs = [1.4 + TXT.label * 0.3528 * 0.2, 1.4 + TXT.label * 0.3528 + 0.6];
     const fr = [0.5, 0.32, 0.68, 0.18, 0.82, 0.42, 0.58, 0.1, 0.9];
@@ -576,7 +579,7 @@ export function drawSitePlan(doc, ctx) {
     const ph = visible(L.centreline, 0.8);
     const kb = visible(L.kerb, 0.2);
     if (ph) items.push({ id: 'phantom', lines: ['ROAD CENTRELINE', 'Indicative'], at: ph, colour: PEN.phantom });
-    if (kb) items.push({ id: 'kerb', lines: ['KERB AND GUTTER', 'Existing, assumed'], at: kb, colour: aerial ? [40, 42, 48] : PEN.road });
+    if (kb && !isRuralLot(lot)) items.push({ id: 'kerb', lines: ['KERB AND GUTTER', 'Existing, assumed'], at: kb, colour: aerial ? [40, 42, 48] : PEN.road });
   }
   if (lot.envelope?.length > 2) {
     const e = lot.envelope;
@@ -686,6 +689,7 @@ export function drawSitePanel(doc, ctx, site) {
     ['Road pavement', sample((cx, cy) => { const q = rectP(cx, cy); hatch(doc, q, 'road', { angle: 0, width: 0.12, colour: [90, 94, 102] }); doc.setDrawColor(...PEN.road); doc.setLineWidth(0.3); doc.line(cx, cy - 1.8, cx + sw, cy - 1.8); doc.line(cx, cy + 1.8, cx + sw, cy + 1.8); })],
     ['Footpath', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'footpath'))],
   ];
+  if (isRuralLot(site?.facts?.lot)) for (let i = items.length - 1; i >= 0; i--) if (/^(Kerb and gutter|Footpath)$/.test(items[i][0])) items.splice(i, 1);
   const lh = 5.2;
   const legH = 9 + items.length * lh;
   doc.setLineWidth(0.5);
@@ -812,7 +816,7 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
   const lot = project.site?.lot;
   const w = box.x1 - box.x0;
   const h = box.y1 - box.y0;
-  doc.setFillColor(248, 249, 250);
+  doc.setFillColor(255, 255, 255); // plain white until an aerial is laid over it
   doc.setDrawColor(...PEN.light);
   doc.setLineWidth(0.15);
   doc.rect(box.x0, box.y0, w, h, 'FD');
@@ -823,7 +827,7 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
     doc.text('Locality not loaded', (box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2, { align: 'center' });
     return null;
   }
-  const view = localityView(project, box, { minSpanM: key ? 400 : 280, k: ctx.k || 1, extent: ctx.locExtent || null });
+  const view = localityView(project, box, { minSpanM: key ? 400 : 700, k: ctx.k || 1, extent: ctx.locExtent || null });
   const { T } = view;
   const under = ctx.underlays?.[key ? 'key' : 'cover'];
   const aerial = !!(under?.url && placeUnderlay(doc, under.url, box));
@@ -858,7 +862,8 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
       const c = G.add(L[i + 1], G.mul(nrm, -s.widthMm / 2));
       const e = G.add(L[i], G.mul(nrm, -s.widthMm / 2));
       const q = clipPolygon([a, b, c, e].map(T), rect);
-      if (q.length > 2) { doc.setFillColor(aerial ? 255 : 226, aerial ? 255 : 228, aerial ? 255 : 232); polygon(doc, q, 'F'); }
+      // The aerial shows the street itself; the cadastral road is outlined over it, and plain white keeps a light outline only
+      if (q.length > 2) { doc.setDrawColor(...(aerial ? [255, 255, 255] : PEN.light)); doc.setLineWidth(aerial ? 0.5 : 0.15); polygon(doc, q, 'S'); }
     }
   }
   // Surrounding cadastre (the wider set when the host supplied one for the locality)
@@ -866,7 +871,6 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
   doc.setLineWidth(key ? 0.12 : pal.neighbourW);
   for (const nb of ctx.locNeighbours || lot.neighbours || []) clippedPolyline(doc, (nb.ring || []).map(T), rect, true);
   const own = clipPolygon(lot.boundary.map(T), rect);
-  if (own.length > 2 && !aerial) { doc.setFillColor(205, 232, 214); polygon(doc, own, 'F'); }
   doc.setDrawColor(...(lot.proposed ? PEN.proposed : pal.boundary));
   doc.setLineWidth(key ? 0.6 : 0.9);
   clippedPolyline(doc, lot.boundary.map(T), rect, true);
@@ -876,7 +880,7 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
   // Street names along the road, in a clear stretch
   if (!key) {
     for (const s of streets) {
-      if (!s.name) continue;
+      if (!s.name || s !== streets[0]) continue; // only the road the lot fronts is named
       const a = T(s.pts[0]);
       const b = T(s.pts[1]);
       const clip = clipSegment(a, b, rect);

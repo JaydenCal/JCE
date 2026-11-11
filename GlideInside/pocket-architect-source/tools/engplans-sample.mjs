@@ -1,6 +1,8 @@
 // Builds the engineering style plan set for the Tamworth sample lot, in public and builder branding, with a synthetic aerial.
 //   node tools/engplans-sample.mjs [outDir]        (default docs/engplans-review; writes urban/ and rural/ with PNG pages at 80 dpi when pdftoppm exists)
-// The sample lot and its aerial are invented (see tools/make-site-fixtures.mjs): the aerial is a picture of nothing real.
+// The sample lot and its cadastre are invented (see tools/make-site-fixtures.mjs). The aerial is the real NSW photograph in
+// tools/fixtures/sample-aerial.jpg (or the file named by SAMPLE_AERIAL), georeferenced over the fixture extent for the sample only.
+// When that file is missing the synthetic aerial is drawn instead.
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -60,6 +62,45 @@ function extendLot(fl) {
   return copy;
 }
 
+const SAMPLE_AERIAL = process.env.SAMPLE_AERIAL ? path.resolve(process.env.SAMPLE_AERIAL) : path.resolve(here('./fixtures/sample-aerial.jpg').pathname);
+const AERIAL_CREDIT = 'Aerial imagery: NSW Spatial Services (sample).';
+let sampleImg;
+/** The real sample photograph decoded once, or null when the file is missing. */
+async function sampleImage() {
+  if (sampleImg !== undefined) return sampleImg;
+  sampleImg = null;
+  try {
+    if (fs.existsSync(SAMPLE_AERIAL)) sampleImg = await (await import('@napi-rs/canvas')).loadImage(fs.readFileSync(SAMPLE_AERIAL));
+  } catch { sampleImg = null; }
+  return sampleImg;
+}
+
+/** The sample photograph over a ground window (metres, any origin): the picture is laid down as mirrored tiles of tileM metres across, so any extent has ground. */
+async function sampleGround(img, win, widthPx, tileM) {
+  const { createCanvas } = await import('@napi-rs/canvas');
+  const heightPx = Math.round((widthPx * (win.maxN - win.minN)) / (win.maxE - win.minE));
+  const c = createCanvas(widthPx, heightPx);
+  const g = c.getContext('2d');
+  const tw = tileM;
+  const th = tileM * (img.height / img.width);
+  const sx = widthPx / (win.maxE - win.minE);
+  const sy = heightPx / (win.maxN - win.minN);
+  for (let i = Math.floor(win.minE / tw); i <= Math.floor(win.maxE / tw); i++) {
+    for (let j = Math.floor(win.minN / th); j <= Math.floor(win.maxN / th); j++) {
+      const dw = tw * sx;
+      const dh = th * sy;
+      const fx = i % 2 !== 0;
+      const fy = j % 2 !== 0;
+      g.save();
+      g.translate((i * tw - win.minE) * sx + (fx ? dw : 0), (win.maxN - (j + 1) * th) * sy + (fy ? dh : 0));
+      g.scale(fx ? -1 : 1, fy ? -1 : 1);
+      g.drawImage(img, 0, 0, dw + 1, dh + 1); // mirrored tiles share edges, so there is no seam
+      g.restore();
+    }
+  }
+  return { buf: c.toBuffer('image/jpeg', 78), heightPx };
+}
+
 async function syntheticAerial(fixture) {
   let canvasLib;
   try { canvasLib = await import('@napi-rs/canvas'); } catch { return null; }
@@ -99,13 +140,28 @@ async function syntheticAerial(fixture) {
   return { meta, url: `data:image/jpeg;base64,${buf.toString('base64')}` };
 }
 
+/** The urban aerial: the real photograph georeferenced over the fixture extent (the fixture cadastre is invented, so it does not line up with the buildings), else the synthetic one. */
+async function urbanAerial(fixture) {
+  const img = await sampleImage();
+  if (!img) return syntheticAerial(fixture);
+  const m = 450;
+  const b = fixture.aerial.bbox;
+  const bbox = { minE: b.minE - m, minN: b.minN - m, maxE: b.maxE + m, maxN: b.maxN + m };
+  const widthPx = 2048;
+  // One tile spans the whole extent, so the picture is laid across it once
+  const { buf, heightPx } = await sampleGround(img, { minE: 0, minN: 0, maxE: bbox.maxE - bbox.minE, maxN: bbox.maxN - bbox.minN }, widthPx, bbox.maxE - bbox.minE);
+  const meta = { ...fixture.aerial, bbox, widthPx, heightPx, mmPerPx: ((bbox.maxE - bbox.minE) * 1000) / widthPx };
+  return { meta, real: true, url: `data:image/jpeg;base64,${buf.toString('base64')}` };
+}
+
 export async function sampleProject({ withAerial = true } = {}) {
   const f = FIXTURES[0];
-  const aer = withAerial ? await syntheticAerial(f) : null;
+  const aer = withAerial ? await urbanAerial(f) : null;
   const lot = buildSiteLot({ lot: extendLot(f.lot), aerialMeta: aer?.meta || f.aerial, aerialKey: aer ? 'sample-aerial' : null, contours: f.contours, address: f.search[0].label, source: 'sample' });
   const r = siteLotSetbacks(lot, rules, { storeys: 2, wallHeightM: 5.4, buildingHeightM: 8 });
   lot.setbacks = r.setbacks;
   lot.envelope = r.envelope;
+  if (aer?.real && lot.aerial) { lot.aerial.attribution = ''; lot.aerial.source = ''; }
   // The fixture coordinates are synthetic; place the search point where Calala really is so the locality map can point to the town centre.
   lot.query = { lon: 150.9296, lat: -31.0446 };
   const p = createProject({ name: 'Sample Residence' });
@@ -159,6 +215,8 @@ function ruralWorld() {
 async function ruralAerialBytes(world, bboxRel, origin) {
   const { createCanvas } = await import('@napi-rs/canvas');
   const W = Math.min(3600, Math.round((bboxRel.maxE - bboxRel.minE) / 0.9));
+  const real = await sampleImage();
+  if (real) return (await sampleGround(real, bboxRel, W, 1000)).buf;
   const H = Math.round((W * (bboxRel.maxN - bboxRel.minN)) / (bboxRel.maxE - bboxRel.minE));
   const c = createCanvas(W, H);
   const g = c.getContext('2d');
@@ -217,6 +275,7 @@ export async function ruralProject() {
   const r = siteLotSetbacks(lot, rules, { storeys: 1, wallHeightM: 2.7, buildingHeightM: 5 });
   lot.setbacks = r.setbacks;
   lot.envelope = r.envelope;
+  if (await sampleImage() && lot.aerial) { lot.aerial.attribution = ''; lot.aerial.source = ''; }
   const p = createProject({ id: 'p_rural_demo', name: '  Single   storey,  4 bedroom ' });
   p.site.lot = lot;
   Object.assign(p.titleBlock, { client: 'A Sample Client', council: 'Gunnedah Shire', lotDp: 'Lot 3 DP 263990' });
@@ -241,7 +300,7 @@ async function main() {
     fs.mkdirSync(out, { recursive: true });
     for (const f of fs.readdirSync(out)) if (/\.(png|pdf)$/.test(f)) fs.rmSync(path.join(out, f));
     for (const [name, builder] of [['public', null], ['builder', { name: 'Sample Builder Homes', logo: null }]]) {
-      const bytes = await toEngineeringPDF(project, { jsPDF, catalogue, date, builder, aerial, fetchAerial });
+      const bytes = await toEngineeringPDF(project, { jsPDF, catalogue, date, builder, aerial, fetchAerial, aerialCredit: (await sampleImage()) ? AERIAL_CREDIT : null });
       const pdf = path.join(out, `${tag}-${name}.pdf`);
       fs.writeFileSync(pdf, bytes);
       console.log(pdf, bytes.layout.sheets.length, 'sheets');

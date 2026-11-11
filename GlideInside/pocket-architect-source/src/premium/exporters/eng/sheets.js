@@ -5,9 +5,10 @@ import { fallAcross, lotDimensions } from '../../../model/placement.js';
 import { scheduleData, levelsSorted } from '../shared.js';
 import { buildingRings, roadReserve, deriveDriveway, clearances, lotLabelLines } from '../../../site/lotplan.js';
 import { northArrow, placeImage, imageInfo } from '../pdf.js';
-import { PEN, TXT, clean, wrap, fit, ink, polygon, viewTitle, clippedPolyline, clipPolygon, labelOn, hatch, haloText } from './kit.js';
+import { PHANTOM, PEN, TXT, clean, wrap, fit, ink, polygon, viewTitle, clippedPolyline, clipPolygon, labelOn, hatch, haloText } from './kit.js';
 import { BODY } from './frame.js';
-import { drawLocality, siteFacts, lotBounds, chooseSiteScale, makeT, paletteFor } from './siteplan.js';
+import { placeUnderlay } from './aerial.js';
+import { isRuralLot, drawLocality, siteFacts, lotBounds, chooseSiteScale, makeT, paletteFor } from './siteplan.js';
 
 const cap = (t) => { const x = String(t ?? ''); return x ? x[0].toUpperCase() + x.slice(1) : x; };
 import { ddmmyyyy, normDate, projectTitle } from './brand.js';
@@ -163,11 +164,31 @@ export function analysisScale(project, k = 1) {
   return chooseSiteScale([{ x: b.minX, y: b.minY }, { x: b.maxX, y: b.maxY }], vp, k).n;
 }
 
+export const ANALYSIS_LEFT = { x0: BODY.x0, y0: BODY.y0, x1: 206, y1: BODY.y1 };
+
+/** The analysis diagram's transform and the plan window (plan mm) its panel shows, so the aerial can be composited for it. */
+export function analysisView(project, k = 1) {
+  const facts = siteFacts(project);
+  if (!facts?.lot) return null;
+  const left = ANALYSIS_LEFT;
+  const vp = { x0: left.x0 + 2, y0: left.y0 + 14, x1: left.x1 - 2, y1: left.y1 - 2 };
+  const bounds = lotBounds(project, facts);
+  const { n, ds } = chooseSiteScale([{ x: bounds.minX, y: bounds.minY }, { x: bounds.maxX, y: bounds.maxY }], vp, k);
+  const T = makeT(bounds, vp, ds);
+  const a = T({ x: 0, y: 0 });
+  const back = (sx, sy) => ({ x: (sx - a.x) * ds, y: (sy - a.y) * ds });
+  const p0 = back(left.x0, left.y0);
+  const p1 = back(left.x1, left.y1);
+  return { T, n, ds, rect: left, vp, bounds, window: { x0: Math.min(p0.x, p1.x), y0: Math.min(p0.y, p1.y), x1: Math.max(p0.x, p1.x), y1: Math.max(p0.y, p1.y) } };
+}
+
 export function drawAnalysis(doc, ctx) {
   const { project } = ctx;
   const facts = siteFacts(project);
   const lot = facts?.lot || null;
-  const left = { x0: BODY.x0, y0: BODY.y0, x1: 206, y1: BODY.y1 };
+  const left = ANALYSIS_LEFT;
+  // The aerial fills the whole panel edge to edge; without one the panel stays plain white
+  const aerial = !!(ctx.underlays?.analysis?.url && placeUnderlay(doc, ctx.underlays.analysis.url, ctx.underlays.analysis.rect || left));
   doc.setDrawColor(...PEN.ink);
   doc.setLineWidth(0.35);
   doc.rect(left.x0, left.y0, left.x1 - left.x0, left.y1 - left.y0);
@@ -185,10 +206,10 @@ export function drawAnalysis(doc, ctx) {
   const vp = { x0: left.x0 + 2, y0: left.y0 + 14, x1: left.x1 - 2, y1: left.y1 - 2 };
   const bounds = lotBounds(project, facts);
   const { n, ds } = chooseSiteScale([{ x: bounds.minX, y: bounds.minY }, { x: bounds.maxX, y: bounds.maxY }], vp, ctx.k || 1);
-  const pal = paletteFor(!!ctx.hasAerial);
-  viewTitle(doc, left.x0 + 3, left.y0 + 8.4, 'Site analysis', `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.title });
+  const pal = paletteFor(aerial);
   const T = makeT(bounds, vp, ds);
-  const rect = { x0: vp.x0, y0: vp.y0, x1: vp.x1, y1: vp.y1 };
+  // Linework runs edge to edge over the aerial (clipped to the panel); without an aerial it keeps to the diagram window
+  const rect = aerial ? { x0: left.x0, y0: left.y0, x1: left.x1, y1: left.y1 } : { x0: vp.x0, y0: vp.y0, x1: vp.x1, y1: vp.y1 };
   const line = (pts, closed = true) => clippedPolyline(doc, pts.map(T), rect, closed);
   doc.setDrawColor(...pal.neighbour);
   doc.setLineWidth(pal.neighbourW);
@@ -196,18 +217,20 @@ export function drawAnalysis(doc, ctx) {
   for (const r of facts.reserve) {
     const L = r.lines;
     const bit = clipPolygon([L.gutter[0], L.gutter[1], L.farGutter[1], L.farGutter[0]].map(T), rect);
-    if (bit.length > 2) { doc.setFillColor(226, 228, 232); polygon(doc, bit, 'F'); }
-    doc.setDrawColor(...PEN.road);
-    doc.setLineWidth(0.25);
-    clippedPolyline(doc, L.kerb.map(T), rect, false);
+    if (bit.length > 2 && !aerial) { doc.setFillColor(226, 228, 232); polygon(doc, bit, 'F'); }
+    else if (bit.length > 2) { const a0 = T(L.centreline[0]); const a1 = T(L.centreline[1]); hatch(doc, bit, 'roadAerial', { angle: (Math.atan2(a1.y - a0.y, a1.x - a0.x) * 180) / Math.PI }); }
+    if (!isRuralLot(lot)) {
+      doc.setDrawColor(...PEN.road);
+      doc.setLineWidth(0.25);
+      clippedPolyline(doc, L.kerb.map(T), rect, false);
+    }
     doc.setDrawColor(...PEN.phantom);
     doc.setLineWidth(0.3);
-    doc.setLineDashPattern([8, 1.5, 1.5, 1.5], 0);
+    doc.setLineDashPattern(PHANTOM, 0);
     clippedPolyline(doc, L.centreline.map(T), rect, false);
     doc.setLineDashPattern([], 0);
   }
   const own = clipPolygon(lot.boundary.map(T), rect);
-  if (own.length > 2) { doc.setFillColor(226, 240, 230); polygon(doc, own, 'F'); }
   doc.setDrawColor(...pal.boundary);
   doc.setLineWidth(0.8);
   line(lot.boundary);
@@ -243,17 +266,26 @@ export function drawAnalysis(doc, ctx) {
   }
   // Frontage tag
   const dim = lotDimensions(lot);
+  const tagged = [];
   for (const r of facts.reserve) {
     const e0 = lot.boundary[r.edge];
     const e1 = lot.boundary[(r.edge + 1) % lot.boundary.length];
     const mid = T(G.lerp(e0, e1, 0.5));
     const out = { x: r.outward.x, y: r.outward.y };
-    labelOn(doc, `STREET FRONTAGE ${dim.frontageM ? dim.frontageM.toFixed(1) : ''} m`, mid.x + out.x * 11, mid.y + out.y * 11, { size: TXT.body, bold: true, colour: PEN.road });
+    const at = { x: mid.x + out.x * 11, y: mid.y + out.y * 11 };
+    if (tagged.some((q) => Math.hypot(q.x - at.x, q.y - at.y) < 60)) continue; // never two frontage tags on top of each other
+    tagged.push(at);
+    labelOn(doc, `STREET FRONTAGE ${dim.frontageM ? dim.frontageM.toFixed(1) : ''} m`, at.x, at.y, { size: TXT.body, bold: true, colour: PEN.road });
   }
   const ll = lotIdLines(project, lot);
   labelOn(doc, `${ll.first} ${ll.second}`.trim(), centre.x, T({ x: G.bbox(lot.boundary).minX, y: G.bbox(lot.boundary).minY }).y + 7, { size: TXT.strong, bold: true, colour: pal.boundary });
+  if (aerial) { doc.setFillColor(255, 255, 255); doc.circle(left.x1 - 14, left.y0 + 23, 11.5, 'F'); }
   northArrow(doc, left.x1 - 14, left.y0 + 24, project.site?.northDeg || 0);
   labelOn(doc, 'Diagram only, not a survey', left.x0 + 4, left.y1 - 4, { size: TXT.body, align: 'left', colour: PEN.grey });
+  // The view title sits in a white tab, drawn last so no linework crosses it
+  doc.setFillColor(255, 255, 255);
+  doc.rect(left.x0, left.y0, 92, 13, 'F');
+  viewTitle(doc, left.x0 + 3, left.y0 + 8.4, 'Site analysis', `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.title });
 
   // Facts
   let y = BODY.y0 + 8;
@@ -283,7 +315,10 @@ export function drawAnalysis(doc, ctx) {
   const topMm = Math.max(0, ...project.levels.map((l) => (l.elevation || 0) + (l.height || 0)));
   const tall = topMm > 4500; // parts of the building more than 4.5 m above ground
   const AMBER = [176, 104, 0];
-  const rows = facts.clear.rows.map((r) => {
+  // One row per boundary name: a large lot has several edges of each kind, and the closest one decides
+  const seen = new Map();
+  for (const r of facts.clear.rows) { const k = String(r.label || '').toLowerCase(); if (!seen.has(k) || r.clearanceM < seen.get(k).clearanceM) seen.set(k, r); }
+  const rows = [...seen.values()].map((r) => {
     const side = /side/i.test(r.label || '') || r.kind === 'side';
     const check = side && tall && r.status !== 'unknown';
     let res = r.status === 'inside' ? 'Inside the indicative setback envelope' : r.status === 'outside' ? `Outside the indicative setback envelope by ${r.shortByM.toFixed(2)} m` : 'No setback rule loaded';

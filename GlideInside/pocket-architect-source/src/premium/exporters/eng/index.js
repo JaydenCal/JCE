@@ -21,7 +21,7 @@ import { drawCover, drawAnalysis, drawSchedules, scheduleCount, COVER_BOX } from
 import { collectTriangles, drawElevations, drawSection, drawRoofPlan, roofAreaM2, roofScale, elevationScale, sectionScale, drawSectionMarker, sectionLinePlan } from './views.js';
 import { drawRoomLabels } from './roomlabels.js';
 import { stairGeometry } from '../shared.js';
-import { drawLevelPanel, analysisScale } from './sheets.js';
+import { drawLevelPanel, analysisScale, analysisView } from './sheets.js';
 
 /**
  * The house turned square to the page for the floor plans, roof plan and elevations (a house turned on its lot would otherwise be
@@ -140,7 +140,7 @@ export async function toEngineeringPDF(project0, options = {}) {
   });
   const doc = withSuperscripts(scaledDoc(raw, p.k));
   const total = plan.list.length;
-  const ctx = { colours: schemeColours(project), project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
+  const ctx = { colours: schemeColours(project), project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, extraCredit: options.aerialCredit || '', analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
   // The aerial is composited once per view (the site plan, the key plan and the cover locality), turned and cropped as each is drawn.
   const bytes0 = await resolveAerial(project, { aerial });
   const lotA = project.site?.lot;
@@ -149,7 +149,13 @@ export async function toEngineeringPDF(project0, options = {}) {
     const kb = keyBox();
     // The locality map and key plan want more ground than the stored aerial covers: ask for the aerial over the extent they need
     let loc = { bytes: bytes0, extent: lotA.aerial.extent };
-    const want = [localityView(project, COVER_BOX(ctx), { minSpanM: 280, k: p.k, ideal: true }), localityView(project, kb, { minSpanM: 400, k: p.k, ideal: true })].filter(Boolean).map((v) => v.window);
+    const av = analysisView(project, p.k);
+    const want = [localityView(project, COVER_BOX(ctx), { minSpanM: 700, k: p.k, ideal: true }), localityView(project, kb, { minSpanM: 400, k: p.k, ideal: true })].filter(Boolean).map((v) => v.window);
+    if (av) want.push(av.window);
+    // The site plan fills its viewport edge to edge, so it asks for ground beyond the stored aerial when the viewport reaches past it
+    const sv0 = facts ? siteView(project, facts, p.k) : null;
+    const siteWin = sv0?.windowPlan ? { x0: Math.min(...sv0.windowPlan.map((q) => q.x)), y0: Math.min(...sv0.windowPlan.map((q) => q.y)), x1: Math.max(...sv0.windowPlan.map((q) => q.x)), y1: Math.max(...sv0.windowPlan.map((q) => q.y)) } : null;
+    if (siteWin) want.push(siteWin);
     if (want.length) {
       const need = { x0: Math.min(...want.map((q) => q.x0)), y0: Math.min(...want.map((q) => q.y0)), x1: Math.max(...want.map((q) => q.x1)), y1: Math.max(...want.map((q) => q.y1)) };
       if (!covers(lotA.aerial.extent, need)) {
@@ -162,10 +168,11 @@ export async function toEngineeringPDF(project0, options = {}) {
     if (loc.neighbours) ctx.locNeighbours = loc.neighbours;
     if (loc.roads) ctx.locRoads = loc.roads;
     const jobs = [];
-    if (facts) { const v = siteView(project, facts, p.k); jobs.push(['site', v.T, SITE_VP, 4.4, 0.5, bytes0, lotA.aerial.extent]); }
+    if (facts) { const v = siteView(project, facts, p.k); jobs.push(['site', v.T, SITE_VP, 4.4, 0.5, loc.bytes, loc.extent]); }
     const kv = localityView(project, kb, { minSpanM: 400, k: p.k, extent: loc.extent });
     if (kv) jobs.push(['key', kv.T, kb, 6, 0.5, loc.bytes, loc.extent]);
-    const cv = localityView(project, COVER_BOX(ctx), { minSpanM: 280, k: p.k, extent: loc.extent });
+    if (av) jobs.push(['analysis', av.T, av.rect, 4.4, 0.5, loc.bytes, loc.extent]);
+    const cv = localityView(project, COVER_BOX(ctx), { minSpanM: 700, k: p.k, extent: loc.extent });
     if (cv) jobs.push(['cover', cv.T, COVER_BOX(ctx), 3.6, 0.5, loc.bytes, loc.extent]);
     for (const [name, T, rect, pxPerMm, quality, src, ext] of jobs) {
       const url = await renderUnderlay({ bytes: src, extent: ext, planToSheet: T, rect, pxPerMm, quality, wash: 0.18 });

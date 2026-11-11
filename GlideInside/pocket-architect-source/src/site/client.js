@@ -74,7 +74,7 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep } = {}) {
     const { mockAerialBlob, mockAerialSize } = await import('./mock-aerial.js');
     let blob = null;
     try {
-      blob = await mockAerialBlob(fx.aerial, fx.lot);
+      blob = await mockAerialBlob(fx.aerial, fx.lot, { sampleUrl: CONFIG.siteMockAerialUrl || null });
     } catch {
       warnings.push('The sample aerial could not be drawn in this browser.');
     }

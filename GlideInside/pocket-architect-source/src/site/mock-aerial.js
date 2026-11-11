@@ -1,5 +1,7 @@
-// A synthetic "aerial" for the sample lots (roads, lawns, roofs, trees) drawn on a canvas, so the underlay and the 3D
-// terrain texture have something to show in mock mode. Browser only. It is a picture of nothing real.
+// The "aerial" for the sample lots in mock mode, so the underlay and the 3D terrain texture have something to show. When the real
+// NSW sample photograph exists (tools/fixtures/sample-aerial.jpg in Node, or CONFIG.siteMockAerialUrl in a browser) it is laid over
+// the lot extent as mirrored tiles; when it is missing a synthetic picture (roads, lawns, roofs, trees) is drawn instead, which is a
+// picture of nothing real.
 
 import { rng, ROOFS, frontFrame, houseSpec, streetTreeSpots } from './neighbours.js';
 
@@ -47,10 +49,66 @@ export function mockAerialSize(meta) {
   return { w, h: Math.round(meta.widthPx ? (w * meta.heightPx) / meta.widthPx : meta.heightPx) };
 }
 
-export async function mockAerialBlob(meta, lotResp) {
+/** The sample photograph as bytes, or null when it is not available (then the synthetic picture is drawn). */
+export async function sampleAerialBytes(url = null) {
+  try {
+    if (typeof process !== 'undefined' && process.versions?.node && typeof document === 'undefined') {
+      const fsName = 'node:fs';
+      const fs = await import(/* @vite-ignore */ fsName);
+      const f = new URL('../../tools/fixtures/sample-aerial.jpg', import.meta.url);
+      return fs.existsSync(f) ? new Uint8Array(fs.readFileSync(f)) : null;
+    }
+    if (url && typeof fetch === 'function') {
+      const r = await fetch(url);
+      return r.ok ? new Uint8Array(await r.arrayBuffer()) : null;
+    }
+  } catch { /* fall back to the synthetic picture */ }
+  return null;
+}
+
+async function decodeSample(bytes) {
+  if (typeof createImageBitmap === 'function') return createImageBitmap(new Blob([bytes]));
+  const spec = '@napi-rs/canvas';
+  return (await import(/* @vite-ignore */ spec)).loadImage(Buffer.from(bytes));
+}
+
+/** The real photograph over the lot extent: mirrored tiles about 600 m across, so the picture is sharp at lot scale and has no seams. */
+async function drawSampleAerial(g, w, h, meta, bytes) {
+  const img = await decodeSample(bytes);
+  const b = meta.bbox;
+  const tileM = 600;
+  const tw = tileM;
+  const th = tileM * (img.height / img.width);
+  const sx = w / (b.maxE - b.minE);
+  const sy = h / (b.maxN - b.minN);
+  const e0 = 0;
+  const n0 = 0;
+  for (let i = Math.floor(e0 / tw); i <= Math.floor((e0 + b.maxE - b.minE) / tw); i++) {
+    for (let j = Math.floor(n0 / th); j <= Math.floor((n0 + b.maxN - b.minN) / th); j++) {
+      const dw = tw * sx;
+      const dh = th * sy;
+      const fx = i % 2 !== 0;
+      const fy = j % 2 !== 0;
+      g.save();
+      g.translate((i * tw - e0) * sx + (fx ? dw : 0), h - (j + 1) * th * sy + n0 * sy + (fy ? dh : 0));
+      g.scale(fx ? -1 : 1, fy ? -1 : 1);
+      g.drawImage(img, 0, 0, dw + 1, dh + 1);
+      g.restore();
+    }
+  }
+}
+
+export async function mockAerialBlob(meta, lotResp, { sampleUrl = null } = {}) {
   const { w, h } = mockAerialSize(meta);
   const canvas = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
   const g = canvas.getContext('2d');
+  const sample = await sampleAerialBytes(sampleUrl);
+  if (sample) {
+    try {
+      await drawSampleAerial(g, w, h, meta, sample);
+      return await canvasBlob(canvas);
+    } catch { /* the synthetic picture below */ }
+  }
   const o = lotResp.origin;
   const b = meta.bbox;
   const ppm = w / (b.maxE - b.minE);
@@ -198,8 +256,13 @@ export async function mockAerialBlob(meta, lotResp) {
   }
   // Light film grain so nothing reads as a flat fill
   speckle(g, rand, w, h, Math.round(w * h / 60), 1.1, ['#000000', '#ffffff'], 0.035);
+  return canvasBlob(canvas);
+}
+
+function canvasBlob(canvas) {
   if (canvas.convertToBlob) return canvas.convertToBlob({ type: 'image/jpeg', quality: 0.95 });
-  return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+  if (canvas.toBlob) return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+  return Promise.resolve(new Blob([canvas.toBuffer('image/jpeg', 90)], { type: 'image/jpeg' }));
 }
 
 // Path of a lot ring in the local frame (metres: a along the front edge, b into the lot) on a context that already has that transform.
