@@ -17,6 +17,24 @@ export const exportFilename = (type, project) => {
 };
 
 /**
+ * The PDF plan set. Engineering style (cover, site plan, floor plans, roof plan, elevations, section, site analysis, schedules) is
+ * the default; style 'legacy' gives the earlier plan sheets, and is also the fallback if the engineering builder cannot run.
+ */
+export async function buildPdfBytes(project, o) {
+  if (o.style !== 'legacy') {
+    try {
+      const { toEngineeringPDF } = await import('./eng/index.js');
+      return await toEngineeringPDF(project, o);
+    } catch (e) {
+      if (o.style === 'engineering') throw e;
+      console.warn('[pdf] engineering plan set failed, using the standard sheets', e?.message);
+    }
+  }
+  const { toPDF } = await import('./pdf.js');
+  return toPDF(project, o);
+}
+
+/**
  * Build one export. options: { jsPDF, loadJsPDF, image, config, catalogue, layerMap, scale }.
  * Returns { bytes: Uint8Array, mime, filename }.
  */
@@ -28,9 +46,8 @@ export async function buildExport(type, project, options = {}) {
     const { toDXF } = await import('./dxf.js');
     bytes = new TextEncoder().encode(toDXF(project, { layerMap: options.layerMap, catalogue, notes: config.disclaimer ? [config.disclaimer] : [] }));
   } else if (type === 'pdf') {
-    const { toPDF } = await import('./pdf.js');
     const jsPDF = options.jsPDF || (await options.loadJsPDF?.());
-    bytes = toPDF(project, { jsPDF, image: options.image || null, config, catalogue, scale: options.scale || null });
+    bytes = await buildPdfBytes(project, { jsPDF, image: options.image || null, config, catalogue, scale: options.scale || null, style: options.style, builder: options.builder, aerial: options.aerial || null });
   } else if (type === 'glb') {
     const { toGLB } = await import('./model3d.js');
     bytes = new Uint8Array(await toGLB(project, { catalogue }));

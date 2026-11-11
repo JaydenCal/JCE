@@ -13,7 +13,8 @@ import { siteCredits, INDICATIVE } from '../site/credits.js';
 
 const LAYER_LABELS = [
   ['boundary', 'Lot boundary'], ['dimensions', 'Boundary lengths'], ['neighbours', 'Neighbouring lots'],
-  ['labels', 'Lot and DP labels'], ['aerial', 'Aerial image'], ['contours', 'Contours'], ['setbacks', 'Setback envelope'],
+  ['labels', 'Lot and DP labels'], ['aerial', 'Aerial image'], ['contours', 'Contours'],
+  ['setbacks', 'Setback envelope'], ['road', 'Road and kerb'], ['driveway', 'Driveway'],
 ];
 
 export function buildSiteSection(ctx) {
@@ -55,6 +56,13 @@ export function buildSiteSection(ctx) {
     sec.append(h('p', { class: 'ps-hint' }, `Coordinates are MGA2020 zone ${lot.zone}, plan up is grid north.`));
 
     sec.append(h('div', { class: 'ps-sec' }, button('Confirm street frontage', () => store.setUI({ view: '2d', frontageEdit: true }), { title: 'Click the edges of your lot that face the street' })));
+    // The builder's lot planner controls: drag, turn, mirror, face the garage to the street, live clearances.
+    sec.append(h('div', { class: 'ps-sec' }, button('Arrange house on lot', async () => {
+      try {
+        const { startArrange } = await import('../portal/arrange.js');
+        startArrange({ store, editor: ctx.editor });
+      } catch (e) { sec.append(h('p', { class: 'ps-hint' }, e.message || 'Could not start.')); }
+    }, { title: 'Drag, turn and mirror the house on the lot and see the clearance to each boundary' })));
     const layers = h('div', { class: 'ps-sec', style: { marginTop: '8px' } }, h('h4', null, 'Layers'));
     for (const [id, label] of LAYER_LABELS) {
       if (id === 'aerial' && !lot.aerial) continue;

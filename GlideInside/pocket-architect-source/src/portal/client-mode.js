@@ -15,10 +15,12 @@ import { toast } from '../ui/toast.js';
 import { getPortalApi } from './api.js';
 import { injectStripStyles } from './app-strip-styles.js';
 import { signInUrl, portalUrl } from './links.js';
-import { SAMPLE_LOT, lotEnvelope } from './envelope.js';
+import { SAMPLE_LOT, lotEnvelope, portalLotToSiteLot } from './envelope.js';
 import { rankDesigns } from './fit.js';
 import { startPlacement } from './placement.js';
 import { defaultPose } from './place-house.js';
+import { autoPose } from './auto-place.js';
+import { lotOf } from '../model/placement.js';
 import { projectToSvg, svgDataUri } from './thumbnail.js';
 import { createProject } from '../model/schema.js';
 
@@ -60,6 +62,8 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     try { localStorage.setItem(LOGO_KEY, brand.logoDataUrl); } catch { /* storage blocked */ }
     app.getLogo = () => brand.logoDataUrl;
   }
+  // The PDF plan set leads with the builder's name and logo and credits Glide Inside in small print.
+  app.builder = { name: brand.displayName || me.org.name, logo: brand.logoDataUrl || null };
   document.querySelector('.ps-welcome')?.remove();
   const entitlement = () => ({
     entitled: true, token: null, clientExports: true, role: me.user.role, orgName: brand.displayName || me.org.name, credits: toCredits(credits),
@@ -167,11 +171,11 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   }
   async function openPicker() {
     const list = h('div', { class: 'pas-list' }, h('p', { class: 'pas-empty' }, 'Loading designs...'));
-    const m = modal('House designs', h('div', null, h('p', null, envelope ? `Ranked for ${lotIsSample ? SAMPLE_LOT.name : lot.address || 'your lot'}. Designs that do not fit can still be placed.` : 'Find your block to see which designs fit.'), list), []);
+    const m = modal('House designs', h('div', null, h('p', null, envelopeNow() ? `Ranked for ${lotIsSample ? SAMPLE_LOT.name : lot.address || 'your lot'}. Designs that do not fit can still be placed.` : 'Find your block to see which designs fit.'), list), []);
     let designs;
     try { designs = await loadDesigns(); } catch (e) { list.replaceChildren(h('p', { class: 'pas-empty' }, e.message || 'Could not load designs.')); return; }
     // The builder's own designs first, then the Glide Inside library; within each, best fit first.
-    const byGroup = (g) => (envelope ? rankDesigns(designs.filter((d) => d.group === g), envelope) : designs.filter((d) => d.group === g).map((d) => ({ ...d, fit: null })));
+    const byGroup = (g) => (envelopeNow() ? rankDesigns(designs.filter((d) => d.group === g), envelopeNow()) : designs.filter((d) => d.group === g).map((d) => ({ ...d, fit: null })));
     const ranked = [...byGroup('builder'), ...byGroup('glide')];
     clear(list);
     let lastGroup = null;
@@ -184,15 +188,32 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
           h('small', null, d.fit?.badge ? h('span', { class: 'pas-badge', 'data-fit': d.fit.status }, d.fit.badge) : null, d.fit?.reason || '', d.fit?.reason ? '' : ''))));
     }
   }
+  // The envelope that applies now: the lot on the design (Find my block) when it carries one, else the portal lot.
+  const envelopeNow = () => {
+    const sl = lotOf(store.project);
+    return sl?.envelope?.length >= 3 ? sl.envelope : envelope;
+  };
   function choose(d) {
     const house = structuredClone(d.project);
     house.name = d.name;
     const fit = d.fit;
+    // A builder lot (no Find my block) becomes the design's lot, so the road, setbacks, clearances and driveway draw under the house.
+    if (!lotOf(store.project) && lot?.polygonMm && envelope) {
+      store.apply('Set lot', (p) => { p.site.lot = portalLotToSiteLot(lot, envelope); p.site.northDeg = 0; });
+      editor.zoomToFit?.();
+    }
     const base = defaultPose(store.project, house);
-    const pose = fit?.pose && fit.status !== 'too-big' ? { x: fit.pose.x, y: fit.pose.y, rotation: fit.rotationDeg || 0, mirrored: !!fit.mirrored } : null;
-    const lotBox = envelope ? { widthMm: Math.max(...envelope.map((p) => p.x)) - Math.min(...envelope.map((p) => p.x)), depthMm: Math.max(...envelope.map((p) => p.y)) - Math.min(...envelope.map((p) => p.y)) } : null;
+    // Rank first, then fine tune: garage to the street where the house fits that way, else the ranking's own pose.
+    const auto = lotOf(store.project) ? autoPose(store.project, house) : null;
+    const rankPose = fit?.pose && fit.status !== 'too-big' ? { x: fit.pose.x, y: fit.pose.y, rotation: fit.rotationDeg || 0, mirrored: !!fit.mirrored } : null;
+    let initialPose = null;
+    if (auto?.pose && auto.fits !== false) initialPose = auto.pose;
+    else if (rankPose) initialPose = { ...base, ...rankPose };
+    else if (auto?.pose) initialPose = auto.pose;
+    const env = envelopeNow();
+    const lotBox = env ? { widthMm: Math.max(...env.map((p) => p.x)) - Math.min(...env.map((p) => p.x)), depthMm: Math.max(...env.map((p) => p.y)) - Math.min(...env.map((p) => p.y)) } : null;
     startPlacement({
-      store, editor, house, lot: lotBox, initialPose: pose ? { ...base, ...pose } : null,
+      store, editor, house, lot: lotBox, initialPose, fit,
       onDone: () => toast(`${d.name} placed. Every wall, room and opening is editable.`, { kind: 'ok' }),
     });
   }
