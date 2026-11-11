@@ -1,3 +1,4 @@
+# SUPERSEDED for the 12/11/2026 launch by deploy-live.ps1 (run RUN-LIVE-DEPLOY.cmd). Kept for reference.
 # Glide Inside go-live deploy for the API Worker "pocket-architect-api" (the LIVE Worker, merged with the release code).
 # Run from the pocket-architect-source folder (the one that holds wrangler.toml and package.json), after reading golive\GO-LIVE.md Step 0.
 # It asks for a secret only if that secret is missing. It never overwrites a secret that is already set.
