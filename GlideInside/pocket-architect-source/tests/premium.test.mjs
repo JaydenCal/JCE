@@ -538,7 +538,7 @@ test('9. PDF: A3 landscape, 1:100 means 10,000 mm is 100 mm on the sheet, auto s
   // The scale is chosen automatically to fit: a 45 m wide building cannot be drawn at 1:100 on A3.
   const wide = createStore(createProject({ id: 'p_wide', name: 'Wide' }), { opContext: { catalogue } });
   wide.run('add_room', { name: 'Shed', type: 'other', x: 0, y: 0, width: 45000, depth: 12000 });
-  assert.equal(toPDF(wide.project, { jsPDF, config, catalogue }).layout.scale, 200);
+  assert.equal(toPDF(wide.project, { jsPDF, config, catalogue }).layout.scale, 150);
   const small = createStore(createProject({ id: 'p_small', name: 'Small' }), { opContext: { catalogue } });
   small.run('add_room', { name: 'Room', type: 'other', x: 0, y: 0, width: 3000, depth: 3000 });
   assert.equal(toPDF(small.project, { jsPDF, config, catalogue }).layout.scale, 50);
@@ -601,9 +601,9 @@ test('9. drawing set: scale bar length, cover and register, fallback note, A1, D
   const wide = createStore(createProject({ id: 'p_wide2', name: 'Wide' }), { opContext: { catalogue } });
   wide.run('add_room', { name: 'Shed', type: 'other', x: 0, y: 0, width: 45000, depth: 12000 });
   const r = toPDF(wide.project, { jsPDF, catalogue, scale: 100 }).layout;
-  assert.equal(r.scale, 200);
+  assert.equal(r.scale, 150);
   assert.equal(r.fallback, true);
-  assert.match(r.note, /1:100 does not fit on A3\. Drawn at 1:200\./);
+  assert.match(r.note, /1:100 does not fit on A3\. Drawn at 1:150\./);
   assert.equal(toPDF(wide.project, { jsPDF, catalogue, scale: 100, paper: 'A1' }).layout.scale, 100, 'A1 holds 1:100');
 
   // Empty title block fields stay empty.
