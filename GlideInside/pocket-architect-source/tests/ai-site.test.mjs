@@ -549,3 +549,43 @@ test('builder and client AI sit behind portalEnabled on the client and the serve
   const pub = await w.pack();
   assert.equal((await w.edit(pub)).status, 200, 'public Plan Pack users are unaffected');
 });
+
+// Final review additions (11/11/2026) ------------------------------------------------------------------------------------
+test('a request that costs more than its estimate is charged in full, as a Plan Pack is', () => {
+  assert.deepEqual(C.splitCharge(5, 3, 0), { monthly: 5, topUp: 0 });
+  assert.deepEqual(C.splitCharge(9, 2, 3), { monthly: 2, topUp: 7 });
+  assert.deepEqual(C.splitCharge(0, 2, 3), { monthly: 0, topUp: 0 });
+});
+
+test('placement reads the setback stage output: { minM } slots, edgeKinds, per rule flags and the fallback basis', () => {
+  const slot = (minM, extra = {}) => ({ minM, calc: 'fixed', clause: 'cl 3D.21(1)-(3) primary road', page: null, dcp: 'Codes SEPP 2008, Part 3D Inland Code', edition: 'as retrieved 11/11/2026', flag: null, ...extra });
+  const picked = {
+    basis: 'Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)',
+    front: slot(4.5, { flag: 'check_with_council', flagReason: 'currency not verified' }), side: slot(0.9), rear: slot(3), secondaryFront: null, garage: null,
+    flag: 'check_with_council', edgeKinds: ['rear', 'side', 'front', 'side'],
+  };
+  const p = lotProject({ setbacks: picked });
+  const lot = p.site.lot;
+  assert.equal(P.requiredFor('front', lot.setbacks), 4.5);
+  assert.equal(P.requiredFor('side', lot.setbacks), 0.9);
+  const notes = P.setbackNotes(lot);
+  assert.deepEqual(notes.map((n) => [n.rule, n.valueM, n.flagged]), [['front', 4.5, true], ['side', 0.9, false], ['rear', 3, false]]);
+  assert.match(notes[0].source, /^Codes SEPP Inland Code cl 3D\.21/);
+  assert.doesNotMatch(notes[0].source, /cl cl/);
+  assert.deepEqual(P.classifyEdges(lot).map((e) => e.kind), picked.edgeKinds);
+  const env = P.envelopeOf(lot);
+  assert.equal(env.source, 'derived');
+  assert.deepEqual(env.missing, []);
+});
+
+test('corner lot without edgeKinds: the shortest street edge is the primary frontage', () => {
+  const p = lotProject({});
+  const lot = p.site.lot;
+  const lens = lot.boundary.map((a, i) => Math.hypot(lot.boundary[(i + 1) % lot.boundary.length].x - a.x, lot.boundary[(i + 1) % lot.boundary.length].y - a.y));
+  const long = lens.indexOf(Math.max(...lens));
+  const short = lens.indexOf(Math.min(...lens));
+  lot.frontEdges = [long, short];
+  const kinds = P.classifyEdges(lot).map((e) => e.kind);
+  assert.equal(kinds[short], 'front');
+  assert.equal(kinds[long], 'secondaryFront');
+});

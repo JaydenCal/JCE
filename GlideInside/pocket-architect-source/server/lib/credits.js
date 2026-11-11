@@ -124,10 +124,14 @@ export function planSpend(monthlyRemaining, topUpRemaining, n) {
   return { fromMonthly, fromTopUp: n - fromMonthly };
 }
 
-/** Split the actual charge across what was reserved: monthly first, anything beyond the monthly reservation to top-up. */
+/** Split the actual charge across the pools: monthly first up to its reservation, the rest to top-up when one was reserved. */
 export function splitCharge(charge, reservedMonthly, reservedTopUp) {
   const m = Math.min(charge, reservedMonthly);
-  return { monthly: m, topUp: Math.min(charge - m, reservedTopUp) };
+  const t = Math.min(charge - m, reservedTopUp);
+  // A request that cost more than its estimate: the rest goes to the pool drawn on last (the store clamps at the pool total),
+  // as a Plan Pack is charged the actual cost.
+  const over = charge - m - t;
+  return reservedTopUp > 0 ? { monthly: m, topUp: t + over } : { monthly: m + over, topUp: t };
 }
 
 /** The billable record for the builder's end-of-month invoice. */

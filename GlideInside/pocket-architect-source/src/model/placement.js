@@ -42,16 +42,21 @@ export function footprint(project) {
 
 // Setback sources and review flags ---------------------------------------------------------------------------------------
 const RULES = ['front', 'side', 'rear', 'secondaryFront', 'garage'];
+// A rule value in metres. Accepts a plain number, the setback stage's slot { minM, clause, page, dcp, edition, flag }
+// (src/site/setbacks.js pickRules) or the older { value } form.
+const metres = (v) => (finite(v) ? v : finite(v?.minM) ? v.minM : finite(v?.value) ? v.value : null);
 const isFlag = (o) => !!o && (o.checkWithCouncil === true || o.check_with_council === true || o.needsReview === true || o.confidence === 'low' || o.flag === 'check_with_council');
 
 /** Plain name of where a rule came from: the council DCP clause, the Codes SEPP Housing Code, or the QDC default. */
 export function sourceLabel(src) {
   if (!src) return null;
-  const kind = `${src.kind || src.type || src.instrument || ''} ${src.dcp || ''}`;
-  if (/sepp|housing code|codes/i.test(kind)) return 'Codes SEPP Housing Code';
-  if (/qdc|queensland development code/i.test(kind)) return 'QDC default';
+  const kind = `${src.basis || ''} ${src.kind || src.type || src.instrument || ''} ${src.dcp || ''}`;
+  const clause = src.clause ? `cl ${String(src.clause).replace(/^cl\.?\s+/i, '')}` : null;
+  if (/inland code/i.test(kind)) return ['Codes SEPP Inland Code', clause].filter(Boolean).join(' ');
+  if (/sepp|housing code|codes/i.test(kind)) return ['Codes SEPP Housing Code', clause].filter(Boolean).join(' ');
+  if (/qdc|queensland development code/i.test(kind)) return ['QDC default', clause].filter(Boolean).join(' ');
   const name = src.dcp || src.name || 'council DCP';
-  return [name, src.clause && `cl ${src.clause}`, src.page && `p${src.page}`].filter(Boolean).join(' ');
+  return [name, clause, src.page && `p${src.page}`].filter(Boolean).join(' ');
 }
 
 /**
@@ -64,11 +69,13 @@ export function setbackNotes(lot) {
   if (!sb) return [];
   const listed = Array.isArray(sb.checkWithCouncil) ? sb.checkWithCouncil : Object.entries(sb.checkWithCouncil || {}).filter(([, v]) => v).map(([k]) => k);
   const sources = Array.isArray(sb.sources) ? sb.sources : [];
-  return RULES.filter((r) => finite(sb[r]) || finite(sb[r]?.value)).map((rule) => {
+  return RULES.filter((r) => metres(sb[r]) != null).map((rule) => {
     const src = sources.find((x) => x?.rule === rule) || (sources.length === 1 && !sources[0]?.rule ? sources[0] : null);
     const own = sb[rule] && typeof sb[rule] === 'object' ? sb[rule] : null;
-    const flagged = listed.includes(rule) || isFlag(own) || (!!src && isFlag(src)) || isFlag(sb);
-    return { rule, valueM: finite(sb[rule]) ? sb[rule] : own.value, flagged, source: sourceLabel(own?.source || src) };
+    // With per rule objects the flag is per rule (sb.flag is only their roll-up); plain numbers take the set's flag.
+    const flagged = listed.includes(rule) || isFlag(own) || (!!src && isFlag(src)) || (!own && isFlag(sb));
+    const ownSrc = own?.source || (own && (own.clause || own.dcp) ? { ...own, basis: own.basis || sb.basis } : null);
+    return { rule, valueM: metres(sb[rule]), flagged, source: sourceLabel(ownSrc || src) };
   });
 }
 
@@ -111,10 +118,18 @@ export function classifyEdges(lot) {
   const b = lot.boundary;
   const fronts = (Array.isArray(lot.frontEdges) ? lot.frontEdges : []).filter((i) => Number.isInteger(i) && i >= 0 && i < b.length);
   const edge = (i) => ({ a: b[i], b: b[(i + 1) % b.length] });
-  const kinds = b.map(() => (fronts.length ? 'side' : 'unknown'));
-  fronts.forEach((i, k) => (kinds[i] = k === 0 ? 'front' : 'secondaryFront'));
-  if (fronts.length) {
-    const f = edge(fronts[0]);
+  // The setback stage records its own classification (lot.setbacks.edgeKinds, one entry per boundary edge). Use it when
+  // present so the check and the envelope agree edge for edge.
+  const given = lot.setbacks?.edgeKinds;
+  const KINDS = ['front', 'secondaryFront', 'side', 'rear'];
+  const useGiven = Array.isArray(given) && given.length === b.length && given.every((k) => KINDS.includes(k));
+  const kinds = useGiven ? [...given] : b.map(() => (fronts.length ? 'side' : 'unknown'));
+  // Without it: on a corner lot the shortest street edge is the primary frontage (same rule as src/site/setbacks.js).
+  const len = (i) => G.dist(b[i], b[(i + 1) % b.length]);
+  const primary = fronts.length ? fronts.reduce((a, i) => (len(i) < len(a) ? i : a)) : -1;
+  if (!useGiven) fronts.forEach((i) => (kinds[i] = i === primary ? 'front' : 'secondaryFront'));
+  if (fronts.length && !useGiven) {
+    const f = edge(primary);
     const df = G.norm(G.sub(f.b, f.a));
     let best = -1;
     let score = 0.7 * 0; // an edge must face the front within about 45 degrees
@@ -144,7 +159,7 @@ export function classifyEdges(lot) {
 export function requiredFor(kind, setbacks) {
   if (!setbacks) return null;
   const v = kind === 'front' ? setbacks.front : kind === 'secondaryFront' ? setbacks.secondaryFront : kind === 'side' ? setbacks.side : kind === 'rear' ? setbacks.rear : null;
-  return finite(v) ? v : finite(v?.value) ? v.value : null;
+  return metres(v);
 }
 
 // Envelope --------------------------------------------------------------------------------------------------------------
