@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Builder and client login | Glide Inside</title>
+<meta name="description" content="Sign in to Pocket Architect as a builder or a builder-issued client. Manage house designs, client logins and billing.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/Glideinside_Favicon_v4.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="../framework.css?v=20261015">
+<link rel="stylesheet" href="portal.css?v=1">
+<script src="../site.config.js?v=20261016"></script>
+<script>window.GI_CONFIG = window.GI_CONFIG || {}; window.GI_CONFIG.portalAppUrl = window.GI_CONFIG.portalAppUrl || "../plan-studio/app/";</script>
+<script src="../framework.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="shell">
+  <a class="logo" href="../index.html" aria-label="Glide Inside home"><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
+  <nav class="site-nav" aria-label="Main"><a href="../plan-studio/index.html">Pocket Architect</a><a href="../index.html">Home</a></nav>
+  <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
+</div></header>
+<div id="main" class="pp-root" tabindex="-1"><p class="pp-sub" style="padding:24px var(--gut)">Loading</p></div>
+<noscript><p style="padding:24px var(--gut)">The builder portal needs JavaScript.</p></noscript>
+<footer class="site-footer"><div class="shell">
+  <div><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside" style="height:30px;width:auto;margin-bottom:12px"><p>Glide Inside · ABN 11 549 431 925<br><a href="mailto:hello@glideinside.com.au">hello@glideinside.com.au</a> · 0477 207 027</p></div>
+  <nav aria-label="Legal"><a href="../terms.html">Order terms</a><a href="../privacy.html">Privacy</a></nav>
+</div></footer>
+<script type="module">
+  import { mountPortal } from './src/portal/ui/portal-app.js';
+  mountPortal(document.getElementById('main'));
+</script>
+</body>
+</html>

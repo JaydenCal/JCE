@@ -205,26 +205,42 @@ function frame(doc, ctx, { title, scaleLabel, sheet }) {
   doc.setLineWidth(0.2);
   doc.line(x0, TB_DISC, SHEET_W - M, TB_DISC);
 
-  // Panel 1: Glide Inside logo and name.
+  // Panel 1. With a builder (or user) logo, the builder leads: logo, then name, and a small "Prepared with Glide Inside" credit
+  // at the foot. Without one it is the Glide Inside logo and the company line, as before.
   const w1 = 45;
   doc.rect(x0, y0, w1, h);
-  if (ctx.brand) {
-    const lw = w1 - 8;
-    const lh = lw / (ctx.brand.w / ctx.brand.h);
-    placeImage(doc, ctx.brand, { x: x0 + 4, y: y0 + h / 2 - lh - 1, w: lw, h: lh });
-  }
-  else {
-    // The logo image carries the name; the text is only a fallback when the image is missing.
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    ink(doc);
-    doc.text(BRAND.name, x0 + w1 / 2, y0 + h / 2, { align: 'center' });
-  }
-  if (v.company) {
+  if (ctx.logo) {
+    placeImage(doc, ctx.logo, { x: x0 + 4, y: y0 + 2.5, w: w1 - 8, h: h * 0.42 });
+    if (v.company) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      ink(doc);
+      doc.text(fit(doc, v.company, w1 - 4), x0 + w1 / 2, y0 + h * 0.42 + 7, { align: 'center' });
+    }
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6);
+    doc.setFontSize(5);
     ink(doc, GREY);
-    doc.text(doc.splitTextToSize(`Prepared by ${v.company}`, w1 - 4).slice(0, 2), x0 + w1 / 2, y0 + h / 2 + 5, { align: 'center' });
+    doc.text('Prepared with', x0 + w1 / 2, y0 + h - 10, { align: 'center' });
+    if (ctx.brand) placeImage(doc, ctx.brand, { x: x0 + w1 / 2 - 10, y: y0 + h - 9, w: 20, h: 7 });
+    else doc.text(BRAND.name, x0 + w1 / 2, y0 + h - 5, { align: 'center' });
+  } else {
+    if (ctx.brand) {
+      const lw = w1 - 8;
+      const lh = lw / (ctx.brand.w / ctx.brand.h);
+      placeImage(doc, ctx.brand, { x: x0 + 4, y: y0 + h / 2 - lh - 1, w: lw, h: lh });
+    } else {
+      // The logo image carries the name; the text is only a fallback when the image is missing.
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      ink(doc);
+      doc.text(BRAND.name, x0 + w1 / 2, y0 + h / 2, { align: 'center' });
+    }
+    if (v.company) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6);
+      ink(doc, GREY);
+      doc.text(doc.splitTextToSize(`Prepared by ${v.company}`, w1 - 4).slice(0, 2), x0 + w1 / 2, y0 + h / 2 + 5, { align: 'center' });
+    }
   }
 
   // Panel 2: project, client, drawing title stacked.
@@ -243,7 +259,6 @@ function frame(doc, ctx, { title, scaleLabel, sheet }) {
   }
   const rest = (h - rh * 1.25) / 2;
   cell(doc, x2, y0 + rh * 1.25, w2, rest, 'CLIENT', v.client, { size: 8 });
-  if (ctx.logo) placeImage(doc, ctx.logo, { x: x2 + w2 - 22, y: y0 + rh * 1.25 + 1.5, w: 20, h: rest - 3 });
   cell(doc, x2, y0 + rh * 1.25 + rest, w2, rest, 'DRAWING TITLE', v.sheetTitle, { size: 8 });
 
   // Panel 3: revisions. The current revision row comes from the title block, then empty ruled rows.

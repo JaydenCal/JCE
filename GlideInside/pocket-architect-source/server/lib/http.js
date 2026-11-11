@@ -22,6 +22,19 @@ export const ERROR_STATUS = {
   // Site lookup (server/lib/site.js).
   UNSUPPORTED_AREA: 422,
   SITE_UPSTREAM: 502,
+  ENQUIRY_NOT_CONFIGURED: 503,
+  EMAIL_FAILED: 502,
+  // Builder and client portal (docs/PORTAL_API.md 1).
+  INVALID_CREDENTIALS: 401,
+  PASSWORD_EXPIRED: 401,
+  ACCOUNT_LOCKED: 423,
+  ACCOUNT_DISABLED: 403,
+  PASSWORD_CHANGE_REQUIRED: 403,
+  FORBIDDEN: 403,
+  TOPUPS_DISABLED: 403,
+  CONFLICT: 409,
+  PORTAL_NOT_CONFIGURED: 503,
+  BILLING_UNAVAILABLE: 502,
 };
 
 export class HttpError extends Error {
@@ -39,8 +52,9 @@ export function corsHeaders(request, config) {
   const origin = request.headers.get('origin');
   if (origin && config.siteOrigin && origin === config.siteOrigin) {
     headers['Access-Control-Allow-Origin'] = origin;
-    headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
-    headers['Access-Control-Allow-Headers'] = 'authorization, content-type';
+    headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
+    headers['Access-Control-Allow-Headers'] = 'authorization, content-type, x-gi-request';
+    headers['Access-Control-Allow-Credentials'] = 'true'; // only ever sent for the configured site origin
     headers['Access-Control-Expose-Headers'] = 'content-disposition, x-site-meta';
     headers['Access-Control-Max-Age'] = '600';
   }

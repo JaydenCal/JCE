@@ -67,6 +67,22 @@ export function readConfig(env = {}) {
     entitlementDays: num(env.ENTITLEMENT_DAYS, 365),
     exportMaxProjectBytes: Math.round(num(env.EXPORT_MAX_PROJECT_BYTES, 2000000)),
     aiTimeoutMs: Math.round(num(env.AI_TIMEOUT_MS, 30000)),
+    // "Send to JCE" enquiries (lib/enquiry.js). RESEND_API_KEY is a secret; the others are plain variables.
+    resendApiKey: str(env.RESEND_API_KEY),
+    enquiryTo: str(env.ENQUIRY_TO, 'enquiries@jceinfrastructure.com.au'),
+    enquiryFrom: str(env.ENQUIRY_FROM, 'Glide Inside <plans@glideinside.com.au>'),
+    enquiryMaxPdfBytes: Math.round(num(env.ENQUIRY_MAX_PDF_BYTES, 6000000)),
+    // Builder and client portal (lib/portal.js, lib/portal-billing.js). Secrets: ADMIN_TOKEN, STRIPE_SECRET_KEY.
+    adminToken: str(env.ADMIN_TOKEN),
+    sellerName: str(env.SELLER_NAME, 'JCE Infrastructure Pty Ltd trading as Glide Inside'),
+    sellerAbn: str(env.SELLER_ABN, '29 699 165 663'),
+    portalProjectMaxBytes: Math.round(num(env.PORTAL_PROJECT_MAX_BYTES, 1800000)), // D1 rows are limited to 2 MB
+    portalLogoMaxBytes: Math.round(num(env.PORTAL_LOGO_MAX_BYTES, 400000)),
+    loginMaxFailures: Math.round(num(env.LOGIN_MAX_FAILURES, 5)), // per username, then locked for 15 minutes
+    loginIpMaxFailures: Math.round(num(env.LOGIN_IP_MAX_FAILURES, 20)), // per IP address
+    sessionDays: num(env.SESSION_DAYS, 30), // sliding
+    stripeLiveBillingApproved: str(env.STRIPE_LIVE_BILLING_APPROVED).toLowerCase() === 'owner-written-go-ahead',
+    stripeGstTaxRateId: str(env.STRIPE_GST_TAX_RATE_ID),
     // Printed on the PDF title block. Defaults come from src/config.js (decision 17.1).
     disclaimer: str(env.DISCLAIMER),
   };

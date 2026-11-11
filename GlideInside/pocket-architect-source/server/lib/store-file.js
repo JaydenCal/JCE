@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createMemoryStore } from './store.js';
 
-const READS = new Set(['getEntitlement', 'getEntitlementBySession', 'getEntitlementByPaymentIntent', 'findForRestore', 'listAiRequests', 'getSpend', 'listEvents']);
+const READS = new Set(['getEntitlement', 'getEntitlementBySession', 'getEntitlementByPaymentIntent', 'findForRestore', 'listAiRequests', 'getSpend', 'listEvents', 'listEnquiries']);
 
 export function createFileStore(file) {
   const inner = createMemoryStore();

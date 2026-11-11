@@ -15,18 +15,26 @@ import * as stripe from './stripe.js';
 import * as credits from './credits.js';
 import * as anthropic from './anthropic.js';
 import { createSite } from './site.js';
+import { handleEnquiry } from './enquiry.js';
+import { createPortal } from './portal.js';
+import { createMemoryPortalStore } from './portal-store.js';
 
 const EXPORT_TYPES = ['pdf', 'dxf', 'glb', 'obj'];
 const WEBHOOK_MAX_BYTES = 1_000_000;
 const randomId = (prefix) => `${prefix}_${[...crypto.getRandomValues(new Uint8Array(10))].map((b) => b.toString(16).padStart(2, '0')).join('')}`;
 
-export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), catalogue = null, loadExporters = null, loadJsPDF = null, devGrant = false } = {}) {
+export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), catalogue = null, loadExporters = null, loadJsPDF = null, devGrant = false, portalStore = undefined, loadTemplates = undefined } = {}) {
   if (!store) throw new Error('createApp needs a store');
   const config = readConfig(env);
   const doFetch = fetchImpl || ((...a) => globalThis.fetch(...a));
   const iso = (ms = now()) => new Date(ms).toISOString();
 
   const site = createSite({ store, fetchImpl, now });
+  // Builder and client portal (lib/portal.js). It needs a portal store: D1 in production (the Worker passes one), memory in tests
+  // and local development. Other stores (Upstash) cannot hold it, so those hosts answer 503 PORTAL_NOT_CONFIGURED.
+  const pstore = portalStore !== undefined ? portalStore : ['memory', 'file'].includes(store.kind) ? createMemoryPortalStore() : null;
+  const portal = pstore ? createPortal({ store, pstore, config, fetchImpl: doFetch, now, ...(loadTemplates ? { loadTemplates } : {}) }) : null;
+
   let toolsCache = null;
   let catalogueCache = null;
   const getCatalogue = async () => {
@@ -448,6 +456,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     });
   }
 
+  async function enquiryJce(request) {
+    const body = await readJson(request, 10_000_000);
+    return json(await handleEnquiry({ body, request, store, config, fetchImpl: doFetch, now, clientIp }));
+  }
+
   // Router ----------------------------------------------------------------------------------------
   async function route(request, url) {
     const m = /\/api(\/.*)?$/.exec(url.pathname.replace(/\/+$/, '') || '/');
@@ -468,6 +481,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (path === '/ai/topup-setting') return allow('POST'), aiTopUpSetting(request);
     const sub = /^\/site(\/[a-z]+)$/.exec(path);
     if (sub) return site.handle(sub[1], request, url);
+    if (path === '/enquiry/jce') return allow('POST'), enquiryJce(request);
+    if (path.startsWith('/portal/') || path === '/billing/run-month') {
+      if (!portal) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not available on this server.');
+      return portal.route(request, url, path);
+    }
     const exp = /^\/export\/([a-z0-9]+)$/.exec(path);
     if (exp) return allow('POST'), exportFile(request, exp[1]);
     throw new HttpError('NOT_FOUND', 'No such endpoint.');
@@ -487,7 +505,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
   }
 
-  return { fetch: handle, handle, config };
+  return { fetch: handle, handle, config, portal, scheduled: async () => (portal ? portal.scheduled() : null) };
 }
 
 export default createApp;

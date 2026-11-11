@@ -14,11 +14,17 @@ The reference deployment is a Cloudflare Worker with D1 (SQLite). Other hosts ar
 | `worker.js` | Cloudflare Worker entry. Builds the app with the D1 store and the catalogue |
 | `lib/app.js` | `createApp({ store, env, fetchImpl, now, catalogue })` returns `{ fetch }`. All endpoints |
 | `lib/store.js` | `createD1Store(db)` and `createMemoryStore()` (the same async interface) |
+| `lib/enquiry.js` | The JCE enquiry endpoint: validation, rate limit, D1 copy, email through Resend |
 | `lib/stripe.js` | Checkout Session over REST, webhook signature check, entitlement creation, refunds |
 | `lib/entitlement.js` | Signed tokens and the per-request database check |
 | `lib/credits.js` | Credit arithmetic, warning levels, spend caps, rate limits |
 | `lib/anthropic.js` | One Messages API call per request, prompt caching, tool call checking |
 | `lib/config.js` | Reads every variable in docs/SCOPE.md 11.6 with its default |
+| `lib/portal.js` | Builder and client portal routes (`/api/portal/*`): sessions, houses, clients, projects, billing, AI credits, team, branding |
+| `lib/portal-store.js` | Portal storage: `createD1PortalStore(db)` and `createMemoryPortalStore()` |
+| `lib/portal-billing.js` | Month usage, tax invoice snapshots, Stripe invoices for the previous month, the cron time check |
+| `lib/portal-ai.js` | Org AI pools (monthly 300 per login, top-up with 12 month carry over), `issueOrgToken` wiring |
+| `lib/password.js` | PBKDF2-SHA-256 hashing (100,000 iterations), session tokens, constant-time compare |
 | `schema.sql` | D1 tables. Safe to run more than once |
 | `wrangler.toml.example` | Worker configuration to copy and edit |
 | `dev-entitlement.mjs` | Local testing without Stripe (prints SQL and a token) |
@@ -38,11 +44,15 @@ limits), `src/premium/exporters/*` and `src/viewer3d/build.js`. Deploy the whole
 | `GET /api/credits?project=` | Bearer | `{ total, used, remaining, warnLevel, reserved }` |
 | `POST /api/ai/estimate` | Bearer | No model call. `{ estimatedCredits, remaining, requiresConfirm }` |
 | `POST /api/ai/edit` | Bearer | `{ reply, ops, rejected, credits, warning }` |
+<<<<<<< HEAD
 | `GET /api/site/search?q=` | none, rate limited | `{ results: [{ label, state, lon, lat }] }`, max 8. NSW from NSW_Property layers 1 to 4 (`address`), QLD from PlanningCadastre LandParcelPropertyFramework layer 0 (Addresses) |
 | `GET /api/site/lot?lon=&lat=&state=` | none, rate limited | Parcel at the point and neighbours within about 60 m in GDA2020 MGA (7854/7855/7856), LGA, NSW zoning, road lines, origin. Cached in D1 `site_cache` |
 | `GET /api/site/aerial?state=&srid=&bbox=` | none, rate limited | Image bytes, georeference in the `x-site-meta` header (URL encoded JSON, includes attribution and capture date) |
 | `GET /api/site/contours?state=&srid=&bbox=&buffer=&origin=` | none, rate limited | Elevation grid, contour lines (minor 0.5 m, major 2.5 m) and provenance |
 | `GET /api/site/health` | none | Probes each upstream service. `ok` needs the cadastre and address services, `allOk` needs every one |
+=======
+| `POST /api/enquiry/jce` | none, rate limited | "Send to JCE for engineering and DA plans". Body `{ name, phone, email, need, notes, consent: true, lot, project, pdfBase64, source }`. Emails JCE through Resend with the PDF attached, keeps a copy in `jce_enquiries`, returns `{ ok, reference }`. `503 ENQUIRY_NOT_CONFIGURED` until `RESEND_API_KEY` is set |
+>>>>>>> origin/claude/glide-portal-backend
 | `POST /api/export/:type` | Bearer | `pdf`, `dxf`, `glb`, `obj`. Body `{ project, image? }`. Returns the file |
 
 Builder and client logins use the same AI endpoints plus two more (see "Builder and client logins" below).
@@ -52,6 +62,7 @@ Errors are JSON, `{ error: { code, message, ... }, code, message }`, with the co
 `SERVER_NOT_CONFIGURED` (500). The server re-checks the database on every authenticated request, so a token alone
 grants nothing: a refunded, expired or exhausted Plan Pack is refused at once.
 
+<<<<<<< HEAD
 ## Builder and client logins (org credit pools, top-ups, budgets)
 
 Builder and client logins have the AI included. They are off until `PORTAL_ENABLED=1` (public launch first); with the
@@ -105,6 +116,70 @@ Assistant replies are filtered by `scrubClaims` so the word "compliant" never re
 "inside the indicative setback envelope".
 
 Store contract addition: `addCredits(id, n)` (D1, memory and Upstash implement it).
+=======
+## Builder and client portal (docs/PORTAL_API.md)
+
+Routes: `/api/portal/*` (cookie session) and `POST /api/billing/run-month` (bearer `ADMIN_TOKEN`). The browser side is
+`src/portal/api.js` (`CONFIG.portalMock` false). Closed until `PORTAL_ENABLED=1` (except the admin job that creates an organisation).
+The portal needs D1 (`createD1PortalStore`); on Upstash or other hosts it answers 503 `PORTAL_NOT_CONFIGURED`.
+
+**Secrets and variables** (`wrangler secret put NAME` for the secrets):
+
+| Name | Kind | Purpose |
+|---|---|---|
+| `ADMIN_TOKEN` | secret | Long random string. Creates organisations and runs month end invoicing. Without it those endpoints answer 503 |
+| `ENTITLEMENT_SECRET` | secret | Already needed. Also signs the org tokens the AI endpoints accept |
+| `STRIPE_SECRET_KEY` | secret | **Test key only** (`sk_test_...`) until the owner gives written go-ahead for live billing |
+| `PORTAL_ENABLED` | var | `1` opens builder and client logins. Default off |
+| `SELLER_NAME`, `SELLER_ABN` | var | Seller on tax invoices. Defaults: `JCE Infrastructure Pty Ltd trading as Glide Inside`, `29 699 165 663` |
+| `ORG_MONTHLY_CREDITS`, `TOPUP_CREDITS`, `TOPUP_AMOUNT_CENTS` | var | 300 credits per login per month, 300 credits for A$10 (1000 cents) incl. GST |
+| `STRIPE_GST_TAX_RATE_ID` | var, optional | An existing inclusive 10% GST tax rate. If empty one is created on first use and remembered in `portal_settings` |
+| `STRIPE_LIVE_BILLING_APPROVED` | var | Leave unset. A live Stripe key (`sk_live_`, `rk_live_`) is refused unless this is exactly `owner-written-go-ahead` |
+| `PORTAL_PROJECT_MAX_BYTES`, `PORTAL_LOGO_MAX_BYTES` | var | 1,800,000 (D1 rows are limited to 2 MB) and 400,000 |
+| `LOGIN_MAX_FAILURES`, `LOGIN_IP_MAX_FAILURES`, `SESSION_DAYS` | var | 5 per username, 20 per IP (both then locked 15 minutes), 30 day sliding session |
+
+**First deploy, in order** (nothing here deploys itself; run these yourself when ready):
+
+```
+cp server/wrangler.toml.example wrangler.toml        # edit SITE_URL, route, database_id; the [triggers] block holds the cron
+wrangler d1 execute plan-studio --remote --file server/schema.sql    # adds the portal tables, safe to re-run
+wrangler secret put ADMIN_TOKEN
+wrangler secret put STRIPE_SECRET_KEY                # sk_test_... only
+wrangler deploy
+# create the first builder organisation (prints the admin's temporary login once):
+curl -sS -X POST https://YOUR-SITE/api/portal/admin/orgs -H "authorization: Bearer $ADMIN_TOKEN" -H 'content-type: application/json' \
+  -d '{"name":"Sample Homes Pty Ltd","adminFirstName":"Priya","adminEmail":"priya@samplehomes.example"}'
+# when launching: set PORTAL_ENABLED = "1" in [vars], deploy again, and set GI_CONFIG.portalEnabled = true / portalMock = false on the site
+```
+
+**Month end invoicing.** The cron (`0 19 * * *` and `0 20 * * *` UTC) fires twice a day; the handler acts only when the Sydney clock reads 06:00
+on the 1st (so exactly once a month, in AEDT and AEST) and invoices the previous Sydney month for every organisation. By hand, for any finished month
+(also the way to retry a failed or skipped org):
+
+```
+curl -sS -X POST https://YOUR-SITE/api/billing/run-month -H "authorization: Bearer $ADMIN_TOKEN" -H 'content-type: application/json' -d '{"month":"2026-10","orgId":"org_..."}'
+```
+
+Per organisation: needs billing contact (legal name, valid ABN, email), otherwise `skipped: billing_contact_incomplete`; no charges gives `skipped: no_charges`.
+It creates the Stripe customer on first billing, then a `send_invoice` invoice (14 days, AUD, inclusive 10% GST tax rate on each item), adds one item for
+logins (A$20 each) and one for top-ups (A$10 each), finalises and sends it. **Stripe sends the invoice email; this server sends none.**
+One row per organisation and month in `invoices` (unique), Stripe idempotency keys on every write, and the steps are recorded so a failed run resumes
+without a second Stripe invoice. `GET /api/portal/billing/invoices` shows only issued invoices.
+
+**Live mode needs the owner's written go-ahead.** Until then use test keys. To go live the owner must say so in writing; only then set a live key and
+`STRIPE_LIVE_BILLING_APPROVED=owner-written-go-ahead`.
+
+**AI credits.** Portal logins use the org pools from `claude/glide-ai` (`org:<orgId>:<loginId>:<YYYY-MM>` and `orgtop:<orgId>:<loginId>`).
+`POST /api/portal/ai/token` returns the org token (`issueOrgToken`, role `builder` for staff, `client` for clients, `cap` from the org setting) that the
+AI endpoints accept as a bearer token. Each top-up is logged as an `ai_topup` event with `{ orgId, loginId, credits, amountCents, ... }`, which is what billing reads.
+Top-up credits expire 12 months after purchase (unused part, oldest purchase first), applied when the balance is read.
+When merging with `claude/glide-ai`: `issueOrgToken` and `addCredits` are copied from that branch unchanged; `config.js`, `http.js` and the stores have
+identical hunks there. Keep either copy. `claude/glide-ai` keeps top-ups forever; the 12 month expiry lives in `lib/portal-ai.js` (`reconcileTopUps`) and runs whenever the portal reads a login's balance (`/portal/ai`, `/portal/me`, `/portal/ai/token`, top-up), which the app does at each sign in and before each AI session. A login that keeps using an old org token can spend an expired top-up until the token (8 hours) is renewed.
+
+**Cloudflare plan.** PBKDF2 at 100,000 iterations uses real CPU time (tens of milliseconds). Run the Worker on the Workers Paid plan (or Standard usage model);
+the free plan's 10 ms CPU limit may cut sign in requests short. Test this on the first deploy.
+
+>>>>>>> origin/claude/glide-portal-backend
 
 ## Deploy on Cloudflare
 
@@ -132,6 +207,28 @@ You need a Cloudflare account, Node 20 or later, a Stripe account (test mode fir
 10. In the app, set `CONFIG.apiBase` to `/api` (same site) or the Worker address, and `CONFIG.premiumEnabled = true`.
 
 Live mode needs the live Stripe key, the live webhook secret and written approval from the owner.
+
+### Send to JCE enquiries (Resend email)
+
+The "Send to JCE for engineering and DA plans" button posts to `POST /api/enquiry/jce`. The Worker emails
+`ENQUIRY_TO` (default enquiries@jceinfrastructure.com.au) with the PDF plan set and the design file attached, using the
+Resend REST API. Nothing is sent until the person clicks Send and ticks the consent box. A copy of each enquiry is kept in
+the `jce_enquiries` table, so nothing is lost if the email fails (the PDF itself is not stored; it can be rebuilt from the
+saved design). Until the key is set, the endpoint answers `503` and the app says the service is not set up yet.
+
+1. Create a Resend account at resend.com (the free tier is enough to start).
+2. In Resend, Domains, add `glideinside.com.au`. Add the DNS records Resend shows (SPF and DKIM TXT or CNAME records, and the
+   optional DMARC record) at the domain's DNS host, then press Verify. Sending works only from a verified domain.
+3. In Resend, API Keys, create a key with "Sending access" limited to that domain.
+4. Store it as a secret, never in the repository: `wrangler secret put RESEND_API_KEY`.
+5. Check the plain variables in `wrangler.toml` `[vars]`: `ENQUIRY_TO` (recipient) and `ENQUIRY_FROM`
+   (for example `Glide Inside <plans@glideinside.com.au>`; the address must be on the verified domain).
+6. Apply the schema again to add the table: `wrangler d1 execute plan-studio --remote --file server/schema.sql`, then `wrangler deploy`.
+7. Test with a real address you control, then read the saved copies: `wrangler d1 execute plan-studio --remote --command "SELECT reference, email_status, email_error FROM jce_enquiries ORDER BY created_at DESC LIMIT 10"`.
+
+Limits: 5 sends per IP per hour and 3 per email address per day (`429 RATE_LIMITED`). The PDF can be up to `ENQUIRY_MAX_PDF_BYTES`
+(default 6,000,000). If Resend refuses the message the enquiry is still saved and the reply is `502 EMAIL_FAILED` with the
+`reference`, so JCE can follow up from the table.
 
 ### Settings
 
@@ -235,6 +332,9 @@ active, not expired). That is what stops parallel requests overspending.
 `node --test tests/server.test.mjs` runs the server against an in-memory store, a SQLite shim of D1 (`node:sqlite`,
 Node 22), a fake Stripe and a fake Anthropic. It covers the acceptance tests in docs/SCOPE.md 16 numbered 7, 8, 11,
 12, 13, 14 and 15, plus restore, rate limits, reservation under parallel requests, CORS and size limits.
+`node --test tests/portal-server.test.mjs` covers the portal (memory store and the D1 shim): password hashing, lockout, sessions, CSRF and Origin,
+roles, every route group, tenant isolation, Sydney month boundaries, top-up expiry and Stripe invoicing with a mocked `fetch`. Run the whole suite with
+`node --test tests/*.test.mjs` (not `tests/`).
 
 ## Known limits
 

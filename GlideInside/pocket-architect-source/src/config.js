@@ -3,6 +3,11 @@ const hasWindow = typeof window !== 'undefined';
 const params = hasWindow ? new URLSearchParams(window.location.search) : new URLSearchParams();
 const isLocal = hasWindow && ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
 
+// false by default so a production build keeps the builder and client features closed until launch. Set true only for the
+// mock/review build the owner looks at (it also turns the in-browser mock on). To open the real portal, the host page sets
+// GI_CONFIG.portalEnabled = true (and the Worker needs PORTAL_ENABLED=1). See docs/PORTAL_API.md, "Going live".
+const REVIEW_BUILD = false;
+
 export const CONFIG = {
   productName: 'Plan Studio',
   // Selling entity printed on paid exports. Placeholder until decision 17.1 is made.
@@ -23,6 +28,20 @@ export const CONFIG = {
   siteLookupEnabled: true,
   siteMock: true,
   siteAerialMarginM: 30, // aerial and elevation grid extend this far beyond the lot boundary
+  // Builder and client accounts (docs/PORTAL_API.md). While the back end does not exist the portal runs on the in-browser mock.
+  // portalMock true runs the screens on the in-browser mock; false calls the real Worker routes (docs/PORTAL_API.md).
+  // The host page can pick with GI_CONFIG.portalMock. Default: the mock only in the review build.
+  portalMock: hasWindow && typeof window.GI_CONFIG?.portalMock === 'boolean' ? window.GI_CONFIG.portalMock : REVIEW_BUILD,
+  // Builder and client features (portal page, client mode in Pocket Architect). Off in the production config until launch;
+  // on in the mock/review build. The host site can set GI_CONFIG.portalEnabled = true to open it.
+  portalEnabled: hasWindow && typeof window.GI_CONFIG?.portalEnabled === 'boolean' ? window.GI_CONFIG.portalEnabled : REVIEW_BUILD,
+  portal: {
+    appUrl: './', // Pocket Architect, relative to the portal page; the site sets GI_CONFIG.portalAppUrl
+    signInUrl: '../../portal/', // the portal sign in page, relative to Pocket Architect; the site sets GI_CONFIG.portalSignInUrl
+    clientLoginFeeAud: 20, // per NEW client login in a calendar month, incl. GST
+    aiTopUp: { credits: 300, priceAud: 10 }, // incl. GST, charged on the end of month invoice
+    aiMonthlyCredits: 300, // per login per month, hard stop at zero
+  },
   autosaveKey: 'ps.autosave.v1',
   embedMode: params.get('embed') === 'demo' ? 'demo' : 'full',
   // Unlocks client-side exports for local testing only. Never true in production.
