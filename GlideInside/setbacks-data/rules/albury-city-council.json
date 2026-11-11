@@ -1,0 +1,1119 @@
+{
+ "lga_slug": "albury-city-council",
+ "council": "Albury City Council",
+ "lgaNames": [
+  "ALBURY",
+  "ALBURY CITY",
+  "ALBURY CITY COUNCIL"
+ ],
+ "dcp": "Albury Development Control Plan 2010, Part 10 (Division A to H) commenced 01/07/2020 (complete version), Part 17 Access and Parking commencing 01/01/2025, Part 6 Planning for Hazards; other Parts as saved (edition otherwise UNVERIFIED)",
+ "lep": "Albury Local Environmental Plan 2010 (lot size map, height, FSR not reproduced in saved text)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "albury-city-council-001",
+   "zones": [
+    "R2",
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "averaging_impractical"
+    ]
+   },
+   "conditionText": "R2 and R5 zones: where averaging is impractical",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     262
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    262
+   ],
+   "evidence": [
+    {
+     "id": 262,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "10m when averaging as set out",
+     "clause": "Division C cl.2 d.i",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R2 and R5 zones: where averaging is impractical",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "10m when averaging as set out",
+   "clause": "Division C cl.2 d.i",
+   "page": 5,
+   "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf"
+  },
+  {
+   "id": "albury-city-council-002",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R2 and R5 zones",
+    "R2 and R5 zones, corner lot",
+    "R2 and R5 zones: primary street setback",
+    "R2 zone"
+   ],
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average setback of the two nearest buildings in the same street and same side",
+    "sources": [
+     261
+    ]
+   },
+   "secondaryFront": {
+    "minM": null,
+    "percent": 50.0,
+    "basis": "percent_of_primary",
+    "sources": [
+     264
+    ]
+   },
+   "garage": {
+    "minM": null,
+    "note": "At or behind the primary street setback of the dwelling house",
+    "sources": [
+     268
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     267
+    ]
+   },
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     265
+    ]
+   },
+   "sources": [
+    261,
+    264,
+    265,
+    267,
+    268
+   ],
+   "evidence": [
+    {
+     "id": 261,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Average setback of the two buildings",
+     "clause": "Division C cl.2 d.i",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R2 and R5 zones: primary street setback",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 264,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Min. secondary street 50% of the primary road setback.",
+     "clause": "Division C cl.2 d.iv",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R2 and R5 zones, corner lot",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 268,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "A garage or carport must be set back",
+     "clause": "Division C cl.2 d.vii",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R2 and R5 zones",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 267,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Min. rear setback. 10m.",
+     "clause": "Division C cl.2 d.vi",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R2 and R5 zones",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 265,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "In R2 zone. 2.5m.",
+     "clause": "Division C cl.2 d.v",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R2 zone",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Average setback of the two buildings",
+   "clause": "Division C cl.2 d.i",
+   "page": 5,
+   "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf"
+  },
+  {
+   "id": "albury-city-council-003",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R2 and R5 zones",
+    "R2 and R5 zones, corner lot",
+    "R2 and R5 zones: primary street setback",
+    "R5 zone"
+   ],
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average setback of the two nearest buildings in the same street and same side",
+    "sources": [
+     261
+    ]
+   },
+   "secondaryFront": {
+    "minM": null,
+    "percent": 50.0,
+    "basis": "percent_of_primary",
+    "sources": [
+     264
+    ]
+   },
+   "garage": {
+    "minM": null,
+    "note": "At or behind the primary street setback of the dwelling house",
+    "sources": [
+     268
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     267
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     266
+    ]
+   },
+   "sources": [
+    261,
+    264,
+    266,
+    267,
+    268
+   ],
+   "evidence": [
+    {
+     "id": 261,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Average setback of the two buildings",
+     "clause": "Division C cl.2 d.i",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R2 and R5 zones: primary street setback",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 264,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Min. secondary street 50% of the primary road setback.",
+     "clause": "Division C cl.2 d.iv",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R2 and R5 zones, corner lot",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 268,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "A garage or carport must be set back",
+     "clause": "Division C cl.2 d.vii",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R2 and R5 zones",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 267,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Min. rear setback. 10m.",
+     "clause": "Division C cl.2 d.vi",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R2 and R5 zones",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 266,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "In R5 zone. 5.0m.",
+     "clause": "Division C cl.2 d.v",
+     "page": 5,
+     "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf",
+     "condition": "R5 zone",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Average setback of the two buildings",
+   "clause": "Division C cl.2 d.i",
+   "page": 5,
+   "source_file": "DCP/Division-C-Development-in-R2-Low-Density-Residential-and-R5-Large-Lot-Residential-zones.pdf"
+  },
+  {
+   "id": "albury-city-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 4.5
+   },
+   "conditionText": "Dual occupancies and semi-detached dwellings (Division E cl.2), wall height closest to boundary not exceeding 4.5 m",
+   "rear": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     364
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    364
+   ],
+   "evidence": [
+    {
+     "id": 364,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "2m, when building height closest to the",
+     "clause": "Division E cl.2 c.vii",
+     "page": 6,
+     "source_file": "DCP/Division-E-Medium-density-housing.pdf",
+     "condition": "Dual occupancies and semi-detached dwellings (Division E cl.2), wall height closest to boundary not exceeding 4.5 m",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2m, when building height closest to the",
+   "clause": "Division E cl.2 c.vii",
+   "page": 6,
+   "source_file": "DCP/Division-E-Medium-density-housing.pdf"
+  },
+  {
+   "id": "albury-city-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "averaging_impractical"
+    ]
+   },
+   "conditionText": "Dwelling house: where averaging is impractical",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     340
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    340
+   ],
+   "evidence": [
+    {
+     "id": 340,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4m when averaging as set out above",
+     "clause": "Division D cl.2 c.i",
+     "page": 4,
+     "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf",
+     "condition": "Dwelling house: where averaging is impractical",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4m when averaging as set out above",
+   "clause": "Division D cl.2 c.i",
+   "page": 4,
+   "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf"
+  },
+  {
+   "id": "albury-city-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 4.5
+   },
+   "conditionText": "Dwelling house, wall height closest to boundary not exceeding 4.5 m",
+   "rear": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     346
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     344
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    344,
+    346
+   ],
+   "evidence": [
+    {
+     "id": 346,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "2m, when building height closest to the",
+     "clause": "Division D cl.2 c.vi",
+     "page": 5,
+     "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf",
+     "condition": "Dwelling house, wall height closest to boundary not exceeding 4.5 m",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 344,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "900mm, when building height closest to",
+     "clause": "Division D cl.2 c.v",
+     "page": 5,
+     "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf",
+     "condition": "Dwelling house, wall height closest to boundary not exceeding 4.5 m",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2m, when building height closest to the",
+   "clause": "Division D cl.2 c.vi",
+   "page": 5,
+   "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf"
+  },
+  {
+   "id": "albury-city-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 4.5
+   },
+   "conditionText": "Dwelling house, wall height closest to boundary exceeding 4.5 m",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     347
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     345
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    345,
+    347
+   ],
+   "evidence": [
+    {
+     "id": 347,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "6m, when building height closest to the",
+     "clause": "Division D cl.2 c.vi",
+     "page": 5,
+     "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf",
+     "condition": "Dwelling house, wall height closest to boundary exceeding 4.5 m",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 345,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5m, when building height closest to the",
+     "clause": "Division D cl.2 c.v",
+     "page": 5,
+     "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf",
+     "condition": "Dwelling house, wall height closest to boundary exceeding 4.5 m",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "6m, when building height closest to the",
+   "clause": "Division D cl.2 c.vi",
+   "page": 5,
+   "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf"
+  },
+  {
+   "id": "albury-city-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dwelling house, corner lot",
+    "Dwelling house: averaging rule"
+   ],
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average setback of the two buildings closest to the lot, in the same street and same side",
+    "sources": [
+     341
+    ]
+   },
+   "secondaryFront": {
+    "minM": null,
+    "percent": 50.0,
+    "basis": "percent_of_primary",
+    "sources": [
+     342
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    341,
+    342
+   ],
+   "evidence": [
+    {
+     "id": 341,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Average setback of the two buildings",
+     "clause": "Division D cl.2 c.i",
+     "page": 4,
+     "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf",
+     "condition": "Dwelling house: averaging rule",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 342,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "50% of the primary road setback.",
+     "clause": "Division D cl.2 c.iii",
+     "page": 5,
+     "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf",
+     "condition": "Dwelling house, corner lot",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Average setback of the two buildings",
+   "clause": "Division D cl.2 c.i",
+   "page": 4,
+   "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf"
+  },
+  {
+   "id": "albury-city-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Dwelling house garage facing road",
+   "garage": {
+    "minM": 0.5,
+    "sources": [
+     343
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    343
+   ],
+   "evidence": [
+    {
+     "id": 343,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "0.5m behind the primary street setback of",
+     "clause": "Division D cl.2 c.iv",
+     "page": 5,
+     "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf",
+     "condition": "Dwelling house garage facing road",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "0.5m behind the primary street setback of",
+   "clause": "Division D cl.2 c.iv",
+   "page": 5,
+   "source_file": "DCP/Division-D-Dwelling-houses-and-secondary-dwellings.pdf"
+  },
+  {
+   "id": "albury-city-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "averaging_impractical"
+    ]
+   },
+   "conditionText": "Multi dwelling housing except terraces (Division E cl.3): where averaging is impractical",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     359
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    359
+   ],
+   "evidence": [
+    {
+     "id": 359,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4m when averaging as set out above is",
+     "clause": "Division E cl.3 c.i",
+     "page": 16,
+     "source_file": "DCP/Division-E-Medium-density-housing.pdf",
+     "condition": "Multi dwelling housing except terraces (Division E cl.3): where averaging is impractical",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4m when averaging as set out above is",
+   "clause": "Division E cl.3 c.i",
+   "page": 16,
+   "source_file": "DCP/Division-E-Medium-density-housing.pdf"
+  },
+  {
+   "id": "albury-city-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 4.5
+   },
+   "conditionText": "Multi dwelling housing except terraces (Division E cl.3), wall height closest to boundary not exceeding 4.5 m",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     362
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     360
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    360,
+    362
+   ],
+   "evidence": [
+    {
+     "id": 362,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "3m, when building height closest to the",
+     "clause": "Division E cl.3 c.v",
+     "page": 16,
+     "source_file": "DCP/Division-E-Medium-density-housing.pdf",
+     "condition": "Multi dwelling housing except terraces (Division E cl.3), wall height closest to boundary not exceeding 4.5 m",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 360,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "0.9m, when building height closest to the",
+     "clause": "Division E cl.3 c.iv",
+     "page": 16,
+     "source_file": "DCP/Division-E-Medium-density-housing.pdf",
+     "condition": "Multi dwelling housing except terraces (Division E cl.3), wall height closest to boundary not exceeding 4.5 m",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "3m, when building height closest to the",
+   "clause": "Division E cl.3 c.v",
+   "page": 16,
+   "source_file": "DCP/Division-E-Medium-density-housing.pdf"
+  },
+  {
+   "id": "albury-city-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 4.5
+   },
+   "conditionText": "Multi dwelling housing except terraces (Division E cl.3), wall height closest to boundary exceeding 4.5 m",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     363
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     361
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    361,
+    363
+   ],
+   "evidence": [
+    {
+     "id": 363,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "6m, when building height closest to the",
+     "clause": "Division E cl.3 c.v",
+     "page": 16,
+     "source_file": "DCP/Division-E-Medium-density-housing.pdf",
+     "condition": "Multi dwelling housing except terraces (Division E cl.3), wall height closest to boundary exceeding 4.5 m",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    },
+    {
+     "id": 361,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5m, when building height closest to the",
+     "clause": "Division E cl.3 c.iv",
+     "page": 16,
+     "source_file": "DCP/Division-E-Medium-density-housing.pdf",
+     "condition": "Multi dwelling housing except terraces (Division E cl.3), wall height closest to boundary exceeding 4.5 m",
+     "edition": "Albury DCP 2010 Part 10 (commenced 01/07/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "6m, when building height closest to the",
+   "clause": "Division E cl.3 c.v",
+   "page": 16,
+   "source_file": "DCP/Division-E-Medium-density-housing.pdf"
+  },
+  {
+   "id": "albury-city-council-013",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Industrial zones: side and rear where adjoining residence, community facility, park or Residential Zone",
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     376
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     376
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    376,
+    376
+   ],
+   "evidence": [
+    {
+     "id": 376,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "are to be a minimum of 5 metres.",
+     "clause": "12.3.1 iii",
+     "page": 6,
+     "source_file": "DCP/Part-12-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial zones: side and rear where adjoining residence, community facility, park or Residential Zone",
+     "edition": "Albury DCP 2010 Part 12"
+    },
+    {
+     "id": 376,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "are to be a minimum of 5 metres.",
+     "clause": "12.3.1 iii",
+     "page": 6,
+     "source_file": "DCP/Part-12-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial zones: side and rear where adjoining residence, community facility, park or Residential Zone",
+     "edition": "Albury DCP 2010 Part 12"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText",
+   "quote": "are to be a minimum of 5 metres.",
+   "clause": "12.3.1 iii",
+   "page": 6,
+   "source_file": "DCP/Part-12-Development-in-the-Industrial-Zones.pdf"
+  },
+  {
+   "id": "albury-city-council-014",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Industrial zones: primary street frontage",
+    "Industrial zones: secondary setback, corner sites"
+   ],
+   "front": {
+    "minM": 7.0,
+    "basis": "greater_of",
+    "note": "Minimum 7 m or the average of adjoining buildings, whichever is greater",
+    "sources": [
+     374
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     375
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    374,
+    375
+   ],
+   "evidence": [
+    {
+     "id": 374,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "The primary setback to the street frontage is to be a minimum of 7",
+     "clause": "12.3.1 i",
+     "page": 6,
+     "source_file": "DCP/Part-12-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial zones: primary street frontage",
+     "edition": "Albury DCP 2010 Part 12"
+    },
+    {
+     "id": 375,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "secondary setback (for corner sites) is to be a minimum of 3",
+     "clause": "12.3.1 ii",
+     "page": 6,
+     "source_file": "DCP/Part-12-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial zones: secondary setback, corner sites",
+     "edition": "Albury DCP 2010 Part 12"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "The primary setback to the street frontage is to be a minimum of 7",
+   "clause": "12.3.1 i",
+   "page": 6,
+   "source_file": "DCP/Part-12-Development-in-the-Industrial-Zones.pdf"
+  },
+  {
+   "id": "albury-city-council-015",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Rural zones: buildings adjoining public reserves and local roads",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     377
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    377
+   ],
+   "evidence": [
+    {
+     "id": 377,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "A minimum setback of 20 metres to buildings adjoining public",
+     "clause": "9.3.2 i",
+     "page": 17,
+     "source_file": "DCP/Part-9-Development-in-the-Rural-Zones.pdf",
+     "condition": "Rural zones: buildings adjoining public reserves and local roads",
+     "edition": "Albury DCP 2010 Part 9"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText",
+   "quote": "A minimum setback of 20 metres to buildings adjoining public",
+   "clause": "9.3.2 i",
+   "page": 17,
+   "source_file": "DCP/Part-9-Development-in-the-Rural-Zones.pdf"
+  },
+  {
+   "id": "albury-city-council-016",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Rural zones: side and rear boundaries",
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     378
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     378
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    378,
+    378
+   ],
+   "evidence": [
+    {
+     "id": 378,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "A minimum setback of 10 metres to buildings from side and rear",
+     "clause": "9.3.2 ii",
+     "page": 17,
+     "source_file": "DCP/Part-9-Development-in-the-Rural-Zones.pdf",
+     "condition": "Rural zones: side and rear boundaries",
+     "edition": "Albury DCP 2010 Part 9"
+    },
+    {
+     "id": 378,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "A minimum setback of 10 metres to buildings from side and rear",
+     "clause": "9.3.2 ii",
+     "page": 17,
+     "source_file": "DCP/Part-9-Development-in-the-Rural-Zones.pdf",
+     "condition": "Rural zones: side and rear boundaries",
+     "edition": "Albury DCP 2010 Part 9"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "A minimum setback of 10 metres to buildings from side and rear",
+   "clause": "9.3.2 ii",
+   "page": 17,
+   "source_file": "DCP/Part-9-Development-in-the-Rural-Zones.pdf"
+  }
+ ],
+ "gaps": [
+  "8 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 263, 379, 269, 270, 271, 380, 381, 382",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Division F residential flat buildings, Part 11 commercial, Part 8 environmental zones, Part 20 Willowbank Road and master plans not extracted for numeric controls (limited time)"
+ ],
+ "notes": "Built from 34 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 2
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 2
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 9
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 34,
+  "rules": 16,
+  "recordsNotModelled": 8,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

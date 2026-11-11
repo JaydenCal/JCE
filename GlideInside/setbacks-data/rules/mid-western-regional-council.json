@@ -1,0 +1,1582 @@
+{
+ "lga_slug": "mid-western-regional-council",
+ "council": "Mid-Western Regional Council",
+ "lgaNames": [
+  "MID-WESTERN REGIONAL",
+  "MID-WESTERN",
+  "MID-WESTERN REGIONAL COUNCIL"
+ ],
+ "dcp": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated; sets multi-part DCP, fast-track standards); Caerleon Development Control Plan version 1.5 (October 2012, Appendix C, referred to as Draft in Part 8.3): records for Caerleon begin with \"Caerleon DCP area:\". Appendix A flood schedules, B1 (AUS-SPEC D5 Council edition), B2 (Stormwater to Smartwater S2S, August 2010) and D (DCP No 16 Subdivision Manual) are saved as separate Engineering files",
+ "lep": "Mid-Western Regional Local Environmental Plan 2012 (lot sizes by LEP maps)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "mid-western-regional-council-001",
+   "zones": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 900.0,
+    "lotAreaMinM2": 900.0
+   },
+   "conditionText": [
+    "DCP 2013 fast track (Part 2): R1, R2, R3 zones, lot over 900 m2 and under 2000 m2: secondary frontage setback for corner lots",
+    "DCP 2013 fast track (Part 2): R1, R2, R3 zones, lot over 900 m2 and under 2000 m2: side/rear setback"
+   ],
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     22736
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     22735
+    ]
+   },
+   "front": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22735,
+    22736
+   ],
+   "evidence": [
+    {
+     "id": 22736,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "R1, R2 and R3 where Lot size is 6.5m to building 900mm 2m",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): R1, R2, R3 zones, lot over 900 m2 and under 2000 m2: secondary frontage setback for corner lots",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    },
+    {
+     "id": 22735,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R1, R2 and R3 where Lot size is 6.5m to building 900mm 2m",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): R1, R2, R3 zones, lot over 900 m2 and under 2000 m2: side/rear setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R1, R2 and R3 where Lot size is 6.5m to building 900mm 2m",
+   "clause": "2.1 Building Setbacks",
+   "page": 9,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-002",
+   "zones": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "DCP 2013 fast track (Part 2): R1, R2, R3 zones, lot under 900 m2: side/rear setback",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     22733
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22733
+   ],
+   "evidence": [
+    {
+     "id": 22733,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R1, R2 and R3 where Lot size is 4.5m to building 900mm 0m for garages in",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): R1, R2, R3 zones, lot under 900 m2: side/rear setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R1, R2 and R3 where Lot size is 4.5m to building 900mm 0m for garages in",
+   "clause": "2.1 Building Setbacks",
+   "page": 9,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-003",
+   "zones": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 900.0,
+    "lotAreaMinM2": 900.0
+   },
+   "conditionText": "DCP 2013 fast track (Part 2): R1, R2, R3 zones, lot over 900 m2 and under 2000 m2 (garage 7.5 m): street setback to building line",
+   "front": {
+    "minM": 6.5,
+    "basis": "fixed",
+    "sources": [
+     22734
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22734
+   ],
+   "evidence": [
+    {
+     "id": 22734,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R1, R2 and R3 where Lot size is 6.5m to building 900mm 2m",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): R1, R2, R3 zones, lot over 900 m2 and under 2000 m2 (garage 7.5 m): street setback to building line",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R1, R2 and R3 where Lot size is 6.5m to building 900mm 2m",
+   "clause": "2.1 Building Setbacks",
+   "page": 9,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-004",
+   "zones": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "DCP 2013 fast track (Part 2): R1, R2, R3 zones, lot under 900 m2 (garage 5.5 m): street setback to building line",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     22732
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22732
+   ],
+   "evidence": [
+    {
+     "id": 22732,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R1, R2 and R3 where Lot size is 4.5m to building 900mm 0m for garages in",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): R1, R2, R3 zones, lot under 900 m2 (garage 5.5 m): street setback to building line",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R1, R2 and R3 where Lot size is 4.5m to building 900mm 0m for garages in",
+   "clause": "2.1 Building Setbacks",
+   "page": 9,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-005",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 20000000.0,
+    "lotAreaMaxM2": 10000.0
+   },
+   "conditionText": [
+    "DCP 2013 fast track (Part 2): R2 zone, lot 2000 m2 to 1 ha: secondary frontage setback",
+    "DCP 2013 fast track (Part 2): R2 zone, lot 2000 m2 to 1 ha: side/rear setback",
+    "DCP 2013 fast track (Part 2): R2 zone, lot 2000 m2 to 1 ha: street setback"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     22737
+    ]
+   },
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     22739
+    ]
+   },
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     22738
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22737,
+    22738,
+    22739
+   ],
+   "evidence": [
+    {
+     "id": 22737,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R2 where 2000m2 to 1ha 10m 2.5m 5m",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): R2 zone, lot 2000 m2 to 1 ha: street setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    },
+    {
+     "id": 22739,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "R2 where 2000m2 to 1ha 10m 2.5m 5m",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): R2 zone, lot 2000 m2 to 1 ha: secondary frontage setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    },
+    {
+     "id": 22738,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R2 where 2000m2 to 1ha 10m 2.5m 5m",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): R2 zone, lot 2000 m2 to 1 ha: side/rear setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R2 where 2000m2 to 1ha 10m 2.5m 5m",
+   "clause": "2.1 Building Setbacks",
+   "page": 9,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-006",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 50000.0
+   },
+   "conditionText": "DCP 2013 fast track (Part 2): R5 zone, area up to 5 ha: street setback 30 m (side/rear 20 m, secondary frontage 15 m)",
+   "secondaryFront": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     22740
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22740
+   ],
+   "evidence": [
+    {
+     "id": 22740,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "R5 Less than or equal to 5ha. In 30m 20m 15m",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): R5 zone, area up to 5 ha: street setback 30 m (side/rear 20 m, secondary frontage 15 m)",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R5 Less than or equal to 5ha. In 30m 20m 15m",
+   "clause": "2.1 Building Setbacks",
+   "page": 9,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-007",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "DCP 2013 fast track (Part 2): RU5 zone: street setback 7.5 m (side/rear per BCA, secondary frontage 3 m)",
+   "secondaryFront": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     22742
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22742
+   ],
+   "evidence": [
+    {
+     "id": 22742,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "RU5 7.5m BCA 3m",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): RU5 zone: street setback 7.5 m (side/rear per BCA, secondary frontage 3 m)",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU5 7.5m BCA 3m",
+   "clause": "2.1 Building Setbacks",
+   "page": 9,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-008",
+   "zones": [
+    "R5",
+    "RU1",
+    "RU4"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 50000.0
+   },
+   "conditionText": "DCP 2013 fast track (Part 2): RU1, RU4 and R5 zones, area over 5 ha: street setback 60 m (side/rear 20 m, secondary frontage 15 m)",
+   "secondaryFront": {
+    "minM": 60.0,
+    "basis": "fixed",
+    "sources": [
+     22741
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22741
+   ],
+   "evidence": [
+    {
+     "id": 22741,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "RU1, RU4 and R5 Greater than 60m 20m 15m",
+     "clause": "2.1 Building Setbacks",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): RU1, RU4 and R5 zones, area over 5 ha: street setback 60 m (side/rear 20 m, secondary frontage 15 m)",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU1, RU4 and R5 Greater than 60m 20m 15m",
+   "clause": "2.1 Building Setbacks",
+   "page": 9,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1000.0,
+    "lotAreaMaxM2": 1999.0,
+    "precinct": "Caerleon DCP area"
+   },
+   "conditionText": [
+    "Caerleon DCP area: Table 3 building line, lot over 1,000 m2 to 1,999 m2",
+    "Caerleon DCP area: Table 3 secondary frontage setback, lot over 1,000 m2 to 1,999 m2",
+    "Caerleon DCP area: Table 3 side setback, lot over 1,000 m2 to 1,999 m2"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     22877
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     22882
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     22886
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22877,
+    22882,
+    22886
+   ],
+   "evidence": [
+    {
+     "id": 22877,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Building Line 3.0m 4.5m 5.5m 6.0m 10.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 building line, lot over 1,000 m2 to 1,999 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    },
+    {
+     "id": 22882,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Frontage Setback 2.0m 2.0m 3.0m 4.0m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 secondary frontage setback, lot over 1,000 m2 to 1,999 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    },
+    {
+     "id": 22886,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback 0m / 0.9m 0.9m 0.9m 0.9m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 side setback, lot over 1,000 m2 to 1,999 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Building Line 3.0m 4.5m 5.5m 6.0m 10.0m",
+   "clause": "5.2.3 Table 3",
+   "page": 24,
+   "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 300.0,
+    "precinct": "Caerleon DCP area"
+   },
+   "conditionText": [
+    "Caerleon DCP area: Table 3 building line, lot < 300 m2",
+    "Caerleon DCP area: Table 3 secondary frontage setback, lot < 300 m2"
+   ],
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     22874
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     22879
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22874,
+    22879
+   ],
+   "evidence": [
+    {
+     "id": 22874,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Building Line 3.0m 4.5m 5.5m 6.0m 10.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 building line, lot < 300 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    },
+    {
+     "id": 22879,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Frontage Setback 2.0m 2.0m 3.0m 4.0m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 secondary frontage setback, lot < 300 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Building Line 3.0m 4.5m 5.5m 6.0m 10.0m",
+   "clause": "5.2.3 Table 3",
+   "page": 24,
+   "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 301.0,
+    "lotAreaMaxM2": 649.0,
+    "precinct": "Caerleon DCP area"
+   },
+   "conditionText": [
+    "Caerleon DCP area: Table 3 building line, lot 301 to 649 m2",
+    "Caerleon DCP area: Table 3 secondary frontage setback, lot 301 to 649 m2",
+    "Caerleon DCP area: Table 3 side setback, lot 301 to 649 m2"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     22875
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     22880
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     22884
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22875,
+    22880,
+    22884
+   ],
+   "evidence": [
+    {
+     "id": 22875,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Building Line 3.0m 4.5m 5.5m 6.0m 10.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 building line, lot 301 to 649 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    },
+    {
+     "id": 22880,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Frontage Setback 2.0m 2.0m 3.0m 4.0m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 secondary frontage setback, lot 301 to 649 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    },
+    {
+     "id": 22884,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback 0m / 0.9m 0.9m 0.9m 0.9m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 side setback, lot 301 to 649 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Building Line 3.0m 4.5m 5.5m 6.0m 10.0m",
+   "clause": "5.2.3 Table 3",
+   "page": 24,
+   "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 650.0,
+    "lotAreaMaxM2": 999.0,
+    "precinct": "Caerleon DCP area"
+   },
+   "conditionText": [
+    "Caerleon DCP area: Table 3 building line, lot 650 to 999 m2",
+    "Caerleon DCP area: Table 3 secondary frontage setback, lot 650 to 999 m2",
+    "Caerleon DCP area: Table 3 side setback, lot 650 to 999 m2"
+   ],
+   "front": {
+    "minM": 5.5,
+    "basis": "fixed",
+    "sources": [
+     22876
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     22881
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     22885
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22876,
+    22881,
+    22885
+   ],
+   "evidence": [
+    {
+     "id": 22876,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Building Line 3.0m 4.5m 5.5m 6.0m 10.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 building line, lot 650 to 999 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    },
+    {
+     "id": 22881,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Frontage Setback 2.0m 2.0m 3.0m 4.0m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 secondary frontage setback, lot 650 to 999 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    },
+    {
+     "id": 22885,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback 0m / 0.9m 0.9m 0.9m 0.9m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 side setback, lot 650 to 999 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Building Line 3.0m 4.5m 5.5m 6.0m 10.0m",
+   "clause": "5.2.3 Table 3",
+   "page": 24,
+   "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 2000.0,
+    "precinct": "Caerleon DCP area"
+   },
+   "conditionText": [
+    "Caerleon DCP area: Table 3 building line, lot over 2,000 m2",
+    "Caerleon DCP area: Table 3 secondary frontage setback, lot over 2,000 m2",
+    "Caerleon DCP area: Table 3 side setback, lot over 2,000 m2"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     22878
+    ]
+   },
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     22883
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     22887
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22878,
+    22883,
+    22887
+   ],
+   "evidence": [
+    {
+     "id": 22878,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Building Line 3.0m 4.5m 5.5m 6.0m 10.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 building line, lot over 2,000 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    },
+    {
+     "id": 22883,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Frontage Setback 2.0m 2.0m 3.0m 4.0m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 secondary frontage setback, lot over 2,000 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    },
+    {
+     "id": 22887,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback 0m / 0.9m 0.9m 0.9m 0.9m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 side setback, lot over 2,000 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Building Line 3.0m 4.5m 5.5m 6.0m 10.0m",
+   "clause": "5.2.3 Table 3",
+   "page": 24,
+   "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "DCP 2013 fast track (Part 2): lot on a classified road such as Ulan or Cope Road: front setback (side and rear 20 m)",
+   "side": {
+    "minM": 100.0,
+    "basis": "fixed",
+    "sources": [
+     22743
+    ]
+   },
+   "rear": {
+    "minM": 100.0,
+    "basis": "fixed",
+    "sources": [
+     22743
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    22743,
+    22743
+   ],
+   "evidence": [
+    {
+     "id": 22743,
+     "parameter": "setback_classified_road",
+     "slot": "side",
+     "quote": "the front setback is 100m and side and",
+     "clause": "2.1",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): lot on a classified road such as Ulan or Cope Road: front setback (side and rear 20 m)",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    },
+    {
+     "id": 22743,
+     "parameter": "setback_classified_road",
+     "slot": "rear",
+     "quote": "the front setback is 100m and side and",
+     "clause": "2.1",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): lot on a classified road such as Ulan or Cope Road: front setback (side and rear 20 m)",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the front setback is 100m and side and",
+   "clause": "2.1",
+   "page": 9,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "DCP 2013 fast track (Part 2): lot on the State Highway (Castlereagh Highway): front setback (side 20 m)",
+   "side": {
+    "minM": 200.0,
+    "basis": "fixed",
+    "sources": [
+     22744
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22744
+   ],
+   "evidence": [
+    {
+     "id": 22744,
+     "parameter": "setback_classified_road",
+     "slot": "side",
+     "quote": "Where the lot is located on the State Highway (Castlereagh Highway) the front setback is 200 m and the",
+     "clause": "2.1",
+     "page": 9,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 fast track (Part 2): lot on the State Highway (Castlereagh Highway): front setback (side 20 m)",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "Where the lot is located on the State Highway (Castlereagh Highway) the front setback is 200 m and the",
+   "clause": "2.1",
+   "page": 9,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1000.0,
+    "lotAreaMaxM2": 1999.0,
+    "precinct": "Caerleon DCP area"
+   },
+   "conditionText": "Caerleon DCP area: Table 3 rear setback (excludes garages), lot over 1,000 m2 to 1,999 m2",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     22891
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    22891
+   ],
+   "evidence": [
+    {
+     "id": 22891,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Setback (Excludes 3.0m 3.0m 3.0m 3.0m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 rear setback (excludes garages), lot over 1,000 m2 to 1,999 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Setback (Excludes 3.0m 3.0m 3.0m 3.0m 5.0m",
+   "clause": "5.2.3 Table 3",
+   "page": 24,
+   "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 300.0,
+    "precinct": "Caerleon DCP area"
+   },
+   "conditionText": "Caerleon DCP area: Table 3 rear setback (excludes garages), lot < 300 m2",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     22888
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    22888
+   ],
+   "evidence": [
+    {
+     "id": 22888,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Setback (Excludes 3.0m 3.0m 3.0m 3.0m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 rear setback (excludes garages), lot < 300 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Setback (Excludes 3.0m 3.0m 3.0m 3.0m 5.0m",
+   "clause": "5.2.3 Table 3",
+   "page": 24,
+   "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 301.0,
+    "lotAreaMaxM2": 649.0,
+    "precinct": "Caerleon DCP area"
+   },
+   "conditionText": "Caerleon DCP area: Table 3 rear setback (excludes garages), lot 301 to 649 m2",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     22889
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    22889
+   ],
+   "evidence": [
+    {
+     "id": 22889,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Setback (Excludes 3.0m 3.0m 3.0m 3.0m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 rear setback (excludes garages), lot 301 to 649 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Setback (Excludes 3.0m 3.0m 3.0m 3.0m 5.0m",
+   "clause": "5.2.3 Table 3",
+   "page": 24,
+   "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 650.0,
+    "lotAreaMaxM2": 999.0,
+    "precinct": "Caerleon DCP area"
+   },
+   "conditionText": "Caerleon DCP area: Table 3 rear setback (excludes garages), lot 650 to 999 m2",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     22890
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    22890
+   ],
+   "evidence": [
+    {
+     "id": 22890,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Setback (Excludes 3.0m 3.0m 3.0m 3.0m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 rear setback (excludes garages), lot 650 to 999 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Setback (Excludes 3.0m 3.0m 3.0m 3.0m 5.0m",
+   "clause": "5.2.3 Table 3",
+   "page": 24,
+   "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 2000.0,
+    "precinct": "Caerleon DCP area"
+   },
+   "conditionText": "Caerleon DCP area: Table 3 rear setback (excludes garages), lot over 2,000 m2",
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     22892
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    22892
+   ],
+   "evidence": [
+    {
+     "id": 22892,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Setback (Excludes 3.0m 3.0m 3.0m 3.0m 5.0m",
+     "clause": "5.2.3 Table 3",
+     "page": 24,
+     "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf",
+     "condition": "Caerleon DCP area: Table 3 rear setback (excludes garages), lot over 2,000 m2",
+     "edition": "Caerleon Development Control Plan version 1.5, October 2012 (Appendix C, titled draft in DCP Part 8.3)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Setback (Excludes 3.0m 3.0m 3.0m 3.0m 5.0m",
+   "clause": "5.2.3 Table 3",
+   "page": 24,
+   "source_file": "DCP/appendix_c_caerleon_dcp-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "DCP 2013 discretionary standards (Part 3): residential development in urban areas: garage setback from front boundary",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     22745
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    22745
+   ],
+   "evidence": [
+    {
+     "id": 22745,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "c) Garages are to be setback a minimum of 5.5 metres from the front boundary.",
+     "clause": "3.1 Building Setbacks",
+     "page": 15,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 discretionary standards (Part 3): residential development in urban areas: garage setback from front boundary",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "c) Garages are to be setback a minimum of 5.5 metres from the front boundary.",
+   "clause": "3.1 Building Setbacks",
+   "page": 15,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "DCP 2013 multi dwelling housing (Part 4.1): multi dwelling housing: secondary frontage setback",
+    "DCP 2013 multi dwelling housing (Part 4.1): multi dwelling housing: side and rear setback",
+    "DCP 2013 multi dwelling housing (Part 4.1): multi dwelling housing: street frontage setback"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     22766
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     22768
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     22767
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22766,
+    22767,
+    22768
+   ],
+   "evidence": [
+    {
+     "id": 22766,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "(a) 4.5 metres to street frontage",
+     "clause": "4.1 Setbacks",
+     "page": 22,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 multi dwelling housing (Part 4.1): multi dwelling housing: street frontage setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    },
+    {
+     "id": 22768,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "(c) 3 metres to secondary frontages",
+     "clause": "4.1 Setbacks",
+     "page": 22,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 multi dwelling housing (Part 4.1): multi dwelling housing: secondary frontage setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    },
+    {
+     "id": 22767,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "(b) 3 metres to side and rear boundaries",
+     "clause": "4.1 Setbacks",
+     "page": 22,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 multi dwelling housing (Part 4.1): multi dwelling housing: side and rear setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "(a) 4.5 metres to street frontage",
+   "clause": "4.1 Setbacks",
+   "page": 22,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-023",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0
+   },
+   "conditionText": "DCP 2013 industrial (Part 4.6): industrial, site area under 2000 m2: street setback",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     22774
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22774
+   ],
+   "evidence": [
+    {
+     "id": 22774,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Less than 2000m2 6m nil 4m 60%",
+     "clause": "4.6 Setbacks",
+     "page": 41,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 industrial (Part 4.6): industrial, site area under 2000 m2: street setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Less than 2000m2 6m nil 4m 60%",
+   "clause": "4.6 Setbacks",
+   "page": 41,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-024",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 2001.0,
+    "lotAreaMaxM2": 5000.0
+   },
+   "conditionText": "DCP 2013 industrial (Part 4.6): industrial, site area 2001 to 5000 m2: street setback",
+   "front": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     22775
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22775
+   ],
+   "evidence": [
+    {
+     "id": 22775,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "2,001 to 5,000 m2 12m nil 10m 55%",
+     "clause": "4.6 Setbacks",
+     "page": 41,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 industrial (Part 4.6): industrial, site area 2001 to 5000 m2: street setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "2,001 to 5,000 m2 12m nil 10m 55%",
+   "clause": "4.6 Setbacks",
+   "page": 41,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  },
+  {
+   "id": "mid-western-regional-council-025",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 5001.0
+   },
+   "conditionText": "DCP 2013 industrial (Part 4.6): industrial, site area over 5001 m2: street setback",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     22776
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22776
+   ],
+   "evidence": [
+    {
+     "id": 22776,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Over 5,001m2 15m nil 12m 50%",
+     "clause": "4.6 Setbacks",
+     "page": 41,
+     "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf",
+     "condition": "DCP 2013 industrial (Part 4.6): industrial, site area over 5001 m2: street setback",
+     "edition": "Mid-Western Regional Development Control Plan 2013 Amendment No. 6 (undated)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Over 5,001m2 15m nil 12m 50%",
+   "clause": "4.6 Setbacks",
+   "page": 41,
+   "source_file": "DCP/development_control_plan_2013_-_amendment_no._6-1-.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP Part 2.1 and 3.1 setback table rows for garage setback (5.5 m or 7.5 m) and the lot-size bands are split over lines, so only the street, side/rear and secondary columns were recorded and the garage cells were not | DCP Part 4.1 multi dwelling housing density table (dwelling units per m2 of site) not extracted because the table heading is not in the text | Caerleon Table 2 rows for major residential road, sub-arterial road, sub-arterial with median and neighbourhood centre road are multi-line cells and were not extracted; Table 2 minor access cul-de-sac longer than 100 m row also omitted"
+ ],
+ "notes": "Built from 39 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 4
+  },
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "R3": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 4
+  },
+  "R5": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 2
+  },
+  "RU5": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "RU1": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "RU4": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 14
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  }
+ },
+ "precincts": [
+  "Caerleon DCP area"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 39,
+  "rules": 25,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 4
+ }
+}

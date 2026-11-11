@@ -1,0 +1,641 @@
+{
+ "lga_slug": "bourke-shire-council",
+ "council": "Bourke Shire Council",
+ "lgaNames": [
+  "BOURKE",
+  "BOURKE SHIRE",
+  "BOURKE SHIRE COUNCIL"
+ ],
+ "dcp": "Bourke Shire Development Control Plan 2012 (adopted 23/07/2012, effective 25/01/2013, amended April 2016)",
+ "lep": "Bourke Local Environmental Plan 2012",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "bourke-shire-council-001",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "General Residential (R1), single storey, dual occupancy",
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     5537
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5537
+   ],
+   "evidence": [
+    {
+     "id": 5537,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "6m 6m 1m 2m General 4.5 m, (675mm#)",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "General Residential (R1), single storey, dual occupancy",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "6m 6m 1m 2m General 4.5 m, (675mm#)",
+   "clause": "4.4.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-002",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "General Residential (R1), 2 storeys, dual occupancy",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     5538
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5538
+   ],
+   "evidence": [
+    {
+     "id": 5538,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "6m 6m 1m 2m General 4.5 m, (675mm#) 4.5 m, (1,125mm#)",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "General Residential (R1), 2 storeys, dual occupancy",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "6m 6m 1m 2m General 4.5 m, (675mm#) 4.5 m, (1,125mm#)",
+   "clause": "4.4.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-003",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {},
+   "conditionText": "General Residential (R1), dual occupancy",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     5535
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    5535
+   ],
+   "evidence": [
+    {
+     "id": 5535,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5 m to",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "General Residential (R1), dual occupancy",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "5.5 m to",
+   "clause": "4.4.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-004",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "General Residential (R1), single storey and 2 storey dwelling",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     5534
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5534
+   ],
+   "evidence": [
+    {
+     "id": 5534,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5 m, (675mm#)",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "General Residential (R1), single storey and 2 storey dwelling",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "4.5 m, (675mm#)",
+   "clause": "4.4.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-005",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "General Residential (R1), multi dwelling",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     5543
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5543
+   ],
+   "evidence": [
+    {
+     "id": 5543,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5 m, 5.5 m",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 24,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "General Residential (R1), multi dwelling",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "4.5 m, 5.5 m",
+   "clause": "4.5.1 Building Setbacks",
+   "page": 24,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-006",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Large Lot Residential (R5), dual occupancy, single and 2 storey",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     5539
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5539
+   ],
+   "evidence": [
+    {
+     "id": 5539,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Residential 20 m 10m 20 m 10m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "Large Lot Residential (R5), dual occupancy, single and 2 storey",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Residential 20 m 10m 20 m 10m",
+   "clause": "4.4.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-007",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Large Lot Residential (R5), dual occupancy",
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     5540
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5540
+   ],
+   "evidence": [
+    {
+     "id": 5540,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Residential 20 m 10m 20 m 10m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "Large Lot Residential (R5), dual occupancy",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Residential 20 m 10m 20 m 10m",
+   "clause": "4.4.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-008",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Village (RU5), dual occupancy",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5536
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5536
+   ],
+   "evidence": [
+    {
+     "id": 5536,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Village (RU5) 6m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "Village (RU5), dual occupancy",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Village (RU5) 6m",
+   "clause": "4.4.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-009",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Village (RU5), general housing",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5542
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5542
+   ],
+   "evidence": [
+    {
+     "id": 5542,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Village (RU5) 6m",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 17,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "Village (RU5), general housing",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Village (RU5) 6m",
+   "clause": "4.3.1 Building Setbacks",
+   "page": 17,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-010",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Primary Production (RU1), outbuildings and general housing",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     5541
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5541
+   ],
+   "evidence": [
+    {
+     "id": 5541,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Production 20 m 10",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 17,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "Primary Production (RU1), outbuildings and general housing",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Production 20 m 10",
+   "clause": "4.3.1 Building Setbacks",
+   "page": 17,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "industrial zones, street setback",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     5544
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5544
+   ],
+   "evidence": [
+    {
+     "id": 5544,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Street setback must be a minimum of 5m",
+     "clause": "4.7.1 Building Setbacks",
+     "page": 32,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "industrial zones, street setback",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Street setback must be a minimum of 5m",
+   "clause": "4.7.1 Building Setbacks",
+   "page": 32,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  },
+  {
+   "id": "bourke-shire-council-012",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "side and rear",
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "Side and rear setbacks to meet BCA requirements",
+    "sources": [
+     5545
+    ]
+   },
+   "rear": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "Side and rear setbacks to meet BCA requirements",
+    "sources": [
+     5545
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    5545,
+    5545
+   ],
+   "evidence": [
+    {
+     "id": 5545,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "Side and rear setbacks to meet BCA requirements",
+     "clause": "4.7.1 Building Setbacks",
+     "page": 32,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "side and rear",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    },
+    {
+     "id": 5545,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "Side and rear setbacks to meet BCA requirements",
+     "clause": "4.7.1 Building Setbacks",
+     "page": 32,
+     "source_file": "DCP/Bourke-Development-Control-Plan.pdf",
+     "condition": "side and rear",
+     "edition": "Bourke Shire Development Control Plan 2012 (July 2012, amended April 2016)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Side and rear setbacks to meet BCA requirements",
+   "clause": "4.7.1 Building Setbacks",
+   "page": 32,
+   "source_file": "DCP/Bourke-Development-Control-Plan.pdf"
+  }
+ ],
+ "gaps": [
+  "R1: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "R5: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "RU5: no numeric side/rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No secondary (corner lot) frontage setback rule"
+ ],
+ "notes": "Built from 12 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": true,
+   "rules": 5
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 12,
+  "rules": 12,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

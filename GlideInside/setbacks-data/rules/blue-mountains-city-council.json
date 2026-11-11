@@ -1,0 +1,752 @@
+{
+ "lga_slug": "blue-mountains-city-council",
+ "council": "Blue Mountains City Council",
+ "lgaNames": [
+  "BLUE MOUNTAINS",
+  "BLUE MOUNTAINS CITY",
+  "BLUE MOUNTAINS CITY COUNCIL"
+ ],
+ "dcp": "Blue Mountains Development Control Plan 2015 (in effect 15/02/2016; saved copy is the portal archival copy titled Amendment 1, Part A states 'Amendment 2 (December 2018)'); draft Amendment 7 documents are saved but are drafts and were not used for values",
+ "lep": "Blue Mountains Local Environmental Plan 2015",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "blue-mountains-city-council-001",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "no_adjoining_buildings"
+    ]
+   },
+   "conditionText": "R2 zone, no buildings on adjoining allotments: minimum from primary road frontage",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     5177
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5177
+   ],
+   "evidence": [
+    {
+     "id": 5177,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a minimum of 8m from the primary road frontage",
+     "clause": "B2.3.1 C3(b)",
+     "page": 40,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "R2 zone, no buildings on adjoining allotments: minimum from primary road frontage",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "a minimum of 8m from the primary road frontage",
+   "clause": "B2.3.1 C3(b)",
+   "page": 40,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-002",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "battle_axe",
+     "irregular_lot"
+    ]
+   },
+   "conditionText": "R2 zone hatchet shaped lots: from rear boundary of the lot in front",
+   "rear": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     5180
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    5180
+   ],
+   "evidence": [
+    {
+     "id": 5180,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "building setback from the rear boundary of the lot in front is to be a minimum of 9m",
+     "clause": "B2.3.1 C3(d)",
+     "page": 41,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "R2 zone hatchet shaped lots: from rear boundary of the lot in front",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "building setback from the rear boundary of the lot in front is to be a minimum of 9m",
+   "clause": "B2.3.1 C3(d)",
+   "page": 41,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-003",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "R2 zone, established areas",
+   "front": {
+    "minM": null,
+    "formula": "20% of average adjoining setback",
+    "basis": "text",
+    "sources": [
+     5178
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5178
+   ],
+   "evidence": [
+    {
+     "id": 5178,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "front building setback is to be within 20% of the average setback of buildings on immediately adjoining allotments",
+     "clause": "B2.3.1 C3(b)",
+     "page": 40,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "R2 zone, established areas",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "front building setback is to be within 20% of the average setback of buildings on immediately adjoining allotments",
+   "clause": "B2.3.1 C3(b)",
+   "page": 40,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-004",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R2 zone corner lots: secondary frontage minimum",
+    "R2 zone: rear boundary minimum",
+    "R2 zone: side and rear boundaries minimum"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5179
+    ]
+   },
+   "rear": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     5182
+    ]
+   },
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     5181
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    5179,
+    5181,
+    5182
+   ],
+   "evidence": [
+    {
+     "id": 5179,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "building setback from the secondary frontage is to be a minimum of 3m",
+     "clause": "B2.3.1 C3(c)",
+     "page": 41,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "R2 zone corner lots: secondary frontage minimum",
+     "edition": "Amendment 2 (December 2018)"
+    },
+    {
+     "id": 5182,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "setback from side and rear boundaries is to be a minimum of 1m",
+     "clause": "B2.3.1 C3(e)",
+     "page": 41,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "R2 zone: rear boundary minimum",
+     "edition": "Amendment 2 (December 2018)"
+    },
+    {
+     "id": 5181,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "setback from side and rear boundaries is to be a minimum of 1m",
+     "clause": "B2.3.1 C3(e)",
+     "page": 41,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "R2 zone: side and rear boundaries minimum",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "building setback from the secondary frontage is to be a minimum of 3m",
+   "clause": "B2.3.1 C3(c)",
+   "page": 41,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-005",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "no_adjoining_buildings",
+     "not_precinct"
+    ]
+   },
+   "conditionText": "R3 zone not within a precinct, no buildings on adjoining allotments: minimum",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     5183
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5183
+   ],
+   "evidence": [
+    {
+     "id": 5183,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a minimum of 8m from the primary road frontage",
+     "clause": "B2.3.1 C5(a)",
+     "page": 41,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "R3 zone not within a precinct, no buildings on adjoining allotments: minimum",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "a minimum of 8m from the primary road frontage",
+   "clause": "B2.3.1 C5(a)",
+   "page": 41,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-006",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "not_precinct"
+    ]
+   },
+   "conditionText": [
+    "R3 zone not within a precinct, corner lots: secondary frontage minimum",
+    "R3 zone not within a precinct: side boundaries minimum"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5184
+    ]
+   },
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     5185
+    ]
+   },
+   "front": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5184,
+    5185
+   ],
+   "evidence": [
+    {
+     "id": 5184,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "in the case of corner lots, building setback from the secondary frontage is to be a minimum of 3m",
+     "clause": "B2.3.1 C5(b)",
+     "page": 41,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "R3 zone not within a precinct, corner lots: secondary frontage minimum",
+     "edition": "Amendment 2 (December 2018)"
+    },
+    {
+     "id": 5185,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "setback from side boundaries is to be a minimum of 2m",
+     "clause": "B2.3.1 C5(d)",
+     "page": 41,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "R3 zone not within a precinct: side boundaries minimum",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "in the case of corner lots, building setback from the secondary frontage is to be a minimum of 3m",
+   "clause": "B2.3.1 C5(b)",
+   "page": 41,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-007",
+   "zones": [
+    "E3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 4000.0,
+    "qualifiers": [
+     "adjoins_other",
+     "no_adjoining_buildings"
+    ]
+   },
+   "conditionText": "E3 or E4 on land under 4,000m2: front setback no buildings adjoining",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     5189
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5189
+   ],
+   "evidence": [
+    {
+     "id": 5189,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "minimum of 8m from the primary road frontage",
+     "clause": "B2.3.1 C14(a)",
+     "page": 42,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "E3 or E4 on land under 4,000m2: front setback no buildings adjoining",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "minimum of 8m from the primary road frontage",
+   "clause": "B2.3.1 C14(a)",
+   "page": 42,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-008",
+   "zones": [
+    "E3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 4000.0
+   },
+   "conditionText": "E3 or E4 on land under 4,000m2: side and rear boundaries",
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     5190
+    ]
+   },
+   "rear": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     5190
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    5190,
+    5190
+   ],
+   "evidence": [
+    {
+     "id": 5190,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "setback from side and rear boundaries is to be a minimum of 1m",
+     "clause": "B2.3.1 C14(d)",
+     "page": 43,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "E3 or E4 on land under 4,000m2: side and rear boundaries",
+     "edition": "Amendment 2 (December 2018)"
+    },
+    {
+     "id": 5190,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "setback from side and rear boundaries is to be a minimum of 1m",
+     "clause": "B2.3.1 C14(d)",
+     "page": 43,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "E3 or E4 on land under 4,000m2: side and rear boundaries",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "setback from side and rear boundaries is to be a minimum of 1m",
+   "clause": "B2.3.1 C14(d)",
+   "page": 43,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-009",
+   "zones": [
+    "B1"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "not_precinct"
+    ]
+   },
+   "conditionText": "B1 zone not within a precinct: front setback",
+   "front": {
+    "minM": null,
+    "formula": "20% of average adjoining setback",
+    "basis": "text",
+    "sources": [
+     5186
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5186
+   ],
+   "evidence": [
+    {
+     "id": 5186,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "front building setback is to be within 20% of the average setback of buildings on immediately adjoining allotments, and",
+     "clause": "B2.3.1 C7(a)",
+     "page": 41,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "B1 zone not within a precinct: front setback",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "front building setback is to be within 20% of the average setback of buildings on immediately adjoining allotments, and",
+   "clause": "B2.3.1 C7(a)",
+   "page": 41,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-010",
+   "zones": [
+    "B7"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "B7 Business Park: primary front boundary minimum",
+   "front": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     5187
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5187
+   ],
+   "evidence": [
+    {
+     "id": 5187,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "setback from the primary front boundary is to be a minimum of 2m and a maximum of 4m",
+     "clause": "B2.3.1 C9(a)",
+     "page": 42,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "B7 Business Park: primary front boundary minimum",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "setback from the primary front boundary is to be a minimum of 2m and a maximum of 4m",
+   "clause": "B2.3.1 C9(a)",
+   "page": 42,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-011",
+   "zones": [
+    "IN1",
+    "IN2"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "IN1 or IN2: primary front boundary (minimum 4m, maximum 8m, landscaped)",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     5188
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5188
+   ],
+   "evidence": [
+    {
+     "id": 5188,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "4m and a maximum of 8m and be landscaped",
+     "clause": "B2.3.1 C10(a)",
+     "page": 42,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "IN1 or IN2: primary front boundary (minimum 4m, maximum 8m, landscaped)",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "4m and a maximum of 8m and be landscaped",
+   "clause": "B2.3.1 C10(a)",
+   "page": 42,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  },
+  {
+   "id": "blue-mountains-city-council-012",
+   "zones": [
+    "RE1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "RE1 Public Recreation: primary front boundary from road reserve",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     5191
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5191
+   ],
+   "evidence": [
+    {
+     "id": 5191,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "setback from the primary front boundary is to be a minimum of 8m from a road reserve",
+     "clause": "B2.3.1 C11",
+     "page": 42,
+     "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf",
+     "condition": "RE1 Public Recreation: primary front boundary from road reserve",
+     "edition": "Amendment 2 (December 2018)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "setback from the primary front boundary is to be a minimum of 8m from a road reserve",
+   "clause": "B2.3.1 C11",
+   "page": 42,
+   "source_file": "DCP/Blue-Mountains-DCP-2015-Amendment-1-portal-archival-copy.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "3 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 5223, 5192, 5193",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): stormwater: WSUD pollutant reduction percentage targets (DCP requires NorBE via MUSIC, no percentages) | Part G locality/precinct controls (setbacks, site cover by village) not extracted | Better Living DCP 2005, DCP 33, DCP 15, DCP 5 Echo Point, DCP 9 Significant Trees and draft Amendment 7 files are legacy or draft and were not used for values; LEGACY-DCP21.txt is empty (scanned, no text: DCP/LEGACY-DCP21.pdf) | Table 2 and Table 3 flood floor level rows beyond those recorded (residential garages up to two spaces etc.) not all individually recorded"
+ ],
+ "notes": "Built from 18 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 4
+  },
+  "R3": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 2
+  },
+  "E3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "B1": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "B7": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN1": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN2": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RE1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 18,
+  "rules": 12,
+  "recordsNotModelled": 3,
+  "otherSetbackKeysNotModelled": 2
+ }
+}

@@ -1,0 +1,1116 @@
+{
+ "lga_slug": "blayney-shire-council",
+ "council": "Blayney Shire Council",
+ "lgaNames": [
+  "BLAYNEY",
+  "BLAYNEY SHIRE",
+  "BLAYNEY SHIRE COUNCIL"
+ ],
+ "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+ "lep": "Blayney Local Environmental Plan 2012",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "blayney-shire-council-001",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground",
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "R1 / RU5, lots up to 900 m2, first storey",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "note": "900mm or NCC",
+    "sources": [
+     5021
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5021
+   ],
+   "evidence": [
+    {
+     "id": 5021,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "900mm or NCC",
+     "clause": "B2.1 table",
+     "page": 6,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R1 / RU5, lots up to 900 m2, first storey",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "900mm or NCC",
+   "clause": "B2.1 table",
+   "page": 6,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-002",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground",
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "R1 / RU5, lots up to 900 m2, above first storey",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     5022
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5022
+   ],
+   "evidence": [
+    {
+     "id": 5022,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": ">1st storey = 1.5m",
+     "clause": "B2.1 table",
+     "page": 6,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R1 / RU5, lots up to 900 m2, above first storey",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": ">1st storey = 1.5m",
+   "clause": "B2.1 table",
+   "page": 6,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-003",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": [
+    "R1 / RU5, lots up to 900 m2",
+    "R1 / RU5, lots up to 900 m2, secondary street/corner"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5023
+    ]
+   },
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     5020
+    ]
+   },
+   "rear": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     5024
+    ]
+   },
+   "front": null,
+   "side": null,
+   "sources": [
+    5020,
+    5023,
+    5024
+   ],
+   "evidence": [
+    {
+     "id": 5023,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "3m 1.5m",
+     "clause": "B2.1 table",
+     "page": 6,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R1 / RU5, lots up to 900 m2, secondary street/corner",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5020,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Note: Min. 5.5m to",
+     "clause": "B2.1 table",
+     "page": 6,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R1 / RU5, lots up to 900 m2",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5024,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "3m 1.5m",
+     "clause": "B2.1 table",
+     "page": 6,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R1 / RU5, lots up to 900 m2",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "3m 1.5m",
+   "clause": "B2.1 table",
+   "page": 6,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-004",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 900.0
+   },
+   "conditionText": "R1 / RU5, lots over 900 m2",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     5025
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     5026
+    ]
+   },
+   "rear": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     5027
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    5025,
+    5026,
+    5027
+   ],
+   "evidence": [
+    {
+     "id": 5025,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m or average setback of",
+     "clause": "B2.1 table",
+     "page": 7,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R1 / RU5, lots over 900 m2",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5026,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "4.5m 1.5m",
+     "clause": "B2.1 table",
+     "page": 7,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R1 / RU5, lots over 900 m2",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5027,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4.5m 1.5m",
+     "clause": "B2.1 table",
+     "page": 7,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R1 / RU5, lots over 900 m2",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "4.5m or average setback of",
+   "clause": "B2.1 table",
+   "page": 7,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-005",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "R1 General Residential / RU5 Village, lots up to 900 m2",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     5019
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5019
+   ],
+   "evidence": [
+    {
+     "id": 5019,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m or average setback of",
+     "clause": "B2.1 table",
+     "page": 6,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R1 General Residential / RU5 Village, lots up to 900 m2",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "4.5m or average setback of",
+   "clause": "B2.1 table",
+   "page": 6,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-006",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "multi-dwelling housing, R1 / RU5 classified roads",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     5043
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5043
+   ],
+   "evidence": [
+    {
+     "id": 5043,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "Classified Roads (Zone R1 / RU5 only) 8m",
+     "clause": "B5.5",
+     "page": 29,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "multi-dwelling housing, R1 / RU5 classified roads",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Classified Roads (Zone R1 / RU5 only) 8m",
+   "clause": "B5.5",
+   "page": 29,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-007",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 10000.0
+   },
+   "conditionText": "R5 Large Lot Residential under 1 ha",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     5028
+    ]
+   },
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5031
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5030
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5029
+    ]
+   },
+   "garage": null,
+   "sources": [
+    5028,
+    5029,
+    5030,
+    5031
+   ],
+   "evidence": [
+    {
+     "id": 5028,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "8.0m or average setback of",
+     "clause": "B2.1 table",
+     "page": 7,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R5 Large Lot Residential under 1 ha",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5031,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "6m 3m 6m",
+     "clause": "B2.1 table",
+     "page": 7,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R5 Large Lot Residential under 1 ha",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5030,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "6m 3m 6m",
+     "clause": "B2.1 table",
+     "page": 7,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R5 Large Lot Residential under 1 ha",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5029,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "6m 3m 6m",
+     "clause": "B2.1 table",
+     "page": 7,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R5 Large Lot Residential under 1 ha",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "8.0m or average setback of",
+   "clause": "B2.1 table",
+   "page": 7,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-008",
+   "zones": [
+    "R5",
+    "RU1",
+    "RU2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 10000.0
+   },
+   "conditionText": [
+    "RU1, RU2 and R5 (1 ha or more), public road frontage",
+    "RU1, RU2 and R5 (1 ha or more), side or rear boundary"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     5034
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     5035
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     5035
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    5034,
+    5035
+   ],
+   "evidence": [
+    {
+     "id": 5034,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Public road frontage – 20m.",
+     "clause": "B4.1",
+     "page": 24,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "RU1, RU2 and R5 (1 ha or more), public road frontage",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5035,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Side or rear boundary – 10m.",
+     "clause": "B4.1",
+     "page": 24,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "RU1, RU2 and R5 (1 ha or more), side or rear boundary",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5035,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "Side or rear boundary – 10m.",
+     "clause": "B4.1",
+     "page": 24,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "RU1, RU2 and R5 (1 ha or more), side or rear boundary",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Public road frontage – 20m.",
+   "clause": "B4.1",
+   "page": 24,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "dwellings adjoining a public reserve boundary",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5033
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5033
+   ],
+   "evidence": [
+    {
+     "id": 5033,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "at least 3m from a boundary with a public reserve",
+     "clause": "B2.1(2)",
+     "page": 6,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "dwellings adjoining a public reserve boundary",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText",
+   "quote": "at least 3m from a boundary with a public reserve",
+   "clause": "B2.1(2)",
+   "page": 6,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "attached garages/carports in urban areas",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 0.5,
+    "sources": [
+     5044
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    5044
+   ],
+   "evidence": [
+    {
+     "id": 5044,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "a) Be located at least 0.5m behind the front building",
+     "clause": "B3.3(1)",
+     "page": 19,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "attached garages/carports in urban areas",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a) Be located at least 0.5m behind the front building",
+   "clause": "B3.3(1)",
+   "page": 19,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "multi-dwelling housing, garages fronting a public road",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     5038
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    5038
+   ],
+   "evidence": [
+    {
+     "id": 5038,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5m from the front boundary AND",
+     "clause": "B5.5",
+     "page": 29,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "multi-dwelling housing, garages fronting a public road",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5m from the front boundary AND",
+   "clause": "B5.5",
+   "page": 29,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": [
+    "multi-dwelling housing, side and rear boundary, single storey",
+    "multi-dwelling housing, single storey"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     5036
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5039
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     5041
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5036,
+    5039,
+    5041
+   ],
+   "evidence": [
+    {
+     "id": 5036,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m – single storey OR average setback of",
+     "clause": "B5.5",
+     "page": 29,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "multi-dwelling housing, single storey",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5039,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "3m – single storey",
+     "clause": "B5.5",
+     "page": 29,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "multi-dwelling housing, single storey",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5041,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5m - single storey",
+     "clause": "B5.5",
+     "page": 29,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "multi-dwelling housing, side and rear boundary, single storey",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5m – single storey OR average setback of",
+   "clause": "B5.5",
+   "page": 29,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": [
+    "multi-dwelling housing, side and rear boundary, two storeys or greater",
+    "multi-dwelling housing, two storeys or greater"
+   ],
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     5040
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5042
+    ]
+   },
+   "front": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5040,
+    5042
+   ],
+   "evidence": [
+    {
+     "id": 5040,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "4.5m – two storeys or greater",
+     "clause": "B5.5",
+     "page": 29,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "multi-dwelling housing, two storeys or greater",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5042,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3m - two storeys or greater",
+     "clause": "B5.5",
+     "page": 29,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "multi-dwelling housing, side and rear boundary, two storeys or greater",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5m – two storeys or greater",
+   "clause": "B5.5",
+   "page": 29,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeysMin": 2
+   },
+   "conditionText": "multi-dwelling housing, two or more storeys",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5037
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5037
+   ],
+   "evidence": [
+    {
+     "id": 5037,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6.0m – two or more storeys OR average setback",
+     "clause": "B5.5",
+     "page": 29,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "multi-dwelling housing, two or more storeys",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "6.0m – two or more storeys OR average setback",
+   "clause": "B5.5",
+   "page": 29,
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-015",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "industrial, side and rear where adjoining residential",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5095
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5095
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    5095,
+    5095
+   ],
+   "evidence": [
+    {
+     "id": 5095,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "must be a minimum of 6 metres, incorporating a minimum 2 metre landscaping strip",
+     "clause": "C3.2(2)(b)",
+     "page": 15,
+     "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf",
+     "condition": "industrial, side and rear where adjoining residential",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5095,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "must be a minimum of 6 metres, incorporating a minimum 2 metre landscaping strip",
+     "clause": "C3.2(2)(b)",
+     "page": 15,
+     "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf",
+     "condition": "industrial, side and rear where adjoining residential",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "must be a minimum of 6 metres, incorporating a minimum 2 metre landscaping strip",
+   "clause": "C3.2(2)(b)",
+   "page": 15,
+   "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf"
+  },
+  {
+   "id": "blayney-shire-council-016",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "industrial, front setback",
+    "industrial, side and rear boundaries"
+   ],
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5093
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5093
+    ]
+   },
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     5094
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    5093,
+    5093,
+    5094
+   ],
+   "evidence": [
+    {
+     "id": 5093,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "a) Industrial buildings must be setback 3 metres",
+     "clause": "C3.2(2)",
+     "page": 15,
+     "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf",
+     "condition": "industrial, side and rear boundaries",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5093,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "a) Industrial buildings must be setback 3 metres",
+     "clause": "C3.2(2)",
+     "page": 15,
+     "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf",
+     "condition": "industrial, side and rear boundaries",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
+    {
+     "id": 5094,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Front setback areas must be a minimum of 8m",
+     "clause": "C3.2(1)",
+     "page": 14,
+     "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf",
+     "condition": "industrial, front setback",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "a) Industrial buildings must be setback 3 metres",
+   "clause": "C3.2(2)",
+   "page": 15,
+   "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf"
+  }
+ ],
+ "gaps": [
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 5032",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): dev_controls: minimum lot size set by BLEP2012 lot size map, not in DCP; no site coverage or landscaped area for single dwellings found; no public open space provision; Part E, G not searched in depth for engineering parameters"
+ ],
+ "notes": "Built from 29 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 6
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 6
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 2
+  },
+  "RU1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 6
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 29,
+  "rules": 16,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

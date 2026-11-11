@@ -1,0 +1,2119 @@
+{
+ "lga_slug": "lithgow-council-city-of",
+ "council": "Lithgow City Council",
+ "lgaNames": [
+  "LITHGOW",
+  "LITHGOW CITY",
+  "LITHGOW CITY COUNCIL"
+ ],
+ "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+ "lep": "Lithgow Local Environmental Plan 2014",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "lithgow-council-city-of-001",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Urban, Zone R1 and R2, first storey (or NCC)",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     20862
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20862
+   ],
+   "evidence": [
+    {
+     "id": 20862,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1st storey = 900mm or NCC",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R1 and R2, first storey (or NCC)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "1st storey = 900mm or NCC",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-002",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Urban, Zone R1 and R2, above first storey",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     20863
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20863
+   ],
+   "evidence": [
+    {
+     "id": 20863,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": ">1st storey = 1.5m",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R1 and R2, above first storey",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": ">1st storey = 1.5m",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-003",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 800.0
+   },
+   "conditionText": [
+    "Urban, Zone R1 and R2 lots up to 800 m2",
+    "Urban, Zone R1 and R2 lots up to 800 m2, secondary street (corner lots)"
+   ],
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     20858
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "note": "3m (subject to private open space/landscape provision)",
+    "sources": [
+     20865
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    20858,
+    20865
+   ],
+   "evidence": [
+    {
+     "id": 20858,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "SECONDARY 2m 3m 4m 6m",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R1 and R2 lots up to 800 m2, secondary street (corner lots)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20865,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "REAR BOUNDARY 3m (subject to private 4m (subject to private open 6m (subject to",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R1 and R2 lots up to 800 m2",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "SECONDARY 2m 3m 4m 6m",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-004",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 800.0
+   },
+   "conditionText": [
+    "Urban, Zone R1 and R2 lots over 800 m2",
+    "Urban, Zone R1 and R2 lots over 800 m2, secondary street (corner lots)"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     20859
+    ]
+   },
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "note": "4m (subject to private open space/landscape provision)",
+    "sources": [
+     20866
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    20859,
+    20866
+   ],
+   "evidence": [
+    {
+     "id": 20859,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "SECONDARY 2m 3m 4m 6m",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R1 and R2 lots over 800 m2, secondary street (corner lots)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20866,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "REAR BOUNDARY 3m (subject to private 4m (subject to private open 6m (subject to",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R1 and R2 lots over 800 m2",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "SECONDARY 2m 3m 4m 6m",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-005",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 800.0
+   },
+   "conditionText": "Urban, Zone R1 and R2, lots up to 800 m2 (greater of 4.5 m and average of adjacent dwellings)",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     20853
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20853
+   ],
+   "evidence": [
+    {
+     "id": 20853,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R1 and R2, lots up to 800 m2 (greater of 4.5 m and average of adjacent dwellings)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-006",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 800.0
+   },
+   "conditionText": "Urban, Zone R1 and R2, lots over 800 m2 (6.0 m or average of adjacent dwellings, whichever is less)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     20854
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20854
+   ],
+   "evidence": [
+    {
+     "id": 20854,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R1 and R2, lots over 800 m2 (6.0 m or average of adjacent dwellings, whichever is less)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-007",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Medium to higher density housing, Zone R1: single storey (or average of adjacent dwellings, whichever is greater)",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     20876
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20876
+   ],
+   "evidence": [
+    {
+     "id": 20876,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m - single storey OR average setback of adjacent",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing, Zone R1: single storey (or average of adjacent dwellings, whichever is greater)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "4.5m - single storey OR average setback of adjacent",
+   "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+   "page": 31,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-008",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeysMin": 2
+   },
+   "conditionText": "Medium to higher density housing, Zone R1: two or more storeys (or average, whichever is greater)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     20877
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20877
+   ],
+   "evidence": [
+    {
+     "id": 20877,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6.0m – two or more storeys OR average setback of",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing, Zone R1: two or more storeys (or average, whichever is greater)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "6.0m – two or more storeys OR average setback of",
+   "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+   "page": 31,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-009",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 800.0
+   },
+   "conditionText": "Urban, Zone R1 and R2, lots up to 800 m2: to garage or carport from front boundary",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     20857
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    20857
+   ],
+   "evidence": [
+    {
+     "id": 20857,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5m to garage/ carport.",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R1 and R2, lots up to 800 m2: to garage or carport from front boundary",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "5.5m to garage/ carport.",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-010",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Medium to higher density housing, Zone R2: single storey (or average, whichever is greater)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     20878
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20878
+   ],
+   "evidence": [
+    {
+     "id": 20878,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6.0m – single storey or average setback of adjacent",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing, Zone R2: single storey (or average, whichever is greater)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "6.0m – single storey or average setback of adjacent",
+   "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+   "page": 31,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-011",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeysMin": 2
+   },
+   "conditionText": "Medium to higher density housing, Zone R2: two or more storeys (or average, whichever is greater)",
+   "front": {
+    "minM": 7.0,
+    "basis": "fixed",
+    "sources": [
+     20879
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20879
+   ],
+   "evidence": [
+    {
+     "id": 20879,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "7.0m – two or more storeys OR average setback of",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing, Zone R2: two or more storeys (or average, whichever is greater)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "7.0m – two or more storeys OR average setback of",
+   "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+   "page": 31,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-012",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 5.0,
+    "lotAreaMaxM2": 4000.0
+   },
+   "conditionText": "Urban, Zone R5 up to 4000 m2, secondary street (corner lots)",
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     20861
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20861
+   ],
+   "evidence": [
+    {
+     "id": 20861,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "SECONDARY 2m 3m 4m 6m",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R5 up to 4000 m2, secondary street (corner lots)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "SECONDARY 2m 3m 4m 6m",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-013",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 4000.0
+   },
+   "conditionText": [
+    "Urban, Zone R5 Large Lot Residential up to 4000 m2",
+    "Urban, Zone R5 Large Lot Residential up to 4000 m2 (greater of 10 m and average of adjacent dwellings)"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     20856
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     20864
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20856,
+    20864
+   ],
+   "evidence": [
+    {
+     "id": 20856,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R5 Large Lot Residential up to 4000 m2 (greater of 10 m and average of adjacent dwellings)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20864,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1st storey = 900mm or NCC 5m",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R5 Large Lot Residential up to 4000 m2",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-014",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 4000.0,
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Rural, environmental and large lot R5 over 4000 m2 dwellings: highway frontage",
+   "front": {
+    "minM": 100.0,
+    "basis": "fixed",
+    "sources": [
+     20870
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20870
+   ],
+   "evidence": [
+    {
+     "id": 20870,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "a) Highway – 100m;",
+     "clause": "6.3 Control 1(a)",
+     "page": 12,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: highway frontage",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "a) Highway – 100m;",
+   "clause": "6.3 Control 1(a)",
+   "page": 12,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-015",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 4000.0
+   },
+   "conditionText": [
+    "Rural, environmental and large lot R5 over 4000 m2 dwellings: public road frontage",
+    "Rural, environmental and large lot R5 over 4000 m2 dwellings: secondary road frontage",
+    "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land up to and including 2 ha"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     20871
+    ]
+   },
+   "secondaryFront": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     20872
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     20873
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     20873
+    ]
+   },
+   "garage": null,
+   "sources": [
+    20871,
+    20872,
+    20873,
+    20873
+   ],
+   "evidence": [
+    {
+     "id": 20871,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "b) Public road frontage – 20m;",
+     "clause": "6.3 Control 1(b)",
+     "page": 12,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: public road frontage",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20872,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "c) Secondary road frontage – 15m;",
+     "clause": "6.3 Control 1(c)",
+     "page": 12,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: secondary road frontage",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20873,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "– 10m;",
+     "clause": "6.3 Control 1(d)",
+     "page": 12,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land up to and including 2 ha",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20873,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "– 10m;",
+     "clause": "6.3 Control 1(d)",
+     "page": 12,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land up to and including 2 ha",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "b) Public road frontage – 20m;",
+   "clause": "6.3 Control 1(b)",
+   "page": 12,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-016",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 4000.0
+   },
+   "conditionText": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
+   "side": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     20874
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20874
+   ],
+   "evidence": [
+    {
+     "id": 20874,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "greater than 2ha in area – 20m.",
+     "clause": "6.3 Control 1(e)",
+     "page": 12,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "greater than 2ha in area – 20m.",
+   "clause": "6.3 Control 1(e)",
+   "page": 12,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-017",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 4000.0
+   },
+   "conditionText": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
+   "rear": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     20874
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    20874
+   ],
+   "evidence": [
+    {
+     "id": 20874,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "greater than 2ha in area – 20m.",
+     "clause": "6.3 Control 1(e)",
+     "page": 12,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "greater than 2ha in area – 20m.",
+   "clause": "6.3 Control 1(e)",
+   "page": 12,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-018",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Urban, Zone RU5",
+    "Urban, Zone RU5, secondary street (corner lots)"
+   ],
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     20860
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "note": "6m (subject to private open space/landscape provision)",
+    "sources": [
+     20867
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    20860,
+    20867
+   ],
+   "evidence": [
+    {
+     "id": 20860,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "SECONDARY 2m 3m 4m 6m",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone RU5, secondary street (corner lots)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20867,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "REAR BOUNDARY 3m (subject to private 4m (subject to private open 6m (subject to",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone RU5",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "SECONDARY 2m 3m 4m 6m",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-019",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Urban, Zone RU5 Village (greater of 8 m and average of adjacent dwellings)",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     20855
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20855
+   ],
+   "evidence": [
+    {
+     "id": 20855,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone RU5 Village (greater of 8 m and average of adjacent dwellings)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 800.0,
+    "lotAreaMaxM2": 1000.0,
+    "precinct": "Foundations Portland DCP area"
+   },
+   "conditionText": [
+    "Foundations Portland DCP area: Lifestyle Lot (800 to 1000 m2)",
+    "Foundations Portland DCP area: Lifestyle Lot (800 to 1000 m2) (building facade)",
+    "Foundations Portland DCP area: Lifestyle Lot (800 to 1000 m2): ground floor and upper storey"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     20943
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     20937
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     20936
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    20936,
+    20937,
+    20943
+   ],
+   "evidence": [
+    {
+     "id": 20943,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Street Setback 3m (building façade) 3m (building façade)",
+     "clause": "Table 4 Key Controls for Large Lots",
+     "page": 74,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Lifestyle Lot (800 to 1000 m2) (building facade)",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    },
+    {
+     "id": 20937,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Setback (min) Ground Floor: 8m Ground Floor: 6m",
+     "clause": "Table 4 Key Controls for Large Lots",
+     "page": 75,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Lifestyle Lot (800 to 1000 m2): ground floor and upper storey",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    },
+    {
+     "id": 20936,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback (min) 1.5m 1.5m",
+     "clause": "Table 4 Key Controls for Large Lots",
+     "page": 75,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Lifestyle Lot (800 to 1000 m2)",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Secondary Street Setback 3m (building façade) 3m (building façade)",
+   "clause": "Table 4 Key Controls for Large Lots",
+   "page": 74,
+   "source_file": "DCP/foundations-dcp-final.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 300.0,
+    "lotAreaMaxM2": 450.0,
+    "precinct": "Foundations Portland DCP area"
+   },
+   "conditionText": "Foundations Portland DCP area: Cottage (300 to 450 m2)",
+   "side": {
+    "minM": null,
+    "basis": "text",
+    "note": "Nil",
+    "sources": [
+     20968
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20968
+   ],
+   "evidence": [
+    {
+     "id": 20968,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback (min) Nil Nil Nil Nil",
+     "clause": "Table 6 Key Controls for Housing Typologies Small Lots",
+     "page": 82,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Cottage (300 to 450 m2)",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "Side Setback (min) Nil Nil Nil Nil",
+   "clause": "Table 6 Key Controls for Housing Typologies Small Lots",
+   "page": 82,
+   "source_file": "DCP/foundations-dcp-final.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 450.0,
+    "lotAreaMaxM2": 600.0,
+    "precinct": "Foundations Portland DCP area"
+   },
+   "conditionText": "Foundations Portland DCP area: Traditional (450 to 600 m2) (minimum)",
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     20952
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20952
+   ],
+   "evidence": [
+    {
+     "id": 20952,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Street Setback 2m 2m 2m",
+     "clause": "Table 5 Key Controls for Traditional Lots",
+     "page": 78,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Traditional (450 to 600 m2) (minimum)",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Secondary Street Setback 2m 2m 2m",
+   "clause": "Table 5 Key Controls for Traditional Lots",
+   "page": 78,
+   "source_file": "DCP/foundations-dcp-final.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 600.0,
+    "lotAreaMaxM2": 800.0,
+    "precinct": "Foundations Portland DCP area"
+   },
+   "conditionText": "Foundations Portland DCP area: Family Traditional (600 to 800 m2) (minimum)",
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     20946
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20946
+   ],
+   "evidence": [
+    {
+     "id": 20946,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Street Setback 2m 2m 2m",
+     "clause": "Table 5 Key Controls for Traditional Lots",
+     "page": 78,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Family Traditional (600 to 800 m2) (minimum)",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Secondary Street Setback 2m 2m 2m",
+   "clause": "Table 5 Key Controls for Traditional Lots",
+   "page": 78,
+   "source_file": "DCP/foundations-dcp-final.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-024",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1000.0,
+    "precinct": "Foundations Portland DCP area"
+   },
+   "conditionText": [
+    "Foundations Portland DCP area: Large Lot (over 1000 m2)",
+    "Foundations Portland DCP area: Large Lot (over 1000 m2) (building facade)",
+    "Foundations Portland DCP area: Large Lot (over 1000 m2): ground floor and upper storey"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     20934
+    ]
+   },
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     20928
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     20927
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    20927,
+    20928,
+    20934
+   ],
+   "evidence": [
+    {
+     "id": 20934,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Street Setback 3m (building façade) 3m (building façade)",
+     "clause": "Table 4 Key Controls for Large Lots",
+     "page": 74,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Large Lot (over 1000 m2) (building facade)",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    },
+    {
+     "id": 20928,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Setback (min) Ground Floor: 8m Ground Floor: 6m",
+     "clause": "Table 4 Key Controls for Large Lots",
+     "page": 75,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Large Lot (over 1000 m2): ground floor and upper storey",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    },
+    {
+     "id": 20927,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback (min) 1.5m 1.5m",
+     "clause": "Table 4 Key Controls for Large Lots",
+     "page": 75,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Large Lot (over 1000 m2)",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Secondary Street Setback 3m (building façade) 3m (building façade)",
+   "clause": "Table 4 Key Controls for Large Lots",
+   "page": 74,
+   "source_file": "DCP/foundations-dcp-final.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-025",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Urban dwellings, all other state and regional roads",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     20869
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20869
+   ],
+   "evidence": [
+    {
+     "id": 20869,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "b) All other State & Regional Roads - 8m; and",
+     "clause": "6.4.1 Control 2",
+     "page": 16,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban dwellings, all other state and regional roads",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "b) All other State & Regional Roads - 8m; and",
+   "clause": "6.4.1 Control 2",
+   "page": 16,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-026",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": [
+    "Medium to higher density housing, corner lots: single storey",
+    "Medium to higher density housing: single storey"
+   ],
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     20881
+    ]
+   },
+   "rear": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     20885
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     20883
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    20881,
+    20883,
+    20885
+   ],
+   "evidence": [
+    {
+     "id": 20881,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "4m – single storey",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing, corner lots: single storey",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20885,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4.5m - single storey",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing: single storey",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20883,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5m - single storey",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing: single storey",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4m – single storey",
+   "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+   "page": 31,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-027",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": [
+    "Medium to higher density housing, corner lots: two storeys or greater",
+    "Medium to higher density housing: two storeys or greater"
+   ],
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     20882
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     20886
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     20884
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    20882,
+    20884,
+    20886
+   ],
+   "evidence": [
+    {
+     "id": 20882,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "6m – two storeys or greater",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing, corner lots: two storeys or greater",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20886,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "6m - two storeys or greater",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing: two storeys or greater",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20884,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3m - two storeys or greater",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing: two storeys or greater",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "6m – two storeys or greater",
+   "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+   "page": 31,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-028",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 300.0,
+    "lotAreaMaxM2": 450.0,
+    "precinct": "Foundations Portland DCP area"
+   },
+   "conditionText": "Foundations Portland DCP area: Cottage rear garage (300 to 450 m2)",
+   "side": {
+    "minM": null,
+    "basis": "text",
+    "note": "Nil",
+    "sources": [
+     20974
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20974
+   ],
+   "evidence": [
+    {
+     "id": 20974,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback (min) Nil Nil Nil Nil",
+     "clause": "Table 6 Key Controls for Housing Typologies Small Lots",
+     "page": 82,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Cottage rear garage (300 to 450 m2)",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "Side Setback (min) Nil Nil Nil Nil",
+   "clause": "Table 6 Key Controls for Housing Typologies Small Lots",
+   "page": 82,
+   "source_file": "DCP/foundations-dcp-final.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-029",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 450.0,
+    "lotAreaMaxM2": 600.0,
+    "precinct": "Foundations Portland DCP area"
+   },
+   "conditionText": "Foundations Portland DCP area: Traditional rear garage (450 to 600 m2) (minimum)",
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     20958
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20958
+   ],
+   "evidence": [
+    {
+     "id": 20958,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Street Setback 2m 2m 2m",
+     "clause": "Table 5 Key Controls for Traditional Lots",
+     "page": 78,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Traditional rear garage (450 to 600 m2) (minimum)",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Secondary Street Setback 2m 2m 2m",
+   "clause": "Table 5 Key Controls for Traditional Lots",
+   "page": 78,
+   "source_file": "DCP/foundations-dcp-final.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-030",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Enclosed car parking: door setback from front lot boundary",
+    "Medium to higher density housing: garages fronting a public road, from front boundary"
+   ],
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     20880,
+     20899
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    20880,
+    20899
+   ],
+   "evidence": [
+    {
+     "id": 20880,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5m from the front boundary AND",
+     "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+     "page": 31,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Medium to higher density housing: garages fronting a public road, from front boundary",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20899,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "a minimum of 5.5m from the front lot boundary of the street they connect to",
+     "clause": "6.4 Garages Control 4",
+     "page": 26,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Enclosed car parking: door setback from front lot boundary",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5m from the front boundary AND",
+   "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
+   "page": 31,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-031",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 125.0,
+    "lotAreaMaxM2": 300.0,
+    "precinct": "Foundations Portland DCP area"
+   },
+   "conditionText": "Foundations Portland DCP area: Townhouse Cottage (125 to 300 m2)",
+   "side": {
+    "minM": null,
+    "basis": "text",
+    "note": "Nil",
+    "sources": [
+     20980
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20980
+   ],
+   "evidence": [
+    {
+     "id": 20980,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback (min) Nil Nil Nil Nil",
+     "clause": "Table 6 Key Controls for Housing Typologies Small Lots",
+     "page": 82,
+     "source_file": "DCP/foundations-dcp-final.pdf",
+     "condition": "Foundations Portland DCP area: Townhouse Cottage (125 to 300 m2)",
+     "edition": "Foundations Portland Site Specific DCP, January 2024"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "Side Setback (min) Nil Nil Nil Nil",
+   "clause": "Table 6 Key Controls for Housing Typologies Small Lots",
+   "page": 82,
+   "source_file": "DCP/foundations-dcp-final.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-032",
+   "zones": [
+    "IN1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Zone IN2 (and IN1 adjacent to residential): front setback",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     20901
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20901
+   ],
+   "evidence": [
+    {
+     "id": 20901,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "minimum of 8m, incorporating a minimum 2 metre landscaping strip",
+     "clause": "7.3.3 Control 1(a)",
+     "page": 13,
+     "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+     "condition": "Zone IN2 (and IN1 adjacent to residential): front setback",
+     "edition": "Lithgow DCP 2021, Chapter 7, November 2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "minimum of 8m, incorporating a minimum 2 metre landscaping strip",
+   "clause": "7.3.3 Control 1(a)",
+   "page": 13,
+   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-033",
+   "zones": [
+    "IN1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Zones IN1 and IN2 corner sites: secondary frontage",
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     20902
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20902
+   ],
+   "evidence": [
+    {
+     "id": 20902,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "also provide a 4-",
+     "clause": "7.3.3 Control 1(b)",
+     "page": 13,
+     "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+     "condition": "Zones IN1 and IN2 corner sites: secondary frontage",
+     "edition": "Lithgow DCP 2021, Chapter 7, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "also provide a 4-",
+   "clause": "7.3.3 Control 1(b)",
+   "page": 13,
+   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-034",
+   "zones": [
+    "IN2"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": [
+    "Zone IN2 (and IN1 adjacent to residential): front setback",
+    "Zone IN2: side and rear where adjoining residential use or zone"
+   ],
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     20901
+    ]
+   },
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     20904
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     20904
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    20901,
+    20904,
+    20904
+   ],
+   "evidence": [
+    {
+     "id": 20901,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "minimum of 8m, incorporating a minimum 2 metre landscaping strip",
+     "clause": "7.3.3 Control 1(a)",
+     "page": 13,
+     "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+     "condition": "Zone IN2 (and IN1 adjacent to residential): front setback",
+     "edition": "Lithgow DCP 2021, Chapter 7, November 2021"
+    },
+    {
+     "id": 20904,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "side and rear setback are minimum 6 metres, incorporating a minimum 2 metre landscaping",
+     "clause": "7.3.3 Control 2(b)",
+     "page": 13,
+     "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+     "condition": "Zone IN2: side and rear where adjoining residential use or zone",
+     "edition": "Lithgow DCP 2021, Chapter 7, November 2021"
+    },
+    {
+     "id": 20904,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "side and rear setback are minimum 6 metres, incorporating a minimum 2 metre landscaping",
+     "clause": "7.3.3 Control 2(b)",
+     "page": 13,
+     "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+     "condition": "Zone IN2: side and rear where adjoining residential use or zone",
+     "edition": "Lithgow DCP 2021, Chapter 7, November 2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "minimum of 8m, incorporating a minimum 2 metre landscaping strip",
+   "clause": "7.3.3 Control 1(a)",
+   "page": 13,
+   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf"
+  },
+  {
+   "id": "lithgow-council-city-of-035",
+   "zones": [
+    "IN2"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Zone IN2: side and rear boundaries",
+    "Zones IN1 and IN2 corner sites: secondary frontage"
+   ],
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     20902
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     20903
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     20903
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    20902,
+    20903,
+    20903
+   ],
+   "evidence": [
+    {
+     "id": 20902,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "also provide a 4-",
+     "clause": "7.3.3 Control 1(b)",
+     "page": 13,
+     "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+     "condition": "Zones IN1 and IN2 corner sites: secondary frontage",
+     "edition": "Lithgow DCP 2021, Chapter 7, November 2021"
+    },
+    {
+     "id": 20903,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "Industrial buildings are setback minimum 3 metres from side and rear property boundaries.",
+     "clause": "7.3.3 Control 2(a)",
+     "page": 13,
+     "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+     "condition": "Zone IN2: side and rear boundaries",
+     "edition": "Lithgow DCP 2021, Chapter 7, November 2021"
+    },
+    {
+     "id": 20903,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "Industrial buildings are setback minimum 3 metres from side and rear property boundaries.",
+     "clause": "7.3.3 Control 2(a)",
+     "page": 13,
+     "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+     "condition": "Zone IN2: side and rear boundaries",
+     "edition": "Lithgow DCP 2021, Chapter 7, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "also provide a 4-",
+   "clause": "7.3.3 Control 1(b)",
+   "page": 13,
+   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 20900, 20868",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Foundations Portland DCP road types 1 to 3 (Figures 8 to 11) are drawings with no extractable dimensions: road reserve, carriageway and verge widths not recorded | Foundations Portland DCP Table 7 and the multi-dwelling controls (sections 6.20 to 6.21), and Chapter 8 rural subdivision controls, were not extracted | Lithgow DCP Chapter 6 SETBACK TABLE side boundary setback for Zone RU5 not resolved (merged cell); Chapter 7 business zone setbacks (B2, RU5, other business zones) not extracted | Chapter 3 DCP flood maps and Chapters 4 and 8 not extracted for numeric parameters; Chapter 9 Pottery Estate only roads and site coverage recorded"
+ ],
+ "notes": "Built from 51 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 9
+  },
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 9
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 6
+  },
+  "RU5": {
+   "front": true,
+   "side": false,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 2
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 12
+  },
+  "IN1": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "IN2": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [
+  "Foundations Portland DCP area"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 51,
+  "rules": 35,
+  "recordsNotModelled": 2,
+  "otherSetbackKeysNotModelled": 4
+ }
+}

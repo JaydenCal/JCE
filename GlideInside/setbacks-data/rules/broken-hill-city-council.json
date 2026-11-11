@@ -1,0 +1,140 @@
+{
+ "lga_slug": "broken-hill-city-council",
+ "council": "Broken Hill City Council",
+ "lgaNames": [
+  "BROKEN HILL",
+  "BROKEN HILL CITY",
+  "BROKEN HILL CITY COUNCIL"
+ ],
+ "dcp": "Broken Hill Development Control Plan 2016 (70 pages; adoption date not stated in extracted text) UNVERIFIED",
+ "lep": "Broken Hill Local Environmental Plan 2013",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "broken-hill-city-council-001",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Single detached dwellings (R1): no numeric setback, consider streetscape and adjacent structures",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "No numeric setback; merit-based to streetscape and adjacent structures",
+    "sources": [
+     5784
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5784
+   ],
+   "evidence": [
+    {
+     "id": 5784,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a setback from the road reserve which considers the streetscape and adjacent structures",
+     "clause": "3.2.2 Single detached dwellings design guidance",
+     "page": 16,
+     "source_file": "DCP/Broken-Hill-DCP-2016.txt",
+     "condition": "Single detached dwellings (R1): no numeric setback, consider streetscape and adjacent structures",
+     "edition": "Broken Hill DCP 2016"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a setback from the road reserve which considers the streetscape and adjacent structures",
+   "clause": "3.2.2 Single detached dwellings design guidance",
+   "page": 16,
+   "source_file": "DCP/Broken-Hill-DCP-2016.txt"
+  },
+  {
+   "id": "broken-hill-city-council-002",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Kanandah Road/Pinnacles Place Precinct: street frontage to building line, generally",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5783
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5783
+   ],
+   "evidence": [
+    {
+     "id": 5783,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "the setback from the street frontage to the building line should generally be no less than 6 metres",
+     "clause": "3.4 Industrial zones controls",
+     "page": 22,
+     "source_file": "DCP/Broken-Hill-DCP-2016.txt",
+     "condition": "Kanandah Road/Pinnacles Place Precinct: street frontage to building line, generally",
+     "edition": "Broken Hill DCP 2016"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "the setback from the street frontage to the building line should generally be no less than 6 metres",
+   "clause": "3.4 Industrial zones controls",
+   "page": 22,
+   "source_file": "DCP/Broken-Hill-DCP-2016.txt"
+  }
+ ],
+ "gaps": [
+  "R1: no numeric side/rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP has no numeric residential setbacks, lot sizes, site coverage or private open space (merit based; minimum lot size by LEP) | Parking Table 5.1 non-residential rows beyond those recorded not extracted: pubs, clubs, take-away, child care and others"
+ ],
+ "notes": "Built from 2 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 2,
+  "rules": 2,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 1
+ }
+}

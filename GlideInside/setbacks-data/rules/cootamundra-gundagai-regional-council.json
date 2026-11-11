@@ -1,0 +1,583 @@
+{
+ "lga_slug": "cootamundra-gundagai-regional-council",
+ "council": "Cootamundra-Gundagai Regional Council",
+ "lgaNames": [
+  "COOTAMUNDRA-GUNDAGAI REGIONAL",
+  "COOTAMUNDRA-GUNDAGAI",
+  "COOTAMUNDRA-GUNDAGAI REGIONAL COUNCIL"
+ ],
+ "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+ "lep": "Cootamundra Local Environmental Plan 2013",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "cootamundra-gundagai-regional-council-001",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5",
+    "RU4"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 900.0,
+    "lotAreaMaxM2": 1500.0
+   },
+   "conditionText": "R1, R3, R5, RU4 and RU5 zones, corner lot secondary road, lots 900 m2 up to 1500 m2",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     11167
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    11167
+   ],
+   "evidence": [
+    {
+     "id": 11167,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "900m2 up to 1500m2 3 metres",
+     "clause": "2.1 Secondary Building Line Setback",
+     "page": 19,
+     "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+     "condition": "R1, R3, R5, RU4 and RU5 zones, corner lot secondary road, lots 900 m2 up to 1500 m2",
+     "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "900m2 up to 1500m2 3 metres",
+   "clause": "2.1 Secondary Building Line Setback",
+   "page": 19,
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+  },
+  {
+   "id": "cootamundra-gundagai-regional-council-002",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5",
+    "RU4"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": "R1, R3, R5, RU4 and RU5 zones, corner lot secondary road, lots up to 600 m2",
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     11165
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    11165
+   ],
+   "evidence": [
+    {
+     "id": 11165,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Lots up to 600m 2 metres",
+     "clause": "2.1 Secondary Building Line Setback",
+     "page": 19,
+     "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+     "condition": "R1, R3, R5, RU4 and RU5 zones, corner lot secondary road, lots up to 600 m2",
+     "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots up to 600m 2 metres",
+   "clause": "2.1 Secondary Building Line Setback",
+   "page": 19,
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+  },
+  {
+   "id": "cootamundra-gundagai-regional-council-003",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5",
+    "RU4"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 600.0,
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "R1, R3, R5, RU4 and RU5 zones, corner lot secondary road, lots 600 m2 up to 900 m2",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     11166
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    11166
+   ],
+   "evidence": [
+    {
+     "id": 11166,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "600m up to 900m 3 metres",
+     "clause": "2.1 Secondary Building Line Setback",
+     "page": 19,
+     "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+     "condition": "R1, R3, R5, RU4 and RU5 zones, corner lot secondary road, lots 600 m2 up to 900 m2",
+     "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "600m up to 900m 3 metres",
+   "clause": "2.1 Secondary Building Line Setback",
+   "page": 19,
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+  },
+  {
+   "id": "cootamundra-gundagai-regional-council-004",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5",
+    "RU4"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1500.0
+   },
+   "conditionText": "R1, R3, R5, RU4 and RU5 zones, corner lot secondary road, lots 1500 m2 or greater",
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     11168
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    11168
+   ],
+   "evidence": [
+    {
+     "id": 11168,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "1500m or greater 5 metres",
+     "clause": "2.1 Secondary Building Line Setback",
+     "page": 19,
+     "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+     "condition": "R1, R3, R5, RU4 and RU5 zones, corner lot secondary road, lots 1500 m2 or greater",
+     "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "1500m or greater 5 metres",
+   "clause": "2.1 Secondary Building Line Setback",
+   "page": 19,
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+  },
+  {
+   "id": "cootamundra-gundagai-regional-council-005",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5",
+    "RU4"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 900.0,
+    "lotAreaMaxM2": 1500.0
+   },
+   "conditionText": "R1, R3, R5, RU4 and RU5 zones, where no neighbouring houses within 40 m, lots 900 m2 up to 1500 m2",
+   "front": {
+    "minM": 6.5,
+    "basis": "fixed",
+    "sources": [
+     11162
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    11162
+   ],
+   "evidence": [
+    {
+     "id": 11162,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "900m2 up to 1500m2 6.5metres",
+     "clause": "2.1 Front Primary Building Line Setback",
+     "page": 18,
+     "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+     "condition": "R1, R3, R5, RU4 and RU5 zones, where no neighbouring houses within 40 m, lots 900 m2 up to 1500 m2",
+     "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "900m2 up to 1500m2 6.5metres",
+   "clause": "2.1 Front Primary Building Line Setback",
+   "page": 18,
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+  },
+  {
+   "id": "cootamundra-gundagai-regional-council-006",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5",
+    "RU4"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": "R1, R3, R5, RU4 and RU5 zones, where no neighbouring houses within 40 m, lots up to 600 m2",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     11160
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    11160
+   ],
+   "evidence": [
+    {
+     "id": 11160,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Lots up to 600m 4.5 metres",
+     "clause": "2.1 Front Primary Building Line Setback",
+     "page": 18,
+     "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+     "condition": "R1, R3, R5, RU4 and RU5 zones, where no neighbouring houses within 40 m, lots up to 600 m2",
+     "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Lots up to 600m 4.5 metres",
+   "clause": "2.1 Front Primary Building Line Setback",
+   "page": 18,
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+  },
+  {
+   "id": "cootamundra-gundagai-regional-council-007",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5",
+    "RU4"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 600.0,
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "R1, R3, R5, RU4 and RU5 zones, where no neighbouring houses within 40 m, lots 600 m2 up to 900 m2",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     11161
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    11161
+   ],
+   "evidence": [
+    {
+     "id": 11161,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "600m2 up to 900m2 4.5metres",
+     "clause": "2.1 Front Primary Building Line Setback",
+     "page": 18,
+     "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+     "condition": "R1, R3, R5, RU4 and RU5 zones, where no neighbouring houses within 40 m, lots 600 m2 up to 900 m2",
+     "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "600m2 up to 900m2 4.5metres",
+   "clause": "2.1 Front Primary Building Line Setback",
+   "page": 18,
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+  },
+  {
+   "id": "cootamundra-gundagai-regional-council-008",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5",
+    "RU4"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1500.0
+   },
+   "conditionText": "R1, R3, R5, RU4 and RU5 zones, where no neighbouring houses within 40 m, lots 1500 m2 or greater",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     11163
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    11163
+   ],
+   "evidence": [
+    {
+     "id": 11163,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "1500m2 or greater 10.0 metres",
+     "clause": "2.1 Front Primary Building Line Setback",
+     "page": 18,
+     "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+     "condition": "R1, R3, R5, RU4 and RU5 zones, where no neighbouring houses within 40 m, lots 1500 m2 or greater",
+     "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "1500m2 or greater 10.0 metres",
+   "clause": "2.1 Front Primary Building Line Setback",
+   "page": 18,
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+  },
+  {
+   "id": "cootamundra-gundagai-regional-council-009",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5",
+    "RU4"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "R1, R3, R5, RU4 and RU5 zones, existing neighbouring houses within 40 m",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average of the front setbacks of the nearest two neighbouring houses with the same primary road frontage, where houses within 40 m",
+    "sources": [
+     11164
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    11164
+   ],
+   "evidence": [
+    {
+     "id": 11164,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "houses within forty (40) metres of the",
+     "clause": "2.1 Front Primary Building Line Setback",
+     "page": 18,
+     "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+     "condition": "R1, R3, R5, RU4 and RU5 zones, existing neighbouring houses within 40 m",
+     "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "houses within forty (40) metres of the",
+   "clause": "2.1 Front Primary Building Line Setback",
+   "page": 18,
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+  },
+  {
+   "id": "cootamundra-gundagai-regional-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Garages, sheds and carports from primary or secondary road boundary",
+   "garage": {
+    "minM": 1.0,
+    "sources": [
+     11169
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    11169
+   ],
+   "evidence": [
+    {
+     "id": 11169,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages, sheds and carports must be setback at least 1m from the primary or secondary",
+     "clause": "2.1 Setbacks for garages, sheds and carports",
+     "page": 21,
+     "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+     "condition": "Garages, sheds and carports from primary or secondary road boundary",
+     "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Garages, sheds and carports must be setback at least 1m from the primary or secondary",
+   "clause": "2.1 Setbacks for garages, sheds and carports",
+   "page": 21,
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+  }
+ ],
+ "gaps": [
+  "R1: no numeric side/rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "R5: no numeric side/rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "RU5: no numeric side/rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): scanned, no text: DCP/Gundagai_DCP_2007_Five_Mile_Precinct_Portal_currency_uncertain.pdf (no extractable text) | DCP/Cootamundra-Gundagai_DCP_2013_Appendices.pdf (heritage and contaminated land) and Cootamundra_DCP_Fact_Sheets_August2015.pdf (repeats site coverage tables) not used for additional records"
+ ],
+ "notes": "Built from 10 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 9
+  },
+  "R3": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 9
+  },
+  "R5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 9
+  },
+  "RU5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 9
+  },
+  "RU4": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 9
+  },
+  "*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 10,
+  "rules": 10,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

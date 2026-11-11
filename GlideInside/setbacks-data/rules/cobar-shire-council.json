@@ -1,0 +1,22 @@
+{
+ "lga_slug": "cobar-shire-council",
+ "council": "Cobar Shire Council",
+ "lgaNames": [
+  "COBAR",
+  "COBAR SHIRE",
+  "COBAR SHIRE COUNCIL"
+ ],
+ "dcp": "No DCP saved. Only the 2020 Local Strategic Planning Statement (reference document) is present. UNVERIFIED",
+ "lep": "Not stated in saved documents (UNVERIFIED)",
+ "status": "none",
+ "rules": [],
+ "gaps": [
+  "No setback records in the extract (no front, side, rear, garage, rural, commercial, industrial or classified road setback values found in the saved council documents).",
+  "Extraction gaps noted for this council (verbatim): No DCP, subdivision code or engineering design specification saved for Cobar: dev_controls, setbacks, roads, access, earthworks, water, sewer, services, contributions not available | Local Strategic Planning Statement 2020 (DCP/Reference) is a policy document with no design parameters; read, no records"
+ ],
+ "notes": "Extract reviewed: reviewed (Opus full-set audit 01/11/2026).",
+ "counts": {
+  "records": 0,
+  "rules": 0
+ }
+}

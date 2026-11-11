@@ -1,0 +1,1177 @@
+{
+ "lga_slug": "north-sydney-council",
+ "council": "North Sydney Council",
+ "lgaNames": [
+  "NORTH SYDNEY",
+  "NORTH SYDNEY COUNCIL"
+ ],
+ "dcp": "North Sydney Development Control Plan 2025 (NSDCP 2025), adopted 28/07/2025, in effect 22/09/2025 (amended 01/07/2026 consolidated file also present); repeals NSDCP 2013",
+ "lep": "North Sydney Local Environmental Plan 2013 (NSLEP 2013)",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "north-sydney-council-001",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "R2 Low Density Residential: 2nd storey (up to 7m)",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     24443
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24443
+   ],
+   "evidence": [
+    {
+     "id": 24443,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "2nd storey (up to 7m) 1.5m",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 5,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R2 Low Density Residential: 2nd storey (up to 7m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "2nd storey (up to 7m) 1.5m",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 5,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-002",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "R2 Low Density Residential: 3rd storey or higher (greater than 7m)",
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     24446
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24446
+   ],
+   "evidence": [
+    {
+     "id": 24446,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3rd storey or higher (greater 2.5m",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R2 Low Density Residential: 3rd storey or higher (greater than 7m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "3rd storey or higher (greater 2.5m",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-003",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "secondary_dwelling",
+    "dual_occupancy",
+    "boarding_house",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "R2 Low Density Residential (boarding houses, dual occupancies, dwelling houses, group homes, secondary dwellings, semi-detached dwellings, seniors housing): 1st storey (up to 4m)",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     24440
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24440
+   ],
+   "evidence": [
+    {
+     "id": 24440,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R2 Low Density Boarding houses; Dual occupancies; 1st storey (up to 4m) 900mm",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 5,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R2 Low Density Residential (boarding houses, dual occupancies, dwelling houses, group homes, secondary dwellings, semi-detached dwellings, seniors housing): 1st storey (up to 4m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R2 Low Density Boarding houses; Dual occupancies; 1st storey (up to 4m) 900mm",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 5,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-004",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "R3 Medium Density Residential (all types except residential flat buildings): 2nd storey (up to 7m)",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     24444
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24444
+   ],
+   "evidence": [
+    {
+     "id": 24444,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "2nd storey (up to 7m) 1.5m",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R3 Medium Density Residential (all types except residential flat buildings): 2nd storey (up to 7m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "2nd storey (up to 7m) 1.5m",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-005",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "height_plane"
+    ]
+   },
+   "conditionText": "R3 Medium Density Residential: residential flat buildings (plus 45 degree building height plane from 3.5 m above existing ground at side boundaries)",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     24448
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24448
+   ],
+   "evidence": [
+    {
+     "id": 24448,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Residential flat buildings 3m; and",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R3 Medium Density Residential: residential flat buildings (plus 45 degree building height plane from 3.5 m above existing ground at side boundaries)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
+   "quote": "Residential flat buildings 3m; and",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-006",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "R3 Medium Density Residential (all types except residential flat buildings): 3rd storey or higher (greater than 7m)",
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     24447
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24447
+   ],
+   "evidence": [
+    {
+     "id": 24447,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3rd storey or higher (greater 2.5m",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R3 Medium Density Residential (all types except residential flat buildings): 3rd storey or higher (greater than 7m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "3rd storey or higher (greater 2.5m",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-007",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "secondary_dwelling",
+    "dual_occupancy",
+    "boarding_house",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "R3 Medium Density Residential (attached dwellings, boarding houses, dual occupancies, dwelling houses, group houses, multi dwelling housing, secondary dwellings, semi-detached, seniors housing): 1st storey (up to 4m)",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     24441
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24441
+   ],
+   "evidence": [
+    {
+     "id": 24441,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R3 Medium Attached dwellings; Boarding 1st storey (up to 4m) 900mm",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R3 Medium Density Residential (attached dwellings, boarding houses, dual occupancies, dwelling houses, group houses, multi dwelling housing, secondary dwellings, semi-detached, seniors housing): 1st storey (up to 4m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R3 Medium Attached dwellings; Boarding 1st storey (up to 4m) 900mm",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-008",
+   "zones": [
+    "R4"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 12.0
+   },
+   "conditionText": "R4 High Density Residential, height limit over 12 m: 1st to 3rd storeys (no more than 7 m above existing ground)",
+   "rear": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     24458
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    24458
+   ],
+   "evidence": [
+    {
+     "id": 24458,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "must be setback at least 4.5m from the rear boundary",
+     "clause": "Part E s1.3.5 P6(b)(ii)",
+     "page": 7,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R4 High Density Residential, height limit over 12 m: 1st to 3rd storeys (no more than 7 m above existing ground)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "must be setback at least 4.5m from the rear boundary",
+   "clause": "Part E s1.3.5 P6(b)(ii)",
+   "page": 7,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-009",
+   "zones": [
+    "R4"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 12.0
+   },
+   "conditionText": "R4 High Density Residential, height limit over 12 m: any part above the 3rd storey",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     24459
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    24459
+   ],
+   "evidence": [
+    {
+     "id": 24459,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "and 6m for any part of the building above the 3rd storey",
+     "clause": "Part E s1.3.5 P6(b)(ii)",
+     "page": 7,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R4 High Density Residential, height limit over 12 m: any part above the 3rd storey",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "and 6m for any part of the building above the 3rd storey",
+   "clause": "Part E s1.3.5 P6(b)(ii)",
+   "page": 7,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-010",
+   "zones": [
+    "R4"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "R4 High Density Residential: minimum rear setback",
+   "rear": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     24457
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    24457
+   ],
+   "evidence": [
+    {
+     "id": 24457,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "must be setback a minimum of 1.5m from the rear boundary",
+     "clause": "Part E s1.3.5 P6(a)",
+     "page": 7,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R4 High Density Residential: minimum rear setback",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "must be setback a minimum of 1.5m from the rear boundary",
+   "clause": "Part E s1.3.5 P6(a)",
+   "page": 7,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-011",
+   "zones": [
+    "R4"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "boarding_house",
+    "seniors_housing",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 12.0,
+    "qualifiers": [
+     "height_plane"
+    ]
+   },
+   "conditionText": "R4 High Density Residential: boarding houses, multi-dwelling housing, residential flat building, seniors housing on land with height limit of 12 m or less (plus 45 degree building height plane from 3.5 m)",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     24450
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24450
+   ],
+   "evidence": [
+    {
+     "id": 24450,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "On land with 3m; and",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R4 High Density Residential: boarding houses, multi-dwelling housing, residential flat building, seniors housing on land with height limit of 12 m or less (plus 45 degree building height plane from 3.5 m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
+   "quote": "On land with 3m; and",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-012",
+   "zones": [
+    "R4"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "boarding_house",
+    "seniors_housing",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 12.0
+   },
+   "conditionText": "R4 High Density Residential: boarding houses, multi-dwelling housing, residential flat building, seniors housing on land with height limit greater than 12 m: 1st to 3rd storey (up to 10m)",
+   "side": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     24451
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24451
+   ],
+   "evidence": [
+    {
+     "id": 24451,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "On land with 1st to 3rd 4.5m",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R4 High Density Residential: boarding houses, multi-dwelling housing, residential flat building, seniors housing on land with height limit greater than 12 m: 1st to 3rd storey (up to 10m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "On land with 1st to 3rd 4.5m",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-013",
+   "zones": [
+    "R4"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "boarding_house",
+    "seniors_housing",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 12.0
+   },
+   "conditionText": "R4 High Density Residential: boarding houses, multi-dwelling housing, residential flat building, seniors housing on land with height limit greater than 12 m: above 3rd storey",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     24452
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24452
+   ],
+   "evidence": [
+    {
+     "id": 24452,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Above 3rd 6m",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R4 High Density Residential: boarding houses, multi-dwelling housing, residential flat building, seniors housing on land with height limit greater than 12 m: above 3rd storey",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "Above 3rd 6m",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-014",
+   "zones": [
+    "R4"
+   ],
+   "appliesTo": [
+    "secondary_dwelling",
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "height_plane"
+    ]
+   },
+   "conditionText": "R4 High Density Residential: attached dwellings, dual occupancies, dwelling houses, group homes, secondary dwellings, semi-detached dwellings (plus 45 degree building height plane from 3.5 m)",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     24449
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24449
+   ],
+   "evidence": [
+    {
+     "id": 24449,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R4 High Density Attached dwellings; Dual 1.5m; and",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "R4 High Density Residential: attached dwellings, dual occupancies, dwelling houses, group homes, secondary dwellings, semi-detached dwellings (plus 45 degree building height plane from 3.5 m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
+   "quote": "R4 High Density Attached dwellings; Dual 1.5m; and",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-015",
+   "zones": [
+    "C4"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "C4 Environmental Living: 2nd storey (up to 7m)",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     24442
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24442
+   ],
+   "evidence": [
+    {
+     "id": 24442,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "2nd storey (up to 7m) 1.5m",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 5,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "C4 Environmental Living: 2nd storey (up to 7m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "2nd storey (up to 7m) 1.5m",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 5,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-016",
+   "zones": [
+    "C4"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "C4 Environmental Living: 3rd storey or higher (greater than 7m)",
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     24445
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24445
+   ],
+   "evidence": [
+    {
+     "id": 24445,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3rd storey or higher (greater 2.5m",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 5,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "C4 Environmental Living: 3rd storey or higher (greater than 7m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "3rd storey or higher (greater 2.5m",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 5,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-017",
+   "zones": [
+    "C4"
+   ],
+   "appliesTo": [
+    "seniors_housing",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "C4 Environmental Living (dwelling houses, group homes, seniors housing): 1st storey (up to 4m)",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     24439
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24439
+   ],
+   "evidence": [
+    {
+     "id": 24439,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "C4 Dwelling houses; Group homes; 1st storey (up to 4m) 900mm",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 5,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "C4 Environmental Living (dwelling houses, group homes, seniors housing): 1st storey (up to 4m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "C4 Dwelling houses; Group homes; 1st storey (up to 4m) 900mm",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 5,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-018",
+   "zones": [
+    "E3"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 4
+   },
+   "conditionText": "E3 Productivity Support: residential types, 0 m side setback up to 4 storeys where no window openings on that elevation",
+   "side": {
+    "minM": 0.0,
+    "basis": "fixed",
+    "sources": [
+     24456
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24456
+   ],
+   "evidence": [
+    {
+     "id": 24456,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "0m, up to 4 storeys but only where no",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "E3 Productivity Support: residential types, 0 m side setback up to 4 storeys where no window openings on that elevation",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "0m, up to 4 storeys but only where no",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Front setback generally",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Match alignment of primary facades of adjoining buildings; where different, use the average of those setbacks",
+    "sources": [
+     24461
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24461
+   ],
+   "evidence": [
+    {
+     "id": 24461,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "The front setback must match the alignment of the primary facades of buildings on",
+     "clause": "Part E s1.3.5 P1",
+     "page": 5,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "Front setback generally",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The front setback must match the alignment of the primary facades of buildings on",
+   "clause": "Part E s1.3.5 P1",
+   "page": 5,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Rear building setback in other zones",
+   "rear": {
+    "minM": null,
+    "basis": "text",
+    "note": "Match adjoining properties, or the setbacks in the relevant Part F Planning Area / Locality provisions; no numeric minimum",
+    "sources": [
+     24460
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    24460
+   ],
+   "evidence": [
+    {
+     "id": 24460,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Provide rear building setbacks that match those on adjoining properties",
+     "clause": "Part E s1.3.5 P5",
+     "page": 7,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "Rear building setback in other zones",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "Provide rear building setbacks that match those on adjoining properties",
+   "clause": "Part E s1.3.5 P5",
+   "page": 7,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-021",
+   "zones": [
+    "E1"
+   ],
+   "appliesTo": [
+    "shop_top_housing",
+    "boarding_house",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 4
+   },
+   "conditionText": "E1 Local Centre: boarding houses and shop top housing, side wall with no side openings, up to 4 storeys",
+   "side": {
+    "minM": 0.0,
+    "basis": "fixed",
+    "sources": [
+     24453
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24453
+   ],
+   "evidence": [
+    {
+     "id": 24453,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "0m, up to 4 storeys, but only where no",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "E1 Local Centre: boarding houses and shop top housing, side wall with no side openings, up to 4 storeys",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "0m, up to 4 storeys, but only where no",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-022",
+   "zones": [
+    "E1"
+   ],
+   "appliesTo": [
+    "shop_top_housing",
+    "boarding_house",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "E1 Local Centre: boarding houses and shop top housing with side openings: 1st to 3rd storey (up to 7m)",
+   "side": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     24454
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24454
+   ],
+   "evidence": [
+    {
+     "id": 24454,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1st to 3rd storey (up to 7m) 4.5m",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "E1 Local Centre: boarding houses and shop top housing with side openings: 1st to 3rd storey (up to 7m)",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "1st to 3rd storey (up to 7m) 4.5m",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  },
+  {
+   "id": "north-sydney-council-023",
+   "zones": [
+    "E1"
+   ],
+   "appliesTo": [
+    "shop_top_housing",
+    "boarding_house",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "E1 Local Centre: boarding houses and shop top housing with side openings: above 3rd storey",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     24455
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24455
+   ],
+   "evidence": [
+    {
+     "id": 24455,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Above 3rd storey 6m",
+     "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+     "page": 6,
+     "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf",
+     "condition": "E1 Local Centre: boarding houses and shop top housing with side openings: above 3rd storey",
+     "edition": "North Sydney DCP 2025 (adopted 28/07/2025, in effect 22/09/2025)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "Above 3rd storey 6m",
+   "clause": "Part E s1.3.5 Table E-1.2 Side Setback Requirements",
+   "page": 6,
+   "source_file": "DCP/nsdcp-2025-part-e-section-1-residential.pdf"
+  }
+ ],
+ "gaps": [
+  "R2: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 24389",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): flood: no flood planning level or freeboard in the DCP parts read beyond the Performance Guide 2005 note (300 mm above 1% AEP flood level) | Part F area character outcomes (6 MB file) and Part F planning area sections skimmed only for lot size and frontage values; precinct-specific setbacks and heights not extracted | Superseded NSDCP 2013 and the 2025 consolidated amended file not extracted separately (same values as the Part files read)"
+ ],
+ "notes": "Built from 24 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R2": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  },
+  "R3": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 4
+  },
+  "R4": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 7
+  },
+  "C4": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  },
+  "E3": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "E1": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 24,
+  "rules": 23,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 9
+ }
+}

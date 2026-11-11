@@ -1,0 +1,781 @@
+{
+ "lga_slug": "orange-city-council",
+ "council": "Orange City Council",
+ "lgaNames": [
+  "ORANGE",
+  "ORANGE CITY",
+  "ORANGE CITY COUNCIL"
+ ],
+ "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+ "lep": "Orange Local Environmental Plan 2000 (as cited by the DCP); not reproduced",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "orange-city-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Ploughmans Valley DCP area",
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Ploughmans Valley DCP area: from centreline of Northern Distributor Road",
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     25112
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25112
+   ],
+   "evidence": [
+    {
+     "id": 25112,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "A 50m setback applies from the centreline of the Northern Distributor Road.",
+     "clause": "PO 7.7-4 guideline n",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Ploughmans Valley DCP area: from centreline of Northern Distributor Road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A 50m setback applies from the centreline of the Northern Distributor Road.",
+   "clause": "PO 7.7-4 guideline n",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  },
+  {
+   "id": "orange-city-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Ploughmans Valley DCP area",
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "Ploughmans Valley DCP area: lots along Ploughmans Lane",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     25111
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25111
+   ],
+   "evidence": [
+    {
+     "id": 25111,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A 8m setback applies from the street frontage for lots along Ploughmans Lane.",
+     "clause": "PO 7.7-4 guideline o",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Ploughmans Valley DCP area: lots along Ploughmans Lane",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A 8m setback applies from the street frontage for lots along Ploughmans Lane.",
+   "clause": "PO 7.7-4 guideline o",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  },
+  {
+   "id": "orange-city-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Ploughmans Valley DCP area",
+    "qualifiers": [
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Ploughmans Valley DCP area: local service roads (22 m road reserve)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     25109
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25109
+   ],
+   "evidence": [
+    {
+     "id": 25109,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A 6m setback applies to local service roads in Ploughmans Valley.",
+     "clause": "PO 7.7-4 guideline l",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Ploughmans Valley DCP area: local service roads (22 m road reserve)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "A 6m setback applies to local service roads in Ploughmans Valley.",
+   "clause": "PO 7.7-4 guideline l",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  },
+  {
+   "id": "orange-city-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Ploughmans Valley DCP area"
+   },
+   "conditionText": "Ploughmans Valley DCP area: lots along Forbes Road and Cargo Road",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     25110
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25110
+   ],
+   "evidence": [
+    {
+     "id": 25110,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A 15m setback applies from the street frontage for lots along Forbes Road and Cargo Road.",
+     "clause": "PO 7.7-4 guideline m",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Ploughmans Valley DCP area: lots along Forbes Road and Cargo Road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A 15m setback applies from the street frontage for lots along Forbes Road and Cargo Road.",
+   "clause": "PO 7.7-4 guideline m",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  },
+  {
+   "id": "orange-city-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Main or defined arterial roads (front)",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     25105
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25105
+   ],
+   "evidence": [
+    {
+     "id": 25105,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "A 9-metre front setback applies from the street frontage for main or defined arterial roads.",
+     "clause": "PO 7.7-4 guideline e",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Main or defined arterial roads (front)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A 9-metre front setback applies from the street frontage for main or defined arterial roads.",
+   "clause": "PO 7.7-4 guideline e",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  },
+  {
+   "id": "orange-city-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Established areas (infill)",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Up to the front building line of the residential part of a building on adjoining (but not adjacent) land",
+    "sources": [
+     25103
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25103
+   ],
+   "evidence": [
+    {
+     "id": 25103,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "the setback shall be up to the front building line of the residential part of a",
+     "clause": "PO 7.7-4 guideline c",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Established areas (infill)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the setback shall be up to the front building line of the residential part of a",
+   "clause": "PO 7.7-4 guideline c",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  },
+  {
+   "id": "orange-city-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Behind building line, or at least this distance whichever greater",
+    "Corner allotments (additional secondary setback)",
+    "Wall setback from side boundary (minimum) within 45 degree envelope"
+   ],
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     25104
+    ]
+   },
+   "garage": {
+    "minM": 5.5,
+    "note": "1.5 m behind building line or at least 5.5 m, whichever is greater",
+    "sources": [
+     25107
+    ],
+    "basis": "greater_of"
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     25113
+    ]
+   },
+   "front": null,
+   "rear": null,
+   "sources": [
+    25104,
+    25107,
+    25113
+   ],
+   "evidence": [
+    {
+     "id": 25104,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "a 2m secondary setback applies to corner",
+     "clause": "PO 7.7-4 guideline d",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Corner allotments (additional secondary setback)",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 25107,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages shall be setback 1.5m behind the building line as established above, or at least 5.5m which",
+     "clause": "PO 7.7-4 guideline g",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Behind building line, or at least this distance whichever greater",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 25113,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "There is a side boundary setback of at least 900mm minimum for walls in accordance with the above",
+     "clause": "PO 7.7-7 guideline a",
+     "page": 27,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Wall setback from side boundary (minimum) within 45 degree envelope",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a 2m secondary setback applies to corner",
+   "clause": "PO 7.7-4 guideline d",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  },
+  {
+   "id": "orange-city-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Shiralee DCP area",
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "Shiralee DCP area: large lots, rear lane setback",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25118
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25118
+   ],
+   "evidence": [
+    {
+     "id": 25118,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear lane setbacks 3.0m",
+     "clause": "5.1 Setbacks, large lot table",
+     "page": 33,
+     "source_file": "DCP/Shiralee-DCP-2015.pdf",
+     "condition": "Shiralee DCP area: large lots, rear lane setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Rear lane setbacks 3.0m",
+   "clause": "5.1 Setbacks, large lot table",
+   "page": 33,
+   "source_file": "DCP/Shiralee-DCP-2015.pdf"
+  },
+  {
+   "id": "orange-city-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Shiralee DCP area"
+   },
+   "conditionText": [
+    "Shiralee DCP area: large lots, primary front setback",
+    "Shiralee DCP area: large lots, rear and side setback",
+    "Shiralee DCP area: large lots, secondary frontage setback"
+   ],
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     25114
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25115
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     25117
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25114,
+    25115,
+    25117
+   ],
+   "evidence": [
+    {
+     "id": 25114,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Primary Front Setback 8.0m",
+     "clause": "5.1 Setbacks, large lot table",
+     "page": 33,
+     "source_file": "DCP/Shiralee-DCP-2015.pdf",
+     "condition": "Shiralee DCP area: large lots, primary front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 25115,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary 3.0m",
+     "clause": "5.1 Setbacks, large lot table",
+     "page": 33,
+     "source_file": "DCP/Shiralee-DCP-2015.pdf",
+     "condition": "Shiralee DCP area: large lots, secondary frontage setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 25117,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Rear and side setback 1.5m",
+     "clause": "5.1 Setbacks, large lot table",
+     "page": 33,
+     "source_file": "DCP/Shiralee-DCP-2015.pdf",
+     "condition": "Shiralee DCP area: large lots, rear and side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Primary Front Setback 8.0m",
+   "clause": "5.1 Setbacks, large lot table",
+   "page": 33,
+   "source_file": "DCP/Shiralee-DCP-2015.pdf"
+  },
+  {
+   "id": "orange-city-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "classified_road"
+    ]
+   },
+   "conditionText": "Dwellings with rear or side boundary adjoining a distributor road",
+   "rear": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     25106
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25106
+   ],
+   "evidence": [
+    {
+     "id": 25106,
+     "parameter": "setback_classified_road",
+     "slot": "rear",
+     "quote": "A 15-metre setback applies for dwellings with a rear or side boundary adjoining a distributor road.",
+     "clause": "PO 7.7-4 guideline f",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Dwellings with rear or side boundary adjoining a distributor road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "A 15-metre setback applies for dwellings with a rear or side boundary adjoining a distributor road.",
+   "clause": "PO 7.7-4 guideline f",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  },
+  {
+   "id": "orange-city-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "New residential areas",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     25102
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25102
+   ],
+   "evidence": [
+    {
+     "id": 25102,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "recent years) a 4.5m setback applies or as otherwise defined for specific roads.",
+     "clause": "PO 7.7-4 guideline b",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "New residential areas",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "recent years) a 4.5m setback applies or as otherwise defined for specific roads.",
+   "clause": "PO 7.7-4 guideline b",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  },
+  {
+   "id": "orange-city-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "precinct": "Shiralee DCP area"
+   },
+   "conditionText": "Shiralee DCP area: large lots, garage or carport setback",
+   "garage": {
+    "minM": 10.0,
+    "sources": [
+     25116
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    25116
+   ],
+   "evidence": [
+    {
+     "id": 25116,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garage / Carport 10.0m",
+     "clause": "5.1 Setbacks, large lot table",
+     "page": 33,
+     "source_file": "DCP/Shiralee-DCP-2015.pdf",
+     "condition": "Shiralee DCP area: large lots, garage or carport setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Garage / Carport 10.0m",
+   "clause": "5.1 Setbacks, large lot table",
+   "page": 33,
+   "source_file": "DCP/Shiralee-DCP-2015.pdf"
+  },
+  {
+   "id": "orange-city-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Garage projection in front of main facade (maximum)",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 3.0,
+    "sources": [
+     25087
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    25087
+   ],
+   "evidence": [
+    {
+     "id": 25087,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "project up to 3m (half the normal depth of a garage) in",
+     "clause": "PO 7.7-4 guideline h",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Garage projection in front of main facade (maximum)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "project up to 3m (half the normal depth of a garage) in",
+   "clause": "PO 7.7-4 guideline h",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  },
+  {
+   "id": "orange-city-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "storeysMin": 3
+   },
+   "conditionText": "Three or more garages (openings)",
+   "garage": {
+    "minM": 8.0,
+    "sources": [
+     25108
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    25108
+   ],
+   "evidence": [
+    {
+     "id": 25108,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "For three or more garages, the garage openings must be set back at least 8m from the front building",
+     "clause": "PO 7.7-4 guideline j",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Three or more garages (openings)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "For three or more garages, the garage openings must be set back at least 8m from the front building",
+   "clause": "PO 7.7-4 guideline j",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+  }
+ ],
+ "gaps": [
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): roads: road_hierarchy per-class design speeds, intersection spacing, kerb return radii (Code defers to Austroads and TfNSW; Shiralee DCP radii not extracted) | earthworks: fill/cut exemption depths (DCP exempt-development criteria in Appendices not extracted) | dev_controls: flood Annexure 3 matrix mapping land use and flood zone to response level (column layout lost, not recorded); height_max and fsr_max set by LEP; Shiralee DCP two-column text jumbled so only large-lot setback and lot tables recorded | Standard drawings file Adopted-2024-Subdivision-and-Development-Code-Drawings-April-2024 not mined; Redmond Place Precinct DCP, West End Precinct DCP, Phillip Street DCP, Eastside Precinct D"
+ ],
+ "notes": "Built from 18 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 14
+  }
+ },
+ "precincts": [
+  "Ploughmans Valley DCP area",
+  "Shiralee DCP area"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 18,
+  "rules": 14,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

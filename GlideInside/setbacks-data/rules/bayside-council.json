@@ -1,0 +1,649 @@
+{
+ "lga_slug": "bayside-council",
+ "council": "Bayside Council",
+ "lgaNames": [
+  "BAYSIDE",
+  "BAYSIDE COUNCIL"
+ ],
+ "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+ "lep": "Bayside Local Environmental Plan 2021",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "bayside-council-001",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Low density residential (dwellings, dual occupancy, semi-detached): side boundary, ground floor",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     2753
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    2753
+   ],
+   "evidence": [
+    {
+     "id": 2753,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "is 0.9m (ground floor) and 1.5m (first storey",
+     "clause": "5.2.1 Setbacks C6",
+     "page": 200,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Low density residential (dwellings, dual occupancy, semi-detached): side boundary, ground floor",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "is 0.9m (ground floor) and 1.5m (first storey",
+   "clause": "5.2.1 Setbacks C6",
+   "page": 200,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  },
+  {
+   "id": "bayside-council-002",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Low density residential (dwellings, dual occupancy, semi-detached): side boundary, first storey and above",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     2754
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    2754
+   ],
+   "evidence": [
+    {
+     "id": 2754,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "is 0.9m (ground floor) and 1.5m (first storey",
+     "clause": "5.2.1 Setbacks C6",
+     "page": 200,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Low density residential (dwellings, dual occupancy, semi-detached): side boundary, first storey and above",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone code inferred from the zone name printed in the record; CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "is 0.9m (ground floor) and 1.5m (first storey",
+   "clause": "5.2.1 Setbacks C6",
+   "page": 200,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  },
+  {
+   "id": "bayside-council-003",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Low density residential (dwellings, dual occupancy, semi-detached): primary road, where no average of adjoining dwellings applies",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     2748
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    2748
+   ],
+   "evidence": [
+    {
+     "id": 2748,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "otherwise, 6m.",
+     "clause": "5.2.1 Setbacks C1",
+     "page": 200,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Low density residential (dwellings, dual occupancy, semi-detached): primary road, where no average of adjoining dwellings applies",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value; Zone code inferred from the zone name printed in the record; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "otherwise, 6m.",
+   "clause": "5.2.1 Setbacks C1",
+   "page": 200,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  },
+  {
+   "id": "bayside-council-004",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "habitable",
+     "laneway"
+    ]
+   },
+   "conditionText": "Low density residential (dwellings, dual occupancy, semi-detached): rear lane, habitable",
+   "rear": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     2750
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    2750
+   ],
+   "evidence": [
+    {
+     "id": 2750,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "a. where habitable: 1.5m",
+     "clause": "5.2.1 Setbacks C3",
+     "page": 200,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Low density residential (dwellings, dual occupancy, semi-detached): rear lane, habitable",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "a. where habitable: 1.5m",
+   "clause": "5.2.1 Setbacks C3",
+   "page": 200,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  },
+  {
+   "id": "bayside-council-005",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "laneway",
+     "non_habitable"
+    ]
+   },
+   "conditionText": "Low density residential (dwellings, dual occupancy, semi-detached): rear lane, non-habitable",
+   "rear": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     2751
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    2751
+   ],
+   "evidence": [
+    {
+     "id": 2751,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "b. where non-habitable: 1m",
+     "clause": "5.2.1 Setbacks C3",
+     "page": 200,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Low density residential (dwellings, dual occupancy, semi-detached): rear lane, non-habitable",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "b. where non-habitable: 1m",
+   "clause": "5.2.1 Setbacks C3",
+   "page": 200,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  },
+  {
+   "id": "bayside-council-006",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Low density residential (dwellings, dual occupancy, semi-detached): rear boundary",
+    "Low density residential (dwellings, dual occupancy, semi-detached): secondary road"
+   ],
+   "secondaryFront": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     2749
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     2752
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    2749,
+    2752
+   ],
+   "evidence": [
+    {
+     "id": 2749,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "road is 1.5m",
+     "clause": "5.2.1 Setbacks C2",
+     "page": 200,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Low density residential (dwellings, dual occupancy, semi-detached): secondary road",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    },
+    {
+     "id": 2752,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "is 5m.",
+     "clause": "5.2.1 Setbacks C5",
+     "page": 200,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Low density residential (dwellings, dual occupancy, semi-detached): rear boundary",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "road is 1.5m",
+   "clause": "5.2.1 Setbacks C2",
+   "page": 200,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  },
+  {
+   "id": "bayside-council-007",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": [
+    "Medium density residential (attached dwellings, multi-dwelling housing): rear boundary, ground storey",
+    "Medium density residential (attached dwellings, multi-dwelling housing): side boundary, front two-thirds of site, ground floor"
+   ],
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     2763
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     2760
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    2760,
+    2763
+   ],
+   "evidence": [
+    {
+     "id": 2763,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "a. For a ground storey: 4m",
+     "clause": "5.2.3 Setbacks C5",
+     "page": 210,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Medium density residential (attached dwellings, multi-dwelling housing): rear boundary, ground storey",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    },
+    {
+     "id": 2760,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a. 0.9m (ground floor) and 1.5m first",
+     "clause": "5.2.3 Setbacks C4",
+     "page": 210,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Medium density residential (attached dwellings, multi-dwelling housing): side boundary, front two-thirds of site, ground floor",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "a. For a ground storey: 4m",
+   "clause": "5.2.3 Setbacks C5",
+   "page": 210,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  },
+  {
+   "id": "bayside-council-008",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Medium density residential (attached dwellings, multi-dwelling housing): rear boundary, above ground storey",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     2764
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    2764
+   ],
+   "evidence": [
+    {
+     "id": 2764,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "b. For above the ground storey: 6m",
+     "clause": "5.2.3 Setbacks C5",
+     "page": 211,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Medium density residential (attached dwellings, multi-dwelling housing): rear boundary, above ground storey",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone code inferred from the zone name printed in the record; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "b. For above the ground storey: 6m",
+   "clause": "5.2.3 Setbacks C5",
+   "page": 211,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  },
+  {
+   "id": "bayside-council-009",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "Medium density residential (attached dwellings, multi-dwelling housing): side boundary, front two-thirds of site, first floor and above",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     2761
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    2761
+   ],
+   "evidence": [
+    {
+     "id": 2761,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a. 0.9m (ground floor) and 1.5m first",
+     "clause": "5.2.3 Setbacks C4",
+     "page": 210,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Medium density residential (attached dwellings, multi-dwelling housing): side boundary, front two-thirds of site, first floor and above",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "a. 0.9m (ground floor) and 1.5m first",
+   "clause": "5.2.3 Setbacks C4",
+   "page": 210,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  },
+  {
+   "id": "bayside-council-010",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Medium density residential (attached dwellings, multi-dwelling housing): road, where no predominant existing setback",
+    "Medium density residential (attached dwellings, multi-dwelling housing): secondary road",
+    "Medium density residential (attached dwellings, multi-dwelling housing): side boundary, rear third of site"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     2758
+    ]
+   },
+   "secondaryFront": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     2759
+    ]
+   },
+   "side": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     2762
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    2758,
+    2759,
+    2762
+   ],
+   "evidence": [
+    {
+     "id": 2758,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "existing setback: 6m",
+     "clause": "5.2.3 Setbacks C1",
+     "page": 210,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Medium density residential (attached dwellings, multi-dwelling housing): road, where no predominant existing setback",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    },
+    {
+     "id": 2759,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "road is 1.5m.",
+     "clause": "5.2.3 Setbacks C3",
+     "page": 210,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Medium density residential (attached dwellings, multi-dwelling housing): secondary road",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    },
+    {
+     "id": 2762,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "b. For the rear third of the site: 4m",
+     "clause": "5.2.3 Setbacks C4",
+     "page": 210,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Medium density residential (attached dwellings, multi-dwelling housing): side boundary, rear third of site",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "existing setback: 6m",
+   "clause": "5.2.3 Setbacks C1",
+   "page": 210,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  },
+  {
+   "id": "bayside-council-011",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Medium density residential (attached dwellings, multi-dwelling housing): garages fronting the street: minimum from front boundary",
+   "garage": {
+    "minM": 6.0,
+    "sources": [
+     2765
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    2765
+   ],
+   "evidence": [
+    {
+     "id": 2765,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "6m from the front boundary if the garage",
+     "clause": "5.2.3 Setbacks C9",
+     "page": 211,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Medium density residential (attached dwellings, multi-dwelling housing): garages fronting the street: minimum from front boundary",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "6m from the front boundary if the garage",
+   "clause": "5.2.3 Setbacks C9",
+   "page": 211,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+  }
+ ],
+ "gaps": [
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP 2022 Chapter 7 location-specific precinct controls, Appendices.txt and Waste-management and Landscape specifications not extracted | DCP 2022 parking rates: only main residential, commercial, industrial, tourist and recreation rows recorded; remaining rows not recorded | Legacy Rockdale 2011 and Botany Bay 2013 DCPs not extracted (superseded)"
+ ],
+ "notes": "Built from 15 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 6
+  },
+  "R3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 5
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 15,
+  "rules": 11,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 2
+ }
+}

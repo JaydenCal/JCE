@@ -1,0 +1,582 @@
+{
+ "lga_slug": "lockhart-shire-council",
+ "council": "Lockhart Shire Council",
+ "lgaNames": [
+  "LOCKHART",
+  "LOCKHART SHIRE",
+  "LOCKHART SHIRE COUNCIL"
+ ],
+ "dcp": "Lockhart Shire Development Control Plan 2016, saved edition adopted July 2018 as amended (96 pages)",
+ "lep": "Lockhart Local Environmental Plan 2012 (flood planning level cl 6.1; lot sizes set by LEP, maps not reproduced)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "lockhart-shire-council-001",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Large Lot Residential: dwellings, minimum from front boundary",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     21393
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    21393
+   ],
+   "evidence": [
+    {
+     "id": 21393,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Dwellings are to be setback a minimum of 20 metres from the front boundary.",
+     "clause": "LLR 2.1",
+     "page": 63,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Large Lot Residential: dwellings, minimum from front boundary",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "Dwellings are to be setback a minimum of 20 metres from the front boundary.",
+   "clause": "LLR 2.1",
+   "page": 63,
+   "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf"
+  },
+  {
+   "id": "lockhart-shire-council-002",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "garage",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Large Lot Residential: dwellings, garages and carports, minimum from the buffer zone on rear boundaries",
+    "Large Lot Residential: dwellings, garages and carports, minimum from the buffer zone on side boundaries"
+   ],
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     21395
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     21394
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    21394,
+    21395
+   ],
+   "evidence": [
+    {
+     "id": 21395,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "setback a minimum 3 metres from the buffer zone for side and rear boundaries",
+     "clause": "LLR 2.2",
+     "page": 63,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Large Lot Residential: dwellings, garages and carports, minimum from the buffer zone on rear boundaries",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    },
+    {
+     "id": 21394,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "setback a minimum 3 metres from the buffer zone for side and rear boundaries",
+     "clause": "LLR 2.2",
+     "page": 63,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Large Lot Residential: dwellings, garages and carports, minimum from the buffer zone on side boundaries",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "setback a minimum 3 metres from the buffer zone for side and rear boundaries",
+   "clause": "LLR 2.2",
+   "page": 63,
+   "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf"
+  },
+  {
+   "id": "lockhart-shire-council-003",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 450.0,
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "Residential and Village (RU5): where two dwellings are not within 40 m, lot area at least 450 m2 but less than 900 m2 (garage 1 m behind dwelling front)",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     21400
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    21400
+   ],
+   "evidence": [
+    {
+     "id": 21400,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A front setback of 4.5 metres applies, if the lot has an area of at least 450m²",
+     "clause": "RV 2.1",
+     "page": 71,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Residential and Village (RU5): where two dwellings are not within 40 m, lot area at least 450 m2 but less than 900 m2 (garage 1 m behind dwelling front)",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "A front setback of 4.5 metres applies, if the lot has an area of at least 450m²",
+   "clause": "RV 2.1",
+   "page": 71,
+   "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf"
+  },
+  {
+   "id": "lockhart-shire-council-004",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "outbuilding"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Residential and Village (RU5): clearance maintained from rear boundaries for outbuildings",
+    "Residential and Village (RU5): enclosed outbuildings from side boundaries (minimum)"
+   ],
+   "rear": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     21405
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     21404
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    21404,
+    21405
+   ],
+   "evidence": [
+    {
+     "id": 21405,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A clearance of 1 metre is to be maintained from rear boundaries.",
+     "clause": "RV 2.2",
+     "page": 71,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Residential and Village (RU5): clearance maintained from rear boundaries for outbuildings",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    },
+    {
+     "id": 21404,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "erected a minimum of 900mm from side boundaries",
+     "clause": "RV 2.2",
+     "page": 71,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Residential and Village (RU5): enclosed outbuildings from side boundaries (minimum)",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "A clearance of 1 metre is to be maintained from rear boundaries.",
+   "clause": "RV 2.2",
+   "page": 71,
+   "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf"
+  },
+  {
+   "id": "lockhart-shire-council-005",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 900.0,
+    "lotAreaMaxM2": 1500.0
+   },
+   "conditionText": "Residential and Village (RU5): where two dwellings are not within 40 m, lot area at least 900 m2 but less than 1500 m2",
+   "front": {
+    "minM": 6.5,
+    "basis": "fixed",
+    "sources": [
+     21401
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    21401
+   ],
+   "evidence": [
+    {
+     "id": 21401,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A front setback of 6.5 metres applies, if the lot has an area of at least 900m²",
+     "clause": "RV 2.1",
+     "page": 71,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Residential and Village (RU5): where two dwellings are not within 40 m, lot area at least 900 m2 but less than 1500 m2",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "A front setback of 6.5 metres applies, if the lot has an area of at least 900m²",
+   "clause": "RV 2.1",
+   "page": 71,
+   "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf"
+  },
+  {
+   "id": "lockhart-shire-council-006",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1500.0
+   },
+   "conditionText": "Residential and Village (RU5): where two dwellings are not within 40 m, lot area 1500 m2 or greater",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     21402
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    21402
+   ],
+   "evidence": [
+    {
+     "id": 21402,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A front setback of 10 metres, if the lot has an area of 1500m² or greater",
+     "clause": "RV 2.1",
+     "page": 71,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Residential and Village (RU5): where two dwellings are not within 40 m, lot area 1500 m2 or greater",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "A front setback of 10 metres, if the lot has an area of 1500m² or greater",
+   "clause": "RV 2.1",
+   "page": 71,
+   "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf"
+  },
+  {
+   "id": "lockhart-shire-council-007",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Residential and Village (RU5): new dwelling with frontage to primary road",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average of the setbacks of the nearest two dwelling houses on the same primary road within 40 m of the lot",
+    "sources": [
+     21399
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    21399
+   ],
+   "evidence": [
+    {
+     "id": 21399,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "The average distance of the setbacks of the nearest two dwelling houses",
+     "clause": "RV 2.1",
+     "page": 71,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Residential and Village (RU5): new dwelling with frontage to primary road",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The average distance of the setbacks of the nearest two dwelling houses",
+   "clause": "RV 2.1",
+   "page": 71,
+   "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf"
+  },
+  {
+   "id": "lockhart-shire-council-008",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Residential and Village (RU5): all buildings from side street (secondary street) boundaries",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     21403
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    21403
+   ],
+   "evidence": [
+    {
+     "id": 21403,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "All buildings will be set back 3 metres from side street (secondary street) boundaries",
+     "clause": "RV 2.2",
+     "page": 71,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Residential and Village (RU5): all buildings from side street (secondary street) boundaries",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "All buildings will be set back 3 metres from side street (secondary street) boundaries",
+   "clause": "RV 2.2",
+   "page": 71,
+   "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf"
+  },
+  {
+   "id": "lockhart-shire-council-009",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial Development: street setback, minimum from front boundary",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     21411
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    21411
+   ],
+   "evidence": [
+    {
+     "id": 21411,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Street setback must be a minimum of 5m from the front boundary",
+     "clause": "Industrial 3.1",
+     "page": 61,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Industrial Development: street setback, minimum from front boundary",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Street setback must be a minimum of 5m from the front boundary",
+   "clause": "Industrial 3.1",
+   "page": 61,
+   "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf"
+  },
+  {
+   "id": "lockhart-shire-council-010",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Rural dwelling houses: front setback",
+    "Rural dwelling houses: side setback"
+   ],
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     21414
+    ]
+   },
+   "side": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     21415
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    21414,
+    21415
+   ],
+   "evidence": [
+    {
+     "id": 21414,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Front setback of 50 metres Side setback of 50 metres",
+     "clause": "Rural 2.4.1",
+     "page": 76,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Rural dwelling houses: front setback",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    },
+    {
+     "id": 21415,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Front setback of 50 metres Side setback of 50 metres",
+     "clause": "Rural 2.4.1",
+     "page": 76,
+     "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf",
+     "condition": "Rural dwelling houses: side setback",
+     "edition": "Adopted July 2018, as amended (Lockhart Shire DCP 2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Front setback of 50 metres Side setback of 50 metres",
+   "clause": "Rural 2.4.1",
+   "page": 76,
+   "source_file": "DCP/Lockhart-DCP-ADOPTED-July-2018-As-amended.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "17 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 21417, 21418, 21419, 21420, 21421, 21422, 21423, 21424, 21425, 21426, 21427, 21428, 21429, 21430, 21431, 21432, 21433",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP lot size, minimum frontage, FSR and height controls are set by the LEP and not printed; parking rates not printed (only space dimensions referred to RTA guide) | DCP heritage, signage and commercial chapters not extracted (not engineering parameters)"
+ ],
+ "notes": "Built from 30 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 6
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU*": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 30,
+  "rules": 10,
+  "recordsNotModelled": 17,
+  "otherSetbackKeysNotModelled": 1
+ }
+}

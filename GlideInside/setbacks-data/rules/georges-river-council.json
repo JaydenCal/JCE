@@ -1,0 +1,1114 @@
+{
+ "lga_slug": "georges-river-council",
+ "council": "Georges River Council",
+ "lgaNames": [
+  "GEORGES RIVER",
+  "GEORGES RIVER COUNCIL"
+ ],
+ "dcp": "Georges River Development Control Plan 2021, Amendment No.6 (10/06/2024) Parts 1 to 10 and appendices; Kogarah DCP Part A and Hurstville DCP 1 Section 1 (introductions only) also saved",
+ "lep": "Georges River Local Environmental Plan 2021 (minimum lot size, height, FSR and landscaped area clause 6.12 referenced, not reproduced)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "georges-river-council-001",
+   "zones": [
+    "E4"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "front setback, all industrial development (E4 General Industrial)",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     13517
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13517
+   ],
+   "evidence": [
+    {
+     "id": 13517,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "A minimum front setback of 4.5 metres is required for all industrial development",
+     "clause": "9.2.3 Control 1",
+     "page": 4,
+     "source_file": "DCP/Amd-6-GRDCP-Part-9-Industrial-Development.pdf",
+     "condition": "front setback, all industrial development (E4 General Industrial)",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "A minimum front setback of 4.5 metres is required for all industrial development",
+   "clause": "9.2.3 Control 1",
+   "page": 4,
+   "source_file": "DCP/Amd-6-GRDCP-Part-9-Industrial-Development.pdf"
+  },
+  {
+   "id": "georges-river-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "battle-axe lot without street frontage: front setback",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     13482
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13482
+   ],
+   "evidence": [
+    {
+     "id": 13482,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a minimum setback of 4.0m is to be provided",
+     "clause": "6.1.2 Setbacks Control 7",
+     "page": 7,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "battle-axe lot without street frontage: front setback",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a minimum setback of 4.0m is to be provided",
+   "clause": "6.1.2 Setbacks Control 7",
+   "page": 7,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "dual occupancy: front wall or door of garage, carport or on-site parking space",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     13493
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    13493
+   ],
+   "evidence": [
+    {
+     "id": 13493,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5m to the front wall or door of the garage",
+     "clause": "6.1.3 Setbacks Control 1 ii",
+     "page": 18,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "dual occupancy: front wall or door of garage, carport or on-site parking space",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5m to the front wall or door of the garage",
+   "clause": "6.1.3 Setbacks Control 1 ii",
+   "page": 18,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "level": "upper",
+    "qualifiers": [
+     "waterfront"
+    ]
+   },
+   "conditionText": "dual occupancy: outside Foreshore Scenic Protection Area (ground and first floor)",
+   "side": {
+    "minM": 1.2,
+    "basis": "fixed",
+    "sources": [
+     13494
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13494
+   ],
+   "evidence": [
+    {
+     "id": 13494,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.2m for development outside the Foreshore Scenic Protection Area",
+     "clause": "6.1.3 Setbacks Control 2 i",
+     "page": 18,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "dual occupancy: outside Foreshore Scenic Protection Area (ground and first floor)",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.2m for development outside the Foreshore Scenic Protection Area",
+   "clause": "6.1.3 Setbacks Control 2 i",
+   "page": 18,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "dual occupancy: main building wall (ground and first floor)",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     13492
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13492
+   ],
+   "evidence": [
+    {
+     "id": 13492,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m to the main building wall / facade",
+     "clause": "6.1.3 Setbacks Control 1 i",
+     "page": 18,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "dual occupancy: main building wall (ground and first floor)",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5m to the main building wall / facade",
+   "clause": "6.1.3 Setbacks Control 1 i",
+   "page": 18,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "dual occupancy fronting primary street (battle-axe/rear lot arrangement): rear lot minimum rear setback",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     13496
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    13496
+   ],
+   "evidence": [
+    {
+     "id": 13496,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "The minimum rear setback for the rear lot is 6m.",
+     "clause": "6.1.3 Setbacks Control 5",
+     "page": 20,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "dual occupancy fronting primary street (battle-axe/rear lot arrangement): rear lot minimum rear setback",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The minimum rear setback for the rear lot is 6m.",
+   "clause": "6.1.3 Setbacks Control 5",
+   "page": 20,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "waterfront"
+    ]
+   },
+   "conditionText": "dual occupancy: Foreshore Scenic Protection Area",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     13495
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13495
+   ],
+   "evidence": [
+    {
+     "id": 13495,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5m for lots within the Foreshore Scenic Protection Area",
+     "clause": "6.1.3 Setbacks Control 2 ii",
+     "page": 18,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "dual occupancy: Foreshore Scenic Protection Area",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.5m for lots within the Foreshore Scenic Protection Area",
+   "clause": "6.1.3 Setbacks Control 2 ii",
+   "page": 18,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {},
+   "conditionText": "dual occupancy (side-by-side/corner arrangement): setback to a secondary street",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     13497
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13497
+   ],
+   "evidence": [
+    {
+     "id": 13497,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "The minimum setback (ground and first floor) to a secondary street is 3m.",
+     "clause": "6.1.3 Setbacks Control 9",
+     "page": 21,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "dual occupancy (side-by-side/corner arrangement): setback to a secondary street",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The minimum setback (ground and first floor) to a secondary street is 3m.",
+   "clause": "6.1.3 Setbacks Control 9",
+   "page": 21,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMaxM": 12.5
+   },
+   "conditionText": "single dwellings, lots up to 12.5 m wide at front building line",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     13479
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13479
+   ],
+   "evidence": [
+    {
+     "id": 13479,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "900mm for lots up to 12.5m in width",
+     "clause": "6.1.2 Setbacks Control 5 i",
+     "page": 7,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "single dwellings, lots up to 12.5 m wide at front building line",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "900mm for lots up to 12.5m in width",
+   "clause": "6.1.2 Setbacks Control 5 i",
+   "page": 7,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMaxM": 15.0
+   },
+   "conditionText": "single dwellings corner lots, site less than 15 m wide",
+   "secondaryFront": {
+    "minM": 1.2,
+    "basis": "fixed",
+    "sources": [
+     13476
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13476
+   ],
+   "evidence": [
+    {
+     "id": 13476,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "1.2m to the building line if the site is less than 15m in width",
+     "clause": "6.1.2 Setbacks Control 3 i",
+     "page": 6,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "single dwellings corner lots, site less than 15 m wide",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.2m to the building line if the site is less than 15m in width",
+   "clause": "6.1.2 Setbacks Control 3 i",
+   "page": 6,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 12.5
+   },
+   "conditionText": "single dwellings, lots greater than 12.5 m wide",
+   "side": {
+    "minM": 1.2,
+    "basis": "fixed",
+    "sources": [
+     13480
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13480
+   ],
+   "evidence": [
+    {
+     "id": 13480,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.2m for lots greater than 12.5m in width",
+     "clause": "6.1.2 Setbacks Control 5 ii",
+     "page": 7,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "single dwellings, lots greater than 12.5 m wide",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.2m for lots greater than 12.5m in width",
+   "clause": "6.1.2 Setbacks Control 5 ii",
+   "page": 7,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "waterfront"
+    ]
+   },
+   "conditionText": "single dwellings, all lots in Foreshore Scenic Protection Area",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     13481
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13481
+   ],
+   "evidence": [
+    {
+     "id": 13481,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5m for all lots within the Foreshore Scenic Protection Area",
+     "clause": "6.1.2 Setbacks Control 5 iii",
+     "page": 7,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "single dwellings, all lots in Foreshore Scenic Protection Area",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.5m for all lots within the Foreshore Scenic Protection Area",
+   "clause": "6.1.2 Setbacks Control 5 iii",
+   "page": 7,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "single dwellings corner lots, site 15 m or greater in width",
+    "single dwellings: 15% of average site length or 6 m, whichever greater",
+    "single dwellings: main building wall / facade"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     13474
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     13477
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     13478
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    13474,
+    13477,
+    13478
+   ],
+   "evidence": [
+    {
+     "id": 13474,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m to the main building wall / façade",
+     "clause": "6.1.2 Setbacks Control 1 i",
+     "page": 6,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "single dwellings: main building wall / facade",
+     "edition": "Amendment No.6, 10/06/2024"
+    },
+    {
+     "id": 13477,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "2.0m to the building line if the site is 15m or greater in width",
+     "clause": "6.1.2 Setbacks Control 3 ii",
+     "page": 6,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "single dwellings corner lots, site 15 m or greater in width",
+     "edition": "Amendment No.6, 10/06/2024"
+    },
+    {
+     "id": 13478,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "a minimum rear setback of 15% of the average site length, or 6m",
+     "clause": "6.1.2 Setbacks Control 4",
+     "page": 7,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "single dwellings: 15% of average site length or 6 m, whichever greater",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5m to the main building wall / façade",
+   "clause": "6.1.2 Setbacks Control 1 i",
+   "page": 6,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "garage or parking structure fronting rear lane: minimum setback from lane",
+   "garage": {
+    "minM": 1.0,
+    "sources": [
+     13483
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    13483
+   ],
+   "evidence": [
+    {
+     "id": 13483,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "still to provide a minimum setback of 1m from the lane",
+     "clause": "6.1.2 Setbacks Control 8",
+     "page": 7,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "garage or parking structure fronting rear lane: minimum setback from lane",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "still to provide a minimum setback of 1m from the lane",
+   "clause": "6.1.2 Setbacks Control 8",
+   "page": 7,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "single dwellings: front facade of garage or carport (or 1 m behind main wall, whichever greater)",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     13475
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    13475
+   ],
+   "evidence": [
+    {
+     "id": 13475,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5m to the front facade of a garage or carport",
+     "clause": "6.1.2 Setbacks Control 1 ii",
+     "page": 6,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "single dwellings: front facade of garage or carport (or 1 m behind main wall, whichever greater)",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5m to the front facade of a garage or carport",
+   "clause": "6.1.2 Setbacks Control 1 ii",
+   "page": 6,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "multi dwelling housing: front wall of garage, carport roof or onsite parking space",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     13501
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    13501
+   ],
+   "evidence": [
+    {
+     "id": 13501,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5m to the front wall of a garage, carport roof or onsite parking space.",
+     "clause": "6.2.4 Control 1 ii",
+     "page": 5,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf",
+     "condition": "multi dwelling housing: front wall of garage, carport roof or onsite parking space",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5m to the front wall of a garage, carport roof or onsite parking space.",
+   "clause": "6.2.4 Control 1 ii",
+   "page": 5,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf"
+  },
+  {
+   "id": "georges-river-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "multi dwelling housing, terraces and manor houses",
+    "multi dwelling housing, terraces and manor houses: main building facade",
+    "multi dwelling housing: secondary frontage to main building facade",
+    "multi dwelling housing: side boundary"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     13500
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     13502
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     13505
+    ]
+   },
+   "side": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     13503
+    ]
+   },
+   "garage": null,
+   "sources": [
+    13500,
+    13502,
+    13503,
+    13505
+   ],
+   "evidence": [
+    {
+     "id": 13500,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m to the main building facade; and",
+     "clause": "6.2.4 Control 1 i",
+     "page": 5,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf",
+     "condition": "multi dwelling housing, terraces and manor houses: main building facade",
+     "edition": "Amendment No.6, 10/06/2024"
+    },
+    {
+     "id": 13502,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Minimum setback to a secondary frontage is 4.5m to the main building facade",
+     "clause": "6.2.4 Control 2",
+     "page": 5,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf",
+     "condition": "multi dwelling housing: secondary frontage to main building facade",
+     "edition": "Amendment No.6, 10/06/2024"
+    },
+    {
+     "id": 13505,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "The minimum rear boundary setback is 6m to the main building facade",
+     "clause": "6.2.4 Control 5",
+     "page": 5,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf",
+     "condition": "multi dwelling housing, terraces and manor houses",
+     "edition": "Amendment No.6, 10/06/2024"
+    },
+    {
+     "id": 13503,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Minimum side boundary setback is 4m to the main building facade (multi dwelling",
+     "clause": "6.2.4 Control 3",
+     "page": 5,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf",
+     "condition": "multi dwelling housing: side boundary",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5m to the main building facade; and",
+   "clause": "6.2.4 Control 1 i",
+   "page": 5,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf"
+  },
+  {
+   "id": "georges-river-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "multi dwelling housing (terraces) and manor houses: side boundary",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     13504
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13504
+   ],
+   "evidence": [
+    {
+     "id": 13504,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Minimum side boundary setback is 1.5m to the main building facade (multi dwelling",
+     "clause": "6.2.4 Control 4",
+     "page": 5,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf",
+     "condition": "multi dwelling housing (terraces) and manor houses: side boundary",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "Minimum side boundary setback is 1.5m to the main building facade (multi dwelling",
+   "clause": "6.2.4 Control 4",
+   "page": 5,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf"
+  },
+  {
+   "id": "georges-river-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "outbuildings (garages, gyms, cabanas, sheds): minimum setback from boundaries",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     13516
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13516
+   ],
+   "evidence": [
+    {
+     "id": 13516,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "The minimum setbacks for garages, gyms, cabanas and sheds are 900mm from all",
+     "clause": "6.4.3 Control 7",
+     "page": 5,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-4-Ancillary-Development.pdf",
+     "condition": "outbuildings (garages, gyms, cabanas, sheds): minimum setback from boundaries",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The minimum setbacks for garages, gyms, cabanas and sheds are 900mm from all",
+   "clause": "6.4.3 Control 7",
+   "page": 5,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-4-Ancillary-Development.pdf"
+  },
+  {
+   "id": "georges-river-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "secondary_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "secondary dwelling: minimum setback to side and rear boundaries (nil to laneway)",
+   "side": {
+    "minM": 1.5,
+    "printed": "1500 mm",
+    "basis": "fixed",
+    "sources": [
+     13491
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13491
+   ],
+   "evidence": [
+    {
+     "id": 13491,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "The minimum setback to side and rear boundaries is 1500mm",
+     "clause": "6.1.2 Secondary Dwellings Control 6",
+     "page": 15,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "secondary dwelling: minimum setback to side and rear boundaries (nil to laneway)",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The minimum setback to side and rear boundaries is 1500mm",
+   "clause": "6.1.2 Secondary Dwellings Control 6",
+   "page": 15,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-021",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "secondary street setback, industrial development",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     13518
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13518
+   ],
+   "evidence": [
+    {
+     "id": 13518,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "A minimum secondary street setback of 3 metres is required for all industrial",
+     "clause": "9.2.3 Control 3",
+     "page": 5,
+     "source_file": "DCP/Amd-6-GRDCP-Part-9-Industrial-Development.pdf",
+     "condition": "secondary street setback, industrial development",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "A minimum secondary street setback of 3 metres is required for all industrial",
+   "clause": "9.2.3 Control 3",
+   "page": 5,
+   "source_file": "DCP/Amd-6-GRDCP-Part-9-Industrial-Development.pdf"
+  }
+ ],
+ "gaps": [
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Part 5 residential locality statements, Part 6.3 high density, Part 7 business precincts, Part 8 centres, Part 10 precincts, Part 4 land use and Appendices not mined (low engineering value or time)"
+ ],
+ "notes": "Built from 26 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "E4": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 19
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 26,
+  "rules": 21,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 5
+ }
+}

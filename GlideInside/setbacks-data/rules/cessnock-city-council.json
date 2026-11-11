@@ -1,0 +1,1000 @@
+{
+ "lga_slug": "cessnock-city-council",
+ "council": "Cessnock City Council",
+ "lgaNames": [
+  "CESSNOCK",
+  "CESSNOCK CITY",
+  "CESSNOCK CITY COUNCIL"
+ ],
+ "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+ "lep": "Cessnock Local Environmental Plan 2011",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "cessnock-city-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": [
+    "Huntlee traditional lots, second storey",
+    "Huntlee traditional lots, second storey and above"
+   ],
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     9623
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     9629
+    ]
+   },
+   "front": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9623,
+    9629
+   ],
+   "evidence": [
+    {
+     "id": 9623,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "2m second storey and above",
+     "clause": "Table 6",
+     "page": 69,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee traditional lots, second storey and above",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 9629,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5m – second storey",
+     "clause": "Table 6",
+     "page": 69,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee traditional lots, second storey",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2m second storey and above",
+   "clause": "Table 6",
+   "page": 69,
+   "source_file": "DCP/E-E17---Huntlee.txt"
+  },
+  {
+   "id": "cessnock-city-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotWidthMinM": 5.0,
+    "qualifiers": [
+     "new_release_area"
+    ]
+   },
+   "conditionText": "D2 new areas: Other Street (carriageway width over 5.0 m)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9612
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9612
+   ],
+   "evidence": [
+    {
+     "id": 9612,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Other Street (carriageway Width >5.0 6.0 metres metres)",
+     "clause": "Table 1 Street Setbacks in New Area",
+     "page": 7,
+     "source_file": "DCP/D-D2---Urban-Housing.txt",
+     "condition": "D2 new areas: Other Street (carriageway width over 5.0 m)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Other Street (carriageway Width >5.0 6.0 metres metres)",
+   "clause": "Table 1 Street Setbacks in New Area",
+   "page": 7,
+   "source_file": "DCP/D-D2---Urban-Housing.txt"
+  },
+  {
+   "id": "cessnock-city-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "new_release_area"
+    ]
+   },
+   "conditionText": "D2 new areas: Access Place and Access Street (carriageway 3.5 to 5.0 m)",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     9611
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9611
+   ],
+   "evidence": [
+    {
+     "id": 9611,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Access Place & Access Street 4.0 metres",
+     "clause": "Table 1 Street Setbacks in New Area",
+     "page": 7,
+     "source_file": "DCP/D-D2---Urban-Housing.txt",
+     "condition": "D2 new areas: Access Place and Access Street (carriageway 3.5 to 5.0 m)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Access Place & Access Street 4.0 metres",
+   "clause": "Table 1 Street Setbacks in New Area",
+   "page": 7,
+   "source_file": "DCP/D-D2---Urban-Housing.txt"
+  },
+  {
+   "id": "cessnock-city-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Huntlee traditional lots, single storey",
+   "secondaryFront": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     9622
+    ]
+   },
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     9628
+    ]
+   },
+   "front": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9622,
+    9628
+   ],
+   "evidence": [
+    {
+     "id": 9622,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Corner Lot Secondary Street Setback 1m single storey",
+     "clause": "Table 6",
+     "page": 69,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee traditional lots, single storey",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 9628,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback (min) 1m – single storey",
+     "clause": "Table 6",
+     "page": 69,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee traditional lots, single storey",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Corner Lot Secondary Street Setback 1m single storey",
+   "clause": "Table 6",
+   "page": 69,
+   "source_file": "DCP/E-E17---Huntlee.txt"
+  },
+  {
+   "id": "cessnock-city-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 3.0
+   },
+   "conditionText": "D2: walls up to 3.0 m high, side or rear boundary",
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     9624
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9624
+   ],
+   "evidence": [
+    {
+     "id": 9624,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "A minimum side or rear boundary setback of 1.0 metre shall be provided for walls up to 3.0 metres in height",
+     "clause": "2.4.4 Provisions 1",
+     "page": 12,
+     "source_file": "DCP/D-D2---Urban-Housing.txt",
+     "condition": "D2: walls up to 3.0 m high, side or rear boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A minimum side or rear boundary setback of 1.0 metre shall be provided for walls up to 3.0 metres in height",
+   "clause": "2.4.4 Provisions 1",
+   "page": 12,
+   "source_file": "DCP/D-D2---Urban-Housing.txt"
+  },
+  {
+   "id": "cessnock-city-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightOverM": 3.0
+   },
+   "conditionText": "D2: wall height over 3.0 m and under 7.2 m, additional setback per metre of height over 3.0 m",
+   "side": {
+    "minM": null,
+    "formula": "300 mm per m",
+    "basis": "text",
+    "sources": [
+     9625
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9625
+   ],
+   "evidence": [
+    {
+     "id": 9625,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "the minimum setback shall be 1.0 metres plus 300 mm for every metre of height over 3.0",
+     "clause": "2.4.4 Provisions 2",
+     "page": 12,
+     "source_file": "DCP/D-D2---Urban-Housing.txt",
+     "condition": "D2: wall height over 3.0 m and under 7.2 m, additional setback per metre of height over 3.0 m",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "the minimum setback shall be 1.0 metres plus 300 mm for every metre of height over 3.0",
+   "clause": "2.4.4 Provisions 2",
+   "page": 12,
+   "source_file": "DCP/D-D2---Urban-Housing.txt"
+  },
+  {
+   "id": "cessnock-city-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Huntlee cottage lot",
+    "Huntlee cottage lot, minimum side setback",
+    "Huntlee country lot secondary street",
+    "Huntlee small traditional lot"
+   ],
+   "front": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     9616
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     9621
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     9631,
+     9632
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     9630
+    ]
+   },
+   "garage": null,
+   "sources": [
+    9616,
+    9621,
+    9630,
+    9631,
+    9632
+   ],
+   "evidence": [
+    {
+     "id": 9616,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front Setback 3.5m",
+     "clause": "Table 4",
+     "page": 64,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee cottage lot",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 9621,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Corner Lot Secondary Street Setback (min) 3m",
+     "clause": "Table 8",
+     "page": 70,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee country lot secondary street",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 9631,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Setback (min) 3m (excludes detached garages and other ancillary",
+     "clause": "Table 4",
+     "page": 64,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee cottage lot",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 9632,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Setback (min) 3m (excludes detached garages and other ancillary",
+     "clause": "Table 5",
+     "page": 68,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee small traditional lot",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 9630,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "or a minimum of 900mm",
+     "clause": "Table 4",
+     "page": 64,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee cottage lot, minimum side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Front Setback 3.5m",
+   "clause": "Table 4",
+   "page": 64,
+   "source_file": "DCP/E-E17---Huntlee.txt"
+  },
+  {
+   "id": "cessnock-city-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Huntlee small traditional lot: building facade",
+    "Huntlee traditional lot: building facade"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     9617,
+     9618
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9617,
+    9618
+   ],
+   "evidence": [
+    {
+     "id": 9617,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front Setback (min) 4.5m (building façade)",
+     "clause": "Table 5",
+     "page": 68,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee small traditional lot: building facade",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 9618,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front Setback (min) 4.5m (building façade)",
+     "clause": "Table 6",
+     "page": 69,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee traditional lot: building facade",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Front Setback (min) 4.5m (building façade)",
+   "clause": "Table 5",
+   "page": 68,
+   "source_file": "DCP/E-E17---Huntlee.txt"
+  },
+  {
+   "id": "cessnock-city-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Huntlee country lot",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9620
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9620
+   ],
+   "evidence": [
+    {
+     "id": 9620,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front Setback (min) 6m",
+     "clause": "Table 8",
+     "page": 70,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee country lot",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Front Setback (min) 6m",
+   "clause": "Table 8",
+   "page": 70,
+   "source_file": "DCP/E-E17---Huntlee.txt"
+  },
+  {
+   "id": "cessnock-city-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Huntlee traditional lot",
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     9633
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    9633
+   ],
+   "evidence": [
+    {
+     "id": 9633,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Setback (min) 4m (excludes detached garages and other ancillary",
+     "clause": "Table 6",
+     "page": 69,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee traditional lot",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "Rear Setback (min) 4m (excludes detached garages and other ancillary",
+   "clause": "Table 6",
+   "page": 69,
+   "source_file": "DCP/E-E17---Huntlee.txt"
+  },
+  {
+   "id": "cessnock-city-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeysMax": 2
+   },
+   "conditionText": "Dual occupancy and urban housing up to two storeys, main frontage",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9613
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9613
+   ],
+   "evidence": [
+    {
+     "id": 9613,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Street Setbacks 6.0 metres to main 6.0 metres to main 9.0 metres",
+     "clause": "Table 2 Yield Table",
+     "page": 28,
+     "source_file": "DCP/D-D2---Urban-Housing.txt",
+     "condition": "Dual occupancy and urban housing up to two storeys, main frontage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Street Setbacks 6.0 metres to main 6.0 metres to main 9.0 metres",
+   "clause": "Table 2 Yield Table",
+   "page": 28,
+   "source_file": "DCP/D-D2---Urban-Housing.txt"
+  },
+  {
+   "id": "cessnock-city-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Corner allotment secondary frontage (dual occupancy and urban housing)",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     9615
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9615
+   ],
+   "evidence": [
+    {
+     "id": 9615,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "if corner allotment 3.0 if corner allotment 3.0",
+     "clause": "Table 2 Yield Table",
+     "page": 28,
+     "source_file": "DCP/D-D2---Urban-Housing.txt",
+     "condition": "Corner allotment secondary frontage (dual occupancy and urban housing)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "if corner allotment 3.0 if corner allotment 3.0",
+   "clause": "Table 2 Yield Table",
+   "page": 28,
+   "source_file": "DCP/D-D2---Urban-Housing.txt"
+  },
+  {
+   "id": "cessnock-city-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Huntlee small traditional lot: garage",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     9619
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    9619
+   ],
+   "evidence": [
+    {
+     "id": 9619,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5m (garage)",
+     "clause": "Table 5",
+     "page": 68,
+     "source_file": "DCP/E-E17---Huntlee.txt",
+     "condition": "Huntlee small traditional lot: garage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5m (garage)",
+   "clause": "Table 5",
+   "page": 68,
+   "source_file": "DCP/E-E17---Huntlee.txt"
+  },
+  {
+   "id": "cessnock-city-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeysMax": 2
+   },
+   "conditionText": "Urban housing up to two storeys (side and rear)",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     9626
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9626
+   ],
+   "evidence": [
+    {
+     "id": 9626,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side/Rear Setbacks 1.0 metres 3.0 metres 6.0 metres",
+     "clause": "Table 2 Yield Table",
+     "page": 28,
+     "source_file": "DCP/D-D2---Urban-Housing.txt",
+     "condition": "Urban housing up to two storeys (side and rear)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Side/Rear Setbacks 1.0 metres 3.0 metres 6.0 metres",
+   "clause": "Table 2 Yield Table",
+   "page": 28,
+   "source_file": "DCP/D-D2---Urban-Housing.txt"
+  },
+  {
+   "id": "cessnock-city-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeysMin": 3
+   },
+   "conditionText": [
+    "Urban housing with more than 2 storeys",
+    "Urban housing with more than 2 storeys (side and rear)"
+   ],
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     9614
+    ]
+   },
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9627
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9614,
+    9627
+   ],
+   "evidence": [
+    {
+     "id": 9614,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Street Setbacks 6.0 metres to main 6.0 metres to main 9.0 metres",
+     "clause": "Table 2 Yield Table",
+     "page": 28,
+     "source_file": "DCP/D-D2---Urban-Housing.txt",
+     "condition": "Urban housing with more than 2 storeys",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 9627,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side/Rear Setbacks 1.0 metres 3.0 metres 6.0 metres",
+     "clause": "Table 2 Yield Table",
+     "page": 28,
+     "source_file": "DCP/D-D2---Urban-Housing.txt",
+     "condition": "Urban housing with more than 2 storeys (side and rear)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Street Setbacks 6.0 metres to main 6.0 metres to main 9.0 metres",
+   "clause": "Table 2 Yield Table",
+   "page": 28,
+   "source_file": "DCP/D-D2---Urban-Housing.txt"
+  },
+  {
+   "id": "cessnock-city-council-016",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Industrial development: front landscaped setback depth",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9636
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9636
+   ],
+   "evidence": [
+    {
+     "id": 9636,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "the front setback area to a minimum depth of 6.0 metres;",
+     "clause": "3.2.1",
+     "page": 1,
+     "source_file": "DCP/D-D3---Industrial-Development.txt",
+     "condition": "Industrial development: front landscaped setback depth",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "the front setback area to a minimum depth of 6.0 metres;",
+   "clause": "3.2.1",
+   "page": 1,
+   "source_file": "DCP/D-D3---Industrial-Development.txt"
+  },
+  {
+   "id": "cessnock-city-council-017",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Schedule 4 areas: dwelling to road",
+    "Schedule 4 areas: dwelling to side boundaries"
+   ],
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     9634
+    ]
+   },
+   "side": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     9635
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9634,
+    9635
+   ],
+   "evidence": [
+    {
+     "id": 9634,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Minimum setback of dwelling houses from the road shall be 30 metres.",
+     "clause": "Schedule 4, Setbacks",
+     "page": 52,
+     "source_file": "DCP/D-D1---Subdivision-Guidelines.txt",
+     "condition": "Schedule 4 areas: dwelling to road",
+     "edition": "Version 1, adopted 15/05/2024, commenced 17/07/2024"
+    },
+    {
+     "id": 9635,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Minimum setback of dwelling houses from side boundaries shall be 20 metres.",
+     "clause": "Schedule 4, Setbacks",
+     "page": 52,
+     "source_file": "DCP/D-D1---Subdivision-Guidelines.txt",
+     "condition": "Schedule 4 areas: dwelling to side boundaries",
+     "edition": "Version 1, adopted 15/05/2024, commenced 17/07/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Minimum setback of dwelling houses from the road shall be 30 metres.",
+   "clause": "Schedule 4, Setbacks",
+   "page": 52,
+   "source_file": "DCP/D-D1---Subdivision-Guidelines.txt"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): earthworks: no general retaining wall height or setback rules outside Huntlee precinct; fill/cut exemptions not found | DCP precinct chapters E2 E3 E4 E6 E10 E11 E12 E15 E18 F3 F6 not mined for road tables (grep found no road reserve or carriageway tables; cross-sections are figures)"
+ ],
+ "notes": "Built from 26 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 15
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU*": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 26,
+  "rules": 17,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

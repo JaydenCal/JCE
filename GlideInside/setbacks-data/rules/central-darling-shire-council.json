@@ -1,0 +1,1199 @@
+{
+ "lga_slug": "central-darling-shire-council",
+ "council": "Central Darling Shire Council",
+ "lgaNames": [
+  "CENTRAL DARLING",
+  "CENTRAL DARLING SHIRE",
+  "CENTRAL DARLING SHIRE COUNCIL"
+ ],
+ "dcp": "Central Darling Development Control Plan 2024, July 2024 (commencement date UNVERIFIED)",
+ "lep": "Central Darling Local Environmental Plan 2012",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "central-darling-shire-council-001",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": [
+    "Dual occupancy, single storey, Large Lot Residential (R5) rear boundary",
+    "Dual occupancy, single storey, Large Lot Residential (R5) side boundary",
+    "Dual occupancy, single storey, Large Lot Residential (R5) street frontage"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9369
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9371
+    ]
+   },
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     9370
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9369,
+    9370,
+    9371
+   ],
+   "evidence": [
+    {
+     "id": 9369,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Residential (R5) 6 m 2m 6m 2m 6m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 16,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Dual occupancy, single storey, Large Lot Residential (R5) street frontage",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9371,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Large Lot 6m Residential (R5) 6 m 2m 6m 2m 6m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 16,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Dual occupancy, single storey, Large Lot Residential (R5) rear boundary",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9370,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Residential (R5) 6 m 2m 6m 2m 6m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 16,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Dual occupancy, single storey, Large Lot Residential (R5) side boundary",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Residential (R5) 6 m 2m 6m 2m 6m",
+   "clause": "4.4.1 Building Setbacks",
+   "page": 16,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-002",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "General housing, Large Lot Residential (R5) 2 ha rear boundary",
+    "General housing, Large Lot Residential (R5) 2 ha side boundary",
+    "General housing, Large Lot Residential (R5) 2 ha street frontage"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9351
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9353
+    ]
+   },
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     9352
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9351,
+    9352,
+    9353
+   ],
+   "evidence": [
+    {
+     "id": 9351,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Large Lot 100 2 m Residential (R5) 2 6m Side boundary 100 m2 ha 2m. rear boundary 6m",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, Large Lot Residential (R5) 2 ha street frontage",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9353,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Large Lot 100 2 m Residential (R5) 2 6m Side boundary 100 m2 ha 2m. rear boundary 6m",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, Large Lot Residential (R5) 2 ha rear boundary",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9352,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Large Lot 100 2 m Residential (R5) 2 6m Side boundary 100 m2 ha 2m. rear boundary 6m",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, Large Lot Residential (R5) 2 ha side boundary",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Large Lot 100 2 m Residential (R5) 2 6m Side boundary 100 m2 ha 2m. rear boundary 6m",
+   "clause": "4.3.1 Building Setbacks",
+   "page": 14,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-003",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": [
+    "Multi dwelling, single storey, Large Lot Residential (R5) side boundary",
+    "Multi dwelling, single storey, Large Lot Residential (R5) street frontage"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9400
+    ]
+   },
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     9402
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9400,
+    9402
+   ],
+   "evidence": [
+    {
+     "id": 9400,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Large Lot residential (R5) 6 m, 7 m 2 m side boundary 6 m, 7 m 3m side boundary",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling, single storey, Large Lot Residential (R5) street frontage",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9402,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Large Lot residential (R5) 6 m, 7 m 2 m side boundary 6 m, 7 m 3m side boundary",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling, single storey, Large Lot Residential (R5) side boundary",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Large Lot residential (R5) 6 m, 7 m 2 m side boundary 6 m, 7 m 3m side boundary",
+   "clause": "4.5.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-004",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": [
+    "Multi dwelling, 2 storeys, Large Lot Residential (R5) side boundary",
+    "Multi dwelling, Large Lot Residential (R5) rear boundary, single and 2 storeys"
+   ],
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9404
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     9403
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9403,
+    9404
+   ],
+   "evidence": [
+    {
+     "id": 9404,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "dwelling) 6 m rear boundary 6 m rear boundary",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling, Large Lot Residential (R5) rear boundary, single and 2 storeys",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9403,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Large Lot residential (R5) 6 m, 7 m 2 m side boundary 6 m, 7 m 3m side boundary",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling, 2 storeys, Large Lot Residential (R5) side boundary",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "dwelling) 6 m rear boundary 6 m rear boundary",
+   "clause": "4.5.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-005",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Multi dwelling, Large Lot Residential (R5), street frontage to garage",
+   "garage": {
+    "minM": 7.0,
+    "sources": [
+     9401
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    9401
+   ],
+   "evidence": [
+    {
+     "id": 9401,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Large Lot residential (R5) 6 m, 7 m 2 m side boundary 6 m, 7 m 3m side boundary",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling, Large Lot Residential (R5), street frontage to garage",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Large Lot residential (R5) 6 m, 7 m 2 m side boundary 6 m, 7 m 3m side boundary",
+   "clause": "4.5.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-006",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": [
+    "Dual occupancy, single storey, Village (RU5) rear boundary",
+    "Dual occupancy, single storey, Village (RU5) side boundary",
+    "Dual occupancy, single storey, Village (RU5) street frontage"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     9363
+    ]
+   },
+   "rear": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     9365
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     9364
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9363,
+    9364,
+    9365
+   ],
+   "evidence": [
+    {
+     "id": 9363,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Village (RU5) 4.5 m 1.5 m 4.5m 6m 2m 6m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 16,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Dual occupancy, single storey, Village (RU5) street frontage",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9365,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Village (RU5) 4.5 m 1.5 m 4.5m 6m 2m 6m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 16,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Dual occupancy, single storey, Village (RU5) rear boundary",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9364,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Village (RU5) 4.5 m 1.5 m 4.5m 6m 2m 6m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 16,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Dual occupancy, single storey, Village (RU5) side boundary",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Village (RU5) 4.5 m 1.5 m 4.5m 6m 2m 6m",
+   "clause": "4.4.1 Building Setbacks",
+   "page": 16,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-007",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": [
+    "Dual occupancy, 2 storeys, Village (RU5) rear boundary",
+    "Dual occupancy, 2 storeys, Village (RU5) side boundary",
+    "Dual occupancy, 2 storeys, Village (RU5) street frontage"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9366
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9368
+    ]
+   },
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     9367
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9366,
+    9367,
+    9368
+   ],
+   "evidence": [
+    {
+     "id": 9366,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Village (RU5) 4.5 m 1.5 m 4.5m 6m 2m 6m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 16,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Dual occupancy, 2 storeys, Village (RU5) street frontage",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9368,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Village (RU5) 4.5 m 1.5 m 4.5m 6m 2m 6m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 16,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Dual occupancy, 2 storeys, Village (RU5) rear boundary",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9367,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Village (RU5) 4.5 m 1.5 m 4.5m 6m 2m 6m",
+     "clause": "4.4.1 Building Setbacks",
+     "page": 16,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Dual occupancy, 2 storeys, Village (RU5) side boundary",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Village (RU5) 4.5 m 1.5 m 4.5m 6m 2m 6m",
+   "clause": "4.4.1 Building Setbacks",
+   "page": 16,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-008",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Multi dwelling, single storey, Village (RU5) side boundary (675 mm to eaves and similar projections)",
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     9396
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9396
+   ],
+   "evidence": [
+    {
+     "id": 9396,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Village (RU5) 4.5 m, 5.5 m 1 m (675 mm#) side 4.5 m, 5.5 m 2m side boundary",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling, single storey, Village (RU5) side boundary (675 mm to eaves and similar projections)",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Village (RU5) 4.5 m, 5.5 m 1 m (675 mm#) side 4.5 m, 5.5 m 2m side boundary",
+   "clause": "4.5.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-009",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Multi dwelling, single storey, Village (RU5) rear boundary",
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     9397
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    9397
+   ],
+   "evidence": [
+    {
+     "id": 9397,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "6 m rear boundary dwelling) 4 m rear boundary Large Lot",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling, single storey, Village (RU5) rear boundary",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "6 m rear boundary dwelling) 4 m rear boundary Large Lot",
+   "clause": "4.5.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-010",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": [
+    "Multi dwelling, 2 storeys, Village (RU5) rear boundary",
+    "Multi dwelling, 2 storeys, Village (RU5) side boundary"
+   ],
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9399
+    ]
+   },
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     9398
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9398,
+    9399
+   ],
+   "evidence": [
+    {
+     "id": 9399,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "6 m rear boundary dwelling) 4 m rear boundary Large Lot",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling, 2 storeys, Village (RU5) rear boundary",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9398,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Village (RU5) 4.5 m, 5.5 m 1 m (675 mm#) side 4.5 m, 5.5 m 2m side boundary",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling, 2 storeys, Village (RU5) side boundary",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "6 m rear boundary dwelling) 4 m rear boundary Large Lot",
+   "clause": "4.5.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-011",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "General housing, Village (RU5) rear boundary",
+    "General housing, Village (RU5) side boundary",
+    "General housing, Village (RU5) street frontage"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     9347
+    ]
+   },
+   "rear": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     9349
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     9348
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9347,
+    9348,
+    9349
+   ],
+   "evidence": [
+    {
+     "id": 9347,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Village (RU5) 4.5 m 50 m2 100 m2 boundary 4.5m rear boundary",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, Village (RU5) street frontage",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9349,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Village (RU5) 4.5 m 50 m2 100 m2 boundary 4.5m rear boundary",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, Village (RU5) rear boundary",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9348,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Not specified 1.5m side Village (RU5) 4.5 m",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, Village (RU5) side boundary",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Source record 9347 is flagged conflict=true in the extract (two council documents disagree)",
+   "quote": "Village (RU5) 4.5 m 50 m2 100 m2 boundary 4.5m rear boundary",
+   "clause": "4.3.1 Building Setbacks",
+   "page": 14,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-012",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "General housing, mandatory front building line in RU5 Village zone",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9350
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9350
+   ],
+   "evidence": [
+    {
+     "id": 9350,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "RU5 Village zone - building line is the mandatory front setback i.e. at least 6m from the front boundary line",
+     "clause": "4.3.2 Design",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, mandatory front building line in RU5 Village zone",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "RU5 Village zone - building line is the mandatory front setback i.e. at least 6m from the front boundary line",
+   "clause": "4.3.2 Design",
+   "page": 14,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-013",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "garage"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Multi dwelling (greater than 2 dwellings per lot), single storey, Village (RU5) street frontage (5.5 m to garage)",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     9394
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9394
+   ],
+   "evidence": [
+    {
+     "id": 9394,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Village (RU5) 4.5 m, 5.5 m 1 m (675 mm#) side 4.5 m, 5.5 m 2m side boundary",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling (greater than 2 dwellings per lot), single storey, Village (RU5) street frontage (5.5 m to garage)",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Village (RU5) 4.5 m, 5.5 m 1 m (675 mm#) side 4.5 m, 5.5 m 2m side boundary",
+   "clause": "4.5.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-014",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Multi dwelling, Village (RU5), street frontage to garage",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     9395
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    9395
+   ],
+   "evidence": [
+    {
+     "id": 9395,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Village (RU5) 4.5 m, 5.5 m 1 m (675 mm#) side 4.5 m, 5.5 m 2m side boundary",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 20,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Multi dwelling, Village (RU5), street frontage to garage",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Village (RU5) 4.5 m, 5.5 m 1 m (675 mm#) side 4.5 m, 5.5 m 2m side boundary",
+   "clause": "4.5.1 Building Setbacks",
+   "page": 20,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-015",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "General housing, Primary Production (RU1) side and rear boundary",
+    "General housing, Primary Production (RU1) street frontage"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     9345
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     9346
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     9346
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9345,
+    9346,
+    9346
+   ],
+   "evidence": [
+    {
+     "id": 9345,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Primary Production (RU1) 20 m 10m Not specified",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, Primary Production (RU1) street frontage",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9346,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Primary Production (RU1) 20 m 10m Not specified",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, Primary Production (RU1) side and rear boundary",
+     "edition": "July 2024"
+    },
+    {
+     "id": 9346,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "Primary Production (RU1) 20 m 10m Not specified",
+     "clause": "4.3.1 Building Setbacks",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, Primary Production (RU1) side and rear boundary",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Primary Production (RU1) 20 m 10m Not specified",
+   "clause": "4.3.1 Building Setbacks",
+   "page": 14,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {},
+   "conditionText": "Dual occupancy, secondary frontage or corner lot minimum",
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     9372
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9372
+   ],
+   "evidence": [
+    {
+     "id": 9372,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Setback for a secondary frontage/ corner lot minimum of 2m setback.",
+     "clause": "4.4.1(a)",
+     "page": 16,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Dual occupancy, secondary frontage or corner lot minimum",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Setback for a secondary frontage/ corner lot minimum of 2m setback.",
+   "clause": "4.4.1(a)",
+   "page": 16,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "General housing, garage or carport behind front building line",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 1.0,
+    "sources": [
+     9356
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    9356
+   ],
+   "evidence": [
+    {
+     "id": 9356,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "The garage and or carport must be set back at least 1m behind the front building line",
+     "clause": "4.3.2 Design",
+     "page": 14,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "General housing, garage or carport behind front building line",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The garage and or carport must be set back at least 1m behind the front building line",
+   "clause": "4.3.2 Design",
+   "page": 14,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  },
+  {
+   "id": "central-darling-shire-council-018",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Industrial development, street setback (landscaped)",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     9498
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9498
+   ],
+   "evidence": [
+    {
+     "id": 9498,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Street setback must be a minimum of 5m.",
+     "clause": "4.7.1 Building Setbacks",
+     "page": 26,
+     "source_file": "DCP/central-darling-development-control-plan-2024.pdf",
+     "condition": "Industrial development, street setback (landscaped)",
+     "edition": "July 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Street setback must be a minimum of 5m.",
+   "clause": "4.7.1 Building Setbacks",
+   "page": 26,
+   "source_file": "DCP/central-darling-development-control-plan-2024.pdf"
+  }
+ ],
+ "gaps": [
+  "15 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 9499, 9514, 9515, 9516, 9517, 9518, 9519, 9520, 9521, 9522, 9523, 9524, 9525, 9526, 9527",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): scanned, no text: DCP/ffl_map_wilcannia-dcp2024.pdf (flood planning level maps for the three townships, so no finished floor levels available)"
+ ],
+ "notes": "Built from 47 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": true,
+   "rules": 5
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": true,
+   "rules": 9
+  },
+  "RU1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 2
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 47,
+  "rules": 18,
+  "recordsNotModelled": 15,
+  "otherSetbackKeysNotModelled": 2
+ }
+}

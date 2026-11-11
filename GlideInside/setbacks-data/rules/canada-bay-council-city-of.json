@@ -1,0 +1,122 @@
+{
+ "lga_slug": "canada-bay-council-city-of",
+ "council": "City of Canada Bay",
+ "lgaNames": [
+  "CANADA BAY",
+  "CITY OF CANADA BAY"
+ ],
+ "dcp": "City of Canada Bay DCP (adopted 04/09/2007, effective 07/03/2008, most recent amendment effective 02/10/2026)",
+ "lep": "Canada Bay Local Environmental Plan 2013",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "canada-bay-council-city-of-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "hardstand forward of building alignment, front boundary to building minimum",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     8420
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    8420
+   ],
+   "evidence": [
+    {
+     "id": 8420,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "The distance between the front property boundary and building is to be a minimum of 5.5m",
+     "clause": "B3.2 C4",
+     "page": 14,
+     "source_file": "DCP/DCP---Part-B-General-Control.pdf",
+     "condition": "hardstand forward of building alignment, front boundary to building minimum",
+     "edition": "City of Canada Bay DCP Part B General Controls, Version 9, 26/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The distance between the front property boundary and building is to be a minimum of 5.5m",
+   "clause": "B3.2 C4",
+   "page": 14,
+   "source_file": "DCP/DCP---Part-B-General-Control.pdf"
+  },
+  {
+   "id": "canada-bay-council-city-of-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "carport forward of front building alignment, minimum distance building to front boundary",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     8421
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    8421
+   ],
+   "evidence": [
+    {
+     "id": 8421,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "minimum of 5.5 metres;",
+     "clause": "B3.2 C7(c)",
+     "page": 15,
+     "source_file": "DCP/DCP---Part-B-General-Control.pdf",
+     "condition": "carport forward of front building alignment, minimum distance building to front boundary",
+     "edition": "City of Canada Bay DCP Part B General Controls, Version 9, 26/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "minimum of 5.5 metres;",
+   "clause": "B3.2 C7(c)",
+   "page": 15,
+   "source_file": "DCP/DCP---Part-B-General-Control.pdf"
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Flood planning matrix (Part B / flood DCP) not tabulated: columns unresolved | Setbacks, site coverage, landscaped area, lot size and private open space controls in Parts C, E, F, H not extracted (inside Whole-Document file)"
+ ],
+ "notes": "Built from 2 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": true,
+   "rules": 2
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 2,
+  "rules": 2,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 1
+ }
+}

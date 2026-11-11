@@ -1,0 +1,1533 @@
+{
+ "lga_slug": "junee-shire-council",
+ "council": "Junee Shire Council",
+ "lgaNames": [
+  "JUNEE",
+  "JUNEE SHIRE",
+  "JUNEE SHIRE COUNCIL"
+ ],
+ "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+ "lep": "Junee Local Environmental Plan 2012",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "junee-shire-council-001",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Crawley Estate"
+   },
+   "conditionText": "Crawley Estate, single dwellings (Zone R5 Large Lot Residential)",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     16784
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16784
+   ],
+   "evidence": [
+    {
+     "id": 16784,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Crawley Estate 20m 20m 10m 10m",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Crawley Estate, single dwellings (Zone R5 Large Lot Residential)",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Crawley Estate 20m 20m 10m 10m",
+   "clause": "C3.1 Dwelling Siting and Setbacks table",
+   "page": 32,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-002",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Tathra Estate"
+   },
+   "conditionText": "Tathra Estate, single dwellings (Zone R5 Large Lot Residential)",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     16788
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16788
+   ],
+   "evidence": [
+    {
+     "id": 16788,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Tathra Estate 20m 20m 10m 10m",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Tathra Estate, single dwellings (Zone R5 Large Lot Residential)",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Tathra Estate 20m 20m 10m 10m",
+   "clause": "C3.1 Dwelling Siting and Setbacks table",
+   "page": 32,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-003",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R5 Large Lot Residential (not Crawley, Tathra or Wantabadgery), dwelling primary street front setback",
+    "R5 Large Lot Residential (not Crawley, Tathra or Wantabadgery), dwelling rear boundary setback",
+    "R5 Large Lot Residential (not Crawley, Tathra or Wantabadgery), dwelling secondary street/corner lot setback",
+    "R5 Large Lot Residential (not Crawley, Tathra or Wantabadgery), dwelling side boundary setback"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     16803
+    ]
+   },
+   "secondaryFront": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     16804
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16805
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16806
+    ]
+   },
+   "garage": null,
+   "sources": [
+    16803,
+    16804,
+    16805,
+    16806
+   ],
+   "evidence": [
+    {
+     "id": 16803,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "R5 Large Lot 20m 20m 10m 10m",
+     "clause": "C4.1 Building Setbacks table",
+     "page": 39,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "R5 Large Lot Residential (not Crawley, Tathra or Wantabadgery), dwelling primary street front setback",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16804,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "R5 Large Lot 20m 20m 10m 10m",
+     "clause": "C4.1 Building Setbacks table",
+     "page": 39,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "R5 Large Lot Residential (not Crawley, Tathra or Wantabadgery), dwelling secondary street/corner lot setback",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16805,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "R5 Large Lot 20m 20m 10m 10m",
+     "clause": "C4.1 Building Setbacks table",
+     "page": 39,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "R5 Large Lot Residential (not Crawley, Tathra or Wantabadgery), dwelling side boundary setback",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16806,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "R5 Large Lot 20m 20m 10m 10m",
+     "clause": "C4.1 Building Setbacks table",
+     "page": 39,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "R5 Large Lot Residential (not Crawley, Tathra or Wantabadgery), dwelling rear boundary setback",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R5 Large Lot 20m 20m 10m 10m",
+   "clause": "C4.1 Building Setbacks table",
+   "page": 39,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-004",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Detached outbuildings, R5 Large Lot Residential, minimum setback (or behind front building line if dwelling within 50m of a public road)",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16824
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16824
+   ],
+   "evidence": [
+    {
+     "id": 16824,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "A minimum setback of: a. 10m; or",
+     "clause": "C5.4 Performance Criteria 4",
+     "page": 43,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Detached outbuildings, R5 Large Lot Residential, minimum setback (or behind front building line if dwelling within 50m of a public road)",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "A minimum setback of: a. 10m; or",
+   "clause": "C5.4 Performance Criteria 4",
+   "page": 43,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-005",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {},
+   "conditionText": "Commercial development, RU5 Village zone other than Junee CBD, front primary",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "average of the setbacks of buildings on adjacent lots within 40m of the lot boundaries",
+    "sources": [
+     16821
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16821
+   ],
+   "evidence": [
+    {
+     "id": 16821,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "Front primary street setbacks should generally be a minimum of the average of the setbacks of buildings on adjacent lots within 40m",
+     "clause": "D3.4 Setbacks",
+     "page": 68,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Commercial development, RU5 Village zone other than Junee CBD, front primary",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Front primary street setbacks should generally be a minimum of the average of the setbacks of buildings on adjacent lots within 40m",
+   "clause": "D3.4 Setbacks",
+   "page": 68,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-006",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "RU5 Village zone, single dwellings, ground level",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "note": "900mm or NCC standard for ground level",
+    "sources": [
+     16794
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16794
+   ],
+   "evidence": [
+    {
+     "id": 16794,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "RU5 Village 4.5m for lots to 3m for lots to 900mm or NCC NCC standard",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU5 Village zone, single dwellings, ground level",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU5 Village 4.5m for lots to 3m for lots to 900mm or NCC NCC standard",
+   "clause": "C3.1 Dwelling Siting and Setbacks table",
+   "page": 32,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-007",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "RU5 Village zone, single dwellings, second level",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     16797
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16797
+   ],
+   "evidence": [
+    {
+     "id": 16797,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "setback of adjacent 5m for lots 1.5m for second",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 33,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU5 Village zone, single dwellings, second level",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "setback of adjacent 5m for lots 1.5m for second",
+   "clause": "C3.1 Dwelling Siting and Setbacks table",
+   "page": 33,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-008",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 1500.0
+   },
+   "conditionText": [
+    "RU5 Village zone, single dwellings, corner lots up to 1500sqm",
+    "RU5 Village zone, single dwellings, lots up to 1500sqm (or average setback of adjacent dwellings, whichever is greater)"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     16792
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     16793
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16792,
+    16793
+   ],
+   "evidence": [
+    {
+     "id": 16792,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "RU5 Village 4.5m for lots to 3m for lots to 900mm or NCC NCC standard",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU5 Village zone, single dwellings, lots up to 1500sqm (or average setback of adjacent dwellings, whichever is greater)",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16793,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "RU5 Village 4.5m for lots to 3m for lots to 900mm or NCC NCC standard",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU5 Village zone, single dwellings, corner lots up to 1500sqm",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "RU5 Village 4.5m for lots to 3m for lots to 900mm or NCC NCC standard",
+   "clause": "C3.1 Dwelling Siting and Setbacks table",
+   "page": 32,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-009",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1500.0
+   },
+   "conditionText": [
+    "RU5 Village zone, single dwellings, corner lots over 1500sqm",
+    "RU5 Village zone, single dwellings, lots over 1500sqm (or average setback of adjacent dwellings, whichever is lesser)"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16795
+    ]
+   },
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     16796
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16795,
+    16796
+   ],
+   "evidence": [
+    {
+     "id": 16795,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "10m for lots",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 33,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU5 Village zone, single dwellings, lots over 1500sqm (or average setback of adjacent dwellings, whichever is lesser)",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16796,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "setback of adjacent 5m for lots 1.5m for second",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 33,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU5 Village zone, single dwellings, corner lots over 1500sqm",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "10m for lots",
+   "clause": "C3.1 Dwelling Siting and Setbacks table",
+   "page": 33,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-010",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "RU5 Village zone, single dwellings, rear boundary",
+   "rear": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "NCC standard",
+    "sources": [
+     16798
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    16798
+   ],
+   "evidence": [
+    {
+     "id": 16798,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "RU5 Village 4.5m for lots to 3m for lots to 900mm or NCC NCC standard",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU5 Village zone, single dwellings, rear boundary",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "RU5 Village 4.5m for lots to 3m for lots to 900mm or NCC NCC standard",
+   "clause": "C3.1 Dwelling Siting and Setbacks table",
+   "page": 32,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-011",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Medium density housing, RU5 Village zone, classified roads",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     16807
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16807
+   ],
+   "evidence": [
+    {
+     "id": 16807,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "Classified Roads (RU5 Village Zone) 8m",
+     "clause": "C6.5 Setbacks table",
+     "page": 48,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Medium density housing, RU5 Village zone, classified roads",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Classified Roads (RU5 Village Zone) 8m",
+   "clause": "C6.5 Setbacks table",
+   "page": 48,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-012",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "RU1 Primary Production, dwelling primary street front setback",
+    "RU1 Primary Production, dwelling rear boundary setback",
+    "RU1 Primary Production, dwelling secondary street/corner lot setback",
+    "RU1 Primary Production, dwelling side boundary setback"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     16799
+    ]
+   },
+   "secondaryFront": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     16800
+    ]
+   },
+   "side": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     16801
+    ]
+   },
+   "rear": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     16802
+    ]
+   },
+   "garage": null,
+   "sources": [
+    16799,
+    16800,
+    16801,
+    16802
+   ],
+   "evidence": [
+    {
+     "id": 16799,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "RU1 Primary 20m 20m 50m 50m",
+     "clause": "C4.1 Building Setbacks table",
+     "page": 39,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU1 Primary Production, dwelling primary street front setback",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16800,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "RU1 Primary 20m 20m 50m 50m",
+     "clause": "C4.1 Building Setbacks table",
+     "page": 39,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU1 Primary Production, dwelling secondary street/corner lot setback",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16801,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "RU1 Primary 20m 20m 50m 50m",
+     "clause": "C4.1 Building Setbacks table",
+     "page": 39,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU1 Primary Production, dwelling side boundary setback",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16802,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "RU1 Primary 20m 20m 50m 50m",
+     "clause": "C4.1 Building Setbacks table",
+     "page": 39,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "RU1 Primary Production, dwelling rear boundary setback",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU1 Primary 20m 20m 50m 50m",
+   "clause": "C4.1 Building Setbacks table",
+   "page": 39,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Crawley Estate"
+   },
+   "conditionText": [
+    "Crawley Estate, rear boundary",
+    "Crawley Estate, secondary street/corner lots",
+    "Crawley Estate, side boundary"
+   ],
+   "secondaryFront": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     16785
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16787
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16786
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    16785,
+    16786,
+    16787
+   ],
+   "evidence": [
+    {
+     "id": 16785,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Crawley Estate 20m 20m 10m 10m",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Crawley Estate, secondary street/corner lots",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16787,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Crawley Estate 20m 20m 10m 10m",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Crawley Estate, rear boundary",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16786,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Crawley Estate 20m 20m 10m 10m",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Crawley Estate, side boundary",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Crawley Estate 20m 20m 10m 10m",
+   "clause": "C3.1 Dwelling Siting and Setbacks table",
+   "page": 32,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Tathra Estate"
+   },
+   "conditionText": [
+    "Tathra Estate, rear boundary",
+    "Tathra Estate, secondary street/corner lots",
+    "Tathra Estate, side boundary"
+   ],
+   "secondaryFront": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     16789
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16791
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16790
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    16789,
+    16790,
+    16791
+   ],
+   "evidence": [
+    {
+     "id": 16789,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Tathra Estate 20m 20m 10m 10m",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Tathra Estate, secondary street/corner lots",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16791,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Tathra Estate 20m 20m 10m 10m",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Tathra Estate, rear boundary",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16790,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Tathra Estate 20m 20m 10m 10m",
+     "clause": "C3.1 Dwelling Siting and Setbacks table",
+     "page": 32,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Tathra Estate, side boundary",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Tathra Estate 20m 20m 10m 10m",
+   "clause": "C3.1 Dwelling Siting and Setbacks table",
+   "page": 32,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Attached garages and carports, single dwellings",
+   "garage": {
+    "minM": 0.5,
+    "note": "at least 0.5m behind the front building line or 5.0m from the front boundary",
+    "sources": [
+     16822,
+     16825
+    ],
+    "behindBuildingLineM": 0.5
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    16822,
+    16825
+   ],
+   "evidence": [
+    {
+     "id": 16822,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Be located at least 0.5m behind the front building line or 5.0m from the front boundary",
+     "clause": "C3.1 Performance Criteria 2a",
+     "page": 33,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Attached garages and carports, single dwellings",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16825,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "Be located at least 0.5m behind the front building line or 5.0m from the front boundary",
+     "clause": "C3.1 Performance Criteria 2a",
+     "page": 33,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Attached garages and carports, single dwellings",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Be located at least 0.5m behind the front building line or 5.0m from the front boundary",
+   "clause": "C3.1 Performance Criteria 2a",
+   "page": 33,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Attached garages and carports, single dwellings, alternative of 5.0m from front boundary",
+   "garage": {
+    "minM": 5.0,
+    "sources": [
+     16823
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    16823
+   ],
+   "evidence": [
+    {
+     "id": 16823,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Be located at least 0.5m behind the front building line or 5.0m from the front boundary",
+     "clause": "C3.1 Performance Criteria 2a",
+     "page": 33,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Attached garages and carports, single dwellings, alternative of 5.0m from front boundary",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen",
+   "quote": "Be located at least 0.5m behind the front building line or 5.0m from the front boundary",
+   "clause": "C3.1 Performance Criteria 2a",
+   "page": 33,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Medium density housing, single storey (or average setback of adjacent dwellings, whichever is greater)",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     16808
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16808
+   ],
+   "evidence": [
+    {
+     "id": 16808,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m – single storey OR average setback of",
+     "clause": "C6.5 Setbacks table",
+     "page": 48,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Medium density housing, single storey (or average setback of adjacent dwellings, whichever is greater)",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "4.5m – single storey OR average setback of",
+   "clause": "C6.5 Setbacks table",
+   "page": 48,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeysMin": 2
+   },
+   "conditionText": "Medium density housing, two or more storeys (or average setback of adjacent dwellings, whichever is greater)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     16809
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16809
+   ],
+   "evidence": [
+    {
+     "id": 16809,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6.0m – two or more storeys OR average setback",
+     "clause": "C6.5 Setbacks table",
+     "page": 48,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Medium density housing, two or more storeys (or average setback of adjacent dwellings, whichever is greater)",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "6.0m – two or more storeys OR average setback",
+   "clause": "C6.5 Setbacks table",
+   "page": 48,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": [
+    "Medium density housing, single storey",
+    "Medium density housing, single storey, side and rear boundary"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     16810
+    ]
+   },
+   "rear": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     16814
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     16812
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    16810,
+    16812,
+    16814
+   ],
+   "evidence": [
+    {
+     "id": 16810,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Street Front Setback 3m – single storey",
+     "clause": "C6.5 Setbacks table",
+     "page": 48,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Medium density housing, single storey",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16814,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Side and Rear Boundary 900mm - single storey",
+     "clause": "C6.5 Setbacks table",
+     "page": 48,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Medium density housing, single storey, side and rear boundary",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16812,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side and Rear Boundary 900mm - single storey",
+     "clause": "C6.5 Setbacks table",
+     "page": 48,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Medium density housing, single storey, side and rear boundary",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Secondary Street Front Setback 3m – single storey",
+   "clause": "C6.5 Setbacks table",
+   "page": 48,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": [
+    "Medium density housing, two storeys or greater",
+    "Medium density housing, two storeys or greater, side and rear boundary"
+   ],
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     16811
+    ]
+   },
+   "rear": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     16815
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     16813
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    16811,
+    16813,
+    16815
+   ],
+   "evidence": [
+    {
+     "id": 16811,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "4.5m – two storeys or greater",
+     "clause": "C6.5 Setbacks table",
+     "page": 48,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Medium density housing, two storeys or greater",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16815,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "1.5m - two storeys or greater",
+     "clause": "C6.5 Setbacks table",
+     "page": 48,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Medium density housing, two storeys or greater, side and rear boundary",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16813,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5m - two storeys or greater",
+     "clause": "C6.5 Setbacks table",
+     "page": 48,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Medium density housing, two storeys or greater, side and rear boundary",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5m – two storeys or greater",
+   "clause": "C6.5 Setbacks table",
+   "page": 48,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-021",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Industrial development, side and rear where adjoining property is residential",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     16820
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     16820
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    16820,
+    16820
+   ],
+   "evidence": [
+    {
+     "id": 16820,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "side and rear setback must be a minimum of 6m, incorporating a minimum 2m wide landscaping strip",
+     "clause": "D4.2 Setbacks",
+     "page": 73,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Industrial development, side and rear where adjoining property is residential",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16820,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "side and rear setback must be a minimum of 6m, incorporating a minimum 2m wide landscaping strip",
+     "clause": "D4.2 Setbacks",
+     "page": 73,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Industrial development, side and rear where adjoining property is residential",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "side and rear setback must be a minimum of 6m, incorporating a minimum 2m wide landscaping strip",
+   "clause": "D4.2 Setbacks",
+   "page": 73,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-022",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Industrial development, corner frontage, primary frontage",
+    "Industrial development, front setback",
+    "Industrial development, side and rear boundaries"
+   ],
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     16816
+    ]
+   },
+   "secondaryFront": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     16817
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     16819
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     16819
+    ]
+   },
+   "garage": null,
+   "sources": [
+    16816,
+    16817,
+    16819,
+    16819
+   ],
+   "evidence": [
+    {
+     "id": 16816,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Front setback areas must be a minimum of 8m, incorporating a minimum 2m wide landscaping strip",
+     "clause": "D4.2 Setbacks",
+     "page": 72,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Industrial development, front setback",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16817,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "provide an 8m front setback to the primary frontage and a minimum 4m setback to the secondary frontage",
+     "clause": "D4.2 Setbacks",
+     "page": 73,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Industrial development, corner frontage, primary frontage",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16819,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "Industrial buildings must be setback 3m from side and rear property boundaries",
+     "clause": "D4.2 Setbacks",
+     "page": 73,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Industrial development, side and rear boundaries",
+     "edition": "Version 1.1, October 2023"
+    },
+    {
+     "id": 16819,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "Industrial buildings must be setback 3m from side and rear property boundaries",
+     "clause": "D4.2 Setbacks",
+     "page": 73,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Industrial development, side and rear boundaries",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Front setback areas must be a minimum of 8m, incorporating a minimum 2m wide landscaping strip",
+   "clause": "D4.2 Setbacks",
+   "page": 72,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  },
+  {
+   "id": "junee-shire-council-023",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial development, corner frontage, secondary frontage",
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     16818
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16818
+   ],
+   "evidence": [
+    {
+     "id": 16818,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "provide an 8m front setback to the primary frontage and a minimum 4m setback to the secondary frontage",
+     "clause": "D4.2 Setbacks",
+     "page": 73,
+     "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+     "condition": "Industrial development, corner frontage, secondary frontage",
+     "edition": "Version 1.1, October 2023"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen",
+   "quote": "provide an 8m front setback to the primary frontage and a minimum 4m setback to the secondary frontage",
+   "clause": "D4.2 Setbacks",
+   "page": 73,
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule"
+ ],
+ "notes": "Built from 42 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 4
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 7
+  },
+  "RU1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 8
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  }
+ },
+ "precincts": [
+  "Crawley Estate",
+  "Tathra Estate"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 42,
+  "rules": 23,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 2
+ }
+}

@@ -1,0 +1,546 @@
+{
+ "lga_slug": "narrabri-shire-council",
+ "council": "Narrabri Shire Council",
+ "lgaNames": [
+  "NARRABRI",
+  "NARRABRI SHIRE",
+  "NARRABRI SHIRE COUNCIL"
+ ],
+ "dcp": "Narrabri Development Control Plan 2026 (NDCP 2026), adopted 19/08/2026 (file name date); chapters 1 to 10 in one document",
+ "lep": "Narrabri Local Environmental Plan 2012",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "narrabri-shire-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "lotAreaMaxM2": 450.0
+   },
+   "conditionText": "Table 2(a) urban residential, single or two storey dwelling, lot up to 450m2",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     23767
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23767
+   ],
+   "evidence": [
+    {
+     "id": 23767,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Single Storey Dwelling … 10m 3.0m 4.5m* 3.0m",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) urban residential, single or two storey dwelling, lot up to 450m2",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single Storey Dwelling … 10m 3.0m 4.5m* 3.0m",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  },
+  {
+   "id": "narrabri-shire-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 450.0
+   },
+   "conditionText": "Table 2(a) urban residential, lot above 450m2, single storey dwelling",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     23776
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    23776
+   ],
+   "evidence": [
+    {
+     "id": 23776,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Single Storey Dwelling 0.9m 0.9m 3.0m",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) urban residential, lot above 450m2, single storey dwelling",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single Storey Dwelling 0.9m 0.9m 3.0m",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  },
+  {
+   "id": "narrabri-shire-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "lotAreaMinM2": 450.0
+   },
+   "conditionText": "Table 2(a) urban residential, lot above 450m2, two storey dwelling",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     23777
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    23777
+   ],
+   "evidence": [
+    {
+     "id": 23777,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Two Storey Dwelling 1.5m 1.5m 6.0m",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) urban residential, lot above 450m2, two storey dwelling",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Two Storey Dwelling 1.5m 1.5m 6.0m",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  },
+  {
+   "id": "narrabri-shire-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 450.0
+   },
+   "conditionText": "Table 2(a) urban residential, dwelling, lot above 450m2",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     23768
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23768
+   ],
+   "evidence": [
+    {
+     "id": 23768,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Single Storey Dwelling … 10m 3.0m 4.5m* 3.0m",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) urban residential, dwelling, lot above 450m2",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single Storey Dwelling … 10m 3.0m 4.5m* 3.0m",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  },
+  {
+   "id": "narrabri-shire-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Table 2(a) urban residential, dwelling fronting a classified road",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     23769
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23769
+   ],
+   "evidence": [
+    {
+     "id": 23769,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "Single Storey Dwelling … 10m 3.0m 4.5m* 3.0m",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) urban residential, dwelling fronting a classified road",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single Storey Dwelling … 10m 3.0m 4.5m* 3.0m",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  },
+  {
+   "id": "narrabri-shire-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Table 2(a) urban residential, single storey dwelling (up to 4.5m high)",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     23774
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23774
+   ],
+   "evidence": [
+    {
+     "id": 23774,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Single Storey Dwelling 0.9m 0.9m 3.0m",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) urban residential, single storey dwelling (up to 4.5m high)",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single Storey Dwelling 0.9m 0.9m 3.0m",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  },
+  {
+   "id": "narrabri-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Table 2(a) urban residential, two storey dwelling (up to 8.5m high)",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     23775
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23775
+   ],
+   "evidence": [
+    {
+     "id": 23775,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Two Storey Dwelling 1.5m 1.5m 6.0m",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) urban residential, two storey dwelling (up to 8.5m high)",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Two Storey Dwelling 1.5m 1.5m 6.0m",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  },
+  {
+   "id": "narrabri-shire-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table 2(a) urban residential, dwelling, secondary street frontage",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     23770
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23770
+   ],
+   "evidence": [
+    {
+     "id": 23770,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Single Storey Dwelling … 10m 3.0m 4.5m* 3.0m",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) urban residential, dwelling, secondary street frontage",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single Storey Dwelling … 10m 3.0m 4.5m* 3.0m",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  },
+  {
+   "id": "narrabri-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 450.0
+   },
+   "conditionText": "Table 2(a) carport (up to 3.3m high), lot up to 450m2 front setback",
+   "garage": {
+    "minM": 4.0,
+    "sources": [
+     23772
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    23772
+   ],
+   "evidence": [
+    {
+     "id": 23772,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Carport (up to 3.3m high) 11m 4.0m* 5.5m*",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) carport (up to 3.3m high), lot up to 450m2 front setback",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Carport (up to 3.3m high) 11m 4.0m* 5.5m*",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  },
+  {
+   "id": "narrabri-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 450.0
+   },
+   "conditionText": "Table 2(a) carport (up to 3.3m high), lot above 450m2 front setback",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     23773
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    23773
+   ],
+   "evidence": [
+    {
+     "id": 23773,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Carport (up to 3.3m high) 11m 4.0m* 5.5m*",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) carport (up to 3.3m high), lot above 450m2 front setback",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Carport (up to 3.3m high) 11m 4.0m* 5.5m*",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  },
+  {
+   "id": "narrabri-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Table 2(a) carport (up to 3.3m high) fronting a classified road",
+   "front": {
+    "minM": 11.0,
+    "basis": "fixed",
+    "sources": [
+     23771
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23771
+   ],
+   "evidence": [
+    {
+     "id": 23771,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "Carport (up to 3.3m high) 11m 4.0m* 5.5m*",
+     "clause": "Table 2(a)",
+     "page": 13,
+     "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf",
+     "condition": "Table 2(a) carport (up to 3.3m high) fronting a classified road",
+     "edition": "NDCP 2026 adopted 19/08/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Carport (up to 3.3m high) 11m 4.0m* 5.5m*",
+   "clause": "Table 2(a)",
+   "page": 13,
+   "source_file": "DCP/Narrabri-DCP-2026-adopted-2026-08-19.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): setbacks tables 2(a) rear columns for small lots and laneways, 2(b) rural, 3(a), 6(a), 7(a): column headers could not be resolved from extracted text, only resolved cells recorded | DCP/Previous-superseded files not used (superseded by NDCP 2026)"
+ ],
+ "notes": "Built from 11 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 11
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 11,
+  "rules": 11,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 2
+ }
+}

@@ -1,0 +1,633 @@
+{
+ "lga_slug": "berrigan-shire-council",
+ "council": "Berrigan Shire Council",
+ "lgaNames": [
+  "BERRIGAN",
+  "BERRIGAN SHIRE",
+  "BERRIGAN SHIRE COUNCIL"
+ ],
+ "dcp": "Berrigan Development Control Plan 2014 (two saved copies, same content; adoption and commencement dates left blank in the saved text, so UNVERIFIED)",
+ "lep": "Berrigan Local Environmental Plan 2013",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "berrigan-shire-council-001",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R5 zone: rear boundary",
+    "R5 zone: secondary or side boundary"
+   ],
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     3548
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     3547
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    3547,
+    3548
+   ],
+   "evidence": [
+    {
+     "id": 3548,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "10 metres from the rear boundary.",
+     "clause": "2.5 Building setbacks, Lower density",
+     "page": 11,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "R5 zone: rear boundary",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    },
+    {
+     "id": 3547,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Within the R5 zone, a minimum 5 metres",
+     "clause": "2.5 Building setbacks, Lower density",
+     "page": 11,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "R5 zone: secondary or side boundary",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "10 metres from the rear boundary.",
+   "clause": "2.5 Building setbacks, Lower density",
+   "page": 11,
+   "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf"
+  },
+  {
+   "id": "berrigan-shire-council-002",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1500.0
+   },
+   "conditionText": [
+    "RU5 zone (greater than 1,500 m2): rear boundary",
+    "RU5 zone (greater than 1,500 m2): secondary or side boundary"
+   ],
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     3546
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     3545
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    3545,
+    3546
+   ],
+   "evidence": [
+    {
+     "id": 3546,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "side boundary and 5 metres from the rear",
+     "clause": "2.5 Building setbacks, Lower density",
+     "page": 11,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "RU5 zone (greater than 1,500 m2): rear boundary",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    },
+    {
+     "id": 3545,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "minimum 1.5 metres from the secondary or",
+     "clause": "2.5 Building setbacks, Lower density",
+     "page": 11,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "RU5 zone (greater than 1,500 m2): secondary or side boundary",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "side boundary and 5 metres from the rear",
+   "clause": "2.5 Building setbacks, Lower density",
+   "page": 11,
+   "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf"
+  },
+  {
+   "id": "berrigan-shire-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": [
+    "Average density residential: minimum if averaging of adjoining dwellings gives a lesser figure or no dwellings adjoin",
+    "Average density residential: rear setback to adjoining properties",
+    "Average density residential: side setback to adjoining properties"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     3536
+    ]
+   },
+   "rear": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "Side and rear setbacks from adjoining properties to comply with the Building Code of Australia",
+    "sources": [
+     3541
+    ]
+   },
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "Side and rear setbacks from adjoining properties to comply with the Building Code of Australia",
+    "sources": [
+     3540
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    3536,
+    3540,
+    3541
+   ],
+   "evidence": [
+    {
+     "id": 3536,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "allotment or a minimum of 4.5m.",
+     "clause": "2.5 Building setbacks, Average density",
+     "page": 10,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Average density residential: minimum if averaging of adjoining dwellings gives a lesser figure or no dwellings adjoin",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    },
+    {
+     "id": 3541,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "properties should comply with the standards",
+     "clause": "2.5 Building setbacks, Average density",
+     "page": 10,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Average density residential: rear setback to adjoining properties",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    },
+    {
+     "id": 3540,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "properties should comply with the standards",
+     "clause": "2.5 Building setbacks, Average density",
+     "page": 10,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Average density residential: side setback to adjoining properties",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "allotment or a minimum of 4.5m.",
+   "clause": "2.5 Building setbacks, Average density",
+   "page": 10,
+   "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf"
+  },
+  {
+   "id": "berrigan-shire-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Average density residential",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average building line setback of dwelling houses adjoining the subject allotment, or minimum 4.5 m; if no dwelling houses exist 4.5 m",
+    "sources": [
+     3537
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3537
+   ],
+   "evidence": [
+    {
+     "id": 3537,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "The average building line setback of",
+     "clause": "2.5 Building setbacks, Average density",
+     "page": 10,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Average density residential",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The average building line setback of",
+   "clause": "2.5 Building setbacks, Average density",
+   "page": 10,
+   "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf"
+  },
+  {
+   "id": "berrigan-shire-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Average density residential: corner lots, side (secondary) boundary",
+    "Higher density residential: corner site, side (secondary) boundary (not detached dwellings facing the second frontage)",
+    "Higher density residential: minimum if averaging gives a lesser figure or no dwellings adjoin"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     3542
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     3538,
+     3543
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3538,
+    3542,
+    3543
+   ],
+   "evidence": [
+    {
+     "id": 3542,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "allotment, or a minimum of 4.5m.",
+     "clause": "2.5 Building setbacks, Higher density",
+     "page": 11,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Higher density residential: minimum if averaging gives a lesser figure or no dwellings adjoin",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    },
+    {
+     "id": 3538,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "A minimum 3 metres from the side",
+     "clause": "2.5 Building setbacks, Average density",
+     "page": 10,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Average density residential: corner lots, side (secondary) boundary",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    },
+    {
+     "id": 3543,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "A minimum 3 metres to the side (secondary)",
+     "clause": "2.5 Building setbacks, Higher density",
+     "page": 11,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Higher density residential: corner site, side (secondary) boundary (not detached dwellings facing the second frontage)",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "allotment, or a minimum of 4.5m.",
+   "clause": "2.5 Building setbacks, Higher density",
+   "page": 11,
+   "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf"
+  },
+  {
+   "id": "berrigan-shire-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Lower density residential: where no dwelling houses adjoin",
+   "front": {
+    "minM": 6.5,
+    "basis": "fixed",
+    "sources": [
+     3544
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3544
+   ],
+   "evidence": [
+    {
+     "id": 3544,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "if no dwelling houses exist 6.5m",
+     "clause": "2.5 Building setbacks, Lower density",
+     "page": 11,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Lower density residential: where no dwelling houses adjoin",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "if no dwelling houses exist 6.5m",
+   "clause": "2.5 Building setbacks, Lower density",
+   "page": 11,
+   "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf"
+  },
+  {
+   "id": "berrigan-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Average and higher density: where front building setback is less than 6 m, garage set behind the building setback",
+   "garage": {
+    "minM": null,
+    "sources": [
+     3539
+    ],
+    "formula": "1 m behind building setback"
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    3539
+   ],
+   "evidence": [
+    {
+     "id": 3539,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "be setback a minimum of 1 metre behind",
+     "clause": "2.5 Building setbacks, Average density (Fig 2.7)",
+     "page": 10,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Average and higher density: where front building setback is less than 6 m, garage set behind the building setback",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "be setback a minimum of 1 metre behind",
+   "clause": "2.5 Building setbacks, Average density (Fig 2.7)",
+   "page": 10,
+   "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf"
+  },
+  {
+   "id": "berrigan-shire-council-008",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Industrial: side and rear setbacks from adjoining properties",
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "Comply with the Building Code of Australia",
+    "sources": [
+     3553
+    ]
+   },
+   "rear": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "Comply with the Building Code of Australia",
+    "sources": [
+     3553
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    3553,
+    3553
+   ],
+   "evidence": [
+    {
+     "id": 3553,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "Side and rear setbacks from adjoining properties should comply with the",
+     "clause": "3.3 Building setbacks, General",
+     "page": 17,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Industrial: side and rear setbacks from adjoining properties",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    },
+    {
+     "id": 3553,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "Side and rear setbacks from adjoining properties should comply with the",
+     "clause": "3.3 Building setbacks, General",
+     "page": 17,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Industrial: side and rear setbacks from adjoining properties",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "Side and rear setbacks from adjoining properties should comply with the",
+   "clause": "3.3 Building setbacks, General",
+   "page": 17,
+   "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf"
+  },
+  {
+   "id": "berrigan-shire-council-009",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Industrial: front (primary) property boundary",
+    "Industrial: side (secondary) property boundary"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     3551
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     3552
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3551,
+    3552
+   ],
+   "evidence": [
+    {
+     "id": 3551,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "A minimum 10 metres from the front (primary) property boundary.",
+     "clause": "3.3 Building setbacks, General",
+     "page": 17,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Industrial: front (primary) property boundary",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    },
+    {
+     "id": 3552,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "A minimum 3 metres from the side (secondary) property boundary.",
+     "clause": "3.3 Building setbacks, General",
+     "page": 17,
+     "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf",
+     "condition": "Industrial: side (secondary) property boundary",
+     "edition": "Berrigan DCP 2014 (adoption date blank in text)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "A minimum 10 metres from the front (primary) property boundary.",
+   "clause": "3.3 Building setbacks, General",
+   "page": 17,
+   "source_file": "DCP/Development-Control-Plan-2014-pdf.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 3549, 3550",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Section 64 sewer developer charges table (page 13): town to value mapping unresolved; water residential charge for Barooga and Berrigan shown as one merged cell ($4,116) on page 8, not recorded"
+ ],
+ "notes": "Built from 18 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R5": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU5": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 18,
+  "rules": 9,
+  "recordsNotModelled": 2,
+  "otherSetbackKeysNotModelled": 2
+ }
+}

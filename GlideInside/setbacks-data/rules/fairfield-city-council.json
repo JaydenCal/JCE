@@ -1,0 +1,1520 @@
+{
+ "lga_slug": "fairfield-city-council",
+ "council": "Fairfield City Council",
+ "lgaNames": [
+  "FAIRFIELD",
+  "FAIRFIELD CITY",
+  "FAIRFIELD CITY COUNCIL"
+ ],
+ "dcp": "Fairfield City Wide DCP 2024 Amendment 2 (adoption date UNVERIFIED); also site-specific town centre DCPs not extracted",
+ "lep": "Fairfield Local Environmental Plan 2013",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "fairfield-city-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Chapter 5C narrow lots: ground floor walls",
+   "rear": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     12713
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    12713
+   ],
+   "evidence": [
+    {
+     "id": 12713,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Ground floor walls must be a minimum of 900 millimeters from the boundary.",
+     "clause": "5C.2.3.3(a)",
+     "page": 207,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5C narrow lots: ground floor walls",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Ground floor walls must be a minimum of 900 millimeters from the boundary.",
+   "clause": "5C.2.3.3(a)",
+   "page": 207,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Chapter 5C narrow lots: corner lot reconfigured, reduced secondary setback considered",
+   "secondaryFront": {
+    "minM": 5.5,
+    "basis": "fixed",
+    "sources": [
+     12715
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12715
+   ],
+   "evidence": [
+    {
+     "id": 12715,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "a reduced setback of 5.5 metres will be considered",
+     "clause": "5C.2.3.4(a)",
+     "page": 207,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5C narrow lots: corner lot reconfigured, reduced secondary setback considered",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a reduced setback of 5.5 metres will be considered",
+   "clause": "5C.2.3.4(a)",
+   "page": 207,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper",
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Chapter 6B dual occupancy: first floor walls where lot adjoins residential properties",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     12772
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    12772
+   ],
+   "evidence": [
+    {
+     "id": 12772,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "First floor walls must be set back a minimum of 6 metres from the rear boundary",
+     "clause": "6B.2.3.3",
+     "page": 266,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 6B dual occupancy: first floor walls where lot adjoins residential properties",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "First floor walls must be set back a minimum of 6 metres from the rear boundary",
+   "clause": "6B.2.3.3",
+   "page": 266,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Chapter 6B dual occupancy: corner lot minimum secondary setback (average of adjoining dwellings otherwise)",
+   "secondaryFront": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     12773
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12773
+   ],
+   "evidence": [
+    {
+     "id": 12773,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "The minimum secondary setback is 1.5 metres.",
+     "clause": "6B.2.3.4(b)",
+     "page": 266,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 6B dual occupancy: corner lot minimum secondary setback (average of adjoining dwellings otherwise)",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "The minimum secondary setback is 1.5 metres.",
+   "clause": "6B.2.3.4(b)",
+   "page": 266,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "garage",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "averaging_impractical"
+    ]
+   },
+   "conditionText": "Chapter 6B dual occupancy: dwelling, garage and carport minimum front setback where averaging gives less",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     12771
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12771
+   ],
+   "evidence": [
+    {
+     "id": 12771,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "must be a minimum of 6 metres.",
+     "clause": "6B.2.3.1(b)",
+     "page": 266,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 6B dual occupancy: dwelling, garage and carport minimum front setback where averaging gives less",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "must be a minimum of 6 metres.",
+   "clause": "6B.2.3.1(b)",
+   "page": 266,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Chapter 6B dual occupancy: detached dual occupancy garage fronting secondary street",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     12774
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    12774
+   ],
+   "evidence": [
+    {
+     "id": 12774,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "shall be setback a minimum of 5.5 metres",
+     "clause": "6B.2.3.4(d)",
+     "page": 266,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 6B dual occupancy: detached dual occupancy garage fronting secondary street",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "shall be setback a minimum of 5.5 metres",
+   "clause": "6B.2.3.4(d)",
+   "page": 266,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": [
+    "Chapter 5A single dwelling house: all ground floor walls, side and rear",
+    "Chapter 5A single dwelling house: ground floor rear walls"
+   ],
+   "rear": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     12684
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     12680
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    12680,
+    12684
+   ],
+   "evidence": [
+    {
+     "id": 12684,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Side and rear setbacks for all ground floor walls must be a minimum of 900mm",
+     "clause": "5A.2.3.2(a)",
+     "page": 159,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: ground floor rear walls",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    },
+    {
+     "id": 12680,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "must be a minimum of 900mm from the boundary",
+     "clause": "5A.2.3.2(a)",
+     "page": 159,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: all ground floor walls, side and rear",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Side and rear setbacks for all ground floor walls must be a minimum of 900mm",
+   "clause": "5A.2.3.2(a)",
+   "page": 159,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper",
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Chapter 5A single dwelling house: upper floor rear walls adjoining residential properties",
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     12683
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    12683
+   ],
+   "evidence": [
+    {
+     "id": 12683,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "The upper floor rear walls require a minimum 4 metre setback",
+     "clause": "5A.2.3.2(c)",
+     "page": 159,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: upper floor rear walls adjoining residential properties",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "The upper floor rear walls require a minimum 4 metre setback",
+   "clause": "5A.2.3.2(c)",
+   "page": 159,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper",
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Chapter 5C narrow lots: first floor walls where lot adjoins residential properties",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     12714
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    12714
+   ],
+   "evidence": [
+    {
+     "id": 12714,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "First floor walls must be set back a minimum of 6 metres from the rear boundary",
+     "clause": "5C.2.3.3(b)",
+     "page": 207,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5C narrow lots: first floor walls where lot adjoins residential properties",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "First floor walls must be set back a minimum of 6 metres from the rear boundary",
+   "clause": "5C.2.3.3(b)",
+   "page": 207,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "Chapter 5A single dwelling house: upper floor side walls, southern and western facade",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     12681
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12681
+   ],
+   "evidence": [
+    {
+     "id": 12681,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "require a minimum 1.5 metre setback from the boundary",
+     "clause": "5A.2.3.2(b)",
+     "page": 159,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: upper floor side walls, southern and western facade",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "require a minimum 1.5 metre setback from the boundary",
+   "clause": "5A.2.3.2(b)",
+   "page": 159,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "Chapter 5A single dwelling house: upper floor side walls, northern and eastern facade",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     12682
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12682
+   ],
+   "evidence": [
+    {
+     "id": 12682,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "require a minimum of 900 millimetres setback from the boundary",
+     "clause": "5A.2.3.2(b)",
+     "page": 159,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: upper floor side walls, northern and eastern facade",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "require a minimum of 900 millimetres setback from the boundary",
+   "clause": "5A.2.3.2(b)",
+   "page": 159,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "averaging_impractical"
+    ]
+   },
+   "conditionText": "Chapter 5A single dwelling house: minimum dwelling front setback where averaging gives less",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     12677
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12677
+   ],
+   "evidence": [
+    {
+     "id": 12677,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "the dwelling front setback must be a minimum of 4.5 metres",
+     "clause": "5A.2.3.1(f)",
+     "page": 158,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: minimum dwelling front setback where averaging gives less",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the dwelling front setback must be a minimum of 4.5 metres",
+   "clause": "5A.2.3.1(f)",
+   "page": 158,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Chapter 5A single dwelling house: battleaxe lots, all boundaries",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     12685
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12685
+   ],
+   "evidence": [
+    {
+     "id": 12685,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "must be setback a minimum of 1.5 metres from all boundaries",
+     "clause": "5A.2.3.1(g)",
+     "page": 158,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: battleaxe lots, all boundaries",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "must be setback a minimum of 1.5 metres from all boundaries",
+   "clause": "5A.2.3.1(g)",
+   "page": 158,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Chapter 5A single dwelling house: any part of the dwelling must be within this distance of the average existing front street setback (average of four dwellings each side)",
+   "front": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     12676
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12676
+   ],
+   "evidence": [
+    {
+     "id": 12676,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "must be located within 1.5 metres of the average existing front street setback",
+     "clause": "5A.2.3.1(a)(b)",
+     "page": 158,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: any part of the dwelling must be within this distance of the average existing front street setback (average of four dwellings each side)",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "must be located within 1.5 metres of the average existing front street setback",
+   "clause": "5A.2.3.1(a)(b)",
+   "page": 158,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Chapter 5A single dwelling house: corner sites minimum secondary setback",
+    "Chapter 5C narrow lots: dwelling minimum front setback"
+   ],
+   "front": {
+    "minM": 5.5,
+    "basis": "fixed",
+    "sources": [
+     12709
+    ]
+   },
+   "secondaryFront": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     12686
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12686,
+    12709
+   ],
+   "evidence": [
+    {
+     "id": 12709,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "The minimum front setback of dwellings is 5.5 metres",
+     "clause": "5C.2.3.1(a)",
+     "page": 206,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5C narrow lots: dwelling minimum front setback",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    },
+    {
+     "id": 12686,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Corner sites require a minimum secondary setback of 1.5 metres.",
+     "clause": "5A.2.3.3(a)",
+     "page": 159,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: corner sites minimum secondary setback",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The minimum front setback of dwellings is 5.5 metres",
+   "clause": "5C.2.3.1(a)",
+   "page": 206,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Chapter 5C narrow lots: one side of each dwelling, excluding garage, for drainage and overland flow",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     12712
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12712
+   ],
+   "evidence": [
+    {
+     "id": 12712,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "must be setback a minimum of 900mm from the side",
+     "clause": "5C.2.3.2(a)",
+     "page": 206,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5C narrow lots: one side of each dwelling, excluding garage, for drainage and overland flow",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "must be setback a minimum of 900mm from the side",
+   "clause": "5C.2.3.2(a)",
+   "page": 206,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true,
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Chapter 5A single dwelling house: garage or carport on secondary frontage or fronting an access handle",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     12679
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    12679
+   ],
+   "evidence": [
+    {
+     "id": 12679,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "the garage or carport must be setback 5.5 metres from the boundary",
+     "clause": "5A.2.3.1(e)",
+     "page": 158,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: garage or carport on secondary frontage or fronting an access handle",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the garage or carport must be setback 5.5 metres from the boundary",
+   "clause": "5A.2.3.1(e)",
+   "page": 158,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "averaging_impractical"
+    ]
+   },
+   "conditionText": "Chapter 5A single dwelling house: minimum garage and carport front setback where averaging gives less",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     12678
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    12678
+   ],
+   "evidence": [
+    {
+     "id": 12678,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "the garage and carport front setback must be a minimum of 5.5 metres",
+     "clause": "5A.2.3.1(d)",
+     "page": 158,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: minimum garage and carport front setback where averaging gives less",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the garage and carport front setback must be a minimum of 5.5 metres",
+   "clause": "5A.2.3.1(d)",
+   "page": 158,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Chapter 5A single dwelling house: garages and carports must not be more than this in front of foremost living area face",
+    "Chapter 5C narrow lots: garage minimum from front boundary"
+   ],
+   "garage": {
+    "minM": 6.0,
+    "sources": [
+     12710,
+     12694
+    ],
+    "behindBuildingLineM": 0.6
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    12694,
+    12710
+   ],
+   "evidence": [
+    {
+     "id": 12710,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garage(s) must be setback a minimum of 6 metres from the front boundary",
+     "clause": "5C.2.3.1(b)",
+     "page": 206,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5C narrow lots: garage minimum from front boundary",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    },
+    {
+     "id": 12694,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "must not be located more than 600 millimetres in front of",
+     "clause": "5A.3.5(f)",
+     "page": 167,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: garages and carports must not be more than this in front of foremost living area face",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Garage(s) must be setback a minimum of 6 metres from the front boundary",
+   "clause": "5C.2.3.1(b)",
+   "page": 206,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Chapter 5C narrow lots: carport minimum from front boundary (assessed on merit)",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     12711
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    12711
+   ],
+   "evidence": [
+    {
+     "id": 12711,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Carport(s) must be setback a minimum of 5.5 metres",
+     "clause": "5C.2.3.1(c)",
+     "page": 206,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5C narrow lots: carport minimum from front boundary (assessed on merit)",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen",
+   "quote": "Carport(s) must be setback a minimum of 5.5 metres",
+   "clause": "5C.2.3.1(c)",
+   "page": 206,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Chapter 6A multi dwelling housing: garages from street boundary",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     12738
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    12738
+   ],
+   "evidence": [
+    {
+     "id": 12738,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages are to be set back from the street boundary by 5.5 metres.",
+     "clause": "6A.2.3.1(b)",
+     "page": 231,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 6A multi dwelling housing: garages from street boundary",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Garages are to be set back from the street boundary by 5.5 metres.",
+   "clause": "6A.2.3.1(b)",
+   "page": 231,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Chapter 6A multi dwelling housing: side and rear walls, ground floor",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     12740
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12740
+   ],
+   "evidence": [
+    {
+     "id": 12740,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side and rear walls should be at least 900 mm from the boundary.",
+     "clause": "6A.2.3.3",
+     "page": 232,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 6A multi dwelling housing: side and rear walls, ground floor",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Side and rear walls should be at least 900 mm from the boundary.",
+   "clause": "6A.2.3.3",
+   "page": 232,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "Chapter 6A multi dwelling housing: upper floor beyond the first 20 m of site: side and rear boundaries",
+   "side": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     12741
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12741
+   ],
+   "evidence": [
+    {
+     "id": 12741,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "minimum of 4 metres from side and rear boundaries",
+     "clause": "6A.2.3.3(a)",
+     "page": 232,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 6A multi dwelling housing: upper floor beyond the first 20 m of site: side and rear boundaries",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "minimum of 4 metres from side and rear boundaries",
+   "clause": "6A.2.3.3(a)",
+   "page": 232,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-024",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Chapter 6A multi dwelling housing: corner lots secondary building setback",
+    "Chapter 6A multi dwelling housing: minimum front setback"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     12737
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     12739
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12737,
+    12739
+   ],
+   "evidence": [
+    {
+     "id": 12737,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "The minimum front setback of multi dwelling housing is 4.5 metres",
+     "clause": "6A.2.3.1(a)",
+     "page": 231,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 6A multi dwelling housing: minimum front setback",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    },
+    {
+     "id": 12739,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "The secondary building setback shall be a minimum of 3 metres",
+     "clause": "6A.2.3.2(a)",
+     "page": 231,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 6A multi dwelling housing: corner lots secondary building setback",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The minimum front setback of multi dwelling housing is 4.5 metres",
+   "clause": "6A.2.3.1(a)",
+   "page": 231,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-025",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Chapter 5A single dwelling house: attached outbuildings minimum setback from boundary",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     12692
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12692
+   ],
+   "evidence": [
+    {
+     "id": 12692,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "The minimum setback shall be 900 millimetres from the boundary.",
+     "clause": "5A.2.10(b)",
+     "page": 163,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: attached outbuildings minimum setback from boundary",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The minimum setback shall be 900 millimetres from the boundary.",
+   "clause": "5A.2.10(b)",
+   "page": 163,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-026",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "secondary_dwelling",
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Chapter 5A single dwelling house: detached outbuildings (except secondary dwelling), minimum setback",
+   "side": {
+    "minM": 0.5,
+    "printed": "500 mm",
+    "basis": "fixed",
+    "sources": [
+     12690
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12690
+   ],
+   "evidence": [
+    {
+     "id": 12690,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "to be a minimum of 500 millimetres",
+     "clause": "5A.2.9(e)",
+     "page": 163,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 5A single dwelling house: detached outbuildings (except secondary dwelling), minimum setback",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "to be a minimum of 500 millimetres",
+   "clause": "5A.2.9(e)",
+   "page": 163,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-027",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element",
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Chapter 9 industrial: Wetherill Park Precinct: The Horsley Drive, Walters Street, Victoria Street; 10 m landscaping only",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     12761
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12761
+   ],
+   "evidence": [
+    {
+     "id": 12761,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "20 metres of which 10 metres is to be used for",
+     "clause": "9.1.2 table",
+     "page": 347,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 9 industrial: Wetherill Park Precinct: The Horsley Drive, Walters Street, Victoria Street; 10 m landscaping only",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "20 metres of which 10 metres is to be used for",
+   "clause": "9.1.2 table",
+   "page": 347,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-028",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element",
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Chapter 9 industrial: Wetherill Park Precinct other roads, all landscaped",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     12762
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12762
+   ],
+   "evidence": [
+    {
+     "id": 12762,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "is to be 10 metres, all of which is to be landscaped",
+     "clause": "9.1.2 table",
+     "page": 347,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 9 industrial: Wetherill Park Precinct other roads, all landscaped",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "is to be 10 metres, all of which is to be landscaped",
+   "clause": "9.1.2 table",
+   "page": 347,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  },
+  {
+   "id": "fairfield-city-council-029",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": [
+    "Chapter 9 industrial: East Fairfield Precinct (Lisbon, Fairfield, Seville, Malta, Mandarin, Scott, Donald Streets), all landscaped",
+    "Chapter 9 industrial: Yennora Precinct (Larra, Whitaker, Railway Parade, Antill, The Promenade, Junction Street), 1.5 m landscaping only",
+    "Chapter 9 industrial: corner allotments, secondary frontage, entire setback landscaped"
+   ],
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     12759,
+     12760
+    ]
+   },
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     12763
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12759,
+    12760,
+    12763
+   ],
+   "evidence": [
+    {
+     "id": 12759,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "5 metres of which 1.5 metres is to be used for",
+     "clause": "9.1.2 table",
+     "page": 347,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 9 industrial: Yennora Precinct (Larra, Whitaker, Railway Parade, Antill, The Promenade, Junction Street), 1.5 m landscaping only",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    },
+    {
+     "id": 12760,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "5 metres, all of which is to be used for",
+     "clause": "9.1.2 table",
+     "page": 347,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 9 industrial: East Fairfield Precinct (Lisbon, Fairfield, Seville, Malta, Mandarin, Scott, Donald Streets), all landscaped",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    },
+    {
+     "id": 12763,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "minimum building setback on corner allotments is to be 5 metres",
+     "clause": "9.1.2(b)",
+     "page": 348,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 9 industrial: corner allotments, secondary frontage, entire setback landscaped",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "5 metres of which 1.5 metres is to be used for",
+   "clause": "9.1.2 table",
+   "page": 347,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf"
+  }
+ ],
+ "gaps": [
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 12758",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Policy 4-515 Table 1.0 ESA table zone column not resolvable from text (only State, Rural Collector, Industrial Regional recorded) | Chapter 7 residential flat buildings, Chapter 4 rural, Chapter 8 centres and Chapter 10 not extracted | Site-specific town centre DCPs (Cabramatta, Canley Corridor, Fairfield City Centre and others) not extracted"
+ ],
+ "notes": "Built from 36 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 26
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 36,
+  "rules": 29,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 2
+ }
+}

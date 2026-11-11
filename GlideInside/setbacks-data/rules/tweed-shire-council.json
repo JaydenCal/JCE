@@ -1,0 +1,943 @@
+{
+ "lga_slug": "tweed-shire-council",
+ "council": "Tweed Shire Council",
+ "lgaNames": [
+  "TWEED",
+  "TWEED SHIRE",
+  "TWEED SHIRE COUNCIL"
+ ],
+ "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+ "lep": "Tweed Local Environmental Plan (referenced only)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "tweed-shire-council-001",
+   "zones": [
+    "RU1",
+    "RU2",
+    "C7"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Tweed DCP 2025, Chapter 2.2.3 C7, Zone RU1 or RU2: minimum setback of dwellings from side and rear boundaries",
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     34925
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     34925
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    34925
+   ],
+   "evidence": [
+    {
+     "id": 34925,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "boundaries on land in Zone RU1 or RU2 is 10m.",
+     "clause": "C7",
+     "page": 124,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 C7, Zone RU1 or RU2: minimum setback of dwellings from side and rear boundaries",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34925,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "boundaries on land in Zone RU1 or RU2 is 10m.",
+     "clause": "C7",
+     "page": 124,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 C7, Zone RU1 or RU2: minimum setback of dwellings from side and rear boundaries",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "boundaries on land in Zone RU1 or RU2 is 10m.",
+   "clause": "C7",
+   "page": 124,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 900.0,
+    "lotAreaMaxM2": 1500.0
+   },
+   "conditionText": [
+    "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >900-1500m²: primary frontage setback (no existing buildings either side)",
+    "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >900-1500m²: secondary frontage setback",
+    "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >900-1500m², wall height <4.5 m: rear setback"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34908
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     34909
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     34921
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    34908,
+    34909,
+    34921
+   ],
+   "evidence": [
+    {
+     "id": 34908,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": ">900-1500m²                           6m                              3m",
+     "clause": "Table D1.2",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >900-1500m²: primary frontage setback (no existing buildings either side)",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34909,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": ">900-1500m²                           6m                              3m",
+     "clause": "Table D1.2",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >900-1500m²: secondary frontage setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34921,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">900-1500m²                                5m                                   12m",
+     "clause": "Table D1.4",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >900-1500m², wall height <4.5 m: rear setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": ">900-1500m²                           6m                              3m",
+   "clause": "Table D1.2",
+   "page": 121,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 900.0,
+    "lotAreaMaxM2": 1500.0
+   },
+   "conditionText": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >900-1500m², wall height >4.5 m: rear setback",
+   "rear": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     34922
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34922
+   ],
+   "evidence": [
+    {
+     "id": 34922,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">900-1500m²                                5m                                   12m",
+     "clause": "Table D1.4",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >900-1500m², wall height >4.5 m: rear setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": ">900-1500m²                                5m                                   12m",
+   "clause": "Table D1.4",
+   "page": 123,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 300.0
+   },
+   "conditionText": [
+    "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size <300m²: primary frontage setback (no existing buildings either side)",
+    "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size <300m²: secondary frontage setback",
+    "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size <300m², wall height <4.5 m: rear setback"
+   ],
+   "front": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     34902
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     34903
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     34915
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    34902,
+    34903,
+    34915
+   ],
+   "evidence": [
+    {
+     "id": 34902,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "<300m²                                3.5m                            2m",
+     "clause": "Table D1.2",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size <300m²: primary frontage setback (no existing buildings either side)",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34903,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "<300m²                                3.5m                            2m",
+     "clause": "Table D1.2",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size <300m²: secondary frontage setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34915,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "<300m²                                 3m                                  4.5m",
+     "clause": "Table D1.4",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size <300m², wall height <4.5 m: rear setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "<300m²                                3.5m                            2m",
+   "clause": "Table D1.2",
+   "page": 121,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 300.0
+   },
+   "conditionText": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size <300m², wall height >4.5 m: rear setback",
+   "rear": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     34916
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34916
+   ],
+   "evidence": [
+    {
+     "id": 34916,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "<300m²                                 3m                                  4.5m",
+     "clause": "Table D1.4",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size <300m², wall height >4.5 m: rear setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "<300m²                                 3m                                  4.5m",
+   "clause": "Table D1.4",
+   "page": 123,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 300.0,
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": [
+    "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >300-600m²: primary frontage setback (no existing buildings either side)",
+    "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >300-600m²: secondary frontage setback",
+    "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >300-600m², wall height <4.5 m: rear setback"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     34904
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     34905
+    ]
+   },
+   "rear": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     34917
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    34904,
+    34905,
+    34917
+   ],
+   "evidence": [
+    {
+     "id": 34904,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": ">300-600m²                            4.5m                            2m",
+     "clause": "Table D1.2",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >300-600m²: primary frontage setback (no existing buildings either side)",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34905,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": ">300-600m²                            4.5m                            2m",
+     "clause": "Table D1.2",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >300-600m²: secondary frontage setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34917,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">300-600m²                                 4.5m                                  6m",
+     "clause": "Table D1.4",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >300-600m², wall height <4.5 m: rear setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": ">300-600m²                            4.5m                            2m",
+   "clause": "Table D1.2",
+   "page": 121,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 300.0,
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >300-600m², wall height >4.5 m: rear setback",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34918
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34918
+   ],
+   "evidence": [
+    {
+     "id": 34918,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">300-600m²                                 4.5m                                  6m",
+     "clause": "Table D1.4",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >300-600m², wall height >4.5 m: rear setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": ">300-600m²                                 4.5m                                  6m",
+   "clause": "Table D1.4",
+   "page": 123,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 600.0,
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": [
+    "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >600-900m²: primary frontage setback (no existing buildings either side)",
+    "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >600-900m²: secondary frontage setback",
+    "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >600-900m², wall height <4.5 m: rear setback"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34906
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     34907
+    ]
+   },
+   "rear": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     34919
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    34906,
+    34907,
+    34919
+   ],
+   "evidence": [
+    {
+     "id": 34906,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": ">600-900m²                            6m                              3m",
+     "clause": "Table D1.2",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >600-900m²: primary frontage setback (no existing buildings either side)",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34907,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": ">600-900m²                            6m                              3m",
+     "clause": "Table D1.2",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >600-900m²: secondary frontage setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34919,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">600-900m²                                 4.5m                                  8m",
+     "clause": "Table D1.4",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >600-900m², wall height <4.5 m: rear setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": ">600-900m²                            6m                              3m",
+   "clause": "Table D1.2",
+   "page": 121,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 600.0,
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >600-900m², wall height >4.5 m: rear setback",
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     34920
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34920
+   ],
+   "evidence": [
+    {
+     "id": 34920,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">600-900m²                                 4.5m                                  8m",
+     "clause": "Table D1.4",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >600-900m², wall height >4.5 m: rear setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": ">600-900m²                                 4.5m                                  8m",
+   "clause": "Table D1.4",
+   "page": 123,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1500.0
+   },
+   "conditionText": [
+    "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >1500m²: primary frontage setback (no existing buildings either side)",
+    "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >1500m²: secondary frontage setback",
+    "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >1500m², wall height <4.5 m: rear setback"
+   ],
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     34910
+    ]
+   },
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     34911
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     34923
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    34910,
+    34911,
+    34923
+   ],
+   "evidence": [
+    {
+     "id": 34910,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": ">1500m²                               8m                              5m",
+     "clause": "Table D1.2",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >1500m²: primary frontage setback (no existing buildings either side)",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34911,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": ">1500m²                               8m                              5m",
+     "clause": "Table D1.2",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 Table D1.2, lot size >1500m²: secondary frontage setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    },
+    {
+     "id": 34923,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">1500m²                                10m                                   15m",
+     "clause": "Table D1.4",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >1500m², wall height <4.5 m: rear setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": ">1500m²                               8m                              5m",
+   "clause": "Table D1.2",
+   "page": 121,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1500.0
+   },
+   "conditionText": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >1500m², wall height >4.5 m: rear setback",
+   "rear": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     34924
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34924
+   ],
+   "evidence": [
+    {
+     "id": 34924,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">1500m²                                10m                                   15m",
+     "clause": "Table D1.4",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.4, lot size >1500m², wall height >4.5 m: rear setback",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": ">1500m²                                10m                                   15m",
+   "clause": "Table D1.4",
+   "page": 123,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Tweed DCP 2025, Chapter 2.2.3 Table D1.3, dwelling wall height <4.5 m: side setback of wall (eaves/guttering 0.45 m)",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     34913
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34913
+   ],
+   "evidence": [
+    {
+     "id": 34913,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "<4.5m                                0.9m                                0.45m",
+     "clause": "Table D1.3",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.3, dwelling wall height <4.5 m: side setback of wall (eaves/guttering 0.45 m)",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "<4.5m                                0.9m                                0.45m",
+   "clause": "Table D1.3",
+   "page": 123,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Tweed DCP 2025, Chapter 2.2.3 Table D1.3, dwelling wall height >4.5 m: side setback of wall (eaves/guttering 0.9 m)",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     34914
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34914
+   ],
+   "evidence": [
+    {
+     "id": 34914,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": ">4.5m                                1.5m                                 0.9m",
+     "clause": "Table D1.3",
+     "page": 123,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.3 Table D1.3, dwelling wall height >4.5 m: side setback of wall (eaves/guttering 0.9 m)",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": ">4.5m                                1.5m                                 0.9m",
+   "clause": "Table D1.3",
+   "page": 123,
+   "source_file": "DCP/dcp-2025.pdf"
+  },
+  {
+   "id": "tweed-shire-council-014",
+   "zones": [
+    "C1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Tweed DCP 2025, Chapter 2.2.2 C1, established and infill areas: building walls set back in line with average primary setback of neighbours within 40 m",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "average primary road setback of neighbouring dwellings within 40 m",
+    "sources": [
+     34912
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34912
+   ],
+   "evidence": [
+    {
+     "id": 34912,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "average primary road setback of neighbouring dwellings within 40 metres of the site",
+     "clause": "C1",
+     "page": 121,
+     "source_file": "DCP/dcp-2025.pdf",
+     "condition": "Tweed DCP 2025, Chapter 2.2.2 C1, established and infill areas: building walls set back in line with average primary setback of neighbours within 40 m",
+     "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "average primary road setback of neighbouring dwellings within 40 metres of the site",
+   "clause": "C1",
+   "page": 121,
+   "source_file": "DCP/dcp-2025.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP 2025 parking Table E4.2 rates are interleaved multi-column text and were not extracted as records | DCP 2025 Part C minimum lot sizes and frontage widths set by LEP and not in extracted text | Edition of earlier 2008 DCP sections not saved, so supersession by DCP 2025 not verified"
+ ],
+ "notes": "Built from 24 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "RU1": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU2": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "C7": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 12
+  },
+  "C1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 24,
+  "rules": 14,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 4
+ }
+}

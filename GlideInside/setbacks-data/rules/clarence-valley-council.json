@@ -1,0 +1,988 @@
+{
+ "lga_slug": "clarence-valley-council",
+ "council": "Clarence Valley Council",
+ "lgaNames": [
+  "CLARENCE VALLEY",
+  "CLARENCE VALLEY COUNCIL"
+ ],
+ "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+ "lep": "Clarence Valley Local Environmental Plan 2011",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "clarence-valley-council-001",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "R1/R2/R3 (6 m) and R5 (10 m): established front setback greater than standard is maintained",
+   "front": {
+    "minM": null,
+    "basis": "text",
+    "note": "Where established setback exceeds 6 m (R1-R3) or 10 m (R5) it should be maintained; reduction considered on merit",
+    "sources": [
+     9993
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9993
+   ],
+   "evidence": [
+    {
+     "id": 9993,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "than 6 metres and in the R5 zones greater",
+     "clause": "C17.1-C17.2",
+     "page": 28,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R1/R2/R3 (6 m) and R5 (10 m): established front setback greater than standard is maintained",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "than 6 metres and in the R5 zones greater",
+   "clause": "C17.1-C17.2",
+   "page": 28,
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-002",
+   "zones": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 6.5
+   },
+   "conditionText": "R1/R2/R3 zones, building height up to 6.5 m",
+   "rear": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     9995
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     9994
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9994,
+    9995
+   ],
+   "evidence": [
+    {
+     "id": 9995,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Up to 6.5m 900mm",
+     "clause": "C16.2 Table C5",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R1/R2/R3 zones, building height up to 6.5 m",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 9994,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Up to 6.5m 900mm",
+     "clause": "C16.2 Table C5",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R1/R2/R3 zones, building height up to 6.5 m",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Up to 6.5m 900mm",
+   "clause": "C16.2 Table C5",
+   "page": 27,
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-003",
+   "zones": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightOverM": 6.5
+   },
+   "conditionText": "R1/R2/R3 zones, building height over 6.5 m and up to 9 m",
+   "rear": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     9997
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     9996
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9996,
+    9997
+   ],
+   "evidence": [
+    {
+     "id": 9997,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Over 6.5m 1.5 metres",
+     "clause": "C16.2 Table C5",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R1/R2/R3 zones, building height over 6.5 m and up to 9 m",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 9996,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Over 6.5m 1.5 metres",
+     "clause": "C16.2 Table C5",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R1/R2/R3 zones, building height over 6.5 m and up to 9 m",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Over 6.5m 1.5 metres",
+   "clause": "C16.2 Table C5",
+   "page": 27,
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-004",
+   "zones": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightOverM": 9.0
+   },
+   "conditionText": "R1/R2/R3 zones, building height over 9 m and up to 12 m",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     9999
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     9998
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9998,
+    9999
+   ],
+   "evidence": [
+    {
+     "id": 9999,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Over 9m and 3 metres",
+     "clause": "C16.2 Table C5",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R1/R2/R3 zones, building height over 9 m and up to 12 m",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 9998,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Over 9m and 3 metres",
+     "clause": "C16.2 Table C5",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R1/R2/R3 zones, building height over 9 m and up to 12 m",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Over 9m and 3 metres",
+   "clause": "C16.2 Table C5",
+   "page": 27,
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-005",
+   "zones": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R1, R2, R3 zones",
+    "corner lots, R1/R2/R3 zones"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9989
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "note": "3.5 m minimum",
+    "sources": [
+     9991
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9989,
+    9991
+   ],
+   "evidence": [
+    {
+     "id": 9989,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front - 6 metres",
+     "clause": "C16.2",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R1, R2, R3 zones",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 9991,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "R1, R2 and R3 zones - 3.5",
+     "clause": "C16.5",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "corner lots, R1/R2/R3 zones",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Front - 6 metres",
+   "clause": "C16.2",
+   "page": 27,
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-006",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "corner lots, R5 zone",
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9992
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9992
+   ],
+   "evidence": [
+    {
+     "id": 9992,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "R5 zone - 6 metres.",
+     "clause": "C16.5",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "corner lots, R5 zone",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R5 zone - 6 metres.",
+   "clause": "C16.5",
+   "page": 27,
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-007",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "R5 Large Lot Residential zone",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     9990
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     10001
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     10000
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    9990,
+    10000,
+    10001
+   ],
+   "evidence": [
+    {
+     "id": 9990,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front – 10 metres",
+     "clause": "C16.3",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R5 Large Lot Residential zone",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 10001,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Side and rear – 3 metres setback.",
+     "clause": "C16.3",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R5 Large Lot Residential zone",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 10000,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side and rear – 3 metres setback.",
+     "clause": "C16.3",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "R5 Large Lot Residential zone",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Front – 10 metres",
+   "clause": "C16.3",
+   "page": 27,
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "additional setbacks may be required on classified roads",
+   "front": {
+    "minM": null,
+    "basis": "text",
+    "note": "Additional setbacks may be required on classified roads",
+    "sources": [
+     10003
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10003
+   ],
+   "evidence": [
+    {
+     "id": 10003,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "Additional setbacks may be",
+     "clause": "C16.9",
+     "page": 28,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "additional setbacks may be required on classified roads",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "Additional setbacks may be",
+   "clause": "C16.9",
+   "page": 28,
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "industrial zones, land fronting classified road",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     10008
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10008
+   ],
+   "evidence": [
+    {
+     "id": 10008,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "road buildings must be setback 15 metres",
+     "clause": "C7.1",
+     "page": 16,
+     "source_file": "DCP/industrial-dcp_1-july-2026.pdf",
+     "condition": "industrial zones, land fronting classified road",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "road buildings must be setback 15 metres",
+   "clause": "C7.1",
+   "page": 16,
+   "source_file": "DCP/industrial-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "garages fronting laneways",
+   "garage": {
+    "minM": 4.5,
+    "sources": [
+     10002
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    10002
+   ],
+   "evidence": [
+    {
+     "id": 10002,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "should be setback 4.5 metres from the",
+     "clause": "C16.8",
+     "page": 28,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "garages fronting laneways",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "should be setback 4.5 metres from the",
+   "clause": "C16.8",
+   "page": 28,
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-011",
+   "zones": [
+    "B*"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "business zones, Queens Lane Iluka (northern side)",
+   "side": {
+    "minM": 3.6,
+    "basis": "fixed",
+    "sources": [
+     10012
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10012
+   ],
+   "evidence": [
+    {
+     "id": 10012,
+     "parameter": "setback_commercial",
+     "slot": "side",
+     "quote": "A minimum 3.6 metre setback to",
+     "clause": "C8.3",
+     "page": 18,
+     "source_file": "DCP/business-dcp_1-july-2026.pdf",
+     "condition": "business zones, Queens Lane Iluka (northern side)",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).",
+   "quote": "A minimum 3.6 metre setback to",
+   "clause": "C8.3",
+   "page": 18,
+   "source_file": "DCP/business-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-012",
+   "zones": [
+    "B*"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {},
+   "conditionText": "business zones, front boundary",
+   "front": {
+    "minM": null,
+    "basis": "text",
+    "note": "zero setback (built to the front boundary)",
+    "sources": [
+     10011
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10011
+   ],
+   "evidence": [
+    {
+     "id": 10011,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "built to the front boundary (zero setback)",
+     "clause": "C8.1",
+     "page": 18,
+     "source_file": "DCP/business-dcp_1-july-2026.pdf",
+     "condition": "business zones, front boundary",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).",
+   "quote": "built to the front boundary (zero setback)",
+   "clause": "C8.1",
+   "page": 18,
+   "source_file": "DCP/business-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-013",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "industrial zones, side and rear boundaries adjoining residential development",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     10010
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     10010
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    10010,
+    10010
+   ],
+   "evidence": [
+    {
+     "id": 10010,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "and rear setback must be 3 metres.",
+     "clause": "C7.3",
+     "page": 16,
+     "source_file": "DCP/industrial-dcp_1-july-2026.pdf",
+     "condition": "industrial zones, side and rear boundaries adjoining residential development",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 10010,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "and rear setback must be 3 metres.",
+     "clause": "C7.3",
+     "page": 16,
+     "source_file": "DCP/industrial-dcp_1-july-2026.pdf",
+     "condition": "industrial zones, side and rear boundaries adjoining residential development",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "and rear setback must be 3 metres.",
+   "clause": "C7.3",
+   "page": 16,
+   "source_file": "DCP/industrial-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-014",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "industrial zones, corner lot secondary frontage",
+    "industrial zones, front boundary"
+   ],
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     10007
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     10009
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10007,
+    10009
+   ],
+   "evidence": [
+    {
+     "id": 10007,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "minimum of 9 metres from the front",
+     "clause": "C7.1",
+     "page": 16,
+     "source_file": "DCP/industrial-dcp_1-july-2026.pdf",
+     "condition": "industrial zones, front boundary",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 10009,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "setback 3 metres to the secondary frontage",
+     "clause": "C7.2",
+     "page": 16,
+     "source_file": "DCP/industrial-dcp_1-july-2026.pdf",
+     "condition": "industrial zones, corner lot secondary frontage",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "minimum of 9 metres from the front",
+   "clause": "C7.1",
+   "page": 16,
+   "source_file": "DCP/industrial-dcp_1-july-2026.pdf"
+  },
+  {
+   "id": "clarence-valley-council-015",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "rural zones, corner lot secondary frontage",
+    "rural zones, front",
+    "rural zones, side"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     10004
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     10005
+    ]
+   },
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     10006
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10004,
+    10005,
+    10006
+   ],
+   "evidence": [
+    {
+     "id": 10004,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Front – 10 metres",
+     "clause": "C5.1",
+     "page": 17,
+     "source_file": "DCP/rural-dcp_1_july_2026.pdf",
+     "condition": "rural zones, front",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 10005,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Side – 3 metres.",
+     "clause": "C5.1",
+     "page": 17,
+     "source_file": "DCP/rural-dcp_1_july_2026.pdf",
+     "condition": "rural zones, side",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 10006,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "setback of 6 metres from the property",
+     "clause": "C5.2",
+     "page": 17,
+     "source_file": "DCP/rural-dcp_1_july_2026.pdf",
+     "condition": "rural zones, corner lot secondary frontage",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Front – 10 metres",
+   "clause": "C5.1",
+   "page": 17,
+   "source_file": "DCP/rural-dcp_1_july_2026.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCPs only sampled: Business DCP (setbacks, parking only), E and Other Zones DCP (not extracted beyond check), Rural DCP (setbacks only; parking Part F not extracted), Industrial DCP (setbacks, parking Table E1), DCP/clarenza-ura-structure-plan.pdf not read"
+ ],
+ "notes": "Built from 24 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "R3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 3
+  },
+  "*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  },
+  "B*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU*": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 24,
+  "rules": 15,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 4
+ }
+}

@@ -1,0 +1,2206 @@
+{
+ "lga_slug": "shoalhaven-city-council",
+ "council": "Shoalhaven City Council",
+ "lgaNames": [
+  "SHOALHAVEN",
+  "SHOALHAVEN CITY",
+  "SHOALHAVEN CITY COUNCIL"
+ ],
+ "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+ "lep": "Shoalhaven Local Environmental Plan 2014; Shoalhaven LEP (Jerberra Estate) 2014",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "shoalhaven-city-council-001",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0,
+    "lotAreaMinM2": 600.0
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, side setback to secondary road frontage, lots 600 m2 and over",
+   "secondaryFront": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     30308
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30308
+   ],
+   "evidence": [
+    {
+     "id": 30308,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "• 4m to verandahs, Lots 600m2 and over: patios and awnings. 450mm from eaves/ 3.5m gutters.",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, side setback to secondary road frontage, lots 600 m2 and over",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "• 4m to verandahs, Lots 600m2 and over: patios and awnings. 450mm from eaves/ 3.5m gutters.",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-002",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, eaves/gutters to side boundary",
+   "side": {
+    "minM": 0.45,
+    "printed": "450 mm",
+    "basis": "fixed",
+    "sources": [
+     30305
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30305
+   ],
+   "evidence": [
+    {
+     "id": 30305,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "patios and awnings. 450mm from eaves/ 3.5m",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, eaves/gutters to side boundary",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "patios and awnings. 450mm from eaves/ 3.5m",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-003",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0,
+    "qualifiers": [
+     "open_space_frontage",
+     "waterfront"
+    ]
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, rear/side setback to foreshore reserve",
+   "rear": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     30310
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    30310
+   ],
+   "evidence": [
+    {
+     "id": 30310,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, rear/side setback to foreshore reserve",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-004",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0
+   },
+   "conditionText": [
+    "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, parallel road frontage",
+    "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, rear setback",
+    "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, side setback to secondary road frontage, lots under 600 m2"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     30303,
+     30307
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     30309
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    30303,
+    30307,
+    30309
+   ],
+   "evidence": [
+    {
+     "id": 30303,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, parallel road frontage",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    },
+    {
+     "id": 30307,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, side setback to secondary road frontage, lots under 600 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    },
+    {
+     "id": 30309,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, rear setback",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-005",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Dual occupancy, R1, R2, R3 and RU5, rear dwelling on a corner lot",
+   "rear": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     30402
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    30402
+   ],
+   "evidence": [
+    {
+     "id": 30402,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "and adjacent less than 4.5m (refer to • 1.5 metres for rear",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, R1, R2, R3 and RU5, rear dwelling on a corner lot",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "and adjacent less than 4.5m (refer to • 1.5 metres for rear",
+   "clause": "Table 2",
+   "page": 14,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-006",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": "Dual occupancy, R1, R2, R3 and RU5, lots under 600 m2, dwellings",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     30392
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30392
+   ],
+   "evidence": [
+    {
+     "id": 30392,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Lots under 600m2: Dual occupancy 900mm to the part of the 3m. Single storey 7.5m. • 5m to dwellings. (detached): dwelling located within development (up",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, R1, R2, R3 and RU5, lots under 600 m2, dwellings",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots under 600m2: Dual occupancy 900mm to the part of the 3m. Single storey 7.5m. • 5m to dwellings. (detached): dwelling located within development (up",
+   "clause": "Table 2",
+   "page": 14,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-007",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 600.0,
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "Dual occupancy, R1, R2, R3 and RU5, lots 600 m2 to 900 m2, dwellings",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     30393
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30393
+   ],
+   "evidence": [
+    {
+     "id": 30393,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Lots 600m2 - 900m2: at Figure 3) or 5m, Where the above does lot. • 6m to dwellings. whichever is the not apply, 1.5m to",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, R1, R2, R3 and RU5, lots 600 m2 to 900 m2, dwellings",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots 600m2 - 900m2: at Figure 3) or 5m, Where the above does lot. • 6m to dwellings. whichever is the not apply, 1.5m to",
+   "clause": "Table 2",
+   "page": 14,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-008",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 900.0
+   },
+   "conditionText": "Dual occupancy, R1, R2, R3 and RU5, lots over 900 m2, dwellings",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     30394
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30394
+   ],
+   "evidence": [
+    {
+     "id": 30394,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Lots over 900m2: than 4.5 m in height): 6m. • 7.5m to dwellings. • 3m to the dwelling. habitable outbuildings.",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, R1, R2, R3 and RU5, lots over 900 m2, dwellings",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots over 900m2: than 4.5 m in height): 6m. • 7.5m to dwellings. • 3m to the dwelling. habitable outbuildings.",
+   "clause": "Table 2",
+   "page": 14,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-009",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dual occupancy (attached), R1, R2, R3 and RU5, to the dwelling",
+    "Dual occupancy, R1, R2, R3 and RU5, part of dwelling within 20 m of front boundary and under 4.5 m high"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     30395
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     30398
+    ]
+   },
+   "front": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30395,
+    30398
+   ],
+   "evidence": [
+    {
+     "id": 30395,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "• 7.5m to dwellings. • 3m to the dwelling. habitable outbuildings.",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy (attached), R1, R2, R3 and RU5, to the dwelling",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    },
+    {
+     "id": 30398,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Lots under 600m2: Dual occupancy 900mm to the part of the 3m. Single storey 7.5m.",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, R1, R2, R3 and RU5, part of dwelling within 20 m of front boundary and under 4.5 m high",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "• 7.5m to dwellings. • 3m to the dwelling. habitable outbuildings.",
+   "clause": "Table 2",
+   "page": 14,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-010",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dual occupancy, R1, R2, R3 and RU5, any other part of the dwelling",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     30399
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30399
+   ],
+   "evidence": [
+    {
+     "id": 30399,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "• 6m to dwellings. whichever is the not apply, 1.5m to any • 900mm to detached",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, R1, R2, R3 and RU5, any other part of the dwelling",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "• 6m to dwellings. whichever is the not apply, 1.5m to any • 900mm to detached",
+   "clause": "Table 2",
+   "page": 14,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-011",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Dual occupancy (attached), R1, R2, R3 and RU5, garages, secondary road frontage",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     30396
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    30396
+   ],
+   "evidence": [
+    {
+     "id": 30396,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "• 6.5m to verandahs, • 5.5m to garages.",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy (attached), R1, R2, R3 and RU5, garages, secondary road frontage",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "• 6.5m to verandahs, • 5.5m to garages.",
+   "clause": "Table 2",
+   "page": 14,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-012",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Dual occupancy, R1, R2, R3 and RU5, single storey development (up to 4.5 m high)",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     30400
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    30400
+   ],
+   "evidence": [
+    {
+     "id": 30400,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "patios and awnings. setbacks of the front • 3 metres to dwelling.",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, R1, R2, R3 and RU5, single storey development (up to 4.5 m high)",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "patios and awnings. setbacks of the front • 3 metres to dwelling.",
+   "clause": "Table 2",
+   "page": 14,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-013",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dual occupancy, R1, R2, R3 and RU5, multiple storey development (greater than 4.5 m high)",
+    "Dual occupancy, R1, R2, R3 and RU5, side setback to secondary road frontage"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     30397
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     30401
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    30397,
+    30401
+   ],
+   "evidence": [
+    {
+     "id": 30397,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "600m2: Dual occupancy 900mm to the part of the 3m. Single storey 7.5m. • 5m to dwellings. (detached): dwelling located within development (up to 4.5m",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, R1, R2, R3 and RU5, side setback to secondary road frontage",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    },
+    {
+     "id": 30401,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "than 4.5 m in height): 6m.",
+     "clause": "Table 2",
+     "page": 14,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, R1, R2, R3 and RU5, multiple storey development (greater than 4.5 m high)",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "600m2: Dual occupancy 900mm to the part of the 3m. Single storey 7.5m. • 5m to dwellings. (detached): dwelling located within development (up to 4.5m",
+   "clause": "Table 2",
+   "page": 14,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-014",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0,
+    "lotAreaMinM2": 600.0
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to dwellings",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     30299
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30299
+   ],
+   "evidence": [
+    {
+     "id": 30299,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Lots 600m2 - 900m2: are proposed at the • 6m to dwellings. rear of a dwelling, one",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to dwellings",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots 600m2 - 900m2: are proposed at the • 6m to dwellings. rear of a dwelling, one",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-015",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0,
+    "lotAreaMinM2": 900.0
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots over 900 m2, to dwellings",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     30300
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30300
+   ],
+   "evidence": [
+    {
+     "id": 30300,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Lots over 900m2: • 7.5m to dwellings.",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots over 900 m2, to dwellings",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots over 900m2: • 7.5m to dwellings.",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-016",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0
+   },
+   "conditionText": [
+    "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots under 600 m2, to dwellings",
+    "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, one 2.4 m side setback required where parking spaces are proposed at the rear of a dwelling for vehicular access"
+   ],
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     30297
+    ]
+   },
+   "side": {
+    "minM": 2.4,
+    "basis": "fixed",
+    "sources": [
+     30306
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30297,
+    30306
+   ],
+   "evidence": [
+    {
+     "id": 30297,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m. • 5m to dwellings. and detached non-",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots under 600 m2, to dwellings",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    },
+    {
+     "id": 30306,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "• 5m to verandahs, 2.4m side setback is",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, one 2.4 m side setback required where parking spaces are proposed at the rear of a dwelling for vehicular access",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m. • 5m to dwellings. and detached non-",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-017",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0,
+    "qualifiers": [
+     "non_habitable",
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, no road frontage and to public reserve, dwellings and detached non-habitable outbuildings",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     30304
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30304
+   ],
+   "evidence": [
+    {
+     "id": 30304,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, no road frontage and to public reserve, dwellings and detached non-habitable outbuildings",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-018",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "verandah_deck"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0,
+    "lotAreaMinM2": 600.0
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to verandahs, patios and awnings",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     30302
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30302
+   ],
+   "evidence": [
+    {
+     "id": 30302,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "• 5m to verandahs, 2.4m side setback is",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to verandahs, patios and awnings",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "• 5m to verandahs, 2.4m side setback is",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-019",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "verandah_deck"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0,
+    "lotAreaMinM2": 900.0
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots over 900 m2, to verandahs, patios and awnings",
+   "front": {
+    "minM": 6.5,
+    "basis": "fixed",
+    "sources": [
+     30301
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30301
+   ],
+   "evidence": [
+    {
+     "id": 30301,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "• 6.5m to verandahs,",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots over 900 m2, to verandahs, patios and awnings",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "• 6.5m to verandahs,",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-020",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "verandah_deck"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots under 600 m2, to verandahs, patios and awnings",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     30298
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30298
+   ],
+   "evidence": [
+    {
+     "id": 30298,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "• 4m to verandahs, Lots 600m2 and over:",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots under 600 m2, to verandahs, patios and awnings",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "• 4m to verandahs, Lots 600m2 and over:",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-021",
+   "zones": [
+    "R2",
+    "R5",
+    "RU1",
+    "RU2",
+    "RU4",
+    "C4",
+    "C3",
+    "C2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeysMin": 2,
+    "lotAreaMinM2": 2000.0,
+    "lotAreaMaxM2": 4000.0
+   },
+   "conditionText": [
+    "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots up to 4,000 m2",
+    "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, rear setback printed once against the first row (lots up to 4,000 m2)",
+    "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, secondary road frontage, lots up to 4,000 m2"
+   ],
+   "front": {
+    "minM": 12.5,
+    "basis": "fixed",
+    "sources": [
+     30289
+    ]
+   },
+   "secondaryFront": {
+    "minM": null,
+    "formula": "50% of front setback",
+    "basis": "text",
+    "note": "50% of the front setback",
+    "sources": [
+     30292
+    ]
+   },
+   "rear": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     30296
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     30293
+    ]
+   },
+   "garage": null,
+   "sources": [
+    30289,
+    30292,
+    30293,
+    30296
+   ],
+   "evidence": [
+    {
+     "id": 30289,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "For lots up to 4,000m2 12.5m 50% of the 5m 7.5m",
+     "clause": "Table 1",
+     "page": 26,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots up to 4,000 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    },
+    {
+     "id": 30292,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "For lots up to 4,000m2 12.5m 50% of the 5m 7.5m",
+     "clause": "Table 1",
+     "page": 26,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, secondary road frontage, lots up to 4,000 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    },
+    {
+     "id": 30296,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "For lots up to 4,000m2 12.5m 50% of the 5m 7.5m",
+     "clause": "Table 1",
+     "page": 26,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, rear setback printed once against the first row (lots up to 4,000 m2)",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    },
+    {
+     "id": 30293,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "For lots up to 4,000m2 12.5m 50% of the 5m 7.5m",
+     "clause": "Table 1",
+     "page": 26,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots up to 4,000 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "For lots up to 4,000m2 12.5m 50% of the 5m 7.5m",
+   "clause": "Table 1",
+   "page": 26,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-022",
+   "zones": [
+    "R2",
+    "R5",
+    "RU1",
+    "RU2",
+    "RU4",
+    "C4",
+    "C3",
+    "C2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeysMin": 2,
+    "lotAreaMinM2": 2000.0
+   },
+   "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots between 4,000 m2 and 10,000 m2",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     30290
+    ]
+   },
+   "side": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     30294
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30290,
+    30294
+   ],
+   "evidence": [
+    {
+     "id": 30290,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "For lots between 4,000m2 20m 7.5m",
+     "clause": "Table 1",
+     "page": 26,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots between 4,000 m2 and 10,000 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    },
+    {
+     "id": 30294,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "For lots between 4,000m2 20m 7.5m",
+     "clause": "Table 1",
+     "page": 26,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots between 4,000 m2 and 10,000 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "For lots between 4,000m2 20m 7.5m",
+   "clause": "Table 1",
+   "page": 26,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-023",
+   "zones": [
+    "R2",
+    "R5",
+    "RU1",
+    "RU2",
+    "RU4",
+    "C4",
+    "C3",
+    "C2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeysMin": 2,
+    "lotAreaMinM2": 2000.0
+   },
+   "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     30291
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30291
+   ],
+   "evidence": [
+    {
+     "id": 30291,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "For lots greater than 30m 10m",
+     "clause": "Table 1",
+     "page": 26,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "For lots greater than 30m 10m",
+   "clause": "Table 1",
+   "page": 26,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-024",
+   "zones": [
+    "R2",
+    "R5",
+    "RU1",
+    "RU2",
+    "RU4",
+    "C4",
+    "C3",
+    "C2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeysMin": 2,
+    "lotAreaMinM2": 2000.0
+   },
+   "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     30295
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30295
+   ],
+   "evidence": [
+    {
+     "id": 30295,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "For lots greater than 30m 10m",
+     "clause": "Table 1",
+     "page": 26,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "For lots greater than 30m 10m",
+   "clause": "Table 1",
+   "page": 26,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-025",
+   "zones": [
+    "R5",
+    "RU1",
+    "RU2",
+    "RU4",
+    "C4",
+    "C3"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 4000.0,
+    "lotAreaMaxM2": 10000.0
+   },
+   "conditionText": [
+    "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots 4,000 m2 to 10,000 m2, front primary frontage",
+    "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots 4,000 m2 to 10,000 m2, secondary road frontage",
+    "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots 4,000 m2 to 10,000 m2, side setback"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     30407
+    ]
+   },
+   "secondaryFront": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     30408
+    ]
+   },
+   "side": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     30409
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30407,
+    30408,
+    30409
+   ],
+   "evidence": [
+    {
+     "id": 30407,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "For lots between 4,000m2 and 20m 10m 7.5m",
+     "clause": "Table 3",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots 4,000 m2 to 10,000 m2, front primary frontage",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    },
+    {
+     "id": 30408,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "For lots between 4,000m2 and 20m 10m 7.5m",
+     "clause": "Table 3",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots 4,000 m2 to 10,000 m2, secondary road frontage",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    },
+    {
+     "id": 30409,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "For lots between 4,000m2 and 20m 10m 7.5m",
+     "clause": "Table 3",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots 4,000 m2 to 10,000 m2, side setback",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "For lots between 4,000m2 and 20m 10m 7.5m",
+   "clause": "Table 3",
+   "page": 15,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-026",
+   "zones": [
+    "R5",
+    "RU1",
+    "RU2",
+    "RU4",
+    "C4",
+    "C3"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 4000.0
+   },
+   "conditionText": [
+    "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots up to 4,000 m2, front setback primary frontage",
+    "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots up to 4,000 m2, rear setback",
+    "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots up to 4,000 m2, secondary road frontage",
+    "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots up to 4,000 m2, side setback"
+   ],
+   "front": {
+    "minM": 12.5,
+    "basis": "fixed",
+    "sources": [
+     30403
+    ]
+   },
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     30404
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     30405
+    ]
+   },
+   "rear": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     30406
+    ]
+   },
+   "garage": null,
+   "sources": [
+    30403,
+    30404,
+    30405,
+    30406
+   ],
+   "evidence": [
+    {
+     "id": 30403,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "For lots up to 4,000m2 12.5m 6m 5m 7.5m 7.5m",
+     "clause": "Table 3",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots up to 4,000 m2, front setback primary frontage",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    },
+    {
+     "id": 30404,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "For lots up to 4,000m2 12.5m 6m 5m 7.5m 7.5m",
+     "clause": "Table 3",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots up to 4,000 m2, secondary road frontage",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    },
+    {
+     "id": 30405,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "For lots up to 4,000m2 12.5m 6m 5m 7.5m 7.5m",
+     "clause": "Table 3",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots up to 4,000 m2, side setback",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    },
+    {
+     "id": 30406,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "For lots up to 4,000m2 12.5m 6m 5m 7.5m 7.5m",
+     "clause": "Table 3",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots up to 4,000 m2, rear setback",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "For lots up to 4,000m2 12.5m 6m 5m 7.5m 7.5m",
+   "clause": "Table 3",
+   "page": 15,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-027",
+   "zones": [
+    "R5",
+    "RU1",
+    "RU2",
+    "RU4",
+    "C4",
+    "C3"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 10000.0
+   },
+   "conditionText": [
+    "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots greater than 10,000 m2, front primary frontage",
+    "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots greater than 10,000 m2, secondary road frontage",
+    "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots greater than 10,000 m2, side setback"
+   ],
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     30410
+    ]
+   },
+   "secondaryFront": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     30411
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     30412
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30410,
+    30411,
+    30412
+   ],
+   "evidence": [
+    {
+     "id": 30410,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "For lots greater than 10,000m2 (1ha) 30m 15m 10m",
+     "clause": "Table 3",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots greater than 10,000 m2, front primary frontage",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    },
+    {
+     "id": 30411,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "For lots greater than 10,000m2 (1ha) 30m 15m 10m",
+     "clause": "Table 3",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots greater than 10,000 m2, secondary road frontage",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    },
+    {
+     "id": 30412,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "For lots greater than 10,000m2 (1ha) 30m 15m 10m",
+     "clause": "Table 3",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Dual occupancy, RU1, RU2, RU4, C3, C4, R5, lots greater than 10,000 m2, side setback",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "For lots greater than 10,000m2 (1ha) 30m 15m 10m",
+   "clause": "Table 3",
+   "page": 15,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-028",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMaxM": 9.0,
+    "qualifiers": [
+     "classified_road",
+     "laneway"
+    ]
+   },
+   "conditionText": "Berry West of Princes Highway, Hitchcocks Lane subdivision (N3): dwelling houses on lots 9 m wide or less, each side",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     30510
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30510
+   ],
+   "evidence": [
+    {
+     "id": 30510,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "9 m or less 900 mm on each side",
+     "clause": "Table 7",
+     "page": 31,
+     "source_file": "DCP/chapter-n3.txt",
+     "condition": "Berry West of Princes Highway, Hitchcocks Lane subdivision (N3): dwelling houses on lots 9 m wide or less, each side",
+     "edition": "DCP Chapter N3 version 3 (adopted 11/05/2021, commenced 16/06/2021)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "9 m or less 900 mm on each side",
+   "clause": "Table 7",
+   "page": 31,
+   "source_file": "DCP/chapter-n3.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-029",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road",
+     "laneway"
+    ]
+   },
+   "conditionText": "Berry West of Princes Highway, Hitchcocks Lane subdivision (N3): dwelling houses on lots wider than 9 m, one side: 10% of lot width up to a maximum of 2.5 m (900 mm on the other side)",
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     30511
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30511
+   ],
+   "evidence": [
+    {
+     "id": 30511,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "than 9 m equivalent to 10% of the width of the allotment, up to a maximum of 2.5 m.",
+     "clause": "Table 7",
+     "page": 32,
+     "source_file": "DCP/chapter-n3.txt",
+     "condition": "Berry West of Princes Highway, Hitchcocks Lane subdivision (N3): dwelling houses on lots wider than 9 m, one side: 10% of lot width up to a maximum of 2.5 m (900 mm on the other side)",
+     "edition": "DCP Chapter N3 version 3 (adopted 11/05/2021, commenced 16/06/2021)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "than 9 m equivalent to 10% of the width of the allotment, up to a maximum of 2.5 m.",
+   "clause": "Table 7",
+   "page": 32,
+   "source_file": "DCP/chapter-n3.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-030",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Garage facade width addressing street, maximum 9 m or 50% of frontage length, whichever is lesser",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 9.0,
+    "sources": [
+     30324
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    30324
+   ],
+   "evidence": [
+    {
+     "id": 30324,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "• Provide opportunity for passive the street shall not exceed 9m or 50% of",
+     "clause": "A26.2",
+     "page": 32,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "Garage facade width addressing street, maximum 9 m or 50% of frontage length, whichever is lesser",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "• Provide opportunity for passive the street shall not exceed 9m or 50% of",
+   "clause": "A26.2",
+   "page": 32,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-031",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Multi dwelling housing, attached and semi-detached dwellings, ground level, to dwellings",
+   "front": {
+    "minM": 5.5,
+    "basis": "fixed",
+    "sources": [
+     30413
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30413
+   ],
+   "evidence": [
+    {
+     "id": 30413,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "• 5.5m to dwellings. outbuildings. dwelling greater than 4.5m",
+     "clause": "Table 4",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Multi dwelling housing, attached and semi-detached dwellings, ground level, to dwellings",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "• 5.5m to dwellings. outbuildings. dwelling greater than 4.5m",
+   "clause": "Table 4",
+   "page": 15,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-032",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Multi dwelling housing, attached and semi-detached dwellings, no road frontage and to public reserve",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     30416
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30416
+   ],
+   "evidence": [
+    {
+     "id": 30416,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Multi dwelling housing, attached Ground level – 3m 1.5m 3m to the part of a dwelling 7.5m to dwellings",
+     "clause": "Table 4",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Multi dwelling housing, attached and semi-detached dwellings, no road frontage and to public reserve",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "Multi dwelling housing, attached Ground level – 3m 1.5m 3m to the part of a dwelling 7.5m to dwellings",
+   "clause": "Table 4",
+   "page": 15,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-033",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "verandah_deck",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Multi dwelling housing, attached and semi-detached dwellings, ground level, verandahs, awnings and patios",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     30414
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30414
+   ],
+   "evidence": [
+    {
+     "id": 30414,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "dwellings and semi-detached • 4.5m to verandahs, 900mm to detached up to 4.5m high. and detached",
+     "clause": "Table 4",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Multi dwelling housing, attached and semi-detached dwellings, ground level, verandahs, awnings and patios",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "dwellings and semi-detached • 4.5m to verandahs, 900mm to detached up to 4.5m high. and detached",
+   "clause": "Table 4",
+   "page": 15,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-034",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Multi dwelling housing, part of dwelling up to 4.5 m high",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     30417
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    30417
+   ],
+   "evidence": [
+    {
+     "id": 30417,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Multi dwelling housing, attached Ground level – 3m 1.5m 3m to the part of a dwelling 7.5m to dwellings",
+     "clause": "Table 4",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Multi dwelling housing, part of dwelling up to 4.5 m high",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Multi dwelling housing, attached Ground level – 3m 1.5m 3m to the part of a dwelling 7.5m to dwellings",
+   "clause": "Table 4",
+   "page": 15,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  },
+  {
+   "id": "shoalhaven-city-council-035",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Multi dwelling housing, part of dwelling greater than 4.5 m high",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     30418
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    30418
+   ],
+   "evidence": [
+    {
+     "id": 30418,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "dwellings. awnings and patios. non-habitable 6m to the part of the outbuildings.",
+     "clause": "Table 4",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Multi dwelling housing, part of dwelling greater than 4.5 m high",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "dwellings. awnings and patios. non-habitable 6m to the part of the outbuildings.",
+   "clause": "Table 4",
+   "page": 15,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+  }
+ ],
+ "gaps": [
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): scanned, no text: DCP/D25-272638-Chapter-G9-Development-on-Flood-Prone-Land.pdf (Chapter G9 flood planning level, freeboard and floor level rules not extracted; only precinct chapters NB3, NB4 give 0.5 m freeboard) | access: residential driveway widths for single dwellings by frontage, driveway grades transitions (AS 2890 cited), layback type | contributions: s7.11 plan rates (Chapter G21 Contributions Plan 2026 saved in DCP folder but not extracted), bonds, maintenance period (G11 section 6 not extracted) | setbacks: commercial and industrial zone setbacks (G20 Industrial and business chapters not extracted); town-specific chapters (S1, S3, S6 to S10, N-series other than N3) only skimmed, n"
+ ],
+ "notes": "Built from 51 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 20
+  },
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 24
+  },
+  "R3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 20
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 20
+  },
+  "SP3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 11
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 7
+  },
+  "RU1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 7
+  },
+  "RU2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 7
+  },
+  "RU4": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 7
+  },
+  "C4": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 7
+  },
+  "C3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 7
+  },
+  "C2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 4
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 8
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 51,
+  "rules": 35,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 3
+ }
+}

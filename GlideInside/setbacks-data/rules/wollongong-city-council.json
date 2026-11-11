@@ -1,0 +1,1442 @@
+{
+ "lga_slug": "wollongong-city-council",
+ "council": "Wollongong City Council",
+ "lgaNames": [
+  "WOLLONGONG",
+  "WOLLONGONG CITY",
+  "WOLLONGONG CITY COUNCIL"
+ ],
+ "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+ "lep": "Wollongong LEP 2009",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "wollongong-city-council-001",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "infill development sites, dwelling houses, dual occupancy (general residential controls)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     39465
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39465
+   ],
+   "evidence": [
+    {
+     "id": 39465,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Infill development sites require a minimum setback of 6m from the front property boundary",
+     "clause": "4.2.2(1)(a)",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "infill development sites, dwelling houses, dual occupancy (general residential controls)",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "Infill development sites require a minimum setback of 6m from the front property boundary",
+   "clause": "4.2.2(1)(a)",
+   "page": 5,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-002",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "new_release_area"
+    ]
+   },
+   "conditionText": "greenfield sites, dwelling houses, dual occupancy (general residential controls)",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     39466
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39466
+   ],
+   "evidence": [
+    {
+     "id": 39466,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Greenfield sites require a minimum setback of 4m",
+     "clause": "4.2.2(1)(d)",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "greenfield sites, dwelling houses, dual occupancy (general residential controls)",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "Greenfield sites require a minimum setback of 4m",
+   "clause": "4.2.2(1)(d)",
+   "page": 5,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-003",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "R2 zone: development within the 8 m rear setback limited to single storey",
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     39476
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    39476
+   ],
+   "evidence": [
+    {
+     "id": 39476,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "where development occurs within the 8m rear setback the development is limited to single storey",
+     "clause": "4.1.2 (R2 rear setback note)",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "R2 zone: development within the 8 m rear setback limited to single storey",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "where development occurs within the 8m rear setback the development is limited to single storey",
+   "clause": "4.1.2 (R2 rear setback note)",
+   "page": 5,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-004",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "attached and multi-dwelling development, R2 zone: 0.8 x ceiling height (1.0 x where first floor living areas face rear)",
+   "side": {
+    "minM": null,
+    "formula": "0.8 x ceiling height",
+    "basis": "text",
+    "sources": [
+     39513
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39513
+   ],
+   "evidence": [
+    {
+     "id": 39513,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R2 Low Density 0.8 x ceiling height 1.0 x ceiling height",
+     "clause": "5.4.2(1)",
+     "page": 28,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "attached and multi-dwelling development, R2 zone: 0.8 x ceiling height (1.0 x where first floor living areas face rear)",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "R2 Low Density 0.8 x ceiling height 1.0 x ceiling height",
+   "clause": "5.4.2(1)",
+   "page": 28,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-005",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "attached and multi-dwelling development, R3 zone: 0.8 x ceiling height (1.0 x where first floor living areas face rear)",
+   "side": {
+    "minM": null,
+    "formula": "0.8 x ceiling height",
+    "basis": "text",
+    "sources": [
+     39514
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39514
+   ],
+   "evidence": [
+    {
+     "id": 39514,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R3 Medium 0.8 x ceiling height 1.0 x ceiling height",
+     "clause": "5.4.2(1)",
+     "page": 28,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "attached and multi-dwelling development, R3 zone: 0.8 x ceiling height (1.0 x where first floor living areas face rear)",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "R3 Medium 0.8 x ceiling height 1.0 x ceiling height",
+   "clause": "5.4.2(1)",
+   "page": 28,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-006",
+   "zones": [
+    "R4"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "attached and multi-dwelling development, R4 zone: 0.4 x ceiling height (0.6 x where first floor living areas face rear)",
+   "side": {
+    "minM": null,
+    "formula": "0.4 x ceiling height",
+    "basis": "text",
+    "sources": [
+     39515
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39515
+   ],
+   "evidence": [
+    {
+     "id": 39515,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R4 High Density 0.4 x ceiling height 0.6 x ceiling height",
+     "clause": "5.4.2(1)",
+     "page": 28,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "attached and multi-dwelling development, R4 zone: 0.4 x ceiling height (0.6 x where first floor living areas face rear)",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "R4 High Density 0.4 x ceiling height 0.6 x ceiling height",
+   "clause": "5.4.2(1)",
+   "page": 28,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "cornerLot": true,
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "corner allotments infill: 6 m unless prevailing street character permits less",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     39470
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39470
+   ],
+   "evidence": [
+    {
+     "id": 39470,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "Infill development sites require a minimum setback of 6m, or",
+     "clause": "4.2.2(2)(a)",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "corner allotments infill: 6 m unless prevailing street character permits less",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Infill development sites require a minimum setback of 6m, or",
+   "clause": "4.2.2(2)(a)",
+   "page": 5,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element",
+     "laneway"
+    ]
+   },
+   "conditionText": [
+    "Hayes Lane and Iredell Road Neighbourhood Plan: corner lot secondary road",
+    "Wongawilli North Neighbourhood Plan: lots fronting Wongawilli Road and Smiths Lane"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     39621
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     39626
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39621,
+    39626
+   ],
+   "evidence": [
+    {
+     "id": 39621,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Minimum front building line setback of 4.5m for all lots fronting Wongawilli Road",
+     "clause": "14.5.3",
+     "page": 62,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Wongawilli North Neighbourhood Plan: lots fronting Wongawilli Road and Smiths Lane",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    },
+    {
+     "id": 39626,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Minimum setback of two metres from a secondary road on a corner lot",
+     "clause": "14.5.13(5)",
+     "page": 82,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Hayes Lane and Iredell Road Neighbourhood Plan: corner lot secondary road",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Minimum front building line setback of 4.5m for all lots fronting Wongawilli Road",
+   "clause": "14.5.3",
+   "page": 62,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+  },
+  {
+   "id": "wollongong-city-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element",
+     "laneway"
+    ]
+   },
+   "conditionText": "Hayes Lane and Iredell Road Neighbourhood Plan: primary road frontage",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     39624
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39624
+   ],
+   "evidence": [
+    {
+     "id": 39624,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Minimum setback of four metres from primary road frontage",
+     "clause": "14.5.13(4)",
+     "page": 82,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Hayes Lane and Iredell Road Neighbourhood Plan: primary road frontage",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "averaging alternative printed beside the fixed value; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Minimum setback of four metres from primary road frontage",
+   "clause": "14.5.13(4)",
+   "page": 82,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+  },
+  {
+   "id": "wollongong-city-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": [
+    "Bong Bong East and North Neighbourhood Plan: corner allotments, secondary street frontage",
+    "Bong Bong East and North Neighbourhood Plan: front building line",
+    "Bong Bong East and North Neighbourhood Plan: maximum rear setback for buildings over 3.8 m",
+    "eaves and gutters to side and rear boundaries"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     39614
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     39616
+    ]
+   },
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     39619
+    ]
+   },
+   "side": {
+    "minM": 0.45,
+    "printed": "450 mm",
+    "basis": "fixed",
+    "sources": [
+     39472
+    ]
+   },
+   "garage": null,
+   "sources": [
+    39472,
+    39614,
+    39616,
+    39619
+   ],
+   "evidence": [
+    {
+     "id": 39614,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front building line: 4.5m minimum setback",
+     "clause": "14.5.1 (replaces B1 4.25 Controls 1 and 2)",
+     "page": 59,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Bong Bong East and North Neighbourhood Plan: front building line",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    },
+    {
+     "id": 39616,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "For corner allotments a 2m minimum setback requirement applies from the secondary street",
+     "clause": "14.5.1",
+     "page": 60,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Bong Bong East and North Neighbourhood Plan: corner allotments, secondary street frontage",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    },
+    {
+     "id": 39619,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "up to a maximum setback of 8m",
+     "clause": "14.5.1",
+     "page": 60,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Bong Bong East and North Neighbourhood Plan: maximum rear setback for buildings over 3.8 m",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    },
+    {
+     "id": 39472,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "eaves/gutters must be setback at least 450mm from the side and rear property boundaries",
+     "clause": "4.3.2(1)",
+     "page": 6,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "eaves and gutters to side and rear boundaries",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front building line: 4.5m minimum setback",
+   "clause": "14.5.1 (replaces B1 4.25 Controls 1 and 2)",
+   "page": 59,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+  },
+  {
+   "id": "wollongong-city-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightOverM": 7.0
+   },
+   "conditionText": "walls exceeding 7 m overall height, side and rear boundaries",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     39473
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39473
+   ],
+   "evidence": [
+    {
+     "id": 39473,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "that exceed 7 metres overall height must be setback at least 3 metres from the side and rear boundaries",
+     "clause": "4.3.2(2)",
+     "page": 6,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "walls exceeding 7 m overall height, side and rear boundaries",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "that exceed 7 metres overall height must be setback at least 3 metres from the side and rear boundaries",
+   "clause": "4.3.2(2)",
+   "page": 6,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "corner allotments, secondary building line",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     39468
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39468
+   ],
+   "evidence": [
+    {
+     "id": 39468,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary building line must be setback a minimum of 3 metres",
+     "clause": "4.2.2(2)(c)",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "corner allotments, secondary building line",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Secondary building line must be setback a minimum of 3 metres",
+   "clause": "4.2.2(2)(c)",
+   "page": 5,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "walls to side or rear boundary (dwelling houses, dual occupancy)",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     39471
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39471
+   ],
+   "evidence": [
+    {
+     "id": 39471,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Walls must be setback at least 900mm from any side or rear property boundary",
+     "clause": "4.3.2(1)",
+     "page": 6,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "walls to side or rear boundary (dwelling houses, dual occupancy)",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Walls must be setback at least 900mm from any side or rear property boundary",
+   "clause": "4.3.2(1)",
+   "page": 6,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 3.8,
+    "lotAreaMinM2": 450.0,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Bong Bong East and North Neighbourhood Plan: dwelling up to 3.8 m height on lot 450 m2 or greater",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     39617
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39617
+   ],
+   "evidence": [
+    {
+     "id": 39617,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "must have a setback from a side boundary of at least 900mm",
+     "clause": "14.5.1",
+     "page": 60,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Bong Bong East and North Neighbourhood Plan: dwelling up to 3.8 m height on lot 450 m2 or greater",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "must have a setback from a side boundary of at least 900mm",
+   "clause": "14.5.1",
+   "page": 60,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+  },
+  {
+   "id": "wollongong-city-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 3.8,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Bong Bong East and North Neighbourhood Plan: dwelling and attached structures up to 3.8 m building height",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     39618
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    39618
+   ],
+   "evidence": [
+    {
+     "id": 39618,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "must have a setback from the rear boundary of at least 3m",
+     "clause": "14.5.1",
+     "page": 60,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Bong Bong East and North Neighbourhood Plan: dwelling and attached structures up to 3.8 m building height",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "must have a setback from the rear boundary of at least 3m",
+   "clause": "14.5.1",
+   "page": 60,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+  },
+  {
+   "id": "wollongong-city-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Iowna Neighbourhood Plan: garages on secondary road of corner lot",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     39630
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    39630
+   ],
+   "evidence": [
+    {
+     "id": 39630,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "which require a 5.5m setback",
+     "clause": "14.5.17(4)",
+     "page": 92,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Iowna Neighbourhood Plan: garages on secondary road of corner lot",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "which require a 5.5m setback",
+   "clause": "14.5.17(4)",
+   "page": 92,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+  },
+  {
+   "id": "wollongong-city-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "corner allotments, garage to secondary road boundary",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     39469
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    39469
+   ],
+   "evidence": [
+    {
+     "id": 39469,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "except for garages which must be setback at least 5.5 metres from the property boundary on the secondary road",
+     "clause": "4.2.2(2)(c)",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "corner allotments, garage to secondary road boundary",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "except for garages which must be setback at least 5.5 metres from the property boundary on the secondary road",
+   "clause": "4.2.2(2)(c)",
+   "page": 5,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element",
+     "laneway"
+    ]
+   },
+   "conditionText": "Hayes Lane and Iredell Road Neighbourhood Plan: garages from property boundary on primary road",
+   "garage": {
+    "minM": 5.0,
+    "sources": [
+     39625
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    39625
+   ],
+   "evidence": [
+    {
+     "id": 39625,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "garages which must be setback at least five metres from the property boundary",
+     "clause": "14.5.13(4)",
+     "page": 82,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Hayes Lane and Iredell Road Neighbourhood Plan: garages from property boundary on primary road",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "garages which must be setback at least five metres from the property boundary",
+   "clause": "14.5.13(4)",
+   "page": 82,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+  },
+  {
+   "id": "wollongong-city-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": [
+    "Bong Bong East and North Neighbourhood Plan: garages from primary road property boundary",
+    "Iowna Neighbourhood Plan: corner lot secondary road, other than garages",
+    "Wongawilli North Neighbourhood Plan: garages and carports on dual frontage lots"
+   ],
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     39629
+    ]
+   },
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     39615
+    ]
+   },
+   "rear": {
+    "minM": 5.5,
+    "basis": "fixed",
+    "sources": [
+     39623
+    ]
+   },
+   "front": null,
+   "side": null,
+   "sources": [
+    39615,
+    39623,
+    39629
+   ],
+   "evidence": [
+    {
+     "id": 39629,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Minimum setback of 2-metres from secondary road on a corner lot, except for garages",
+     "clause": "14.5.17(4)",
+     "page": 92,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Iowna Neighbourhood Plan: corner lot secondary road, other than garages",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    },
+    {
+     "id": 39615,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "garages which must be setback at least 5.5m from the property boundary on the primary road",
+     "clause": "14.5.1",
+     "page": 59,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Bong Bong East and North Neighbourhood Plan: garages from primary road property boundary",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    },
+    {
+     "id": 39623,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "garages and carports are to have a minimum rear setback of 5.5m",
+     "clause": "14.5.3",
+     "page": 62,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Wongawilli North Neighbourhood Plan: garages and carports on dual frontage lots",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Minimum setback of 2-metres from secondary road on a corner lot, except for garages",
+   "clause": "14.5.17(4)",
+   "page": 92,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+  },
+  {
+   "id": "wollongong-city-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "garages and carports to primary street frontage",
+    "garages minimum setback from front property boundary"
+   ],
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     39467,
+     39494
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    39467,
+    39494
+   ],
+   "evidence": [
+    {
+     "id": 39467,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages and carports must be setback a minimum of 5.5 metres",
+     "clause": "4.2.2(1)(c)",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "garages and carports to primary street frontage",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    },
+    {
+     "id": 39494,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages must be setback a minimum of 5.5m from the front property boundary",
+     "clause": "4.10.2(3)",
+     "page": 13,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "garages minimum setback from front property boundary",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Garages and carports must be setback a minimum of 5.5 metres",
+   "clause": "4.2.2(1)(c)",
+   "page": 5,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "attached and multi-dwelling development, all zones",
+    "attached dwellings and multi dwelling housing",
+    "attached dwellings and multi dwelling housing, corner allotments"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     39510
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     39511
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     39512
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39510,
+    39511,
+    39512
+   ],
+   "evidence": [
+    {
+     "id": 39510,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A 6m setback requirements applies from the front property boundary to the front façade",
+     "clause": "5.3.2(1)",
+     "page": 27,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "attached dwellings and multi dwelling housing",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    },
+    {
+     "id": 39511,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "a minimum setback of 3m to the secondary street frontage from the dwelling",
+     "clause": "5.3.2(2)",
+     "page": 27,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "attached dwellings and multi dwelling housing, corner allotments",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    },
+    {
+     "id": 39512,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "All zones 1.5m 1.5m",
+     "clause": "5.4.2(1)",
+     "page": 28,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "attached and multi-dwelling development, all zones",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A 6m setback requirements applies from the front property boundary to the front façade",
+   "clause": "5.3.2(1)",
+   "page": 27,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {
+    "level": "upper",
+    "qualifiers": [
+     "habitable"
+    ]
+   },
+   "conditionText": "freestanding garages or outbuildings with habitable roof space or second storey",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     39475
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39475
+   ],
+   "evidence": [
+    {
+     "id": 39475,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "second storey must be setback at least 900mm from a side or rear property boundary",
+     "clause": "4.3.2(3)",
+     "page": 6,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "freestanding garages or outbuildings with habitable roof space or second storey",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "second storey must be setback at least 900mm from a side or rear property boundary",
+   "clause": "4.3.2(3)",
+   "page": 6,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "detached single storey garages or outbuildings (non-masonry), side or rear boundary",
+   "side": {
+    "minM": 0.5,
+    "printed": "500 mm",
+    "basis": "fixed",
+    "sources": [
+     39474
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39474
+   ],
+   "evidence": [
+    {
+     "id": 39474,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Detached single storey garages/outbuildings must be setback at least 500mm from a side or rear boundary",
+     "clause": "4.3.2(4)",
+     "page": 6,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+     "condition": "detached single storey garages or outbuildings (non-masonry), side or rear boundary",
+     "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Detached single storey garages/outbuildings must be setback at least 500mm from a side or rear boundary",
+   "clause": "4.3.2(4)",
+   "page": 6,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+  },
+  {
+   "id": "wollongong-city-council-024",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "secondary_dwelling",
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Rural zones: Front building line setback for dwelling-houses, secondary dwellings, farm stay buildings, rural sheds",
+    "Rural zones: Rear setback for dwelling-houses, secondary dwellings, farm stay buildings, rural sheds",
+    "Rural zones: Secondary building line for corner lots setback for dwelling-houses, secondary dwellings, farm stay buildings, rural sheds",
+    "Rural zones: Side setback for dwelling-houses, secondary dwellings, farm stay buildings, rural sheds"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     39638
+    ]
+   },
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     39639
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     39641
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     39640
+    ]
+   },
+   "garage": null,
+   "sources": [
+    39638,
+    39639,
+    39640,
+    39641
+   ],
+   "evidence": [
+    {
+     "id": 39638,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front Building Line Setback 10 metres",
+     "clause": "4.2.2 Table 1",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B07-Development-in-Rural-Zones.pdf",
+     "condition": "Rural zones: Front building line setback for dwelling-houses, secondary dwellings, farm stay buildings, rural sheds",
+     "edition": "Wollongong DCP 2009 Chapter B7 Development in Rural Zones (edition UNVERIFIED)"
+    },
+    {
+     "id": 39639,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Building Line Setback for Corner Lots 5 metres",
+     "clause": "4.2.2 Table 1",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B07-Development-in-Rural-Zones.pdf",
+     "condition": "Rural zones: Secondary building line for corner lots setback for dwelling-houses, secondary dwellings, farm stay buildings, rural sheds",
+     "edition": "Wollongong DCP 2009 Chapter B7 Development in Rural Zones (edition UNVERIFIED)"
+    },
+    {
+     "id": 39641,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Setback 10 metres",
+     "clause": "4.2.2 Table 1",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B07-Development-in-Rural-Zones.pdf",
+     "condition": "Rural zones: Rear setback for dwelling-houses, secondary dwellings, farm stay buildings, rural sheds",
+     "edition": "Wollongong DCP 2009 Chapter B7 Development in Rural Zones (edition UNVERIFIED)"
+    },
+    {
+     "id": 39640,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback 5 metres",
+     "clause": "4.2.2 Table 1",
+     "page": 5,
+     "source_file": "DCP/Wollongong-DCP-2009-Chapter-B07-Development-in-Rural-Zones.pdf",
+     "condition": "Rural zones: Side setback for dwelling-houses, secondary dwellings, farm stay buildings, rural sheds",
+     "edition": "Wollongong DCP 2009 Chapter B7 Development in Rural Zones (edition UNVERIFIED)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Front Building Line Setback 10 metres",
+   "clause": "4.2.2 Table 1",
+   "page": 5,
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B07-Development-in-Rural-Zones.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 39493, 39495",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP Chapter B2 Residential Subdivision not in library (road hierarchy, reserve and carriageway widths, kerb returns, cul-de-sac dimensions, lot sizes)"
+ ],
+ "notes": "Built from 38 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "R2": {
+   "front": false,
+   "side": false,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "R3": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "R4": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 18
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 38,
+  "rules": 24,
+  "recordsNotModelled": 2,
+  "otherSetbackKeysNotModelled": 13
+ }
+}

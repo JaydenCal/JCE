@@ -1,0 +1,350 @@
+{
+ "lga_slug": "strathfield-municipal-council",
+ "council": "Strathfield Municipal Council",
+ "lgaNames": [
+  "STRATHFIELD",
+  "STRATHFIELD MUNICIPAL",
+  "STRATHFIELD MUNICIPAL COUNCIL"
+ ],
+ "dcp": "Strathfield General Residential DCP (dated 1 September 2026) for dwelling houses, dual occupancies, multi-dwelling housing, terraces, manor homes; Strathfield Consolidated DCP 2005 Parts A (2020), D, I, N (amended 02/2023) and R (in force 10/07/2018). Part A (2020) and the 2026 General Residential DCP overlap for dwelling houses; Part I dates from 1976-1986 sources and its currency is not confirmed",
+ "lep": "Strathfield Local Environmental Plan 2012",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "strathfield-municipal-council-001",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "General Residential DCP: dwellings and dual occupancies, two storey: minimum side setback",
+   "side": {
+    "minM": 1.2,
+    "basis": "fixed",
+    "sources": [
+     32564
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32564
+   ],
+   "evidence": [
+    {
+     "id": 32564,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "C3.3.1The minimum side setback for two (2) storey developments is 1.2m.",
+     "clause": "C3.3.1",
+     "page": 12,
+     "source_file": "DCP/final-01.09.26-general-residential-dcp.pdf",
+     "condition": "General Residential DCP: dwellings and dual occupancies, two storey: minimum side setback",
+     "edition": "Strathfield General Residential DCP, dated 1 September 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "C3.3.1The minimum side setback for two (2) storey developments is 1.2m.",
+   "clause": "C3.3.1",
+   "page": 12,
+   "source_file": "DCP/final-01.09.26-general-residential-dcp.pdf"
+  },
+  {
+   "id": "strathfield-municipal-council-002",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "General Residential DCP: minimum front setback is the average of the site and the two existing dwellings either side (5 dwellings)",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "average of existing front setback at site and two dwellings either side (5 dwellings)",
+    "sources": [
+     32563
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32563
+   ],
+   "evidence": [
+    {
+     "id": 32563,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "The minimum front building setback is the average of the existing front setback at the site",
+     "clause": "C3.1.1",
+     "page": 11,
+     "source_file": "DCP/final-01.09.26-general-residential-dcp.pdf",
+     "condition": "General Residential DCP: minimum front setback is the average of the site and the two existing dwellings either side (5 dwellings)",
+     "edition": "Strathfield General Residential DCP, dated 1 September 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "The minimum front building setback is the average of the existing front setback at the site",
+   "clause": "C3.1.1",
+   "page": 11,
+   "source_file": "DCP/final-01.09.26-general-residential-dcp.pdf"
+  },
+  {
+   "id": "strathfield-municipal-council-003",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "General Residential DCP: manor homes: minimum side setback",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     32565
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32565
+   ],
+   "evidence": [
+    {
+     "id": 32565,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "C3.5.1The minimum side setbacks for manor homes is 1.5m.",
+     "clause": "C3.5.1",
+     "page": 15,
+     "source_file": "DCP/final-01.09.26-general-residential-dcp.pdf",
+     "condition": "General Residential DCP: manor homes: minimum side setback",
+     "edition": "Strathfield General Residential DCP, dated 1 September 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "C3.5.1The minimum side setbacks for manor homes is 1.5m.",
+   "clause": "C3.5.1",
+   "page": 15,
+   "source_file": "DCP/final-01.09.26-general-residential-dcp.pdf"
+  },
+  {
+   "id": "strathfield-municipal-council-004",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "General Residential DCP: R2 Low Density zone: minimum rear setback (not less than 6 m)",
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     32566
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    32566
+   ],
+   "evidence": [
+    {
+     "id": 32566,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "10m or 20% of the average length of the site, whichever is lesser",
+     "clause": "C3.6.1",
+     "page": 15,
+     "source_file": "DCP/final-01.09.26-general-residential-dcp.pdf",
+     "condition": "General Residential DCP: R2 Low Density zone: minimum rear setback (not less than 6 m)",
+     "edition": "Strathfield General Residential DCP, dated 1 September 2026"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "10m or 20% of the average length of the site, whichever is lesser",
+   "clause": "C3.6.1",
+   "page": 15,
+   "source_file": "DCP/final-01.09.26-general-residential-dcp.pdf"
+  },
+  {
+   "id": "strathfield-municipal-council-005",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "General Residential DCP: all zones other than R2: minimum rear setback",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     32567
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    32567
+   ],
+   "evidence": [
+    {
+     "id": 32567,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "all other zones, the minimum rear building setbackis 6m.",
+     "clause": "C3.6.2",
+     "page": 15,
+     "source_file": "DCP/final-01.09.26-general-residential-dcp.pdf",
+     "condition": "General Residential DCP: all zones other than R2: minimum rear setback",
+     "edition": "Strathfield General Residential DCP, dated 1 September 2026"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "all other zones, the minimum rear building setbackis 6m.",
+   "clause": "C3.6.2",
+   "page": 15,
+   "source_file": "DCP/final-01.09.26-general-residential-dcp.pdf"
+  },
+  {
+   "id": "strathfield-municipal-council-006",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Part D Industrial: industrial: corner lot secondary frontage setback",
+    "Part D Industrial: industrial: minimum front setback"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     32622
+    ]
+   },
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     32623
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32622,
+    32623
+   ],
+   "evidence": [
+    {
+     "id": 32622,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "1. A minimum setback of 10m from the front boundary applies.",
+     "clause": "2.6",
+     "page": 8,
+     "source_file": "DCP/part-d-industrial-development2.pdf",
+     "condition": "Part D Industrial: industrial: minimum front setback",
+     "edition": "Strathfield Consolidated DCP 2005 Part D Industrial Development (undated)"
+    },
+    {
+     "id": 32623,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "2. On corner lots, a setback of 5m applies to the secondary frontage.",
+     "clause": "2.6",
+     "page": 8,
+     "source_file": "DCP/part-d-industrial-development2.pdf",
+     "condition": "Part D Industrial: industrial: corner lot secondary frontage setback",
+     "edition": "Strathfield Consolidated DCP 2005 Part D Industrial Development (undated)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "1. A minimum setback of 10m from the front boundary applies.",
+   "clause": "2.6",
+   "page": 8,
+   "source_file": "DCP/part-d-industrial-development2.pdf"
+  }
+ ],
+ "gaps": [
+  "R1: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "R2: no numeric front/side setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 32624",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Part A Dwelling Houses (2020) setbacks, site coverage and FSR not extracted where the 2026 General Residential DCP governs | Heritage, tree, signage, child care, educational, waste, contaminated land and precinct DCPs (Parts E, H, J, K, M, O, P, Q, DCP 13, 14, 20, 25, 26) not extracted"
+ ],
+ "notes": "Built from 8 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  },
+  "R2": {
+   "front": false,
+   "side": false,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 8,
+  "rules": 6,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 3
+ }
+}

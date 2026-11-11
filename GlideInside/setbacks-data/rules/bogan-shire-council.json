@@ -1,0 +1,915 @@
+{
+ "lga_slug": "bogan-shire-council",
+ "council": "Bogan Shire Council",
+ "lgaNames": [
+  "BOGAN",
+  "BOGAN SHIRE",
+  "BOGAN SHIRE COUNCIL"
+ ],
+ "dcp": "Bogan Shire Council Development Control Plan 2012, adopted June 2012 (Minute 176/2012), amended April 2014, April 2017 and May 2020 (Minute 133/2020)",
+ "lep": "Bogan Local Environmental Plan 2011 (referred to as Bogan Shire Council LEP 2011)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "bogan-shire-council-001",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Step 2 Residential (Dual Occupancy), R1 zone single storey front",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5340
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5340
+   ],
+   "evidence": [
+    {
+     "id": 5340,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R1 6m 6m 2m",
+     "clause": "Step 2 Residential (Dual Occupancy) Building Setbacks table",
+     "page": 13,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 Residential (Dual Occupancy), R1 zone single storey front",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R1 6m 6m 2m",
+   "clause": "Step 2 Residential (Dual Occupancy) Building Setbacks table",
+   "page": 13,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-002",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 2000.0
+   },
+   "conditionText": "Step 2 General Housing and Ancillary Structures, R1 zone lots over 2000m2 dwelling street setback",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5305
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5305
+   ],
+   "evidence": [
+    {
+     "id": 5305,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R1 R1 >2000m2 25% 6m BCA >2000m2",
+     "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+     "page": 11,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, R1 zone lots over 2000m2 dwelling street setback",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R1 R1 >2000m2 25% 6m BCA >2000m2",
+   "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+   "page": 11,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-003",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Step 2 General Housing and Ancillary Structures, R1 zone corner lot, secondary frontage permitted for part of dwelling (max 20% of building length)",
+    "Step 2 General Housing and Ancillary Structures, R1 zone dwelling side/rear setback",
+    "Step 2 General Housing and Ancillary Structures, R1 zone dwelling street setback"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5303
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     5311
+    ]
+   },
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "BCA",
+    "sources": [
+     5304
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5303,
+    5304,
+    5311
+   ],
+   "evidence": [
+    {
+     "id": 5303,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R1 6m BCA R1 60%",
+     "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+     "page": 11,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, R1 zone dwelling street setback",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    },
+    {
+     "id": 5311,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "frontage is permitted at 4 metres for part of",
+     "clause": "Step 2 General Housing and Ancillary Structures notes",
+     "page": 11,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, R1 zone corner lot, secondary frontage permitted for part of dwelling (max 20% of building length)",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    },
+    {
+     "id": 5304,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R1 6m BCA R1 60%",
+     "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+     "page": 11,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, R1 zone dwelling side/rear setback",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "R1 6m BCA R1 60%",
+   "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+   "page": 11,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-004",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Step 2 General Housing and Ancillary Structures, R5 zone dwelling side/rear setback",
+    "Step 2 General Housing and Ancillary Structures, R5 zone dwelling street setback"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     5306
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     5307
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5306,
+    5307
+   ],
+   "evidence": [
+    {
+     "id": 5306,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R5 10m 1.5m",
+     "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+     "page": 11,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, R5 zone dwelling street setback",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    },
+    {
+     "id": 5307,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R5 10m 1.5m",
+     "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+     "page": 11,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, R5 zone dwelling side/rear setback",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R5 10m 1.5m",
+   "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+   "page": 11,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-005",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Step 2 Residential (Dual Occupancy), RU5 zone single storey front",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5341
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5341
+   ],
+   "evidence": [
+    {
+     "id": 5341,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "RU5 6m 6m",
+     "clause": "Step 2 Residential (Dual Occupancy) Building Setbacks table",
+     "page": 13,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 Residential (Dual Occupancy), RU5 zone single storey front",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU5 6m 6m",
+   "clause": "Step 2 Residential (Dual Occupancy) Building Setbacks table",
+   "page": 13,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-006",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Step 2 General Housing and Ancillary Structures, RU5 zone dwelling street setback",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5310
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5310
+   ],
+   "evidence": [
+    {
+     "id": 5310,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "RU5 RU5 6m BCA",
+     "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+     "page": 11,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, RU5 zone dwelling street setback",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU5 RU5 6m BCA",
+   "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+   "page": 11,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-007",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Step 2 General Housing and Ancillary Structures, RU1 zone dwelling side/rear setback",
+    "Step 2 General Housing and Ancillary Structures, RU1 zone dwelling street setback",
+    "Step 2 General Housing and Ancillary Structures, outbuildings, RU1 front/street",
+    "Step 2 General Housing and Ancillary Structures, outbuildings, RU1 side/rear"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     5308,
+     5334
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     5309,
+     5335
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5308,
+    5309,
+    5334,
+    5335
+   ],
+   "evidence": [
+    {
+     "id": 5308,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "RU1 20m 10m",
+     "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+     "page": 11,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, RU1 zone dwelling street setback",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    },
+    {
+     "id": 5334,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "RU1 N/A N/A 10m 20m",
+     "clause": "Step 2 General Housing and Ancillary Structures outbuildings table",
+     "page": 12,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, outbuildings, RU1 front/street",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    },
+    {
+     "id": 5309,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "RU1 20m 10m",
+     "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+     "page": 11,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, RU1 zone dwelling side/rear setback",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    },
+    {
+     "id": 5335,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "RU1 N/A N/A 10m 20m",
+     "clause": "Step 2 General Housing and Ancillary Structures outbuildings table",
+     "page": 12,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, outbuildings, RU1 side/rear",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU1 20m 10m",
+   "clause": "Step 2 General Housing and Ancillary Structures Dwelling Setbacks table",
+   "page": 11,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Step 4 Nyngan Aerodrome hangar lots, rear setback minimum",
+    "Step 4 Nyngan Aerodrome hangar lots, side setback minimum"
+   ],
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5446
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5445
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    5445,
+    5446
+   ],
+   "evidence": [
+    {
+     "id": 5446,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear setback must be a minimum of 3m.",
+     "clause": "Step 4 Nyngan Aerodrome hangar lots Building Setbacks",
+     "page": 30,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 4 Nyngan Aerodrome hangar lots, rear setback minimum",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    },
+    {
+     "id": 5445,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side setback must be a minimum of 3m.",
+     "clause": "Step 4 Nyngan Aerodrome hangar lots Building Setbacks",
+     "page": 30,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 4 Nyngan Aerodrome hangar lots, side setback minimum",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Rear setback must be a minimum of 3m.",
+   "clause": "Step 4 Nyngan Aerodrome hangar lots Building Setbacks",
+   "page": 30,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Step 2 Residential (Dual Occupancy), garage setback to allow domestic stack parking (single garage plus 6 m kerb-side parking alternative)",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 6.5,
+    "sources": [
+     5357
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    5357
+   ],
+   "evidence": [
+    {
+     "id": 5357,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "minimum of 6.5 metres (to allow domestic",
+     "clause": "Step 2 Residential (Dual Occupancy) Parking",
+     "page": 13,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 Residential (Dual Occupancy), garage setback to allow domestic stack parking (single garage plus 6 m kerb-side parking alternative)",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "minimum of 6.5 metres (to allow domestic",
+   "clause": "Step 2 Residential (Dual Occupancy) Parking",
+   "page": 13,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 4000.0
+   },
+   "conditionText": [
+    "Step 2 General Housing and Ancillary Structures, outbuildings, lots under 4,000m2 front/street",
+    "Step 2 General Housing and Ancillary Structures, outbuildings, lots under 4,000m2 side/rear"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5332
+    ]
+   },
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "BCA",
+    "sources": [
+     5330
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5330,
+    5332
+   ],
+   "evidence": [
+    {
+     "id": 5332,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "<4,000m² 3.6m 120m2 BCA 6m",
+     "clause": "Step 2 General Housing and Ancillary Structures outbuildings table",
+     "page": 12,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, outbuildings, lots under 4,000m2 front/street",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    },
+    {
+     "id": 5330,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "<4,000m² 3.6m 120m2 BCA 6m",
+     "clause": "Step 2 General Housing and Ancillary Structures outbuildings table",
+     "page": 12,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, outbuildings, lots under 4,000m2 side/rear",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "<4,000m² 3.6m 120m2 BCA 6m",
+   "clause": "Step 2 General Housing and Ancillary Structures outbuildings table",
+   "page": 12,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 4000.0
+   },
+   "conditionText": [
+    "Step 2 General Housing and Ancillary Structures, outbuildings, lots 4000m2 and over front/street",
+    "Step 2 General Housing and Ancillary Structures, outbuildings, lots 4000m2 and over side/rear"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     5333
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     5331
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5331,
+    5333
+   ],
+   "evidence": [
+    {
+     "id": 5333,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4000m²> 4.8m 240m² 5m 10m",
+     "clause": "Step 2 General Housing and Ancillary Structures outbuildings table",
+     "page": 12,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, outbuildings, lots 4000m2 and over front/street",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    },
+    {
+     "id": 5331,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "4000m²> 4.8m 240m² 5m 10m",
+     "clause": "Step 2 General Housing and Ancillary Structures outbuildings table",
+     "page": 12,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 General Housing and Ancillary Structures, outbuildings, lots 4000m2 and over side/rear",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4000m²> 4.8m 240m² 5m 10m",
+   "clause": "Step 2 General Housing and Ancillary Structures outbuildings table",
+   "page": 12,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-012",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Step 2 Industrial Development, street setback minimum (must be landscaped)",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     5377
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5377
+   ],
+   "evidence": [
+    {
+     "id": 5377,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Street setback must be a minimum of 5m.",
+     "clause": "Step 2 Industrial Development Building Setbacks",
+     "page": 17,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 Industrial Development, street setback minimum (must be landscaped)",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Street setback must be a minimum of 5m.",
+   "clause": "Step 2 Industrial Development Building Setbacks",
+   "page": 17,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-013",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Step 2 Industrial Development, reduced landscaped street setback where car parking is provided immediately behind landscaped area",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5378
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5378
+   ],
+   "evidence": [
+    {
+     "id": 5378,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "of 3 metres, is permitted where car parking is",
+     "clause": "Step 2 Industrial Development Building Setbacks",
+     "page": 17,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 Industrial Development, reduced landscaped street setback where car parking is provided immediately behind landscaped area",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "of 3 metres, is permitted where car parking is",
+   "clause": "Step 2 Industrial Development Building Setbacks",
+   "page": 17,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  },
+  {
+   "id": "bogan-shire-council-014",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Step 2 Industrial Development, side and rear setbacks",
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "BCA",
+    "sources": [
+     5379
+    ]
+   },
+   "rear": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "BCA",
+    "sources": [
+     5379
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    5379,
+    5379
+   ],
+   "evidence": [
+    {
+     "id": 5379,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "Side and rear setbacks to meet BCA requirements.",
+     "clause": "Step 2 Industrial Development Building Setbacks",
+     "page": 17,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 Industrial Development, side and rear setbacks",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    },
+    {
+     "id": 5379,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "Side and rear setbacks to meet BCA requirements.",
+     "clause": "Step 2 Industrial Development Building Setbacks",
+     "page": 17,
+     "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf",
+     "condition": "Step 2 Industrial Development, side and rear setbacks",
+     "edition": "Bogan Shire Council DCP 2012, adopted June 2012, amended May 2020 (Minute 133/2020)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Side and rear setbacks to meet BCA requirements.",
+   "clause": "Step 2 Industrial Development Building Setbacks",
+   "page": 17,
+   "source_file": "DCP/Bogan-Development-Control-Plan-2012-current-council-link.pdf"
+  }
+ ],
+ "gaps": [
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP says a summary table of road requirements is at the end of the subdivision section; none present in saved text | Appendix B Flood Proofing Guidelines and Appendix C Hangar Setback Requirements pages have no extractable text (images or blank) | Dual occupancy and multi dwelling setback tables: side/rear and two-storey cells could not be resolved (merged cells), only single storey front recorded"
+ ],
+ "notes": "Built from 23 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 3
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU1": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": true,
+   "rules": 4
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 23,
+  "rules": 14,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 2
+ }
+}

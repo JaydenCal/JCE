@@ -1,0 +1,2850 @@
+{
+ "lga_slug": "blacktown-city-council",
+ "council": "Blacktown City Council",
+ "lgaNames": [
+  "BLACKTOWN",
+  "BLACKTOWN CITY",
+  "BLACKTOWN CITY COUNCIL"
+ ],
+ "dcp": "Blacktown City Council Development Control Plan 2015 (Parts A to O); Blacktown City Council Growth Centre Precincts DCP 2010 (amended October 2025)",
+ "lep": "Blacktown Local Environmental Plan 2015",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "blacktown-city-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground",
+    "lotWidthMinM": 9.0,
+    "lotWidthMaxM": 15.0,
+    "precinct": "Growth Centre Precincts DCP area"
+   },
+   "conditionText": [
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, rear setback ground level",
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, side setback detached boundary ground floor",
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, rear setback ground level",
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, side setback detached boundary ground floor"
+   ],
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     4578,
+     4586
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     4581,
+     4589
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    4578,
+    4581,
+    4586,
+    4589
+   ],
+   "evidence": [
+    {
+     "id": 4578,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4 m (ground level) and 6 m (upper",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, rear setback ground level",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4586,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4 m (ground level) and 6 m (upper",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, rear setback ground level",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4581,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Ground Floor: 0.9 m",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, side setback detached boundary ground floor",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4589,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Ground Floor: 0.9 m",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, side setback detached boundary ground floor",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4 m (ground level) and 6 m (upper",
+   "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+   "page": 72,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground",
+    "lotWidthMinM": 15.0,
+    "precinct": "Growth Centre Precincts DCP area"
+   },
+   "conditionText": [
+    "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, rear setback ground level",
+    "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, side setback ground floor, side A and side B"
+   ],
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     4596
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     4598
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    4596,
+    4598
+   ],
+   "evidence": [
+    {
+     "id": 4596,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4 m (ground level) and 6 m (upper levels)",
+     "clause": "Table 4-5 lots frontage over 15 m front accessed",
+     "page": 74,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, rear setback ground level",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4598,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Ground Floor: 0.9 m (Side A), 0.9 m (Side B)",
+     "clause": "Table 4-5 lots frontage over 15 m front accessed",
+     "page": 74,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, side setback ground floor, side A and side B",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4 m (ground level) and 6 m (upper levels)",
+   "clause": "Table 4-5 lots frontage over 15 m front accessed",
+   "page": 74,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground",
+    "precinct": "Growth Centre Precincts DCP area"
+   },
+   "conditionText": "Growth Centre Precincts DCP area: Table 4-6 lots in the Environmental Living Zone, side setback ground floor",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     4606
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4606
+   ],
+   "evidence": [
+    {
+     "id": 4606,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Ground Floor: 1.5 m",
+     "clause": "Table 4-6 lots in the Environmental Living Zone",
+     "page": 75,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-6 lots in the Environmental Living Zone, side setback ground floor",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Ground Floor: 1.5 m",
+   "clause": "Table 4-6 lots in the Environmental Living Zone",
+   "page": 75,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper",
+    "lotWidthMinM": 9.0,
+    "lotWidthMaxM": 15.0,
+    "precinct": "Growth Centre Precincts DCP area"
+   },
+   "conditionText": [
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, rear setback upper levels",
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, rear setback upper levels"
+   ],
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     4579,
+     4587
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    4579,
+    4587
+   ],
+   "evidence": [
+    {
+     "id": 4579,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4 m (ground level) and 6 m (upper",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, rear setback upper levels",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4587,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4 m (ground level) and 6 m (upper",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, rear setback upper levels",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4 m (ground level) and 6 m (upper",
+   "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+   "page": 72,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper",
+    "lotWidthMinM": 15.0,
+    "precinct": "Growth Centre Precincts DCP area"
+   },
+   "conditionText": [
+    "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, rear setback upper levels",
+    "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, side setback upper floor side B"
+   ],
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     4597
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     4599
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    4597,
+    4599
+   ],
+   "evidence": [
+    {
+     "id": 4597,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4 m (ground level) and 6 m (upper levels)",
+     "clause": "Table 4-5 lots frontage over 15 m front accessed",
+     "page": 74,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, rear setback upper levels",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4599,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Upper Floor: 0.9 m (Side A), 1.5 m (Side B)",
+     "clause": "Table 4-5 lots frontage over 15 m front accessed",
+     "page": 74,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, side setback upper floor side B",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4 m (ground level) and 6 m (upper levels)",
+   "clause": "Table 4-5 lots frontage over 15 m front accessed",
+   "page": 74,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotWidthMinM": 9.0,
+    "lotWidthMaxM": 15.0,
+    "precinct": "Growth Centre Precincts DCP area"
+   },
+   "conditionText": [
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, corner lot secondary street setback",
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, front setback to building facade line",
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, corner lot secondary street setback",
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, front setback to building facade line"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     4576,
+     4584
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     4580,
+     4588
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4576,
+    4580,
+    4584,
+    4588
+   ],
+   "evidence": [
+    {
+     "id": 4576,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5 m to building facade line",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, front setback to building facade line",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4584,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5 m to building facade line",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, front setback to building facade line",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4580,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Corner lots secondary 2.0 m 2.0 m",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, corner lot secondary street setback",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4588,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Corner lots secondary 2.0 m 2.0 m",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, corner lot secondary street setback",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5 m to building facade line",
+   "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+   "page": 72,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotWidthMinM": 15.0,
+    "precinct": "Growth Centre Precincts DCP area"
+   },
+   "conditionText": [
+    "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, corner lot secondary street setback",
+    "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, front setback to building facade line"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     4594
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     4600
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4594,
+    4600
+   ],
+   "evidence": [
+    {
+     "id": 4594,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5 m to building facade line",
+     "clause": "Table 4-5 lots frontage over 15 m front accessed",
+     "page": 74,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, front setback to building facade line",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4600,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Corner lots secondary 2.0 m",
+     "clause": "Table 4-5 lots frontage over 15 m front accessed",
+     "page": 74,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, corner lot secondary street setback",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5 m to building facade line",
+   "clause": "Table 4-5 lots frontage over 15 m front accessed",
+   "page": 74,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotWidthMinM": 18.0,
+    "qualifiers": [
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Corner lot, Stanhope Gardens: collector streets (road reserve 18 m or wider)",
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     4317
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4317
+   ],
+   "evidence": [
+    {
+     "id": 4317,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "is 2m on collector streets (road reserve of 18m or wider)",
+     "clause": "3.4.1",
+     "page": 24,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Corner lot, Stanhope Gardens: collector streets (road reserve 18 m or wider)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "is 2m on collector streets (road reserve of 18m or wider)",
+   "clause": "3.4.1",
+   "page": 24,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Growth Centre Precincts DCP area"
+   },
+   "conditionText": [
+    "Growth Centre Precincts DCP area: Table 4-6 lots in the Environmental Living Zone, corner lot secondary street setback",
+    "Growth Centre Precincts DCP area: Table 4-6 lots in the Environmental Living Zone, front setback to building facade line",
+    "Growth Centre Precincts DCP area: Table 4-6 lots in the Environmental Living Zone, rear setback"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     4604
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     4607
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     4605
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    4604,
+    4605,
+    4607
+   ],
+   "evidence": [
+    {
+     "id": 4604,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5 m to building facade line",
+     "clause": "Table 4-6 lots in the Environmental Living Zone",
+     "page": 75,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-6 lots in the Environmental Living Zone, front setback to building facade line",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4607,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Corner lots secondary 4.5 m",
+     "clause": "Table 4-6 lots in the Environmental Living Zone",
+     "page": 75,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-6 lots in the Environmental Living Zone, corner lot secondary street setback",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4605,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear setback (min.) 10 m",
+     "clause": "Table 4-6 lots in the Environmental Living Zone",
+     "page": 75,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-6 lots in the Environmental Living Zone, rear setback",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5 m to building facade line",
+   "clause": "Table 4-6 lots in the Environmental Living Zone",
+   "page": 75,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Corner lot, Stanhope Gardens: all other streets",
+   "secondaryFront": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     4318
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4318
+   ],
+   "evidence": [
+    {
+     "id": 4318,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "and 1m on all other streets.",
+     "clause": "3.4.1",
+     "page": 24,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Corner lot, Stanhope Gardens: all other streets",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "and 1m on all other streets.",
+   "clause": "3.4.1",
+   "page": 24,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial corner allotments: secondary frontage on all other roads",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     4514
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4514
+   ],
+   "evidence": [
+    {
+     "id": 4514,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Infrastructure – Local Road or on industrial collector roads and 3m on all other roads",
+     "clause": "4.1",
+     "page": 12,
+     "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial corner allotments: secondary frontage on all other roads",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen",
+   "quote": "Infrastructure – Local Road or on industrial collector roads and 3m on all other roads",
+   "clause": "4.1",
+   "page": 12,
+   "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf"
+  },
+  {
+   "id": "blacktown-city-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Dual occupancy corner lot: slab on ground dwellings from side or rear boundary",
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     4343
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4343
+   ],
+   "evidence": [
+    {
+     "id": 4343,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Slab on ground dwellings are to be setback 1m from any side or rear property boundary and",
+     "clause": "4.3.2",
+     "page": 38,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dual occupancy corner lot: slab on ground dwellings from side or rear boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Slab on ground dwellings are to be setback 1m from any side or rear property boundary and",
+   "clause": "4.3.2",
+   "page": 38,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Dual occupancy car parking spaces setback from front boundary",
+   "garage": {
+    "minM": 2.5,
+    "sources": [
+     4348
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    4348
+   ],
+   "evidence": [
+    {
+     "id": 4348,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "but should be setback 2.5m from the front boundary.",
+     "clause": "4.3.7",
+     "page": 40,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dual occupancy car parking spaces setback from front boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "but should be setback 2.5m from the front boundary.",
+   "clause": "4.3.7",
+   "page": 40,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Dual occupancy corner lot: primary front setback to internal living areas",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     4341
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4341
+   ],
+   "evidence": [
+    {
+     "id": 4341,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "minimum primary front setback of 6m to the internal living areas",
+     "clause": "4.3.2",
+     "page": 38,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dual occupancy corner lot: primary front setback to internal living areas",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "minimum primary front setback of 6m to the internal living areas",
+   "clause": "4.3.2",
+   "page": 38,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Dual occupancy: single storey eaves/gutters from side or rear boundary",
+   "side": {
+    "minM": 0.45,
+    "printed": "450 mm",
+    "basis": "fixed",
+    "sources": [
+     4345
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4345
+   ],
+   "evidence": [
+    {
+     "id": 4345,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "shall be setback a minimum 450mm from any side or rear boundary, other than a secondary road.",
+     "clause": "4.3.6",
+     "page": 40,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dual occupancy: single storey eaves/gutters from side or rear boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "shall be setback a minimum 450mm from any side or rear boundary, other than a secondary road.",
+   "clause": "4.3.6",
+   "page": 40,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Dual occupancy: 2 storey eaves/gutters from side or rear boundary",
+   "side": {
+    "minM": 0.675,
+    "printed": "675 mm",
+    "basis": "fixed",
+    "sources": [
+     4346
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4346
+   ],
+   "evidence": [
+    {
+     "id": 4346,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "shall be setback a minimum 675mm from any side or rear boundary, other than a secondary road.",
+     "clause": "4.3.6",
+     "page": 40,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dual occupancy: 2 storey eaves/gutters from side or rear boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "shall be setback a minimum 675mm from any side or rear boundary, other than a secondary road.",
+   "clause": "4.3.6",
+   "page": 40,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dual occupancy corner lot: secondary street setback",
+    "Dual occupancy: walls generally from side and rear boundaries"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     4342
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     4344
+    ]
+   },
+   "front": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4342,
+    4344
+   ],
+   "evidence": [
+    {
+     "id": 4342,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "must have a minimum secondary street setback of 3m.",
+     "clause": "4.3.2",
+     "page": 38,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dual occupancy corner lot: secondary street setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 4344,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "generally required to stand a minimum of 900mm from the side and rear boundaries.",
+     "clause": "4.3.6",
+     "page": 40,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dual occupancy: walls generally from side and rear boundaries",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "must have a minimum secondary street setback of 3m.",
+   "clause": "4.3.2",
+   "page": 38,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Corner lot dwelling house: primary road building line",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     4316
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4316
+   ],
+   "evidence": [
+    {
+     "id": 4316,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "shall be 6m, with a maximum 1m encroachment of any architectural feature",
+     "clause": "3.4.1",
+     "page": 24,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Corner lot dwelling house: primary road building line",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "shall be 6m, with a maximum 1m encroachment of any architectural feature",
+   "clause": "3.4.1",
+   "page": 24,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "level": "ground"
+   },
+   "conditionText": "Dwelling house ground storey walls, side or rear boundary (maximum 2 storeys)",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     4306
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4306
+   ],
+   "evidence": [
+    {
+     "id": 4306,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "ground storey walls of any dwelling house or addition shall be setback a minimum 900mm from any side or rear boundary",
+     "clause": "3.2.4(a)",
+     "page": 22,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house ground storey walls, side or rear boundary (maximum 2 storeys)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "ground storey walls of any dwelling house or addition shall be setback a minimum 900mm from any side or rear boundary",
+   "clause": "3.2.4(a)",
+   "page": 22,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeysMin": 3,
+    "level": "ground"
+   },
+   "conditionText": "Dwelling house of more than 2 storeys: ground storey walls side or rear",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     4312
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4312
+   ],
+   "evidence": [
+    {
+     "id": 4312,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "shall be setback a minimum 1.5m from any side or rear boundary of the allotment.",
+     "clause": "3.2.5",
+     "page": 22,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house of more than 2 storeys: ground storey walls side or rear",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "shall be setback a minimum 1.5m from any side or rear boundary of the allotment.",
+   "clause": "3.2.5",
+   "page": 22,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeysMin": 3,
+    "level": "upper"
+   },
+   "conditionText": [
+    "Dwelling house of more than 2 storeys: upper storey walls, rear boundary",
+    "Dwelling house of more than 2 storeys: upper storey walls, side boundary"
+   ],
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     4314
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     4313
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    4313,
+    4314
+   ],
+   "evidence": [
+    {
+     "id": 4314,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "1.5m from any side boundary and 3m from any rear boundary",
+     "clause": "3.2.5",
+     "page": 22,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house of more than 2 storeys: upper storey walls, rear boundary",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 4313,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "shall be setback a minimum 1.5m from any side boundary and 3m from any rear boundary",
+     "clause": "3.2.5",
+     "page": 22,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house of more than 2 storeys: upper storey walls, side boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.5m from any side boundary and 3m from any rear boundary",
+   "clause": "3.2.5",
+   "page": 22,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": [
+    "Dwelling house upper storey walls: rear boundary",
+    "Dwelling house upper storey walls: side boundary"
+   ],
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     4309
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     4308
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    4308,
+    4309
+   ],
+   "evidence": [
+    {
+     "id": 4309,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "900mm from any side boundary and 3m from any rear boundary",
+     "clause": "3.2.4(c)",
+     "page": 22,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house upper storey walls: rear boundary",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 4308,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "upper storey walls of any dwelling house shall be setback a minimum 900mm from any side boundary",
+     "clause": "3.2.4(c)",
+     "page": 22,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house upper storey walls: side boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "900mm from any side boundary and 3m from any rear boundary",
+   "clause": "3.2.4(c)",
+   "page": 22,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Dwelling house wall to rear boundary that directly abuts a roadway",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     4304
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    4304
+   ],
+   "evidence": [
+    {
+     "id": 4304,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "setback a minimum 3m from any rear boundary of the allotment that directly abuts a roadway.",
+     "clause": "3.2.3",
+     "page": 20,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house wall to rear boundary that directly abuts a roadway",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "setback a minimum 3m from any rear boundary of the allotment that directly abuts a roadway.",
+   "clause": "3.2.3",
+   "page": 20,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-024",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Dwelling house eaves/gutters, single storey, side or rear boundary",
+   "side": {
+    "minM": 0.45,
+    "printed": "450 mm",
+    "basis": "fixed",
+    "sources": [
+     4310
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4310
+   ],
+   "evidence": [
+    {
+     "id": 4310,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "shall be setback a minimum 450mm from any side or rear boundary",
+     "clause": "3.2.4(e)",
+     "page": 22,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house eaves/gutters, single storey, side or rear boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "shall be setback a minimum 450mm from any side or rear boundary",
+   "clause": "3.2.4(e)",
+   "page": 22,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-025",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Dwelling house eaves/gutters, 2 storey, side or rear boundary",
+   "side": {
+    "minM": 0.675,
+    "printed": "675 mm",
+    "basis": "fixed",
+    "sources": [
+     4311
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4311
+   ],
+   "evidence": [
+    {
+     "id": 4311,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "shall be setback a minimum 675mm from any side or rear boundary",
+     "clause": "3.2.4(f)",
+     "page": 22,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house eaves/gutters, 2 storey, side or rear boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "shall be setback a minimum 675mm from any side or rear boundary",
+   "clause": "3.2.4(f)",
+   "page": 22,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-026",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "habitable"
+    ]
+   },
+   "conditionText": "Dwelling house habitable room side walls, Stanhope Gardens",
+   "side": {
+    "minM": 1.2,
+    "basis": "fixed",
+    "sources": [
+     4307
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4307
+   ],
+   "evidence": [
+    {
+     "id": 4307,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "at least 1.2m for land within Stanhope Gardens",
+     "clause": "3.2.4(b)",
+     "page": 22,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house habitable room side walls, Stanhope Gardens",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "at least 1.2m for land within Stanhope Gardens",
+   "clause": "3.2.4(b)",
+   "page": 22,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-027",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Corner lot dwelling house: building line to secondary road (maximum 1 m encroachment of architectural feature)",
+    "Dwelling house, all locations except Stanhope Gardens: minimum building line to primary road"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     4302
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     4315
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4302,
+    4315
+   ],
+   "evidence": [
+    {
+     "id": 4302,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6m for all locations covered by this Part, except for Stanhope Gardens",
+     "clause": "3.2.3",
+     "page": 20,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house, all locations except Stanhope Gardens: minimum building line to primary road",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 4315,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "The building line to any secondary road is 3m",
+     "clause": "3.4.1",
+     "page": 24,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Corner lot dwelling house: building line to secondary road (maximum 1 m encroachment of architectural feature)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "6m for all locations covered by this Part, except for Stanhope Gardens",
+   "clause": "3.2.3",
+   "page": 20,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-028",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dwelling house, Stanhope Gardens: minimum building line",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     4303
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4303
+   ],
+   "evidence": [
+    {
+     "id": 4303,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m for land located in Stanhope Gardens",
+     "clause": "3.2.3",
+     "page": 20,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Dwelling house, Stanhope Gardens: minimum building line",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "4.5m for land located in Stanhope Gardens",
+   "clause": "3.2.3",
+   "page": 20,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-029",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotWidthMinM": 9.0,
+    "lotWidthMaxM": 15.0,
+    "precinct": "Growth Centre Precincts DCP area"
+   },
+   "conditionText": [
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, front setback to garage line",
+    "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, front setback to garage line"
+   ],
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     4577,
+     4585
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    4577,
+    4585
+   ],
+   "evidence": [
+    {
+     "id": 4577,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5 m to garage line and 1 m behind",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 9 m to under 12.5 m, front setback to garage line",
+     "edition": "October 2025 amendment"
+    },
+    {
+     "id": 4585,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5 m to garage line and 1 m behind",
+     "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+     "page": 72,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-4 lots frontage 9 m to 15 m front accessed, frontage 12.5 m to 15 m, front setback to garage line",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5 m to garage line and 1 m behind",
+   "clause": "Table 4-4 lots frontage 9 m to 15 m front accessed",
+   "page": 72,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-030",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotWidthMinM": 15.0,
+    "precinct": "Growth Centre Precincts DCP area"
+   },
+   "conditionText": "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, front setback to garage line",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     4595
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    4595
+   ],
+   "evidence": [
+    {
+     "id": 4595,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5 m to garage line and 1m behind",
+     "clause": "Table 4-5 lots frontage over 15 m front accessed",
+     "page": 74,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Table 4-5 lots frontage over 15 m front accessed, front setback to garage line",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5 m to garage line and 1m behind",
+   "clause": "Table 4-5 lots frontage over 15 m front accessed",
+   "page": 74,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-031",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "precinct": "Growth Centre Precincts DCP area",
+    "qualifiers": [
+     "height_plane"
+    ]
+   },
+   "conditionText": "Growth Centre Precincts DCP area: Minimum front setback to garages even where facade setback varied by Building Envelope Plan",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     4618
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    4618
+   ],
+   "evidence": [
+    {
+     "id": 4618,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "front setback to garages must be a minimum of 5.5m",
+     "clause": "4.2.3.2 (3)",
+     "page": 80,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Minimum front setback to garages even where facade setback varied by Building Envelope Plan",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
+   "quote": "front setback to garages must be a minimum of 5.5m",
+   "clause": "4.2.3.2 (3)",
+   "page": 80,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-032",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "precinct": "Growth Centre Precincts DCP area",
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "Growth Centre Precincts DCP area: Garage line behind building front facade line (except rear loaded)",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 1.0,
+    "sources": [
+     4617
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    4617
+   ],
+   "evidence": [
+    {
+     "id": 4617,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "at least 1m behind the building front facade line",
+     "clause": "4.2.3.2 (5)",
+     "page": 80,
+     "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf",
+     "condition": "Growth Centre Precincts DCP area: Garage line behind building front facade line (except rear loaded)",
+     "edition": "October 2025 amendment"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "at least 1m behind the building front facade line",
+   "clause": "4.2.3.2 (5)",
+   "page": 80,
+   "source_file": "DCP/Blacktown-Growth-Centre-Precincts-DCP-2010-amended-October-2025.pdf"
+  },
+  {
+   "id": "blacktown-city-council-033",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Attached and multi dwelling housing: minimum distance from any wall to site boundary",
+    "Attached and multi dwelling housing: secondary setback for corner allotment (first building near corner)",
+    "Attached dwellings and multi dwelling housing: street setback"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     4355
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     4356
+    ]
+   },
+   "side": {
+    "minM": 2.3,
+    "basis": "fixed",
+    "sources": [
+     4367
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4355,
+    4356,
+    4367
+   ],
+   "evidence": [
+    {
+     "id": 4355,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "The building setback from the street is 6m.",
+     "clause": "5.2",
+     "page": 43,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Attached dwellings and multi dwelling housing: street setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 4356,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "The secondary building setback for a corner allotment is 3m",
+     "clause": "5.2",
+     "page": 43,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Attached and multi dwelling housing: secondary setback for corner allotment (first building near corner)",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 4367,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "The minimum distance from any wall of a building to a site boundary shall be 2.3m.",
+     "clause": "5.9(a)",
+     "page": 46,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Attached and multi dwelling housing: minimum distance from any wall to site boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The building setback from the street is 6m.",
+   "clause": "5.2",
+   "page": 43,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-034",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage",
+    "verandah_deck"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Detached garage, carport, awning or shed to secondary road",
+   "garage": {
+    "minM": 3.0,
+    "sources": [
+     4330
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    4330
+   ],
+   "evidence": [
+    {
+     "id": 4330,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "shall be 3m.",
+     "clause": "3.6.3",
+     "page": 28,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Detached garage, carport, awning or shed to secondary road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "shall be 3m.",
+   "clause": "3.6.3",
+   "page": 28,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-035",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage",
+    "verandah_deck"
+   ],
+   "conditions": {
+    "lotWidthMaxM": 6.0
+   },
+   "conditionText": "Garage, carport, awning or shed to primary road frontage (6 m or lesser where compatible)",
+   "garage": {
+    "minM": 6.0,
+    "sources": [
+     4329
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    4329
+   ],
+   "evidence": [
+    {
+     "id": 4329,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "6m or lesser where compatible with adjoining residential development",
+     "clause": "3.6.2",
+     "page": 27,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Garage, carport, awning or shed to primary road frontage (6 m or lesser where compatible)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "6m or lesser where compatible with adjoining residential development",
+   "clause": "3.6.2",
+   "page": 27,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-036",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage",
+    "verandah_deck"
+   ],
+   "conditions": {},
+   "conditionText": "Detached garage, carport, awning or shed to side or rear boundary",
+   "side": {
+    "minM": 0.5,
+    "printed": "500 mm",
+    "basis": "fixed",
+    "sources": [
+     4331
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4331
+   ],
+   "evidence": [
+    {
+     "id": 4331,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "setback a minimum 500mm from any side or rear boundary of an allotment.",
+     "clause": "3.6.4",
+     "page": 28,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Detached garage, carport, awning or shed to side or rear boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "setback a minimum 500mm from any side or rear boundary of an allotment.",
+   "clause": "3.6.4",
+   "page": 28,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-037",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "verandah_deck"
+   ],
+   "conditions": {
+    "storeys": 4,
+    "qualifiers": [
+     "habitable"
+    ]
+   },
+   "conditionText": "Residential flat buildings 4 storeys: habitable rooms/balconies side and rear",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     4376
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4376
+   ],
+   "evidence": [
+    {
+     "id": 4376,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "4 storeys 6m 3m",
+     "clause": "Table 6.1",
+     "page": 53,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Residential flat buildings 4 storeys: habitable rooms/balconies side and rear",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4 storeys 6m 3m",
+   "clause": "Table 6.1",
+   "page": 53,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-038",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "verandah_deck"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "habitable"
+    ]
+   },
+   "conditionText": "Residential flat buildings 5-8 storeys: habitable rooms/balconies side and rear",
+   "side": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     4378
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4378
+   ],
+   "evidence": [
+    {
+     "id": 4378,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "5-8 storeys 9m 4.5m",
+     "clause": "Table 6.1",
+     "page": 53,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Residential flat buildings 5-8 storeys: habitable rooms/balconies side and rear",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5-8 storeys 9m 4.5m",
+   "clause": "Table 6.1",
+   "page": 53,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-039",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "verandah_deck"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "habitable"
+    ]
+   },
+   "conditionText": "Residential flat buildings 9+ storeys: habitable rooms/balconies side and rear",
+   "side": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     4380
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4380
+   ],
+   "evidence": [
+    {
+     "id": 4380,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "9+ storeys 12m 6m",
+     "clause": "Table 6.1",
+     "page": 53,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Residential flat buildings 9+ storeys: habitable rooms/balconies side and rear",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "9+ storeys 12m 6m",
+   "clause": "Table 6.1",
+   "page": 53,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-040",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {
+    "storeys": 4,
+    "qualifiers": [
+     "non_habitable"
+    ]
+   },
+   "conditionText": "Residential flat buildings 4 storeys: non-habitable rooms side and rear",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     4377
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4377
+   ],
+   "evidence": [
+    {
+     "id": 4377,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "4 storeys 6m 3m",
+     "clause": "Table 6.1",
+     "page": 53,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Residential flat buildings 4 storeys: non-habitable rooms side and rear",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4 storeys 6m 3m",
+   "clause": "Table 6.1",
+   "page": 53,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-041",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "non_habitable"
+    ]
+   },
+   "conditionText": "Residential flat buildings 5-8 storeys: non-habitable rooms side and rear",
+   "side": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     4379
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4379
+   ],
+   "evidence": [
+    {
+     "id": 4379,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "5-8 storeys 9m 4.5m",
+     "clause": "Table 6.1",
+     "page": 53,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Residential flat buildings 5-8 storeys: non-habitable rooms side and rear",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5-8 storeys 9m 4.5m",
+   "clause": "Table 6.1",
+   "page": 53,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-042",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "non_habitable"
+    ]
+   },
+   "conditionText": "Residential flat buildings 9+ storeys: non-habitable rooms side and rear",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     4381
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4381
+   ],
+   "evidence": [
+    {
+     "id": 4381,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "9+ storeys 12m 6m",
+     "clause": "Table 6.1",
+     "page": 53,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Residential flat buildings 9+ storeys: non-habitable rooms side and rear",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "9+ storeys 12m 6m",
+   "clause": "Table 6.1",
+   "page": 53,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-043",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {
+    "storeysMax": 2
+   },
+   "conditionText": "Residential flat buildings, 1 and 2 storeys: minimum front setback",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     4375
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4375
+   ],
+   "evidence": [
+    {
+     "id": 4375,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "(ii) 7.5m for 1 and 2 storey buildings.",
+     "clause": "6.6.2(b)",
+     "page": 53,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Residential flat buildings, 1 and 2 storeys: minimum front setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "(ii) 7.5m for 1 and 2 storey buildings.",
+   "clause": "6.6.2(b)",
+   "page": 53,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-044",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {
+    "storeysMin": 3
+   },
+   "conditionText": "Residential flat buildings, 3 or more storeys: minimum front setback",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     4374
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4374
+   ],
+   "evidence": [
+    {
+     "id": 4374,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "(i) 9m for 3 or more storey buildings",
+     "clause": "6.6.2(b)",
+     "page": 53,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Residential flat buildings, 3 or more storeys: minimum front setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "(i) 9m for 3 or more storey buildings",
+   "clause": "6.6.2(b)",
+   "page": 53,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  },
+  {
+   "id": "blacktown-city-council-045",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Industrial areas: adjoining residential zone not separated by a road",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     4510
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4510
+   ],
+   "evidence": [
+    {
+     "id": 4510,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "15m of an adjoining residential zone or 5m of an adjoining RE1 Public",
+     "clause": "4.1(d)",
+     "page": 12,
+     "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial areas: adjoining residential zone not separated by a road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "15m of an adjoining residential zone or 5m of an adjoining RE1 Public",
+   "clause": "4.1(d)",
+   "page": 12,
+   "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf"
+  },
+  {
+   "id": "blacktown-city-council-046",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial areas: any other road",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     4509
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4509
+   ],
+   "evidence": [
+    {
+     "id": 4509,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "7.5m of the street alignment of any other road",
+     "clause": "4.1(c)",
+     "page": 12,
+     "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial areas: any other road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "7.5m of the street alignment of any other road",
+   "clause": "4.1(c)",
+   "page": 12,
+   "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf"
+  },
+  {
+   "id": "blacktown-city-council-047",
+   "zones": [
+    "RE1",
+    "SP2"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Industrial areas: adjoining RE1 or SP2 Educational Establishment zone not separated by a road",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     4511
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4511
+   ],
+   "evidence": [
+    {
+     "id": 4511,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "15m of an adjoining residential zone or 5m of an adjoining RE1 Public",
+     "clause": "4.1(d)",
+     "page": 12,
+     "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial areas: adjoining RE1 or SP2 Educational Establishment zone not separated by a road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "15m of an adjoining residential zone or 5m of an adjoining RE1 Public",
+   "clause": "4.1(d)",
+   "page": 12,
+   "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf"
+  },
+  {
+   "id": "blacktown-city-council-048",
+   "zones": [
+    "SP2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": [
+    "Industrial areas: no buildings within this distance of SP2 Classified Road alignment",
+    "Industrial corner allotments: secondary frontage on SP2 roads or industrial collector roads"
+   ],
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     4513
+    ]
+   },
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     4507
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4507,
+    4513
+   ],
+   "evidence": [
+    {
+     "id": 4513,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "shall be 5m on roads zoned SP2 Infrastructure – Classified Road or SP2",
+     "clause": "4.1",
+     "page": 12,
+     "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial corner allotments: secondary frontage on SP2 roads or industrial collector roads",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 4507,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "20m of the street alignment of a road zoned SP2 Infrastructure – Classified",
+     "clause": "4.1(a)",
+     "page": 12,
+     "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial areas: no buildings within this distance of SP2 Classified Road alignment",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "shall be 5m on roads zoned SP2 Infrastructure – Classified Road or SP2",
+   "clause": "4.1",
+   "page": 12,
+   "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf"
+  },
+  {
+   "id": "blacktown-city-council-049",
+   "zones": [
+    "SP2"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Industrial: car parking may be considered within the setback to SP2 Classified Road to within this distance of alignment",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     4515
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4515
+   ],
+   "evidence": [
+    {
+     "id": 4515,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "to within 10m of the street alignment",
+     "clause": "4.1",
+     "page": 12,
+     "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial: car parking may be considered within the setback to SP2 Classified Road to within this distance of alignment",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "to within 10m of the street alignment",
+   "clause": "4.1",
+   "page": 12,
+   "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf"
+  },
+  {
+   "id": "blacktown-city-council-050",
+   "zones": [
+    "SP2"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial areas: SP2 Local Road or industrial collector road (Holbeche Road, Huntingwood Drive, Glendenning Road, Power Street east of Glendenning)",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     4508
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4508
+   ],
+   "evidence": [
+    {
+     "id": 4508,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "10m of the street alignment of a road zoned SP2 Infrastructure – Local",
+     "clause": "4.1(b)",
+     "page": 12,
+     "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf",
+     "condition": "Industrial areas: SP2 Local Road or industrial collector road (Holbeche Road, Huntingwood Drive, Glendenning Road, Power Street east of Glendenning)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "10m of the street alignment of a road zoned SP2 Infrastructure – Local",
+   "clause": "4.1(b)",
+   "page": 12,
+   "source_file": "DCP/Part-E-Development-in-the-Industrial-Zones.pdf"
+  },
+  {
+   "id": "blacktown-city-council-051",
+   "zones": [
+    "SP2"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Attached and multi dwelling housing fronting SP2 road where vehicular access permitted",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     4357
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    4357
+   ],
+   "evidence": [
+    {
+     "id": 4357,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "shall be 10m where the site fronts any road",
+     "clause": "5.2",
+     "page": 43,
+     "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf",
+     "condition": "Attached and multi dwelling housing fronting SP2 road where vehicular access permitted",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "shall be 10m where the site fronts any road",
+   "clause": "5.2",
+   "page": 43,
+   "source_file": "DCP/Part-C-Development-within-the-Residential-Areas.pdf"
+  }
+ ],
+ "gaps": [
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 4305, 4512",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP Parts B, D, H, K and L-O and precinct schedules only skimmed or not read"
+ ],
+ "notes": "Built from 73 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 44
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RE1": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "SP2": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  }
+ },
+ "precincts": [
+  "Growth Centre Precincts DCP area"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 73,
+  "rules": 51,
+  "recordsNotModelled": 2,
+  "otherSetbackKeysNotModelled": 3
+ }
+}

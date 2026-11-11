@@ -1,0 +1,694 @@
+{
+ "lga_slug": "coonamble-shire-council",
+ "council": "Coonamble Shire Council",
+ "lgaNames": [
+  "COONAMBLE",
+  "COONAMBLE SHIRE",
+  "COONAMBLE SHIRE COUNCIL"
+ ],
+ "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+ "lep": "Coonamble Local Environmental Plan No. 1 (referenced by DCPs)",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "coonamble-shire-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Industrial land (DCP 1 Annexure), building backing onto a public reserve",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     10814
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    10814
+   ],
+   "evidence": [
+    {
+     "id": 10814,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "the building shall be set back a minimum of 3 metres from the property boundary",
+     "clause": "2.1(c)",
+     "page": 7,
+     "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf",
+     "condition": "Industrial land (DCP 1 Annexure), building backing onto a public reserve",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText",
+   "quote": "the building shall be set back a minimum of 3 metres from the property boundary",
+   "clause": "2.1(c)",
+   "page": 7,
+   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "DCP 2 Rural Small Holdings zone 1(c), arterial roads",
+   "front": {
+    "minM": 18.0,
+    "basis": "fixed",
+    "sources": [
+     10809
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10809
+   ],
+   "evidence": [
+    {
+     "id": 10809,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "Buildings must be set back a minimum of 18 metres from arterial roads",
+     "clause": "cl.7(ii)(a)",
+     "page": 4,
+     "source_file": "DCP/DCP_091111_DCP2_Rural_Small_Holdings.pdf",
+     "condition": "DCP 2 Rural Small Holdings zone 1(c), arterial roads",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Buildings must be set back a minimum of 18 metres from arterial roads",
+   "clause": "cl.7(ii)(a)",
+   "page": 4,
+   "source_file": "DCP/DCP_091111_DCP2_Rural_Small_Holdings.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Industrial land (DCP 1 Annexure), secondary street frontage",
+    "Industrial land (DCP 1 Annexure), side and rear boundaries"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     10812
+    ]
+   },
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "no side or rear setbacks, BCA requirements apply",
+    "sources": [
+     10813
+    ]
+   },
+   "front": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10812,
+    10813
+   ],
+   "evidence": [
+    {
+     "id": 10812,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "the other street property boundary shall be 3 metres minimum",
+     "clause": "2.1(a)",
+     "page": 7,
+     "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf",
+     "condition": "Industrial land (DCP 1 Annexure), secondary street frontage",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    },
+    {
+     "id": 10813,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "There are no side and rear boundary setbacks",
+     "clause": "2.1(b)",
+     "page": 7,
+     "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf",
+     "condition": "Industrial land (DCP 1 Annexure), side and rear boundaries",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "the other street property boundary shall be 3 metres minimum",
+   "clause": "2.1(a)",
+   "page": 7,
+   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "DCP 1 residential sector, laneways narrower than 6.0 m giving rear access",
+   "rear": {
+    "minM": null,
+    "basis": "text",
+    "note": "no setback from laneways narrower than 6.0 m",
+    "sources": [
+     10801
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    10801
+   ],
+   "evidence": [
+    {
+     "id": 10801,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "There is no building setback from laneways which are less than 6.0 metres wide",
+     "clause": "cl.18",
+     "page": 3,
+     "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+     "condition": "DCP 1 residential sector, laneways narrower than 6.0 m giving rear access",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "There is no building setback from laneways which are less than 6.0 metres wide",
+   "clause": "cl.18",
+   "page": 3,
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "DCP 1 general village sector (VG), State Highways 9 m and other roads",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     10804
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10804
+   ],
+   "evidence": [
+    {
+     "id": 10804,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "All land uses are to be set back a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
+     "clause": "cl.29",
+     "page": 4,
+     "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+     "condition": "DCP 1 general village sector (VG), State Highways 9 m and other roads",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "All land uses are to be set back a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
+   "clause": "cl.29",
+   "page": 4,
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "DCP 1 village residential sector, preferred land uses, other roads",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     10799
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10799
+   ],
+   "evidence": [
+    {
+     "id": 10799,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
+     "clause": "cl.19",
+     "page": 3,
+     "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+     "condition": "DCP 1 village residential sector, preferred land uses, other roads",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
+   "clause": "cl.19",
+   "page": 3,
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "DCP 1 village residential sector, other land uses, all roads",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     10800
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10800
+   ],
+   "evidence": [
+    {
+     "id": 10800,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Other land uses are to be set back a minimum of 9 metres from all roads",
+     "clause": "cl.20",
+     "page": 3,
+     "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+     "condition": "DCP 1 village residential sector, other land uses, all roads",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Other land uses are to be set back a minimum of 9 metres from all roads",
+   "clause": "cl.20",
+   "page": 3,
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-008",
+   "zones": [
+    "B*"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {},
+   "conditionText": "DCP 1 village commercial sector, other land uses, other roads",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     10803
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10803
+   ],
+   "evidence": [
+    {
+     "id": 10803,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "Other land uses are to be set back a minimum of 7.5 metres from",
+     "clause": "cl.25",
+     "page": 3,
+     "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+     "condition": "DCP 1 village commercial sector, other land uses, other roads",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).",
+   "quote": "Other land uses are to be set back a minimum of 7.5 metres from",
+   "clause": "cl.25",
+   "page": 3,
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-009",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Industrial land (DCP 1 Annexure), main roads/state highways",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     10810
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10810
+   ],
+   "evidence": [
+    {
+     "id": 10810,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Buildings are to be set back from all main roads/state highways a minimum of 9 metres from the property boundary",
+     "clause": "2.1(a)",
+     "page": 7,
+     "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf",
+     "condition": "Industrial land (DCP 1 Annexure), main roads/state highways",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Buildings are to be set back from all main roads/state highways a minimum of 9 metres from the property boundary",
+   "clause": "2.1(a)",
+   "page": 7,
+   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-010",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "DCP 1 village industrial sector (VI), preferred land uses, other roads",
+    "Industrial land (DCP 1 Annexure), all other front boundaries"
+   ],
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     10805,
+     10811
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10805,
+    10811
+   ],
+   "evidence": [
+    {
+     "id": 10805,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Preferred land uses are to be set back a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
+     "clause": "cl.33",
+     "page": 3,
+     "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+     "condition": "DCP 1 village industrial sector (VI), preferred land uses, other roads",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    },
+    {
+     "id": 10811,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Buildings are to be set back from all other front boundaries a minimum of 7.5 metres",
+     "clause": "2.1(a)",
+     "page": 7,
+     "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf",
+     "condition": "Industrial land (DCP 1 Annexure), all other front boundaries",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Preferred land uses are to be set back a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
+   "clause": "cl.33",
+   "page": 3,
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-011",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "DCP 1 village industrial sector (VI), other land uses, all roads",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     10807
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10807
+   ],
+   "evidence": [
+    {
+     "id": 10807,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Other land uses are to be set back a minimum of 9 metres from all roads",
+     "clause": "cl.34",
+     "page": 4,
+     "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+     "condition": "DCP 1 village industrial sector (VI), other land uses, all roads",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Other land uses are to be set back a minimum of 9 metres from all roads",
+   "clause": "cl.34",
+   "page": 4,
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-012",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial land (DCP 1 Annexure), car parking to front boundary",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     10815
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10815
+   ],
+   "evidence": [
+    {
+     "id": 10815,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Car parking shall be setback a minimum of three metres (3) from the front boundary",
+     "clause": "2.2(a)",
+     "page": 7,
+     "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf",
+     "condition": "Industrial land (DCP 1 Annexure), car parking to front boundary",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Car parking shall be setback a minimum of three metres (3) from the front boundary",
+   "clause": "2.2(a)",
+   "page": 7,
+   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf"
+  },
+  {
+   "id": "coonamble-shire-council-013",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "DCP 2 Rural Small Holdings zone 1(c), other roads",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     10808
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10808
+   ],
+   "evidence": [
+    {
+     "id": 10808,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Buildings must be set back a minimum of 10 metres from other roads",
+     "clause": "cl.7(ii)(a)",
+     "page": 4,
+     "source_file": "DCP/DCP_091111_DCP2_Rural_Small_Holdings.pdf",
+     "condition": "DCP 2 Rural Small Holdings zone 1(c), other roads",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Buildings must be set back a minimum of 10 metres from other roads",
+   "clause": "cl.7(ii)(a)",
+   "page": 4,
+   "source_file": "DCP/DCP_091111_DCP2_Rural_Small_Holdings.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "3 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 10798, 10802, 10806",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): No kerb return radius, property boundary splay, street tree spacing, traffic calming numbers, lot size by dwelling type, site coverage or setbacks for residential dwellings beyond DCP 1 | DCP 3 Small Cattle Feedlots and DCP 4 Small Intensive Piggeries read as rural agricultural, not extracted (no engineering parameters)"
+ ],
+ "notes": "Built from 18 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": false,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 7
+  },
+  "B*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 4
+  },
+  "RU*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 18,
+  "rules": 13,
+  "recordsNotModelled": 3,
+  "otherSetbackKeysNotModelled": 3
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "lga_slug": "balranald-shire-council",
+ "council": "Balranald Shire Council",
+ "lgaNames": [
+  "BALRANALD",
+  "BALRANALD SHIRE",
+  "BALRANALD SHIRE COUNCIL"
+ ],
+ "dcp": "None adopted in saved documents. May 2013 agenda records a comprehensive DCP in preparation (Draft Element 1 Notification Provisions only); August 2025 agenda states no DCP applies to the land in the item assessed. Building Setback draft policy referred to in the August 2025 agenda is not in the saved text",
+ "lep": "Balranald Local Environmental Plan 2010",
+ "status": "none",
+ "rules": [],
+ "gaps": [
+  "No setback records in the extract (no front, side, rear, garage, rural, commercial, industrial or classified road setback values found in the saved council documents).",
+  "Extraction gaps noted for this council (verbatim): dev_controls: lot sizes, site coverage, parking rates (no DCP saved; agendas contain no general controls) | setbacks (Building Setback policy not in saved text)"
+ ],
+ "notes": "Extract reviewed: reviewed (Opus full-set audit 01/11/2026).",
+ "counts": {
+  "records": 0,
+  "rules": 0
+ }
+}

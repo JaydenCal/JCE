@@ -1,0 +1,1892 @@
+{
+ "lga_slug": "the-hills-shire-council",
+ "council": "The Hills Shire Council",
+ "lgaNames": [
+  "THE HILLS",
+  "THE HILLS SHIRE",
+  "HILLS",
+  "THE HILLS SHIRE COUNCIL"
+ ],
+ "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+ "lep": "The Hills LEP 2012 (lot size, height and FSR set by LEP)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "the-hills-shire-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Rural DCP (Part B Section 1): Maraylya, Box Hill and Nelson, land adjacent to Boundary Road",
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     34465
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34465
+   ],
+   "evidence": [
+    {
+     "id": 34465,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front Setback 50m",
+     "clause": "B. Additional Controls",
+     "page": 6,
+     "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+     "condition": "Rural DCP (Part B Section 1): Maraylya, Box Hill and Nelson, land adjacent to Boundary Road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "Front Setback 50m",
+   "clause": "B. Additional Controls",
+   "page": 6,
+   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "level": "ground",
+    "qualifiers": [
+     "boundary_wall"
+    ]
+   },
+   "conditionText": "Dual Occupancy DCP (Part B Section 3): 2 storey (ground floor), wall to boundary",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     34416
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34416
+   ],
+   "evidence": [
+    {
+     "id": 34416,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "2 storey 900mm 675mm",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+     "condition": "Dual Occupancy DCP (Part B Section 3): 2 storey (ground floor), wall to boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2 storey 900mm 675mm",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "level": "upper",
+    "qualifiers": [
+     "boundary_wall"
+    ]
+   },
+   "conditionText": "Dual Occupancy DCP (Part B Section 3): 2 storey (second floor), wall to boundary",
+   "side": {
+    "minM": 4.0,
+    "printed": "4000 mm",
+    "basis": "fixed",
+    "sources": [
+     34417
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34417
+   ],
+   "evidence": [
+    {
+     "id": 34417,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "2 storey 4 metres 3775mm",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+     "condition": "Dual Occupancy DCP (Part B Section 3): 2 storey (second floor), wall to boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2 storey 4 metres 3775mm",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "level": "upper",
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Dual Occupancy DCP (Part B Section 3): 2 storey (second floor), eave to boundary",
+   "side": {
+    "minM": 3.775,
+    "printed": "3775 mm",
+    "basis": "fixed",
+    "sources": [
+     34418
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34418
+   ],
+   "evidence": [
+    {
+     "id": 34418,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "2 storey 4 metres 3775mm",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+     "condition": "Dual Occupancy DCP (Part B Section 3): 2 storey (second floor), eave to boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2 storey 4 metres 3775mm",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "boundary_wall"
+    ]
+   },
+   "conditionText": "Dual Occupancy DCP (Part B Section 3): 1 storey, wall to boundary",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     34414
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34414
+   ],
+   "evidence": [
+    {
+     "id": 34414,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1 storey 900 mm 675 mm",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+     "condition": "Dual Occupancy DCP (Part B Section 3): 1 storey, wall to boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1 storey 900 mm 675 mm",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Dual Occupancy DCP (Part B Section 3): 1 storey, eave to boundary",
+   "side": {
+    "minM": 0.675,
+    "printed": "675 mm",
+    "basis": "fixed",
+    "sources": [
+     34415
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34415
+   ],
+   "evidence": [
+    {
+     "id": 34415,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1 storey 900 mm 675 mm",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+     "condition": "Dual Occupancy DCP (Part B Section 3): 1 storey, eave to boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1 storey 900 mm 675 mm",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Dual Occupancy DCP (Part B Section 3): urban classified road",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     34419
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34419
+   ],
+   "evidence": [
+    {
+     "id": 34419,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "- Urban 10 metres",
+     "clause": "Table 2",
+     "page": 8,
+     "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+     "condition": "Dual Occupancy DCP (Part B Section 3): urban classified road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "- Urban 10 metres",
+   "clause": "Table 2",
+   "page": 8,
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dual Occupancy DCP (Part B Section 3): corner allotment, rural, each street frontage",
+    "Dual Occupancy DCP (Part B Section 3): other roads, minimum"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "note": "Consistent with setbacks in the locality to a minimum of 4.5 m",
+    "sources": [
+     34421
+    ]
+   },
+   "secondaryFront": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     34422
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34421,
+    34422
+   ],
+   "evidence": [
+    {
+     "id": 34421,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a minimum of 4.5 metres",
+     "clause": "Table 2",
+     "page": 8,
+     "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+     "condition": "Dual Occupancy DCP (Part B Section 3): other roads, minimum",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 34422,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "- Rural 10 metres",
+     "clause": "Table 2",
+     "page": 8,
+     "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+     "condition": "Dual Occupancy DCP (Part B Section 3): corner allotment, rural, each street frontage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a minimum of 4.5 metres",
+   "clause": "Table 2",
+   "page": 8,
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "cornerLot": true,
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): corner allotments with no classified road frontage, primary frontage",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34295
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34295
+   ],
+   "evidence": [
+    {
+     "id": 34295,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a setback of not less than 6 metres for the",
+     "clause": "2.14.1(d)",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): corner allotments with no classified road frontage, primary frontage",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a setback of not less than 6 metres for the",
+   "clause": "2.14.1(d)",
+   "page": 11,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "adjoins_other",
+     "classified_road"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): rear wall to classified road, 1 storey (lot with two frontages backing onto arterial or sub-arterial)",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34309
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34309
+   ],
+   "evidence": [
+    {
+     "id": 34309,
+     "parameter": "setback_classified_road",
+     "slot": "rear",
+     "quote": "1 storey 6 metres",
+     "clause": "2.14.1(j)",
+     "page": 12,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): rear wall to classified road, 1 storey (lot with two frontages backing onto arterial or sub-arterial)",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "1 storey 6 metres",
+   "clause": "2.14.1(j)",
+   "page": 12,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): battleaxe allotments, single storey element (three sides only)",
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     34307
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34307
+   ],
+   "evidence": [
+    {
+     "id": 34307,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4m for the single storey element and 6m for the 2",
+     "clause": "2.14.1(i)",
+     "page": 12,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): battleaxe allotments, single storey element (three sides only)",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4m for the single storey element and 6m for the 2",
+   "clause": "2.14.1(i)",
+   "page": 12,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 3,
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): battleaxe allotments, 2 and 3 storey elements (three sides only)",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34308
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34308
+   ],
+   "evidence": [
+    {
+     "id": 34308,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4m for the single storey element and 6m for the 2",
+     "clause": "2.14.1(i)",
+     "page": 12,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): battleaxe allotments, 2 and 3 storey elements (three sides only)",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4m for the single storey element and 6m for the 2",
+   "clause": "2.14.1(i)",
+   "page": 12,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 3,
+    "qualifiers": [
+     "boundary_wall"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): 3 storey, wall to boundary",
+   "side": {
+    "minM": 1.5,
+    "printed": "1500 mm",
+    "basis": "fixed",
+    "sources": [
+     34303
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34303
+   ],
+   "evidence": [
+    {
+     "id": 34303,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3 storey 1500mm 1175mm",
+     "clause": "2.14.1(g)",
+     "page": 12,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): 3 storey, wall to boundary",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "3 storey 1500mm 1175mm",
+   "clause": "2.14.1(g)",
+   "page": 12,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeysMax": 2,
+    "qualifiers": [
+     "boundary_wall"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): 1 or 2 storeys, wall to boundary",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     34301
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34301
+   ],
+   "evidence": [
+    {
+     "id": 34301,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1 or 2 storeys 900mm 675mm",
+     "clause": "2.14.1(g)",
+     "page": 12,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): 1 or 2 storeys, wall to boundary",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1 or 2 storeys 900mm 675mm",
+   "clause": "2.14.1(g)",
+   "page": 12,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 3,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): 3 storey, eave to boundary",
+   "side": {
+    "minM": 1.175,
+    "printed": "1175 mm",
+    "basis": "fixed",
+    "sources": [
+     34304
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34304
+   ],
+   "evidence": [
+    {
+     "id": 34304,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3 storey 1500mm 1175mm",
+     "clause": "2.14.1(g)",
+     "page": 12,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): 3 storey, eave to boundary",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "3 storey 1500mm 1175mm",
+   "clause": "2.14.1(g)",
+   "page": 12,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeysMax": 2,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): 1 or 2 storeys, eave to boundary",
+   "side": {
+    "minM": 0.675,
+    "printed": "675 mm",
+    "basis": "fixed",
+    "sources": [
+     34302
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34302
+   ],
+   "evidence": [
+    {
+     "id": 34302,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1 or 2 storeys 900mm 675mm",
+     "clause": "2.14.1(g)",
+     "page": 12,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): 1 or 2 storeys, eave to boundary",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1 or 2 storeys 900mm 675mm",
+   "clause": "2.14.1(g)",
+   "page": 12,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 3,
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): rear wall to classified road, 2-3 storey",
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     34329
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34329
+   ],
+   "evidence": [
+    {
+     "id": 34329,
+     "parameter": "setback_classified_road",
+     "slot": "rear",
+     "quote": "8 metres",
+     "clause": "2.14.1(j)",
+     "page": 12,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): rear wall to classified road, 2-3 storey",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "8 metres",
+   "clause": "2.14.1(j)",
+   "page": 12,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": [
+    "Residential DCP (Part B Section 2): corner allotments with no classified road frontage, secondary road frontage",
+    "Residential DCP (Part B Section 2): minimum road frontage setback for any classified road",
+    "Residential DCP (Part B Section 2): non classified roads, default primary road frontage setback"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     34290,
+     34289
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     34296
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34289,
+    34290,
+    34296
+   ],
+   "evidence": [
+    {
+     "id": 34290,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Primary Road Frontage Setback 10m",
+     "clause": "2.14.1(b)",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): non classified roads, default primary road frontage setback",
+     "edition": "In Force 6 May 2022"
+    },
+    {
+     "id": 34289,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "classified road is 10 metres",
+     "clause": "2.14.1(a)",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): minimum road frontage setback for any classified road",
+     "edition": "In Force 6 May 2022"
+    },
+    {
+     "id": 34296,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "primary frontage and 4 metres to a secondary road",
+     "clause": "2.14.1(d)",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): corner allotments with no classified road frontage, secondary road frontage",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Primary Road Frontage Setback 10m",
+   "clause": "2.14.1(b)",
+   "page": 11,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): predominant streetscape setback pattern",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Where predominant setback pattern exceeds the minimum, the greater setback suggested by the three adjoining dwellings either side applies",
+    "sources": [
+     34297
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34297
+   ],
+   "evidence": [
+    {
+     "id": 34297,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "the greater setback",
+     "clause": "2.14.1(c)",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): predominant streetscape setback pattern",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the greater setback",
+   "clause": "2.14.1(c)",
+   "page": 11,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Residential DCP (Part B Section 2): 1 storey element",
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     34305
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34305
+   ],
+   "evidence": [
+    {
+     "id": 34305,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4 metres",
+     "clause": "2.14.1(h)",
+     "page": 12,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): 1 storey element",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4 metres",
+   "clause": "2.14.1(h)",
+   "page": 12,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 3
+   },
+   "conditionText": "Residential DCP (Part B Section 2): 2-3 storey elements",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34306
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    34306
+   ],
+   "evidence": [
+    {
+     "id": 34306,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "6 metres",
+     "clause": "2.14.1(h)",
+     "page": 12,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): 2-3 storey elements",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "6 metres",
+   "clause": "2.14.1(h)",
+   "page": 12,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Residential DCP (Part B Section 2): Bingara Crescent/Crestwood (Map 2)",
+    "Residential DCP (Part B Section 2): Kings Road (Map 3)",
+    "Residential DCP (Part B Section 2): West Pennant Hills Valley (Map 1)",
+    "Rural DCP (Part B Section 1): Riverside Oaks Golf Course residential, side boundaries"
+   ],
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     34291,
+     34292,
+     34293
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     34474
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34291,
+    34292,
+    34293,
+    34474
+   ],
+   "evidence": [
+    {
+     "id": 34291,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "West Pennant Hills Valley 1 7.5",
+     "clause": "2.14.1(b) table",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): West Pennant Hills Valley (Map 1)",
+     "edition": "In Force 6 May 2022"
+    },
+    {
+     "id": 34292,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Bingara Crescent/ Crestwood 2 7.5",
+     "clause": "2.14.1(b) table",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): Bingara Crescent/Crestwood (Map 2)",
+     "edition": "In Force 6 May 2022"
+    },
+    {
+     "id": 34293,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Kings Road 3 7.5",
+     "clause": "2.14.1(b) table",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): Kings Road (Map 3)",
+     "edition": "In Force 6 May 2022"
+    },
+    {
+     "id": 34474,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side boundaries: 0.9m",
+     "clause": "Minimum Setbacks",
+     "page": 10,
+     "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+     "condition": "Rural DCP (Part B Section 1): Riverside Oaks Golf Course residential, side boundaries",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "West Pennant Hills Valley 1 7.5",
+   "clause": "2.14.1(b) table",
+   "page": 11,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Residential DCP (Part B Section 2): Bella Vista Residential (Map 4)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34294
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34294
+   ],
+   "evidence": [
+    {
+     "id": 34294,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Bella Vista Residential 4 6m",
+     "clause": "2.14.1(b) table",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): Bella Vista Residential (Map 4)",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Bella Vista Residential 4 6m",
+   "clause": "2.14.1(b) table",
+   "page": 11,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-024",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Rural DCP (Part B Section 1): Riverside Oaks Golf Course residential, setback to access road",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     34473
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34473
+   ],
+   "evidence": [
+    {
+     "id": 34473,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Setback to access road: 4.5m",
+     "clause": "Minimum Setbacks",
+     "page": 10,
+     "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+     "condition": "Rural DCP (Part B Section 1): Riverside Oaks Golf Course residential, setback to access road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Setback to access road: 4.5m",
+   "clause": "Minimum Setbacks",
+   "page": 10,
+   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-025",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Residential DCP (Part B Section 2): garage maximum width",
+    "Residential DCP (Part B Section 2): garages, minimum"
+   ],
+   "garage": {
+    "minM": 5.5,
+    "note": "Garages no more than 6.5 m wide and not extending across more than 50% of property width at the building line",
+    "sources": [
+     34298,
+     34315
+    ],
+    "basis": "greater_of",
+    "behindBuildingLineM": 6.5
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    34298,
+    34315
+   ],
+   "evidence": [
+    {
+     "id": 34298,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5 metres, whichever is the greater",
+     "clause": "2.14.1(e)",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): garages, minimum",
+     "edition": "In Force 6 May 2022"
+    },
+    {
+     "id": 34315,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "more than 6.5m in width and should not extend",
+     "clause": "2.14.6(e)",
+     "page": 19,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): garage maximum width",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5 metres, whichever is the greater",
+   "clause": "2.14.1(e)",
+   "page": 11,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-026",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Rural DCP (Part B Section 1): Riverside Oaks Golf Course residential, garages",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     34475
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    34475
+   ],
+   "evidence": [
+    {
+     "id": 34475,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages: 5.5m",
+     "clause": "Minimum Setbacks",
+     "page": 10,
+     "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+     "condition": "Rural DCP (Part B Section 1): Riverside Oaks Golf Course residential, garages",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen",
+   "quote": "Garages: 5.5m",
+   "clause": "Minimum Setbacks",
+   "page": 10,
+   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-027",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "Multi Dwelling Housing DCP (Part B Section 4): second storey components, side/rear boundary",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34444
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34444
+   ],
+   "evidence": [
+    {
+     "id": 34444,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Second Storey Components 6 metres",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+     "condition": "Multi Dwelling Housing DCP (Part B Section 4): second storey components, side/rear boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Second Storey Components 6 metres",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-028",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Multi Dwelling Housing DCP (Part B Section 4): primary road frontage, urban classified road",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     34438
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34438
+   ],
+   "evidence": [
+    {
+     "id": 34438,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "Urban Classified Road 10 metres",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+     "condition": "Multi Dwelling Housing DCP (Part B Section 4): primary road frontage, urban classified road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Urban Classified Road 10 metres",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-029",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Multi Dwelling Housing DCP (Part B Section 4): single storey component, 5 m portion of the unit",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     34442
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34442
+   ],
+   "evidence": [
+    {
+     "id": 34442,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "A 5 metre portion of the unit 1.5 metres",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+     "condition": "Multi Dwelling Housing DCP (Part B Section 4): single storey component, 5 m portion of the unit",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A 5 metre portion of the unit 1.5 metres",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-030",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Multi Dwelling Housing DCP (Part B Section 4): single storey component, remainder",
+   "side": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     34443
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34443
+   ],
+   "evidence": [
+    {
+     "id": 34443,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "The remainder of the single storey 4.5 metres",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+     "condition": "Multi Dwelling Housing DCP (Part B Section 4): single storey component, remainder",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "The remainder of the single storey 4.5 metres",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-031",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Multi Dwelling Housing DCP (Part B Section 4): primary road frontage, existing urban road",
+    "Multi Dwelling Housing DCP (Part B Section 4): secondary road frontage (corner allotments)"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     34439
+    ]
+   },
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34441
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34439,
+    34441
+   ],
+   "evidence": [
+    {
+     "id": 34439,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Existing Urban Road 10 metres",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+     "condition": "Multi Dwelling Housing DCP (Part B Section 4): primary road frontage, existing urban road",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 34441,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "(Corner Allotments) 6 metres",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+     "condition": "Multi Dwelling Housing DCP (Part B Section 4): secondary road frontage (corner allotments)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Existing Urban Road 10 metres",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-032",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Multi Dwelling Housing DCP (Part B Section 4): primary road frontage, Rouse Hill Development Area",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     34440
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34440
+   ],
+   "evidence": [
+    {
+     "id": 34440,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Rouse Hill Development Area 6 metres",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+     "condition": "Multi Dwelling Housing DCP (Part B Section 4): primary road frontage, Rouse Hill Development Area",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Rouse Hill Development Area 6 metres",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-033",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Rural DCP (Part B Section 1): lots fronting a classified road",
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     34469
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34469
+   ],
+   "evidence": [
+    {
+     "id": 34469,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Lots fronting a classified road 30m",
+     "clause": "Minimum Setbacks",
+     "page": 10,
+     "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+     "condition": "Rural DCP (Part B Section 1): lots fronting a classified road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Lots fronting a classified road 30m",
+   "clause": "Minimum Setbacks",
+   "page": 10,
+   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-034",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Rural DCP (Part B Section 1): lots fronting any other road",
+    "Rural DCP (Part B Section 1): side and rear setbacks"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     34470
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     34471
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     34471
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    34470,
+    34471,
+    34471
+   ],
+   "evidence": [
+    {
+     "id": 34470,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Lots fronting any other road 10m",
+     "clause": "Minimum Setbacks",
+     "page": 10,
+     "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+     "condition": "Rural DCP (Part B Section 1): lots fronting any other road",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 34471,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Side and rear setbacks 5m",
+     "clause": "Minimum Setbacks",
+     "page": 10,
+     "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+     "condition": "Rural DCP (Part B Section 1): side and rear setbacks",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 34471,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "Side and rear setbacks 5m",
+     "clause": "Minimum Setbacks",
+     "page": 10,
+     "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+     "condition": "Rural DCP (Part B Section 1): side and rear setbacks",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Lots fronting any other road 10m",
+   "clause": "Minimum Setbacks",
+   "page": 10,
+   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf"
+  },
+  {
+   "id": "the-hills-shire-council-035",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Dual Occupancy DCP (Part B Section 3): rural classified road",
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     34420
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34420
+   ],
+   "evidence": [
+    {
+     "id": 34420,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "- Rural 30 metres",
+     "clause": "Table 2",
+     "page": 8,
+     "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+     "condition": "Dual Occupancy DCP (Part B Section 3): rural classified road",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "- Rural 30 metres",
+   "clause": "Table 2",
+   "page": 8,
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 34472",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Not read in detail: B5 RFB, B6 Business, B7 Industrial, C3 Landscaping, Part D precinct sections, Box Hill Growth Centres DCP, rest of North Kellyville DCP tables 11-15"
+ ],
+ "notes": "Built from 45 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 32
+  },
+  "RU*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 45,
+  "rules": 35,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

@@ -1,0 +1,191 @@
+{
+ "lga_slug": "northern-beaches-council",
+ "council": "Northern Beaches Council",
+ "lgaNames": [
+  "NORTHERN BEACHES",
+  "NORTHERN BEACHES COUNCIL"
+ ],
+ "dcp": "Three legacy DCP areas: Manly DCP 2013 (Amendment 11, last amended 28/08/2017, saved under Older-reference), Pittwater 21 DCP (only Appendices saved; Appendix 10 and 11 contain no text), Warringah DCP 2000 (Amendment 4, 01/12/2019; only 12 pages saved, no development controls). Conditions start with the DCP area name",
+ "lep": "Manly LEP 2013, Pittwater LEP 2014, Warringah LEP 2011 (UNVERIFIED, not reproduced)",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "northern-beaches-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Manly DCP area"
+   },
+   "conditionText": "Manly DCP area: where neighbouring street front building lines are variable (minimum generally applies)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     24714
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24714
+   ],
+   "evidence": [
+    {
+     "id": 24714,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a minimum 6m front setback generally applies",
+     "clause": "4.1.4.1",
+     "page": 73,
+     "source_file": "DCP/Older-reference/Manly-DCP-2013-Amendment-11-2017.txt",
+     "condition": "Manly DCP area: where neighbouring street front building lines are variable (minimum generally applies)",
+     "edition": "Manly Development Control Plan 2013 Amendment 11, last amended 28/08/2017"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "a minimum 6m front setback generally applies",
+   "clause": "4.1.4.1",
+   "page": 73,
+   "source_file": "DCP/Older-reference/Manly-DCP-2013-Amendment-11-2017.txt"
+  },
+  {
+   "id": "northern-beaches-council-002",
+   "zones": [
+    "E1",
+    "E2",
+    "RE1",
+    "RE2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Manly DCP area",
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": [
+    "Manly DCP area: development adjacent to RE1, RE2, E1, E2 zones (minimum prevails)",
+    "Manly DCP area: development adjacent to RE1, RE2, E1, E2 zones: common boundary"
+   ],
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     24716
+    ]
+   },
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     24715
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    24715,
+    24716
+   ],
+   "evidence": [
+    {
+     "id": 24716,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "the minimum 8m setback prevails",
+     "clause": "4.1.4.6",
+     "page": 76,
+     "source_file": "DCP/Older-reference/Manly-DCP-2013-Amendment-11-2017.txt",
+     "condition": "Manly DCP area: development adjacent to RE1, RE2, E1, E2 zones (minimum prevails)",
+     "edition": "Manly Development Control Plan 2013 Amendment 11, last amended 28/08/2017"
+    },
+    {
+     "id": 24715,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "must be set back at least 6m from this common boundary",
+     "clause": "4.1.4.6",
+     "page": 76,
+     "source_file": "DCP/Older-reference/Manly-DCP-2013-Amendment-11-2017.txt",
+     "condition": "Manly DCP area: development adjacent to RE1, RE2, E1, E2 zones: common boundary",
+     "edition": "Manly Development Control Plan 2013 Amendment 11, last amended 28/08/2017"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "the minimum 8m setback prevails",
+   "clause": "4.1.4.6",
+   "page": 76,
+   "source_file": "DCP/Older-reference/Manly-DCP-2013-Amendment-11-2017.txt"
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "All residential rules are tied to named precincts or DCP areas (1); the app must supply the precinct for a lot",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Pittwater 21 DCP Appendix 10 Driveway Profiles and Appendix 11 Stormwater Management Technical Data (OSD orifice table, rainfall charts): pages contain no text, scanned/drawing only | Warringah DCP 2000: only 12 pages saved (cover, amendments, no development controls) | Manly DCP 2013: side setback (wall-height based), site coverage, landscaped area, open space, lot size, flood controls (5.4.3) and Schedule 4+ not extracted in detail; Pittwater 21 DCP main controls (Part B/C/D) not saved"
+ ],
+ "notes": "Built from 3 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "E1": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "E2": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RE1": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RE2": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [
+  "Manly DCP area"
+ ],
+ "needsPrecinct": true,
+ "counts": {
+  "records": 3,
+  "rules": 2,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

@@ -1,0 +1,1086 @@
+{
+ "lga_slug": "eurobodalla-shire-council",
+ "council": "Eurobodalla Shire Council",
+ "lgaNames": [
+  "EUROBODALLA",
+  "EUROBODALLA SHIRE",
+  "EUROBODALLA SHIRE COUNCIL"
+ ],
+ "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+ "lep": "Eurobodalla Local Environmental Plan 2012 (referenced only; lot sizes, height and FSR set by LEP maps)",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "eurobodalla-shire-council-001",
+   "zones": [
+    "R5",
+    "E4"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "R5 and E4 zones: dwellings, boundary to unsealed public or private road on right of way",
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     12415
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12415
+   ],
+   "evidence": [
+    {
+     "id": 12415,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "in which case the minimum setback is 30m",
+     "clause": "2.2 A1.1",
+     "page": 8,
+     "source_file": "DCP/Rural-R5-Large-Lot-Residential-and-E4-Environmental-Living-Zones-DCP.pdf",
+     "condition": "R5 and E4 zones: dwellings, boundary to unsealed public or private road on right of way",
+     "edition": "Rural R5 and E4 DCP (edition UNVERIFIED)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "in which case the minimum setback is 30m",
+   "clause": "2.2 A1.1",
+   "page": 8,
+   "source_file": "DCP/Rural-R5-Large-Lot-Residential-and-E4-Environmental-Living-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-002",
+   "zones": [
+    "R5",
+    "E4"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "R5 and E4 zones: buildings other than dwellings, road frontage",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     12416
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12416
+   ],
+   "evidence": [
+    {
+     "id": 12416,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "setback at least 20m from the road frontage and",
+     "clause": "2.2 A1.2",
+     "page": 8,
+     "source_file": "DCP/Rural-R5-Large-Lot-Residential-and-E4-Environmental-Living-Zones-DCP.pdf",
+     "condition": "R5 and E4 zones: buildings other than dwellings, road frontage",
+     "edition": "Rural R5 and E4 DCP (edition UNVERIFIED)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "setback at least 20m from the road frontage and",
+   "clause": "2.2 A1.2",
+   "page": 8,
+   "source_file": "DCP/Rural-R5-Large-Lot-Residential-and-E4-Environmental-Living-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "level": "upper",
+    "lotAreaMaxM2": 2500.0,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Lots under 2500 m2: single storey or first floor (including 600 mm to eaves or gutters)",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     12388
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12388
+   ],
+   "evidence": [
+    {
+     "id": 12388,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "building, 900mm (including a minimum of",
+     "clause": "2.2 A3",
+     "page": 11,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Lots under 2500 m2: single storey or first floor (including 600 mm to eaves or gutters)",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "building, 900mm (including a minimum of",
+   "clause": "2.2 A3",
+   "page": 11,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2500.0,
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Lots under 2500 m2: part of building higher than 4.5 m (including 1.2 m to eaves or gutters)",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     12389
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12389
+   ],
+   "evidence": [
+    {
+     "id": 12389,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "For any part of the building higher than 4.5m, 1.5m",
+     "clause": "2.2 A3",
+     "page": 11,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Lots under 2500 m2: part of building higher than 4.5 m (including 1.2 m to eaves or gutters)",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "For any part of the building higher than 4.5m, 1.5m",
+   "clause": "2.2 A3",
+   "page": 11,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 2500.0,
+    "lotAreaMaxM2": 5000.0
+   },
+   "conditionText": [
+    "Lots from 2500 m2 to under 5000 m2: front boundary",
+    "Lots from 2500 m2 to under 5000 m2: side and rear boundaries"
+   ],
+   "front": {
+    "minM": 7.0,
+    "basis": "fixed",
+    "sources": [
+     12384
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     12385
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12384,
+    12385
+   ],
+   "evidence": [
+    {
+     "id": 12384,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "7m from the front boundary",
+     "clause": "2.2 A1",
+     "page": 10,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Lots from 2500 m2 to under 5000 m2: front boundary",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    },
+    {
+     "id": 12385,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "5m from the side and rear boundaries",
+     "clause": "2.2 A1",
+     "page": 10,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Lots from 2500 m2 to under 5000 m2: side and rear boundaries",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "7m from the front boundary",
+   "clause": "2.2 A1",
+   "page": 10,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 2500.0,
+    "lotAreaMaxM2": 5000.0
+   },
+   "conditionText": "Lots from 2500 m2 to under 5000 m2: front boundary to unsealed public road or private road on right of way",
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     12386
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12386
+   ],
+   "evidence": [
+    {
+     "id": 12386,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "30m from the front boundary where the boundary is to an unsealed public road",
+     "clause": "2.2 A1",
+     "page": 10,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Lots from 2500 m2 to under 5000 m2: front boundary to unsealed public road or private road on right of way",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "30m from the front boundary where the boundary is to an unsealed public road",
+   "clause": "2.2 A1",
+   "page": 10,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "open_space_frontage",
+     "waterfront"
+    ]
+   },
+   "conditionText": "Land adjoining a public reserve other than a foreshore reserve: setback from reserve",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     12397
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12397
+   ],
+   "evidence": [
+    {
+     "id": 12397,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "the minimum setback for any building from the reserve must be 3m",
+     "clause": "2.2 A8.2",
+     "page": 13,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Land adjoining a public reserve other than a foreshore reserve: setback from reserve",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText",
+   "quote": "the minimum setback for any building from the reserve must be 3m",
+   "clause": "2.2 A8.2",
+   "page": 13,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Neighbourhood shops",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     12383
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12383
+   ],
+   "evidence": [
+    {
+     "id": 12383,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Neighbourhood shops must be setback a minimum of 3 metres from the road frontage",
+     "clause": "2.2 A2.2",
+     "page": 10,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Neighbourhood shops",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Neighbourhood shops must be setback a minimum of 3 metres from the road frontage",
+   "clause": "2.2 A2.2",
+   "page": 10,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "open_space_frontage",
+     "waterfront"
+    ]
+   },
+   "conditionText": "Land with common boundary with foreshore reserve (and cliff top), where no building line established: setback from reserve or cliff",
+   "front": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     12396
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12396
+   ],
+   "evidence": [
+    {
+     "id": 12396,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "must be 12m",
+     "clause": "2.2 A8.1 / A8.3",
+     "page": 13,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Land with common boundary with foreshore reserve (and cliff top), where no building line established: setback from reserve or cliff",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "must be 12m",
+   "clause": "2.2 A8.1 / A8.3",
+   "page": 13,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Corner lots, secondary street frontage",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     12391
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12391
+   ],
+   "evidence": [
+    {
+     "id": 12391,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "frontage side boundary is 3m.",
+     "clause": "2.2 A5.1",
+     "page": 11,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Corner lots, secondary street frontage",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "frontage side boundary is 3m.",
+   "clause": "2.2 A5.1",
+   "page": 11,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2500.0,
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Residential zones, lots under 2500 m2: infill development",
+   "front": {
+    "minM": null,
+    "formula": "20%",
+    "basis": "average_neighbours",
+    "note": "within 20% of average front setbacks of adjoining buildings, no less than the smaller of the existing setbacks",
+    "sources": [
+     12382
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12382
+   ],
+   "evidence": [
+    {
+     "id": 12382,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "to within 20% of the average front setbacks of the",
+     "clause": "2.2 A2.1",
+     "page": 10,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Residential zones, lots under 2500 m2: infill development",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "to within 20% of the average front setbacks of the",
+   "clause": "2.2 A2.1",
+   "page": 10,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2500.0,
+    "qualifiers": [
+     "new_release_area"
+    ]
+   },
+   "conditionText": "Residential zones, lots under 2500 m2: new subdivisions where no setback established",
+   "front": {
+    "minM": 5.5,
+    "basis": "fixed",
+    "sources": [
+     12380
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12380
+   ],
+   "evidence": [
+    {
+     "id": 12380,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "In new subdivisions where a setback has not been established a setback of 5.5m applies",
+     "clause": "2.2 A2.3",
+     "page": 10,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Residential zones, lots under 2500 m2: new subdivisions where no setback established",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "In new subdivisions where a setback has not been established a setback of 5.5m applies",
+   "clause": "2.2 A2.3",
+   "page": 10,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2500.0
+   },
+   "conditionText": "Residential zones, lots under 2500 m2: up to 50% of front facade",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     12381
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12381
+   ],
+   "evidence": [
+    {
+     "id": 12381,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Up to 50% of the front façade of the dwelling (excluding garages or carports) may be setback 4.5m",
+     "clause": "2.2 A2.3",
+     "page": 10,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Residential zones, lots under 2500 m2: up to 50% of front facade",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Up to 50% of the front façade of the dwelling (excluding garages or carports) may be setback 4.5m",
+   "clause": "2.2 A2.3",
+   "page": 10,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Corner lots: garages and carports from secondary property boundary",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     12392
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    12392
+   ],
+   "evidence": [
+    {
+     "id": 12392,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "and a minimum of 5.5m from the secondary property boundary",
+     "clause": "2.2 A5.3",
+     "page": 12,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Corner lots: garages and carports from secondary property boundary",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "and a minimum of 5.5m from the secondary property boundary",
+   "clause": "2.2 A5.3",
+   "page": 12,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Carports and garages: maximum projection forward of front facade, for no more than 50% of the facade",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 1.2,
+    "sources": [
+     12400
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    12400
+   ],
+   "evidence": [
+    {
+     "id": 12400,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "1.2m and for no more than 50% of that façade.",
+     "clause": "2.3 A1",
+     "page": 15,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Carports and garages: maximum projection forward of front facade, for no more than 50% of the facade",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.2m and for no more than 50% of that façade.",
+   "clause": "2.3 A1",
+   "page": 15,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Garages with door facing street, and all carports",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     12387
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    12387
+   ],
+   "evidence": [
+    {
+     "id": 12387,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "must be set back a minimum of 5.5 metres from the property boundary",
+     "clause": "2.2 A2.4",
+     "page": 10,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Garages with door facing street, and all carports",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "must be set back a minimum of 5.5 metres from the property boundary",
+   "clause": "2.2 A2.4",
+   "page": 10,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMaxM2": 2500.0
+   },
+   "conditionText": "Lots under 2500 m2: single storey (up to 3.8 m high) sheds, detached garages and detached ancillary buildings",
+   "side": {
+    "minM": 0.45,
+    "printed": "450 mm",
+    "basis": "fixed",
+    "sources": [
+     12390
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12390
+   ],
+   "evidence": [
+    {
+     "id": 12390,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "sheds, detached garages and other detached ancillary buildings (eg. gazebos, aviaries, green houses, pool houses, etc), 450mm",
+     "clause": "2.2 A3",
+     "page": 11,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Lots under 2500 m2: single storey (up to 3.8 m high) sheds, detached garages and detached ancillary buildings",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "sheds, detached garages and other detached ancillary buildings (eg. gazebos, aviaries, green houses, pool houses, etc), 450mm",
+   "clause": "2.2 A3",
+   "page": 11,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "non_habitable"
+    ]
+   },
+   "conditionText": "All buildings except sheds, detached garages and detached non-habitable ancillary buildings up to 3.8 m high",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     12393
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    12393
+   ],
+   "evidence": [
+    {
+     "id": 12393,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A minimum rear boundary setback of 3m",
+     "clause": "2.2 A6.1",
+     "page": 12,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "All buildings except sheds, detached garages and detached non-habitable ancillary buildings up to 3.8 m high",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A minimum rear boundary setback of 3m",
+   "clause": "2.2 A6.1",
+   "page": 12,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "non_habitable"
+    ]
+   },
+   "conditionText": "Sheds, detached garages and detached non-habitable ancillary buildings up to 3.8 m high",
+   "rear": {
+    "minM": 0.45,
+    "printed": "450 mm",
+    "basis": "fixed",
+    "sources": [
+     12394
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    12394
+   ],
+   "evidence": [
+    {
+     "id": 12394,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A minimum rear boundary setback of 450mm",
+     "clause": "2.2 A6.2",
+     "page": 12,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Sheds, detached garages and detached non-habitable ancillary buildings up to 3.8 m high",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "A minimum rear boundary setback of 450mm",
+   "clause": "2.2 A6.2",
+   "page": 12,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Battle axe allotments: setback to the boundary shared with the front lot (all buildings except small ancillary buildings)",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     12395
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12395
+   ],
+   "evidence": [
+    {
+     "id": 12395,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A minimum ‘front’ boundary setback of 3m",
+     "clause": "2.2 A7.1",
+     "page": 12,
+     "source_file": "DCP/Residential-Zones-DCP.pdf",
+     "condition": "Battle axe allotments: setback to the boundary shared with the front lot (all buildings except small ancillary buildings)",
+     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A minimum ‘front’ boundary setback of 3m",
+   "clause": "2.2 A7.1",
+   "page": 12,
+   "source_file": "DCP/Residential-Zones-DCP.pdf"
+  },
+  {
+   "id": "eurobodalla-shire-council-021",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Industrial zones: Princes Highway frontage",
+   "front": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     12419
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12419
+   ],
+   "evidence": [
+    {
+     "id": 12419,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "following roads shall be 12m:",
+     "clause": "2.1 A1.1",
+     "page": 7,
+     "source_file": "DCP/Industrial-Zones-DCP.pdf",
+     "condition": "Industrial zones: Princes Highway frontage",
+     "edition": "Industrial Zones DCP (edition UNVERIFIED)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "following roads shall be 12m:",
+   "clause": "2.1 A1.1",
+   "page": 7,
+   "source_file": "DCP/Industrial-Zones-DCP.pdf"
+  }
+ ],
+ "gaps": [
+  "R5: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 12414",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): IFD zone tables in IDS Appendix A not extracted | Town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) not extracted"
+ ],
+ "notes": "Built from 23 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "E4": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 18
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 23,
+  "rules": 21,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 1
+ }
+}

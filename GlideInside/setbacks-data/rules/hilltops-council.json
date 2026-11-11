@@ -1,0 +1,478 @@
+{
+ "lga_slug": "hilltops-council",
+ "council": "Hilltops Council",
+ "lgaNames": [
+  "HILLTOPS",
+  "HILLTOPS COUNCIL"
+ ],
+ "dcp": "Hilltops Development Control Plan 2025, adopted 25/06/2025, in force 01/07/2025 (repeals Young DCP 2011 and Boorowa DCP 2013)",
+ "lep": "Hilltops Local Environmental Plan 2022",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "hilltops-council-001",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "cornerLot": true
+   },
+   "conditionText": "R1 and R2 single storey dwellings: side and rear (excluding secondary street)",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "note": "3 m, or less where windows are offset to achieve privacy",
+    "sources": [
+     15945
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15945
+   ],
+   "evidence": [
+    {
+     "id": 15945,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "• 3m, or",
+     "clause": "ASR5.1 a)",
+     "page": 26,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "R1 and R2 single storey dwellings: side and rear (excluding secondary street)",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "• 3m, or",
+   "clause": "ASR5.1 a)",
+   "page": 26,
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+  },
+  {
+   "id": "hilltops-council-002",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "level": "upper"
+   },
+   "conditionText": "R1 and R2 two storey dwellings: upper level",
+   "side": {
+    "minM": null,
+    "basis": "text",
+    "note": "Upper level 3 m plus 0.3 m per metre of height over 3.6 m up to 6.9 m, plus 1 m per metre over 6.9 m",
+    "sources": [
+     15946
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15946
+   ],
+   "evidence": [
+    {
+     "id": 15946,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "by 3m, plus 0.3m for every metre of height over 3.6 metres",
+     "clause": "ASR5.1 b)",
+     "page": 26,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "R1 and R2 two storey dwellings: upper level",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "by 3m, plus 0.3m for every metre of height over 3.6 metres",
+   "clause": "ASR5.1 b)",
+   "page": 26,
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+  },
+  {
+   "id": "hilltops-council-003",
+   "zones": [
+    "R1",
+    "R2",
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "established_area"
+    ]
+   },
+   "conditionText": "R1, R2 and R5: adjoining dwelling has differing setbacks",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average of the adjoining setbacks",
+    "sources": [
+     15944
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15944
+   ],
+   "evidence": [
+    {
+     "id": 15944,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "• the average of those",
+     "clause": "ASR4.1",
+     "page": 26,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "R1, R2 and R5: adjoining dwelling has differing setbacks",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "• the average of those",
+   "clause": "ASR4.1",
+   "page": 26,
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+  },
+  {
+   "id": "hilltops-council-004",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "R1 and R2 single storey dwellings: rear",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "note": "3 m (same as side setback)",
+    "sources": [
+     15947
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    15947
+   ],
+   "evidence": [
+    {
+     "id": 15947,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "• 3m, or",
+     "clause": "ASR5.1 a)",
+     "page": 26,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "R1 and R2 single storey dwellings: rear",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "• 3m, or",
+   "clause": "ASR5.1 a)",
+   "page": 26,
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+  },
+  {
+   "id": "hilltops-council-005",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R1 and R2 zones, single residential: primary street frontage",
+    "R1 and R2 zones, single residential: secondary street frontage"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "note": "Not less than 6 m",
+    "sources": [
+     15940
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "note": "Not less than 3 m",
+    "sources": [
+     15941
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15940,
+    15941
+   ],
+   "evidence": [
+    {
+     "id": 15940,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "and the R2 Low Density • not less than 6m.",
+     "clause": "ASR4.1",
+     "page": 26,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "R1 and R2 zones, single residential: primary street frontage",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    },
+    {
+     "id": 15941,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "frontage: • not less than 3m.",
+     "clause": "ASR4.1",
+     "page": 26,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "R1 and R2 zones, single residential: secondary street frontage",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "and the R2 Low Density • not less than 6m.",
+   "clause": "ASR4.1",
+   "page": 26,
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+  },
+  {
+   "id": "hilltops-council-006",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R5 Large Lot Residential zone: primary street frontage",
+    "R5 Large Lot Residential zone: secondary street frontage",
+    "R5 Large Lot Residential: rear boundary",
+    "R5 Large Lot Residential: side boundaries"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "note": "Not less than 10 m",
+    "sources": [
+     15942
+    ]
+   },
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "note": "Not less than 6 m",
+    "sources": [
+     15943
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "note": "Not less than 10 m",
+    "sources": [
+     15949
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "note": "Not less than 10 m from rear and side boundaries",
+    "sources": [
+     15948
+    ]
+   },
+   "garage": null,
+   "sources": [
+    15942,
+    15943,
+    15948,
+    15949
+   ],
+   "evidence": [
+    {
+     "id": 15942,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Zone • not less than 10m.",
+     "clause": "ASR4.1",
+     "page": 26,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "R5 Large Lot Residential zone: primary street frontage",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    },
+    {
+     "id": 15943,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "• not less than 6m.",
+     "clause": "ASR4.1",
+     "page": 26,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "R5 Large Lot Residential zone: secondary street frontage",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    },
+    {
+     "id": 15949,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "not less than 10m from the rear and side boundaries",
+     "clause": "ASR5.2",
+     "page": 27,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "R5 Large Lot Residential: rear boundary",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    },
+    {
+     "id": 15948,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "not less than 10m from the rear and side boundaries",
+     "clause": "ASR5.2",
+     "page": 27,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "R5 Large Lot Residential: side boundaries",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Zone • not less than 10m.",
+   "clause": "ASR4.1",
+   "page": 26,
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+  },
+  {
+   "id": "hilltops-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Garages recessed behind front facade",
+   "garage": {
+    "minM": null,
+    "note": "Directly address street; recessed behind front facade; not projecting in front of other parts of the dwelling",
+    "sources": [
+     15950
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    15950
+   ],
+   "evidence": [
+    {
+     "id": 15950,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "ASR4.2 Garages in dwellings are to:",
+     "clause": "ASR4.2",
+     "page": 26,
+     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+     "condition": "Garages recessed behind front facade",
+     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "ASR4.2 Garages in dwellings are to:",
+   "clause": "ASR4.2",
+   "page": 26,
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 15923",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP rural dwelling (Section 2.1) setbacks not extracted; two column page layout in DCP limits quotable table rows"
+ ],
+ "notes": "Built from 12 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 2
+  },
+  "*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 12,
+  "rules": 7,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 2
+ }
+}

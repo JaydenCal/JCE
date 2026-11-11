@@ -1,0 +1,87 @@
+{
+ "lga_slug": "hay-shire-council",
+ "council": "Hay Shire Council",
+ "lgaNames": [
+  "HAY",
+  "HAY SHIRE",
+  "HAY SHIRE COUNCIL"
+ ],
+ "dcp": "None in force: the Business Paper (26/05/2026) states the Hay Development Control Plan is under development; Hay Local Environmental Plan 2011 applies. The saved DCP folder holds the Hay Structure Plan (strategy, not a DCP); edition UNVERIFIED",
+ "lep": "Hay Local Environmental Plan 2011",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "hay-shire-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "eave or gutter line to side boundary (DA condition: no overhang)",
+   "side": {
+    "minM": 0.45,
+    "printed": "450 mm",
+    "basis": "fixed",
+    "sources": [
+     15540
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15540
+   ],
+   "evidence": [
+    {
+     "id": 15540,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side setbacks require a minimum 450mm clearance",
+     "clause": "DA report 379 Russell Street, response to Objection 2",
+     "page": 40,
+     "source_file": "Engineering/2026-05-26-Business-Paper-DCP-Engineering-status-evidence.txt",
+     "condition": "eave or gutter line to side boundary (DA condition: no overhang)",
+     "edition": "Ordinary Meeting Business Paper 26/05/2026 (DA reports, not an engineering manual)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Side setbacks require a minimum 450mm clearance",
+   "clause": "DA report 379 Russell Street, response to Objection 2",
+   "page": 40,
+   "source_file": "Engineering/2026-05-26-Business-Paper-DCP-Engineering-status-evidence.txt"
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): no DCP and no engineering manual or standard drawings saved or in force: the two saved files are the Hay Structure Plan and a Council meeting Business Paper with DA reports | access: driveway width, grade, setbacks and standard drawing not found (Road Opening Permit required only) | setbacks: only an eave clearance of 450 mm from DA reasoning; front, side and rear setback tables not found"
+ ],
+ "notes": "Built from 1 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 1,
+  "rules": 1,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

@@ -1,0 +1,266 @@
+{
+ "lga_slug": "oberon-council",
+ "council": "Oberon Council",
+ "lgaNames": [
+  "OBERON",
+  "OBERON COUNCIL"
+ ],
+ "dcp": "Oberon Development Control Plan 2001 (Parts A to P; consolidated copy and individual parts saved); adoption and amendment dates UNVERIFIED; references Oberon LEP 1998",
+ "lep": "Oberon Local Environmental Plan 1998 (as referenced in DCP; current LEP not saved)",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "oberon-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cunynghame Park Estate",
+    "qualifiers": [
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Cunynghame Park Estate: front boundary setback minimum",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     24827
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24827
+   ],
+   "evidence": [
+    {
+     "id": 24827,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front Boundary Setbacks are to be a minimum of 3 metres from the allotment frontage.",
+     "clause": "L (setbacks)",
+     "page": 2,
+     "source_file": "DCP/dcp-part-l-cunynghame-park-estate.pdf",
+     "condition": "Cunynghame Park Estate: front boundary setback minimum",
+     "edition": "Oberon DCP 2001"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "Front Boundary Setbacks are to be a minimum of 3 metres from the allotment frontage.",
+   "clause": "L (setbacks)",
+   "page": 2,
+   "source_file": "DCP/dcp-part-l-cunynghame-park-estate.pdf"
+  },
+  {
+   "id": "oberon-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Tasman Estate"
+   },
+   "conditionText": "Tasman Estate: front boundary setback minimum",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     24828
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24828
+   ],
+   "evidence": [
+    {
+     "id": 24828,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front Boundary Setbacks are to be a minimum of 3 metres from the allotment frontage.",
+     "clause": "P (setbacks)",
+     "page": 2,
+     "source_file": "DCP/Part-P-Tasman-Estate.pdf",
+     "condition": "Tasman Estate: front boundary setback minimum",
+     "edition": "Oberon DCP 2001"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Front Boundary Setbacks are to be a minimum of 3 metres from the allotment frontage.",
+   "clause": "P (setbacks)",
+   "page": 2,
+   "source_file": "DCP/Part-P-Tasman-Estate.pdf"
+  },
+  {
+   "id": "oberon-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Residential development, car parking spaces not within this distance of the street alignment",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     24788
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    24788
+   ],
+   "evidence": [
+    {
+     "id": 24788,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Car parking spaces shall not be provided within 5.5 metres of the street alignment of any",
+     "clause": "C.6.2",
+     "page": 9,
+     "source_file": "DCP/dcp-part-c-residential-development.pdf",
+     "condition": "Residential development, car parking spaces not within this distance of the street alignment",
+     "edition": "Oberon DCP 2001"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Car parking spaces shall not be provided within 5.5 metres of the street alignment of any",
+   "clause": "C.6.2",
+   "page": 9,
+   "source_file": "DCP/dcp-part-c-residential-development.pdf"
+  },
+  {
+   "id": "oberon-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Residential development village zone, absolute minimum to street",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     24786
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24786
+   ],
+   "evidence": [
+    {
+     "id": 24786,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "no residential building, dwelling or associated building shall be set within 3 metres of the",
+     "clause": "C.5.7",
+     "page": 7,
+     "source_file": "DCP/dcp-part-c-residential-development.pdf",
+     "condition": "Residential development village zone, absolute minimum to street",
+     "edition": "Oberon DCP 2001"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "no residential building, dwelling or associated building shall be set within 3 metres of the",
+   "clause": "C.5.7",
+   "page": 7,
+   "source_file": "DCP/dcp-part-c-residential-development.pdf"
+  },
+  {
+   "id": "oberon-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Residential development village zone, typical acceptable",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     24787
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24787
+   ],
+   "evidence": [
+    {
+     "id": 24787,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Typically, a minimum 6 metre setback from the street boundary would be acceptable.",
+     "clause": "C.5.7",
+     "page": 7,
+     "source_file": "DCP/dcp-part-c-residential-development.pdf",
+     "condition": "Residential development village zone, typical acceptable",
+     "edition": "Oberon DCP 2001"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Typically, a minimum 6 metre setback from the street boundary would be acceptable.",
+   "clause": "C.5.7",
+   "page": 7,
+   "source_file": "DCP/dcp-part-c-residential-development.pdf"
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): setbacks: Part C gives street setback only; side and rear not numerically stated | DCP Parts A, D, G, H, I, M, N not extracted (rural, commercial, tourism, complying and exempt development)"
+ ],
+ "notes": "Built from 5 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 5
+  }
+ },
+ "precincts": [
+  "Cunynghame Park Estate",
+  "Tasman Estate"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 5,
+  "rules": 5,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

@@ -1,0 +1,338 @@
+{
+ "lga_slug": "wollondilly-shire-council",
+ "council": "Wollondilly Shire Council",
+ "lgaNames": [
+  "WOLLONDILLY",
+  "WOLLONDILLY SHIRE",
+  "WOLLONDILLY SHIRE COUNCIL"
+ ],
+ "dcp": "Wollondilly Development Control Plan 2016: Volume 1 General (updated 31 July 2026), Volume 2 Urban Release Areas, Volume 3 Subdivision of Land, Volume 5 Commercial and Community Uses (updated 15 July 2026), Volume 6 Tourist Uses (10 Jan 2018 file), Volume 7 Industry and Infrastructure Uses, Volume 8 Primary Agricultural and Rural Uses. Volume 4 Residential Developments is cited but not saved.",
+ "lep": "Wollondilly Local Environmental Plan (name per DCP; not read in the saved text)",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "wollondilly-shire-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground",
+    "lotAreaMaxM2": 450.0,
+    "qualifiers": [
+     "building_element",
+     "heritage"
+    ]
+   },
+   "conditionText": "Menangle Landscape Conservation Area, ground floor, lots with area less than 450 m2",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     39102
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39102
+   ],
+   "evidence": [
+    {
+     "id": 39102,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Ground Floor Front Setback 4.5m",
+     "clause": "Menangle Landscape Conservation Area",
+     "page": 48,
+     "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt",
+     "condition": "Menangle Landscape Conservation Area, ground floor, lots with area less than 450 m2",
+     "edition": "Volume 1 General (updated 31 July 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Ground Floor Front Setback 4.5m",
+   "clause": "Menangle Landscape Conservation Area",
+   "page": 48,
+   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt"
+  },
+  {
+   "id": "wollondilly-shire-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground",
+    "lotAreaMinM2": 450.0,
+    "qualifiers": [
+     "building_element",
+     "heritage"
+    ]
+   },
+   "conditionText": "Menangle Landscape Conservation Area, ground floor, lots with area of 450 m2 or larger",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     39103
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39103
+   ],
+   "evidence": [
+    {
+     "id": 39103,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Ground Floor Front Setback 6m",
+     "clause": "Menangle Landscape Conservation Area",
+     "page": 48,
+     "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt",
+     "condition": "Menangle Landscape Conservation Area, ground floor, lots with area of 450 m2 or larger",
+     "edition": "Volume 1 General (updated 31 July 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Ground Floor Front Setback 6m",
+   "clause": "Menangle Landscape Conservation Area",
+   "page": 48,
+   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt"
+  },
+  {
+   "id": "wollondilly-shire-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper",
+    "lotAreaMinM2": 450.0,
+    "qualifiers": [
+     "building_element",
+     "heritage"
+    ]
+   },
+   "conditionText": "Menangle Landscape Conservation Area, first floor Option B, lots with area of 450 m2 or larger",
+   "side": {
+    "minM": 1.9,
+    "basis": "fixed",
+    "sources": [
+     39104
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39104
+   ],
+   "evidence": [
+    {
+     "id": 39104,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback 1.9m",
+     "clause": "Menangle Landscape Conservation Area",
+     "page": 49,
+     "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt",
+     "condition": "Menangle Landscape Conservation Area, first floor Option B, lots with area of 450 m2 or larger",
+     "edition": "Volume 1 General (updated 31 July 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Side Setback 1.9m",
+   "clause": "Menangle Landscape Conservation Area",
+   "page": 49,
+   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt"
+  },
+  {
+   "id": "wollondilly-shire-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Notification exemption, residential outbuildings, setback from any boundary",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     39108
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39108
+   ],
+   "evidence": [
+    {
+     "id": 39108,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Setback from any boundary is no less than 900mm",
+     "clause": "Part 1 Table 1 notification",
+     "page": 15,
+     "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt",
+     "condition": "Notification exemption, residential outbuildings, setback from any boundary",
+     "edition": "Volume 1 General (updated 31 July 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Setback from any boundary is no less than 900mm",
+   "clause": "Part 1 Table 1 notification",
+   "page": 15,
+   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt"
+  },
+  {
+   "id": "wollondilly-shire-council-005",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Industrial zoned land, front setback from an arterial road",
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     39186
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39186
+   ],
+   "evidence": [
+    {
+     "id": 39186,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Front setback 30 metres from an arterial road",
+     "clause": "cl 2.1 control 1",
+     "page": 4,
+     "source_file": "DCP/Volume-7-Industry-and-Infrastructure-Uses.txt",
+     "condition": "Industrial zoned land, front setback from an arterial road",
+     "edition": "Volume 7 Industry and Infrastructure Uses"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Front setback 30 metres from an arterial road",
+   "clause": "cl 2.1 control 1",
+   "page": 4,
+   "source_file": "DCP/Volume-7-Industry-and-Infrastructure-Uses.txt"
+  },
+  {
+   "id": "wollondilly-shire-council-006",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial zoned land, front setback from all other roads",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     39187
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39187
+   ],
+   "evidence": [
+    {
+     "id": 39187,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "10 metres all other roads",
+     "clause": "cl 2.1 control 1",
+     "page": 4,
+     "source_file": "DCP/Volume-7-Industry-and-Infrastructure-Uses.txt",
+     "condition": "Industrial zoned land, front setback from all other roads",
+     "edition": "Volume 7 Industry and Infrastructure Uses"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "10 metres all other roads",
+   "clause": "cl 2.1 control 1",
+   "page": 4,
+   "source_file": "DCP/Volume-7-Industry-and-Infrastructure-Uses.txt"
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 39188, 39109",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP Volume 4 Residential Developments (setbacks, site coverage, private open space, dwelling parking) is cited by Volume 1 and Volume 3 but is not among the saved files, so residential setbacks and site coverage are not extracted | DCP Volume 1 Part 8 flood Table C control matrix (FL, BC, SS, HY codes by precinct and land use) not extracted cell by cell; only the flood planning level definition and referenced controls"
+ ],
+ "notes": "Built from 8 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 4
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 8,
+  "rules": 6,
+  "recordsNotModelled": 2,
+  "otherSetbackKeysNotModelled": 3
+ }
+}

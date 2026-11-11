@@ -1,0 +1,22 @@
+{
+ "lga_slug": "liverpool-plains-shire-council",
+ "council": "Liverpool Plains Shire Council",
+ "lgaNames": [
+  "LIVERPOOL PLAINS",
+  "LIVERPOOL PLAINS SHIRE",
+  "LIVERPOOL PLAINS SHIRE COUNCIL"
+ ],
+ "dcp": "Liverpool Plains Development Control Plan (single saved file, edition UNVERIFIED; refers to Liverpool Plains Local Environmental Plan 2011)",
+ "lep": "Liverpool Plains Local Environmental Plan 2011 (as cited by the DCP)",
+ "status": "none",
+ "rules": [],
+ "gaps": [
+  "No setback records in the extract (no front, side, rear, garage, rural, commercial, industrial or classified road setback values found in the saved council documents).",
+  "Extraction gaps noted for this council (verbatim): scanned or unreadable, no usable text: DCP/liverpool-plains-development-control-plan.pdf. All 74 pages carry text in a glyph-substitution font encoding (letters and digits are private-use or Latin Extended code points, for example '3.5.4' appears as 'ϯ͘ϱ͘ϰ'; word spaces are lost and most capital letters are dropped). The text is not verbatim readable, so a verbatim quote containing the recorded number cannot be taken from it, and no records were written. The PDF is not on disk in this environment; the file needs OCR from the original PDF or a re-extraction with a different text layer. | All parameter categories (dev_controls, setbacks, roads, access, stormwater, earthworks, water, sewer, services, contributions, documentation) are gaps for this council. Engineering manual: none saved in the text folder."
+ ],
+ "notes": "Extract reviewed: reviewed (Opus full-set audit 01/11/2026).",
+ "counts": {
+  "records": 0,
+  "rules": 0
+ }
+}

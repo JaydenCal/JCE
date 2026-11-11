@@ -1,0 +1,433 @@
+{
+ "lga_slug": "sydney-council-of-the-city-of",
+ "council": "City of Sydney Council",
+ "lgaNames": [
+  "SYDNEY",
+  "CITY OF SYDNEY",
+  "CITY OF SYDNEY COUNCIL"
+ ],
+ "dcp": "Sydney Development Control Plan 2012 (Sections 1 to 6 and Schedules; footers read December 2012, saved section files carry reference dates 280223 to 121225); adoption date UNVERIFIED",
+ "lep": "Sydney Local Environmental Plan 2012",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "sydney-council-of-the-city-of-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Green Square DCP area"
+   },
+   "conditionText": "Green Square DCP area: building setback from new street frontage where land dedicated for community infrastructure",
+   "front": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     33068
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    33068
+   ],
+   "evidence": [
+    {
+     "id": 33068,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "buildings are to be set back from the new street frontage property boundary by a minimum of 1.0m",
+     "clause": "5.2.10(2)",
+     "page": 94,
+     "source_file": "DCP/section5-dcp2012_041124.pdf",
+     "condition": "Green Square DCP area: building setback from new street frontage where land dedicated for community infrastructure",
+     "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "buildings are to be set back from the new street frontage property boundary by a minimum of 1.0m",
+   "clause": "5.2.10(2)",
+   "page": 94,
+   "source_file": "DCP/section5-dcp2012_041124.pdf"
+  },
+  {
+   "id": "sydney-council-of-the-city-of-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Rosebery Estate DCP area"
+   },
+   "conditionText": [
+    "Rosebery Estate DCP area: built form minimum from rear boundary",
+    "Rosebery Estate DCP area: minimum from front property boundary"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     33060
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     33064
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    33060,
+    33064
+   ],
+   "evidence": [
+    {
+     "id": 33060,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Development must be set back a minimum of 6m from the front property boundary.",
+     "clause": "5.6.4(1)",
+     "page": 210,
+     "source_file": "DCP/section5-dcp2012_041124.pdf",
+     "condition": "Rosebery Estate DCP area: minimum from front property boundary",
+     "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
+    },
+    {
+     "id": 33064,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Built form is to be set back a minimum of 10m from the rear property boundary.",
+     "clause": "5.6.6(1)",
+     "page": 213,
+     "source_file": "DCP/section5-dcp2012_041124.pdf",
+     "condition": "Rosebery Estate DCP area: built form minimum from rear boundary",
+     "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Development must be set back a minimum of 6m from the front property boundary.",
+   "clause": "5.6.4(1)",
+   "page": 210,
+   "source_file": "DCP/section5-dcp2012_041124.pdf"
+  },
+  {
+   "id": "sydney-council-of-the-city-of-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "single dwellings, terraces, dual occupancies: front setback per Building setbacks map or predominant street setting",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Per Building setbacks map; otherwise consistent with predominant setting in the street",
+    "sources": [
+     33066
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    33066
+   ],
+   "evidence": [
+    {
+     "id": 33066,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front setbacks are to be consistent with the Building setbacks map.",
+     "clause": "4.1.2(1)",
+     "page": 6,
+     "source_file": "DCP/section4_dcp2012_091222.pdf",
+     "condition": "single dwellings, terraces, dual occupancies: front setback per Building setbacks map or predominant street setting",
+     "edition": "Sydney DCP 2012 Section 4 Development Types (file ref 091222; footer December 2012)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Front setbacks are to be consistent with the Building setbacks map.",
+   "clause": "4.1.2(1)",
+   "page": 6,
+   "source_file": "DCP/section4_dcp2012_091222.pdf"
+  },
+  {
+   "id": "sydney-council-of-the-city-of-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "precinct": "Rosebery Estate DCP area"
+   },
+   "conditionText": "Rosebery Estate DCP area: dual occupancy, frontage 14.5 m or greater, each side boundary for 8 m beyond predominant building line",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     33063
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    33063
+   ],
+   "evidence": [
+    {
+     "id": 33063,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "the building must be set back a minimum of 3m from both side boundaries.",
+     "clause": "5.6.5.2(2)",
+     "page": 213,
+     "source_file": "DCP/section5-dcp2012_041124.pdf",
+     "condition": "Rosebery Estate DCP area: dual occupancy, frontage 14.5 m or greater, each side boundary for 8 m beyond predominant building line",
+     "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the building must be set back a minimum of 3m from both side boundaries.",
+   "clause": "5.6.5.2(2)",
+   "page": 213,
+   "source_file": "DCP/section5-dcp2012_041124.pdf"
+  },
+  {
+   "id": "sydney-council-of-the-city-of-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Rosebery Estate DCP area"
+   },
+   "conditionText": "Rosebery Estate DCP area: single dwelling, one side boundary",
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     33061
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    33061
+   ],
+   "evidence": [
+    {
+     "id": 33061,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Buildings are to be set back at least 1m from one side boundary and 3m from the other side boundary.",
+     "clause": "5.6.5.1(1)",
+     "page": 211,
+     "source_file": "DCP/section5-dcp2012_041124.pdf",
+     "condition": "Rosebery Estate DCP area: single dwelling, one side boundary",
+     "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Buildings are to be set back at least 1m from one side boundary and 3m from the other side boundary.",
+   "clause": "5.6.5.1(1)",
+   "page": 211,
+   "source_file": "DCP/section5-dcp2012_041124.pdf"
+  },
+  {
+   "id": "sydney-council-of-the-city-of-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Rosebery Estate DCP area"
+   },
+   "conditionText": "Rosebery Estate DCP area: single dwelling, other side boundary",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     33062
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    33062
+   ],
+   "evidence": [
+    {
+     "id": 33062,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Buildings are to be set back at least 1m from one side boundary and 3m from the other side boundary.",
+     "clause": "5.6.5.1(1)",
+     "page": 211,
+     "source_file": "DCP/section5-dcp2012_041124.pdf",
+     "condition": "Rosebery Estate DCP area: single dwelling, other side boundary",
+     "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "Buildings are to be set back at least 1m from one side boundary and 3m from the other side boundary.",
+   "clause": "5.6.5.1(1)",
+   "page": 211,
+   "source_file": "DCP/section5-dcp2012_041124.pdf"
+  },
+  {
+   "id": "sydney-council-of-the-city-of-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "precinct": "Rosebery Estate DCP area"
+   },
+   "conditionText": "Rosebery Estate DCP area: enclosed car parking not permitted within this distance of front boundary",
+   "garage": {
+    "minM": 14.0,
+    "sources": [
+     33065
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    33065
+   ],
+   "evidence": [
+    {
+     "id": 33065,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Enclosed car parking is not permitted within 14m of the front property boundary.",
+     "clause": "5.6.5.1(5)",
+     "page": 211,
+     "source_file": "DCP/section5-dcp2012_041124.pdf",
+     "condition": "Rosebery Estate DCP area: enclosed car parking not permitted within this distance of front boundary",
+     "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Enclosed car parking is not permitted within 14m of the front property boundary.",
+   "clause": "5.6.5.1(5)",
+   "page": 211,
+   "source_file": "DCP/section5-dcp2012_041124.pdf"
+  },
+  {
+   "id": "sydney-council-of-the-city-of-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "residential flat, non-residential and mixed use: no setback on map",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Adopt adjacent or average front setback or alignment where adjoining buildings vary",
+    "sources": [
+     33067
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    33067
+   ],
+   "evidence": [
+    {
+     "id": 33067,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "either the adjacent or average front setback or alignment is to be adopted.",
+     "clause": "4.2.2.1(1)",
+     "page": 27,
+     "source_file": "DCP/section4_dcp2012_091222.pdf",
+     "condition": "residential flat, non-residential and mixed use: no setback on map",
+     "edition": "Sydney DCP 2012 Section 4 Development Types (file ref 091222; footer December 2012)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "either the adjacent or average front setback or alignment is to be adopted.",
+   "clause": "4.2.2.1(1)",
+   "page": 27,
+   "source_file": "DCP/section4_dcp2012_091222.pdf"
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): dev_controls: min_lot_size, min_lot_depth, battle_axe_*, building_envelope, landscaped_area_min, height_max and fsr_max (set by Sydney LEP 2012 and maps, not in DCP text), parking_rate (maximum rates in LEP), visitor_parking_rate, dual_occupancy_min_lot, site_area_per_dwelling, flood_planning_aep and freeboard (LEP clause 7.15 and Interim Floodplain Management Policy not saved) | setbacks: most setbacks are map-based (Building setbacks map, Building setback and alignment map); only Rosebery Estate and Green Square values recorded; side, rear, industrial and commercial general values not tabulated | earthworks: fill and cut exempt depths, batter slopes, lot grading, retaining wall setbacks, s"
+ ],
+ "notes": "Built from 9 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 8
+  }
+ },
+ "precincts": [
+  "Green Square DCP area",
+  "Rosebery Estate DCP area"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 9,
+  "rules": 8,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 4
+ }
+}

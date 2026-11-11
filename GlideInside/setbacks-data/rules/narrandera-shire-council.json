@@ -1,0 +1,725 @@
+{
+ "lga_slug": "narrandera-shire-council",
+ "council": "Narrandera Shire Council",
+ "lgaNames": [
+  "NARRANDERA",
+  "NARRANDERA SHIRE",
+  "NARRANDERA SHIRE COUNCIL"
+ ],
+ "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+ "lep": "Narrandera Local Environmental Plan 2013",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "narrandera-shire-council-001",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Nallabooma Estate"
+   },
+   "conditionText": "Nallabooma Estate (R5): front setback to primary road access",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     23956
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23956
+   ],
+   "evidence": [
+    {
+     "id": 23956,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Front setback to primary road access 15m",
+     "clause": "6.3.1",
+     "page": 38,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Nallabooma Estate (R5): front setback to primary road access",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Front setback to primary road access 15m",
+   "clause": "6.3.1",
+   "page": 38,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Nallabooma Estate",
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Nallabooma Estate: Leeton Road, any building",
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     23963
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23963
+   ],
+   "evidence": [
+    {
+     "id": 23963,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "Leeton Road 30m minimum for any building",
+     "clause": "6.3.1",
+     "page": 38,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Nallabooma Estate: Leeton Road, any building",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Leeton Road 30m minimum for any building",
+   "clause": "6.3.1",
+   "page": 38,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Dual occupancy and multi dwelling housing, minimum (or average of two adjoining buildings)",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     23973
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23973
+   ],
+   "evidence": [
+    {
+     "id": 23973,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "is to be a minimum of 5m, or",
+     "clause": "7.4.2",
+     "page": 41,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Dual occupancy and multi dwelling housing, minimum (or average of two adjoining buildings)",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "is to be a minimum of 5m, or",
+   "clause": "7.4.2",
+   "page": 41,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "habitable"
+    ]
+   },
+   "conditionText": "Dual occupancy and multi dwelling housing: habitable buildings",
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     23975
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    23975
+   ],
+   "evidence": [
+    {
+     "id": 23975,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Habitable buildings are to be set back 5m from",
+     "clause": "7.4.3",
+     "page": 41,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Dual occupancy and multi dwelling housing: habitable buildings",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Habitable buildings are to be set back 5m from",
+   "clause": "7.4.3",
+   "page": 41,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dual occupancy and multi dwelling housing, secondary street",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     23974
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23974
+   ],
+   "evidence": [
+    {
+     "id": 23974,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "secondary street setback to a dwelling or building is to be a minimum of 3m",
+     "clause": "7.4.3",
+     "page": 41,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Dual occupancy and multi dwelling housing, secondary street",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "secondary street setback to a dwelling or building is to be a minimum of 3m",
+   "clause": "7.4.3",
+   "page": 41,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Residential flat buildings (or 25% greater than average of two adjoining buildings, whichever greater)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     23988
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23988
+   ],
+   "evidence": [
+    {
+     "id": 23988,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "is to be a minimum of 6m, or",
+     "clause": "7.6.1",
+     "page": 45,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Residential flat buildings (or 25% greater than average of two adjoining buildings, whichever greater)",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "is to be a minimum of 6m, or",
+   "clause": "7.6.1",
+   "page": 45,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "habitable"
+    ]
+   },
+   "conditionText": "Residential flat buildings: habitable building",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     23991
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    23991
+   ],
+   "evidence": [
+    {
+     "id": 23991,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "supplemented 6m.",
+     "clause": "7.6.2",
+     "page": 45,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Residential flat buildings: habitable building",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "supplemented 6m.",
+   "clause": "7.6.2",
+   "page": 45,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Residential flat buildings: two storey building",
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     23990
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23990
+   ],
+   "evidence": [
+    {
+     "id": 23990,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "and to be a minimum of 5m.",
+     "clause": "7.6.2",
+     "page": 45,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Residential flat buildings: two storey building",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "and to be a minimum of 5m.",
+   "clause": "7.6.2",
+   "page": 45,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {},
+   "conditionText": "Residential flat buildings",
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     23989
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23989
+   ],
+   "evidence": [
+    {
+     "id": 23989,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "flat building is to be a minimum of 5m.",
+     "clause": "7.6.2",
+     "page": 45,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Residential flat buildings",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "flat building is to be a minimum of 5m.",
+   "clause": "7.6.2",
+   "page": 45,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-010",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Industrial: minimum front building setback",
+    "Industrial: minimum secondary frontage building setback",
+    "Industrial: minimum side building setback"
+   ],
+   "front": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     23996
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     23997
+    ]
+   },
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     23998
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23996,
+    23997,
+    23998
+   ],
+   "evidence": [
+    {
+     "id": 23996,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "the minimum front building setback is 12m",
+     "clause": "9.5",
+     "page": 54,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Industrial: minimum front building setback",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    },
+    {
+     "id": 23997,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "The minimum side building setback is 3m",
+     "clause": "9.5",
+     "page": 54,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Industrial: minimum side building setback",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    },
+    {
+     "id": 23998,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "setback is 5m. Zero lot line development is",
+     "clause": "9.5",
+     "page": 54,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Industrial: minimum secondary frontage building setback",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "the minimum front building setback is 12m",
+   "clause": "9.5",
+   "page": 54,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-011",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Nallabooma Estate"
+   },
+   "conditionText": [
+    "Nallabooma Estate: rear setback, other building",
+    "Nallabooma Estate: setback to secondary road access",
+    "Nallabooma Estate: side setback, other building"
+   ],
+   "secondaryFront": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     23957
+    ]
+   },
+   "side": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     23959
+    ]
+   },
+   "rear": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     23961
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    23957,
+    23959,
+    23961
+   ],
+   "evidence": [
+    {
+     "id": 23957,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "Setback to secondary road access 15m",
+     "clause": "6.3.1",
+     "page": 38,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Nallabooma Estate: setback to secondary road access",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    },
+    {
+     "id": 23959,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Side setback – other building 15m",
+     "clause": "6.3.1",
+     "page": 38,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Nallabooma Estate: side setback, other building",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    },
+    {
+     "id": 23961,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "Rear setback – other building 30mm",
+     "clause": "6.3.1",
+     "page": 38,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Nallabooma Estate: rear setback, other building",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Setback to secondary road access 15m",
+   "clause": "6.3.1",
+   "page": 38,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  },
+  {
+   "id": "narrandera-shire-council-012",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Nallabooma Estate"
+   },
+   "conditionText": [
+    "Nallabooma Estate: rear setback, residential building",
+    "Nallabooma Estate: side setback, residential building"
+   ],
+   "side": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     23958
+    ]
+   },
+   "rear": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     23960
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    23958,
+    23960
+   ],
+   "evidence": [
+    {
+     "id": 23958,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Side setback – residential building 30m",
+     "clause": "6.3.1",
+     "page": 38,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Nallabooma Estate: side setback, residential building",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    },
+    {
+     "id": 23960,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "Rear setback – residential building 50m",
+     "clause": "6.3.1",
+     "page": 38,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Nallabooma Estate: rear setback, residential building",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Side setback – residential building 30m",
+   "clause": "6.3.1",
+   "page": 38,
+   "source_file": "DCP/Narrandera-DCP-2013.txt"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 23962",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Residential setbacks for single dwellings defer to Codes SEPP"
+ ],
+ "notes": "Built from 18 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 8
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU*": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [
+  "Nallabooma Estate"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 18,
+  "rules": 12,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 0
+ }
+}

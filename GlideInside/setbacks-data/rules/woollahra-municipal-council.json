@@ -1,0 +1,1071 @@
+{
+ "lga_slug": "woollahra-municipal-council",
+ "council": "Woollahra Municipal Council",
+ "lgaNames": [
+  "WOOLLAHRA",
+  "WOOLLAHRA MUNICIPAL",
+  "WOOLLAHRA MUNICIPAL COUNCIL"
+ ],
+ "dcp": "Woollahra Development Control Plan 2015 (adopted 27/04/2015, commenced 23/05/2015; consolidated copy last amended 21/08/2026; Chapter B3 as at 21/08/2026, E1 as at 23/05/2025, E2 as at 02/12/2024)",
+ "lep": "Woollahra Local Environmental Plan 2014",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "woollahra-municipal-council-001",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 9.0,
+    "lotWidthMaxM": 11.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 9.0 to under 11.0 m (Figure 5A)",
+   "side": {
+    "minM": 1.1,
+    "basis": "fixed",
+    "sources": [
+     39852
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39852
+   ],
+   "evidence": [
+    {
+     "id": 39852,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "9.0 - < 11.0 1.1",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 9.0 to under 11.0 m (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "9.0 - < 11.0 1.1",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-002",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 11.0,
+    "lotWidthMaxM": 13.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 11.0 to under 13.0 m (Figure 5A)",
+   "side": {
+    "minM": 1.3,
+    "basis": "fixed",
+    "sources": [
+     39853
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39853
+   ],
+   "evidence": [
+    {
+     "id": 39853,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "11.0 - < 13.0 1.3",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 11.0 to under 13.0 m (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "11.0 - < 13.0 1.3",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-003",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 13.0,
+    "lotWidthMaxM": 15.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 13.0 to under 15.0 m (Figure 5A)",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     39854
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39854
+   ],
+   "evidence": [
+    {
+     "id": 39854,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "13.0 - < 15.0 1.5",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 13.0 to under 15.0 m (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "13.0 - < 15.0 1.5",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-004",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 15.0,
+    "lotWidthMaxM": 17.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 15.0 to under 17.0 m (Figure 5A)",
+   "side": {
+    "minM": 1.9,
+    "basis": "fixed",
+    "sources": [
+     39855
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39855
+   ],
+   "evidence": [
+    {
+     "id": 39855,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "15.0 - < 17.0 1.9",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 15.0 to under 17.0 m (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "15.0 - < 17.0 1.9",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-005",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 17.0,
+    "lotWidthMaxM": 19.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 17.0 to under 19.0 m (Figure 5A)",
+   "side": {
+    "minM": 2.3,
+    "basis": "fixed",
+    "sources": [
+     39856
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39856
+   ],
+   "evidence": [
+    {
+     "id": 39856,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "17.0 - < 19.0 2.3",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 17.0 to under 19.0 m (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "17.0 - < 19.0 2.3",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-006",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 19.0,
+    "lotWidthMaxM": 21.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 19.0 to under 21.0 m (Figure 5A)",
+   "side": {
+    "minM": 2.7,
+    "basis": "fixed",
+    "sources": [
+     39857
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39857
+   ],
+   "evidence": [
+    {
+     "id": 39857,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "19.0 - < 21.0 2.7",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 19.0 to under 21.0 m (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "19.0 - < 21.0 2.7",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-007",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 21.0,
+    "lotWidthMaxM": 23.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 21.0 to under 23.0 m (Figure 5A)",
+   "side": {
+    "minM": 3.1,
+    "basis": "fixed",
+    "sources": [
+     39858
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39858
+   ],
+   "evidence": [
+    {
+     "id": 39858,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "21.0 - < 23.0 3.1",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 21.0 to under 23.0 m (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "21.0 - < 23.0 3.1",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-008",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 23.0,
+    "lotWidthMaxM": 25.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 23.0 to under 25.0 m (Figure 5A)",
+   "side": {
+    "minM": 3.4,
+    "basis": "fixed",
+    "sources": [
+     39859
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39859
+   ],
+   "evidence": [
+    {
+     "id": 39859,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "23.0 - < 25.0 3.4",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 23.0 to under 25.0 m (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "23.0 - < 25.0 3.4",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-009",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 25.0,
+    "lotWidthMaxM": 30.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 25.0 to under 30.0 m (Figure 5A)",
+   "side": {
+    "minM": 3.75,
+    "basis": "fixed",
+    "sources": [
+     39860
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39860
+   ],
+   "evidence": [
+    {
+     "id": 39860,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "25.0 - < 30.0 3.75",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 25.0 to under 30.0 m (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "25.0 - < 30.0 3.75",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-010",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMaxM": 9.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width under 9.0 m (Figure 5A)",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     39851
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39851
+   ],
+   "evidence": [
+    {
+     "id": 39851,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "< 9.0 0.9",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width under 9.0 m (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "< 9.0 0.9",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-011",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "seniors_housing",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 30.0
+   },
+   "conditionText": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 30 m and over (Figure 5A)",
+   "side": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     39861
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39861
+   ],
+   "evidence": [
+    {
+     "id": 39861,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "30 + 4.5",
+     "clause": "B3.2.3 Figure 5A",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "dwelling houses, semi-detached dwellings, dual occupancies (also seniors housing in R2): site width 30 m and over (Figure 5A)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "30 + 4.5",
+   "clause": "B3.2.3 Figure 5A",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-012",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "battle-axe lot, R3 zone development other than dwelling house or dual occupancy: all boundaries",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     39870
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39870
+   ],
+   "evidence": [
+    {
+     "id": 39870,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a 6m setback applies to all boundaries",
+     "clause": "B3.9 C4",
+     "page": 220,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "battle-axe lot, R3 zone development other than dwelling house or dual occupancy: all boundaries",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "a 6m setback applies to all boundaries",
+   "clause": "B3.9 C4",
+   "page": 220,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "battle_axe",
+     "established_area"
+    ]
+   },
+   "conditionText": "all lots (not battle-axe)",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "average of the three most typical setbacks of the four closest residential buildings facing the same side of the street",
+    "sources": [
+     39849
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39849
+   ],
+   "evidence": [
+    {
+     "id": 39849,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "three most typical setbacks of the four",
+     "clause": "B3.2.2 C1",
+     "page": 140,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "all lots (not battle-axe)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "three most typical setbacks of the four",
+   "clause": "B3.2.2 C1",
+   "page": 140,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": [
+    "battle-axe lot, low density (Figure 29)",
+    "battle-axe lot, low density (Figure 29): primary frontage setback"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     39867
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     39869
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     39868
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    39867,
+    39868,
+    39869
+   ],
+   "evidence": [
+    {
+     "id": 39867,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "B = Primary frontage setback 6m from boundary",
+     "clause": "B3.9 Figure 29",
+     "page": 219,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "battle-axe lot, low density (Figure 29): primary frontage setback",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    },
+    {
+     "id": 39869,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "D = Rear setback 6m",
+     "clause": "B3.9 Figure 29",
+     "page": 219,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "battle-axe lot, low density (Figure 29)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    },
+    {
+     "id": 39868,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "C = Side setback 1.5m",
+     "clause": "B3.9 Figure 29",
+     "page": 219,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "battle-axe lot, low density (Figure 29)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "B = Primary frontage setback 6m from boundary",
+   "clause": "B3.9 Figure 29",
+   "page": 219,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "all lots: percentage of average of the two side boundary dimensions",
+   "rear": {
+    "minM": null,
+    "formula": "25% of average side boundary length",
+    "basis": "text",
+    "sources": [
+     39850
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    39850
+   ],
+   "evidence": [
+    {
+     "id": 39850,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "The minimum rear setback control is 25%",
+     "clause": "B3.2.4 C1",
+     "page": 145,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "all lots: percentage of average of the two side boundary dimensions",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "The minimum rear setback control is 25%",
+   "clause": "B3.2.4 C1",
+   "page": 145,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "lotWidthMaxM": 18.0
+   },
+   "conditionText": "residential flat buildings, manor houses, multi dwelling housing, attached dwellings and other uses: site width under 18.0 m (Figure 5B)",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     39862
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39862
+   ],
+   "evidence": [
+    {
+     "id": 39862,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "<18.0 1.5",
+     "clause": "B3.2.3 Figure 5B",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "residential flat buildings, manor houses, multi dwelling housing, attached dwellings and other uses: site width under 18.0 m (Figure 5B)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "<18.0 1.5",
+   "clause": "B3.2.3 Figure 5B",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 18.0,
+    "lotWidthMaxM": 21.0
+   },
+   "conditionText": "residential flat buildings, manor houses, multi dwelling housing, attached dwellings and other uses: site width 18.0 to under 21.0 m (Figure 5B)",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     39863
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39863
+   ],
+   "evidence": [
+    {
+     "id": 39863,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "18.0 - < 21.0 2.0",
+     "clause": "B3.2.3 Figure 5B",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "residential flat buildings, manor houses, multi dwelling housing, attached dwellings and other uses: site width 18.0 to under 21.0 m (Figure 5B)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "18.0 - < 21.0 2.0",
+   "clause": "B3.2.3 Figure 5B",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 21.0,
+    "lotWidthMaxM": 28.0
+   },
+   "conditionText": "residential flat buildings, manor houses, multi dwelling housing, attached dwellings and other uses: site width 21.0 to under 28.0 m (Figure 5B)",
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     39864
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39864
+   ],
+   "evidence": [
+    {
+     "id": 39864,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "21.0 - < 28.0 2.5",
+     "clause": "B3.2.3 Figure 5B",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "residential flat buildings, manor houses, multi dwelling housing, attached dwellings and other uses: site width 21.0 to under 28.0 m (Figure 5B)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "21.0 - < 28.0 2.5",
+   "clause": "B3.2.3 Figure 5B",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 28.0,
+    "lotWidthMaxM": 35.0
+   },
+   "conditionText": "residential flat buildings, manor houses, multi dwelling housing, attached dwellings and other uses: site width 28.0 to under 35.0 m (Figure 5B)",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     39865
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39865
+   ],
+   "evidence": [
+    {
+     "id": 39865,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "28.0 - < 35.0 3.0",
+     "clause": "B3.2.3 Figure 5B",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "residential flat buildings, manor houses, multi dwelling housing, attached dwellings and other uses: site width 28.0 to under 35.0 m (Figure 5B)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "28.0 - < 35.0 3.0",
+   "clause": "B3.2.3 Figure 5B",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  },
+  {
+   "id": "woollahra-municipal-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 35.0
+   },
+   "conditionText": "residential flat buildings, manor houses, multi dwelling housing, attached dwellings and other uses: site width 35.0 m and over (Figure 5B)",
+   "side": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     39866
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39866
+   ],
+   "evidence": [
+    {
+     "id": 39866,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "35.0 + 3.5",
+     "clause": "B3.2.3 Figure 5B",
+     "page": 144,
+     "source_file": "DCP/consolidated-wdcp-2015.txt",
+     "condition": "residential flat buildings, manor houses, multi dwelling housing, attached dwellings and other uses: site width 35.0 m and over (Figure 5B)",
+     "edition": "Woollahra DCP 2015 consolidated, last amended 21 August 2026 (Chapter B3 as at 21/08/2026, Chapter E1 as at 23/05/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "35.0 + 3.5",
+   "clause": "B3.2.3 Figure 5B",
+   "page": 144,
+   "source_file": "DCP/consolidated-wdcp-2015.txt"
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): access: driveway_width_residential, driveway_grade_max (except the 25% HCA test), driveway crossfall, distance from intersection and layback detail (graphical, RF2_C and RF2_D not saved as text) | dev_controls: min_lot_size, FSR and dual occupancy minimum lot size set in Woollahra LEP 2014 (not saved); site_coverage_max not used (landscaped area and deep soil controls instead); excavation volume limits in B3.4 Figures 9A and 9B are graphs and were not read as values; Part B1 precinct-specific controls and Part C heritage conservation area chapters not mined for differing setbacks, garage and fence values | setbacks: setback_rural, setback_industrial, setback_commercial, setback_classified_ro"
+ ],
+ "notes": "Built from 22 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R2": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 11
+  },
+  "R3": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 8
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 22,
+  "rules": 20,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 2
+ }
+}

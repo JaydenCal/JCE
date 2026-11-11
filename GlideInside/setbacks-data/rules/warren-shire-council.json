@@ -1,0 +1,28 @@
+{
+ "lga_slug": "warren-shire-council",
+ "council": "Warren Shire Council",
+ "lgaNames": [
+  "WARREN",
+  "WARREN SHIRE",
+  "WARREN SHIRE COUNCIL"
+ ],
+ "dcp": "Warren Shire Council Development Control Plan adopted 24 January 2013 (Minute 29.01.13), applies subject to Warren LEP 2012; 7 pages, zone by zone subdivision and dwelling controls only",
+ "lep": "Warren Local Environmental Plan 2012",
+ "status": "none",
+ "rules": [],
+ "gaps": [
+  "No rules tagged to R1, R2, R5 or RU5 and none with an unstated residential zone; only other zones or precinct-level text",
+  "4 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 36523, 36524, 36528, 36529",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Setbacks for urban zones (front, side, rear), site coverage, landscaped area, parking rates, building envelope: not in the DCP (7 pages, rural and subdivision controls only)"
+ ],
+ "notes": "Built from 4 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {},
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 4,
+  "rules": 0,
+  "recordsNotModelled": 4,
+  "otherSetbackKeysNotModelled": 1
+ }
+}

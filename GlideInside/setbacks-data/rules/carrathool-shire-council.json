@@ -1,0 +1,103 @@
+{
+ "lga_slug": "carrathool-shire-council",
+ "council": "Carrathool Shire Council",
+ "lgaNames": [
+  "CARRATHOOL",
+  "CARRATHOOL SHIRE",
+  "CARRATHOOL SHIRE COUNCIL"
+ ],
+ "dcp": "None saved. Carrathool Shire has no DCP in the library; only council policies were saved. Controls sit in Carrathool Local Environmental Plan 2012 (not saved)",
+ "lep": "Carrathool Local Environmental Plan 2012",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "carrathool-shire-council-001",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "RU5 village areas, corner allotments, side boundary",
+    "RU5 village areas, front boundary"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     8728
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     8729
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    8728,
+    8729
+   ],
+   "evidence": [
+    {
+     "id": 8728,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "be a minimum of six (6) metres from the front boundary",
+     "clause": "Policy statements",
+     "page": 1,
+     "source_file": "Engineering/071-Building-Line-Policy-v6.pdf",
+     "condition": "RU5 village areas, front boundary",
+     "edition": "Policy 71 v6, effective 19/12/2023"
+    },
+    {
+     "id": 8729,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "in the case of corner allotments, a minimum of three (3) metres from the side boundary",
+     "clause": "Policy statements",
+     "page": 1,
+     "source_file": "Engineering/071-Building-Line-Policy-v6.pdf",
+     "condition": "RU5 village areas, corner allotments, side boundary",
+     "edition": "Policy 71 v6, effective 19/12/2023"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "be a minimum of six (6) metres from the front boundary",
+   "clause": "Policy statements",
+   "page": 1,
+   "source_file": "Engineering/071-Building-Line-Policy-v6.pdf"
+  }
+ ],
+ "gaps": [
+  "RU5: no numeric side/rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): setbacks other than RU5 village building line (side, rear, rural, industrial, commercial)"
+ ],
+ "notes": "Built from 2 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "RU5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 2,
+  "rules": 1,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 0
+ }
+}
