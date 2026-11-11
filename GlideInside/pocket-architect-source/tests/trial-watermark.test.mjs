@@ -20,7 +20,7 @@ const hex = (b) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
 const abn = (() => { for (let v = 51824753556; ; v++) if (abnValid(String(v))) return String(v); })();
 
 function house() {
-  const p = createProject({ id: 'p_trial001', name: 'Marsh residence' });
+  const p = createProject({ id: 'p_mw001', name: 'Marsh residence' });
   applyOp(p, 'add_room', { type: 'living', name: 'Living', x: 0, y: 0, width: 6000, depth: 4500 });
   applyOp(p, 'add_room', { type: 'bedroom', name: 'Bed 1', x: 6000, y: 0, width: 3500, depth: 4500 });
   return p;
@@ -144,7 +144,7 @@ test('after the trial ends the account is read only and exports are refused', as
 test('Plan Pack (homeowner) exports are never watermarked, whatever the request says', async () => {
   const w = world();
   const sid = 'cs_test_paid1';
-  const raw = JSON.stringify({ id: 'evt_1', type: 'checkout.session.completed', data: { object: { id: sid, object: 'checkout.session', payment_status: 'paid', client_reference_id: 'p_trial001', metadata: { projectId: 'p_trial001' }, amount_total: 3000, currency: 'aud', customer_details: { email: 'b@example.com' }, payment_intent: 'pi_1' } } });
+  const raw = JSON.stringify({ id: 'evt_1', type: 'checkout.session.completed', data: { object: { id: sid, object: 'checkout.session', payment_status: 'paid', client_reference_id: 'p_mw001', metadata: { projectId: 'p_trial001' }, amount_total: 3000, currency: 'aud', customer_details: { email: 'b@example.com' }, payment_intent: 'pi_1' } } });
   const t = Math.floor(w.clock.t / 1000);
   const sig = hex(await hmacSha256('whsec_x', `${t}.${raw}`));
   const hook = await w.app.fetch(new Request('https://api.test/api/stripe/webhook', { method: 'POST', body: raw, headers: { 'stripe-signature': `t=${t},v1=${sig}`, 'content-type': 'application/json' } }));
