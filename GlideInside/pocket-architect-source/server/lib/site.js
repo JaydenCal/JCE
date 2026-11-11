@@ -262,12 +262,15 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
   }
 
   // JSON results cached in the store (D1 table site_cache) so they survive Worker restarts and are shared by all Workers.
-  async function jsonCached(key, ttl, compute, { ttlFor = null } = {}) {
+  async function jsonCached(key, ttl, compute, { ttlFor = null, accept = null } = {}) {
     const nowMs = now();
     if (store?.getSiteCache) {
       try {
         const hit = await store.getSiteCache(key, nowMs);
-        if (hit) return { value: JSON.parse(hit), cached: true };
+        if (hit) {
+          const v = JSON.parse(hit);
+          if (!accept || accept(v)) return { value: v, cached: true }; // e.g. an empty search answer cached by an older build is ignored
+        }
       } catch {
         /* a cache failure never fails the request */
       }
@@ -356,7 +359,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         }
       }
       return { results: merged.slice(0, 8) };
-    }, { ttlFor: (v, ttl) => (st.partial || !v.results.length ? 0 : ttl) });
+    }, { ttlFor: (v, ttl) => (st.partial || !v.results.length ? 0 : ttl), accept: (v) => Array.isArray(v?.results) && v.results.length > 0 });
     if (edge && !st.partial && value.results.length) {
       try { await edge.put(edgeUrl, new Response(JSON.stringify(value), { headers: { 'content-type': 'application/json', 'cache-control': `public, max-age=${TTL.search}` } })); } catch { /* ignore */ }
     }
