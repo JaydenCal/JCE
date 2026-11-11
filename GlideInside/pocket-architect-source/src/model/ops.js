@@ -857,7 +857,7 @@ export const OPS = {
   move_house: {
     label: 'Move house',
     description: 'Move the whole house (walls, rooms, furniture and stairs on every level) on the lot by dx east and dy south, in mm. Tanks stay put. Needs a lot on the site. Use check_setbacks afterwards when setbacks matter.',
-    params: { dx: P.num('mm east (+x), west is negative'), dy: P.num('mm south (+y), north is negative') },
+    params: { dx: { ...P.num('mm east (+x), west is negative'), minimum: -100000, maximum: 100000 }, dy: { ...P.num('mm south (+y), north is negative'), minimum: -100000, maximum: 100000 } },
     required: ['dx', 'dy'],
     run(p, a) {
       if (!SITE.lotOf(p)) fail('No lot is loaded for this design, so the house cannot be positioned on a lot.');
@@ -870,7 +870,7 @@ export const OPS = {
   rotate_house: {
     label: 'Rotate house',
     description: 'Rotate the whole house about its centre by an angle in degrees clockwise on screen (negative is anticlockwise). Needs a lot on the site.',
-    params: { degrees: P.num('Degrees clockwise, between -360 and 360') },
+    params: { degrees: { ...P.num('Degrees clockwise, between -360 and 360'), minimum: -360, maximum: 360 } },
     required: ['degrees'],
     run(p, a) {
       if (!SITE.lotOf(p)) fail('No lot is loaded for this design, so the house cannot be positioned on a lot.');
@@ -882,7 +882,7 @@ export const OPS = {
   set_floor_level: {
     label: 'Floor level',
     description: 'Set the finished floor level (FFL) of the ground floor as a reduced level in metres (RL, m AHD) on the lot. Needs a lot on the site. Do not use millimetres.',
-    params: { rl: P.num('Reduced level in metres, e.g. 101.35') },
+    params: { rl: { ...P.num('Reduced level in metres, e.g. 101.35'), minimum: -50, maximum: 3500 } },
     required: ['rl'],
     run(p, a) {
       const lot = SITE.lotOf(p);

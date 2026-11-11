@@ -128,6 +128,22 @@ export function describeOp(op, a = {}, project, names = nameResolver(null)) {
       const tail = a.status === 'demolish' ? 'for demolition' : `as ${a.status}`;
       return `Marked ${n || 'some'} ${plural(n, 'element')} ${tail}`;
     }
+    case 'move_house': {
+      const dx = Number(a.dx) || 0;
+      const dy = Number(a.dy) || 0;
+      const parts = [];
+      if (dx) parts.push(`${metres(dx)} ${dx > 0 ? 'east' : 'west'}`);
+      if (dy) parts.push(`${metres(dy)} ${dy > 0 ? 'south' : 'north'}`);
+      return parts.length ? `Moved the house ${parts.join(' and ')}` : 'Moved the house';
+    }
+    case 'rotate_house':
+      return `Rotated the house ${Math.abs(Number(a.degrees) || 0)} degrees ${Number(a.degrees) < 0 ? 'anticlockwise' : 'clockwise'}`;
+    case 'set_floor_level':
+      return `Floor level set to RL ${Number(a.rl).toFixed(2)} m`;
+    case 'check_setbacks':
+      return 'Checked the design against the setbacks';
+    case 'suggest_site_position':
+      return a.apply === true ? 'Moved the house to a position inside the setbacks' : 'Suggested a site position';
     case 'set_project':
       return a.name ? `Renamed the project to ${a.name}` : 'Updated the project details';
     default:
