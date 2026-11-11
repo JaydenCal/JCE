@@ -328,6 +328,7 @@ export function roomViewpoint(project, roomId, opts = {}) {
   const poly = room.polygon;
   const bb = G.bbox(poly);
   const rects = furnitureRects(level, 0);
+  const garage = isGarage(room);
   const keepOffBy = { 220: furnitureRects(level, 220), 0: rects };
 
   // what to look at
@@ -342,7 +343,8 @@ export function roomViewpoint(project, roomId, opts = {}) {
   // candidate standing points
   const step = Math.max(100, Math.min(250, Math.min(bb.w, bb.h) / 14));
   // preferred: 0.4 m from walls and 0.22 m off furniture; then give up the furniture margin before the wall clearance
-  const tiers = [[MIN_WALL_CLEAR * 1000, 220], [MIN_WALL_CLEAR * 1000, 0], [300, 0], [200, 0], [100, 0], [0, 0]];
+  // a garage: the standing point furthest from the cars (a camera against a bonnet or a door is useless), so the tiers only set the wall clearance
+  const tiers = garage ? [[250, 0], [200, 0], [100, 0], [0, 0]] : [[MIN_WALL_CLEAR * 1000, 220], [MIN_WALL_CLEAR * 1000, 0], [300, 0], [200, 0], [100, 0], [0, 0]];
   let chosen = null;
   for (const [need, pad] of tiers) {
     const keepOff = keepOffBy[pad];
@@ -362,6 +364,11 @@ export function roomViewpoint(project, roomId, opts = {}) {
           const v = G.norm(G.sub(p, r.c));
           return t + r.area * Math.max(0, G.dot(v, r.front));
         }, 0) / subjectArea;
+        if (garage && rects.length) {
+          const gap = Math.min(...rects.map((r) => (G.pointInPolygon(p, r.poly) ? 0 : Math.min(...G.polygonEdges(r.poly).map(([a, b]) => G.projectToSegment(p, a, b).d)))));
+          list.push({ p, cl, score: Math.min(gap, 2500) * 3 + Math.min(D, 6000) * 0.2 });
+          continue;
+        }
         list.push({ p, cl, score: focus?.furniture ? 6000 + 2500 * facing - Math.abs(D - 5000) - 0.15 * Math.min(cl, 2500) : Math.min(D, 8000) - 0.35 * Math.min(cl, 2500) });
       }
     }
@@ -376,7 +383,7 @@ export function roomViewpoint(project, roomId, opts = {}) {
           const half = Math.max(...r.poly.map((q) => G.dist(q, r.c)));
           if (G.dist(c.p, r.c) - half < 1500) crowd += 900;
         }
-        const pen = sightPenalty(c.p, aim, poly, rects, focusSkip) + crowd;
+        const pen = garage ? 0 : sightPenalty(c.p, aim, poly, rects, focusSkip) + crowd;
         const s = c.score - pen;
         if (!best || s > best.s) best = { ...c, s };
       }

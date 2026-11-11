@@ -350,21 +350,21 @@ test('AI credits: monthly cap per login with a hard stop, top-ups of 300 for A$1
   await api.signIn(DEMO_LOGINS.client); // Sarah: 124 of 300 used
   let ai = await api.aiBalance();
   assert.deepEqual([ai.used, ai.remaining, ai.topUpBalance], [124, 176, 0]);
-  await api.spendAiCredits({ credits: 80 });
-  await rejects(api.spendAiCredits({ credits: 9 }), 'CREDITS_EXHAUSTED');
+  await api.spendAiCredits({ credits: 160 });
+  await rejects(api.spendAiCredits({ credits: 17 }), 'CREDITS_EXHAUSTED');
   const top = await api.aiTopUp();
   assert.deepEqual([top.topUp.credits, top.topUp.amountCents], [TOPUP_CREDITS, TOPUP_FEE_CENTS]);
   assert.equal(top.topUp.loginId, 'u_sarah');
   assert.equal(top.topUp.orgId, 'org_sample');
   ai = top.ai;
-  assert.equal(ai.remaining, 8 + 300);
-  await api.spendAiCredits({ credits: 20 }); // monthly allowance first (8 left), then top-up balance
+  assert.equal(ai.remaining, 16 + 300);
+  await api.spendAiCredits({ credits: 28 }); // monthly allowance first (16 left), then top-up balance
   ai = await api.aiBalance();
   assert.deepEqual([ai.monthlyRemaining, ai.topUpBalance], [0, 288]);
   // Allowance resets next month; the top-up balance carries over.
   clock.set(iso('2026-12-02T02:00:00Z'));
   ai = await api.aiBalance();
-  assert.deepEqual([ai.used, ai.monthlyRemaining, ai.topUpBalance], [0, 150, 288]);
+  assert.deepEqual([ai.used, ai.monthlyRemaining, ai.topUpBalance], [0, 300, 288]);
   clock.set(NOW);
   // The builder can switch client top-ups off.
   await api.signOut();

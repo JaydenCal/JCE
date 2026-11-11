@@ -17,6 +17,7 @@ import { cardStats, lotHeading, lotLine, hasBuilding } from './stats.js';
 import { publicDesigns, currentIndex, pagerText, stepIndex } from './designs.js';
 import { swapHouse } from './swap.js';
 import { LOT_CARD_CSS } from './lot-card-css.js';
+import { icon } from '../ui/icons.js';
 import { listRoomTabs } from '../viewer3d/rooms.js';
 import { roomsPlanModel } from './rooms-plan.js';
 
@@ -50,7 +51,8 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => sitePlanPdf() }, 'Plan set PDF');
   const fit = E('lc-fit', 'div', { role: 'status', 'aria-live': 'polite', dataset: { ps: 'lc-fit' } });
   const more = h('button', { class: 'lc-more', type: 'button', 'aria-expanded': 'false', onclick: () => { card.classList.toggle('is-open'); more.setAttribute('aria-expanded', String(card.classList.contains('is-open'))); sizeInset(); } }, 'Details');
-  const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-acts', 'div', null, bWalk, bEdit, bPdf), fit);
+  const tabsEl = E('lc-tabs', 'div', { role: 'tablist', 'aria-label': 'Rooms', dataset: { ps: 'lc-tabs' } });
+  const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-sp lc-sp-rooms', 'div', null, E('lc-k', 'span', null, 'Rooms'), tabsEl), E('lc-acts', 'div', null, bWalk, bEdit, bPdf), fit);
   const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more), body);
 
   const pgP = h('button', { type: 'button', 'aria-label': 'Previous design', onclick: () => step(-1) }, '‹');
@@ -59,10 +61,10 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const pager = E('lc-pager lc-glass', 'div', { dataset: { ps: 'lc-pager' } }, pgP, pgT, pgN);
 
   // Rooms: tab pills, a one line caption and a small floor plan with the chosen room highlighted (rooms on it are clickable).
-  const tabsEl = E('lc-tabs', 'div', { role: 'tablist', 'aria-label': 'Rooms', dataset: { ps: 'lc-tabs' } });
+  const tabsCompact = E('lc-tabs', 'div', { role: 'tablist', 'aria-label': 'Rooms', dataset: { ps: 'lc-tabs-compact' } });
   const cap = E('lc-cap', 'p', { dataset: { ps: 'lc-caption' }, 'aria-live': 'polite' });
   const plan = (() => { const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'lc-plan'); svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', 'Floor plan'); return svg; })();
-  const rooms = E('lc-rooms lc-glass', 'div', { dataset: { ps: 'lc-rooms' } }, tabsEl, E('lc-rooms-row', 'div', null, cap, plan));
+  const rooms = E('lc-rooms lc-glass', 'div', { dataset: { ps: 'lc-rooms' } }, tabsCompact, E('lc-rooms-row', 'div', null, cap, plan));
 
   const cv = h('canvas', { width: 300, height: 400, 'aria-hidden': 'true' });
   const north = (() => {
@@ -76,7 +78,8 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const northLabel = E('lc-nlabel', 'i', null, 'N');
   const mini = h('button', { class: 'lc-mini', type: 'button', title: 'Show or hide the 2D plan', 'aria-label': 'Top view. Click to show or hide the 2D plan', dataset: { ps: 'lc-mini' }, onclick: () => toggle2d() }, cv, h('span', { class: 'lc-mini-t' }, 'TOP VIEW'), north, northLabel);
 
-  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, card, rooms, pager, mini);
+  const findPill = h('button', { class: 'lc-find lc-glass', type: 'button', dataset: { ps: 'lc-find' }, 'aria-label': 'Find another block', onclick: () => import('../ui/find-block.js').then((m) => m.openFindBlock(store)) }, icon('search', { size: 16 }), h('span', null, ''));
+  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, findPill, card, rooms, pager, mini);
   host.append(root);
 
   // State -------------------------------------------------------------------------------------------------------------------------
@@ -203,6 +206,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     root.hidden = !show;
     root.dataset.view = view;
     viewerHost.classList.toggle('lc-on', show && (view === '3d' || view === 'split'));
+    viewerHost.classList.toggle('lc-full', show && view === '3d');
     layoutClasses();
     if (!show) { getViewer()?.setInset?.({}); app().editor?.setInset?.({}); return; }
     loadDesigns();
@@ -226,7 +230,10 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
 
     tabs = listRoomTabs(p, null, { groupBedrooms: true });
     if (!tabs.some((t) => t.id === selTab)) selTab = 'aerial';
-    tabsEl.replaceChildren(...tabs.map((t) => h('button', { class: 'lc-tab', type: 'button', role: 'tab', 'aria-selected': String(t.id === selTab), dataset: { tab: t.id }, onclick: () => pickTab(t.id) }, t.label)));
+    const mkTab = (t) => h('button', { class: 'lc-tab', type: 'button', role: 'tab', title: t.caption || '', 'aria-selected': String(t.id === selTab), dataset: { tab: t.id }, onclick: () => pickTab(t.id) }, t.label);
+    tabsEl.replaceChildren(...tabs.map(mkTab));
+    tabsCompact.replaceChildren(...tabs.map(mkTab));
+    findPill.lastChild.textContent = `${lot.address || lot.lotLabel || 'Find my block'}${lot.areaM2 ? ` · ${Math.round(lot.areaM2).toLocaleString('en-AU')} m²` : ''}`;
     const cur = targetTab() || tabs.find((t) => t.id === 'aerial');
     cap.textContent = cur?.caption || '';
     rooms.hidden = tabs.length < 2;
@@ -356,10 +363,12 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const mo = typeof MutationObserver === 'function' ? new MutationObserver(() => schedule()) : null;
   mo?.observe(host, { childList: true });
   const offs = [store.on('project', schedule), store.on('ui', (patch = {}) => { schedule(); if ('view' in patch) setTimeout(sizeInset, 700); })];
+  const onAerial = () => { selTab = 'aerial'; bedI = 0; schedule(); };
+  window.addEventListener('ps:room-aerial', onAerial);
   schedule();
   return {
     el: root, render, step, setScheme, sitePlanPdf,
     get designs() { return designs; },
-    dispose() { disposed = true; offs.forEach((o) => o?.()); ro?.disconnect(); mo?.disconnect(); root.remove(); },
+    dispose() { disposed = true; window.removeEventListener('ps:room-aerial', onAerial); offs.forEach((o) => o?.()); ro?.disconnect(); mo?.disconnect(); root.remove(); },
   };
 }

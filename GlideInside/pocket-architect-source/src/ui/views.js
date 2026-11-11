@@ -79,7 +79,7 @@ export function createViewManager({ store, refs, editor, catalogue }) {
       view: store.ui.view,
       tool: store.ui.tool,
       selection: store.ui.selection,
-      editing: !!viewer?.editing || !!viewer?.ahead?.isArmed,
+      editing: !!viewer?.editing || !!viewer?.ahead?.isArmed || !!viewer?.inCutaway?.(), // Escape in a room cutaway goes back to the aerial, not the plan
       modalOpen: !!document.querySelector('.ps-modal, .ps3d-picker:not([hidden]), .ps-level-menu:not([hidden])'),
       typing: isTyping(e.target),
       defaultPrevented: e.defaultPrevented,

@@ -840,6 +840,8 @@ svg { display: block; }
 .ps-find--large .ps-find-box svg { left: 15px; }
 .ps-find--large .ps-find-list { position: static; margin: 8px 0 0; box-shadow: none; max-height: none; overflow: visible; flex: 1 1 auto; }
 .ps-find--large .ps-find-item { min-height: 48px; padding: 0 12px; font-size: 15px; }
+.ps-find-label { min-width: 0; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-find-item .ps-tag { flex: none; }
 .ps-find--large .ps-find-status { font-size: 14px; margin-top: 10px; }
 @media (max-width: 599.98px) {
   .ps-scrim--top { padding: 0; place-items: stretch; }
