@@ -133,7 +133,8 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     hasProject: !!h.project || h.hasProject === true,
   });
   const visibleHouse = (user, h) => !h.archived && (user.houseAccess === 'all' || (Array.isArray(user.houseAccess) && user.houseAccess.includes(h.id)));
-  const projectView = (p, ownerName) => ({ id: p.id, orgId: p.orgId, ownerId: p.ownerId, name: p.name, lotAddress: p.lotAddress || '', houseNames: p.houseNames || [], createdAt: p.createdAt, updatedAt: p.updatedAt, ownerName: ownerName || '' });
+  const projectView = (p, ownerName) => ({ id: p.id, orgId: p.orgId, ownerId: p.ownerId, name: p.name, lotAddress: p.lotAddress || '', houseNames: p.houseNames || [], createdAt: p.createdAt, updatedAt: p.updatedAt, ownerName: ownerName || '',
+    editedByStaff: !!p.editedById, editedByName: p.editedById ? p.editedByName || '' : '', editedByStaffAt: p.editedById ? p.editedByStaffAt || null : null });
 
   const aiFor = (org, user, opts = {}) => aiSnapshot({ store, config, org, user, nowMs: now(), ...opts });
   /** Client rows only read the pools (no creation, no expiry work) so a long list stays cheap. */
@@ -504,6 +505,10 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       lotAddress: b.lotAddress !== undefined ? text(b.lotAddress, 'Lot address', { max: 200 }) : p.lotAddress || '',
       houseNames: Array.isArray(b.houseNames) ? b.houseNames.slice(0, 20).map((x) => String(x).slice(0, 80)) : p.houseNames || [],
     };
+    // Staff adjusting a client's project (Open as client view): the project stays the client's, and the save is recorded as edited by staff.
+    // Nothing here touches the login charge or the AI pools, so a staff login designing never bills anyone.
+    const byStaff = isStaff(user) && p.ownerId !== user.id;
+    Object.assign(p, byStaff ? { editedById: user.id, editedByName: user.name, editedByStaffAt: iso() } : { editedById: null, editedByName: null, editedByStaffAt: null });
     await pstore.saveProject(p);
     return json(projectView(p, user.name));
   }

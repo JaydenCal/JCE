@@ -192,6 +192,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     createdAt: u.createdAt, lastSignInAt: u.lastSignInAt, tempPasswordExpiresAt: u.mustChangePassword ? u.tempPasswordExpiresAt || null : null, ...(org ? { ai: aiBalance(u, org) } : {}),
   });
   const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
+  const staffEdit = (p) => ({ editedByStaff: !!p.editedById, editedByName: p.editedById ? p.editedByName || '' : '', editedByStaffAt: p.editedById ? p.editedByStaffAt || null : null });
   const houseMeta = (h) => { const { project, ...rest } = h; return { ...clone(rest), hasProject: !!project }; };
   const visibleHouse = (user, h) => !h.archived && (user.houseAccess === 'all' || (Array.isArray(user.houseAccess) && user.houseAccess.includes(h.id)));
 
@@ -523,7 +524,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       if (!isStaff(user)) list = list.filter((p) => p.ownerId === user.id);
       else if (clientId) list = list.filter((p) => p.ownerId === clientId);
       const names = new Map(db.users.map((u) => [u.id, u.name]));
-      return list.sort((a, b) => (b.updatedAt > a.updatedAt ? 1 : -1)).map(({ project, glideRef, ...p }) => ({ ...clone(p), ownerName: names.get(p.ownerId) || '' }));
+      return list.sort((a, b) => (b.updatedAt > a.updatedAt ? 1 : -1)).map(({ project, glideRef, ...p }) => ({ ...clone(p), ownerName: names.get(p.ownerId) || '', ...staffEdit(p) }));
     },
     /** Opens a project: the saved design, plus who owns it. Staff can open any client's project. */
     async openProject(id) {
@@ -535,7 +536,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       project.id = project.id || p.id;
       const owner = db.users.find((u) => u.id === p.ownerId);
       const { project: _p, glideRef, ...meta } = p;
-      return { ...clone(meta), ownerName: owner?.name || '', project };
+      return { ...clone(meta), ownerName: owner?.name || '', ...staffEdit(meta), project };
     },
     async saveProject({ id, name, project, lotAddress, houseNames } = {}) {
       await wait();
@@ -554,12 +555,15 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
         db.projects.push(p);
       }
       Object.assign(p, { name: text(name ?? proj.name, 'Name', { required: true, max: 80 }), updatedAt: iso(), project: proj });
+      // Staff saving a client's project: it stays the client's and the save is recorded as edited by staff (same rule as the server).
+      if (isStaff(user) && p.ownerId !== user.id) Object.assign(p, { editedById: user.id, editedByName: user.name, editedByStaffAt: iso() });
+      else Object.assign(p, { editedById: null, editedByName: null, editedByStaffAt: null });
       if (lotAddress !== undefined) p.lotAddress = text(lotAddress, 'Lot address', { max: 200 });
       else p.lotAddress = p.lotAddress || '';
       p.houseNames = Array.isArray(houseNames) ? houseNames.slice(0, 20).map(String) : p.houseNames || [];
       save(db);
       const { project: _p, glideRef, ...meta } = p;
-      return clone(meta);
+      return { ...clone(meta), ...staffEdit(meta) };
     },
 
     // Billing ----------------------------------------------------------------------------------------------------------------

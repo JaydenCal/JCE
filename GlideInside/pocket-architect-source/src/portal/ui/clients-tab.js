@@ -3,7 +3,7 @@
 import { h, openDialog, confirmDialog, field, busy, toast, chip, icon, errorMessage, downloadText } from './kit.js';
 import { credentialsCard } from './credentials-card.js';
 import { ddmmyyyy } from '../billing.js';
-import { appLink, portalUrl } from '../links.js';
+import { appLink, designLink, portalUrl } from '../links.js';
 import { slug } from '../../ui/dom.js';
 import { TEMP_PASSWORD_DAYS } from '../mock-api.js';
 import { accountOf, isReadOnly, addBillingButton } from './trial-ui.js';
@@ -76,6 +76,7 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
       canWrite ? h('button', { class: 'pp-menu-item', type: 'button', onclick: () => editDialog(c) }, 'Edit') : null,
       canGenerate ? h('button', { class: 'pp-menu-item', type: 'button', onclick: () => resetDialog(c) }, icon('key', 14), 'Reset password') : null,
       canWrite && (c.status === 'active' || !locked) ? h('button', { class: 'pp-menu-item', type: 'button', onclick: (e) => toggle(e.currentTarget, c) }, c.status === 'active' ? 'Disable' : 'Enable') : null,
+      c.projectCount ? h('button', { class: 'pp-menu-item', type: 'button', onclick: () => projectsDialog(c) }, icon('open', 14), 'Open as client view') : null,
       h('button', { class: 'pp-menu-item', type: 'button', onclick: (e) => exportProjects(e.currentTarget, c) }, icon('download', 14), 'Export projects'),
       canWrite ? h('button', { class: 'pp-menu-item pp-menu-item--danger', type: 'button', onclick: () => deleteDialog(c) }, icon('trash', 14), 'Delete') : null].filter(Boolean);
     const menu = h('details', { class: 'pp-menu', onclick: (e) => { if (e.target.closest('.pp-menu-item')) menu.open = false; } }, h('summary', { class: 'pp-btn pp-btn--sm' }, 'Actions'), h('div', { class: 'pp-menu-list' }, ...items));
@@ -160,8 +161,10 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
   }
   async function projectsDialog(c) {
     const list = await api.listProjects({ clientId: c.id });
-    openDialog({ title: `${c.name}'s projects`, body: h('ul', { class: 'pp-list' }, list.map((p) => h('li', null, h('div', null, h('strong', null, p.name), h('div', { class: 'pp-sub' }, `${p.lotAddress || 'No lot address'} · updated ${day(p.updatedAt)}`)),
-      h('a', { class: 'pp-btn pp-btn--sm', href: appLink({ project: p.id }), target: '_blank', rel: 'noopener' }, icon('open', 15), 'Open')))),
+    openDialog({ title: `${c.name}'s projects`, body: h('ul', { class: 'pp-list' }, list.map((p) => h('li', null, h('div', null, h('strong', null, p.name), h('div', { class: 'pp-sub' }, `${p.lotAddress || 'No lot address'} · updated ${day(p.updatedAt)}${p.editedByStaff ? ' · last saved by staff' : ''}`)),
+      h('div', { class: 'pp-actions' },
+        h('a', { class: 'pp-btn pp-btn--sm pp-btn--primary', href: designLink({ project: p.id }), target: '_blank', rel: 'noopener', title: 'Opens the project the way the client sees it. Saving goes back to their project, recorded as edited by staff.' }, icon('open', 15), 'Open as client view'),
+        h('a', { class: 'pp-btn pp-btn--sm', href: appLink({ project: p.id }), target: '_blank', rel: 'noopener' }, 'Full editor'))))),
     footer: (d) => h('button', { class: 'pp-btn', type: 'button', onclick: () => d.close() }, 'Close') });
   }
   async function exportProjects(btn, c) {

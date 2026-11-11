@@ -2,7 +2,7 @@
 
 import { h, clear, toast, icon, errorMessage } from './kit.js';
 import { getPortalApi } from '../api.js';
-import { appLink } from '../links.js';
+import { appLink, designLink } from '../links.js';
 import { signInView, forgotView, resetView, changePasswordView } from './auth-views.js';
 import { renderHouses } from './houses-tab.js';
 import { renderGlide } from './glide-tab.js';
@@ -159,7 +159,9 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
       }
       route();
     });
-    return h('div', { dataset: { title: 'Dashboard' } }, brandBar(h('a', { class: 'pp-btn pp-btn--sm', href: appLink(), target: '_blank', rel: 'noopener' }, icon('open', 15), 'Open Pocket Architect')),
+    return h('div', { dataset: { title: 'Dashboard' } }, brandBar([
+      h('a', { class: 'pp-btn pp-btn--primary', id: 'design-on-lot', href: designLink(), target: '_blank', rel: 'noopener', title: 'Open Pocket Architect the way your clients see it: your branding and your house designs, on a lot' }, icon('open', 15), 'Design on a lot'),
+      h('a', { class: 'pp-btn pp-btn--sm', href: appLink(), target: '_blank', rel: 'noopener' }, 'Open full editor')]),
       h('main', { class: 'pp-main' }, bannerSlot, tablist, panel));
   }
 

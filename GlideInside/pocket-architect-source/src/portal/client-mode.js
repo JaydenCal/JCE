@@ -16,6 +16,7 @@ import { getPortalApi } from './api.js';
 import { injectStripStyles } from './app-strip-styles.js';
 import { applyBrandTheme, clearBrandTheme } from './theme-css.js';
 import { signInUrl, portalUrl } from './links.js';
+import { designMode as isDesignMode, clientLike as isClientLike, wantsGlide, fullEditorHref, designNewHref } from './design-mode.js';
 import { SAMPLE_LOT, lotEnvelope, portalLotToSiteLot } from './envelope.js';
 import { rankDesigns } from './fit.js';
 import { startPlacement } from './placement.js';
@@ -53,6 +54,11 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   const { store, editor } = app;
   const premium = app.premium;
   const isClient = me.user.role === 'client';
+  // Builder or staff login using "Design on a lot" (?design=new, or ?design=1&project=<id> from Open as client view): the same experience a client
+  // gets (the builder's branding and own houses only, Find my block, place, colours, rooms, walk inside, lot card, send, exports), plus the staff extras.
+  const designMode = isDesignMode(me.user.role, params);
+  const clientLike = isClientLike(me.user.role, params);
+  let reviewOwner = null; // the client whose saved project staff opened as that client sees it
   const brand = me.org.branding || {};
   applyBrandTheme(brand.colours); // builder colour scheme over the app chrome; the 3D scene, aerial and setback states keep their own colours
   let lot = { ...SAMPLE_LOT, address: me.lotAddress || '' }; // review builds start with the sample lot so ranking can be shown
@@ -82,7 +88,10 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   await refreshEnvelope();
 
   // Clients start on an empty lot; staff keep whatever they have open.
-  if (isClient && !params.has('project') && !params.has('house') && !params.has('glide')) {
+  if (designMode && params.get('design') === 'new' && !params.has('project') && !params.has('house') && !params.has('glide')) {
+    app.replaceProject?.(createProject({ name: 'My home' })); // a new design on a blank lot; a reload then keeps the design (design=1)
+    try { const u = new URL(loc.href); u.searchParams.set('design', '1'); globalThis.history?.replaceState?.(null, '', u.href); } catch { /* not a browser */ }
+  } else if (isClient && !params.has('project') && !params.has('house') && !params.has('glide')) {
     // A different person last used this browser: start on a blank lot rather than showing their design.
     let last = null;
     try { last = localStorage.getItem(OWNER_KEY); localStorage.setItem(OWNER_KEY, me.user.id); } catch { /* storage blocked */ }
@@ -102,11 +111,15 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   const aiChip = h('button', { class: 'pas-chip', type: 'button', onclick: aiDialog });
   const housesBtn = h('button', { class: 'pas-btn pas-btn--primary', type: 'button', 'aria-haspopup': 'dialog', onclick: () => openPicker() }, 'House designs');
   const findBtn = h('button', { class: 'pas-btn', type: 'button', onclick: findMyBlock }, 'Find my block');
+  const fullBtn = h('button', { class: 'pas-btn', type: 'button', id: 'pas-full-editor', title: 'Leave the client view and use the whole editor', onclick: () => { loc.href = fullEditorHref(loc.href); } }, 'Full editor');
+  const designBtn = h('button', { class: 'pas-btn', type: 'button', id: 'pas-design-on-lot', title: 'Design on a lot the way your clients do', onclick: () => { loc.href = designNewHref(loc.href); } }, 'Design on a lot');
   const plansBtn = h('button', { class: 'pas-btn', type: 'button', onclick: () => premium?.previewPdf?.() }, 'Plans (PDF)');
   const userMenu = menu(me.user.name || me.user.username, [
     ['Save project', () => saveProject()],
     ['My projects', () => projectsDialog()],
     ...(!isClient ? [['Save to house library', () => saveToLibrary()]] : []),
+    ...(designMode ? [['Open full editor', () => { loc.href = fullEditorHref(loc.href); }]] : []),
+    ...(!isClient && !designMode ? [['Design on a lot', () => { loc.href = designNewHref(loc.href); }]] : []),
     ...(me.enquiry ? [['Send to JCE for engineering and DA plans', () => premium?.openEnquiry?.()]] : []),
     ...(!isClient ? [['Builder dashboard', () => { loc.href = portalUrl(); }]] : []),
     ['Sign out', signOut],
@@ -114,8 +127,8 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   const renderStrip = () => {
     clear(strip);
     strip.append(...[
-      h('div', { class: 'pas-brand' }, brand.logoDataUrl ? h('img', { src: brand.logoDataUrl, alt: '' }) : null, h('div', null, h('strong', null, brand.displayName || me.org.name), h('small', null, isClient ? 'Client login' : 'Builder staff'))),
-      findBtn, housesBtn, plansBtn, statusLine, h('span', { class: 'pas-spacer' }), brand.colours?.primary ? h('span', { class: 'gi-powered' }, 'Powered by Glide Inside') : null, aiChip, userMenu].filter(Boolean)); // native append would print null
+      h('div', { class: 'pas-brand' }, brand.logoDataUrl ? h('img', { src: brand.logoDataUrl, alt: '' }) : null, h('div', null, h('strong', null, brand.displayName || me.org.name), h('small', null, isClient ? 'Client login' : designMode ? 'Design on a lot' : 'Builder staff'))),
+      findBtn, housesBtn, plansBtn, ...(designMode ? [fullBtn] : !isClient ? [designBtn] : []), statusLine, h('span', { class: 'pas-spacer' }), brand.colours?.primary ? h('span', { class: 'gi-powered' }, 'Powered by Glide Inside') : null, aiChip, userMenu].filter(Boolean)); // native append would print null
     paintAi();
   };
   function paintAi() {
@@ -166,7 +179,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
 
   // House designs -------------------------------------------------------------------------------------------------------------
   async function loadDesigns() {
-    const [mine, glide] = await Promise.all([api.listHouses(), (isClient && me.org.showGlideToClients !== true ? Promise.resolve([]) : api.listGlideLibrary().catch(() => []))]);
+    const [mine, glide] = await Promise.all([api.listHouses(), (wantsGlide(me, params) ? api.listGlideLibrary().catch(() => []) : Promise.resolve([]))]);
     const full = async (list, getter, group) => Promise.all(list.map(async (x) => {
       const r = await getter(x.id);
       return { id: x.id, name: x.name, group, project: r.project, meta: x, source: group === 'glide' ? 'glide' : 'house' };
@@ -176,7 +189,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   // The lot card carousel: the builder's own library ranked by fit on the client's lot (never other builders' designs).
   app.lotDesigns = async (project) => {
     const all = await loadDesigns();
-    return builderDesigns(project || store.project, all, { allowGlide: !isClient });
+    return builderDesigns(project || store.project, all, { allowGlide: !clientLike });
   };
   async function openPicker() {
     const list = h('div', { class: 'pas-list' }, h('p', { class: 'pas-empty' }, 'Loading designs...'));
@@ -235,7 +248,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     try {
       const saved = await api.saveProject({ id: currentProjectId || undefined, name: store.project.name, project: store.project, lotAddress: lot.address || '' });
       currentProjectId = saved.id;
-      toast('Project saved to your account.', { kind: 'ok' });
+      toast(reviewOwner ? `Saved to ${reviewOwner}'s project. It is recorded as edited by staff.` : 'Project saved to your account.', { kind: 'ok' });
     } catch (e) { toast(e.message || 'Could not save.', { kind: 'error' }); }
   }
   async function saveToLibrary() {
@@ -250,14 +263,16 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     const list = await api.listProjects().catch(() => []);
     clear(body);
     if (!list.length) body.append(h('p', { class: 'pas-empty' }, 'No saved projects yet. Use Save project in the menu.'));
-    for (const p of list) body.append(h('button', { class: 'pas-item', type: 'button', onclick: () => { m.close(); openProject(p.id); } }, h('span', null, h('strong', null, p.name), h('small', null, p.ownerName && !isClient ? `Client: ${p.ownerName}` : ''))));
+    for (const p of list) body.append(h('button', { class: 'pas-item', type: 'button', onclick: () => { m.close(); openProject(p.id); } }, h('span', null, h('strong', null, p.name), h('small', null, !isClient && p.ownerId && p.ownerId !== me.user.id ? `Client: ${p.ownerName}${p.editedByStaff ? ' (edited by staff)' : ''}` : ''))));
   }
   async function openProject(id) {
     try {
       const p = await api.openProject(id);
       app.replaceProject(p.project);
       currentProjectId = p.id;
-      if (p.lotAddress) { lot = { ...lot, address: p.lotAddress }; statusLine.textContent = `Lot: ${p.lotAddress}`; }
+      reviewOwner = !isClient && p.ownerId && p.ownerId !== me.user.id ? p.ownerName || 'the client' : null;
+      if (p.lotAddress) { lot = { ...lot, address: p.lotAddress }; lotIsSample = false; }
+      statusLine.textContent = `${reviewOwner ? `Client view of ${reviewOwner}'s project. ` : ''}${p.lotAddress ? `Lot: ${p.lotAddress}` : ''}`;
     } catch (e) { toast(e.message || 'Could not open that project.', { kind: 'error' }); }
   }
 
@@ -280,7 +295,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   try {
     if (params.get('project')) await openProject(params.get('project'));
     else if (params.get('house')) { const r = await api.getHouse(params.get('house')); app.replaceProject(r.project); }
-    else if (params.get('glide') && !(isClient && me.org.showGlideToClients !== true)) { const r = await api.getGlideModel(params.get('glide')); app.replaceProject(r.project); }
+    else if (params.get('glide') && wantsGlide(me, params)) { const r = await api.getGlideModel(params.get('glide')); app.replaceProject(r.project); }
   } catch (e) { toast(e.message || 'Could not open that design.', { kind: 'error' }); }
   return { strip, openPicker, refreshCredits };
 }

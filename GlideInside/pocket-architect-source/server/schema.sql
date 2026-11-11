@@ -277,7 +277,10 @@ CREATE TABLE IF NOT EXISTS portal_projects (
   house_names TEXT,                  -- JSON array
   project_json TEXT NOT NULL,        -- capped below the 2 MB D1 row limit (PORTAL_PROJECT_MAX_BYTES)
   created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
+  updated_at TEXT NOT NULL,
+  edited_by_id TEXT,                 -- set when staff saved the project (Open as client view); null when the owner saved it
+  edited_by_name TEXT,
+  edited_by_staff_at TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_portal_projects_org ON portal_projects(org_id, owner_id);
 
