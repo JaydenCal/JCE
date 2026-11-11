@@ -80,6 +80,38 @@
   if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
     document.documentElement.classList.add("js");
     var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: .12 });
-    document.querySelectorAll(".section-head,.feature,.audience .card,.price-card,.flow,.rules,.steps li").forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+    document.querySelectorAll(".section-head,.sec-head,.feature,.audience .card,.price-card,.flow,.rules,.steps li,.seq li,.split>.shot,.sheets,.rooms-stage,.tiers,.rate,.trust").forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
   }
+  // home hero stage: address types in, the render settles, the card rises; then the card UI gently cycles colours and rooms
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll("[data-stage]").forEach(function (st) {
+    document.documentElement.classList.add("js");
+    var img = st.querySelector(".stage-img img"), typed = st.querySelector(".st-type");
+    var sw = [].slice.call(st.querySelectorAll("[data-swatches] button")), nameEl = st.querySelector("[data-scheme-name]");
+    var pills = [].slice.call(st.querySelectorAll("[data-pills] span")), carN = st.querySelector("[data-car-n]");
+    var si = 0, pi = pills.length - 1, ci = 0, timer = null, visible = true;
+    function pick(i) { si = (i + sw.length) % sw.length; sw.forEach(function (b, k) { b.setAttribute("aria-pressed", k === si); }); if (nameEl) nameEl.textContent = sw[si].dataset.name; }
+    sw.forEach(function (b, k) { b.addEventListener("click", function () { pick(k); stop(); }); });
+    st.querySelectorAll("[data-car]").forEach(function (b) { b.addEventListener("click", function () { ci = (ci + Number(b.dataset.car) + 3) % 3; if (carN) carN.textContent = ci + 1; pick(si + Number(b.dataset.car)); stop(); }); });
+    function tick() { if (!visible) return; pick(si + 1); pills.forEach(function (p) { p.classList.remove("on"); }); pi = (pi + 1) % pills.length; pills[pi].classList.add("on"); }
+    function start() { if (!reduce && !timer && sw.length) timer = setInterval(tick, 2600); }
+    function stop() { clearInterval(timer); timer = null; }
+    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(st);
+    function reveal() { st.classList.add("is-in"); setTimeout(start, 2200); }
+    if (reduce || !typed) { if (img && !img.complete) img.addEventListener("load", reveal); else reveal(); return; }
+    var full = typed.dataset.type || typed.textContent, n = 0; typed.textContent = ""; typed.classList.add("typing");
+    var ready = false, typedDone = false;
+    function maybe() { if (ready && typedDone) { typed.classList.remove("typing"); reveal(); } }
+    if (!img || img.complete) ready = true; else { img.addEventListener("load", function () { ready = true; maybe(); }); setTimeout(function () { ready = true; maybe(); }, 3500); }
+    (function step() { n++; typed.textContent = full.slice(0, n); if (n < full.length) setTimeout(step, 38 + Math.random() * 40); else { typedDone = true; setTimeout(maybe, 250); } })();
+  });
+  // rooms tabs: [data-rooms] buttons[data-room] switch img[data-room-img]
+  document.querySelectorAll("[data-rooms]").forEach(function (tabs) {
+    var sec = tabs.closest("section") || document;
+    tabs.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-room]"); if (!b) return;
+      tabs.querySelectorAll("[data-room]").forEach(function (x) { x.setAttribute("aria-selected", x === b); });
+      sec.querySelectorAll("[data-room-img]").forEach(function (im) { im.hidden = im.dataset.roomImg !== b.dataset.room; if (!im.hidden) im.loading = "eager"; });
+    });
+  });
 })();

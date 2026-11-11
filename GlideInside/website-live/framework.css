@@ -351,7 +351,7 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 .lead{color:var(--muted)}
 ::selection{background:var(--accent);color:var(--accent-ink)}
 /* header: dark glass on every page */
-.site-header{background:rgba(10,17,30,.78);border-bottom:1px solid rgba(255,255,255,.07);color:var(--on-night)}
+.site-header{background:rgba(10,17,30,.94);border-bottom:1px solid rgba(255,255,255,.07);color:var(--on-night)}
 .site-header .logo img{filter:brightness(0) invert(1);height:30px}
 .site-nav a{color:rgba(238,241,246,.78);font-size:14.5px}
 .site-nav a:hover{background:rgba(255,255,255,.07);color:#fff}
@@ -425,10 +425,10 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 /* ---------- home: cinematic hero with the composited lot view ---------- */
 .dark{background:var(--night);color:var(--on-night)}
 .dark .lead,.dark .muted{color:var(--on-night-2)}
-.cine{position:relative;isolation:isolate;overflow:hidden;padding:clamp(40px,6vw,88px) 0 clamp(56px,7vw,110px);
+.cine{position:relative;isolation:isolate;overflow:hidden;padding:clamp(36px,4.6vw,68px) 0 clamp(56px,7vw,110px);
   background:radial-gradient(1100px 560px at 85% -10%,rgba(233,182,111,.16),transparent 60%),radial-gradient(1000px 700px at -10% 30%,rgba(79,143,224,.10),transparent 60%),var(--night)}
 .cine-top{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,4vw,72px);align-items:end;margin-bottom:clamp(30px,4vw,56px)}
-.cine h1{max-width:13ch;font-size:clamp(46px,6.4vw,96px);line-height:.98}
+.cine h1{max-width:13ch;font-size:clamp(44px,5.5vw,82px);line-height:.98}
 .cine-side .lead{margin:0 0 26px;font-size:clamp(17px,1.35vw,19px);max-width:44ch}
 @media(max-width:900px){.cine-top{grid-template-columns:1fr;align-items:start}}
 .stage-wrap{max-width:1440px}
@@ -474,7 +474,7 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 .st-mini{position:absolute;right:clamp(14px,2vw,26px);bottom:clamp(14px,2vw,26px);width:clamp(150px,15vw,214px);aspect-ratio:3/4;border-radius:16px;overflow:hidden}
 .st-mini b{position:absolute;left:10px;top:10px;font-size:9.5px;letter-spacing:.2em;background:rgba(0,0,0,.55);padding:4px 8px;border-radius:999px;z-index:2}
 .st-mini svg{position:absolute;inset:0;width:100%;height:100%}
-.st-compass{position:absolute;right:9px;top:9px;width:26px;height:26px;z-index:2}
+.st-mini .st-compass{position:absolute;inset:auto;right:9px;top:9px;width:26px;height:26px;z-index:2}
 .stage-cap{margin:16px 4px 0;font-size:13px;color:var(--on-night-2)}
 /* load sequence: address types, the render settles in, the card rises */
 .js .stage .stage-img img{opacity:0;transform:scale(1.08);filter:blur(6px);transition:opacity 1.1s var(--ease),transform 1.6s var(--ease),filter 1.1s var(--ease)}
