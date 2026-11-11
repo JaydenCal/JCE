@@ -6,8 +6,9 @@
 // It is safe to run twice: its own blocks are wrapped in comment markers and replaced in place.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const here = dirname(new URL(import.meta.url).pathname);
+const here = dirname(fileURLToPath(import.meta.url)); // not URL.pathname: that gives /C:/... on Windows
 export const CSS_LINK = '<link rel="stylesheet" href="/assets/gi-chrome.css?v=20261111">';
 const NEW_ABN = 'ABN 29 699 165 663';
 const mark = (name, html) => `<!--gi-chrome:${name}:start-->\n${html.trim()}\n<!--gi-chrome:${name}:end-->`;
@@ -57,7 +58,7 @@ export function reskin(html, { header, footer } = {}) {
   return { html: out, notes };
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pathname) {
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [src, dst] = process.argv.slice(2);
   if (!src) { console.error('Usage: node tools/reskin-subdivision.mjs <subdivision/index.html> [output]'); process.exit(2); }
   const r = reskin(readFileSync(resolve(src), 'utf8'));

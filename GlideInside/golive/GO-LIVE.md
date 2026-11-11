@@ -11,6 +11,30 @@ Plain rules for this pack:
 
 ---
 
+## Morning of 12/11/2026 (the order, two clicks for the deploy)
+
+Do these in order. The first four are one click each. Everything is on your PC in `Downloads\glideinside-v6\...\GlideInside\golive\` (the package folder). Nothing here is done for you: the deploy and the upload only happen when you click.
+
+Night before (optional, changes nothing): double-click `RUN-LIVE-PREFLIGHT.cmd`. It checks the login, the live config, the migration files, that every secret exists (names only) and a dry run. It must end with PREFLIGHT PASSED.
+
+Before you start: the live Stripe webhook endpoint (`https://glideinside.com.au/api/stripe/webhook`, 5 events, Step 3) exists in Stripe live mode, the Resend domain says Verified (Step 4), and `golive\glideinside-site-upload.zip` is the rebuilt one. Do not send packs or open the ads until step 5 is done: between step 1 and step 2 the OLD Worker holds the live Stripe keys and the new A$30 price, and an old Worker may not unlock a pack for a A$30 payment. Keep that gap to a few minutes.
+
+1. **Keys.** Double-click `SET-LIVE-KEYS-TOMORROW.cmd` (sets `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID` = `price_1UaYNuBd0GFQCpgxUaMDNX4T` and `RESEND_API_KEY`).
+2. **Deploy.** Double-click `RUN-LIVE-DEPLOY.cmd`, check the preflight lines are green, press Enter once. It backs up D1 (to `Downloads\pocket-architect-before-golive-<date>.sql`), applies the migrations still to run (0009 `glide_library_default_off` and 0010 `org_brand_colours`, plus any of 0001 to 0008 not yet recorded), deploys `pocket-architect-api`, waits 10 seconds and runs the smoke test. It ends with `LIVE DEPLOY: PASS` or `FAIL`, the previous version id and the exact rollback command (also written to `ROLLBACK-LIVE.cmd`). The log is `golive-deploy.log`. If it says FAIL, stop and send the log to Claude: do not upload the site. Optional: `RUN-LIVE-DEPLOY.cmd -ShareId <id>` also checks that a share link you already handed out still opens.
+3. **Upload the site.** `UPLOAD-STEPS.md` steps 1 to 5 (backup check, analytics.js check, upload the zip, extract over the top, never delete `subdivision/`).
+4. **Reskin /subdivision/.** `UPLOAD-STEPS.md` step 6: download the live `subdivision/index.html` to `Downloads\sub\index.html`, double-click `RUN-RESKIN-SUBDIVISION.cmd`, upload `index.new.html`, rename (Section 9). Then purge the Cloudflare cache once (`UPLOAD-STEPS.md` step 7).
+5. **Smoke.** Double-click `RUN-LIVE-SMOKE.cmd` (API and the 8 key pages). Every line must be PASS. WARN lines do not stop the launch (an optional government service down, or the AI helper paused: read the line).
+6. **Stripe test purchase with a real card.** Private window, https://glideinside.com.au/plan-studio/launch/, Launch the tool, draw anything, **Unlock plans, A$30**, pay with a real card for A$30. Check it unlocks (500 credits), export a PDF, ask the Assistant one question. Then in the Stripe dashboard (live mode) refund the payment and confirm access stops (`charge.refunded` reaches the live webhook). Also do the Send to JCE test from the tool: it goes to `enquiries@jceinfrastructure.com.au` (your own inbox), so there is nothing to change and no redeploy. The Section 10 steps that use the test card and `--var ENQUIRY_TO` are for test mode only.
+7. **Send packs.** Only after 1 to 6 are done.
+
+Things to know before you start:
+- `STRIPE_LIVE_BILLING_APPROVED` is unset on purpose. With a live `sk_live_` key the builder portal refuses card setup and month-end billing ("live billing has not been approved"). Trial requests, approvals, trial logins and the Plan Pack are not affected. Builders cannot add billing details, and no invoice can be raised, until you give the written go-ahead and the variable is set. The 14 day trials end on 26/11/2026 at the earliest, so this is not needed tomorrow.
+- The month-end billing cron is commented out in `wrangler.toml` (the portal notes above say it is on; it is not). Nothing bills on 1/12/2026 until `[triggers]` is switched on and redeployed.
+- The deploy uses `golive\wrangler.live.toml`, generated from `pocket-architect-source\wrangler.toml` (only the two folder paths differ). After any change to the source config run `node golive/build-live-config.mjs` in the repo; `--check` fails if the two have drifted. `live-migrate\wrangler.toml` on your PC is not used by this script.
+- The smoke test leaves one tiny test design in Save and share (there is no delete endpoint; it expires after 365 days) and one unpaid Stripe Checkout session (expires in 24 hours, nothing is charged).
+
+---
+
 ## Step 0. The live server code is merged (read this, then do the checks)
 
 The live Worker `pocket-architect-api` (deployed 15/10/2026) had Save and share, R2 file storage and its own D1 tables that were not in this repository. They are now merged into `server/` (branch `claude/glide-server-merge`). Deploying this release **replaces** that Worker. It was built so that nothing live breaks:
@@ -291,7 +315,11 @@ Do these in order, after Steps 0 to 7 above:
 - `GO-LIVE.md`: this document.
 - `glideinside-site-upload.zip`: the 152 files to upload. `UPLOAD_FILES.txt` lists them.
 - `glideinside-site-full.zip`: a complete copy of the site, excluding `subdivision/` and the review screenshots.
-- `deploy-golive.ps1`: Worker deploy that skips secrets that are already set.
+- `deploy-golive.ps1`: the older Worker deploy script (superseded by `deploy-live.ps1`).
+- `deploy-live.ps1`, `RUN-LIVE-DEPLOY.cmd`, `RUN-LIVE-PREFLIGHT.cmd`: the live deploy (preflight, backup, migrations, deploy, smoke, rollback command).
+- `smoke-live.ps1`, `RUN-LIVE-SMOKE.cmd`: the live smoke test (`-Pages` also checks the 8 key pages).
+- `wrangler.live.toml`, `build-live-config.mjs`: the live Worker config and the tool that keeps it identical to the source config.
+- `UPLOAD-STEPS.md`, `RUN-RESKIN-SUBDIVISION.cmd`: the cPanel upload checklist and the /subdivision/ reskin.
 
 
 ## Client login pricing (volume tiers, 11/11/2026)
