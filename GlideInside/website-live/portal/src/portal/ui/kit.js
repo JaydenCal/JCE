@@ -102,8 +102,9 @@ export function openDialog({ title, body, footer, size = 'md', dismissible = tru
     close,
     el: dialog,
     setTitle: (t) => { titleEl.textContent = t; },
-    setBody(node) { clear(bodyEl); bodyEl.append(typeof node === 'function' ? node(api) : node); },
-    setFooter(node) { clear(footEl); const n = typeof node === 'function' ? node(api) : node; footEl.hidden = !n; if (n) footEl.append(n); },
+    // A body or footer may be one node or an array of nodes (append(array) would print "[object HTMLButtonElement]").
+    setBody(node) { clear(bodyEl); bodyEl.append(...[].concat(typeof node === 'function' ? node(api) : node).filter((x) => x != null && x !== false)); },
+    setFooter(node) { clear(footEl); const n = [].concat(typeof node === 'function' ? node(api) : node).filter((x) => x != null && x !== false); footEl.hidden = !n.length; footEl.append(...n); },
   };
   api.setBody(body);
   api.setFooter(footer || null);

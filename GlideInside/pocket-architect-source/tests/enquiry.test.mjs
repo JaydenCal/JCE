@@ -101,3 +101,14 @@ test('enquiry: if Resend refuses, the enquiry is still saved and the reference i
   assert.equal(row.emailStatus, 'failed');
   assert.equal(out.error.reference ?? out.reference, row.reference);
 });
+
+test('enquiry (final review): line breaks cannot reach the subject, notes keep theirs, a non PDF attachment is refused', async () => {
+  const { parseEnquiry } = await import('../server/lib/enquiry.js');
+  const e = parseEnquiry({ ...good(), project: null, projectName: 'House\r\nBcc: someone@example.com', name: 'Sam Lee', notes: 'line one\nline two' });
+  assert.equal(e.projectName, 'House Bcc: someone@example.com');
+  assert.equal(e.name, 'Sam Lee');
+  assert.equal(e.notes, 'line one\nline two');
+  const w = world();
+  assert.equal((await w.post({ ...good(), pdfBase64: Buffer.from('<html>not a pdf</html>').toString('base64') })).status, 400);
+  assert.equal(w.sent.length, 0);
+});

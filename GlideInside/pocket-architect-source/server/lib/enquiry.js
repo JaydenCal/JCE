@@ -10,8 +10,11 @@ export const NEEDS = ['engineering', 'da', 'both'];
 const NEED_TEXT = { engineering: 'Engineering', da: 'DA plans', both: 'Engineering and DA plans' };
 const REF_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0, 1, I or O: easy to read out
 const randomRef = () => `GI-${Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => REF_ALPHABET[b % REF_ALPHABET.length]).join('')}`;
-const text = (v, name, { max = 200, required = false } = {}) => {
-  const s = typeof v === 'string' ? v.trim() : '';
+// Single line fields lose control characters and line breaks, so a name or project name cannot break the email subject or
+// the summary lines. Notes keep their line breaks.
+const text = (v, name, { max = 200, required = false, multiline = false } = {}) => {
+  const raw = typeof v === 'string' ? v : '';
+  const s = (multiline ? raw.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '') : raw.replace(/[\u0000-\u001f\u007f\u2028\u2029]+/g, ' ')).trim();
   if (required && !s) throw new HttpError('BAD_REQUEST', `${name} is required.`);
   if (s.length > max) throw new HttpError('BAD_REQUEST', `${name} is too long.`);
   return s;
@@ -44,9 +47,10 @@ export function parseEnquiry(body, { maxProjectBytes = 2_000_000, maxPdfBytes = 
     pdfBase64 = String(body.pdfBase64).replace(/^data:application\/pdf;base64,/, '');
     if (!/^[A-Za-z0-9+/]+={0,2}$/.test(pdfBase64)) throw new HttpError('BAD_REQUEST', 'The plan set is not valid.');
     if (Math.floor((pdfBase64.length * 3) / 4) > maxPdfBytes) throw new HttpError('PAYLOAD_TOO_LARGE', 'The plan set is too large to send.');
+    if (!pdfBase64.startsWith('JVBERi0')) throw new HttpError('BAD_REQUEST', 'The plan set is not a PDF.'); // "%PDF-"
   }
   return {
-    name, phone, email, need, notes: text(body.notes, 'Notes', { max: 4000 }), lot,
+    name, phone, email, need, notes: text(body.notes, 'Notes', { max: 4000, multiline: true }), lot,
     source: ['public', 'builder', 'client'].includes(body.source) ? body.source : 'public',
     orgName: text(body.orgName, 'Builder', { max: 120 }),
     projectName: text(project?.name || body.projectName, 'Project name', { max: 120 }),
