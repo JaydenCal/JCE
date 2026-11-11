@@ -60,7 +60,7 @@ export async function renderBilling(host, { api, me, refreshMe, goBilling }) {
   field('Phone', (id) => h('input', { id, name: 'phone', type: 'tel', value: contact.phone || '', readonly: !canWrite })));
   const err = h('p', { class: 'pp-error', role: 'alert', hidden: true });
   const save = h('button', { class: 'pp-btn pp-btn--primary', type: 'submit' }, 'Save billing details');
-  form.append(err, canWrite ? h('div', { class: 'pp-field--wide' }, save) : null);
+  form.append(err); if (canWrite) form.append(h('div', { class: 'pp-field--wide' }, save));
 
   const topToggle = h('input', { type: 'checkbox', checked: !!me.org.allowClientTopUps, disabled: !canSettings, onchange: async (e) => {
     try {

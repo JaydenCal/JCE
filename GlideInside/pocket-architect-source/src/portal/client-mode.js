@@ -113,9 +113,9 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   ]);
   const renderStrip = () => {
     clear(strip);
-    strip.append(
+    strip.append(...[
       h('div', { class: 'pas-brand' }, brand.logoDataUrl ? h('img', { src: brand.logoDataUrl, alt: '' }) : null, h('div', null, h('strong', null, brand.displayName || me.org.name), h('small', null, isClient ? 'Client login' : 'Builder staff'))),
-      findBtn, housesBtn, plansBtn, statusLine, h('span', { class: 'pas-spacer' }), brand.colours?.primary ? h('span', { class: 'gi-powered' }, 'Powered by Glide Inside') : null, aiChip, userMenu);
+      findBtn, housesBtn, plansBtn, statusLine, h('span', { class: 'pas-spacer' }), brand.colours?.primary ? h('span', { class: 'gi-powered' }, 'Powered by Glide Inside') : null, aiChip, userMenu].filter(Boolean)); // native append would print null
     paintAi();
   };
   function paintAi() {
