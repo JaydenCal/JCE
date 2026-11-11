@@ -513,7 +513,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
       if (!open.ok) throw new HttpError('NOT_FOUND', open.reason, { reason: 'IMAGERY_NOT_OPEN' });
       capture = open.captureDate;
       source = 'Queensland latest state program imagery (aerial, three years or older)';
-      attribution = 'Imagery: State of Queensland (Department of Natural Resources and Mines, Manufacturing and Regional and Rural Development), State Remotely Sensed Image Library. The State gives no warranty for this data and accepts no liability.';
+      attribution = 'Imagery: State of Queensland (Department of Natural Resources and Mines, Manufacturing and Regional and Rural Development), State Remotely Sensed Image Library, CC BY-SA. The State gives no warranty for this data and accepts no liability.';
       licence = 'CC BY-SA (as stated by the service) for SISP aerial three years or older. Planet satellite fill is not used.';
     }
     const exportUrl = nsw ? `${SERVICES.nswImagery}/export` : `${SERVICES.qldImagery}/exportImage`;
@@ -681,7 +681,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         resolutionM: covered ? (/0\.5/.test(res.join(' ')) ? 0.5 : 1) : lidar.known ? 30 : null,
         datum: 'not stated by the service (AHD not confirmed)', accuracy: acc.length ? acc.join('; ') : 'not stated', lidarProjects: projects,
         copyright: 'State of Queensland and Commonwealth of Australia', licence: 'not stated by the service (CC BY-SA per the JCE owner instruction of 15/10/2026)', retrieved: iso(),
-        note: covered ? 'Queensland LiDAR DEM, indicative only; detailed survey required' : 'Queensland DEM without LiDAR coverage, very coarse, indicative only; detailed survey required',
+        note: covered ? 'Queensland LiDAR DEM, State of Queensland, CC BY-SA, indicative only; detailed survey required' : 'Queensland DEM without LiDAR coverage, State of Queensland, CC BY-SA, very coarse, indicative only; detailed survey required',
       };
     }
     return { srid, origin, minor, major, minRL: min, maxRL: max, grid, contours: lines, provenance };

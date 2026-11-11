@@ -229,11 +229,44 @@ export function drawLot(ctx, st) {
   ctx.restore();
 }
 
+// The indicative buildable envelope (site.lot.envelope): the lot boundary moved in by the setbacks. Dashed, with a plain label.
+export function drawEnvelope(ctx, st) {
+  const lot = st.project.site?.lot;
+  const env = lot?.envelope;
+  if (!layerOn(lot, 'setbacks') || !Array.isArray(env) || env.length < 3) return;
+  const { view, theme } = st;
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  tracePoly(ctx, view, env);
+  ctx.fillStyle = 'rgba(11,122,91,0.06)';
+  ctx.fill();
+  ctx.setLineDash([9, 5]);
+  ctx.lineWidth = 1.8;
+  ctx.strokeStyle = '#0b7a5b';
+  ctx.stroke();
+  ctx.setLineDash([]);
+  if (layerOn(lot, 'labels')) {
+    const c = ringCentroid(env.map((p) => [p.x, p.y]));
+    const s = toScreen(view, { x: c[0], y: c[1] });
+    const top = env.reduce((a, b) => (b.y < a.y ? b : a));
+    const t = toScreen(view, top);
+    if (t.y > 14 && s.y - t.y > 40) {
+      ctx.font = `600 10.5px ${theme.f.ui}`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#0b7a5b';
+      halo(ctx, 'Indicative setback envelope', s.x, t.y + 12, theme);
+    }
+  }
+  ctx.restore();
+}
+
 // Attribution and contour accuracy, small, bottom right. Required wherever the data is shown.
 export function drawCredits(ctx, st) {
   const lot = st.project.site?.lot;
   if (!lot || st.size.w < 520) return;
-  const lines = siteCredits(lot).filter((c) => c.id !== 'zoning' && (c.id !== 'aerial' || layerOn(lot, 'aerial')) && (c.id !== 'contours' || layerOn(lot, 'contours')));
+  const lines = siteCredits(lot).filter((c) => c.id !== 'zoning' && c.id !== 'setbacks' && (c.id !== 'aerial' || layerOn(lot, 'aerial')) && (c.id !== 'contours' || layerOn(lot, 'contours')));
   if (!lines.length) return;
   ctx.save();
   ctx.font = `10px ${st.theme.f.ui}`;
@@ -272,4 +305,5 @@ export function drawSite(ctx, st) {
   drawContours(ctx, st);
   drawNeighbours(ctx, st);
   drawLot(ctx, st);
+  drawEnvelope(ctx, st);
 }

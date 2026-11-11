@@ -44,15 +44,12 @@ limits), `src/premium/exporters/*` and `src/viewer3d/build.js`. Deploy the whole
 | `GET /api/credits?project=` | Bearer | `{ total, used, remaining, warnLevel, reserved }` |
 | `POST /api/ai/estimate` | Bearer | No model call. `{ estimatedCredits, remaining, requiresConfirm }` |
 | `POST /api/ai/edit` | Bearer | `{ reply, ops, rejected, credits, warning }` |
-<<<<<<< HEAD
 | `GET /api/site/search?q=` | none, rate limited | `{ results: [{ label, state, lon, lat }] }`, max 8. NSW from NSW_Property layers 1 to 4 (`address`), QLD from PlanningCadastre LandParcelPropertyFramework layer 0 (Addresses) |
 | `GET /api/site/lot?lon=&lat=&state=` | none, rate limited | Parcel at the point and neighbours within about 60 m in GDA2020 MGA (7854/7855/7856), LGA, NSW zoning, road lines, origin. Cached in D1 `site_cache` |
 | `GET /api/site/aerial?state=&srid=&bbox=` | none, rate limited | Image bytes, georeference in the `x-site-meta` header (URL encoded JSON, includes attribution and capture date) |
 | `GET /api/site/contours?state=&srid=&bbox=&buffer=&origin=` | none, rate limited | Elevation grid, contour lines (minor 0.5 m, major 2.5 m) and provenance |
 | `GET /api/site/health` | none | Probes each upstream service. `ok` needs the cadastre and address services, `allOk` needs every one |
-=======
 | `POST /api/enquiry/jce` | none, rate limited | "Send to JCE for engineering and DA plans". Body `{ name, phone, email, need, notes, consent: true, lot, project, pdfBase64, source }`. Emails JCE through Resend with the PDF attached, keeps a copy in `jce_enquiries`, returns `{ ok, reference }`. `503 ENQUIRY_NOT_CONFIGURED` until `RESEND_API_KEY` is set |
->>>>>>> origin/claude/glide-portal-backend
 | `POST /api/export/:type` | Bearer | `pdf`, `dxf`, `glb`, `obj`. Body `{ project, image? }`. Returns the file |
 
 Builder and client logins use the same AI endpoints plus two more (see "Builder and client logins" below).
@@ -62,7 +59,6 @@ Errors are JSON, `{ error: { code, message, ... }, code, message }`, with the co
 `SERVER_NOT_CONFIGURED` (500). The server re-checks the database on every authenticated request, so a token alone
 grants nothing: a refunded, expired or exhausted Plan Pack is refused at once.
 
-<<<<<<< HEAD
 ## Builder and client logins (org credit pools, top-ups, budgets)
 
 Builder and client logins have the AI included. They are off until `PORTAL_ENABLED=1` (public launch first); with the
@@ -116,7 +112,7 @@ Assistant replies are filtered by `scrubClaims` so the word "compliant" never re
 "inside the indicative setback envelope".
 
 Store contract addition: `addCredits(id, n)` (D1, memory and Upstash implement it).
-=======
+
 ## Builder and client portal (docs/PORTAL_API.md)
 
 Routes: `/api/portal/*` (cookie session) and `POST /api/billing/run-month` (bearer `ADMIN_TOKEN`). The browser side is
@@ -179,7 +175,6 @@ identical hunks there. Keep either copy. `claude/glide-ai` keeps top-ups forever
 **Cloudflare plan.** PBKDF2 at 100,000 iterations uses real CPU time (tens of milliseconds). Run the Worker on the Workers Paid plan (or Standard usage model);
 the free plan's 10 ms CPU limit may cut sign in requests short. Test this on the first deploy.
 
->>>>>>> origin/claude/glide-portal-backend
 
 ## Deploy on Cloudflare
 

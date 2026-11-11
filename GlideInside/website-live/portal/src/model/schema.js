@@ -1,7 +1,8 @@
 // Plan Studio project schema, version 1. All lengths in millimetres, angles in degrees.
 // Plan coordinates: x to the right, y down the screen. See docs/SCOPE.md section 9.
 
-export const SCHEMA_VERSION = 1;
+// Version 2 adds site.lot (the real block from "Find my block", or null). Version 1 projects load unchanged with site.lot = null.
+export const SCHEMA_VERSION = 2;
 
 export const PROJECT_TYPES = ['house', 'unit', 'shed', 'extension'];
 export const STATUS = ['new', 'existing', 'demolish'];
@@ -127,7 +128,7 @@ export function createProject(opts = {}) {
       floorToFloor: DEFAULTS.floorToFloor,
     },
     finishes: structuredClone(shed ? DEFAULT_FINISHES_SHED : DEFAULT_FINISHES),
-    site: { northDeg: 0, underlay: null, tanks: [] },
+    site: { northDeg: 0, underlay: null, tanks: [], lot: null },
     titleBlock: defaultTitleBlock(),
     drawing: { scale: 'auto', paper: 'A3' },
     levels: [
@@ -222,7 +223,9 @@ export function migrate(input) {
   p.finishes = { ...structuredClone(p.type === 'shed' ? DEFAULT_FINISHES_SHED : DEFAULT_FINISHES), ...(p.finishes || {}) };
   p.titleBlock = { ...defaultTitleBlock(), ...(p.titleBlock || {}) };
   p.drawing = { scale: 'auto', paper: 'A3', ...(p.drawing || {}) };
-  p.site = { northDeg: 0, underlay: null, tanks: [], ...(p.site || {}) };
+  p.site = { northDeg: 0, underlay: null, tanks: [], lot: null, ...(p.site || {}) };
+  if (!p.site.lot || typeof p.site.lot !== 'object') p.site.lot = null;
+  p.schema = SCHEMA_VERSION; // version 1 to 2: site.lot added, nothing else changed
   if (!Array.isArray(p.levels) || !p.levels.length) p.levels = [createLevel()];
   for (const l of p.levels) {
     for (const key of ['walls', 'openings', 'rooms', 'furniture', 'stairs']) if (!Array.isArray(l[key])) l[key] = [];

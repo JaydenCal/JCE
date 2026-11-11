@@ -1,6 +1,6 @@
 /* Glide Inside tracking. No dependencies. Loaded on every site page.
    Does nothing except UTM passthrough unless GI_CONFIG.ga4Id is set. Setup steps: docs/marketing/TRACKING.md.
-   Events sent to GA4: design_started, purchase, generate_lead, start_design_click, plus ps_template_selected,
+   Events sent to GA4: book_demo, design_started, purchase, generate_lead, start_design_click, plus ps_template_selected,
    ps_upgrade_click, ps_checkout_started and ps_export forwarded from the app. */
 (function () {
   "use strict";
@@ -143,6 +143,11 @@
     if (!a) return;
     var h = a.getAttribute("href") || "";
     if (/^mailto:/i.test(h)) {
+      // "Book a demo" and "Register interest" buttons (builder accounts): their own event, plus the generic lead below.
+      var label = (a.textContent || "").trim();
+      if (/builder(Demo|Interest)Url/.test(a.getAttribute("data-cfg-href") || "") || /book a demo|register interest/i.test(label)) {
+        send("book_demo", { page: location.pathname, button: /interest/i.test(label + h) ? "register_interest" : "book_demo", link_text: label.slice(0, 60) });
+      }
       var type = /subdivision/i.test(h) ? "subdivision_quote" : /pocket/i.test(h) ? "pocket_architect_enquiry" : /@/.test(h) && !/subject=/i.test(h) ? "email_link" : "general_enquiry";
       var p = { lead_type: type, method: "mailto", link_text: (a.textContent || "").trim().slice(0, 60), page_path: location.pathname };
       Object.keys(utm).forEach(function (k) { p[k] = utm[k]; });

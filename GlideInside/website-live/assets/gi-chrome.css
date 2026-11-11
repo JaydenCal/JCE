@@ -1,0 +1,44 @@
+/* Glide Inside site header and footer, scoped so it can be dropped into a page with its own styles (used by /subdivision/).
+   Everything is under .gi-head or .gi-foot and every class starts with gi-. Nothing here styles html, body or plain elements. */
+@font-face{font-family:"GI Bricolage";src:url(/assets/fonts/bricolage-grotesque-latin-wght-normal.woff2) format("woff2");font-weight:200 800;font-display:swap}
+@font-face{font-family:"GI Manrope";src:url(/assets/fonts/manrope-latin-wght-normal.woff2) format("woff2");font-weight:200 800;font-display:swap}
+.gi-head,.gi-foot{--gi-paper:#f3f5f2;--gi-ink:#16211d;--gi-muted:#55625b;--gi-line:#d3dad4;--gi-accent:#a3532d;--gi-accent-hover:#8a4323;--gi-deep:#12231c;--gi-card:#fff;--gi-survey:#1d6a8c;--gi-font:"GI Manrope","Segoe UI",Arial,sans-serif;--gi-gut:clamp(16px,4vw,48px);--gi-max:1240px;--gi-head-h:68px;
+  font:400 16px/1.65 var(--gi-font);-webkit-font-smoothing:antialiased;box-sizing:border-box;text-align:left;letter-spacing:normal;text-transform:none}
+.gi-head *,.gi-foot *{box-sizing:border-box}
+.gi-head img,.gi-foot img{max-width:100%;display:block;height:auto}
+.gi-head a,.gi-foot a{text-decoration:none}
+.gi-head a:focus-visible,.gi-head button:focus-visible,.gi-foot a:focus-visible{outline:3px solid var(--gi-survey);outline-offset:2px}
+.gi-shell{width:100%;max-width:var(--gi-max);margin:0 auto;padding-inline:var(--gi-gut)}
+.gi-head{position:sticky;top:0;z-index:1000;background:rgba(243,245,242,.94);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid var(--gi-line);color:var(--gi-ink)}
+.gi-head .gi-shell{display:flex;align-items:center;gap:28px;height:var(--gi-head-h)}
+.gi-head .gi-logo{flex:none}.gi-head .gi-logo img{height:32px;width:auto}
+.gi-nav{display:flex;gap:4px;flex:1;align-items:center}
+.gi-nav a{font-weight:600;font-size:15px;color:var(--gi-ink);padding:8px 12px;border-radius:8px}
+.gi-nav a:hover{background:rgba(22,33,29,.06)}
+.gi-nav a[aria-current=page]{background:var(--gi-ink);color:#fff}
+.gi-head-end{display:flex;align-items:center;gap:6px;flex:none}
+.gi-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--gi-accent);color:#fff !important;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid transparent;cursor:pointer;font-size:14px;font-family:var(--gi-font);line-height:1.2;transition:background .15s}
+.gi-btn:hover{background:var(--gi-accent-hover)}
+.gi-toggle{display:none;margin-left:auto;background:var(--gi-card);border:1px solid var(--gi-line);border-radius:10px;padding:9px 14px;font:700 14px var(--gi-font);color:var(--gi-ink);cursor:pointer}
+.gi-nav .gi-nav-cta{display:none}
+@media(max-width:1120px){
+  .gi-head .gi-shell{gap:16px}
+  .gi-toggle{display:block}
+  .gi-head-end{display:none}
+  .gi-nav{display:none;position:absolute;top:var(--gi-head-h);left:0;right:0;flex-direction:column;align-items:stretch;gap:2px;background:var(--gi-paper);border-bottom:1px solid var(--gi-line);padding:10px var(--gi-gut) 20px;box-shadow:0 24px 40px -24px rgba(18,35,28,.35)}
+  .gi-nav.gi-open{display:flex}.gi-nav a{padding:14px 12px;font-size:17px}
+  .gi-nav .gi-nav-cta{display:flex;margin-top:10px;justify-content:center;font-size:16px}
+}
+.gi-foot{background:var(--gi-deep);color:#b9c8bd;padding-block:56px 36px;font-size:14px}
+.gi-foot .gi-shell{display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:36px 40px}
+.gi-foot a{color:#e6efe6}.gi-foot a:hover{text-decoration:underline}
+.gi-foot nav{display:flex;flex-direction:column;gap:9px}
+.gi-foot h4{font:700 14px var(--gi-font);margin:0 0 4px;color:#fff}
+.gi-foot p{margin:0}
+.gi-foot .gi-brand p{margin:14px 0 0;max-width:36ch}
+.gi-foot .gi-brand img{height:30px;width:auto;filter:brightness(0) invert(1)}
+.gi-foot .gi-legal{grid-column:1/-1;border-top:1px solid #33503f;padding-top:24px;font-size:13px;color:#93a69a;max-width:none}
+.gi-foot .gi-legal+.gi-legal{border-top:0;padding-top:0;margin-top:-20px}
+.gi-foot span{display:block}
+@media(max-width:900px){.gi-foot .gi-shell{grid-template-columns:1fr 1fr}.gi-foot .gi-brand{grid-column:1/-1}}
+@media(max-width:480px){.gi-foot .gi-shell{grid-template-columns:1fr}}

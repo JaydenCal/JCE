@@ -30,7 +30,7 @@ Brief for Claude Code
 Add a browser-based home design tool to the website. Visitors draw a floor plan in a game-like 2D editor, see it immediately as a 3D model, walk through it in first person, furnish it and change finishes.
 
 - The core tool is free and needs no account and no AI.
-- A paid **Plan Pack (A$30 per project)** unlocks the AI design assistant and the exports: PDF plans, DXF and a 3D model.
+- A paid **Plan Pack (A$35 per project)** unlocks the AI design assistant and the exports: PDF plans, DXF and a 3D model.
 
 Business goals:
 
@@ -107,7 +107,7 @@ The free tier makes no AI calls, so it costs nothing to run beyond static hostin
 
 ### 4.2 Plan Pack (premium)
 
-- Price: **A$30 per project**, displayed as "A$30 incl. GST" if the selling entity is GST registered (decision 17.3)
+- Price: **A$35 per project**, displayed as "A$35 incl. GST" if the selling entity is GST registered (decision 17.3)
 - AI design assistant on Claude Haiku 5.5 with an allowance of **500 AI credits** (section 7.4)
 - PDF plan set, DXF and 3D model (GLB and OBJ) for that project
 - Unlimited re-export of the same project for 12 months (decision 17.4)
@@ -542,7 +542,7 @@ CREATE TABLE rate_limits (key TEXT PRIMARY KEY, window_start INTEGER, count INTE
 
 ### 11.4 Stripe flow
 
-1. The Unlock button calls `POST /api/checkout`. The server creates a Checkout Session through the Stripe REST API: mode `payment`, currency `aud`, the Plan Pack price (`STRIPE_PRICE_ID`, or inline price data of 3000 cents), `metadata.projectId`, `client_reference_id = projectId`, success URL `<APP_URL>?checkout=success&session_id={CHECKOUT_SESSION_ID}&project=<projectId>` and cancel URL `<APP_URL>?checkout=cancel`.
+1. The Unlock button calls `POST /api/checkout`. The server creates a Checkout Session through the Stripe REST API: mode `payment`, currency `aud`, the Plan Pack price (`STRIPE_PRICE_ID`, or inline price data of 3500 cents), `metadata.projectId`, `client_reference_id = projectId`, success URL `<APP_URL>?checkout=success&session_id={CHECKOUT_SESSION_ID}&project=<projectId>` and cancel URL `<APP_URL>?checkout=cancel`.
 2. The webhook verifies the `Stripe-Signature` header (HMAC-SHA256 of `timestamp.body` with `STRIPE_WEBHOOK_SECRET`, 300 s tolerance), records the event ID for idempotency, and on `checkout.session.completed` with `payment_status = paid` creates the entitlement. `charge.refunded` sets the entitlement to `refunded`.
 3. On return, the app calls `GET /api/entitlement` with the session ID and stores the token in `localStorage` (`ps.ent.<projectId>`). If the webhook has not arrived yet, it retries for up to 30 s.
 4. Receipts are sent by Stripe. Enable "Successful payments" emails in the Stripe dashboard and show GST on receipts if registered.
@@ -573,8 +573,8 @@ CREATE TABLE rate_limits (key TEXT PRIMARY KEY, window_start INTEGER, count INTE
 | `FX_AUD_PER_USD` | `1.67` | Conservative conversion for reporting |
 | `STRIPE_SECRET_KEY` | | Secret (test key until approved) |
 | `STRIPE_WEBHOOK_SECRET` | | Secret |
-| `STRIPE_PRICE_ID` | | Plan Pack price, A$30 |
-| `PLAN_PACK_PRICE_CENTS` | `3000` | Used if no price ID |
+| `STRIPE_PRICE_ID` | | Plan Pack price, A$35 |
+| `PLAN_PACK_PRICE_CENTS` | `3500` | Used if no price ID |
 | `ENTITLEMENT_SECRET` | | Secret for tokens |
 | `ENTITLEMENT_DAYS` | `365` | Re-export window |
 | `EXPORT_MAX_PROJECT_BYTES` | `2000000` | Request size limit |
@@ -612,7 +612,7 @@ Plain, professional wording. No AI hype.
 2. How it works: draw rooms like a game; see it in 3D and walk through; furnish and pick finishes; export with a Plan Pack.
 3. What you can design: houses (single and double storey), granny flats and units, sheds, extensions, decks and rainwater tanks.
 4. Free versus Plan Pack comparison table (from section 4).
-5. Pricing card: Plan Pack A$30 per project, what is included, the credit allowance explained in one line.
+5. Pricing card: Plan Pack A$35 per project, what is included, the credit allowance explained in one line.
 6. FAQ: Are these plans approved? (No, concept only.) Can I lodge them with council? (No, a designer or certifier must prepare DA or CDC documentation.) Do I need an account? What is an AI credit? What happens when credits run out? Can I get engineering? Refunds?
 7. Disclaimer block (section 13).
 8. Cross-sell: "Need engineering for your design?" and "Want a cinematic fly-through?" with configurable links.
@@ -631,7 +631,7 @@ Plain, professional wording. No AI hype.
 ### 12.6 SEO
 
 - Title and description for the landing page, Open Graph image (a 3D screenshot), canonical URL.
-- Structured data: `SoftwareApplication` (applicationCategory DesignApplication, operatingSystem Web, offers price 30 AUD) and `FAQPage` for the FAQ.
+- Structured data: `SoftwareApplication` (applicationCategory DesignApplication, operatingSystem Web, offers price 35 AUD) and `FAQPage` for the FAQ.
 - Add the landing URL to the sitemap; keep the app route `noindex`.
 - Keywords to cover naturally: floor plan designer, house plan maker, granny flat floor plan, shed design tool, home extension planner, 3D house walkthrough, rainwater tank placement.
 
@@ -690,7 +690,7 @@ A single file `plan-studio/brand.config.js` (or the site's equivalent) holds: pr
 ### Phase 2: payments and exports
 
 1. Deploy the server (Workers and D1, or the platform equivalent); create the database tables.
-2. Stripe test mode: product "Plan Pack", price A$30; webhook endpoint; Checkout flow; entitlement token; restore purchase.
+2. Stripe test mode: product "Plan Pack", price A$35; webhook endpoint; Checkout flow; entitlement token; restore purchase.
 3. Server-side PDF, DXF, GLB and OBJ exports behind entitlement.
 4. Terms page and privacy update.
 5. Acceptance tests 16.7 to 16.10.
@@ -717,7 +717,7 @@ A single file `plan-studio/brand.config.js` (or the site's equivalent) holds: pr
 5. Extension mode: tracing underlay calibrates to within 1% over 10 m; existing, new and demolish display correctly in 2D and 3D.
 6. Landing page loads no three.js until interaction; Lighthouse mobile performance 90 or better.
 7. Locked exports cannot be produced from the free build: export endpoints return `NOT_ENTITLED` without a valid token, and no client code path produces the files in production.
-8. Stripe test payment of A$30 creates an entitlement; a repeated webhook does not create a duplicate; a refund marks it refunded and exports stop.
+8. Stripe test payment of A$35 creates an entitlement; a repeated webhook does not create a duplicate; a refund marks it refunded and exports stop.
 9. PDF opens in Acrobat with correct scale (a 10,000 mm wall measures 100 mm on paper at 1:100); DXF opens in AutoCAD and a 10,000 mm wall measures 10000; GLB opens in Blender at the correct size.
 10. Restore purchase returns access on a second browser.
 11. "Make the roof dark grey" changes the roof colour as one undo step and charges 1 to 3 credits.
@@ -734,7 +734,7 @@ A single file `plan-studio/brand.config.js` (or the site's equivalent) holds: pr
 |---|---|---|
 | 17.1 | Which website hosts the tool, and which entity sells the Plan Pack | Brand fit favours Glide Inside (3D homes for builders and owners). Liability containment favours selling through JCE Infrastructure Pty Ltd, since Glide Inside currently trades under the sole trader ABN. Option: host on Glide Inside and contract as the Pty Ltd, or move Glide Inside into the Pty Ltd first. The JCE site would take a teaser section and link. |
 | 17.2 | Product name, nav label and route | Working name Plan Studio; route `/floor-plan-designer/` for search value. |
-| 17.3 | GST registration of the selling entity | Display "A$30 incl. GST" if registered. |
+| 17.3 | GST registration of the selling entity | Display "A$35 incl. GST" if registered. |
 | 17.4 | Plan Pack terms | Per project, 500 credits, 12 months re-export, no top-ups at launch. |
 | 17.5 | Accounts | No accounts at launch (token plus restore). Accounts need login emails, so defer. |
 | 17.6 | Free tier limits | No limits except AI and exports. |

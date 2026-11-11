@@ -2,20 +2,20 @@
 # Copy to wrangler.toml (in the project root, next to package.json) and edit the marked lines.
 # Secrets are NOT set here. Use `wrangler secret put NAME` (see server/README.md).
 
-name = "plan-studio-api"
+name = "REPLACE-WITH-THE-LIVE-WORKER-NAME"
 main = "server/worker.js"
 compatibility_date = "2026-09-01"
 # jsPDF and three.js use a few Node built-ins when they build exports.
 compatibility_flags = ["nodejs_compat"]
 
-# Serve the API on the same site as the app, so the browser needs no CORS: /api/* goes to this Worker.
-# Edit the zone and pattern. Remove the block to use the workers.dev address instead (then set apiBase in the app).
-# routes = [{ pattern = "example.com.au/api/*", zone_name = "example.com.au" }]
+# Glide Inside: the live Worker is routed on the site itself (zone glideinside.com.au is on Cloudflare), so the browser uses /api (same origin).
+# EDIT `name` to the name of the Worker that is already deployed (Cloudflare dashboard > Workers & Pages), or a deploy creates a second one.
+routes = [{ pattern = "glideinside.com.au/api/*", zone_name = "glideinside.com.au" }]
 
 # Reads docs/SCOPE.md 11.6. Plain values only. Anything secret goes in `wrangler secret put`.
 [vars]
-SITE_URL = "https://example.com.au"                        # EDIT: the site origin. Used for CORS.
-APP_URL = "https://example.com.au/floor-plan-designer/app/" # EDIT: where Stripe sends people after paying
+SITE_URL = "https://glideinside.com.au"                    # the site origin. Used for CORS (one origin only, no www).
+APP_URL = "https://glideinside.com.au/plan-studio/app/"     # where Stripe sends people after paying
 ANTHROPIC_MODEL = "claude-haiku-5-5"                       # confirm the model ID before go-live
 PRICE_IN_PER_MTOK_USD = "0.10"
 PRICE_OUT_PER_MTOK_USD = "0.50"
@@ -30,16 +30,16 @@ AI_RATE_PER_DAY = "150"
 AI_DAILY_CAP_USD = "5"
 AI_MONTHLY_CAP_USD = "50"
 FX_AUD_PER_USD = "1.67"
-PLAN_PACK_PRICE_CENTS = "3000"                             # used when STRIPE_PRICE_ID is empty
+PLAN_PACK_PRICE_CENTS = "3500"                             # A$35 incl. GST; used when STRIPE_PRICE_ID is empty
 ENTITLEMENT_DAYS = "365"
 EXPORT_MAX_PROJECT_BYTES = "2000000"
 # Printed on the PDF title block (default to src/config.js when empty).
 ENQUIRY_TO = "enquiries@jceinfrastructure.com.au"            # where "Send to JCE" enquiries go
-ENQUIRY_FROM = "Glide Inside <plans@glideinside.com.au>"   # must be on a domain verified in Resend
+ENQUIRY_FROM = "Glide Inside <plans@glideinside.com.au>"   # must be on a domain verified in Resend (glideinside.com.au)
 STRIPE_PRICE_ID = ""                                       # optional: a Stripe price for the Plan Pack
 
 # Builder portal (docs/PORTAL_API.md). Off until launch. Secrets (wrangler secret put): ADMIN_TOKEN, STRIPE_SECRET_KEY (test key only).
-PORTAL_ENABLED = "0"                                       # set "1" to open builder and client logins
+PORTAL_ENABLED = "0"                                       # launch: leave "0" (builder and client portal stay closed)
 SELLER_NAME = "JCE Infrastructure Pty Ltd trading as Glide Inside"  # seller on tax invoices
 SELLER_ABN = "29 699 165 663"
 ORG_MONTHLY_CREDITS = "300"                                # AI credits per login per month

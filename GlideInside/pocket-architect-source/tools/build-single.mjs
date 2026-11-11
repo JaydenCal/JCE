@@ -5,6 +5,8 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const brandArg = process.argv.indexOf('--brand');
+const brand = brandArg > 0 ? process.argv[brandArg + 1] : null; // e.g. 'Pocket Architect': renames the product in the page and its messages
 const outArg = process.argv.indexOf('--out');
 const out = outArg > 0 ? resolve(process.argv[outArg + 1]) : resolve(root, 'dist/plan-studio.html');
 
@@ -52,5 +54,5 @@ ${js}
 </html>
 `;
 mkdirSync(dirname(out), { recursive: true });
-writeFileSync(out, html);
+writeFileSync(out, brand ? html.replaceAll('Plan Studio', brand) : html);
 console.log(`wrote ${out} (${(html.length / 1e6).toFixed(2)} MB)`);

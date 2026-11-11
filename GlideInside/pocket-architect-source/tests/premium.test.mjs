@@ -778,7 +778,7 @@ test('UI, locked by default: Unlock button, locked Exports menu, locked assistan
     await sleep(60);
     out.closedOnEscape = !$('.psp-modal');
   `);
-  assert.equal(r.topbar, 'Unlock plans, A$30');
+  assert.equal(r.topbar, 'Unlock plans, A$35');
   assert.equal(r.requestsAtStart, 0, 'the locked state makes no network calls');
   assert.deepEqual(r.items, ['PDF plans', 'DXF drawing', '3D model (GLB)', '3D model (OBJ)']);
   assert.equal(r.itemsLocked, true);
@@ -787,12 +787,12 @@ test('UI, locked by default: Unlock button, locked Exports menu, locked assistan
   assert.ok(r.prompts.every(([, disabled]) => disabled), 'example prompts are disabled chips');
   const promptText = r.prompts.map(([t]) => t).join(' | ').toLowerCase();
   for (const word of ['roof', 'deck', 'study', 'flip']) assert.ok(promptText.includes(word), `prompt about ${word}`);
-  assert.ok(r.aiButtons.some((t) => /Unlock plans, A\$30/.test(t)));
+  assert.ok(r.aiButtons.some((t) => /Unlock plans, A\$35/.test(t)));
   assert.equal(r.noInput, true, 'no input box while locked');
   assert.equal(r.storeEntitled, false);
   assert.equal(r.isEntitled, false);
   assert.equal(r.modalTitle, 'Unlock the Plan Pack');
-  for (const s of ['A$30', 'incl. GST', 'AI design assistant', '500 AI credits', 'PDF plan set', 'DXF', '3D model files', 'Re-export', '12 months', 'Concept design only', 'Continue to secure checkout', 'Restore purchase']) assert.ok(r.modalText.includes(s), `modal text has "${s}"`);
+  for (const s of ['A$35', 'incl. GST', 'AI design assistant', '500 AI credits', 'PDF plan set', 'DXF', '3D model files', 'Re-export', '12 months', 'Concept design only', 'Continue to secure checkout', 'Restore purchase']) assert.ok(r.modalText.includes(s), `modal text has "${s}"`);
   assert.ok(!/[–—]/.test(r.modalText), 'no dashes in the copy');
   assert.equal(r.menuClosed, true, 'the menu closes when an item is chosen');
   assert.equal(r.navigated, 'https://checkout.stripe.com/c/pay/cs_test_mock');
@@ -1087,7 +1087,7 @@ test('UI, a refunded or expired Plan Pack: the token is forgotten and the locked
   assert.equal(r.entitled, false);
   assert.deepEqual(r.stored, []);
   assert.equal(r.notice, 'This Plan Pack has been refunded. If you think this is a mistake, restore your purchase.');
-  assert.equal(r.topbar, 'Unlock plans, A$30');
+  assert.equal(r.topbar, 'Unlock plans, A$35');
   assert.equal(r.input, false);
 });
 
@@ -1277,7 +1277,7 @@ test('UI, back end present: a healthy /api/health turns checkout on for the sess
     out.checkoutEnabled = !button($('.psp-modal'), 'Continue to secure checkout').disabled;
     out.paths = T.requests.map((x) => x.path);
   `);
-  assert.equal(r.topbar, 'Unlock plans, A$30');
+  assert.equal(r.topbar, 'Unlock plans, A$35');
   assert.equal(r.topbarDisabled, false);
   assert.match(r.aiButton, /Unlock plans/);
   assert.equal(r.checkoutEnabled, true);

@@ -20,7 +20,7 @@ export const DEFAULT_AI_MONTHLY_CAP = 150;
 export const TEMP_PASSWORD_DAYS = 7;
 export const MAX_FAILED_SIGN_INS = 5;
 export const LOCKOUT_MINUTES = 15;
-export const SELLER = { name: 'Glide Inside', abn: '29 699 165 663' };
+export const SELLER = { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' };
 export const DEMO_LOGINS = {
   admin: { identifier: 'priya@samplehomes.example', password: 'river-maple-47' },
   designer: { identifier: 'tom@samplehomes.example', password: 'olive-cedar-38' },

@@ -28,6 +28,7 @@ export function siteCredits(lot) {
   if (lot.aerial && a?.attribution) out.push({ id: 'aerial', text: `${a.attribution}${a.captureDate ? ` Captured ${a.captureDate}.` : ' Capture date not stated.'}` });
   const e = lot.provenance?.elevation;
   if (lot.contours?.length || lot.terrain) out.push({ id: 'contours', text: contourNote(e) });
+  if (lot.setbacks) out.push({ id: 'setbacks', text: setbackNote(lot.setbacks) });
   return out;
 }
 
@@ -43,4 +44,13 @@ export function contourNote(e) {
 // One line for a sheet footer.
 export function creditsOneLine(lot) {
   return siteCredits(lot).map((c) => c.text).join('  ');
+}
+
+// One line naming where the setbacks came from. Always "indicative"; never "compliant".
+export function setbackNote(sb) {
+  if (!sb) return '';
+  const src = sb.source?.kind === 'council'
+    ? `${sb.source.dcp || 'council DCP'}`
+    : `${sb.source?.name || sb.basis}${sb.source?.edition ? `, ${sb.source.edition}` : ''}`;
+  return `Setbacks: ${sb.basis}. Source: ${src}. Indicative only; confirm with the council or a certifier${sb.flag === 'check_with_council' ? ' (one or more values are marked check with council)' : ''}.`;
 }

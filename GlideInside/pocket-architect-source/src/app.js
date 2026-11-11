@@ -5,6 +5,7 @@ import { CONFIG } from './config.js';
 import { createStore, loadAutosave } from './model/store.js';
 import { createProject, migrate, validate } from './model/schema.js';
 import { createEditor2D } from './editor2d/editor.js';
+import { attachSetbacks } from './site/setback-stage.js';
 import { h, isTyping } from './ui/dom.js';
 import { initTheme } from './ui/theme.js';
 import { buildShell } from './ui/shell.js';
@@ -100,6 +101,9 @@ async function main() {
   // A demo (teaser) never writes the autosave slot, so it cannot overwrite a visitor's real design.
   const noAutosave = demoMode();
   const store = createStore(start.project, { autosaveKey: noAutosave ? null : CONFIG.autosaveKey, opContext: { catalogue } });
+
+  // Indicative setbacks and building envelope for a looked-up lot, loaded per council (src/site/setback-stage.js).
+  if (CONFIG.siteLookupEnabled) attachSetbacks(store);
 
   const editor = createEditor2D(refs.planHost, store, { catalogue });
   const views = createViewManager({ store, refs, editor, catalogue });

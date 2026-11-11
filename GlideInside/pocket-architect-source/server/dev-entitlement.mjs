@@ -28,7 +28,7 @@ const id = `ent_dev${Math.random().toString(16).slice(2, 12)}`;
 
 const sql = [
   'INSERT INTO entitlements (id, project_id, email, stripe_session_id, stripe_payment_intent, amount_cents, currency, credits_total, status, created_at, expires_at)',
-  `VALUES ('${id}', '${projectId}', '${email}', 'cs_dev_${id}', 'pi_dev_${id}', 3000, 'aud', ${credits}, 'active', '${now.toISOString()}', '${expires.toISOString()}');`,
+  `VALUES ('${id}', '${projectId}', '${email}', 'cs_dev_${id}', 'pi_dev_${id}', 3500, 'aud', ${credits}, 'active', '${now.toISOString()}', '${expires.toISOString()}');`,
 ].join(' ');
 
 const token = await signToken({ eid: id, pid: projectId, exp: Math.floor(expires.getTime() / 1000) }, secret);

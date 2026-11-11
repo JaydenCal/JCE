@@ -19,7 +19,7 @@ import { siteToPlan, planToSite, ringEdges, round } from './geo.js';
 import { deriveFrontage } from './frontage.js';
 
 export const FLOOR_ABOVE_GROUND_M = 0.15;
-export const DEFAULT_LAYERS = { boundary: true, neighbours: true, aerial: true, contours: true, labels: true, dimensions: true };
+export const DEFAULT_LAYERS = { boundary: true, neighbours: true, aerial: true, contours: true, labels: true, dimensions: true, setbacks: true };
 
 const polyOf = (resp) => resp?.polygons?.[0] || { outer: [], holes: [] };
 const ringToPlan = (ring) => ring.map(siteToPlan);

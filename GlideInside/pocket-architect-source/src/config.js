@@ -12,11 +12,11 @@ export const CONFIG = {
   productName: 'Plan Studio',
   // Selling entity printed on paid exports. Placeholder until decision 17.1 is made.
   seller: { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' },
+  // Same origin: the Cloudflare Worker is routed at glideinside.com.au/api/* (one site, no CORS, cookie sessions stay same-site).
   apiBase: '/api',
-  // Builder and client logins (portal) get the AI included. Off until the public launch is done.
-  portalEnabled: false,
+  aiMock: false, // true serves canned assistant replies in the browser (review builds only)
   premiumEnabled: false, // Phase 1: premium shows as "coming soon" until the back end is live
-  planPack: { priceAud: 30, gstInclusive: true, credits: 500, reexportMonths: 12 },
+  planPack: { priceAud: 35, gstInclusive: true, credits: 500, reexportMonths: 12 },
   links: {
     engineering: '', // engineering enquiry URL (configurable)
     flythrough: '',
@@ -24,9 +24,11 @@ export const CONFIG = {
     privacy: '',
   },
   // Site lookup ("Find my block"): address search, lot boundary, DCDB neighbours, aerial and LiDAR/DEM contours (docs/SITE_LOOKUP.md).
-  // siteMock serves recorded-shape SAMPLE data from src/site/fixtures/ without calling the API. Set it to false once /api/site/* is deployed.
+  // siteMock true serves recorded-shape SAMPLE data from src/site/fixtures/ without calling the API (tests and review builds only).
   siteLookupEnabled: true,
-  siteMock: true,
+  siteMock: false,
+  // Setback rules are served statically from the site, one file per council (see tools/split-setbacks.mjs). Relative to the app page.
+  setbacksBase: '../data/setbacks/',
   siteAerialMarginM: 30, // aerial and elevation grid extend this far beyond the lot boundary
   // Builder and client accounts (docs/PORTAL_API.md). While the back end does not exist the portal runs on the in-browser mock.
   // portalMock true runs the screens on the in-browser mock; false calls the real Worker routes (docs/PORTAL_API.md).
