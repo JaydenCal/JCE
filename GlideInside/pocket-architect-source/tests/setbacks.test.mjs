@@ -356,3 +356,29 @@ test('concave (L shaped and battle-axe) lots give a validated envelope inside th
   assert.ok(env && envelopeArea(env) < envelopeArea(L));
   assert.equal(buildEnvelope(L, [0], picked(4.5, 11, 6)), null, 'consumed');
 });
+
+test('siteLotSetbacks: site.lot in, setbacks (with edgeKinds and inputs) and envelope out', { skip: !ALL }, async () => {
+  const { siteLotSetbacks, findCouncil } = await import('../src/site/setbacks.js');
+  assert.equal(findCouncil(ALL.councils, 'TAMWORTH REGIONAL').lga_slug, 'tamworth-regional-council');
+  assert.equal(findCouncil(ALL.councils, 'Gunnedah Shire Council').lga_slug, 'gunnedah-shire-council');
+  assert.equal(findCouncil(ALL.councils, 'Nowhere'), null);
+  // 20 m by 40 m lot as src/site/model.js writes it (plan mm, y down), street on the bottom edge
+  const boundary = [{ x: -10000, y: -20000 }, { x: 10000, y: -20000 }, { x: 10000, y: 20000 }, { x: -10000, y: 20000 }];
+  const lot = { state: 'NSW', lga: 'GUNNEDAH SHIRE', zoning: { code: 'R2' }, areaM2: 800, boundary, frontEdges: [2], setbacks: null, envelope: null };
+  const r = siteLotSetbacks(lot, ALL, { storeys: 1, wallHeightM: 2.7, buildingHeightM: 4.2 });
+  assert.ok(r.setbacks && r.envelope, JSON.stringify(r.attempts));
+  assert.deepEqual(r.setbacks.edgeKinds, ['rear', 'side', 'front', 'side']);
+  assert.equal(r.setbacks.inputs.lotWidthM, 20);
+  assert.equal(r.setbacks.inputs.cornerLot, false);
+  assert.ok(['check_with_council', null].includes(r.setbacks.flag));
+  assert.ok(r.setbacks.front.clause && r.setbacks.front.dcp && r.setbacks.front.edition);
+  const ys = r.envelope.map((p) => p.y);
+  assert.ok(Math.abs(Math.max(...ys) - (20000 - r.setbacks.front.minM * 1000)) < 1e-3, 'front setback off the street edge');
+  // Queensland: no zone on the lot, QDC default, street type needed
+  const q = { state: 'QLD', lga: 'Townsville City', zoning: null, areaM2: 420, boundary: boundary.map((p) => ({ x: p.x * 0.6, y: p.y * 0.875 })), frontEdges: [2] };
+  assert.equal(siteLotSetbacks(q, ALL, { buildingHeightM: 4 }).setbacks, null);
+  const qq = siteLotSetbacks(q, ALL, { buildingHeightM: 4, streetType: 'access' });
+  assert.match(qq.setbacks.basis, /^QDC MP1\.1/);
+  assert.ok(qq.envelope);
+  assert.equal(siteLotSetbacks({ ...lot, frontEdges: [] }, ALL, {}).setbacks, null);
+});

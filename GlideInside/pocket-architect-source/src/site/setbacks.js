@@ -556,3 +556,57 @@ export function envelopeArea(polyMm) {
   const pts = polyMm.map((p) => ({ x: px(p), y: py(p) }));
   return Math.abs(signedArea(pts));
 }
+
+// ---------------------------------------------------------------- site.lot adapter
+// Agreed shape (docs/SITE_LOOKUP.md, "Setbacks and envelope on site.lot"):
+//   site.lot.frontEdges  number[]   every boundary edge that faces a street (edge i = boundary[i] to boundary[i + 1]);
+//                                   written by src/site/frontage.js and confirmed by the person
+//   site.lot.setbacks    null | the pickRules result plus { edgeKinds: ['front'|'secondaryFront'|'side'|'rear', ...]
+//                                   (one per boundary edge), inputs: {...what was asked} }
+//   site.lot.envelope    null | [{ x, y }] in plan mm (buildEnvelope)
+//   flags                `flag: 'check_with_council' | null` and `flagReason` on the result and on each of
+//                        front / secondaryFront / side / rear / garage
+
+const lgaKey = (name) => String(name || '').toLowerCase().replace(/-/g, ' ')
+  .replace(/\b(the|council|of|city|shire|regional|municipal|municipality)\b/g, ' ').replace(/\s+/g, ' ').trim();
+
+/** The council rule file for an LGA name as the cadastre gives it ("TAMWORTH REGIONAL"), or null. */
+export function findCouncil(councils, lgaName) {
+  const k = lgaKey(lgaName);
+  if (!k) return null;
+  const hits = (councils || []).filter((c) => lgaKey(c.lga_slug) === k || lgaKey(c.council) === k);
+  return hits.length === 1 ? hits[0] : null;
+}
+
+/**
+ * siteLotSetbacks(lot, ruleSet, design?) -> { setbacks, envelope, attempts }
+ * lot: project.site.lot (src/site/model.js). ruleSet: setback-rules.json ({ councils, fallbacks }).
+ * design: what the lot cannot tell us: { storeys, wallHeightM, buildingHeightM, streetType, precinct, landSizeMap,
+ * qualifiers, neighbourSetbacksM, use }. Nothing is assumed for a missing value: a rule that needs it gives no result.
+ * setbacks and envelope are null when nothing can be determined; assign both to site.lot as returned.
+ */
+export function siteLotSetbacks(lot, ruleSet, design = {}) {
+  const none = (reason) => ({ setbacks: null, envelope: null, attempts: [{ basis: null, reason }] });
+  if (!lot || !Array.isArray(lot.boundary) || lot.boundary.length < 3) return none('no lot boundary');
+  const edgeKinds = classifyEdges(lot.boundary, lot.frontEdges || []);
+  if (!edgeKinds.includes('front')) return none('street frontage not set');
+  const n = lot.boundary.length;
+  const len = (i) => Math.hypot(px(lot.boundary[(i + 1) % n]) - px(lot.boundary[i]), py(lot.boundary[(i + 1) % n]) - py(lot.boundary[i]));
+  const splay = new Set(frontageRuns(lot.boundary, lot.frontEdges || []).filter((r) => r.splay).flatMap((r) => r.edges));
+  const widthMm = edgeKinds.reduce((s, k, i) => (k === 'front' && !splay.has(i) ? s + len(i) : s), 0);
+  const state = norm(lot.state || 'NSW');
+  const inputs = {
+    state,
+    // Queensland zones are not looked up; the QDC default is not zone based
+    zone: (lot.zoning && lot.zoning.code) || (state === 'QLD' ? 'QLD' : null),
+    lotAreaM2: isNum(lot.areaM2) ? lot.areaM2 : undefined,
+    lotWidthM: Math.round(widthMm) / 1000, // primary street frontage, used as the lot width
+    cornerLot: edgeKinds.includes('secondaryFront'),
+    use: 'dwelling',
+    ...design,
+  };
+  const council = state === 'NSW' ? findCouncil(ruleSet && ruleSet.councils, lot.lga) : null;
+  const d = pickRulesDetailed(council, inputs, { fallbacks: (ruleSet && ruleSet.fallbacks) || {} });
+  if (!d.picked) return { setbacks: null, envelope: null, attempts: d.attempts };
+  return { setbacks: { ...d.picked, edgeKinds, inputs }, envelope: buildEnvelope(lot.boundary, lot.frontEdges || [], d.picked), attempts: d.attempts };
+}
