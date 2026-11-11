@@ -1,6 +1,6 @@
 # Builder and client accounts: API contract
 
-Status: front end built against an in-browser mock (`src/portal/mock-api.js`). The Worker routes below do not exist yet. This file is the contract the real back end must meet so the screens work unchanged.
+Status: the Worker routes below are built (`server/lib/portal*.js`, branch `claude/glide-portal-backend`, tests in `tests/portal-server.test.mjs`) and the front end still runs on the in-browser mock until `CONFIG.portalMock` is turned off. This file is the contract both sides meet so the screens work unchanged. Section 13 lists where the real server differs from the first draft of this contract and how to go live.
 
 How the pieces fit:
 
@@ -13,15 +13,15 @@ How the pieces fit:
 | `src/portal/client-mode.js` | The signed-in strip and house picker inside Pocket Architect. |
 | `website-live/portal/` | The portal page (sign in and dashboard). `node tools/sync-portal.mjs` copies the modules it needs into `portal/src/`. |
 
-Launch gating: everything is behind `CONFIG.portalEnabled`. It is `true` in the mock/review build and must be `false` in the production config until launch (see `REVIEW_BUILD` in `src/config.js`; the host page can also set `GI_CONFIG.portalEnabled`). When false the portal page shows "not open yet" and Pocket Architect ignores any portal session.
+Launch gating: everything is behind `CONFIG.portalEnabled`. `REVIEW_BUILD` in `src/config.js` is `false` by default, so a production build keeps it closed; the review build sets `REVIEW_BUILD = true` (portal on, in-browser mock on). The host page can override with `GI_CONFIG.portalEnabled` and `GI_CONFIG.portalMock`. The Worker has its own switch, `PORTAL_ENABLED`. When false the portal page shows "not open yet" and Pocket Architect ignores any portal session.
 
 ## 1. Conventions
 
 - JSON in and out. Errors: `{ "error": { "code": "...", "message": "...", ...extra } }` with the HTTP status below.
-- Sessions: an `HttpOnly; Secure; SameSite=Lax; Path=/` cookie `gi_session` holding a random 256 bit id (store its SHA-256 in D1). 8 hour idle expiry, 30 day absolute. State changing calls also require the header `X-Requested-With: portal` (CSRF defence on top of SameSite).
+- Sessions: an `HttpOnly; Secure; SameSite=Lax; Path=/api` cookie `gi_session` holding a random 32 byte token (only its SHA-256 is stored in D1). 30 day **sliding** expiry (the cookie is refreshed while in use), with a 90 day absolute cap. Every state changing call (any method but GET) needs the header `X-GI-Request: 1` (a cross-site form cannot send it; `src/portal/api.js` always sends it) and, when the browser sends an `Origin` header, it must equal `SITE_URL`, otherwise `403 FORBIDDEN`. CORS allows credentials only for `SITE_URL`.
 - Money is integer cents, A$ incl. GST. GST is `total / 11`.
 - Dates are ISO 8601 UTC. Billing months use the Sydney calendar (`Australia/Sydney`), key `YYYY-MM`.
-- Roles: `admin` (everything), `designer` (houses, read clients, read projects; no issuing logins, billing, team or branding), `client`.
+- Roles: `admin` (everything), `designer` (houses, read clients, read projects; no issuing logins, billing, team, branding or settings), `client`. Permissions: admin has `houses.write clients.read clients.write billing.read billing.write team.read team.write branding.write projects.read`; designer `houses.write clients.read projects.read`; client none. `org.billingContact` in `me` is sent to admins only.
 - Error codes: `UNAUTHORISED` 401, `INVALID_CREDENTIALS` 401, `PASSWORD_EXPIRED` 401, `ACCOUNT_LOCKED` 423 (with `retryAfter` seconds), `ACCOUNT_DISABLED` 403, `PASSWORD_CHANGE_REQUIRED` 403, `FORBIDDEN` 403, `TOPUPS_DISABLED` 403, `NOT_FOUND` 404, `CONFLICT` 409, `BAD_REQUEST` 400, `PAYLOAD_TOO_LARGE` 413, `CREDITS_EXHAUSTED` 402, `RATE_LIMITED` 429.
 
 ## 2. Calls
@@ -36,8 +36,8 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 | `signOut` | `DELETE /portal/session` | `{ ok }`. |
 | `me` | `GET /portal/me` | `{ user, org, permissions[], houseAccess, lotAddress, ai, canTopUp, plansIncluded, enquiry, exports[] }`. `exports` is `['pdf','dxf','glb','obj']` for staff and `['pdf']` for clients unless the org allows CAD. `enquiry` is false for a client when `allowClientEnquiries` is off. While `mustChangePassword` is true every call except `me`, `changePassword` and `signOut` answers `PASSWORD_CHANGE_REQUIRED`. |
 | `changePassword` | `POST /portal/password` | `{ currentPassword, newPassword }`. Rules in section 6. Clears `mustChangePassword`. |
-| `requestPasswordReset` | `POST /portal/password/reset-request` | `{ email }` for builder staff. Always answers `{ ok: true }` (no account enumeration). The real server emails a single use link (1 hour); the mock returns the token for review. Clients have no self service reset: the builder issues a new password. |
-| `completePasswordReset` | `POST /portal/password/reset` | `{ token, newPassword }`. |
+| `requestPasswordReset` | `POST /portal/password/reset-request` | `{ email }`. Always answers `{ ok: true }` (no account enumeration). **The real server sends no email, so it creates no link**: staff ask an admin, who generates a temporary password (`resetStaffPassword`). Clients have no self service reset: the builder issues a new password. |
+| `completePasswordReset` | `POST /portal/password/reset` | `{ token, newPassword }`. The real server has no tokens, so it always answers `400 BAD_REQUEST` (expired link). Built only for the day an email sender is added. |
 
 ### House library (staff)
 
@@ -45,7 +45,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 
 ### Glide Inside library
 
-`listGlideLibrary()` `GET /portal/glide-library`, `getGlideModel(id)` `GET /portal/glide-library/:id`. Read only, shared by all builders. For client logins both answer empty / `NOT_FOUND` when the org setting `showGlideToClients` is false.
+`listGlideLibrary()` `GET /portal/glide-library`, `getGlideModel(id)` `GET /portal/glide-library/:id`. Read only, shared by all builders. The server lists `src/portal/glide-library.generated.js` and builds each model's project from the `src/catalogue/tpl` templates on request. For client logins both answer empty / `NOT_FOUND` when the org setting `showGlideToClients` is false.
 
 ### Clients (staff; issuing needs admin)
 
@@ -99,7 +99,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 - Resetting passwords, disabling logins, staff logins and deleting an unused login are free.
 - AI top-up: A$10 incl. GST per 300 credits, charged on the end of month invoice.
 - Month total = A$20 x new logins (first sign in that month) + A$10 x top-ups.
-- Invoices are produced after month end (a scheduled Worker). Stripe or any payment collection is out of scope for this stage.
+- Invoices are produced after month end by a scheduled Worker (06:00 on the 1st, Sydney time) through the Stripe REST API: one invoice per organisation per month, `send_invoice`, due in 14 days, prices GST inclusive (an inclusive 10% GST tax rate on each item). Stripe emails the invoice; this server sends no email. Idempotent per organisation and month. **Test mode only** until the owner gives written go-ahead for live billing (a live key is refused). The login charge row is `login_issues` (this draft called it `login_charges`) and top-ups are the AI branch's `ai_topup` events. See `server/README.md`.
 
 ## 5. Tax invoices
 
@@ -110,7 +110,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
   "title": "Tax invoice",
   "number": "GI-SHM-202610",
   "issuedAt": "2026-11-01T...", "dueAt": "2026-11-15T...", "month": "2026-10",
-  "seller": { "name": "Glide Inside", "abn": "11 549 431 925" },
+  "seller": { "name": "JCE Infrastructure Pty Ltd trading as Glide Inside", "abn": "29 699 165 663" },
   "buyer": { "name": "<billing legalName>", "abn": "<billing ABN>", "email": "..." },
   "lines": [ { "description": "New client logins first signed in during 2026-10 (A$20 each, incl. GST)", "quantity": 3, "unitCents": 2000, "totalCents": 6000 },
              { "description": "AI credit top-ups of 300 credits (A$10 each, incl. GST)", "quantity": 1, "unitCents": 1000, "totalCents": 1000 } ],
@@ -119,7 +119,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 }
 ```
 
-It carries the seller name and ABN, the words "Tax invoice", the date, a description of the supply, the GST amount and the total including GST. The builder's legal name and ABN are required in Billing settings before an invoice can be generated (the Billing tab warns until they are set). A buyer ABN is required for the invoice to be a valid tax invoice above A$1,000 and is good practice always.
+The seller is set by the owner's decision of 11/11/2026 and held in the server variables `SELLER_NAME` and `SELLER_ABN` (defaults as above). It carries the seller name and ABN, the words "Tax invoice", the date, a description of the supply, the GST amount and the total including GST. The builder's legal name and ABN are required in Billing settings before an invoice can be generated (the Billing tab warns until they are set). A buyer ABN is required for the invoice to be a valid tax invoice above A$1,000 and is good practice always.
 
 ## 6. Passwords, sessions and lockout
 
@@ -168,34 +168,18 @@ Consent text shown: "I agree to my plans and details being sent to JCE Infrastru
 
 Behaviour: 503 `ENQUIRY_NOT_CONFIGURED` when `RESEND_API_KEY` is unset (the UI says it is not set up yet); 400 for missing consent, name, phone, email or `need`; 413 over the size limits (PDF `ENQUIRY_MAX_PDF_BYTES`, default 6,000,000; project 2,000,000); 429 over 5 sends per IP per hour or 3 per email address per day. Otherwise it saves a copy in the `jce_enquiries` table, then sends one email through the Resend REST API (`POST https://api.resend.com/emails`, `fetch`, no SDK) from `ENQUIRY_FROM` to `ENQUIRY_TO` (default enquiries@jceinfrastructure.com.au), reply-to the person, with a plain text summary and two attachments (the PDF and the design `.planstudio.json`), and answers `{ ok: true, reference: "GI-XXXXX" }`. If Resend refuses, the copy is kept and the answer is 502 `EMAIL_FAILED` with the `reference`. Success text: "Sent to JCE Infrastructure, reference GI-xxxx; JCE will be in touch." In mock mode no email is sent and a fake reference is returned. Resend setup is in `server/README.md`.
 
-## 10. D1 table proposal
+## 10. D1 tables
 
-```sql
-CREATE TABLE orgs (id TEXT PRIMARY KEY, name TEXT NOT NULL, short_code TEXT UNIQUE, display_name TEXT, logo_data_url TEXT,
-  allow_client_topups INTEGER NOT NULL DEFAULT 1, allow_client_enquiries INTEGER NOT NULL DEFAULT 1,
-  show_glide_to_clients INTEGER NOT NULL DEFAULT 1, allow_client_cad_exports INTEGER NOT NULL DEFAULT 0,
-  ai_monthly_cap INTEGER NOT NULL DEFAULT 150, legal_name TEXT, abn TEXT, billing_name TEXT, billing_email TEXT, billing_phone TEXT, created_at TEXT NOT NULL);
-CREATE TABLE users (id TEXT PRIMARY KEY, org_id TEXT NOT NULL REFERENCES orgs(id), role TEXT NOT NULL CHECK (role IN ('admin','designer','client')),
-  name TEXT NOT NULL, email TEXT, username TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL,
-  must_change_password INTEGER NOT NULL DEFAULT 1, temp_password_expires_at TEXT, failed_attempts INTEGER NOT NULL DEFAULT 0, locked_until TEXT,
-  status TEXT NOT NULL DEFAULT 'active', lot_address TEXT, house_access TEXT NOT NULL DEFAULT 'all', -- 'all' or JSON array of house ids
-  ai_top_up_balance INTEGER NOT NULL DEFAULT 0, first_sign_in_at TEXT, last_sign_in_at TEXT, created_at TEXT NOT NULL);
-CREATE INDEX users_org ON users(org_id, role);
-CREATE TABLE sessions (id_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), created_at TEXT NOT NULL, last_seen_at TEXT NOT NULL, expires_at TEXT NOT NULL);
-CREATE TABLE reset_tokens (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, expires_at TEXT NOT NULL, used_at TEXT);
-CREATE TABLE houses (id TEXT PRIMARY KEY, org_id TEXT NOT NULL, name TEXT NOT NULL, description TEXT, project_json TEXT, source_glide_id TEXT,
-  archived INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL);
-CREATE TABLE projects (id TEXT PRIMARY KEY, org_id TEXT NOT NULL, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  name TEXT NOT NULL, lot_address TEXT, project_json TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL);
-CREATE TABLE login_charges (login_id TEXT PRIMARY KEY, org_id TEXT NOT NULL, charged_at TEXT NOT NULL, month TEXT NOT NULL, amount_cents INTEGER NOT NULL DEFAULT 2000);
-CREATE TABLE ai_topups (id TEXT PRIMARY KEY, org_id TEXT NOT NULL, login_id TEXT NOT NULL, credits INTEGER NOT NULL DEFAULT 300, amount_cents INTEGER NOT NULL DEFAULT 1000, created_at TEXT NOT NULL, month TEXT NOT NULL);
-CREATE TABLE ai_usage (login_id TEXT NOT NULL, month TEXT NOT NULL, credits_used INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (login_id, month));
-CREATE TABLE invoices (id TEXT PRIMARY KEY, org_id TEXT NOT NULL, month TEXT NOT NULL, number TEXT NOT NULL UNIQUE, issued_at TEXT NOT NULL, due_at TEXT NOT NULL,
-  logins_count INTEGER, topups_count INTEGER, total_cents INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'due', snapshot_json TEXT NOT NULL, UNIQUE (org_id, month));
--- jce_enquiries is already in server/schema.sql.
-```
+The tables are in `server/schema.sql` (all `CREATE ... IF NOT EXISTS`, purely additive, re-run it after deploying: `wrangler d1 execute plan-studio --remote --file server/schema.sql`). They follow the first proposal with these changes:
 
-`login_charges.login_id` is the primary key so the first sign in charge can only ever be created once. `ON DELETE CASCADE` on projects removes a deleted client's designs. `invoices.snapshot_json` freezes the buyer details and lines at issue.
+- `login_charges` is `login_issues` (`login_id` PRIMARY KEY, so the A$20 charge can exist once; no foreign key, so it survives deleting the client). It also keeps `client_name` and `month`.
+- `ai_topups` and `ai_usage` are not tables. AI credits live in the `entitlements` rows of the AI branch (monthly pool and top-up pool per login) and each top-up is an `ai_topup` row in `events`. `users.ai_top_up_balance` is gone for the same reason.
+- `users` has no `failed_attempts` or `locked_until`; lockout counters are in `auth_failures` (keys `u:<identifier>` and `ip:<address>`), so unknown usernames lock the same way as real ones.
+- `reset_tokens` is not built (no email, see section 2). `portal_settings` holds one value, the Stripe GST tax rate id.
+- `invoices` adds `stripe_invoice_id`, `stripe_step` (created, items, finalized, sent), `stripe_hosted_url` and `error`; status is `pending`, `due`, `paid`, `void` or `failed`. `orgs` adds `stripe_customer_id`; `ai_monthly_cap` defaults to 300.
+- `users.email` and `users.username` are lower case and globally unique (a partial unique index lets many users have no email).
+- `projects.project_json` is capped at 1,800,000 bytes (`PORTAL_PROJECT_MAX_BYTES`) because D1 rows are limited to 2 MB, not the 4 MB the mock allowed. A larger design answers `413 PAYLOAD_TOO_LARGE`; the underlay image is the usual cause.
+- `jce_enquiries` was already in the schema.
 
 ## 11. Integration hooks
 
@@ -208,3 +192,24 @@ CREATE TABLE invoices (id TEXT PRIMARY KEY, org_id TEXT NOT NULL, month TEXT NOT
 ## 12. Open decisions
 
 See the final report: AI monthly cap default and top-up expiry, designer permissions, staff password reset by email versus admin reset, Pocket Architect bundle rebuild, title block logo treatment, global username uniqueness, handling of project JSON and PDF in enquiries, and the PBKDF2 iteration cap.
+
+## 13. Real server notes
+
+Routes added to the contract above:
+
+| Route | Auth | Purpose |
+|---|---|---|
+| `POST /api/portal/admin/orgs` | bearer `ADMIN_TOKEN` | `{ name, shortCode?, adminFirstName, adminEmail? }`. Creates an organisation and its first admin; returns the temporary login once. There is no self service sign up. |
+| `POST /api/billing/run-month` | bearer `ADMIN_TOKEN` | `{ month?, orgId? }`. Creates the Stripe invoices for a finished Sydney month (default: the previous one). Idempotent. The Worker cron calls the same code. |
+| `POST /api/portal/ai/token` | cookie | `{ token, role, expiresAt }`: the org token (`issueOrgToken`) the AI endpoints accept as a bearer token. |
+
+Differences from the first draft:
+
+- Lockout: 5 failures per username lock it for 15 minutes (`423 ACCOUNT_LOCKED`, `retryAfter`), also for names that do not exist; 20 failures per IP address lock that address for 15 minutes (`429 RATE_LIMITED`). A correct password does not unlock early. Both limits are variables (`LOGIN_MAX_FAILURES`, `LOGIN_IP_MAX_FAILURES`).
+- Org settings accept `showGlideLibrary` as an alias of `showGlideToClients` and `allowClientCad` as an alias of `allowClientCadExports`; values must be booleans. `me().org` returns the names the screens use.
+- AI: monthly allowance defaults to 300 credits per login (`ORG_MONTHLY_CREDITS`; the mock used 150), top-ups carry over 12 months.
+- Logos: PNG or JPEG only (SVG is refused), at most 400,000 characters of data URL, the file signature is checked.
+- Role or password changes and resets end the person's sessions at once; a disabled login loses its sessions at once.
+- `enquiryJce` stays public (no cookie needed), so `allowClientEnquiries` is enforced by the screens only.
+
+Going live: (1) apply `server/schema.sql`; (2) set the secrets and variables in `server/README.md`; (3) create the first organisation; (4) in the site config set `GI_CONFIG.portalEnabled = true` and `GI_CONFIG.portalMock = false` (or build with `REVIEW_BUILD = false`, the default, and no mock), run `node tools/sync-portal.mjs` to refresh `website-live/portal/src`, and set `PORTAL_ENABLED=1` on the Worker; (5) live Stripe only with the owner's written go-ahead.

@@ -389,7 +389,7 @@ test('the month total on the Billing tab and invoice is A$20 per new login plus 
   const [first] = await api.listInvoices();
   const inv = await api.getInvoice(first.id);
   assert.equal(inv.title, 'Tax invoice');
-  assert.deepEqual(inv.seller, { name: 'Glide Inside', abn: '11 549 431 925' });
+  assert.deepEqual(inv.seller, { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' });
   assert.equal(inv.totalInclGstCents, first.totalCents);
   assert.equal(inv.gstCents, gstOfTotal(first.totalCents));
   assert.equal(inv.subtotalExGstCents + inv.gstCents, inv.totalInclGstCents);

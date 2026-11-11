@@ -80,3 +80,15 @@ export async function authenticate(request, { store, config, now, missing = 'UNA
   if (ent.expiresAt && Date.parse(ent.expiresAt) <= nowMs) throw new HttpError('NOT_ENTITLED', 'This Plan Pack has expired.');
   return ent;
 }
+
+/**
+ * Token for a builder or client login: { oid, lid, role, cap?, exp }. The login system that owns the accounts calls this
+ * after it has signed the person in. `cap` optionally overrides the monthly credits for that login.
+ * (Identical to the version on claude/glide-ai, so the two branches merge cleanly.)
+ */
+export async function issueOrgToken({ orgId, loginId, role, cap, ttlSeconds = 8 * 3600 }, config, nowMs) {
+  if (!['builder', 'client'].includes(role)) throw new HttpError('BAD_REQUEST', 'role must be builder or client.');
+  const payload = { oid: orgId, lid: loginId, role, exp: Math.floor(nowMs / 1000) + ttlSeconds };
+  if (Number.isFinite(cap) && cap >= 0) payload.cap = Math.round(cap);
+  return signToken(payload, config.entitlementSecret);
+}

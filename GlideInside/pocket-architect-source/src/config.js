@@ -3,9 +3,10 @@ const hasWindow = typeof window !== 'undefined';
 const params = hasWindow ? new URLSearchParams(window.location.search) : new URLSearchParams();
 const isLocal = hasWindow && ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
 
-// true in the mock/review build the owner is looking at; set false in the production config so builder features stay closed
-// until launch (or let the host page open them with GI_CONFIG.portalEnabled = true).
-const REVIEW_BUILD = true;
+// false by default so a production build keeps the builder and client features closed until launch. Set true only for the
+// mock/review build the owner looks at (it also turns the in-browser mock on). To open the real portal, the host page sets
+// GI_CONFIG.portalEnabled = true (and the Worker needs PORTAL_ENABLED=1). See docs/PORTAL_API.md, "Going live".
+const REVIEW_BUILD = false;
 
 export const CONFIG = {
   productName: 'Plan Studio',
@@ -21,8 +22,9 @@ export const CONFIG = {
     privacy: '',
   },
   // Builder and client accounts (docs/PORTAL_API.md). While the back end does not exist the portal runs on the in-browser mock.
-  // Set portalMock to false when the Worker routes in docs/PORTAL_API.md are live.
-  portalMock: true,
+  // portalMock true runs the screens on the in-browser mock; false calls the real Worker routes (docs/PORTAL_API.md).
+  // The host page can pick with GI_CONFIG.portalMock. Default: the mock only in the review build.
+  portalMock: hasWindow && typeof window.GI_CONFIG?.portalMock === 'boolean' ? window.GI_CONFIG.portalMock : REVIEW_BUILD,
   // Builder and client features (portal page, client mode in Pocket Architect). Off in the production config until launch;
   // on in the mock/review build. The host site can set GI_CONFIG.portalEnabled = true to open it.
   portalEnabled: hasWindow && typeof window.GI_CONFIG?.portalEnabled === 'boolean' ? window.GI_CONFIG.portalEnabled : REVIEW_BUILD,

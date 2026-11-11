@@ -8,6 +8,7 @@
 
 import { createApp } from './lib/app.js';
 import { createD1Store } from './lib/store.js';
+import { createD1PortalStore } from './lib/portal-store.js';
 
 let cached = null;
 
@@ -17,6 +18,7 @@ function appFor(env) {
       env,
       app: createApp({
         store: createD1Store(env.DB),
+        portalStore: createD1PortalStore(env.DB),
         env,
         // The catalogue supplies furniture, material and colour ids for the assistant's tools.
         catalogue: () => import('../src/catalogue/index.js').then((m) => m.catalogue ?? m.default ?? m),
@@ -30,5 +32,15 @@ function appFor(env) {
 export default {
   async fetch(request, env) {
     return appFor(env).fetch(request);
+  },
+  // Cron (wrangler.toml [triggers]): month end invoicing at 06:00 on the 1st, Sydney time. The cron fires at 19:00 and 20:00 UTC
+  // so one of them is 06:00 in both AEDT and AEST; the handler does nothing at any other Sydney time. Invoices are idempotent per org per month.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(
+      appFor(env)
+        .scheduled()
+        .then((r) => r && console.log(JSON.stringify({ event: 'billing_run', ...r })))
+        .catch((e) => console.error(JSON.stringify({ event: 'billing_run_failed', message: e?.message }))),
+    );
   },
 };

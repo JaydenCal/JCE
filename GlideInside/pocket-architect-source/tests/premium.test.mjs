@@ -622,7 +622,7 @@ test('9. drawing set: scale bar length, cover and register, fallback note, A1, D
   assert.ok(ents.some((e) => e.type === 'TEXT' && e.g[8][0] === 'PS-TITLE' && /^PREPARED WITH: Glide Inside/.test(e.g[1].join(' '))), 'title block layer carries the Glide Inside name');
 });
 
-test('9. drawing set: Glide Inside logo on cover and every sheet, the user logo only in the client panel, no JCE', async () => {
+test('9. drawing set: Glide Inside logo on cover and every sheet, a user or builder logo leads the first panel with a small Prepared with Glide Inside credit, no JCE', async () => {
   const { LOGO_PNG } = await import('../src/premium/brand/logo.js');
   const calls = { images: [], texts: [] };
   class Rec extends jsPDF {
@@ -640,7 +640,8 @@ test('9. drawing set: Glide Inside logo on cover and every sheet, the user logo 
   const out = toPDF(store.project, { jsPDF: Rec, catalogue, logo: user });
   const sheets = out.layout.pages.length;
   assert.equal(calls.images.filter((i) => i === 'brand').length, sheets + 1, 'one in every title block plus the cover');
-  assert.equal(calls.images.filter((i) => i === 'user').length, sheets, 'user logo in the client panel of each sheet');
+  assert.equal(calls.images.filter((i) => i === 'user').length, sheets, 'user or builder logo leads panel 1 of each sheet');
+  assert.ok(calls.texts.includes('Prepared with'), 'small Prepared with Glide Inside credit (text plus the Glide Inside logo)');
   assert.equal(calls.texts.filter((t) => t === 'Glide Inside').length, 0, 'no duplicate name under the logo');
   assert.ok(calls.texts.includes('CONCEPT'), 'status box');
   assert.ok(!calls.texts.some((t) => /JCE/i.test(t)));

@@ -38,6 +38,20 @@ ENQUIRY_TO = "enquiries@jceinfrastructure.com.au"            # where "Send to JC
 ENQUIRY_FROM = "Glide Inside <plans@glideinside.com.au>"   # must be on a domain verified in Resend
 STRIPE_PRICE_ID = ""                                       # optional: a Stripe price for the Plan Pack
 
+# Builder portal (docs/PORTAL_API.md). Off until launch. Secrets (wrangler secret put): ADMIN_TOKEN, STRIPE_SECRET_KEY (test key only).
+PORTAL_ENABLED = "0"                                       # set "1" to open builder and client logins
+SELLER_NAME = "JCE Infrastructure Pty Ltd trading as Glide Inside"  # seller on tax invoices
+SELLER_ABN = "29 699 165 663"
+ORG_MONTHLY_CREDITS = "300"                                # AI credits per login per month
+TOPUP_CREDITS = "300"
+TOPUP_AMOUNT_CENTS = "1000"                                # A$10 incl. GST
+# STRIPE_GST_TAX_RATE_ID = ""                              # optional: an existing inclusive 10% GST tax rate; otherwise one is created
+# STRIPE_LIVE_BILLING_APPROVED stays unset: live Stripe keys are refused without the owner's written go-ahead.
+
+# Month end invoices: 06:00 on the 1st, Sydney time (19:00 UTC in AEDT, 20:00 UTC in AEST). The handler checks the Sydney clock.
+[triggers]
+crons = ["0 19 * * *", "0 20 * * *"]
+
 # D1 (SQLite). Create it with `wrangler d1 create plan-studio`, paste the id below,
 # then apply the schema: `wrangler d1 execute plan-studio --remote --file server/schema.sql`
 [[d1_databases]]

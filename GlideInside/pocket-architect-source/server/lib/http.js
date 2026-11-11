@@ -6,6 +6,7 @@ export const ERROR_STATUS = {
   CREDITS_EXHAUSTED: 402,
   INSUFFICIENT_CREDITS: 402,
   CONFIRM_REQUIRED: 409,
+  TOPUP_DISABLED: 403,
   RATE_LIMITED: 429,
   AI_PAUSED: 503,
   PAYLOAD_TOO_LARGE: 413,
@@ -20,6 +21,17 @@ export const ERROR_STATUS = {
   SERVER_NOT_CONFIGURED: 500,
   ENQUIRY_NOT_CONFIGURED: 503,
   EMAIL_FAILED: 502,
+  // Builder and client portal (docs/PORTAL_API.md 1).
+  INVALID_CREDENTIALS: 401,
+  PASSWORD_EXPIRED: 401,
+  ACCOUNT_LOCKED: 423,
+  ACCOUNT_DISABLED: 403,
+  PASSWORD_CHANGE_REQUIRED: 403,
+  FORBIDDEN: 403,
+  TOPUPS_DISABLED: 403,
+  CONFLICT: 409,
+  PORTAL_NOT_CONFIGURED: 503,
+  BILLING_UNAVAILABLE: 502,
 };
 
 export class HttpError extends Error {
@@ -37,8 +49,9 @@ export function corsHeaders(request, config) {
   const origin = request.headers.get('origin');
   if (origin && config.siteOrigin && origin === config.siteOrigin) {
     headers['Access-Control-Allow-Origin'] = origin;
-    headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
-    headers['Access-Control-Allow-Headers'] = 'authorization, content-type';
+    headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
+    headers['Access-Control-Allow-Headers'] = 'authorization, content-type, x-gi-request';
+    headers['Access-Control-Allow-Credentials'] = 'true'; // only ever sent for the configured site origin
     headers['Access-Control-Expose-Headers'] = 'content-disposition';
     headers['Access-Control-Max-Age'] = '600';
   }

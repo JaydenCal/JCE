@@ -1,6 +1,6 @@
 // Portal client API. Every call the dashboard and Pocket Architect need (docs/PORTAL_API.md 3).
 // CONFIG.portalMock = true uses the in-browser mock (mock-api.js). Otherwise the same calls go to {apiBase}/portal/... over fetch
-// with the HttpOnly session cookie. Both resolve plain data and reject with ApiError (src/premium/api.js).
+// with the HttpOnly session cookie (gi_session, Path=/api) and the CSRF header X-GI-Request: 1 on every call. Both resolve plain data and reject with ApiError (src/premium/api.js).
 
 import { CONFIG } from '../config.js';
 import { ApiError } from '../premium/api.js';
@@ -60,7 +60,7 @@ const ROUTES = {
   setOrgSettings: ['PATCH', '/portal/org/settings'],
   enquiryJce: ['POST', '/enquiry/jce'],
 };
-const ID_CALLS = new Set(['getHouse', 'duplicateHouse', 'getGlideModel', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects', 'getInvoice', 'openProject', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff']);
+const ID_CALLS = new Set(['getHouse', 'duplicateHouse', 'archiveHouse', 'getGlideModel', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects', 'getInvoice', 'openProject', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff']);
 
 /** Real HTTP implementation of the same calls. `me` resolves null on 401. `archiveHouse(id, archived)` sends { archived }. */
 export function createHttpApi({ base = CONFIG.apiBase, fetchImpl = null } = {}) {
@@ -81,7 +81,7 @@ export function createHttpApi({ base = CONFIG.apiBase, fetchImpl = null } = {}) 
     else body = rest[0] ?? {};
     let res;
     try {
-      res = await doFetch(`${root}${path}${query}`, { method, headers: { accept: 'application/json', ...(body !== undefined ? { 'content-type': 'application/json' } : {}) }, body: body === undefined ? undefined : JSON.stringify(body), credentials: 'same-origin', cache: 'no-store' });
+      res = await doFetch(`${root}${path}${query}`, { method, headers: { accept: 'application/json', 'x-gi-request': '1', ...(body !== undefined ? { 'content-type': 'application/json' } : {}) }, body: body === undefined ? undefined : JSON.stringify(body), credentials: 'same-origin', cache: 'no-store' });
     } catch {
       throw new ApiError('NETWORK', 'Could not reach the Glide Inside server. Check your connection and try again.');
     }
