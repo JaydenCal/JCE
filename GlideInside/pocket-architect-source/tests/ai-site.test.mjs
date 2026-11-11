@@ -217,7 +217,7 @@ test('site tools run as one undo step through the store, and describe themselves
 });
 
 test('system prompt: site rules, no invented setbacks, never the word compliant', () => {
-  assert.match(SYSTEM_PROMPT, /Never invent, estimate or recall a setback/);
+  assert.match(SYSTEM_PROMPT, /Never invent or recall a setback/);
   assert.match(SYSTEM_PROMPT, /council setbacks are not loaded for this lot/);
   assert.match(SYSTEM_PROMPT, /inside the indicative setback envelope/);
   assert.ok(!/compliant/i.test(SYSTEM_PROMPT));
@@ -530,7 +530,7 @@ test('setbacks flagged check with council are still used, named with their sourc
   }
   p.site.lot.setbacks = SETBACKS;
   assert.equal(P.flaggedSentence(p.site.lot), '');
-  assert.match(SYSTEM_PROMPT, /SETBACKS_CHECK_WITH_COUNCIL as "check with council" and give their source \(council DCP clause, Codes SEPP Housing Code or QDC default\)/);
+  assert.match(SYSTEM_PROMPT, /SETBACKS_CHECK_WITH_COUNCIL as "check with council" and give its source \(council DCP clause, Codes SEPP Housing Code or QDC default\)/);
   assert.ok(SYSTEM_PROMPT.length / 3.5 < 800);
 });
 

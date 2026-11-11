@@ -346,6 +346,12 @@ TANK t1 5000L at (9600,500)
 - No compliance, approval, structural or cost claims. Decline unrelated requests.
 - Reply in one or two plain sentences.
 
+### 7.8 Site-aware assistant and builder or client logins
+
+- With `site.lot` on the design (written by `src/site/model.js`) the context adds SITE, LOT_BOUNDARY, SETBACKS (with source), SETBACKS_CHECK_WITH_COUNCIL, ENVELOPE, FALL and SETBACK_CHECK lines. Tools: `move_house`, `rotate_house`, `set_floor_level`, `check_setbacks`, `suggest_site_position` (`src/model/placement.js`). The assistant never states a setback the lot does not carry, names rules flagged "check with council" with their source, and says "inside the indicative setback envelope", never "compliant".
+- Builder and client logins include the AI behind `CONFIG.portalEnabled`: a monthly credit pool per login (Sydney calendar month) with the same warnings and hard stop, A$10 incl. GST top-ups of 300 credits billed on the builder's monthly invoice (carry over, spent after monthly credits), per-organisation spend budgets and a share of the global budget reserved for public Plan Pack users. See server/README.md.
+- `CONFIG.aiMock = true` runs the whole panel against canned replies with valid operations and a simulated credit pool.
+
 ---
 
 ## 8. Exports (Plan Pack)
