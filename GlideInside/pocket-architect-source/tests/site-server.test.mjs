@@ -429,3 +429,33 @@ test('search: a slow upstream is cut off and an answer that arrived is still ret
   assert.equal(res.status, 200);
   assert.equal(body.results[0].label, '12 Smith Street Tamworth NSW');
 });
+
+test('aerial: wide request with maxpx caps the picture at 2048 px, separately cached; the old default is unchanged', async () => {
+  const sizes = [];
+  const inner = upstream();
+  const spy = async (input, init) => {
+    const u = new URL(String(input));
+    if (u.pathname.endsWith('/export')) sizes.push(u.searchParams.get('size'));
+    return inner(input, init);
+  };
+  const app = createApp({ store: createMemoryStore(), env: {}, fetchImpl: spy, now: () => T0 });
+  const get = (path) => app.fetch(new Request(`https://api.test/api/site${path}`, { headers: { 'cf-connecting-ip': '2.2.2.2' } }));
+  const wide = `${C.e - 350},${C.n - 350},${C.e + 350},${C.n + 350}`;
+  // old client: no maxpx, 700 m at 0.1 m/px asks for the 4096 px NSW limit
+  assert.equal((await get(`/aerial?state=NSW&srid=7856&bbox=${wide}&res=0.1`)).status, 200);
+  assert.equal(sizes.at(-1), '4096,4096');
+  // new client: wide tile, 2048 px
+  const r = await get(`/aerial?state=NSW&srid=7856&bbox=${wide}&res=0.342&maxpx=2048`);
+  assert.equal(r.status, 200);
+  const [sw, sh] = sizes.at(-1).split(',').map(Number);
+  assert.ok(sw >= 2000 && sw <= 2048 && sh <= 2048, sizes.at(-1));
+  const meta = JSON.parse(decodeURIComponent(r.headers.get('x-site-meta')));
+  assert.equal(meta.widthPx, sw);
+  assert.ok(Math.abs(meta.mmPerPx - 342) < 2);
+  // maxpx is clamped and cached on its own key
+  const n = sizes.length;
+  await get(`/aerial?state=NSW&srid=7856&bbox=${wide}&res=0.342&maxpx=2048`);
+  assert.equal(sizes.length, n);
+  await get(`/aerial?state=NSW&srid=7856&bbox=${wide}&res=0.1&maxpx=99999`);
+  assert.equal(sizes.at(-1), '4096,4096');
+});

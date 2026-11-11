@@ -168,7 +168,7 @@ function labelSprite(lines, kind) {
  * addSiteTerrain(ctx, root, project, { texture, edgeColour, showContours }) -> { edgeY, extent, grid } | null
  * `texture` is a THREE.Texture of the aerial (north up, covering lot.aerial.extent), or null for a plain grass surface.
  */
-export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour = null, showContours = false } = {}) {
+export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour = null, wideTexture = null, wideEdgeColour = null, showContours = false } = {}) {
   const lot = project.site?.lot;
   const tm = terrainModel(project);
   if (!tm || !S.siteReady(project)) return null;
@@ -227,14 +227,17 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   const grid = { cols, rows, x0: dims.x0, y0: dims.y0, dx: dims.dx, dy: dims.dy, heights };
   const surf = (x, y) => S.surfaceAt(grid, x, y);
 
-  // Fade ring: from the terrain edge out to the horizon colour.
-  const nodes = S.perimeterNodes(cols, rows).map((n) => ({ x: pos[(n.j * cols + n.i) * 3], y: heights[n.j * cols + n.i], z: pos[(n.j * cols + n.i) * 3 + 2], dir: n.dir }));
+  // Wide outer tile: a lower resolution aerial on a frame of ground around the sharp inner tile, so the visible ground is real imagery
+  // well past the lot. Only the far edge of this tile fades (the ring below), into the neutral ground colour.
+  const wide = hasAerial && wideTexture ? addWideGround(root, lot, tm, ext, wideTexture) : null;
+  const nodes = wide ? wide.nodes : S.perimeterNodes(cols, rows).map((n) => ({ x: pos[(n.j * cols + n.i) * 3], y: heights[n.j * cols + n.i], z: pos[(n.j * cols + n.i) * 3 + 2], dir: n.dir }));
   let edgeSum = 0;
   for (const n of nodes) edgeSum += n.y;
   const edgeY = nodes.length ? edgeSum / nodes.length : tm.padY;
   const ring = S.fadeRing(nodes, edgeY - 0.05);
   // The aerial edge is often road, so lean on grass: the ring reads as open ground that fades to the horizon.
-  const inner = new THREE.Color(edgeColour || GRASS).lerp(new THREE.Color(GRASS), 0.55).multiplyScalar(1.12);
+  // With the wide tile the ring starts from that picture's own edge colour (no seam); without it the old grass lean applies.
+  const inner = wide ? new THREE.Color(wideEdgeColour || GRASS) : new THREE.Color(edgeColour || GRASS).lerp(new THREE.Color(GRASS), 0.55).multiplyScalar(1.12);
   const outer = new THREE.Color(HORIZON);
   const rc = [];
   for (const t of ring.colourT) {
@@ -260,7 +263,74 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   } catch (e) {
     console.warn('[viewer3d] site extras skipped', e);
   }
-  return { extras, edgeY, extent: ext, grid, outerR: S.RING_OFFSETS_M[S.RING_OFFSETS_M.length - 1] + Math.max(aw, ah) / 2000 };
+  const ow = wide ? wide.extent.x1 - wide.extent.x0 : aw;
+  const oh = wide ? wide.extent.y1 - wide.extent.y0 : ah;
+  return { extras, edgeY, extent: ext, wideExtent: wide ? wide.extent : null, grid, outerR: S.RING_OFFSETS_M[S.RING_OFFSETS_M.length - 1] + Math.max(ow, oh) / 2000 };
+}
+
+// The wide tile as a frame of ground around the inner extent (cells wholly inside it are left out). Sits just below the inner mesh with a
+// polygon offset, so the seam never z-fights. Returns { extent, nodes } (perimeter nodes for the fade ring) or null.
+export function addWideGround(root, lot, tm, inner, texture) {
+  const w = lot.aerialWide?.extent;
+  if (!w || ![w.x0, w.y0, w.x1, w.y1].every(Number.isFinite) || !(w.x1 > w.x0 && w.y1 > w.y0)) return null;
+  if (!(w.x0 <= inner.x0 && w.y0 <= inner.y0 && w.x1 >= inner.x1 && w.y1 >= inner.y1)) return null; // must surround the inner tile
+  if (!S.layerOn(lot, 'aerial')) return null;
+  const dims = S.gridDims(w, 4000, 170);
+  const { cols, rows } = dims;
+  const pos = new Float32Array(cols * rows * 3);
+  const uv = new Float32Array(cols * rows * 2);
+  const hs = new Float32Array(cols * rows);
+  for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < cols; i++) {
+      const x = dims.x0 + i * dims.dx;
+      const y = dims.y0 + j * dims.dy;
+      const Y = tm.heightAt(x, y);
+      const k = j * cols + i;
+      hs[k] = Y;
+      pos[k * 3] = x / 1000;
+      pos[k * 3 + 1] = Y - 0.08;
+      pos[k * 3 + 2] = y / 1000;
+      uv[k * 2] = i / (cols - 1);
+      uv[k * 2 + 1] = 1 - j / (rows - 1);
+    }
+  }
+  const all = S.gridIndices(cols, rows);
+  const idx = [];
+  const e = 1; // mm
+  for (let t = 0; t < all.length; t += 3) {
+    // keep a triangle unless all three corners are inside the inner extent
+    let inside = true;
+    for (let q = 0; q < 3; q++) {
+      const k = all[t + q];
+      const x = pos[k * 3] * 1000;
+      const y = pos[k * 3 + 2] * 1000;
+      if (!(x >= inner.x0 - e && x <= inner.x1 + e && y >= inner.y0 - e && y <= inner.y1 + e)) { inside = false; break; }
+    }
+    if (!inside) idx.push(all[t], all[t + 1], all[t + 2]);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.magFilter = THREE.LinearFilter;
+  texture.generateMipmaps = true;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.anisotropy = Math.max(texture.anisotropy || 1, 16);
+  texture.needsUpdate = true;
+  const mat = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, metalness: 0, envMapIntensity: 0.25, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 });
+  mat.userData.shared = false;
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.name = 'site-terrain-wide';
+  mesh.receiveShadow = true;
+  mesh.castShadow = false;
+  mesh.userData = { ground: true, siteTerrain: true, siteTerrainWide: true, frame: false };
+  root.add(mesh);
+  const nodes = S.perimeterNodes(cols, rows).map((n) => ({ x: pos[(n.j * cols + n.i) * 3], y: hs[n.j * cols + n.i], z: pos[(n.j * cols + n.i) * 3 + 2], dir: n.dir }));
+  return { extent: { x0: w.x0, y0: w.y0, x1: w.x1, y1: w.y1 }, nodes };
 }
 
 // Lines and labels on the surface ---------------------------------------------------------------------------------------------

@@ -77,16 +77,25 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
       warnings.push('The aerial image could not be read.');
     }
   }
+  let aerialWideKey = null;
+  if (aerialKey && res.aerialWide?.blob) {
+    aerialWideKey = `${aerialKey}.wide`;
+    await saveImage(aerialWideKey, res.aerialWide.blob);
+    if (!(await loadBitmap(aerialWideKey))) aerialWideKey = null;
+  }
   const lot = buildSiteLot({
     lot: res.lot,
     aerialMeta: aerialKey ? res.aerial.meta : null,
     aerialKey,
+    aerialWideMeta: aerialWideKey ? res.aerialWide.meta : null,
+    aerialWideKey,
     contours: res.contours,
     address: String(selection.label || '').replace(/\s*\(sample\)$/, ''),
     source: res.lot.sample ? 'sample' : String(res.lot.state || '').toLowerCase(),
     warnings,
   });
   const oldKey = store.project.site?.underlay?.key;
+  const oldWide = store.project.site?.lot?.aerialWide?.key || null;
   const first = !store.project.site?.lot;
   store.apply('Find my block', (p) => {
     if (first) recentreDesign(p);
@@ -103,6 +112,7 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
     if (council && (!tb.council || tb.council === tb.councilAuto)) { tb.council = council; tb.councilAuto = council; }
   });
   if (oldKey && oldKey !== aerialKey && store.project.site.underlay?.key === aerialKey) removeImage(oldKey);
+  if (oldWide && oldWide !== aerialWideKey) removeImage(oldWide);
   // Next the person confirms which edges are the street frontage (setbacks depend on it).
   store.setUI({ view: planView(store.ui.view), frontageEdit: true });
   return { lot, warnings };
@@ -112,10 +122,12 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
 export function removeSiteLot(store) {
   const u = store.project.site?.underlay;
   const drop = u?.site ? u.key : null;
+  const dropWide = store.project.site?.lot?.aerialWide?.key || null;
   store.apply('Remove lot', (p) => {
     p.site.lot = null;
     if (p.site.underlay?.site) p.site.underlay = null;
   });
   store.setUI({ frontageEdit: false });
   if (drop) removeImage(drop);
+  if (dropWide) removeImage(dropWide);
 }

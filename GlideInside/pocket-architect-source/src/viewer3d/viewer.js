@@ -335,8 +335,35 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   }
   vbSun.setAttribute('aria-pressed', String(sunKey === 'warm'));
   // Aerial texture for the site terrain: loaded from the underlay store, rebuilt when the image changes.
-  const site = { key: null, texture: null, edgeColour: null, loading: null };
+  const site = { key: null, texture: null, edgeColour: null, loading: null, wideKey: null, wideTexture: null, wideEdgeColour: null };
+  // The wide outer tile (about 2048 px): drawn on the ground ring beyond the sharp inner tile.
+  function syncWideTexture() {
+    const key = store.project.site?.lot?.aerialWide?.key || null;
+    if (key === site.wideKey) return;
+    site.wideKey = key;
+    site.wideTexture?.dispose();
+    site.wideTexture = null;
+    site.wideEdgeColour = null;
+    if (!key) return;
+    loadBitmap(key).then((bmp) => {
+      if (!bmp || site.wideKey !== key) return;
+      const maxTex = renderer.capabilities.maxTextureSize || 4096;
+      const k = Math.min(1, maxTex / Math.max(bmp.w, bmp.h));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(bmp.w * k));
+      c.height = Math.max(1, Math.round(bmp.h * k));
+      const cg = c.getContext('2d');
+      cg.imageSmoothingEnabled = true;
+      cg.imageSmoothingQuality = 'high';
+      cg.drawImage(bmp.img, 0, 0, c.width, c.height);
+      site.wideEdgeColour = edgeColourOf(c);
+      site.wideTexture = new THREE.CanvasTexture(c);
+      site.wideTexture.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
+      scheduleRebuild(20);
+    });
+  }
   function syncSiteTexture() {
+    syncWideTexture();
     const key = store.project.site?.lot?.aerial?.key || null;
     if (key === site.key) return;
     site.key = key;
@@ -375,6 +402,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       walk: mode === 'walk',
       siteTexture: site.texture,
       siteEdgeColour: site.edgeColour,
+      siteWideTexture: site.wideTexture,
+      siteWideEdgeColour: site.wideEdgeColour,
       showContours: layers.contours,
     };
   }
@@ -978,6 +1007,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       model = null;
     }
     site.texture?.dispose();
+    site.wideTexture?.dispose();
     sky.geometry.dispose();
     sky.material.dispose();
     envTarget.dispose();

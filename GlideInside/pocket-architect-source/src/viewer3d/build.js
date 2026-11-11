@@ -388,7 +388,7 @@ export function buildModel(project, opts = {}) {
   const bounds = modelBounds(root);
   // Whenever a lot is loaded the site is built: terrain with the aerial (when present), boundary, neighbours, labels and envelope.
   // The elevation grid is optional (flat ground at slab level without it). Without a lot the old flat disc stays.
-  const terrain = siteReady(project) ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null, edgeColour: opts.siteEdgeColour || null, showContours: !!opts.showContours }) : null;
+  const terrain = siteReady(project) ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null, edgeColour: opts.siteEdgeColour || null, wideTexture: opts.siteWideTexture || null, wideEdgeColour: opts.siteWideEdgeColour || null, showContours: !!opts.showContours }) : null;
   const groundR = terrain ? terrain.outerR : addGround(ctx, root, bounds, null);
   root.userData = { groundY, groundR, levelIds: levels.map((l) => l.id), cutIdx };
   return root;

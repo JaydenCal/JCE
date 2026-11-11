@@ -60,7 +60,7 @@ export function buildContours(resp) {
  * buildSiteLot({ lot, aerialMeta, aerialKey, contours, address, source }) -> site.lot
  * `lot` is the /api/site/lot response, `contours` the /api/site/contours response (or null).
  */
-export function buildSiteLot({ lot, aerialMeta = null, aerialKey = null, contours = null, address = '', source = 'api', warnings = [] }) {
+export function buildSiteLot({ lot, aerialMeta = null, aerialKey = null, aerialWideMeta = null, aerialWideKey = null, contours = null, address = '', source = 'api', warnings = [] }) {
   if (!lot?.lot) throw new Error('No lot in the response');
   const poly = polyOf(lot.lot);
   const terrain = buildTerrain(contours?.grid);
@@ -102,6 +102,12 @@ export function buildSiteLot({ lot, aerialMeta = null, aerialKey = null, contour
       captureDate: aerialMeta.captureDate || null,
       mmPerPx: aerialMeta.mmPerPx,
       extent: aerialExtentPlan(aerialMeta.bbox, lot.origin),
+    } : null,
+    // Lower resolution outer tile (about 2048 px) around the sharp inner one; only the 3D ground uses it.
+    aerialWide: aerialWideMeta && aerialWideKey && aerialMeta && aerialKey ? {
+      key: aerialWideKey,
+      mmPerPx: aerialWideMeta.mmPerPx,
+      extent: aerialExtentPlan(aerialWideMeta.bbox, lot.origin),
     } : null,
     floorRL: null,
     floorRLAuto: true,
