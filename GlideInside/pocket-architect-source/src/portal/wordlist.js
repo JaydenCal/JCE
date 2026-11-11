@@ -2,7 +2,7 @@
 // Keep every entry lowercase letters only, 3 to 7 letters, no duplicates. tests/portal.test.mjs checks the list.
 
 export const WORDS = `
-river maple cedar olive lemon peach mango berry apple grape melon plum cherry honey sugar
+river maple cedar olive lemon peach mango berry apple melon plum cherry honey sugar
 salt pepper basil mint sage thyme ginger cocoa bread toast cream butter cheese bacon pasta
 rice bean corn pea carrot onion potato tomato lime fig date nut almond walnut pecan oat
 wheat barley flour dough cake pie jam jelly candy syrup tea coffee milk juice soup stew

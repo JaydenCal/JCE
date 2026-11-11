@@ -82,3 +82,17 @@ export function summariseMonth({ issues = [], topUps = [] }, key) {
     totals: { loginsCount: logins.length, loginsCents, topUpsCount: tops.length, topUpsCents, totalCents: loginsCents + topUpsCents },
   };
 }
+
+/** Instant (ms) of 00:00 on the first day of the Sydney calendar month `key`. */
+export function monthStartMs(key) {
+  const [y, m] = key.split('-').map(Number);
+  let t = Date.UTC(y, m - 1, 1, -14);
+  for (let i = 0; i < 40; i += 1, t += 3600000) {
+    const p = sydneyParts(t);
+    if (monthKey(t) === key && p.day === 1 && p.hour === 0) return t;
+  }
+  throw new Error(`monthStartMs: no start found for ${key}`);
+}
+
+/** GST included in a GST-inclusive total (one eleventh), rounded to the nearest cent. */
+export const gstOfTotal = (totalCents) => Math.round(totalCents / 11);

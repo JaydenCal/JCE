@@ -16,6 +16,15 @@ export const CONFIG = {
     terms: '',
     privacy: '',
   },
+  // Builder and client accounts (docs/PORTAL_API.md). While the back end does not exist the portal runs on the in-browser mock.
+  // Set portalMock to false when the Worker routes in docs/PORTAL_API.md are live.
+  portalMock: true,
+  portal: {
+    appUrl: './', // Pocket Architect, relative to the portal page; the site sets GI_CONFIG.portalAppUrl
+    clientLoginFeeAud: 20, // per NEW client login in a calendar month, incl. GST
+    aiTopUp: { credits: 300, priceAud: 10 }, // incl. GST, charged on the end of month invoice
+    aiMonthlyCredits: 150, // per login per month, hard stop at zero
+  },
   autosaveKey: 'ps.autosave.v1',
   embedMode: params.get('embed') === 'demo' ? 'demo' : 'full',
   // Unlocks client-side exports for local testing only. Never true in production.
