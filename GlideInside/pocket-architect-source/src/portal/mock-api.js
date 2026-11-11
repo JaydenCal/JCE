@@ -8,6 +8,7 @@ import { ApiError } from '../premium/api.js';
 import { migrate, validate } from '../model/schema.js';
 import { GLIDE_LIBRARY } from './glide-library.generated.js';
 import { houseStats } from './house-stats.js';
+import { validateColours } from './theme.js';
 import { projectToSvg } from './thumbnail.js';
 import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js';
 import { gstOfTotal, monthLabel } from './billing.js';
@@ -132,7 +133,7 @@ function seedDb(now) {
   ];
   return {
     version: 1,
-    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null }, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
+    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null, colours: { primary: '#1f4d3a', accent: '#d9822b', darkInk: null, darkBg: null } }, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
     users, houses, projects, issues, topUps, resets: {},
   };
 }
@@ -714,8 +715,8 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     },
 
     // Branding and settings --------------------------------------------------------------------------------------------------------
-    /** Builder logo and name for plan title blocks. logoDataUrl: PNG or JPEG data URL (at most 400 KB) or null to remove. */
-    async setBranding({ displayName, logoDataUrl } = {}) {
+    /** Builder logo, name and colour scheme. logoDataUrl: PNG or JPEG data URL (at most 400 KB) or null to remove. colours: { primary, accent, darkInk, darkBg } or null for the Glide Inside look. */
+    async setBranding({ displayName, logoDataUrl, colours } = {}) {
       await wait();
       const { db, org } = ctx('branding.write');
       const b = { displayName: text(displayName, 'Name for plans', { required: true, max: 60 }), logoDataUrl: org.branding.logoDataUrl };
@@ -723,6 +724,15 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
         if (logoDataUrl !== null && !/^data:image\/(png|jpeg);base64,/.test(logoDataUrl)) throw err('BAD_REQUEST', 'The logo must be a PNG or JPG image.');
         if (logoDataUrl && logoDataUrl.length > 400_000) throw err('PAYLOAD_TOO_LARGE', 'That logo is too large. Use an image under 300 KB.', 413);
         b.logoDataUrl = logoDataUrl;
+      }
+      b.colours = org.branding.colours || null;
+      if (colours !== undefined) {
+        if (colours === null) b.colours = null;
+        else {
+          const v = validateColours(colours);
+          if (!v.ok) throw err('BAD_REQUEST', Object.values(v.errors)[0]);
+          b.colours = v.colours.primary ? v.colours : null;
+        }
       }
       org.branding = b;
       save(db);

@@ -14,6 +14,7 @@ import { h, clear } from '../ui/dom.js';
 import { toast } from '../ui/toast.js';
 import { getPortalApi } from './api.js';
 import { injectStripStyles } from './app-strip-styles.js';
+import { applyBrandTheme, clearBrandTheme } from './theme-css.js';
 import { signInUrl, portalUrl } from './links.js';
 import { SAMPLE_LOT, lotEnvelope, portalLotToSiteLot } from './envelope.js';
 import { rankDesigns } from './fit.js';
@@ -53,6 +54,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   const premium = app.premium;
   const isClient = me.user.role === 'client';
   const brand = me.org.branding || {};
+  applyBrandTheme(brand.colours); // builder colour scheme over the app chrome; the 3D scene, aerial and setback states keep their own colours
   let lot = { ...SAMPLE_LOT, address: me.lotAddress || '' }; // review builds start with the sample lot so ranking can be shown
   let lotIsSample = true;
   let envelope = null;
@@ -113,7 +115,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     clear(strip);
     strip.append(
       h('div', { class: 'pas-brand' }, brand.logoDataUrl ? h('img', { src: brand.logoDataUrl, alt: '' }) : null, h('div', null, h('strong', null, brand.displayName || me.org.name), h('small', null, isClient ? 'Client login' : 'Builder staff'))),
-      findBtn, housesBtn, plansBtn, statusLine, h('span', { class: 'pas-spacer' }), aiChip, userMenu);
+      findBtn, housesBtn, plansBtn, statusLine, h('span', { class: 'pas-spacer' }), brand.colours?.primary ? h('span', { class: 'gi-powered' }, 'Powered by Glide Inside') : null, aiChip, userMenu);
     paintAi();
   };
   function paintAi() {
@@ -268,6 +270,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
 
   async function signOut() {
     clearInterval(timer);
+    clearBrandTheme();
     try { await api.signOut(); } catch { /* already signed out */ }
     try { localStorage.removeItem(AUTOSAVE()); localStorage.removeItem(LOGO_KEY); localStorage.removeItem(OWNER_KEY); } catch { /* ignore */ }
     loc.href = signInUrl();

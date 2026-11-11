@@ -205,7 +205,11 @@ CREATE TABLE IF NOT EXISTS orgs (
   billing_phone TEXT,
   stripe_customer_id TEXT,           -- created on first billing
   created_at TEXT NOT NULL,
-  custom_login_cents INTEGER         -- owner's per-login price for this org (NULL = volume tiers), migration 0008
+  custom_login_cents INTEGER,        -- owner's per-login price for this org (NULL = volume tiers), migration 0008
+  brand_primary TEXT,                -- builder colour scheme, #rrggbb or NULL (migration 0010)
+  brand_accent TEXT,
+  brand_dark_ink TEXT,
+  brand_dark_bg TEXT
 );
 
 CREATE TABLE IF NOT EXISTS users (

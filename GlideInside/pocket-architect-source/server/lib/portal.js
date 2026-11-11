@@ -5,6 +5,7 @@
 import { migrate, validate } from '../../src/model/schema.js';
 import { GLIDE_LIBRARY } from '../../src/portal/glide-library.generated.js';
 import { houseStats } from '../../src/portal/house-stats.js';
+import { validateColours } from '../../src/portal/theme.js';
 import { projectToSvg } from '../../src/portal/thumbnail.js';
 import { generateUsername, generatePassword, passwordProblem } from '../../src/portal/credentials.js';
 import { monthKey, NEW_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, formatAud, LOGIN_TIER_2_MAX } from '../../src/portal/billing.js';
@@ -112,8 +113,9 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   }
 
   // Views -------------------------------------------------------------------------------------------------------------------
+  const coloursOf = (o) => (o.brandPrimary ? { primary: o.brandPrimary, accent: o.brandAccent || null, darkInk: o.brandDarkInk || null, darkBg: o.brandDarkBg || null } : null);
   const publicOrg = (o, role) => ({
-    id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null },
+    id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null, colours: coloursOf(o) },
     allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true,
     showGlideLibrary: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap,
     ...(role === 'admin' ? { billingContact: billingContact(o) } : {}),
@@ -627,8 +629,18 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
         patch.logoDataUrl = b.logoDataUrl;
       }
     }
+    // Colour scheme: undefined leaves it alone, null (or no primary) goes back to the Glide Inside look, an object replaces all four.
+    if (b.colours !== undefined) {
+      if (b.colours === null) Object.assign(patch, { brandPrimary: null, brandAccent: null, brandDarkInk: null, brandDarkBg: null });
+      else {
+        const v = validateColours(b.colours);
+        if (!v.ok) throw new HttpError('BAD_REQUEST', Object.values(v.errors)[0]);
+        Object.assign(patch, { brandPrimary: v.colours.primary, brandAccent: v.colours.accent, brandDarkInk: v.colours.darkInk, brandDarkBg: v.colours.darkBg });
+      }
+    }
     await pstore.updateOrg(org.id, patch);
-    return json({ displayName: patch.displayName, logoDataUrl: 'logoDataUrl' in patch ? patch.logoDataUrl : org.logoDataUrl || null });
+    const after = { ...org, ...patch };
+    return json({ displayName: patch.displayName, logoDataUrl: 'logoDataUrl' in patch ? patch.logoDataUrl : org.logoDataUrl || null, colours: coloursOf(after) });
   }
   async function setSettings(r) {
     const { org, user } = await auth(r, { need: 'billing.write' });
