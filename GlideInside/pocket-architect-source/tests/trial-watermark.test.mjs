@@ -144,12 +144,12 @@ test('after the trial ends the account is read only and exports are refused', as
 test('Plan Pack (homeowner) exports are never watermarked, whatever the request says', async () => {
   const w = world();
   const sid = 'cs_test_paid1';
-  const raw = JSON.stringify({ id: 'evt_1', type: 'checkout.session.completed', data: { object: { id: sid, object: 'checkout.session', payment_status: 'paid', client_reference_id: 'p_mw001', metadata: { projectId: 'p_trial001' }, amount_total: 3000, currency: 'aud', customer_details: { email: 'b@example.com' }, payment_intent: 'pi_1' } } });
+  const raw = JSON.stringify({ id: 'evt_1', type: 'checkout.session.completed', data: { object: { id: sid, object: 'checkout.session', payment_status: 'paid', client_reference_id: 'p_mw001', metadata: { projectId: 'p_mw001' }, amount_total: 3000, currency: 'aud', customer_details: { email: 'b@example.com' }, payment_intent: 'pi_1' } } });
   const t = Math.floor(w.clock.t / 1000);
   const sig = hex(await hmacSha256('whsec_x', `${t}.${raw}`));
   const hook = await w.app.fetch(new Request('https://api.test/api/stripe/webhook', { method: 'POST', body: raw, headers: { 'stripe-signature': `t=${t},v1=${sig}`, 'content-type': 'application/json' } }));
   assert.equal(hook.status, 200);
-  const got = await (await w.app.fetch(new Request(`https://api.test/api/entitlement?session_id=${sid}&project=p_trial001`))).json();
+  const got = await (await w.app.fetch(new Request(`https://api.test/api/entitlement?session_id=${sid}&project=p_mw001`))).json();
   const call = (type, extra = {}) => w.app.fetch(new Request(`https://api.test/api/export/${type}`, { method: 'POST', headers: { authorization: `Bearer ${got.token}`, 'content-type': 'application/json' }, body: JSON.stringify({ ...body(), ...extra }) }));
   const pdf = await call('pdf', { watermark: true, trial: true });
   assert.equal(pdf.status, 200);
