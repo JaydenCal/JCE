@@ -11,6 +11,7 @@ import { applySiteLookup } from '../site/apply.js';
 
 const STEPS = { lot: 'Finding the lot', aerial: 'Loading the aerial image', contours: 'Loading ground levels' };
 let seq = 0;
+const searchCache = new Map(); // normalised query -> results, for this page view
 
 export function createFindBlock(store, { onDone, autofocus = false, compact = false, large = false } = {}) {
   const id = `ps-find-${++seq}`;
@@ -31,6 +32,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
   let controller = null;
   let busy = false;
   let disposed = false;
+  const cache = searchCache;
 
   const say = (text, kind = '') => {
     status.textContent = text || '';
@@ -66,10 +68,13 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
       say('');
       return;
     }
+    const ck = q.toLowerCase().replace(/\s+/g, ' ');
+    if (cache.has(ck)) { results = cache.get(ck); active = -1; paint(); say(''); return; }
     controller = new AbortController();
-    say('Searching');
+    say('Searching...'); // the previous suggestions stay up meanwhile
     try {
       results = await searchAddresses(q, { signal: controller.signal });
+      if (results.length) cache.set(ck, results);
       active = -1;
       paint();
       say(results.length ? '' : 'No matching address found. Check the spelling, or try the street name and suburb.', results.length ? '' : 'warn');
@@ -80,7 +85,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
       say(e?.message || 'The address search failed. You can keep drawing without a lot.', 'warn');
     }
   }
-  const debounced = debounce(search, 300);
+  const debounced = debounce(search, 150);
 
   async function choose(i) {
     const pick = results[i];

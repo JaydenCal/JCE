@@ -912,3 +912,51 @@ svg { display: block; }
   font: 600 13px/1 var(--ps-font-ui, system-ui, sans-serif); color: #fff; background: rgba(14, 16, 20, 0.72); border: 1px solid rgba(255, 255, 255, 0.22);
 }
 .ps-shell[data-embed-busy] .ps-embed-busy { display: block; }
+
+/* Embed viewer: a small lot card (about 360 px wide), collapsed to its title, lot line and a chevron until opened. The 3D lot is the hero. */
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-card { width: min(360px, calc(100% - 24px)); padding: 10px 12px 0; bottom: 12px; border-radius: 12px; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-title { font-size: 20px; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-sub { margin-top: 3px; font-size: 11.5px; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-sub .lc-sc { display: none; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-stats { gap: 12px; margin: 6px 0 4px; flex-wrap: nowrap; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-stats b { font-size: 15px; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-stats i { margin-top: 2px; font-size: 8.5px; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-sp { margin: 3px 0; gap: 6px; align-items: center; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-sp > :not(.lc-k) { min-width: 0; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-sp .lc-k { width: 46px; font-size: 9px; padding-top: 0; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-strip { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; zoom: 0.78; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-tab { height: 22px; padding: 0 8px !important; font-size: 10.5px; flex: none; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-btn { height: 28px; font-size: 11px; padding: 0 11px !important; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-acts { gap: 6px; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-fit { min-height: 22px; font-size: 11px; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-pager { left: 392px; transform: none; bottom: 12px; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-more { display: inline-block; position: relative; width: 28px; height: 28px; padding: 0 !important; font-size: 0; flex: none; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-more::after { content: ''; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; border: solid #fff; border-width: 0 2px 2px 0; transform: translate(-50%, -75%) rotate(45deg); }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-card.is-open .lc-more::after { transform: translate(-50%, -25%) rotate(-135deg); }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-card:not(.is-open) .lc-body { display: none; }
+.ps-shell[data-embed-viewer] .lc-root:not(.is-phone):not(.is-compact) .lc-card:not(.is-open) { padding-bottom: 8px; }
+
+/* The full app: the same small card on a narrow window (the body stays open). */
+@media (max-width: 1099.98px) {
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-card { width: min(360px, calc(100% - 24px)); padding: 10px 12px 0; bottom: 12px; border-radius: 12px; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-title { font-size: 20px; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-sub { margin-top: 3px; font-size: 11.5px; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-sub .lc-sc { display: none; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-stats { gap: 12px; margin: 6px 0 4px; flex-wrap: nowrap; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-stats b { font-size: 15px; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-stats i { margin-top: 2px; font-size: 8.5px; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-sp { margin: 3px 0; gap: 6px; align-items: center; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-sp > :not(.lc-k) { min-width: 0; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-sp .lc-k { width: 46px; font-size: 9px; padding-top: 0; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-strip { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; zoom: 0.78; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-tab { height: 22px; padding: 0 8px !important; font-size: 10.5px; flex: none; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-btn { height: 28px; font-size: 11px; padding: 0 11px !important; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-acts { gap: 6px; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-fit { min-height: 22px; font-size: 11px; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-pager { left: 392px; transform: none; bottom: 12px; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-more { display: inline-block; position: relative; width: 28px; height: 28px; padding: 0 !important; font-size: 0; flex: none; }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-more::after { content: ''; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; border: solid #fff; border-width: 0 2px 2px 0; transform: translate(-50%, -75%) rotate(45deg); }
+.lc-root:not(.is-phone):not(.is-compact):not([data-view="2d"]):not([data-view="split"]) .lc-card.is-open .lc-more::after { transform: translate(-50%, -25%) rotate(-135deg); }
+}

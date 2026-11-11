@@ -542,8 +542,42 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     return { n, u, mid };
   }
 
+  // Embed (home page frame) opening view: an elevated three quarter view of the lot and house from the street side, centred in the area
+    // the lot card leaves clear. A small lot is framed whole; a big lot (over 70 m) frames the house and 22 m of surrounds, not the whole site.
+  function embedBase() {
+    const lot = store.project.site?.lot;
+    const bd = lot?.boundary;
+    if (!bd?.length) return null;
+    let hx0 = Infinity; let hx1 = -Infinity; let hz0 = Infinity; let hz1 = -Infinity; let hy1 = 3;
+    for (const lv of store.project.levels || []) {
+      for (const w of lv.walls || []) for (const q of [w.a, w.b]) { hx0 = Math.min(hx0, q.x / 1000); hx1 = Math.max(hx1, q.x / 1000); hz0 = Math.min(hz0, q.y / 1000); hz1 = Math.max(hz1, q.y / 1000); }
+      hy1 = Math.max(hy1, ((lv.elevation || 0) + (lv.height || 2550)) / 1000 + 2);
+    }
+    if (!Number.isFinite(hx0)) return null;
+    const bx = bd.map((q) => q.x / 1000); const bz = bd.map((q) => q.y / 1000);
+    let x0 = Math.min(...bx); let x1 = Math.max(...bx); let z0 = Math.min(...bz); let z1 = Math.max(...bz);
+    if (Math.max(x1 - x0, z1 - z0) > 70) {
+    const m = 22;
+    x0 = hx0 - m; x1 = hx1 + m; z0 = hz0 - m; z1 = hz1 + m;
+    }
+    x0 = Math.min(x0, hx0); x1 = Math.max(x1, hx1); z0 = Math.min(z0, hz0); z1 = Math.max(z1, hz1);
+    const pts = [];
+    for (const x of [x0, x1]) for (const z of [z0, z1]) pts.push(x, 0, z, x, hy1, z);
+    const box = new THREE.Box3(new THREE.Vector3(x0, 0, z0), new THREE.Vector3(x1, hy1, z1));
+    const sf = streetFrame();
+    const ang = 28 * RAD;
+    const az = sf ? (Math.atan2(sf.n.x * Math.cos(ang) + sf.u.x * Math.sin(ang), sf.n.y * Math.cos(ang) + sf.u.y * Math.sin(ang)) * 180) / Math.PI : 30;
+    const pose = framedPose(camera, pts, box, az, 42);
+    return pose;
+  }
+
+  let embedFraming = false;
   // kind: 'hero' (three quarter from the street, slightly low), 'front' (close, square on), 'aerial' (the whole lot), 'fit' (old default)
   function poseFor(kind) {
+    if (embedFraming && store.project.site?.lot?.boundary?.length && kind !== 'front' && kind !== 'fit') {
+      const e = embedBase();
+      if (e) return e;
+    }
     const box = bounds || new THREE.Box3(new THREE.Vector3(-5, 0, -5), new THREE.Vector3(10, 4, 8));
     const sf = kind === 'fit' ? null : streetFrame();
     if (!sf || !housePoints.length) {
@@ -1022,6 +1056,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       if (k > 1.001) pose.pos.sub(pose.target).multiplyScalar(k).add(pose.target);
       return { position: pose.pos.clone(), target: pose.target.clone() };
     },
+    setEmbedFraming: (on) => { embedFraming = !!on; if (framed && bounds && !userMoved) frameCamera(false, lastKind); },
     leaveWalk: () => store.setUI({ view: '3d' }),
     addDoubleClickHandler: (fn) => {
       dblHandlers.push(fn);

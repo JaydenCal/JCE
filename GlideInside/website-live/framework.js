@@ -38,17 +38,20 @@
     if (!f) return;
     var started = false;
     live.box = box; live.frame = f; live.stage = box.querySelector(".lh-stage");
-    function go() {
-      if (started) return; started = true;
+    function go(address) {
+      if (started) return false; started = true;
       var y = window.scrollY, x = window.scrollX;
       f.addEventListener("load", function () {
         live.ready = false;
         box.classList.add("is-live");
         try { if (document.activeElement === f) f.blur(); } catch (e) {}
-        window.scrollTo(x, y); setTimeout(function () { window.scrollTo(x, y); }, 400);
+        if (!address && !live.last) { window.scrollTo(x, y); setTimeout(function () { window.scrollTo(x, y); }, 400); }
         try { if (window.gtag) window.gtag("event", "live_editor_loaded", {}); } catch (e) {}
       });
-      f.src = new URL(f.dataset.src, root || location.href).href;
+      var u = new URL(f.dataset.src, root || location.href);
+      if (address) u.searchParams.set("address", address);
+      f.src = u.href;
+      return true;
     }
     live.start = go;
     if (phoneMq.matches) {
@@ -85,25 +88,41 @@
     try { if (window.gtag) window.gtag("event", "address_search", {}); } catch (e) {}
     if (phoneMq.matches || !live.frame) { location.assign(appUrl(address)); return; }
     live.box.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
-    live.start();
-    if (live.ready) postFind(address); else live.pending = address;
+    setBusy(true);
+    if (live.ready) { postFind(address); return; }
+    // Not ready: a frame that has not started loads straight at the address (?address=); one that is still starting gets it when it says gi:ready,
+    // and is pointed at the address itself if that does not happen.
+    if (live.start(address)) { live.pending = null; return; }
+    live.pending = address;
+    clearTimeout(live.fallback);
+    live.fallback = setTimeout(function () {
+      if (!live.pending || live.ready) return;
+      live.pending = null;
+      var u = new URL(live.frame.src || appUrl(""), location.href); u.searchParams.set("address", address); live.frame.src = u.href;
+    }, 20000);
+  }
+  function setBusy(on) {
+    clearTimeout(live.busyT);
+    searches.forEach(function (c) { if (!c.go) return; if (on) { c.go.dataset.label = c.go.dataset.label || c.go.textContent; c.go.textContent = "Finding your block..."; c.go.disabled = true; } else if (c.go.dataset.label) { c.go.textContent = c.go.dataset.label; c.go.disabled = false; } });
+    if (on) live.busyT = setTimeout(function () { setBusy(false); }, 60000);
   }
   function setStatus(text, kind) { searches.forEach(function (c) { c.status.textContent = text || ""; c.status.dataset.kind = kind || ""; }); }
   window.addEventListener("message", function (e) {
     if (e.origin !== location.origin || !live.frame || e.source !== live.frame.contentWindow) return;
     var m = e.data; if (!m || typeof m !== "object") return;
-    if (m.type === "gi:ready") { live.ready = true; if (live.pending) { var a = live.pending; live.pending = null; postFind(a); } }
+    if (m.type === "gi:ready") { live.ready = true; clearTimeout(live.fallback); if (live.pending) { var a = live.pending; live.pending = null; postFind(a); } }
     else if (m.type === "gi:status") {
       if (m.state === "loading") setStatus("Loading your block");
-      else if (m.state === "done") { if (m.address) live.last = m.address; setStatus(m.address ? "Showing " + m.address : "", ""); }
-      else if (m.state === "error") setStatus(m.message || "That address could not be loaded.", "warn");
+      else if (m.state === "done") { setBusy(false); if (m.address) live.last = m.address; setStatus(m.address ? "Showing " + m.address : "", ""); }
+      else if (m.state === "error") { setBusy(false); setStatus(m.message || "That address could not be loaded.", "warn"); }
     }
   });
+  var searchCache = {};
   document.querySelectorAll("[data-addr-search]").forEach(function (root) {
     var input = root.querySelector("[data-addr-input]"), list = root.querySelector(".as-list"), status = root.querySelector("[data-addr-status]");
     if (!input || !list) return;
-    var max = Number(root.dataset.max) || 6, results = [], active = -1, ctl = null, timer = 0, seq = 0, uid = "as" + searches.length + "-";
-    var comp = { input: input, status: status || document.createElement("p") };
+    var max = Number(root.dataset.max) || 6, results = [], active = -1, ctl = null, timer = 0, seq = 0, searching = false, uid = "as" + searches.length + "-";
+    var comp = { input: input, status: status || document.createElement("p"), go: root.querySelector(".as-go") };
     searches.push(comp);
     function close() { list.hidden = true; input.setAttribute("aria-expanded", "false"); input.removeAttribute("aria-activedescendant"); active = -1; }
     function paint() {
@@ -115,7 +134,8 @@
         li.addEventListener("pointerdown", function (e) { e.preventDefault(); choose(i); });
         list.appendChild(li);
       });
-      list.hidden = !results.length;
+      if (searching) { var sr = document.createElement("li"); sr.className = "as-opt as-searching"; sr.setAttribute("role", "presentation"); sr.textContent = "Searching..."; list.appendChild(sr); }
+      list.hidden = !results.length && !searching;
       input.setAttribute("aria-expanded", String(!!results.length));
       if (active >= 0) input.setAttribute("aria-activedescendant", uid + active);
     }
@@ -127,11 +147,16 @@
       return fetch("/api/site/search?q=" + encodeURIComponent(q), ctl ? { signal: ctl.signal } : {})
         .then(function (res) { if (!res.ok) throw new Error("search " + res.status); return res.json(); })
         .then(function (body) { if (my !== seq) return null; return (body && body.results) || []; })
-        .catch(function (e) { if (e && e.name === "AbortError") return null; if (my === seq) { setStatus("The address search is not available right now. Try again soon.", "warn"); } return null; });
+        .catch(function (e) { if (e && e.name === "AbortError") return null; if (my === seq) { setBusy(false); setStatus("The address search is not available right now. Try again soon.", "warn"); } return null; });
     }
     function run(q) {
+      var key = q.toLowerCase().replace(/\s+/g, " ");
+      if (searchCache[key]) { results = searchCache[key]; active = -1; searching = false; paint(); setStatus(""); return Promise.resolve(results); }
+      searching = true; paint(); // the previous suggestions stay up while the new ones load
       return search(q).then(function (r) {
-        if (r == null) return null;
+        searching = false;
+        if (r == null) { paint(); return null; }
+        searchCache[key] = r;
         results = r; active = -1; paint();
         setStatus(r.length ? "" : "No matching address found. Check the spelling, or try the street name and suburb.", r.length ? "" : "warn");
         return r;
@@ -148,12 +173,13 @@
       var q = input.value.trim();
       if (q.length < 3) { setStatus("Type your street address first.", "warn"); return; }
       if (active >= 0) { choose(active); return; }
-      run(q).then(function (r) { if (r && r.length) choose(0); });
+      setBusy(true);
+      run(q).then(function (r) { if (r && r.length) choose(0); else setBusy(false); });
     }
     input.addEventListener("input", function () {
       clearTimeout(timer); var q = input.value.trim();
-      if (q.length < 3) { if (ctl) ctl.abort(); seq++; results = []; paint(); setStatus(""); return; }
-      timer = setTimeout(function () { run(q); }, 250);
+      if (q.length < 3) { if (ctl) ctl.abort(); seq++; results = []; searching = false; paint(); setStatus(""); return; }
+      timer = setTimeout(function () { run(q); }, 150);
     });
     input.addEventListener("focus", function () { if (results.length) paint(); });
     input.addEventListener("blur", function () { setTimeout(close, 140); });

@@ -115,6 +115,7 @@ export function buildSiteLot({ lot, aerialMeta = null, aerialKey = null, contour
     },
     warnings,
     sample: !!lot.sample,
+    demo: !!lot.demo,
   };
   out.floorRL = defaultFloorRL(out);
   const fr = deriveFrontage(out);

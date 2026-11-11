@@ -9,8 +9,11 @@
 
 import { h } from '../ui/dom.js';
 import { toast } from '../ui/toast.js';
-import { lotOf } from '../model/placement.js';
-import { buildingRings } from '../site/lotplan.js';
+import { lotOf, translateHouse, rotateHouse } from '../model/placement.js';
+import * as G from '../model/geometry.js';
+import { canMoveHouse, onHouse, turnAngle } from '../editor2d/tool-movehouse.js';
+import { ringOf } from '../editor2d/draw-lotplan.js';
+import { buildingRings, buildingHull } from '../site/lotplan.js';
 import { setbackStatusLine } from '../site/lot-checks.js';
 import { SCHEMES, effectiveSchemeId, schemeById, schemeLine, schemeColours } from '../model/colour-schemes.js';
 import { cardStats, lotHeading, lotLine, hasBuilding } from './stats.js';
@@ -29,7 +32,7 @@ const DOT = { inside: '#6fd39a', outside: '#ff8a7a', check: '#f2b94b' };
 /** The muted header line: "Builder name · Concept only" in the portal, "Concept only" in the public app. */
 export const mutedLine = (builderName) => (builderName ? `${builderName} · Concept only` : 'Concept only');
 
-export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null, onEdit = null, onMini = null }) {
+export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null, onEdit = null, onMini = null, embed = false }) {
   if (!document.getElementById(STYLE_ID)) {
     const st = document.createElement('style');
     st.id = STYLE_ID;
@@ -76,7 +79,8 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     return svg;
   })();
   const northLabel = E('lc-nlabel', 'i', null, 'N');
-  const mini = h('button', { class: 'lc-mini', type: 'button', title: 'Show or hide the 2D plan', 'aria-label': 'Top view. Click to show or hide the 2D plan', dataset: { ps: 'lc-mini' }, onclick: () => toggle2d() }, cv, h('span', { class: 'lc-mini-t' }, 'TOP VIEW'), north, northLabel);
+  const mini = h('button', { class: 'lc-mini', type: 'button', title: 'Show or hide the 2D plan', 'aria-label': 'Top view. Click to show or hide the 2D plan', dataset: { ps: 'lc-mini' }, onclick: () => { if (suppressClick) { suppressClick = false; return; } toggle2d(); } }, cv, h('span', { class: 'lc-mini-t' }, 'TOP VIEW'), north, northLabel, h('span', { class: 'lc-mini-hint', 'aria-hidden': 'true' }, 'Drag to move, handle to rotate'));
+  let suppressClick = false;
 
   const findPill = h('button', { class: 'lc-find lc-glass', type: 'button', dataset: { ps: 'lc-find' }, 'aria-label': 'Find another block', onclick: () => import('../ui/find-block.js').then((m) => m.openFindBlock(store)) }, icon('search', { size: 16 }), h('span', null, ''));
   const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, findPill, card, rooms, pager, mini);
@@ -184,7 +188,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     else { selTab = 'aerial'; schedule(); go(roomId); }
   }
 
-  function toggle2d() { if (onMini) { onMini(); return; } store.setUI({ view: store.ui.view === 'split' ? '3d' : 'split' }); }
+  function toggle2d() { if (embed) { mini.classList.toggle('is-big'); setTimeout(sizeInset, 50); return; } if (onMini) { onMini(); return; } store.setUI({ view: store.ui.view === 'split' ? '3d' : 'split' }); }
 
   // Rendering ---------------------------------------------------------------------------------------------------------------------
   const schemeChip = (s) => {
@@ -306,6 +310,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     const ox = (W - (maxX - minX) * k) / 2 - minX * k;
     const oy = (H - (maxY - minY) * k) / 2 - minY * k;
     const path = (ring) => { ctx.beginPath(); ring.forEach((q, i) => (i ? ctx.lineTo(q.x * k + ox, q.y * k + oy) : ctx.moveTo(q.x * k + ox, q.y * k + oy))); ctx.closePath(); };
+    miniT = { k, ox, oy };
     const img = ensureMiniAerial(p, lot);
     const ex = lot.aerial?.extent;
     const hasImg = !!(img && ex);
@@ -343,7 +348,142 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       ctx.lineWidth = 1;
       ctx.stroke();
     }
+    if (canMoveHouse(p)) {
+      const ring = ringOf(p, miniRot);
+      if (ring) {
+        ctx.beginPath();
+        ctx.arc(ring.centre.x * k + ox, ring.centre.y * k + oy, ring.radius * k, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(199,162,86,.8)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(ring.handle.x * k + ox, ring.handle.y * k + oy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#c7a256';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+    }
   }
+
+  // Top view: drag the house to move it (kept inside the lot), drag the gold handle to turn it (Shift snaps to 15 degrees); two fingers twist.
+  // The 3D view follows live: each step replaces the previous one, so the whole drag is one undo step. Same moves as the 2D Move house tool.
+  let miniT = null;
+  let miniRot = 0;
+  const ptrs = new Map();
+  let md = null;
+  const canvasPt = (e) => {
+    const r = cv.getBoundingClientRect();
+    const sx = ((e.clientX - r.left) * cv.width) / Math.max(1, r.width);
+    const sy = ((e.clientY - r.top) * cv.height) / Math.max(1, r.height);
+    return miniT ? { sx, sy, x: (sx - miniT.ox) / miniT.k, y: (sy - miniT.oy) / miniT.k } : null;
+  };
+  const handleHit = (pt) => {
+    const ring = ringOf(store.project, miniRot);
+    if (!ring || !pt) return null;
+    const hx = ring.handle.x * miniT.k + miniT.ox;
+    const hy = ring.handle.y * miniT.k + miniT.oy;
+    return Math.hypot(hx - pt.sx, hy - pt.sy) <= 14 ? ring : null;
+  };
+  const onHouseHull = (pt) => {
+    if (onHouse(store.project, pt)) return true;
+    const hull = buildingHull(store.project);
+    return hull.length >= 3 && G.pointInPolygon(pt, hull);
+  };
+  const insideLot = (hull, boundary, dx, dy) => hull.every((q) => G.pointInPolygon({ x: q.x + dx, y: q.y + dy }, boundary));
+  let flushT = 0;
+  function applyDrag(final = false) {
+    if (!md) return;
+    const now = performance.now();
+    if (!final && now - flushT < 70) { if (!md.raf) md.raf = setTimeout(() => { md && (md.raf = 0); applyDrag(); }, 70); return; }
+    flushT = now;
+    const key = md.mode === 'move' ? `${md.dx}|${md.dy}` : `${md.deg}`;
+    if (key === md.key) return;
+    md.key = key;
+    if (md.applied) store.undo();
+    md.applied = false;
+    if (md.mode === 'move' ? (!md.dx && !md.dy) : !md.deg) return;
+    if (md.mode === 'move') store.apply('Move house', (q) => translateHouse(q, md.dx, md.dy));
+    else store.apply('Rotate house', (q) => rotateHouse(q, md.deg, md.centre));
+    md.applied = true;
+  }
+  function endDrag() {
+    if (!md) return;
+    clearTimeout(md.raf);
+    applyDrag(true);
+    if (md.mode !== 'move' && md.applied) miniRot = (((miniRot + md.deg) % 360) + 360) % 360;
+    if (md.moved) suppressClick = true;
+    md = null;
+    schedule();
+  }
+  function beginTwist() {
+    endDrag();
+    const [a, b] = [...ptrs.values()];
+    const ring = ringOf(store.project, miniRot);
+    if (!ring) return;
+    md = { mode: 'turn', centre: ring.centre, a0: (Math.atan2(b.sy - a.sy, b.sx - a.sx) * 180) / Math.PI, total: 0, prev: null, deg: 0, moved: true, twist: true, key: '', applied: false, raf: 0 };
+  }
+  mini.style.touchAction = 'none';
+  mini.addEventListener('pointerdown', (e) => {
+    if (e.button > 0 || !miniT || !canMoveHouse(store.project)) return;
+    const pt = canvasPt(e);
+    ptrs.set(e.pointerId, pt);
+    if (ptrs.size === 2 && e.pointerType === 'touch') { beginTwist(); e.preventDefault(); return; }
+    if (ptrs.size > 1) return;
+    const ring = handleHit(pt);
+    if (ring) md = { mode: 'turn', centre: ring.centre, a0: (Math.atan2(pt.sy - (ring.centre.y * miniT.k + miniT.oy), pt.sx - (ring.centre.x * miniT.k + miniT.ox)) * 180) / Math.PI, total: 0, prev: null, deg: 0, moved: false, sx: pt.sx, sy: pt.sy, key: '', applied: false, raf: 0 };
+    else if (onHouseHull(pt)) md = { mode: 'move', x0: pt.x, y0: pt.y, dx: 0, dy: 0, moved: false, sx: pt.sx, sy: pt.sy, hull: buildingHull(store.project), key: '', applied: false, raf: 0 };
+    else return;
+    try { mini.setPointerCapture(e.pointerId); } catch { /* no capture */ }
+    e.preventDefault();
+  });
+  mini.addEventListener('pointermove', (e) => {
+    const pt = canvasPt(e);
+    if (!pt) return;
+    if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, pt);
+    if (!md) {
+      if (canMoveHouse(store.project) && e.pointerType !== 'touch') mini.style.cursor = handleHit(pt) ? 'grab' : onHouseHull(pt) ? 'move' : '';
+      return;
+    }
+    if (md.twist) {
+      if (ptrs.size < 2) return;
+      const [a, b] = [...ptrs.values()];
+      let d = (Math.atan2(b.sy - a.sy, b.sx - a.sx) * 180) / Math.PI - md.a0;
+      d = ((d + 540) % 360) - 180;
+      md.total = md.prev == null ? d : md.total + (((d - md.prev + 540) % 360) - 180);
+      md.prev = d;
+      md.deg = turnAngle(md.total, false);
+      applyDrag();
+      return;
+    }
+    if (!md.moved) { if (Math.hypot(pt.sx - md.sx, pt.sy - md.sy) < 3) return; md.moved = true; mini.style.cursor = 'grabbing'; }
+    if (md.mode === 'move') {
+      const snap = (v) => Math.round(v / 50) * 50;
+      const dx = snap(pt.x - md.x0);
+      const dy = snap(pt.y - md.y0);
+      const lot = lotOf(store.project);
+      const b = lot?.boundary;
+      const startsInside = !b || insideLot(md.hull, b, 0, 0);
+      let nx = md.dx; let ny = md.dy;
+      if (!b || !startsInside || insideLot(md.hull, b, dx, dy)) { nx = dx; ny = dy; }
+      else if (insideLot(md.hull, b, dx, md.dy)) nx = dx;
+      else if (insideLot(md.hull, b, md.dx, dy)) ny = dy;
+      md.dx = nx; md.dy = ny;
+    } else {
+      const c = { x: md.centre.x * miniT.k + miniT.ox, y: md.centre.y * miniT.k + miniT.oy };
+      let d = (Math.atan2(pt.sy - c.y, pt.sx - c.x) * 180) / Math.PI - md.a0;
+      d = ((d + 540) % 360) - 180;
+      md.total = md.prev == null ? d : md.total + (((d - md.prev + 540) % 360) - 180);
+      md.prev = d;
+      md.deg = turnAngle(md.total, e.shiftKey);
+    }
+    applyDrag();
+  });
+  const up = (e) => { ptrs.delete(e.pointerId); if (!md || !(md.twist ? ptrs.size < 2 : true)) return; endDrag(); mini.style.cursor = ''; };
+  mini.addEventListener('pointerup', up);
+  mini.addEventListener('pointercancel', up);
+
 
   // The camera frames the lot in the clear area: card on the left and minimap on the right when there is room, else the card height
   // at the bottom (phone width, where the card collapses to a title and the actions).

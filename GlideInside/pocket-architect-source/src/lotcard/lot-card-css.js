@@ -99,6 +99,10 @@ export const LOT_CARD_CSS = `
 .lc-root[data-room="1"]:not(.is-compact) .lc-card :is(.lc-stats,.lc-sp:not(.lc-sp-rooms),.lc-acts,.lc-fit){display:none}
 .lc-compact.lc-on .ps3d-viewbar{top:auto;bottom:170px;left:12px;transform:none}
 .lc-compact.lc-on .ps3d-hints{display:none}
+.lc-mini-hint{position:absolute;left:0;right:0;bottom:0;padding:4px 6px;font:500 9px var(--lc-sans);color:#fff;background:rgba(10,10,12,.72);text-align:center;opacity:0;pointer-events:none;transition:opacity .15s}
+.lc-mini:hover .lc-mini-hint{opacity:1}
+@media (hover:none){.lc-mini-hint{display:none}}
+.lc-mini.is-big{width:min(44vw,460px);min-width:0;z-index:5}
 @media (max-width:640px){.lc-plan{width:110px;height:74px}.lc-stats{gap:10px}.lc-btn{height:34px;padding:0 12px!important}}
 @media (prefers-reduced-motion:no-preference){.lc-chip,.lc-btn{transition:background .15s,box-shadow .15s}}
 `;

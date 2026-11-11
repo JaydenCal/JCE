@@ -70,7 +70,7 @@ export const SERVICES = {
   qldLidar: 'https://spatial-gis.information.qld.gov.au/arcgis/rest/services/Elevation/ElevationProjectExtents/MapServer/100',
 };
 
-const TTL = { search: 3600, lot: 7 * 86400, aerial: 7 * 86400, contours: 7 * 86400, health: 60 };
+const TTL = { search: 86400, lot: 7 * 86400, aerial: 7 * 86400, contours: 7 * 86400, health: 60 };
 const LIMITS = { search: [60, 60], lot: [20, 60], aerial: [20, 60], contours: [12, 60], health: [10, 60] }; // [hits, window seconds] per IP
 const DAY_LIMIT = 800;
 const NEIGHBOUR_M = 60;
@@ -109,6 +109,25 @@ export function searchWords(tokens, state) {
   let t = tokens.filter((x) => !drop.has(x));
   if (t.length >= 3 && /^\d{4}$/.test(t[t.length - 1])) t = t.slice(0, -1);
   return t.map((x, i) => (ABBREV[x] && !(x === 'ST' && (i === 0 || /^\d/.test(t[i - 1]))) ? ABBREV[x] : x)).filter(Boolean);
+}
+
+/**
+ * The state a search clearly names: 'NSW' or 'QLD', else null (query both). Looks for the state name or code and a trailing postcode
+ * (NSW 2000 to 2599, 2619 to 2899, 2921 to 2999; QLD 4000 to 4999 and 9000 to 9999). Pure.
+ */
+export function inferState(tokens) {
+  const t = tokens.map((x) => String(x).toUpperCase());
+  const qld = t.includes('QLD') || t.includes('QUEENSLAND');
+  const nsw = t.includes('NSW') || (t.includes('NEW') && t.includes('WALES'));
+  if (qld && !nsw) return 'QLD';
+  if (nsw && !qld) return 'NSW';
+  if (qld || nsw) return null;
+  const pc = t.length >= 3 && /^\d{4}$/.test(t[t.length - 1]) ? Number(t[t.length - 1]) : null;
+  if (pc != null) {
+    if ((pc >= 4000 && pc <= 4999) || (pc >= 9000 && pc <= 9999)) return 'QLD';
+    if ((pc >= 2000 && pc <= 2599) || (pc >= 2619 && pc <= 2899) || (pc >= 2921 && pc <= 2999)) return 'NSW';
+  }
+  return null;
 }
 
 /** NSW AddressPoint where clauses: { prefix, words } or null. */
@@ -270,26 +289,28 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     return q.toUpperCase().replace(/[,.]/g, ' ').replace(/[^A-Z0-9'/\- ]/g, ' ').split(/\s+/).filter(Boolean);
   }
 
-  async function searchNsw(tokens) {
+  // Each upstream gets 2.5 s and no retry: whatever has arrived by then is returned (a slow service must not hold the dropdown back).
+  const SEARCH_TIMEOUT_MS = 2500;
+  async function searchNsw(tokens, st) {
     const w = buildNswWhere(tokens);
     if (!w) return [];
     const run = (where) => upstream(`${SERVICES.nswAddresses}/query`, {
       f: 'json', where, outFields: 'address', returnGeometry: 'true', outSR: '4326', resultRecordCount: '8',
-    }, { timeoutMs: 12000 }).catch(() => ({ features: [] }));
-    // Prefix first (fast, index friendly); if it finds nothing, every word anywhere in the address.
-    let body = await run(w.prefix);
-    if (!(body.features || []).length && w.words !== w.prefix) body = await run(w.words);
+    }, { timeoutMs: SEARCH_TIMEOUT_MS, retries: 0 }).catch(() => { st.partial = true; return { features: [] }; });
+    // The prefix query (index friendly) and the every-word query run together; the prefix result wins when it found anything.
+    const [pre, any] = await Promise.all([run(w.prefix), w.words !== w.prefix ? run(w.words) : Promise.resolve({ features: [] })]);
+    const body = (pre.features || []).length ? pre : any;
     return (body.features || []).filter((f) => f.geometry && Number.isFinite(f.geometry.x) && f.attributes?.address).map((f) => ({
       label: `${titleCase(f.attributes.address)} NSW`, state: 'NSW', lon: round(f.geometry.x, 6), lat: round(f.geometry.y, 6),
     }));
   }
 
-  async function searchQld(tokens) {
+  async function searchQld(tokens, st) {
     const where = buildQldWhere(tokens);
     if (!where) return [];
     const body = await upstream(`${SERVICES.qldAddresses}/query`, {
       f: 'json', where, outFields: 'address,locality', returnGeometry: 'true', outSR: '7844', resultRecordCount: '8',
-    }, { timeoutMs: 12000 }).catch(() => ({ features: [] }));
+    }, { timeoutMs: SEARCH_TIMEOUT_MS, retries: 0 }).catch(() => { st.partial = true; return { features: [] }; });
     return (body.features || []).filter((f) => f.geometry && f.attributes?.address).map((f) => ({
       label: /\bQLD\b/i.test(f.attributes.address) ? titleCase(f.attributes.address).replace(/\bQld\b/, 'QLD') : `${titleCase(f.attributes.address)} QLD`,
       state: 'QLD', lon: round(f.geometry.x, 6), lat: round(f.geometry.y, 6),
@@ -302,10 +323,24 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     if (q.length < 3) return json({ results: [] });
     if (q.length > 120) throw new HttpError('BAD_REQUEST', 'q is too long.');
     const tokens = searchTokens(q);
-    const wantNsw = !tokens.includes('QLD') && !tokens.includes('QUEENSLAND');
-    const wantQld = !tokens.includes('NSW');
-    const { value } = await jsonCached(`search:${tokens.join(' ')}`, TTL.search, async () => {
-      const [a, b] = await Promise.all([wantNsw ? searchNsw(tokens) : [], wantQld ? searchQld(tokens) : []]);
+    const only = inferState(tokens);
+    const wantNsw = only !== 'QLD';
+    const wantQld = only !== 'NSW';
+    const key = `search:${tokens.join(' ')}`;
+    // Workers Cache API (1 day) in front of the store cache; a partial answer (an upstream timed out) is never cached.
+    const edge = typeof caches !== 'undefined' && caches?.default ? caches.default : null;
+    const edgeUrl = `https://site-cache.invalid/${encodeURIComponent(key)}`;
+    if (edge) {
+      try {
+        const hit = await edge.match(edgeUrl);
+        if (hit) return json(await hit.json(), 200, { 'cache-control': 'public, max-age=300', 'x-search-cache': 'edge' });
+      } catch {
+        /* cache unavailable */
+      }
+    }
+    const st = { partial: false };
+    const { value } = await jsonCached(key, TTL.search, async () => {
+      const [a, b] = await Promise.all([wantNsw ? searchNsw(tokens, st) : [], wantQld ? searchQld(tokens, st) : []]);
       // Interleave so both states show, shortest label first inside each (closest to what was typed).
       const byLen = (x, y) => x.label.length - y.label.length || x.label.localeCompare(y.label);
       a.sort(byLen);
@@ -321,7 +356,10 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         }
       }
       return { results: merged.slice(0, 8) };
-    });
+    }, { ttlFor: (v, ttl) => (st.partial || !v.results.length ? 0 : ttl) });
+    if (edge && !st.partial && value.results.length) {
+      try { await edge.put(edgeUrl, new Response(JSON.stringify(value), { headers: { 'content-type': 'application/json', 'cache-control': `public, max-age=${TTL.search}` } })); } catch { /* ignore */ }
+    }
     return json(value, 200, { 'cache-control': 'public, max-age=300' });
   }
 

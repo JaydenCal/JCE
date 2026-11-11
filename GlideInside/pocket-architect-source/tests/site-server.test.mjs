@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createApp } from '../server/lib/app.js';
 import { createMemoryStore, createD1Store } from '../server/lib/store.js';
-import { createSite, parseBbox, createCache, buildNswWhere, buildQldWhere, searchWords } from '../server/lib/site.js';
+import { createSite, parseBbox, createCache, buildNswWhere, buildQldWhere, searchWords, inferState } from '../server/lib/site.js';
 import { lonLatToMga, mgaToLonLat } from '../src/site/geo.js';
 
 let DatabaseSync = null;
@@ -378,4 +378,54 @@ test('QLD: search uses the Addresses layer, lot uses cadastral parcels, zoning i
   assert.equal(b.lga, 'Townsville City');
   assert.equal(b.neighbours.length, 1);
   assert.equal(b.neighbours[0].isRoad, true);
+});
+
+test('search routing: a state or postcode hint queries only that state, otherwise both run in parallel', async () => {
+  const tk = (t) => t.toUpperCase().split(/\s+/);
+  assert.equal(inferState(tk('12 smith street tamworth nsw')), 'NSW');
+  assert.equal(inferState(tk('5 example street west end qld')), 'QLD');
+  assert.equal(inferState(tk('5 example street queensland')), 'QLD');
+  assert.equal(inferState(tk('5 example street new south wales')), 'NSW');
+  assert.equal(inferState(tk('5 example street kirwan 4817')), 'QLD');
+  assert.equal(inferState(tk('12 smith street tamworth 2340')), 'NSW');
+  assert.equal(inferState(tk('12 smith street')), null);
+  assert.equal(inferState(tk('12 smith street nsw qld')), null);
+
+  const hosts = async (q) => {
+    const calls = [];
+    const { get } = mk({ calls });
+    await (await get(`/search?q=${encodeURIComponent(q)}`)).json();
+    return { nsw: calls.some((c) => /NSW_Geocoded/.test(c)), qld: calls.some((c) => /LandParcelPropertyFramework/.test(c)) };
+  };
+  assert.deepEqual(await hosts('12 smith street tamworth nsw'), { nsw: true, qld: false });
+  assert.deepEqual(await hosts('12 smith street west end qld'), { nsw: false, qld: true });
+  assert.deepEqual(await hosts('12 smith street'), { nsw: true, qld: true });
+
+  // Parallel: both upstream calls are in flight before either answers.
+  let inFlight = 0;
+  let peak = 0;
+  const slow = async () => {
+    inFlight++;
+    peak = Math.max(peak, inFlight);
+    await new Promise((r) => setTimeout(r, 30));
+    inFlight--;
+    return new Response(JSON.stringify({ features: [] }), { status: 200, headers: { 'content-type': 'application/json' } });
+  };
+  const app = createApp({ store: createMemoryStore(), env: {}, fetchImpl: slow, now: () => T0 });
+  await app.fetch(new Request('https://api.test/api/site/search?q=12+smith+street', { headers: { 'cf-connecting-ip': '2.2.2.2' } }));
+  assert.ok(peak >= 2, `upstream calls ran one after another (peak ${peak})`);
+});
+
+test('search: a slow upstream is cut off and an answer that arrived is still returned', async () => {
+  const j = (b) => new Response(JSON.stringify(b), { status: 200, headers: { 'content-type': 'application/json' } });
+  const impl = async (input) => {
+    const u = String(input);
+    if (/LandParcelPropertyFramework/.test(u)) return new Response('down', { status: 503 });
+    return j({ features: [{ attributes: { address: '12 SMITH STREET TAMWORTH' }, geometry: { x: LON, y: LAT } }] });
+  };
+  const app = createApp({ store: createMemoryStore(), env: {}, fetchImpl: impl, now: () => T0 });
+  const res = await app.fetch(new Request('https://api.test/api/site/search?q=12+smith+street', { headers: { 'cf-connecting-ip': '3.3.3.3' } }));
+  const body = await res.json();
+  assert.equal(res.status, 200);
+  assert.equal(body.results[0].label, '12 Smith Street Tamworth NSW');
 });

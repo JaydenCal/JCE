@@ -3,7 +3,7 @@
 // for ?address= and which the viewer runs for a gi:find-address message from the page around it.
 //
 //   parent -> app   { type: 'gi:find-address', address }       same origin parent only
-//   app -> parent   { type: 'gi:ready' }                         the demo lot is on screen
+//   app -> parent   { type: 'gi:ready' }                         the app is listening for gi:find-address
 //   app -> parent   { type: 'gi:status', state: 'loading' | 'done' | 'error', message?, address? }
 
 import { h } from './dom.js';
@@ -136,6 +136,7 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
   async function aerial() {
     try {
       const v = getViewer() || (await getViewer.ensure?.());
+      v?.setEmbedFraming?.(true);
       await v?.snapToRoom?.('aerial', { duration: 0.01, site: true });
     } catch { /* the viewer keeps its own framing */ }
   }
@@ -166,10 +167,8 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
       await loadDemo(store, catalogue, { after: settleAerial });
       store.setUI({ view: '3d' });
       await aerial();
-      postToParent({ type: 'gi:ready' });
     } catch (e) {
       console.warn('[embed] demo lot failed', e);
-      postToParent({ type: 'gi:ready' });
     } finally {
       settle();
     }
@@ -182,8 +181,10 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
     run(m.address.slice(0, 160));
   };
   window.addEventListener('message', onMessage);
+  postToParent({ type: 'gi:ready' }); // the listener is on: a search sent now waits its turn behind the lot that is loading
 
   if (viewerMode) {
+    Promise.resolve(getViewer.ensure?.()).then((v) => v?.setEmbedFraming?.(true)).catch(() => {});
     // The cinematic view is the whole app here: the plan and split views are not reachable.
     off = store.on('ui', (patch = {}) => {
       if ('view' in patch && patch.view !== '3d' && patch.view !== 'walk') store.setUI({ view: '3d' });
@@ -204,6 +205,7 @@ export function openFullEditor(project) {
 
 /** The "Open full editor" link (top right) and a small loading note, over the 3D view. */
 export function mountViewerChrome(stage, store) {
+  if (inFrame()) return { link: null, busy: stage.appendChild(h('div', { class: 'ps-embed-busy', role: 'status', 'aria-live': 'polite' }, 'Loading your block')) };
   const link = h('a', { class: 'ps-embed-full', href: FULL_EDITOR_PATH, target: '_top', dataset: { ps: 'embed-full' }, onclick: (e) => { e.preventDefault(); openFullEditor(store.project); } }, 'Open full editor', h('span', { 'aria-hidden': 'true' }, ' \u2197'));
   const busy = h('div', { class: 'ps-embed-busy', role: 'status', 'aria-live': 'polite' }, 'Loading your block');
   stage.append(link, busy);

@@ -663,3 +663,5 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 }
 .live-hero .lh-bar span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .live-hero .lh-bar .lh-edit,.live-hero .lh-bar .lh-fs{white-space:nowrap;flex:none}
+.as-opt.as-searching{cursor:default;color:#596275;font-weight:500;font-size:14px}
+.as-opt.as-searching:hover{background:none}

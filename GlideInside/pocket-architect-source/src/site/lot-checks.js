@@ -118,6 +118,6 @@ export function setbackStatusLine(project) {
     }
     return { state: 'check', text: 'Setbacks not confirmed, check with council' };
   }
-  if (flagged) return { state: 'check', text: 'Fits the setbacks, check with council' };
+  if (flagged && !lot.demo) return { state: 'check', text: 'Fits the setbacks, check with council' };
   return { state: 'inside', text: 'Fits the setbacks' };
 }
