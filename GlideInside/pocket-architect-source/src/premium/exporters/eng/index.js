@@ -10,7 +10,7 @@ import { paperOf, levelContent, chooseScale } from '../drawing.js';
 import { levelsSorted, ascii, outlineBox } from '../shared.js';
 import { scaledDoc, drawLevel } from '../pdf.js';
 import { clean, viewTitle, cleanedDoc, withSuperscripts } from './kit.js';
-import { brandOf, drawingNo } from './brand.js';
+import { brandOf, drawingNo, projectTitle } from './brand.js';
 import { drawFrame, BODY } from './frame.js';
 import { drawSitePlan, drawSitePanel, siteFacts, siteView, SITE_VP, keyBox, localityView } from './siteplan.js';
 import { AREA } from '../pdf.js';
@@ -118,7 +118,7 @@ export async function toEngineeringPDF(project, options = {}) {
   const brand = brandOf(project, options);
   const tb = project.titleBlock || {};
   raw.setProperties({
-    title: `${ascii(tb.projectName || project.name) || 'Design'} concept plan set`,
+    title: `${ascii(projectTitle(project)) || 'Design'} concept plan set`,
     subject: 'Concept design plans, to be verified by a suitably qualified person',
     author: brand.mode === 'builder' ? brand.name || 'Glide Inside' : ascii(tb.company) || 'Glide Inside',
     creator: 'Glide Inside Pocket Architect',

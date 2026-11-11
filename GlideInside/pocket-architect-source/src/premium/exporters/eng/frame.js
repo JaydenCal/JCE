@@ -3,7 +3,7 @@
 
 import { clean, PEN, fit, ink, wrap } from './kit.js';
 import { placeImage } from '../pdf.js';
-import { DISCLAIMER, ddmmyyyy, normDate, drawingNo, attribution } from './brand.js';
+import { DISCLAIMER, ddmmyyyy, normDate, drawingNo, attribution, projectTitle } from './brand.js';
 
 export const SW = 420;
 export const SH = 297;
@@ -123,7 +123,7 @@ export function drawFrame(doc, ctx, sheet) {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(13);
   ink(doc, PEN.ink);
-  const pname = clean(tb.projectName || project.name || 'Untitled design').toUpperCase();
+  const pname = projectTitle(project).toUpperCase();
   doc.text(fit(doc, pname, w2 - 5), x2 + 2.6, y0 + 9.2);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);

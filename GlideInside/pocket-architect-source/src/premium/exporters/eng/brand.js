@@ -24,15 +24,40 @@ export function normDate(text) {
 }
 export const ddmmyy = ddmmyyyy; // earlier name; the format is DD/MM/YYYY
 
-/** Short project code for drawing numbers: the job number if there is one, else letters and digits from the project name. */
+/** Letters and digits only, upper case, at most n long. */
+const alnum = (t, n = 12) => String(t ?? '').toUpperCase().replace(/[^A-Z0-9]+/g, '').slice(0, n);
+
+/**
+ * Short job code for drawing numbers. Never derived from the free text project name (a typo there must not reach every drawing number):
+ * the job number the user entered, else the lot and plan of the site (Lot 3 DP 263990 gives L3DP263990), else a short id, else DRAFT.
+ */
 export function projectCode(project) {
   const tb = project?.titleBlock || {};
-  const raw = clean(tb.jobNumber) || clean(tb.projectName) || clean(project?.name) || 'PROJECT';
-  const code = raw.toUpperCase().replace(/[^A-Z0-9]+/g, '').slice(0, 8);
-  return code || 'PROJECT';
+  const job = alnum(clean(tb.jobNumber), 10);
+  if (job) return job;
+  const lot = project?.site?.lot;
+  const lotNo = alnum(lot?.lotNumber, 5);
+  const plan = alnum(lot?.planLabel, 10);
+  if (lotNo && plan) return `L${lotNo}${plan}`.slice(0, 16);
+  const id = alnum(project?.id, 6);
+  return id || 'DRAFT';
 }
 
 export const drawingNo = (project, n) => `GI-${projectCode(project)}-A-${String(n).padStart(3, '0')}`;
+
+/**
+ * The project title for the sheets: trimmed, spaces collapsed, control and stray symbol characters removed, and digits typed
+ * inside a word (SI38NGLE) taken out. Falls back to "<n> bedroom house" or "Concept house".
+ */
+export function projectTitle(project) {
+  const tb = project?.titleBlock || {};
+  let t = clean(tb.projectName) || clean(project?.name) || '';
+  t = t.replace(/[\u0000-\u001f\u007f<>{}[\]|\\^~`]+/g, ' ').replace(/(?<=[A-Za-z])\d+(?=[A-Za-z])/g, '').replace(/\s+/g, ' ').trim();
+  if (t && /[A-Za-z0-9]/.test(t) && !/^untitled( design)?$/i.test(t)) return t;
+  let beds = 0;
+  for (const l of project?.levels || []) for (const r of l.rooms || []) if (/bed(room)?\b/i.test(String(r.type || r.name || '')) && !/ensuite|bath|robe/i.test(String(r.name || ''))) beds++;
+  return beds > 0 ? `${beds} bedroom house` : 'Concept house';
+}
 
 /**
  * Who the sheets are branded as. options.builder = { name, logo (data URL) } for builder or client logins. In the browser the

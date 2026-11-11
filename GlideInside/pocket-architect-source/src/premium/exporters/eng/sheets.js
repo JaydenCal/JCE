@@ -10,7 +10,7 @@ import { BODY } from './frame.js';
 import { drawLocality, siteFacts, lotBounds, chooseSiteScale, makeT, paletteFor } from './siteplan.js';
 
 const cap = (t) => { const x = String(t ?? ''); return x ? x[0].toUpperCase() + x.slice(1) : x; };
-import { ddmmyyyy, normDate } from './brand.js';
+import { ddmmyyyy, normDate, projectTitle } from './brand.js';
 import { schemeById, effectiveSchemeId, schemeLine } from '../../../model/colour-schemes.js';
 import { compassWord } from './views.js';
 
@@ -95,7 +95,7 @@ export function drawCover(doc, ctx, list) {
   y += 14;
   doc.setFontSize(30);
   ink(doc, PEN.ink);
-  const name = clean(tb.projectName || project.name || 'Untitled design').toUpperCase();
+  const name = projectTitle(project).toUpperCase();
   const nameLines = wrap(doc, name, 190).slice(0, 2);
   nameLines.forEach((l, i) => doc.text(l, x0, y + i * 12.5));
   y += nameLines.length * 12.5 + 3;

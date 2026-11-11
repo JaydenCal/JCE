@@ -14,7 +14,7 @@ import { autoPose } from '../src/portal/auto-place.js';
 import { placeHouse } from '../src/portal/place-house.js';
 import { toEngineeringPDF, engineeringSheets } from '../src/premium/exporters/eng/index.js';
 import { clean, hatchSegments, placeCallouts, clipSegment } from '../src/premium/exporters/eng/kit.js';
-import { ddmmyy, drawingNo, projectCode, brandOf, attribution } from '../src/premium/exporters/eng/brand.js';
+import { ddmmyy, drawingNo, projectCode, projectTitle, brandOf, attribution } from '../src/premium/exporters/eng/brand.js';
 import { buildExport } from '../src/premium/exporters/index.js';
 
 const rules = JSON.parse(fs.readFileSync(new URL('../../setbacks-data/setback-rules.json', import.meta.url), 'utf8'));
@@ -123,9 +123,16 @@ test('branding switch: public leads with Glide Inside and the user fields, build
 });
 
 test('drawing numbers, dates and attribution', () => {
-  const p = createProject({ name: 'Sample Residence' });
-  assert.equal(projectCode(p), 'SAMPLERE');
-  assert.equal(drawingNo(p, 7), 'GI-SAMPLERE-A-007');
+  const p = createProject({ id: 'p_abc123xyz', name: 'SI38NGLE storey,   4 bedroom ' });
+  // Never from the free text name: the short id, then the lot and plan, then a typed job number
+  assert.equal(projectCode(p), 'PABC12');
+  assert.equal(drawingNo(p, 7), 'GI-PABC12-A-007');
+  p.site.lot = { lotNumber: '3', planLabel: 'DP 263990' };
+  assert.equal(drawingNo(p, 1), 'GI-L3DP263990-A-001');
+  p.titleBlock.jobNumber = 'tam-24';
+  assert.equal(drawingNo(p, 1), 'GI-TAM24-A-001');
+  assert.equal(projectTitle(p), 'SINGLE storey, 4 bedroom');
+  assert.equal(projectTitle(createProject({ name: '   ' })), 'Concept house');
   assert.equal(ddmmyy(new Date(2026, 0, 5)), '05/01/2026');
   assert.match(attribution({ state: 'NSW' }), /NSW Spatial Services \(CC BY\)/);
   assert.match(attribution({ state: 'QLD' }), /Queensland Government \(CC BY 4\.0\).*CC BY-SA/);
