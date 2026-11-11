@@ -158,9 +158,12 @@ test('room tabs: only rooms the design has, aerial last; rooms plan covers every
   const p = house();
   const tabs = listRoomTabs(p);
   assert.equal(tabs.at(-1).id, 'aerial');
+  const grouped = listRoomTabs(p, null, { groupBedrooms: true });
+  assert.ok(grouped.filter((t) => t.id === 'bedrooms').length <= 1);
+  assert.ok(!grouped.some((t) => t.id === 'master' || /^bed\d/.test(t.id)), 'grouped: one Bedrooms tab');
   const types = new Set(p.levels.flatMap((l) => l.rooms).map((r) => r.type));
-  assert.equal(tabs.some((t) => t.id === 'garage'), types.has('garage') || types.has('carport'));
-  assert.equal(tabs.some((t) => t.id === 'kitchen'), types.has('kitchen'));
+  assert.equal(tabs.some((t) => t.id === 'garage'), p.levels.flatMap((l) => l.rooms).some((r) => /garage|carport/i.test(`${r.type} ${r.name}`)));
+  assert.equal(tabs.some((t) => t.id === 'kitchen'), p.levels.flatMap((l) => l.rooms).some((r) => /kitchen/i.test(`${r.type} ${r.name}`)));
   for (const t of tabs) assert.ok(!/[–—]/.test(t.caption));
   const m = roomsPlanModel(p, 150, 100);
   assert.equal(m.rooms.length, p.levels.flatMap((l) => l.rooms).length);

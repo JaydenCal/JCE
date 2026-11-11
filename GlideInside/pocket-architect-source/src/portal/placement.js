@@ -15,7 +15,7 @@ import { lotOf } from '../model/placement.js';
  * initialPose, the house starts turned so its garage faces the street, centred on the frontage behind the front setback
  * (auto-place.js). `fit` is the ranking entry from fit.js ({ badge, reason }) shown in the panel: rank first, then fine tune.
  */
-export function startPlacement({ store, editor, house, lot = null, host = document.getElementById('ps-stage'), onDone, onCancel, initialPose = null, fit = null } = {}) {
+export function startPlacement({ store, editor, house, lot = null, host = document.getElementById('ps-stage'), onDone, onCancel, initialPose = null, fit = null, design = null } = {}) {
   const base = structuredClone(store.project);
   let pose = initialPose || null;
   let note = '';
@@ -42,6 +42,6 @@ export function startPlacement({ store, editor, house, lot = null, host = docume
   const describe = `${(b.width / 1000).toFixed(1)} x ${(b.depth / 1000).toFixed(1)} m. Drag the house to move it, drag the gold handle to turn it (Shift for 15 degree steps). Arrow keys nudge 0.5 m (Shift 0.1 m).${tooBig ? ' This house is larger than the lot.' : ''}${note}`;
   return runPoseSession({
     store, editor, host, title: `Place ${house.name || 'house'}`, describe, fit, initialPose: pose,
-    apply: (p, ps) => placeHouse(p, house, ps), commitLabel: 'Place house', commitText: 'Place house', onDone, onCancel,
+    apply: (p, ps) => { placeHouse(p, house, ps); if (design) p.placedHouse = { id: design.id ?? null, name: design.name || house.name || '' }; }, commitLabel: 'Place house', commitText: 'Place house', onDone, onCancel,
   });
 }

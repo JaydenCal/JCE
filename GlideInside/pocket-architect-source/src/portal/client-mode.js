@@ -223,7 +223,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     const hull = sl0?.boundary?.length >= 3 ? orientedBox(sl0.boundary) : null;
     const lotBox = hull ? { widthMm: hull.w, depthMm: hull.d } : env ? { widthMm: Math.max(...env.map((p) => p.x)) - Math.min(...env.map((p) => p.x)), depthMm: Math.max(...env.map((p) => p.y)) - Math.min(...env.map((p) => p.y)) } : null;
     startPlacement({
-      store, editor, house, lot: lotBox, initialPose, fit,
+      store, editor, house, lot: lotBox, initialPose, fit, design: { id: d.id, name: d.name },
       onDone: () => { store.setUI({ placedDesign: { id: d.id, name: d.name } }); toast(`${d.name} placed. Every wall, room and opening is editable.`, { kind: 'ok' }); },
     });
   }

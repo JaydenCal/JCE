@@ -758,6 +758,29 @@ export function createWalk({ camera, canvas, container, store, onExit, doors = n
     },
     goToLevel,
     openWheel,
+    // Put the player at a world position and look direction (room snapping). Bypasses collisions, so callers pass a clear spot.
+    // levelId (optional) switches the walking level; y is the eye height in metres. Returns false when not walking.
+    placeAt({ x, y, z, yaw, pitch = 0, levelId: lid = null }) {
+      if (!active) return false;
+      if (lid && lid !== levelId && store.project.levels.some((l) => l.id === lid)) {
+        levelId = lid;
+        onStair = null;
+        refreshColliders();
+        doorTarget = null;
+        target = null;
+        updateHud();
+        if (store.ui.activeLevelId !== lid) store.setUI({ activeLevelId: lid });
+      }
+      camera.position.set(x, y, z);
+      camera.quaternion.setFromEuler(new THREE.Euler(Math.max(-MAX_PITCH, Math.min(MAX_PITCH, pitch)), yaw, 0, 'YXZ'));
+      eyeY = eyeTarget = y;
+      glide = null;
+      onStair = null;
+      return true;
+    },
+    get pitch() {
+      return new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ').x;
+    },
     // test hooks
     _state: () => ({ x: camera.position.x, y: camera.position.y, z: camera.position.z, levelId }),
     _press: (code, on = true) => (on ? held.add(code) : held.delete(code)),

@@ -8,6 +8,8 @@ export const VIEWER_CSS = `
 .ps3d-hints{position:absolute;left:158px;bottom:52px;display:flex;flex-wrap:wrap;gap:8px;max-width:calc(100% - 150px);pointer-events:none;transition:opacity .5s ease;z-index:5}
 .ps3d-viewbar{position:absolute;left:158px;bottom:12px;z-index:6;display:flex;gap:6px;flex-wrap:wrap}.ps3d-viewbar[hidden]{display:none}.ps3d-chip--btn{cursor:pointer;font-family:inherit}.ps3d-chip--btn:hover{border-color:var(--ps-accent,#1f6feb)}.ps3d-chip--btn[aria-pressed="true"]{background:#7a4a12;color:#fff;border-color:#7a4a12}
 .ps3d-hints[hidden]{display:none}
+.ps3d-roombar{position:absolute;left:170px;right:12px;bottom:12px;z-index:16;display:flex;gap:6px;flex-wrap:nowrap;justify-content:center;overflow-x:auto;scrollbar-width:none;pointer-events:none}.ps3d-roombar::-webkit-scrollbar{display:none}.ps3d-roombar[hidden]{display:none}
+.ps3d-roombar .ps3d-chip{pointer-events:auto;cursor:pointer;font-family:inherit;white-space:nowrap;flex:0 0 auto;padding:4px 10px}.ps3d-roombar .ps3d-chip:hover{border-color:var(--ps-accent,#1f6feb)}.ps3d-roombar .ps3d-chip[aria-pressed="true"]{background:var(--ps-accent,#1f6feb);border-color:var(--ps-accent,#1f6feb);color:var(--ps-accent-ink,#fff)}
 .ps3d-hints.is-faded{opacity:0}
 .ps3d-chip{background:var(--ps-panel,#fff);color:var(--ps-text,#1c2430);border:1px solid var(--ps-border,#cfd6de);border-radius:999px;padding:5px 11px;font-size:12px;line-height:1.25;font-weight:500;box-shadow:0 1px 4px rgba(0,0,0,.14)}
 .ps3d-note{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-size:15px;color:var(--ps-muted,#5b6674);background:var(--ps-bg,#e8edf2)}

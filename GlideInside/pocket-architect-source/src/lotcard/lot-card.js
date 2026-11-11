@@ -17,7 +17,7 @@ import { cardStats, lotHeading, lotLine, hasBuilding } from './stats.js';
 import { publicDesigns, currentIndex, pagerText, stepIndex } from './designs.js';
 import { swapHouse } from './swap.js';
 import { LOT_CARD_CSS } from './lot-card-css.js';
-import { listRoomTabs, snapToRoom } from '../viewer3d/rooms.js';
+import { listRoomTabs } from '../viewer3d/rooms.js';
 import { roomsPlanModel } from './rooms-plan.js';
 
 const STYLE_ID = 'lc-style';
@@ -47,7 +47,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const chips = E('lc-strip', 'div', { role: 'group', 'aria-label': 'Colour schemes' });
   const bWalk = h('button', { class: 'lc-btn lc-pri', type: 'button', dataset: { ps: 'lc-walk' }, onclick: () => store.setUI({ view: 'walk' }) }, 'Walk inside');
   const bEdit = h('button', { class: 'lc-btn', type: 'button', dataset: { ps: 'lc-edit' }, onclick: () => store.setUI({ view: '2d' }) }, 'Edit floor plan');
-  const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => sitePlanPdf() }, 'Site plan PDF');
+  const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => sitePlanPdf() }, 'Plan set PDF');
   const fit = E('lc-fit', 'div', { role: 'status', 'aria-live': 'polite', dataset: { ps: 'lc-fit' } });
   const more = h('button', { class: 'lc-more', type: 'button', 'aria-expanded': 'false', onclick: () => { card.classList.toggle('is-open'); more.setAttribute('aria-expanded', String(card.classList.contains('is-open'))); sizeInset(); } }, 'Details');
   const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-acts', 'div', null, bWalk, bEdit, bPdf), fit);
@@ -121,6 +121,8 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     const i = stepIndex(designs.length, currentIndex(designs, store.project, uiPlaced()), dir);
     const d = designs[i];
     selTab = 'aerial';
+    bedI = 0;
+    go('aerial');
     try {
       const { fits } = swapHouse(store, d.project, { id: d.id, name: d.name });
       store.setUI({ placedDesign: { id: d.id, name: d.name } });
@@ -135,22 +137,48 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     store.apply('Colour scheme', (p) => { p.colourScheme = id; });
   }
 
-  // Site plan PDF goes through the same PDF plan set, entitlement and paywall as the top bar: builder staff are entitled, a client
+  // The PDF button opens the whole plan set (the engineering exporter has no single sheet output). It goes through the same PDF plan set, entitlement and paywall as the top bar: builder staff are entitled, a client
   // only when the builder allows PDF exports, the public app needs the Plan Pack (the preview shows the sheets, Unlock opens the offer).
   function sitePlanPdf() {
     const prem = app().premium;
-    if (!prem?.previewPdf) { toast('Site plan PDF comes with the Plan Pack.', { kind: 'info' }); return; }
+    if (!prem?.previewPdf) { toast('The plan set PDF comes with the Plan Pack.', { kind: 'info' }); return; }
     const portal = prem.state?.portal;
     if (portal && Array.isArray(portal.exports) && !portal.exports.includes('pdf')) { toast('Your builder provides the PDF plans. Ask them if you need one.', { kind: 'info' }); return; }
     prem.previewPdf();
   }
 
+  // Tabs come from the room engine (one grouped Bedrooms tab). Bedrooms cycles through the individual bedrooms: master first, then the
+  // others, one per click. The engine's own per bedroom tab (master, bed2 ...) supplies the pose and the caption.
   let tabs = [];
   let selTab = 'aerial';
+  let bedI = 0;
+  const bedTabs = () => listRoomTabs(store.project, null).filter((t) => t.bedN > 0);
+  const viewerNow = async () => getViewer() || (await getViewer.ensure?.().catch(() => null)) || null;
+  const targetTab = () => (selTab === 'bedrooms' ? bedTabs()[bedI] : tabs.find((t) => t.id === selTab));
+  async function go(id) {
+    const v = await viewerNow();
+    if (v?.snapToRoom) await v.snapToRoom(id, { duration: 1.1, site: id === 'aerial' }).catch(() => {});
+  }
   function pickTab(id) {
+    if (id === 'bedrooms') {
+      const beds = bedTabs();
+      bedI = selTab === 'bedrooms' ? (bedI + 1) % Math.max(1, beds.length) : 0;
+      selTab = 'bedrooms';
+      schedule();
+      if (beds[bedI]) go(beds[bedI].id);
+      return;
+    }
     selTab = id;
-    snapToRoom(getViewer(), store.project, id).catch(() => {});
     schedule();
+    go(id);
+  }
+  function pickRoom(roomId) {
+    const beds = bedTabs();
+    const bi = beds.findIndex((t) => t.roomIds.includes(roomId));
+    if (bi >= 0) { selTab = 'bedrooms'; bedI = bi; schedule(); go(beds[bi].id); return; }
+    const tab = tabs.find((x) => x.roomIds.includes(roomId));
+    if (tab) pickTab(tab.id);
+    else { selTab = 'aerial'; schedule(); go(roomId); }
   }
 
   function toggle2d() { store.setUI({ view: store.ui.view === 'split' ? '3d' : 'split' }); }
@@ -176,7 +204,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     root.dataset.view = view;
     viewerHost.classList.toggle('lc-on', show && (view === '3d' || view === 'split'));
     layoutClasses();
-    if (!show) { getViewer()?.setInset?.({}); return; }
+    if (!show) { getViewer()?.setInset?.({}); app().editor?.setInset?.({}); return; }
     loadDesigns();
 
     const idx = currentIndex(designs, p, uiPlaced());
@@ -196,10 +224,10 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     fit.dataset.state = line.state;
     fit.replaceChildren(h('span', { class: 'lc-dot', style: { background: DOT[line.state] || 'transparent' } }), line.text);
 
-    tabs = listRoomTabs(p);
+    tabs = listRoomTabs(p, null, { groupBedrooms: true });
     if (!tabs.some((t) => t.id === selTab)) selTab = 'aerial';
     tabsEl.replaceChildren(...tabs.map((t) => h('button', { class: 'lc-tab', type: 'button', role: 'tab', 'aria-selected': String(t.id === selTab), dataset: { tab: t.id }, onclick: () => pickTab(t.id) }, t.label)));
-    const cur = tabs.find((t) => t.id === selTab);
+    const cur = targetTab() || tabs.find((t) => t.id === 'aerial');
     cap.textContent = cur?.caption || '';
     rooms.hidden = tabs.length < 2;
     drawPlan(p, cur);
@@ -231,7 +259,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       const t = document.createElementNS(ns, 'title');
       t.textContent = r.name;
       el.append(t);
-      el.addEventListener('click', () => { const tab = tabs.find((x) => x.roomIds.includes(r.id)); if (tab) pickTab(tab.id); });
+      el.addEventListener('click', () => pickRoom(r.id));
       return el;
     }));
   }
@@ -293,25 +321,32 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
 
   // The camera frames the lot in the clear area: card on the left and minimap on the right when there is room, else the card height
   // at the bottom (phone width, where the card collapses to a title and the actions).
-  function sizeInset() {
-    const v = getViewer();
-    if (!v?.setInset || root.hidden) return;
-    const vr = viewerHost.getBoundingClientRect();
-    if (viewerHost.hidden || vr.width < 2 || root.dataset.view === '2d') { v.setInset({}); return; }
+  function insetOver(target, els) {
+    const vr = target.getBoundingClientRect();
     const inset = { left: 0, right: 0, bottom: 0, top: 0 };
-    for (const el of [card, rooms, pager, mini, head]) {
-      if (el.hidden || getComputedStyle(el).display === 'none') continue;
+    if (target.hidden || vr.width < 2 || vr.height < 2) return inset;
+    for (const el of els) {
+      if (el === head || el.hidden || getComputedStyle(el).display === 'none') continue;
       const r = el.getBoundingClientRect();
       if (r.right <= vr.left || r.left >= vr.right || r.bottom <= vr.top || r.top >= vr.bottom) continue;
       const cx = (r.left + r.right) / 2 - vr.left;
       const nearTop = r.top - vr.top < vr.height / 3;
-      if (el === head) continue;
       if (nearTop) inset.top = Math.max(inset.top, r.bottom - vr.top + 6);
       else if (cx < vr.width * 0.3 && r.width < vr.width * 0.6) inset.left = Math.max(inset.left, r.right - vr.left + 16);
       else if (cx > vr.width * 0.75 && r.width < vr.width * 0.4) inset.right = Math.max(inset.right, vr.right - r.left + 16);
       else inset.bottom = Math.max(inset.bottom, vr.bottom - r.top + 8);
     }
-    v.setInset(inset);
+    return inset;
+  }
+  function sizeInset() {
+    const v = getViewer();
+    const ed = app().editor;
+    if (root.hidden) { ed?.setInset?.({}); return; }
+    const els = [card, rooms, pager, mini, head];
+    // 3D: framed in what the cards leave clear. 2D and split: the plan is framed the same way, so the lot is not under the card.
+    if (v?.setInset) v.setInset(root.dataset.view === '2d' ? {} : insetOver(viewerHost, els));
+    const view = root.dataset.view;
+    ed?.setInset?.(ed.element && (view === '2d' || view === 'split') ? insetOver(ed.element, els) : {});
   }
 
   const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { layoutClasses(); sizeInset(); }) : null;

@@ -36,6 +36,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     view: { scale: M.DEFAULT_SCALE, ox: 60, oy: 60 },
     size: { w: 0, h: 0 },
     autoFit: false,
+    inset: { left: 0, right: 0, top: 0, bottom: 0 },
     dpr: 1,
     theme: readTheme(element),
     active: false,
@@ -326,7 +327,11 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       state.fitted = false;
       return;
     }
-    state.view = M.fitView(fitBounds(), state.size, { padding: Math.min(84, Math.max(54, state.size.w * 0.08)) });
+    // Margins that overlay cards cover (the lot card): frame the plan in the clear area.
+    const ins = state.inset;
+    const clear = { w: Math.max(40, state.size.w - ins.left - ins.right), h: Math.max(40, state.size.h - ins.top - ins.bottom) };
+    const v = M.fitView(fitBounds(), clear, { padding: Math.min(84, Math.max(54, clear.w * 0.08)) });
+    state.view = { ...v, ox: v.ox + ins.left, oy: v.oy + ins.top };
     state.fitted = true;
     state.autoFit = true;
     emitZoom();
@@ -720,6 +725,15 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       }
     },
     zoomToFit,
+    element,
+    // Screen margins covered by overlay cards. A view the person has not moved is re-framed in the clear area.
+    setInset(next = {}) {
+      const n = { left: Math.max(0, next.left || 0), right: Math.max(0, next.right || 0), top: Math.max(0, next.top || 0), bottom: Math.max(0, next.bottom || 0) };
+      const o = state.inset;
+      if (n.left === o.left && n.right === o.right && n.top === o.top && n.bottom === o.bottom) return;
+      state.inset = n;
+      if (state.active && state.fitted && state.autoFit) zoomToFit();
+    },
     zoomBy: (f) => zoomBy(f),
     getView: () => ({ ...state.view }),
     setView(v) {
