@@ -1,4 +1,4 @@
-# Loads each builder's OWN house designs into that builder's LIVE Glide Inside house library (so their test builder and client logins have designs to place).
+﻿# Loads each builder's OWN house designs into that builder's LIVE Glide Inside house library (so their test builder and client logins have designs to place).
 # Run from glideinside-v6\live-tools\ (the wrapper A-IMPORT-BUILDER-HOUSES.cmd does this). Needs the Worker with the import route deployed first.
 #   - Reads the live admin token from ..\LIVE-ADMIN-TOKEN-keep-private.txt (never printed, never logged).
 #   - Finds each organisation by slug via GET /api/portal/admin/orgs (the list carries each org's slug).
@@ -32,7 +32,7 @@ if (-not $tok) { $m = [regex]::Match($raw, '[A-Za-z0-9_\-\.]{32,}'); if ($m.Succ
 if (-not $tok) { Say 'STOP: no admin token found in the token file.'; Flush; exit 1 }
 $adm = @{ Authorization = "Bearer $tok"; 'x-gi-request' = '1' }
 
-try { $orgs = @(Invoke-RestMethod -Uri "$Api/admin/orgs" -Headers $adm) }
+try { $raw0 = Invoke-RestMethod -Uri "$Api/admin/orgs" -Headers $adm; $orgs = @($raw0 | ForEach-Object { $_ }) }
 catch { Say "STOP: could not list organisations: $(ErrText $_)"; Flush; exit 1 }
 
 $totalOk = 0; $totalFail = 0
