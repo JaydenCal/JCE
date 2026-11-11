@@ -512,8 +512,8 @@ export function drawLevel(doc, ctx, content) {
   for (const sh of shapes) for (const pc of sh.pieces) wallBoxes.push(boxOf(pc.poly.map(T), 0.3));
   const wallInset = (Math.max(0, ...shapes.map((sh) => Number(sh.wall.thickness) || 0)) / 2) / scale + 0.5;
 
-  // Room names and areas, in the largest clear part of each room.
-  for (const r of level.rooms) {
+  // Room names and areas, in the largest clear part of each room (the engineering plan set places its own, ctx.noRoomLabels).
+  for (const r of ctx.noRoomLabels ? [] : level.rooms) {
     const centroid = T(G.polygonCentroid(r.polygon));
     const areaText = `${(G.polygonArea(r.polygon) / 1e6).toFixed(2)} m2`;
     const wMm = G.bbox(r.polygon).w / scale;

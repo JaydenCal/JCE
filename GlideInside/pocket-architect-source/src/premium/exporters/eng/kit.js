@@ -25,7 +25,17 @@ export const PEN = {
   road: [60, 62, 68],
   phantom: [200, 20, 20],
   tag: [196, 32, 32],
+  // Existing cadastral boundaries over an aerial are red (owner convention). The setback envelope is magenta so the two never read alike.
+  cadRed: [232, 28, 28],
+  envelopeAerial: [214, 0, 160],
 };
+
+/** Standard PHANTOM line type: one long dash then two short dashes (sheet mm on A3). */
+export const PHANTOM = [14, 2, 2, 2, 2, 2];
+export const PHANTOM_LEN = 24;
+
+/** Text sizes (pt on A3). Nothing on a drawing is smaller than TXT.min except the footer band. */
+export const TXT = { min: 6.5, small: 7, body: 8, label: 9, strong: 10, head: 12, title: 16 };
 
 const FORBIDDEN = [[/\b(non-?)?compliant\b/gi, 'within indicative limits']];
 
@@ -42,12 +52,48 @@ export function clean(s) {
     .replace(/[^\x20-\x7e°±²³·]/g, '')
     .replace(/%%/g, '% %')
     .replace(/\s+/g, ' ')
+    .replace(/\bm2\b/g, 'm²')
+    .replace(/\bM2\b/g, 'M²')
     .trim();
   for (const [re, to] of FORBIDDEN) t = t.replace(re, to);
   return t;
 }
 
 export const wrap = (doc, text, width) => doc.splitTextToSize(clean(text), width);
+
+/** Wrap a doc so every string written through it is cleaned (m2 becomes m², no dashes). Used round code that writes its own text. */
+export function cleanedDoc(doc) {
+  return new Proxy(doc, {
+    get(t, prop) {
+      if (prop === 'text') return (s, ...r) => t.text(Array.isArray(s) ? s.map(clean) : clean(s), ...r);
+      const v = t[prop];
+      return typeof v === 'function' ? v.bind(t) : v;
+    },
+  });
+}
+
+/** Text reading upwards, centred on (x, yMid). jsPDF centres rotated text along the wrong axis, so the start point is worked out here. */
+export function vtext(doc, text, x, yMid, { size = null, colour = null, bold = false } = {}) {
+  const t = clean(text);
+  doc.setFont('helvetica', bold ? 'bold' : 'normal');
+  if (size) doc.setFontSize(size);
+  if (colour) doc.setTextColor(...colour);
+  doc.text(t, x, yMid + doc.getTextWidth(t) / 2, { angle: 90 });
+}
+
+/** Text with a white halo (a thick white stroke under the glyphs), so it reads over an aerial. */
+export function haloText(doc, text, x, y, { size = 8, bold = false, colour = PEN.ink, align = 'left', angle = 0, halo = 0.9 } = {}) {
+  const t = clean(text);
+  doc.setFont('helvetica', bold ? 'bold' : 'normal');
+  doc.setFontSize(size);
+  if (halo) {
+    doc.setDrawColor(255, 255, 255);
+    doc.setLineWidth(halo);
+    doc.text(t, x, y, { align, angle, renderingMode: 'stroke' });
+  }
+  doc.setTextColor(...colour);
+  doc.text(t, x, y, { align, angle });
+}
 
 // Boxes ---------------------------------------------------------------------------------------------------------------------
 export const boxOfPts = (pts, pad = 0) => {
@@ -56,7 +102,7 @@ export const boxOfPts = (pts, pad = 0) => {
 };
 export const overlap = (a, b) => Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
 export const inflate = (b, d) => ({ x0: b.x0 - d, y0: b.y0 - d, x1: b.x1 + d, y1: b.y1 + d });
-const segHitsBox = (a, b, r) => {
+export const segHitsBox = (a, b, r) => {
   // Liang-Barsky against the box; true when any part of the segment is inside.
   let t0 = 0;
   let t1 = 1;
@@ -141,10 +187,15 @@ export const HATCH = {
   hardstand: { angle: 135, spacing: 1.4, width: 0.08, colour: [90, 90, 90], cross: 45 },
   bitumen: { angle: 0, spacing: 1.9, width: 0.08, colour: [90, 92, 98], dots: true },
   concrete: { angle: 45, spacing: 2.4, width: 0.07, colour: [110, 110, 110], dots: true },
+  // Road pavement: plain lines along the road alignment (the caller gives the angle), no stipple.
+  road: { angle: 0, spacing: 2.6, width: 0.07, colour: [120, 124, 132] },
+  roadAerial: { angle: 0, spacing: 4, width: 0.06, colour: [235, 235, 235] },
+  footpath: { angle: 90, spacing: 3.2, width: 0.07, colour: [140, 144, 150] },
+  poche: { angle: 45, spacing: 1.1, width: 0.12, colour: [18, 20, 24] },
 };
 
-export function hatch(doc, poly, kind) {
-  const h = HATCH[kind] || HATCH.proposed;
+export function hatch(doc, poly, kind, over = {}) {
+  const h = { ...(HATCH[kind] || HATCH.proposed), ...over };
   doc.setLineWidth(h.width);
   doc.setDrawColor(...h.colour);
   doc.setLineDashPattern([], 0);
@@ -189,19 +240,32 @@ export function dimLine(doc, a, b, text, { colour = PEN.dim, size = 6, offset = 
   doc.setFontSize(size);
   const w = doc.getTextWidth(text);
   const mid = G.lerp(A, B, 0.5);
+  if (Math.hypot(B.x - A.x, B.y - A.y) < w + 3) {
+    // Too short to carry its text: the text sits horizontally beside the line, with a halo.
+    const side = textSide >= 0 ? 1 : -1;
+    const right = n.x * side >= 0;
+    const px = mid.x + n.x * side * 1.8 + (right ? 0 : 0);
+    const py = mid.y + n.y * side * 1.8 + 1;
+    haloText(doc, text, px, py, { size, colour, align: n.x * side >= 0 ? 'left' : 'right', halo: 0.9 });
+    const x0 = n.x * side >= 0 ? px : px - w;
+    return { x0: x0 - 0.5, y0: py - size * 0.3528 - 0.5, x1: x0 + w + 0.5, y1: py + 0.8 };
+  }
   let ang = (Math.atan2(d.y, d.x) * 180) / Math.PI;
   if (ang > 90) ang -= 180;
   if (ang < -90) ang += 180;
   const rad = (ang * Math.PI) / 180;
-  const off = textSide * 1.2;
+  const off = textSide * 2.4;
   const tx = mid.x + Math.sin(rad) * off;
   const ty = mid.y - Math.cos(rad) * off;
-  doc.setTextColor(...colour);
-  const hw = Math.abs(Math.cos(rad)) * w / 2 + Math.abs(Math.sin(rad)) * 1.2;
-  const hh = Math.abs(Math.sin(rad)) * w / 2 + Math.abs(Math.cos(rad)) * 1.2;
+  const hw = Math.abs(Math.cos(rad)) * w / 2 + Math.abs(Math.sin(rad)) * 1.5;
+  const hh = Math.abs(Math.sin(rad)) * w / 2 + Math.abs(Math.cos(rad)) * 1.5;
   if (whiteBehind) { doc.setFillColor(255, 255, 255); doc.rect(tx - hw, ty - hh, 2 * hw, 2 * hh, 'F'); }
+  // Written from its start point: jsPDF centres rotated text along the wrong axis.
+  const dv = { x: Math.cos(rad), y: Math.sin(rad) };
+  const upv = { x: Math.sin(rad), y: -Math.cos(rad) };
+  const capH = size * 0.3528 * 0.72;
   doc.setTextColor(...colour);
-  doc.text(text, tx, ty + 0.4, { align: 'center', angle: -ang });
+  doc.text(text, tx - dv.x * w / 2 - upv.x * capH / 2, ty - dv.y * w / 2 - upv.y * capH / 2, { angle: -ang });
   return { x0: tx - hw, y0: ty - hh, x1: tx + hw, y1: ty + hh };
 }
 
@@ -375,4 +439,109 @@ export function alongText(doc, text, mid, dir, offset, { size = 5.6, colour = PE
   const ends = [base, { x: base.x + d.x * w, y: base.y + d.y * w }];
   const pts = [...ends, ...ends.map((e) => ({ x: e.x + n.x * h, y: e.y + n.y * h }))];
   return boxOfPts(pts, 0.4);
+}
+
+
+/**
+ * Text running along an edge, measured before it is drawn: { box, draw() }. `dir` is the edge direction in sheet space, `offset` the
+ * distance from the edge to the text baseline (positive is the up the page side of the reading direction).
+ */
+export function alongLabel(doc, text, mid, dir, offset, { size = 8, colour = PEN.ink, bold = false, halo = 0 } = {}) {
+  const t = clean(text);
+  doc.setFont('helvetica', bold ? 'bold' : 'normal');
+  doc.setFontSize(size);
+  const w = doc.getTextWidth(t);
+  let ang = (Math.atan2(dir.y, dir.x) * 180) / Math.PI;
+  if (ang > 90) ang -= 180;
+  if (ang <= -90) ang += 180;
+  const rad = (ang * Math.PI) / 180;
+  const d = { x: Math.cos(rad), y: Math.sin(rad) };
+  const n = { x: d.y, y: -d.x };
+  const p = { x: mid.x + n.x * offset, y: mid.y + n.y * offset };
+  const base = { x: p.x - d.x * w / 2, y: p.y - d.y * w / 2 };
+  const h = size * 0.3528;
+  const ends = [base, { x: base.x + d.x * w, y: base.y + d.y * w }];
+  const pts = [...ends, ...ends.map((e) => ({ x: e.x + n.x * h, y: e.y + n.y * h }))];
+  return {
+    box: boxOfPts(pts, 0.5),
+    up: n,
+    draw: () => haloText(doc, t, base.x, base.y, { size, bold, colour, angle: -ang, halo }),
+  };
+}
+
+/**
+ * Registry of what is already on a drawing: label boxes and linework segments. Labels are tried at several places and the first
+ * that fits inside the viewport and clear of everything else is drawn; otherwise it is dropped (or the caller falls back).
+ */
+export class LabelField {
+  constructor(rect) { this.rect = rect; this.boxes = []; this.segs = []; }
+  addBox(b) { if (b) this.boxes.push(b); return b; }
+  addSeg(a, b, soft = false) { const s = [a, b]; if (soft) s.soft = true; this.segs.push(s); }
+  addRing(pts, closed = true, soft = false) { const n = closed ? pts.length : pts.length - 1; for (let i = 0; i < n; i++) this.addSeg(pts[i], pts[(i + 1) % pts.length], soft); }
+  inside(b) { const r = this.rect; return b.x0 >= r.x0 + 0.8 && b.y0 >= r.y0 + 0.8 && b.x1 <= r.x1 - 0.8 && b.y1 <= r.y1 - 0.8; }
+  free(b, { lines = true, soft = true, ignoreSegs = [] } = {}) {
+    if (!this.inside(b)) return false;
+    for (const o of this.boxes) if (overlap(inflate(b, 0.3), o) > 0) return false;
+    if (lines) for (const sg of this.segs) if (!ignoreSegs.includes(sg) && (soft || !sg.soft) && segHitsBox(sg[0], sg[1], b)) return false;
+    return true;
+  }
+  /** Try `cands` (functions or label specs returning { box, draw }) in order. Returns the placed one or null. */
+  place(cands, opts) {
+    for (const c of cands) {
+      const l = typeof c === 'function' ? c() : c;
+      if (l && this.free(l.box, opts)) { l.draw(); this.boxes.push(l.box); return l; }
+    }
+    return null;
+  }
+}
+
+/**
+ * Superscript digits. Some PDF viewers lack the superscript glyphs of the standard fonts, so "m²" would show as "m". Strings with ²
+ * or ³ are written as the text, then the digit at 62 percent size, raised. Widths (alignment, wrapping, fitting) count the same way.
+ */
+export function withSuperscripts(doc) {
+  let size = 10;
+  const SUP = { '²': '2', '³': '3' };
+  const widthOf = (t, s) => {
+    const parts = String(s).split(/([²³])/);
+    let w = 0;
+    for (const p of parts) {
+      if (SUP[p]) { doc.setFontSize(size * 0.62); w += doc.getTextWidth(SUP[p]); doc.setFontSize(size); } else if (p) w += doc.getTextWidth(p);
+    }
+    return w;
+  };
+  return new Proxy(doc, {
+    get(t, prop) {
+      if (prop === 'setFontSize') return (n) => { size = n; return t.setFontSize(n); };
+      if (prop === 'getTextWidth') return (s) => (/[²³]/.test(String(s)) ? widthOf(t, s) : t.getTextWidth(s));
+      if (prop === 'text') {
+        return (s, x, y, o = {}) => {
+          if (typeof s !== 'string' || !/[²³]/.test(s)) return t.text(s, x, y, o);
+          const a = ((o.angle || 0) * Math.PI) / 180;
+          const d = { x: Math.cos(a), y: -Math.sin(a) };
+          const up = { x: -Math.sin(a), y: -Math.cos(a) };
+          const W = widthOf(t, s);
+          let off = o.align === 'center' ? -W / 2 : o.align === 'right' ? -W : 0;
+          const { align, ...rest } = o;
+          void align;
+          for (const p of s.split(/([²³])/)) {
+            if (!p) continue;
+            if (SUP[p]) {
+              const raise = size * 0.3528 * 0.38;
+              t.setFontSize(size * 0.62);
+              t.text(SUP[p], x + d.x * off + up.x * raise, y + d.y * off + up.y * raise, rest);
+              off += t.getTextWidth(SUP[p]);
+              t.setFontSize(size);
+            } else {
+              t.text(p, x + d.x * off, y + d.y * off, rest);
+              off += t.getTextWidth(p);
+            }
+          }
+          return undefined;
+        };
+      }
+      const v = t[prop];
+      return typeof v === 'function' ? v.bind(t) : v;
+    },
+  });
 }

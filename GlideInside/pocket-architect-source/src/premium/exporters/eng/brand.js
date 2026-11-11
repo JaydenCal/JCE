@@ -1,7 +1,7 @@
 // Branding and numbering for the engineering style plan set.
 //   Public users: Glide Inside branding plus the fields of their title block (titleblock.js).
 //   Builder and client logins: the builder's logo and name lead the title block, with a small "Prepared with Glide Inside" credit.
-// Drawing numbers use the Glide Inside scheme GI-<project>-A-NNN. Dates on sheets are DD.MM.YY.
+// Drawing numbers use the Glide Inside scheme GI-<project>-A-NNN. Dates on sheets are DD/MM/YYYY.
 
 import { clean } from './kit.js';
 import { BRAND, LOGO_PNG } from '../../brand/logo.js';
@@ -9,10 +9,20 @@ import { imageInfo } from '../pdf.js';
 
 export const DISCLAIMER = 'CONCEPT ONLY. TO BE VERIFIED BY A SUITABLY QUALIFIED PERSON BEFORE ANY USE FOR APPROVAL OR CONSTRUCTION. Not a survey. Not a development application drawing.';
 
-export const ddmmyy = (d = new Date()) => {
+export const ddmmyyyy = (d = new Date()) => {
   const p = (n) => String(n).padStart(2, '0');
-  return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${String(d.getFullYear()).slice(-2)}`;
+  return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`;
 };
+/** A date the user typed, put into DD/MM/YYYY where it is a recognisable numeric date; anything else is kept as written. */
+export function normDate(text) {
+  const t = clean(text);
+  let m = /^(\d{1,2})[./-](\d{1,2})[./-](\d{2}|\d{4})$/.exec(t);
+  if (m) return `${m[1].padStart(2, '0')}/${m[2].padStart(2, '0')}/${m[3].length === 2 ? `20${m[3]}` : m[3]}`;
+  m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(t);
+  if (m) return `${m[3].padStart(2, '0')}/${m[2].padStart(2, '0')}/${m[1]}`;
+  return t;
+}
+export const ddmmyy = ddmmyyyy; // earlier name; the format is DD/MM/YYYY
 
 /** Short project code for drawing numbers: the job number if there is one, else letters and digits from the project name. */
 export function projectCode(project) {
@@ -46,10 +56,16 @@ export function brandOf(project, options = {}) {
   return { mode: 'public', name: clean(tb.company), logo: asImg(userLogo), glide, credit: '' };
 }
 
-/** Attribution line for the footer, from the state of the lot. */
-export function attribution(lot) {
+/** Attribution line for the footer, from the state of the lot. With an aerial on the sheet its own attribution and date follow. */
+export function attribution(lot, { aerial = false } = {}) {
   const nsw = 'Cadastre, imagery and contours: NSW Spatial Services (CC BY).';
   const qld = 'Cadastre: Queensland Government (CC BY 4.0). Imagery and elevation: Queensland Government (CC BY-SA).';
-  if (!lot) return `${nsw} ${qld} Where used.`;
-  return lot.state === 'QLD' ? qld : nsw;
+  let base;
+  if (!lot) base = `${nsw} ${qld} Where used.`;
+  else base = lot.state === 'QLD' ? qld : nsw;
+  const a = aerial ? lot?.aerial : null;
+  if (!a) return base;
+  const when = a.captureDate ? ` Aerial captured ${normDate(clean(String(a.captureDate)))}.` : '';
+  const src = clean(a.attribution || a.source || '').replace(/^\s*(aerial underlay|aerial|imagery)\s*:\s*/i, '').replace(/[\s.,;]+$/, '');
+  return `${base} Aerial underlay${src ? `: ${src}` : ''}. Reduced resolution, not for measurement.${when}`;
 }

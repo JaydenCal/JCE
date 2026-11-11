@@ -1,25 +1,30 @@
-// Site plan sheet and the locality map, in the manner of the JCESITE plan sets: cadastre filling the viewport with the surrounding
-// lots labelled, the lot boundary with bearings and distances, the indicative setback envelope, contours with RLs, the proposed
-// dwelling hatched, driveway and crossover, road reserve with a red phantom centreline, setback dimensions, FFL and NSL at the
-// house corners, boxed call outs, a legend and notes on the right.
+// Site plan sheet and the locality map, in the manner of the JCESITE plan sets: the lot filling the viewport (turned so the street runs
+// along the bottom where that gives a larger scale), a reduced resolution aerial underlay edge to edge, cadastre in red over the
+// aerial, the lot boundary with bearings and distances, the indicative setback envelope, contours with RLs, the proposed dwelling
+// hatched, driveway and crossover, road reserve with a red PHANTOM centreline, setback dimensions, FFL and NSL at the house corners,
+// boxed call outs, a legend and notes on the right. Every label goes through one registry so that text never lands on text.
 
 import * as G from '../../../model/geometry.js';
 import { terrainAt } from '../../../site/model.js';
-import { setbackNotes } from '../../../model/placement.js';
 import {
   boundaryDims, roadReserve, buildingRings, buildingHull, orientedBox, deriveDriveway, clearances, lotLabelLines,
 } from '../../../site/lotplan.js';
-import { contourNote } from '../../../site/credits.js';
-import { northArrow, scaleBar, placeImage } from '../pdf.js';
+import { northArrow, scaleBar } from '../pdf.js';
 import {
-  PEN, clean, wrap, fit, ink, polygon, hatch, HATCH, clippedPolyline, clipPolygon, dimLine, placeCallouts, drawCallouts,
-  viewTitle, labelOn, alongText, boxOfPts, overlap, inflate,
+  PEN, PHANTOM, PHANTOM_LEN, TXT, clean, wrap, fit, ink, polygon, hatch, clippedPolyline, clipPolygon, dimLine, placeCallouts, drawCallouts,
+  viewTitle, boxOfPts, overlap, inflate, haloText, alongLabel, LabelField, clipSegment,
 } from './kit.js';
-import { BODY, SW, TB_TOP } from './frame.js';
+import { placeUnderlay } from './aerial.js';
+import { nearestTown } from './towns.js';
+import { BODY } from './frame.js';
 
-export const SITE_SCALES = [100, 150, 200, 250, 300, 400, 500, 750, 1000, 2000];
-const PANEL_W = 92;
+export const SITE_SCALES = [100, 200, 250, 500, 1000, 2000];
+export const PANEL_W = 100;
 export const SITE_VP = { x0: BODY.x0, y0: BODY.y0, x1: BODY.x1 - PANEL_W - 3, y1: BODY.y1 };
+// Right hand panel boxes (sheet mm), shared with the code that renders the aerial for the key plan.
+export const NORTH_H = 36;
+export const KEY_H = 52;
+export const keyBox = () => ({ x0: SITE_VP.x1 + 3 + 2, y0: BODY.y0 + NORTH_H + 3 + 8, x1: BODY.x1 - 2, y1: BODY.y0 + NORTH_H + 3 + KEY_H - 2 });
 
 /** Everything a site drawing needs about the lot, or null with no lot. */
 export function siteFacts(project) {
@@ -31,31 +36,13 @@ export function siteFacts(project) {
   return { lot, rings, hull, obox, reserve: roadReserve(lot), drive: deriveDriveway(project), clear: clearances(project) };
 }
 
-/** Pick the scale (printed 1:n) that fits the lot, its frontage road and the house into the viewport. */
-export function chooseSiteScale(pts, vp, k = 1) {
-  const b = G.bbox(pts);
-  const w = vp.x1 - vp.x0;
-  const h = vp.y1 - vp.y0;
-  const n = SITE_SCALES.find((s) => b.w / (s * k) <= w * 0.94 && b.h / (s * k) <= h * 0.94) || SITE_SCALES.at(-1);
-  return { n, ds: n * k, box: b };
-}
-
-/** World to sheet transform centring `box` in `vp`. */
-export const makeT = (box, vp, ds) => {
-  const cx = (vp.x0 + vp.x1) / 2;
-  const cy = (vp.y0 + vp.y1) / 2;
-  const mx = (box.minX + box.maxX) / 2;
-  const my = (box.minY + box.maxY) / 2;
-  return (p) => ({ x: cx + (p.x - mx) / ds, y: cy + (p.y - my) / ds });
-};
-
 const ptsOf = (flat) => {
   const out = [];
   for (let i = 0; i + 1 < flat.length; i += 2) out.push({ x: flat[i], y: flat[i + 1] });
   return out;
 };
-
 const dirOf = (a, b) => G.norm(G.sub(b, a));
+const rad = (d) => (d * Math.PI) / 180;
 
 function offsetPoly(poly, d) {
   // Outset a convex polygon by d (mm) edge by edge. Orientation independent.
@@ -75,130 +62,209 @@ function offsetPoly(poly, d) {
   });
 }
 
-export function lotBounds(project, facts) {
-  const pts = [...facts.lot.boundary];
+/** Points the site plan must show: the lot, the house and the street out to just past its centreline. */
+export function fitPoints(facts) {
+  const pts = [...facts.lot.boundary, ...facts.hull];
   for (const r of facts.reserve) {
-    // Show the kerb, gutter and the road centreline in front of the lot.
-    const { lines } = r;
-    const a = G.lerp(lines.centreline[0], lines.centreline[1], 0.5);
-    pts.push(a, G.add(facts.lot.boundary[r.edge], G.mul(r.outward, (r.vergeM + 1.2) * 1000)));
+    const reach = (r.vergeM + r.gutterM + r.carriagewayM / 2 + 1.6) * 1000;
     const e0 = facts.lot.boundary[r.edge];
     const e1 = facts.lot.boundary[(r.edge + 1) % facts.lot.boundary.length];
-    pts.push(G.add(e0, G.mul(r.outward, (r.vergeM + r.gutterM + r.carriagewayM / 2 + 2) * 1000)), G.add(e1, G.mul(r.outward, (r.vergeM + r.gutterM + r.carriagewayM / 2 + 2) * 1000)));
+    pts.push(G.add(e0, G.mul(r.outward, reach)), G.add(e1, G.mul(r.outward, reach)));
   }
-  for (const p of facts.hull) pts.push(p);
+  return pts;
+}
+
+/** Bounds used by the analysis diagram (a little roomier than the site plan fit). */
+export function lotBounds(project, facts) {
+  const pts = fitPoints(facts);
+  for (const r of facts.reserve) {
+    const L = r.lines;
+    pts.push(...L.farKerb.slice(0, 1), G.lerp(L.centreline[0], L.centreline[1], 0.5));
+  }
   const b = G.bbox(pts);
   const pad = 3000;
   return G.bbox([{ x: b.minX - pad, y: b.minY - pad }, { x: b.maxX + pad, y: b.maxY + pad }]);
 }
 
+export function chooseSiteScale(pts, vp, k = 1) {
+  const b = G.bbox(pts);
+  const w = vp.x1 - vp.x0;
+  const h = vp.y1 - vp.y0;
+  const n = SITE_SCALES.find((s) => b.w / (s * k) <= w * 0.96 && b.h / (s * k) <= h * 0.96) || SITE_SCALES.at(-1);
+  return { n, ds: n * k, box: b };
+}
+
+/** World to sheet transform centring `box` in `vp`. */
+export const makeT = (box, vp, ds) => {
+  const cx = (vp.x0 + vp.x1) / 2;
+  const cy = (vp.y0 + vp.y1) / 2;
+  const mx = (box.minX + box.maxX) / 2;
+  const my = (box.minY + box.maxY) / 2;
+  return (p) => ({ x: cx + (p.x - mx) / ds, y: cy + (p.y - my) / ds });
+};
+
+const turnBy = (deg) => { const c = Math.cos(rad(deg)); const s = Math.sin(rad(deg)); return (p) => ({ x: c * p.x - s * p.y, y: s * p.x + c * p.y }); };
+
 /**
- * Draw the site plan into SITE_VP. Returns { n, ds, label, T, boxes } where boxes are the label boxes it placed.
- * ctx: { project, k, paper, brand }.
+ * The site plan view: the plan turned by `turnDeg` (clockwise on the sheet) at the smallest standard scale that fits the lot, house and
+ * street in the viewport. North up is tried first and the turned views (street along the bottom, or either side) only win on scale.
+ * Returns { n, ds, turnDeg, T, label, northDeg, vp }.
+ */
+export function siteView(project, facts, k = 1) {
+  const vp = SITE_VP;
+  const fp = fitPoints(facts);
+  const inner = { x0: vp.x0 + 4, y0: vp.y0 + 4, x1: vp.x1 - 4, y1: vp.y1 - 4 };
+  const cands = [0];
+  const road = facts.reserve[0];
+  let base = null;
+  if (road) base = 90 - (Math.atan2(road.outward.y, road.outward.x) * 180) / Math.PI;
+  else if (facts.obox) base = -facts.obox.angleDeg;
+  if (base != null) {
+    const norm = (d) => ((((d + 180) % 360) + 360) % 360) - 180;
+    // The street stays within 45 degrees of horizontal so its name reads across the sheet, never up the page
+    for (const d of road ? [base, base + 180] : [base, base + 90, base - 90, base + 180]) cands.push(norm(d));
+  }
+  let best = null;
+  for (const turnDeg of cands) {
+    const rot = turnBy(turnDeg);
+    const b = G.bbox(fp.map(rot));
+    const n = SITE_SCALES.find((s) => b.w / (s * k) <= inner.x1 - inner.x0 && b.h / (s * k) <= inner.y1 - inner.y0) || SITE_SCALES.at(-1);
+    if (!best || n < best.n) best = { n, turnDeg, rot, b };
+  }
+  const ds = best.n * k;
+  const cx = (vp.x0 + vp.x1) / 2;
+  const cy = (vp.y0 + vp.y1) / 2;
+  const bx = (best.b.minX + best.b.maxX) / 2;
+  const by = (best.b.minY + best.b.maxY) / 2;
+  const T = (p) => { const r = best.rot(p); return { x: cx + (r.x - bx) / ds, y: cy + (r.y - by) / ds }; };
+  return { n: best.n, ds, turnDeg: Math.round(best.turnDeg * 1000) / 1000, T, vp, northDeg: (Number(project.site?.northDeg) || 0) + best.turnDeg };
+}
+
+/** The palette: red cadastre over an aerial (owner convention), the JCE green without one. */
+export const paletteFor = (hasAerial) => ({
+  boundary: hasAerial ? PEN.cadRed : PEN.boundary,
+  neighbour: hasAerial ? PEN.cadRed : PEN.neighbour,
+  neighbourW: hasAerial ? 0.22 : 0.13,
+  envelope: hasAerial ? PEN.envelopeAerial : PEN.envelope,
+});
+
+/** Dash pattern for the existing boundary is solid, for a proposed lot boundary long dash, dot (never the same as existing). */
+const PROPOSED_BOUNDARY = [9, 2, 1, 2];
+
+const STREET_TYPES = 'Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl|Crescent|Cres|Close|Cl|Way|Parade|Pde|Highway|Hwy|Boulevard|Blvd|Terrace|Tce|Circuit|Cct|Esplanade|Esp|Grove|Gr';
+/** The road name only: no house number, suburb, state or postcode. */
+export const roadNameOnly = (raw) => {
+  const t = clean(String(raw || '')).split(',')[0].replace(/^\s*(unit|lot)?\s*[\d/]+[a-z]?\s+/i, '').trim();
+  const m = t.match(new RegExp(`^(.*?\\b(?:${STREET_TYPES}))\\b`, 'i'));
+  return (m ? m[1] : t.replace(/\b(NSW|QLD|VIC|SA|WA|TAS|NT|ACT)\b.*$/i, '')).trim();
+};
+const ROAD_NAME = (lot) => roadNameOnly(lot.roads?.find((x) => x.name)?.name || lot.address || '').toUpperCase();
+
+/**
+ * Draw the site plan into SITE_VP. Returns { n, ds, label, T, turnDeg, northDeg, facts }.
+ * ctx: { project, k, paper, underlays: { site: { url, rect } } }.
  */
 export function drawSitePlan(doc, ctx) {
   const { project } = ctx;
   const vp = SITE_VP;
   const facts = siteFacts(project);
   const lot = facts?.lot || null;
-  const taken = [];
   const rect = { x0: vp.x0, y0: vp.y0, x1: vp.x1, y1: vp.y1 };
-
-  // Viewport frame
-  ink(doc, PEN.ink);
-  doc.setLineWidth(0.35);
-  doc.rect(vp.x0, vp.y0, vp.x1 - vp.x0, vp.y1 - vp.y0);
   if (!facts) return noLotMessage(doc, ctx, vp);
 
-  const bounds = lotBounds(project, facts);
-  const { n, ds } = chooseSiteScale([{ x: bounds.minX, y: bounds.minY }, { x: bounds.maxX, y: bounds.maxY }], { x0: vp.x0, y0: vp.y0 + 8, x1: vp.x1, y1: vp.y1 }, ctx.k || 1);
-  const T = makeT(bounds, { x0: vp.x0, y0: vp.y0 + 8, x1: vp.x1, y1: vp.y1 }, ds);
+  const view = siteView(project, facts, ctx.k || 1);
+  const { n, ds, T } = view;
   const label = `1:${n} @ ${ctx.paper || 'A3'}`;
+  const under = ctx.underlays?.site;
+  const aerial = !!(under?.url && placeUnderlay(doc, under.url, under.rect || rect));
+  const pal = paletteFor(aerial);
+  const field = new LabelField(rect);
   doc.setLineDashPattern([], 0);
+  // The view title sits in a white tab at the top left. It is drawn last (so nothing covers it) and reserved now.
+  field.addBox({ x0: vp.x0, y0: vp.y0, x1: vp.x0 + 80, y1: vp.y0 + 13 });
 
   const stroke = (pts, closed = true) => clippedPolyline(doc, pts.map(T), rect, closed);
-  const inVp = (b) => b.x0 >= rect.x0 + 0.5 && b.y0 >= rect.y0 + 0.5 && b.x1 <= rect.x1 - 0.5 && b.y1 <= rect.y1 - 0.5;
-  const reg = (b) => { if (b) taken.push(b); return b; };
+  const HALO = 1.0;
 
   // 1. Contours (under everything)
   const contourLabels = [];
-  const houseSheet = facts.hull.length ? boxOfPts(facts.hull.map(T), 1) : null;
   for (const c of lot.contours || []) {
+    if (Math.abs(c.level - Math.round(c.level)) > 1e-6) continue; // contours at 1.0 m minimum (5 m DEM)
     const pts = ptsOf(c.pts || []).map(T);
     if (pts.length < 2) continue;
     doc.setDrawColor(...(c.major ? PEN.contourMajor : PEN.contourMinor));
-    doc.setLineWidth(c.major ? 0.22 : 0.1);
+    doc.setLineWidth(c.major ? 0.28 : 0.12);
     doc.setLineDashPattern([], 0);
     clippedPolyline(doc, pts, rect, false);
     contourLabels.push({ c, pts });
   }
 
-  // 2. Neighbours, with lot number and DP on separate lines (DP one size larger)
-  doc.setDrawColor(...PEN.neighbour);
-  doc.setLineWidth(0.13);
+  // 2. Neighbouring lots (DCDB)
+  doc.setDrawColor(...pal.neighbour);
+  doc.setLineWidth(pal.neighbourW);
   for (const nb of lot.neighbours || []) {
     if (nb.isRoad) continue;
     stroke(nb.ring);
   }
-  const nbLabels = [];
-  for (const nb of lot.neighbours || []) {
-    if (nb.isRoad || !nb.ring?.length) continue;
-    const c = G.polygonCentroid(nb.ring);
-    const s = T(c);
-    const l1 = nb.lotNumber ? `LOT ${nb.lotNumber}` : '';
-    const l2 = nb.planLabel || '';
-    if (!l1 && !l2) continue;
-    nbLabels.push({ s, l1, l2, ring: nb.ring });
-  }
 
-  // 3. Road reserve: footpath, kerb, gutter, bitumen, concrete footpath and the red phantom centreline
+  // 3. Road reserve: footpath, kerb, gutter, pavement hatched along the road, concrete footpath, red PHANTOM centreline
+  const roadBoxes = [];
   for (const r of facts.reserve) {
     const L = r.lines;
     const quad = (A, B) => [A[0], A[1], B[1], B[0]];
-    const bit = clipPolygon(quad(L.gutter, L.farGutter).map(T), rect);
-    if (bit.length > 2) hatch(doc, bit, 'bitumen');
+    const along = dirOf(T(L.centreline[0]), T(L.centreline[1]));
+    const ang = (Math.atan2(along.y, along.x) * 180) / Math.PI;
+    const bit = clipPolygon(quad(L.kerb, L.farKerb).map(T), rect);
+    if (bit.length > 2) hatch(doc, bit, aerial ? 'roadAerial' : 'road', { angle: ang });
     const fp = clipPolygon(quad(L.footpathNear, L.footpathFar).map(T), rect);
-    if (fp.length > 2) hatch(doc, fp, 'concrete');
+    if (fp.length > 2) hatch(doc, fp, 'footpath', { angle: ang + 90 });
     doc.setLineDashPattern([], 0);
-    for (const [key, w, col] of [['footpathNear', 0.1, PEN.grey], ['footpathFar', 0.1, PEN.grey], ['kerb', 0.3, PEN.road], ['gutter', 0.1, PEN.grey], ['farGutter', 0.1, PEN.grey], ['farKerb', 0.3, PEN.road]]) {
+    for (const [key, w, col] of [['footpathNear', 0.14, PEN.grey], ['footpathFar', 0.14, PEN.grey], ['kerb', 0.4, aerial ? [255, 255, 255] : PEN.road], ['gutter', 0.14, PEN.grey], ['farGutter', 0.14, PEN.grey], ['farKerb', 0.4, aerial ? [255, 255, 255] : PEN.road]]) {
       doc.setDrawColor(...col);
       doc.setLineWidth(w);
-      const s = L[key].map(T);
-      clippedPolyline(doc, s, rect, false);
+      clippedPolyline(doc, L[key].map(T), rect, false);
     }
     doc.setDrawColor(...PEN.phantom);
-    doc.setLineWidth(0.35);
-    doc.setLineDashPattern([9, 1.6, 1.6, 1.6, 1.6, 1.6], 0);
+    doc.setLineWidth(0.5);
+    doc.setLineDashPattern(PHANTOM, 0);
     clippedPolyline(doc, L.centreline.map(T), rect, false);
     doc.setLineDashPattern([], 0);
-    // Street name along the far side of the carriageway
-    const name = clean(lot.roads?.find((x) => x.name)?.name || (lot.address || '').split(',')[0].replace(/^\d+\s*/, '')).toUpperCase();
+    // Street name along the far half of the carriageway, in the largest clear stretch
+    const name = ROAD_NAME(lot);
     if (name) {
-      const mid = T(G.lerp(L.centreline[0], L.centreline[1], 0.5));
-      const d = dirOf(T(L.centreline[0]), T(L.centreline[1]));
-      reg(alongText(doc, name, mid, d, -3.4, { size: 6, colour: PEN.road, bold: true }));
+      const half = (r.carriagewayM / 2 + r.gutterM) * 1000 / ds;
+      const c0 = T(L.centreline[0]);
+      const c1 = T(L.centreline[1]);
+      const nrm = { x: -along.y, y: along.x };
+      const farSide = G.dot(nrm, G.sub(T(L.farGutter[0]), c0)) >= 0 ? 1 : -1;
+      const off = Math.min(half * 0.5, 6);
+      for (const f of [0.5, 0.3, 0.7, 0.2, 0.8]) {
+        const mid = G.lerp(c0, c1, f);
+        const at = { x: mid.x + nrm.x * farSide * off, y: mid.y + nrm.y * farSide * off };
+        const lab = alongLabel(doc, name, at, along, -TXT.strong * 0.3528 / 2, { size: TXT.strong, colour: PEN.road, bold: true, halo: HALO });
+        if (field.inside(lab.box)) { doc.setFillColor(...(aerial ? [90, 90, 94] : [255, 255, 255])); doc.rect(lab.box.x0, lab.box.y0, lab.box.x1 - lab.box.x0, lab.box.y1 - lab.box.y0, 'F'); lab.draw(); roadBoxes.push(field.addBox(lab.box)); break; }
+      }
     }
   }
 
-  // 4. Proposed works: driveway and crossover, then the dwelling
+  // 4. Proposed works: driveway and crossover, eaves, then the dwelling
   const drive = facts.drive;
   if (drive?.ok) {
     const dp = clipPolygon(drive.polygon.map(T), rect);
-    if (dp.length > 2) { hatch(doc, dp, 'hardstand'); }
+    if (dp.length > 2) { doc.setFillColor(255, 255, 255); polygon(doc, dp, 'F'); hatch(doc, dp, 'hardstand'); }
     ink(doc, PEN.proposed);
-    doc.setLineWidth(0.3);
+    doc.setLineWidth(0.4);
     stroke(drive.polygon);
     const cp = clipPolygon(drive.crossover.polygon.map(T), rect);
-    if (cp.length > 2) { hatch(doc, cp, 'concrete'); }
-    doc.setLineWidth(0.3);
+    if (cp.length > 2) { doc.setFillColor(255, 255, 255); polygon(doc, cp, 'F'); hatch(doc, cp, 'concrete'); }
+    doc.setLineWidth(0.4);
     stroke(drive.crossover.polygon);
   }
-  // Eaves line (dashed) and the walls
   const overhang = Math.max(...project.levels.map((l) => l.roof?.overhang || 0), 0);
   if (facts.hull.length > 2 && overhang > 0) {
     doc.setDrawColor(...PEN.proposed);
-    doc.setLineWidth(0.18);
-    doc.setLineDashPattern([2.2, 1.2], 0);
+    doc.setLineWidth(0.25);
+    doc.setLineDashPattern([2.6, 1.4], 0);
     stroke(offsetPoly(facts.hull, overhang));
     doc.setLineDashPattern([], 0);
   }
@@ -209,352 +275,438 @@ export function drawSitePlan(doc, ctx) {
   for (const ring of footRings) polygon(doc, ring.map(T), 'F');
   for (const ring of footRings) hatch(doc, ring.map(T), 'proposed');
   ink(doc, PEN.proposed);
-  doc.setLineWidth(0.45);
+  doc.setLineWidth(0.55);
   for (const w of ground?.walls || []) {
     if (w.kind !== 'exterior' || w.status === 'demolish') continue;
     stroke(G.wallPolygon(w));
   }
+  const houseSheet = facts.hull.length ? boxOfPts(facts.hull.map(T), 1.2) : null;
+  if (houseSheet) field.addBox(houseSheet);
 
-  // 5. Lot boundary: green, with bearings and distances
-  doc.setDrawColor(...PEN.boundary);
-  doc.setLineWidth(0.8);
-  doc.setLineDashPattern([], 0);
+  // 5. Lot boundary. Existing: solid, with a cross at each corner. A proposed lot: long dash, dot in blue (never the existing convention).
+  const proposedLot = !!lot.proposed;
+  doc.setDrawColor(...(proposedLot ? PEN.proposed : pal.boundary));
+  doc.setLineWidth(proposedLot ? 0.9 : 1.1);
+  doc.setLineDashPattern(proposedLot ? PROPOSED_BOUNDARY : [], 0);
   stroke(lot.boundary);
-  const dims = boundaryDims(lot);
-  const centre = T(G.polygonCentroid(lot.boundary));
-  for (const d of dims) {
-    const a = T(lot.boundary[d.index]);
-    const b = T(lot.boundary[(d.index + 1) % lot.boundary.length]);
-    const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-    const dir = dirOf(a, b);
-    // Bearing outside the lot, distance inside.
-    const up = { x: dir.y, y: -dir.x };
-    let out = G.dot(up, G.sub(mid, centre)) > 0 ? 1 : -1; // which side of the line is away from the lot
-    const lenMm = Math.hypot(b.x - a.x, b.y - a.y);
-    if (lenMm < 14) continue;
-    // alongText offsets to the "up" side of the reading direction, so choose the sign that puts it on the wanted side.
-    const readDir = dir.x < 0 || (Math.abs(dir.x) < 1e-9 && dir.y > 0) ? { x: -dir.x, y: -dir.y } : dir;
-    const readUp = { x: readDir.y, y: -readDir.x };
-    const sideOut = G.dot(readUp, G.sub(mid, centre)) > 0 ? 1 : -1;
-    const bearBox = alongText(doc, d.bearing, mid, dir, sideOut * 2.4, { size: 5.8, colour: PEN.boundary, bold: true });
-    reg(bearBox);
-    reg(alongText(doc, `${d.length} m`, mid, dir, -sideOut * 2.4, { size: 5.8, colour: PEN.boundary }));
-    void out;
+  doc.setLineDashPattern([], 0);
+  if (!proposedLot) {
+    doc.setLineWidth(0.3);
+    for (const c of lot.boundary.map(T)) {
+      if (c.x < rect.x0 + 2 || c.x > rect.x1 - 2 || c.y < rect.y0 + 2 || c.y > rect.y1 - 2) continue;
+      doc.line(c.x - 1.3, c.y - 1.3, c.x + 1.3, c.y + 1.3);
+      doc.line(c.x - 1.3, c.y + 1.3, c.x + 1.3, c.y - 1.3);
+    }
   }
 
-  // 6. Envelope (indicative): red dashed
+  // 6. Envelope (indicative)
   if (lot.envelope?.length > 2) {
-    doc.setDrawColor(...PEN.envelope);
-    doc.setLineWidth(0.4);
-    doc.setLineDashPattern([3, 1.6], 0);
+    doc.setDrawColor(...pal.envelope);
+    doc.setLineWidth(0.5);
+    doc.setLineDashPattern([4, 2], 0);
     stroke(lot.envelope);
     doc.setLineDashPattern([], 0);
+    field.addRing(lot.envelope.map(T), true, true);
   }
 
   // 7. Setback dimensions to the house
-  const dimBoxes = [];
   for (const row of facts.clear.rows) {
     if (!row.from || !row.to || row.clearanceM > 40) continue;
     const a = T(row.from);
     const b = T(row.to);
-    if (Math.hypot(a.x - b.x, a.y - b.y) < 5) continue;
+    if (Math.hypot(a.x - b.x, a.y - b.y) < 9) continue;
     const col = row.status === 'outside' ? PEN.envelope : PEN.dim;
-    const txt = `${row.clearanceM.toFixed(2)} m`;
-    const bx = dimLine(doc, a, b, txt, { colour: col, size: 5.8, textSide: 1 });
-    if (bx) dimBoxes.push(reg(bx));
+    const bx = dimLine(doc, a, b, `${row.clearanceM.toFixed(2)} m`, { colour: col, size: TXT.body, textSide: 1 });
+    field.addSeg(a, b);
+    if (bx) field.addBox(bx);
   }
 
-  // 8. FFL and NSL at the four corners of the house
-  const levelTags = [];
+  // 8. FFL and NSL at the four corners of the house, each in a box clear of everything else with a leader to its corner
   if (facts.obox) {
     const floor = lot.floorRL;
+    const hc = T(facts.obox.centre);
     for (const c of facts.obox.corners) {
-      const ground0 = lot.terrain ? terrainAt(lot.terrain, c.x, c.y) : null;
-      if (floor == null && ground0 == null) continue;
+      const nsl = lot.terrain ? terrainAt(lot.terrain, c.x, c.y) : null;
+      if (floor == null && nsl == null) continue;
       const s = T(c);
-      const away = G.norm(G.sub(s, T(facts.obox.centre)));
-      levelTags.push({ s, away, floor, nsl: ground0 });
-    }
-    for (const t of levelTags) {
-      doc.setFillColor(...PEN.proposed);
-      doc.circle(t.s.x, t.s.y, 0.6, 'F');
       const lines = [];
-      if (t.floor != null) lines.push(`FFL ${t.floor.toFixed(2)}`);
-      if (t.nsl != null) lines.push(`NSL ${t.nsl.toFixed(2)}`);
+      if (floor != null) lines.push(`FFL ${floor.toFixed(2)}`);
+      if (nsl != null) lines.push(`NSL ${nsl.toFixed(1)}`);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(5);
-      const w = Math.max(...lines.map((l) => doc.getTextWidth(l))) + 2;
-      const h = lines.length * 2.1 + 1;
-      const cx = t.s.x - t.away.x * (w / 2 + 1.5);
-      const cy = t.s.y - t.away.y * (h / 2 + 1.5);
-      const box = { x0: cx - w / 2, y0: cy - h / 2, x1: cx + w / 2, y1: cy + h / 2 };
-      doc.setFillColor(255, 255, 255);
-      doc.setDrawColor(...PEN.proposed);
-      doc.setLineWidth(0.15);
-      doc.rect(box.x0, box.y0, w, h, 'FD');
-      doc.setTextColor(...PEN.proposed);
-      lines.forEach((l, i) => doc.text(l, box.x0 + 1, box.y0 + 2.3 + i * 2.1));
-      reg(box);
+      doc.setFontSize(TXT.small);
+      const w = Math.max(...lines.map((l) => doc.getTextWidth(l))) + 2.4;
+      const h = lines.length * 3.1 + 1.4;
+      const away = G.norm(G.sub(s, hc));
+      doc.setFillColor(...PEN.proposed);
+      doc.circle(s.x, s.y, 0.7, 'F');
+      let done = false;
+      for (const turn of [0, 35, -35, 70, -70, 110, -110]) {
+        const d = turnBy(turn)(away);
+        for (const dist of [4, 7, 11]) {
+          const cx = s.x + d.x * (dist + w / 2 * Math.abs(d.x) + 0.5);
+          const cy = s.y + d.y * (dist + h / 2 * Math.abs(d.y) + 0.5);
+          const box = { x0: cx - w / 2, y0: cy - h / 2, x1: cx + w / 2, y1: cy + h / 2 };
+          if (!field.free(box, { lines: true })) continue;
+          doc.setDrawColor(...PEN.proposed);
+          doc.setLineWidth(0.15);
+          const ax = G.clamp(s.x, box.x0, box.x1);
+          const ay = G.clamp(s.y, box.y0, box.y1);
+          doc.line(ax, ay, s.x, s.y);
+          doc.setFillColor(255, 255, 255);
+          doc.rect(box.x0, box.y0, w, h, 'FD');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(TXT.small);
+          doc.setTextColor(...PEN.proposed);
+          lines.forEach((l, i) => doc.text(l, box.x0 + 1.2, box.y0 + 3.3 + i * 3.1));
+          field.addBox(box);
+          done = true;
+          break;
+        }
+        if (done) break;
+      }
     }
   }
 
-  // 9. Contour RL labels (after the other labels so they step round them)
-  const labelled = [];
-  const clash = (b) => taken.some((o) => overlap(inflate(b, 0.5), o) > 0) || (houseSheet && overlap(b, houseSheet) > 0) || labelled.some((o) => overlap(b, o) > 0);
+  // 9. Boundary bearings (outside the lot) and distances (inside). Each is tried at several places along the edge and on both
+  // sides, and drawn only where it touches no other label or dimension.
+  const dims = boundaryDims(lot);
+  const lotPoly = lot.boundary.map(T);
+  const centre = T(G.polygonCentroid(lot.boundary));
+  const bcol = proposedLot ? PEN.proposed : pal.boundary;
+  for (const d of dims) {
+    const a = lotPoly[d.index];
+    const b = lotPoly[(d.index + 1) % lotPoly.length];
+    const lenMm = Math.hypot(b.x - a.x, b.y - a.y);
+    if (lenMm < 12) continue;
+    const dir = dirOf(a, b);
+    const readDir = dir.x < 0 || (Math.abs(dir.x) < 1e-9 && dir.y > 0) ? { x: -dir.x, y: -dir.y } : dir;
+    const readUp = { x: readDir.y, y: -readDir.x };
+    const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    const sideOut = G.dot(readUp, G.sub(mid, centre)) > 0 ? 1 : -1;
+    const spec = (txt, side, bold, off) => (f) => () => {
+      const m = G.lerp(a, b, f);
+      return alongLabel(doc, txt, m, dir, side * off, { size: TXT.label, colour: bcol, bold, halo: HALO });
+    };
+    const offs = [1.4 + TXT.label * 0.3528 * 0.2, 1.4 + TXT.label * 0.3528 + 0.6];
+    const fr = [0.5, 0.32, 0.68, 0.18, 0.82, 0.42, 0.58, 0.1, 0.9];
+    const bearing = []; const length = [];
+    for (const off of offs) for (const f of fr) { bearing.push(spec(d.bearing, sideOut, true, off + 1.2)(f)); length.push(spec(`${d.length} m`, -sideOut, false, off + 0.9)(f)); }
+    // The length may also go on the bearing side, below it, when its own side is full.
+    for (const f of fr) length.push(spec(`${d.length} m`, sideOut, false, offs[1] + 4.2)(f));
+    field.place(bearing, { lines: true });
+    field.place(length, { lines: true });
+  }
+
+  // 10. Contour RL labels
   for (const { c, pts } of contourLabels) {
     const segs = [];
     let total = 0;
     for (let i = 0; i + 1 < pts.length; i++) {
-      const s = require2(pts[i], pts[i + 1], rect);
+      const s = clipSegment(pts[i], pts[i + 1], rect);
       if (s) { const len = Math.hypot(s[1].x - s[0].x, s[1].y - s[0].y); segs.push({ s, len }); total += len; }
     }
-    if (total < 22) continue;
+    if (total < 26) continue;
     for (const f of [0.5, 0.3, 0.7, 0.18, 0.82, 0.4, 0.6]) {
       let at = total * f;
       let seg = null;
       for (const g of segs) { if (at <= g.len) { seg = g; break; } at -= g.len; }
-      if (!seg || seg.len < 9) continue;
+      if (!seg || seg.len < 10) continue;
       const t = at / seg.len;
       const p = { x: seg.s[0].x + (seg.s[1].x - seg.s[0].x) * t, y: seg.s[0].y + (seg.s[1].y - seg.s[0].y) * t };
-      const d = dirOf(seg.s[0], seg.s[1]);
-      const txt = Number(c.level).toFixed(c.level % 1 ? 1 : 1);
+      const txt = Number(c.level).toFixed(1);
       doc.setFont('helvetica', c.major ? 'bold' : 'normal');
-      doc.setFontSize(5);
-      const w = doc.getTextWidth(txt) + 1.2;
-      const b = boxOfPts([{ x: p.x - w / 2, y: p.y - 1.5 }, { x: p.x + w / 2, y: p.y + 1.5 }]);
-      if (!inVp(b) || clash(b)) continue;
-      labelled.push(b);
-      doc.setFillColor(255, 255, 255);
-      doc.rect(b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0, 'F');
-      const ang = -(Math.atan2(d.y, d.x) * 180) / Math.PI;
-      doc.setTextColor(...(c.major ? PEN.contourMajor : PEN.contourMinor));
-      doc.text(txt, p.x, p.y + 0.9, { align: 'center' });
-      void ang;
+      doc.setFontSize(TXT.min);
+      const w = doc.getTextWidth(txt) + 1.4;
+      const box = boxOfPts([{ x: p.x - w / 2, y: p.y - 1.9 }, { x: p.x + w / 2, y: p.y + 1.9 }]);
+      if (!field.free(box, { lines: false })) continue;
+      field.addBox(box);
+      haloText(doc, txt, p.x, p.y + 0.9, { size: TXT.min, bold: !!c.major, colour: c.major ? PEN.contourMajor : [150, 108, 50], align: 'center', halo: HALO });
       break;
     }
   }
 
-  // 10. Neighbour labels last of the lot data, only where they fit wholly in the viewport and clear of other labels
-  for (const nl of nbLabels) {
+  // 11. Neighbour labels: lot number, then the DP one size larger beneath it
+  for (const nb of lot.neighbours || []) {
+    if (nb.isRoad || !nb.ring?.length) continue;
+    const l1 = nb.lotNumber ? `LOT ${nb.lotNumber}` : '';
+    const l2 = nb.planLabel || '';
+    if (!l1 && !l2) continue;
+    const ring = nb.ring.map(T);
+    const c0 = T(G.polygonCentroid(nb.ring));
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6);
-    const w1 = nl.l1 ? doc.getTextWidth(nl.l1) : 0;
-    doc.setFontSize(7.4);
-    const w2 = nl.l2 ? doc.getTextWidth(nl.l2) : 0;
+    doc.setFontSize(TXT.label);
+    const w1 = l1 ? doc.getTextWidth(l1) : 0;
+    doc.setFontSize(TXT.strong);
+    const w2 = l2 ? doc.getTextWidth(l2) : 0;
     const w = Math.max(w1, w2);
-    const h = (nl.l1 ? 2.6 : 0) + (nl.l2 ? 3.2 : 0);
-    const b = { x0: nl.s.x - w / 2 - 0.5, y0: nl.s.y - h / 2 - 0.5, x1: nl.s.x + w / 2 + 0.5, y1: nl.s.y + h / 2 + 0.5 };
-    if (!inVp(b) || clash(b)) continue;
-    labelled.push(b);
-    let y = b.y0 + 0.5;
-    if (nl.l1) { doc.setFont('helvetica', 'bold'); doc.setFontSize(6); doc.setTextColor(...PEN.neighbour); doc.text(nl.l1, nl.s.x, y + 2, { align: 'center' }); y += 2.7; }
-    if (nl.l2) { doc.setFont('helvetica', 'bold'); doc.setFontSize(7.4); doc.setTextColor(...PEN.neighbour); doc.text(nl.l2, nl.s.x, y + 2.4, { align: 'center' }); }
+    const h = (l1 ? 3.6 : 0) + (l2 ? 4.2 : 0);
+    const bb = G.bbox(ring);
+    const cands = [[0, 0], [0, -0.18], [0, 0.18], [-0.18, 0], [0.18, 0], [-0.18, -0.18], [0.18, 0.18], [0.18, -0.18], [-0.18, 0.18]].map(([dx, dy]) => ({ x: c0.x + dx * bb.w, y: c0.y + dy * bb.h }));
+    // Lots cut by the viewport edge (across the road, or behind the lot): try the visible part of the lot as well
+    const vx0 = Math.max(bb.minX, rect.x0); const vx1 = Math.min(bb.maxX, rect.x1); const vy0 = Math.max(bb.minY, rect.y0); const vy1 = Math.min(bb.maxY, rect.y1);
+    if (vx1 > vx0 && vy1 > vy0) for (const fx of [0.5, 0.3, 0.7, 0.15, 0.85]) for (const fy of [0.5, 0.3, 0.7, 0.15, 0.85]) cands.push({ x: vx0 + (vx1 - vx0) * fx, y: vy0 + (vy1 - vy0) * fy });
+    for (const s of cands) {
+      const b = { x0: s.x - w / 2 - 0.5, y0: s.y - h / 2 - 0.5, x1: s.x + w / 2 + 0.5, y1: s.y + h / 2 + 0.5 };
+      if (!field.free(b, { lines: false })) continue;
+      if (![{ x: b.x0, y: b.y0 }, { x: b.x1, y: b.y0 }, { x: b.x1, y: b.y1 }, { x: b.x0, y: b.y1 }].every((q) => G.pointInPolygon(q, ring))) continue;
+      field.addBox(b);
+      let y = b.y0 + 0.5;
+      if (l1) { haloText(doc, l1, s.x, y + 3, { size: TXT.label, bold: true, colour: aerial ? [30, 30, 34] : PEN.neighbour, align: 'center', halo: HALO }); y += 3.6; }
+      if (l2) haloText(doc, l2, s.x, y + 3.4, { size: TXT.strong, bold: true, colour: aerial ? [30, 30, 34] : PEN.neighbour, align: 'center', halo: HALO });
+      break;
+    }
   }
 
-  // 11. The lot's own label, inside the boundary, clear of the house
+  // 12. The lot's own label, inside the boundary and clear of the house
   const ll = lotLabelLines(lot);
-  const lotLines = [ll.first, ll.second, lot.areaM2 ? `${Math.round(lot.areaM2)} m2` : ''].filter(Boolean);
-  const cand = [0.12, 0.88, 0.5].flatMap((f) => [0.1, 0.9].map((g) => ({ f, g })));
-  const lb = G.bbox(lot.boundary.map(T));
-  let placedLabel = null;
-  for (const c of [{ x: 0.5, y: 0.08 }, { x: 0.5, y: 0.93 }, { x: 0.2, y: 0.5 }, { x: 0.8, y: 0.5 }, { x: 0.25, y: 0.12 }, { x: 0.75, y: 0.12 }, { x: 0.25, y: 0.9 }, { x: 0.75, y: 0.9 }]) {
+  const lotLines = [ll.first, ll.second, lot.areaM2 ? `${Math.round(lot.areaM2)} m²` : ''].filter(Boolean);
+  const sizes = [TXT.strong + 3, TXT.strong + 4, TXT.label];
+  const lb = G.bbox(lotPoly);
+  let lotLabelBox = null;
+  for (const c of [{ x: 0.5, y: 0.1 }, { x: 0.5, y: 0.92 }, { x: 0.5, y: 0.5 }, { x: 0.25, y: 0.12 }, { x: 0.75, y: 0.12 }, { x: 0.25, y: 0.9 }, { x: 0.75, y: 0.9 }, { x: 0.2, y: 0.5 }, { x: 0.8, y: 0.5 }]) {
     const p = { x: lb.minX + lb.w * c.x, y: lb.minY + lb.h * c.y };
-    if (!G.pointInPolygon(p, lot.boundary.map(T))) continue;
-    const w = 26;
-    const h = lotLines.length * 3.2 + 1;
+    doc.setFont('helvetica', 'bold');
+    const w = Math.max(...lotLines.map((l, i) => { doc.setFontSize(sizes[i] || TXT.label); return doc.getTextWidth(clean(l)); })) + 3;
+    const h = lotLines.length * 5.6 + 1.4;
     const b = { x0: p.x - w / 2, y0: p.y - h / 2, x1: p.x + w / 2, y1: p.y + h / 2 };
     const corners = [{ x: b.x0, y: b.y0 }, { x: b.x1, y: b.y0 }, { x: b.x1, y: b.y1 }, { x: b.x0, y: b.y1 }];
-    if (!corners.every((q) => G.pointInPolygon(q, lot.boundary.map(T)))) continue;
-    if (clash(b)) continue;
-    placedLabel = b;
+    if (!corners.every((q) => G.pointInPolygon(q, lotPoly))) continue;
+    if (!field.free(b, { soft: false })) continue;
+    lotLabelBox = b;
     break;
   }
-  void cand;
-  if (placedLabel) {
-    labelled.push(placedLabel);
-    taken.push(placedLabel);
-    const cx = (placedLabel.x0 + placedLabel.x1) / 2;
-    lotLines.forEach((l, i) => {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(i === 0 ? 7.2 : i === 1 ? 8.2 : 6);
-      doc.setTextColor(...PEN.boundary);
-      doc.text(clean(l), cx, placedLabel.y0 + 3 + i * 3.2, { align: 'center' });
-    });
+  if (lotLabelBox) {
+    field.addBox(lotLabelBox);
+    const cx = (lotLabelBox.x0 + lotLabelBox.x1) / 2;
+    lotLines.forEach((l, i) => haloText(doc, l, cx, lotLabelBox.y0 + 5 + i * 5.6, { size: sizes[i] || TXT.label, bold: true, colour: bcol, align: 'center', halo: HALO }));
   }
 
-  // 12. Call outs
+  // 13. Call outs
   const items = [];
   const hc = facts.obox ? T(facts.obox.centre) : null;
   const footprint = footRings.reduce((a, r) => a + G.polygonArea(r) / 1e6, 0);
-  if (hc) items.push({ id: 'house', lines: ['PROPOSED DWELLING', lot.floorRL != null ? `FFL ${lot.floorRL.toFixed(2)} (${lot.floorRLAuto ? 'assumed' : 'set'})` : 'FFL to be set', `Footprint ${footprint.toFixed(0)} m2`], at: hc, colour: PEN.proposed });
+  if (hc) items.push({ id: 'house', lines: ['PROPOSED DWELLING', lot.floorRL != null ? `FFL ${lot.floorRL.toFixed(2)} (${lot.floorRLAuto ? 'assumed' : 'set'})` : 'FFL to be set', `Footprint ${footprint.toFixed(0)} m²`], at: hc, colour: PEN.proposed });
   if (drive?.ok) {
-    const dc = T(drive.centre[Math.floor(drive.centre.length * 0.55)]);
-    items.push({ id: 'drive', lines: ['PROPOSED DRIVEWAY', `${(drive.widthMm / 1000).toFixed(1)} m wide, concrete`], at: dc, colour: PEN.proposed });
-    const cc = T(G.lerp(drive.crossover.from, drive.crossover.to, 0.5));
-    items.push({ id: 'cross', lines: ['PROPOSED CROSSOVER', 'Council approval required'], at: cc, colour: PEN.proposed });
+    items.push({ id: 'drive', lines: ['PROPOSED DRIVEWAY', `${(drive.widthMm / 1000).toFixed(1)} m wide, concrete`], at: T(drive.centre[Math.floor(drive.centre.length * 0.55)]), colour: PEN.proposed });
+    items.push({ id: 'cross', lines: ['PROPOSED CROSSOVER', 'Council approval required'], at: T(G.lerp(drive.crossover.from, drive.crossover.to, 0.5)), colour: PEN.proposed });
   }
   if (facts.reserve[0]) {
+    // Road call outs point at the part of the road that is on the sheet (the reserve lines run on past the viewport edge).
     const L = facts.reserve[0].lines;
-    items.push({ id: 'phantom', lines: ['ROAD CENTRELINE', 'Indicative'], at: T(G.lerp(L.centreline[0], L.centreline[1], 0.82)), colour: PEN.phantom });
-    items.push({ id: 'kerb', lines: ['KERB AND GUTTER', 'Existing, assumed'], at: T(G.lerp(L.kerb[0], L.kerb[1], 0.2)), colour: PEN.road });
+    const visible = (line, f) => { const c = clipSegment(T(line[0]), T(line[1]), { x0: rect.x0 + 12, y0: rect.y0 + 12, x1: rect.x1 - 12, y1: rect.y1 - 12 }); return c ? G.lerp(c[0], c[1], f) : null; };
+    const ph = visible(L.centreline, 0.8);
+    const kb = visible(L.kerb, 0.2);
+    if (ph) items.push({ id: 'phantom', lines: ['ROAD CENTRELINE', 'Indicative'], at: ph, colour: PEN.phantom });
+    if (kb) items.push({ id: 'kerb', lines: ['KERB AND GUTTER', 'Existing, assumed'], at: kb, colour: aerial ? [40, 42, 48] : PEN.road });
   }
   if (lot.envelope?.length > 2) {
     const e = lot.envelope;
     const top = e.reduce((a, p) => (T(p).y < T(a).y ? p : a), e[0]);
-    items.push({ id: 'env', lines: ['INDICATIVE SETBACK ENVELOPE', 'Check with council'], at: T(G.lerp(top, e[(e.indexOf(top) + 1) % e.length], 0.5)), colour: PEN.envelope });
+    items.push({ id: 'env', lines: ['INDICATIVE SETBACK ENVELOPE', 'Check with council'], at: T(G.lerp(top, e[(e.indexOf(top) + 1) % e.length], 0.5)), colour: pal.envelope });
   }
   const bd = dims.find((d) => d.index === (facts.reserve[0]?.edge ?? 0)) || dims[0];
-  const bmid = T(G.lerp(lot.boundary[(bd.index + 2) % lot.boundary.length], lot.boundary[(bd.index + 3) % lot.boundary.length], 0.3));
-  items.push({ id: 'bnd', lines: ['LOT BOUNDARY (EXISTING)', `${lot.lotLabel || ''} ${Math.round(lot.areaM2 || 0)} m2`.trim()], at: bmid, colour: PEN.boundary });
-  const obstacles = [...taken, ...(houseSheet ? [houseSheet] : [])];
-  const avoid = [];
+  if (bd) {
+    const at = T(G.lerp(lot.boundary[(bd.index + 2) % lot.boundary.length], lot.boundary[(bd.index + 3) % lot.boundary.length], 0.3));
+    items.push({ id: 'bnd', lines: [proposedLot ? 'LOT BOUNDARY (PROPOSED)' : 'LOT BOUNDARY (EXISTING)', `${ll.first} ${ll.second}`.trim()], at, colour: bcol });
+  }
+  const avoid = [...field.segs];
   const addRing = (pts) => pts.forEach((q, i) => avoid.push([T(q), T(pts[(i + 1) % pts.length])]));
   addRing(lot.boundary);
-  if (lot.envelope?.length > 2) addRing(lot.envelope);
   if (drive?.ok) { addRing(drive.polygon); addRing(drive.crossover.polygon); }
-  const placed = placeCallouts(doc, items, { obstacles, avoid, area: { x0: rect.x0, y0: rect.y0 + 8, x1: rect.x1, y1: rect.y1 }, size: 6 });
-  drawCallouts(doc, placed);
+  const placed = placeCallouts(doc, items.filter((it) => it.at.x > rect.x0 + 4 && it.at.x < rect.x1 - 4 && it.at.y > rect.y0 + 4 && it.at.y < rect.y1 - 4), { obstacles: [...field.boxes], avoid, area: rect, size: TXT.body });
+  drawCallouts(doc, placed.map((p) => ({ ...p, size: TXT.body })));
 
-  // View title and scale bar below the title
-  viewTitle(doc, vp.x0 + 3, vp.y0 + 6, 'Site plan', label);
-  return { n, ds, label, T, taken, facts };
+  // View title in a white tab at the top left
+  doc.setFillColor(255, 255, 255);
+  doc.rect(vp.x0, vp.y0, 80, 13, 'F');
+  viewTitle(doc, vp.x0 + 3, vp.y0 + 9, 'Site plan', label, { size: TXT.title });
+  ink(doc, PEN.ink);
+  doc.setLineDashPattern([], 0);
+  doc.setLineWidth(0.5);
+  doc.rect(vp.x0, vp.y0, vp.x1 - vp.x0, vp.y1 - vp.y0);
+  return { n, ds, label, T, turnDeg: view.turnDeg, northDeg: view.northDeg, facts, aerial, palette: pal };
 }
 
-const require2 = (a, b, rect) => {
-  const t0 = Math.max(0, 0);
-  void t0;
-  // Liang-Barsky clip in sheet space.
-  let u0 = 0;
-  let u1 = 1;
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  for (const [p, q] of [[-dx, a.x - rect.x0], [dx, rect.x1 - a.x], [-dy, a.y - rect.y0], [dy, rect.y1 - a.y]]) {
-    if (p === 0) { if (q < 0) return null; } else { const t = q / p; if (p < 0) { if (t > u1) return null; if (t > u0) u0 = t; } else { if (t < u0) return null; if (t < u1) u1 = t; } }
-  }
-  return [{ x: a.x + dx * u0, y: a.y + dy * u0 }, { x: a.x + dx * u1, y: a.y + dy * u1 }];
-};
-
 function noLotMessage(doc, ctx, vp) {
-  const { project } = ctx;
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
+  doc.setFontSize(12);
   ink(doc, PEN.grey);
   doc.text('NO LOT LOADED', (vp.x0 + vp.x1) / 2, (vp.y0 + vp.y1) / 2 - 4, { align: 'center' });
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
-  doc.text('Use Find my block to load the lot, its setbacks and ground levels. This sheet then shows the site plan.', (vp.x0 + vp.x1) / 2, (vp.y0 + vp.y1) / 2 + 2, { align: 'center' });
-  void project;
-  viewTitle(doc, vp.x0 + 3, vp.y0 + 6, 'Site plan', 'NTS');
-  return { n: null, ds: null, label: 'NTS', T: null, taken: [], facts: null };
+  doc.setFontSize(TXT.body);
+  doc.text('Use Find my block to load the lot, its setbacks and ground levels. This sheet then shows the site plan.', (vp.x0 + vp.x1) / 2, (vp.y0 + vp.y1) / 2 + 3, { align: 'center' });
+  doc.setLineWidth(0.5);
+  doc.rect(vp.x0, vp.y0, vp.x1 - vp.x0, vp.y1 - vp.y0);
+  viewTitle(doc, vp.x0 + 3, vp.y0 + 8.4, 'Site plan', 'NTS', { size: TXT.title });
+  return { n: null, ds: null, label: 'NTS', T: null, turnDeg: 0, northDeg: ctx.project.site?.northDeg || 0, facts: null, aerial: false };
 }
 
 // Right hand panel: north point, key plan, legend, notes ---------------------------------------------------------------------
 export function drawSitePanel(doc, ctx, site) {
   const { project } = ctx;
-  const lot = project.site?.lot || null;
   const x0 = SITE_VP.x1 + 3;
   const x1 = BODY.x1;
   const w = x1 - x0;
   let y = BODY.y0;
+  const aerial = !!site?.aerial;
+  const pal = site?.palette || paletteFor(false);
 
-  // North point and scale text
-  doc.setLineWidth(0.35);
+  // North point, scale text and scale bar
+  doc.setLineWidth(0.5);
   ink(doc, PEN.ink);
-  doc.rect(x0, y, w, 34);
-  northArrow(doc, x0 + 14, y + 12.5, project.site?.northDeg || 0);
-  if (site?.n) scaleBar(doc, x0 + 6, y + 25, site.n, site.ds);
+  doc.rect(x0, y, w, NORTH_H);
+  northArrow(doc, x0 + 16, y + 17, site?.northDeg ?? (project.site?.northDeg || 0));
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(TXT.strong);
+  doc.text(clean(site?.label ? `SCALE ${site.label}` : 'NOT TO SCALE'), x0 + 34, y + 9);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6);
+  doc.setFontSize(TXT.small);
   ink(doc, PEN.grey);
-  doc.text(clean(site?.label ? `SCALE ${site.label}` : 'NOT TO SCALE'), x0 + 30, y + 8);
-  doc.text('North is MGA grid north.', x0 + 30, y + 12.5);
-  doc.text('Plan up is north.', x0 + 30, y + 16.5);
-  y += 37;
+  doc.text('North is MGA grid north.', x0 + 34, y + 14.5);
+  doc.text(Math.abs(site?.turnDeg || 0) < 0.5 ? 'Plan up is north.' : 'Plan is turned to the street. See north point.', x0 + 34, y + 19);
+  if (site?.n) {
+    // A bar of four parts that fits the panel beside the north arrow
+    const maxW = x1 - (x0 + 34) - 8;
+    const segM = [1, 2, 5, 10, 20, 25, 50].filter((m) => (m * 1000 * 4) / site.ds <= maxW).at(-1) || 1;
+    const seg = (segM * 1000) / site.ds;
+    doc.setLineWidth(0.2);
+    for (let i = 0; i < 4; i++) { doc.setFillColor(...(i % 2 ? [255, 255, 255] : PEN.ink)); ink(doc, PEN.ink); doc.rect(x0 + 34 + i * seg, y + 25, seg, 2, 'FD'); }
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(TXT.small);
+    doc.setTextColor(...PEN.ink);
+    for (let i = 0; i <= 4; i++) doc.text(String(segM * i), x0 + 34 + i * seg, y + 31, { align: 'center' });
+    doc.text('m', x0 + 34 + 4 * seg + 3.5, y + 31);
+  }
+  y += NORTH_H + 3;
 
   // Key plan
-  const kh = 44;
-  doc.setLineWidth(0.35);
+  doc.setLineWidth(0.5);
   ink(doc, PEN.ink);
-  doc.rect(x0, y, w, kh);
+  doc.rect(x0, y, w, KEY_H);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(6.5);
-  doc.text('KEY PLAN', x0 + 2, y + 4);
-  drawLocality(doc, { x0: x0 + 2, y0: y + 6, x1: x1 - 2, y1: y + kh - 2 }, ctx);
-  y += kh + 3;
+  doc.setFontSize(TXT.label);
+  doc.text('KEY PLAN', x0 + 2, y + 5.4);
+  drawLocality(doc, keyBox(), ctx, { key: true });
+  y += KEY_H + 3;
 
   // Legend
+  const sw = 14;
+  const sample = (fn) => (cx, cy) => fn(cx, cy);
+  const rectP = (cx, cy) => [{ x: cx, y: cy - 1.8 }, { x: cx + sw, y: cy - 1.8 }, { x: cx + sw, y: cy + 1.8 }, { x: cx, y: cy + 1.8 }];
   const items = [
-    ['Lot boundary (existing)', (cx, cy) => { doc.setDrawColor(...PEN.boundary); doc.setLineWidth(0.8); doc.line(cx, cy, cx + 12, cy); }],
-    ['Neighbouring lot boundary', (cx, cy) => { doc.setDrawColor(...PEN.neighbour); doc.setLineWidth(0.13); doc.line(cx, cy, cx + 12, cy); }],
-    ['Indicative setback envelope', (cx, cy) => { doc.setDrawColor(...PEN.envelope); doc.setLineWidth(0.4); doc.setLineDashPattern([3, 1.6], 0); doc.line(cx, cy, cx + 12, cy); doc.setLineDashPattern([], 0); }],
-    ['Road centreline (indicative)', (cx, cy) => { doc.setDrawColor(...PEN.phantom); doc.setLineWidth(0.35); doc.setLineDashPattern([5, 1.2, 1.2, 1.2], 0); doc.line(cx, cy, cx + 12, cy); doc.setLineDashPattern([], 0); }],
-    ['Kerb and gutter', (cx, cy) => { doc.setDrawColor(...PEN.road); doc.setLineWidth(0.3); doc.line(cx, cy, cx + 12, cy); }],
-    ['Contour (minor, major)', (cx, cy) => { doc.setDrawColor(...PEN.contourMinor); doc.setLineWidth(0.1); doc.line(cx, cy - 0.8, cx + 5.5, cy - 0.8); doc.setDrawColor(...PEN.contourMajor); doc.setLineWidth(0.22); doc.line(cx + 6.5, cy + 0.8, cx + 12, cy + 0.8); }],
-    ['Dimension to boundary', (cx, cy) => { doc.setDrawColor(...PEN.dim); doc.setLineWidth(0.13); doc.line(cx, cy, cx + 12, cy); doc.setLineWidth(0.25); doc.line(cx, cy - 1, cx, cy + 1); doc.line(cx + 12, cy - 1, cx + 12, cy + 1); }],
-    ['Proposed works', (cx, cy) => { const p = [{ x: cx, y: cy - 1.8 }, { x: cx + 12, y: cy - 1.8 }, { x: cx + 12, y: cy + 1.8 }, { x: cx, y: cy + 1.8 }]; hatch(doc, p, 'proposed'); doc.setDrawColor(...PEN.proposed); doc.setLineWidth(0.3); polygon(doc, p, 'S'); }],
-    ['Hardstand (driveway)', (cx, cy) => { const p = [{ x: cx, y: cy - 1.8 }, { x: cx + 12, y: cy - 1.8 }, { x: cx + 12, y: cy + 1.8 }, { x: cx, y: cy + 1.8 }]; hatch(doc, p, 'hardstand'); }],
-    ['Concrete (crossover, footpath)', (cx, cy) => { const p = [{ x: cx, y: cy - 1.8 }, { x: cx + 12, y: cy - 1.8 }, { x: cx + 12, y: cy + 1.8 }, { x: cx, y: cy + 1.8 }]; hatch(doc, p, 'concrete'); }],
-    ['Bitumen (road)', (cx, cy) => { const p = [{ x: cx, y: cy - 1.8 }, { x: cx + 12, y: cy - 1.8 }, { x: cx + 12, y: cy + 1.8 }, { x: cx, y: cy + 1.8 }]; hatch(doc, p, 'bitumen'); }],
+    [site?.facts?.lot?.proposed ? 'Lot boundary (proposed)' : 'Lot boundary (existing)', sample((cx, cy) => { doc.setDrawColor(...(site?.facts?.lot?.proposed ? PEN.proposed : pal.boundary)); doc.setLineWidth(site?.facts?.lot?.proposed ? 0.9 : 1.1); doc.setLineDashPattern(site?.facts?.lot?.proposed ? PROPOSED_BOUNDARY : [], 0); doc.line(cx, cy, cx + sw, cy); doc.setLineDashPattern([], 0); })],
+    [aerial ? 'Neighbouring lots (cadastre)' : 'Neighbouring lot boundary', sample((cx, cy) => { doc.setDrawColor(...pal.neighbour); doc.setLineWidth(pal.neighbourW + 0.1); doc.line(cx, cy, cx + sw, cy); })],
+    ['Indicative setback envelope', sample((cx, cy) => { doc.setDrawColor(...pal.envelope); doc.setLineWidth(0.5); doc.setLineDashPattern([4, 2], 0); doc.line(cx, cy, cx + sw, cy); doc.setLineDashPattern([], 0); })],
+    ['Road centreline (phantom, indicative)', sample((cx, cy) => { doc.setDrawColor(...PEN.phantom); doc.setLineWidth(0.5); doc.setLineDashPattern([5, 1.2, 1.2, 1.2, 1.2, 1.2], 0); doc.line(cx, cy, cx + sw, cy); doc.setLineDashPattern([], 0); })],
+    ['Kerb and gutter', sample((cx, cy) => { doc.setDrawColor(...PEN.road); doc.setLineWidth(0.4); doc.line(cx, cy, cx + sw, cy); })],
+    ['Contour (minor, major)', sample((cx, cy) => { doc.setDrawColor(...PEN.contourMinor); doc.setLineWidth(0.12); doc.line(cx, cy - 0.9, cx + 6, cy - 0.9); doc.setDrawColor(...PEN.contourMajor); doc.setLineWidth(0.28); doc.line(cx + 7, cy + 0.9, cx + sw, cy + 0.9); })],
+    ['Dimension to boundary', sample((cx, cy) => { doc.setDrawColor(...PEN.dim); doc.setLineWidth(0.13); doc.line(cx, cy, cx + sw, cy); doc.setLineWidth(0.25); doc.line(cx, cy - 1, cx, cy + 1); doc.line(cx + sw, cy - 1, cx + sw, cy + 1); })],
+    ['Proposed works', sample((cx, cy) => { const p = rectP(cx, cy); hatch(doc, p, 'proposed'); doc.setDrawColor(...PEN.proposed); doc.setLineWidth(0.4); polygon(doc, p, 'S'); })],
+    ['Hardstand (driveway)', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'hardstand'))],
+    ['Concrete (crossover)', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'concrete'))],
+    ['Road pavement', sample((cx, cy) => { const q = rectP(cx, cy); hatch(doc, q, 'road', { angle: 0, width: 0.12, colour: [90, 94, 102] }); doc.setDrawColor(...PEN.road); doc.setLineWidth(0.3); doc.line(cx, cy - 1.8, cx + sw, cy - 1.8); doc.line(cx, cy + 1.8, cx + sw, cy + 1.8); })],
+    ['Footpath', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'footpath'))],
   ];
-  const lh = 5.1;
-  const legH = 7 + items.length * lh;
-  doc.setLineWidth(0.35);
+  const lh = 5.2;
+  const legH = 9 + items.length * lh;
+  doc.setLineWidth(0.5);
   ink(doc, PEN.ink);
   doc.rect(x0, y, w, legH);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(6.5);
-  doc.text('LEGEND', x0 + 2, y + 4);
+  doc.setFontSize(TXT.label);
+  doc.text('LEGEND', x0 + 2, y + 5.4);
   items.forEach(([name, draw], i) => {
-    const cy = y + 8.6 + i * lh;
+    const cy = y + 10 + i * lh;
     draw(x0 + 3, cy);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(5.6);
+    doc.setFontSize(TXT.small);
     doc.setTextColor(...PEN.ink);
-    doc.text(clean(name), x0 + 18, cy + 0.8);
+    doc.text(clean(name), x0 + 3 + sw + 3, cy + 0.9);
   });
   y += legH + 3;
 
   // Notes
-  const notes = siteNotes(project);
-  doc.setLineWidth(0.35);
+  const notes = siteNotes(project, { aerial, sheet: ctx.analysisNumber });
   const nh = BODY.y1 - y;
+  doc.setLineWidth(0.5);
   ink(doc, PEN.ink);
   doc.rect(x0, y, w, nh);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(6.5);
-  doc.text('NOTES', x0 + 2, y + 4);
-  let ty = y + 8;
+  doc.setFontSize(TXT.label);
+  doc.text('NOTES', x0 + 2, y + 5.4);
+  let ty = y + 10;
+  const lineH = 2.75;
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(5.1);
+  doc.setFontSize(TXT.min);
   for (let i = 0; i < notes.length; i++) {
     const lines = wrap(doc, `${i + 1}. ${notes[i]}`, w - 5);
-    if (ty + lines.length * 2.1 > y + nh - 1) break;
-    lines.forEach((l, j) => doc.text(l, x0 + 2 + (j ? 2 : 0), ty + j * 2.1));
-    ty += lines.length * 2.1 + 1;
+    if (ty + lines.length * lineH > y + nh - 1) break;
+    lines.forEach((l, j) => doc.text(l, x0 + 2 + (j ? 2.4 : 0), ty + j * lineH));
+    ty += lines.length * lineH + 1.1;
   }
 }
 
-export function siteNotes(project) {
+export function siteNotes(project, { aerial = false, sheet = null } = {}) {
   const lot = project.site?.lot || null;
   const out = [
     'Concept only. To be verified by a suitably qualified person before any use for approval or construction.',
     'Boundaries are from the cadastre, are indicative only, and are not a survey. A registered survey is required.',
   ];
-  if (lot?.setbacks) {
-    const s = lot.setbacks;
-    out.push(`Setbacks: ${clean(s.council || '')} ${clean(s.basis || '')}. The red envelope is indicative. Where a rule is marked "check with council" the figure has not been confirmed with the council.`);
-    for (const n of setbackNotes(lot)) out.push(`${n.rule === 'side' ? 'Side' : n.rule === 'rear' ? 'Rear' : n.rule === 'front' ? 'Front' : n.rule} ${n.valueM} m: ${clean(n.source)}${n.flagged ? ' (check with council)' : ''}.`);
-  } else if (lot) out.push('Council setbacks are not loaded for this lot. The envelope is not shown.');
-  if (lot?.terrain || lot?.contours?.length) out.push(contourNote(lot.provenance?.elevation));
+  if (aerial) out.push('The aerial underlay is reduced in resolution and is for orientation only. It is not for measurement. Cadastre drawn in red over the aerial.');
+  if (lot?.setbacks) out.push(`Setbacks are indicative${lot.setbacks.council ? ` (${clean(lot.setbacks.council)})` : ''}. The sources, the figures provided and the items to confirm are on ${sheet ? `sheet ${sheet}` : 'the site analysis sheet'}. A figure marked check with council is not confirmed.`);
+  else if (lot) out.push('Council setbacks are not loaded for this lot. The envelope is not shown.');
+  if (lot?.terrain || lot?.contours?.length) out.push(`Levels are indicative only, from the ${lot.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM, and are not survey. Contours are at 1.0 m intervals and spot levels are to 0.1 m. A registered survey is required.`);
   if (lot?.floorRL != null) out.push(`FFL ${lot.floorRL.toFixed(2)} m AHD ${lot.floorRLAuto ? 'is assumed from the ground level at the house, not designed' : 'as set by the designer'}. NSL is the natural surface level from the terrain model at each house corner.`);
-  out.push('Services, easements, trees, flood and bushfire overlays are not shown. Dial Before You Dig plans and a section 10.7 or equivalent certificate are required.');
+  if (lot?.floorRL != null && lot?.terrain) {
+    const bx = orientedBox(buildingHull(project));
+    if (bx) {
+      const hw = bx.w / 2; const hd = bx.d / 2;
+      const cut = [[-1, -1], [1, -1], [1, 1], [-1, 1]].some(([a, b]) => {
+        const rl = terrainAt(lot.terrain, bx.centre.x + bx.u.x * hw * a + bx.v.x * hd * b, bx.centre.y + bx.u.y * hw * a + bx.v.y * hd * b);
+        return rl != null && rl > lot.floorRL + 0.05;
+      });
+      if (cut) out.push('FFL is below the natural surface at one or more house corners. Cut is required at those corners: refer to site works.');
+    }
+  }
+  out.push('Services, easements, trees, flood and bushfire overlays are not shown. Before You Dig Australia plans and a section 10.7 or equivalent certificate are required.');
   out.push('Driveway and crossover are indicative. Crossover location, width and levels need council approval.');
   return out;
 }
 
 // Locality map ----------------------------------------------------------------------------------------------------------------
-/** Surrounding lots, the subject lot filled and the house, drawn to fit `box`. With an aerial image the lots are drawn over it. */
-export function drawLocality(doc, box, ctx) {
+const LOCALITY_SCALES = [500, 1000, 2000, 2500, 5000, 10000];
+
+/**
+ * The locality view for a box: north up, zoomed out to take in the surrounding cadastre (at least 280 m across) at a standard scale.
+ * Returns { T, n, ds } where T maps plan mm to sheet mm.
+ */
+export function localityView(project, box, { minSpanM = 280, k = 1 } = {}) {
+  const lot = project.site?.lot;
+  if (!lot?.boundary?.length) return null;
+  const w = box.x1 - box.x0;
+  const lc = G.polygonCentroid(lot.boundary);
+  // Only the cadastre near the lot sets the scale: a long run of lots must not push the map out to a tiny scale
+  const near = (lot.neighbours || []).filter((q) => q.ring?.length && Math.hypot(...Object.values(G.sub(G.polygonCentroid(q.ring), lc))) < minSpanM * 600);
+  const pts = [...lot.boundary, ...near.flatMap((q) => q.ring)];
+  const nb = G.bbox(pts);
+  const needW = Math.max(minSpanM * 1000, nb.w * 1.15);
+  const needH = Math.max(minSpanM * 1000 * ((box.y1 - box.y0) / w), nb.h * 1.15);
+  const n = LOCALITY_SCALES.find((s) => needW / (s * k) <= w && needH / (s * k) <= box.y1 - box.y0) || LOCALITY_SCALES.at(-1);
+  const ds = n * k;
+  const cx = (box.x0 + box.x1) / 2;
+  const cy = (box.y0 + box.y1) / 2;
+  // Centre on the middle of the cadastre, but keep the subject lot well inside the view.
+  const mid = { x: (nb.minX + nb.maxX) / 2, y: (nb.minY + nb.maxY) / 2 };
+  const span = { x: (w * ds) / 2, y: ((box.y1 - box.y0) * ds) / 2 };
+  const c = { x: G.clamp(mid.x, lc.x - span.x * 0.4, lc.x + span.x * 0.4), y: G.clamp(mid.y, lc.y - span.y * 0.4, lc.y + span.y * 0.4) };
+  return { n, ds, T: (p) => ({ x: cx + (p.x - c.x) / ds, y: cy + (p.y - c.y) / ds }), box };
+}
+
+/**
+ * Surrounding lots (DCDB), street names, the subject lot and the house, with the aerial under them when one was supplied, and an
+ * arrow towards the nearest town centre. Drawn to fit `box`. opts.key gives the small key plan on the site sheet.
+ */
+export function drawLocality(doc, box, ctx, { key = false } = {}) {
   const { project } = ctx;
   const lot = project.site?.lot;
   const w = box.x1 - box.x0;
@@ -565,42 +717,131 @@ export function drawLocality(doc, box, ctx) {
   doc.rect(box.x0, box.y0, w, h, 'FD');
   if (!lot) {
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6);
+    doc.setFontSize(TXT.body);
     ink(doc, PEN.grey);
     doc.text('Locality not loaded', (box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2, { align: 'center' });
-    return;
+    return null;
   }
-  const rings = [lot.boundary, ...(lot.neighbours || []).map((n) => n.ring)];
-  // Focus on the lot and the lots near it.
-  const lb = G.bbox(lot.boundary);
-  const span = Math.max(lb.w, lb.h) * 3.2;
-  const aspect = w / h;
-  const cx = (lb.minX + lb.maxX) / 2;
-  const cy = (lb.minY + lb.maxY) / 2;
-  const vw = aspect >= 1 ? span * aspect : span;
-  const vh = aspect >= 1 ? span : span / aspect;
-  const T = (p) => ({ x: box.x0 + w / 2 + ((p.x - cx) / vw) * w, y: box.y0 + h / 2 + ((p.y - cy) / vh) * h });
+  const view = localityView(project, box, { minSpanM: key ? 400 : 280, k: ctx.k || 1 });
+  const { T } = view;
+  const under = ctx.underlays?.[key ? 'key' : 'cover'];
+  const aerial = !!(under?.url && placeUnderlay(doc, under.url, box));
+  const pal = paletteFor(aerial);
   const rect = { x0: box.x0 + 0.3, y0: box.y0 + 0.3, x1: box.x1 - 0.3, y1: box.y1 - 0.3 };
-  if (ctx.aerial && lot.aerial?.extent) {
-    const e = lot.aerial.extent;
-    const a = T({ x: e.x0, y: e.y0 });
-    const b = T({ x: e.x1, y: e.y1 });
-    // Only when the image lies wholly inside the box (jsPDF cannot clip images through the scaled proxy).
-    if (a.x >= rect.x0 && b.x <= rect.x1 && a.y >= rect.y0 && b.y <= rect.y1) {
-      try { doc.addImage(ctx.aerial, 'JPEG', a.x, a.y, b.x - a.x, b.y - a.y); } catch { /* unreadable image: schematic only */ }
+  const field = new LabelField(rect);
+  const small = key ? TXT.min : TXT.body;
+
+  // Streets: the frontage road through the box, and any named roads the lookup returned
+  const facts = siteFacts(project);
+  const streets = [];
+  for (const r of facts?.reserve || []) {
+    const c0 = r.lines.centreline[0];
+    const c1 = r.lines.centreline[1];
+    const dir = G.norm(G.sub(c1, c0));
+    const mid = G.lerp(c0, c1, 0.5);
+    const reach = (view.ds * Math.max(w, h)) * 1.2;
+    streets.push({ name: ROAD_NAME(lot), pts: [G.add(mid, G.mul(dir, -reach)), G.add(mid, G.mul(dir, reach))], widthMm: (r.vergeM * 2 + r.gutterM * 2 + r.carriagewayM) * 1000 });
+  }
+  for (const rd of lot.roads || []) {
+    const pts = ptsOf(rd.pts || []);
+    if (pts.length > 1 && rd.name && rd.name.toUpperCase() !== (streets[0]?.name || '')) streets.push({ name: clean(rd.name).toUpperCase(), pts, widthMm: 18000 });
+  }
+  for (const s of streets) {
+    const strip = [];
+    const L = s.pts;
+    for (let i = 0; i + 1 < L.length; i++) {
+      const d = G.norm(G.sub(L[i + 1], L[i]));
+      const nrm = { x: -d.y, y: d.x };
+      const a = G.add(L[i], G.mul(nrm, s.widthMm / 2));
+      const b = G.add(L[i + 1], G.mul(nrm, s.widthMm / 2));
+      const c = G.add(L[i + 1], G.mul(nrm, -s.widthMm / 2));
+      const e = G.add(L[i], G.mul(nrm, -s.widthMm / 2));
+      const q = clipPolygon([a, b, c, e].map(T), rect);
+      if (q.length > 2) { doc.setFillColor(aerial ? 255 : 226, aerial ? 255 : 228, aerial ? 255 : 232); polygon(doc, q, 'F'); }
     }
   }
-  doc.setDrawColor(...PEN.neighbour);
-  doc.setLineWidth(0.12);
-  for (const r of rings.slice(1)) clippedPolyline(doc, r.map(T), rect, true);
+  // Surrounding cadastre
+  doc.setDrawColor(...pal.neighbour);
+  doc.setLineWidth(key ? 0.12 : pal.neighbourW);
+  for (const nb of lot.neighbours || []) clippedPolyline(doc, (nb.ring || []).map(T), rect, true);
   const own = clipPolygon(lot.boundary.map(T), rect);
-  if (own.length > 2) { doc.setFillColor(205, 232, 214); polygon(doc, own, 'F'); }
-  doc.setDrawColor(...PEN.boundary);
-  doc.setLineWidth(0.5);
+  if (own.length > 2 && !aerial) { doc.setFillColor(205, 232, 214); polygon(doc, own, 'F'); }
+  doc.setDrawColor(...(lot.proposed ? PEN.proposed : pal.boundary));
+  doc.setLineWidth(key ? 0.6 : 0.9);
   clippedPolyline(doc, lot.boundary.map(T), rect, true);
   const hull = buildingHull(project);
   if (hull.length > 2) { doc.setFillColor(...PEN.proposed); polygon(doc, hull.map(T), 'F'); }
+
+  // Street names along the road, in a clear stretch
+  if (!key) {
+    for (const s of streets) {
+      if (!s.name) continue;
+      const a = T(s.pts[0]);
+      const b = T(s.pts[1]);
+      const clip = clipSegment(a, b, rect);
+      if (!clip) continue;
+      const dir = dirOf(clip[0], clip[1]);
+      for (const f of [0.22, 0.78, 0.5, 0.1, 0.9]) {
+        const m = G.lerp(clip[0], clip[1], f);
+        const lab = alongLabel(doc, s.name, m, dir, -TXT.body * 0.3528 / 2, { size: TXT.body, bold: true, colour: PEN.road, halo: 1.1 });
+        if (field.free(lab.box, { lines: false })) { lab.draw(); field.addBox(lab.box); break; }
+      }
+    }
+  }
+
+  // Direction to the nearest town centre
+  const q = lot.query || null;
+  const town = q ? nearestTown(q.lon, q.lat) : null;
+  if (town && town.km >= 0.4 && !key) {
+    const north = rad(Number(project.site?.northDeg) || 0);
+    // Bearing is from true north; the plan's up is MGA grid north (the difference is under a degree here).
+    const th = rad(town.bearingDeg) - north;
+    const d = { x: Math.sin(th), y: -Math.cos(th) };
+    const c = { x: (box.x0 + box.x1) / 2, y: (box.y0 + box.y1) / 2 };
+    const reachX = Math.abs(d.x) > 1e-6 ? (w / 2 - 14) / Math.abs(d.x) : 1e9;
+    const reachY = Math.abs(d.y) > 1e-6 ? (h / 2 - 12) / Math.abs(d.y) : 1e9;
+    const r0 = Math.min(reachX, reachY);
+    const tip = { x: c.x + d.x * r0, y: c.y + d.y * r0 };
+    const tail = { x: tip.x - d.x * 18, y: tip.y - d.y * 18 };
+    doc.setDrawColor(...PEN.ink);
+    doc.setLineWidth(0.8);
+    doc.line(tail.x, tail.y, tip.x, tip.y);
+    const px = -d.y;
+    const py = d.x;
+    doc.setFillColor(...PEN.ink);
+    polygon(doc, [{ x: tip.x + d.x * 4, y: tip.y + d.y * 4 }, { x: tip.x + px * 2.2, y: tip.y + py * 2.2 }, { x: tip.x - px * 2.2, y: tip.y - py * 2.2 }], 'F');
+    const txt = `${clean(town.name).toUpperCase()} TOWN CENTRE, ${town.km.toFixed(1)} km ${town.compass}`;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(TXT.body);
+    const tw = doc.getTextWidth(txt) + 4;
+    const bx = G.clamp(tail.x - tw / 2, rect.x0 + 1, rect.x1 - tw - 1);
+    const by = G.clamp(tail.y - d.y * 6, rect.y0 + 8, rect.y1 - 9);
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(...PEN.ink);
+    doc.setLineWidth(0.25);
+    doc.rect(bx, by - 4.6, tw, 6.8, 'FD');
+    doc.setTextColor(...PEN.ink);
+    doc.text(txt, bx + 2, by);
+  }
+
+  // Captions
   const ll = lotLabelLines(lot);
-  labelOn(doc, `${ll.first} ${ll.second}`.trim(), box.x0 + 2, box.y1 - 2, { size: 5.4, bold: true, colour: PEN.boundary, align: 'left', pad: 0.8 });
-  labelOn(doc, 'NTS', box.x1 - 2, box.y1 - 2, { size: 5.4, colour: PEN.grey, align: 'right', pad: 0.8 });
+  const cap = clean(`${ll.first} ${ll.second}`.trim());
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(small);
+  const cw = doc.getTextWidth(cap) + 2.4;
+  doc.setFillColor(255, 255, 255);
+  doc.rect(box.x0 + 1, box.y1 - 7, cw, 6, 'F');
+  doc.setTextColor(...(lot.proposed ? PEN.proposed : pal.boundary));
+  doc.text(cap, box.x0 + 2.2, box.y1 - 2.7);
+  const scaleText = key ? 'NTS' : `1:${view.n} @ ${ctx.paper || 'A3'}`;
+  doc.setFont('helvetica', 'normal');
+  const sw2 = doc.getTextWidth(scaleText) + 2.4;
+  doc.setFillColor(255, 255, 255);
+  doc.rect(box.x1 - sw2 - 1, box.y1 - 7, sw2, 6, 'F');
+  doc.setTextColor(...PEN.grey);
+  doc.text(scaleText, box.x1 - 2.2, box.y1 - 2.7, { align: 'right' });
+  return view;
 }
+
+export { PHANTOM_LEN, fit, overlap, inflate };
