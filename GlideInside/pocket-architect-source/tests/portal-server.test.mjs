@@ -7,7 +7,7 @@ import { createApp } from '../server/lib/app.js';
 import { createMemoryStore, createD1Store } from '../server/lib/store.js';
 import { createMemoryPortalStore, createD1PortalStore } from '../server/lib/portal-store.js';
 import { hashPassword, verifyPassword, sha256Hex, PBKDF2_ITERATIONS, secretEqual } from '../server/lib/password.js';
-import { verifyToken, issueOrgToken } from '../server/lib/entitlement.js';
+import { verifyToken, authenticate, issueOrgToken } from '../server/lib/entitlement.js';
 import { isMonthlyRunTime, buildSnapshot } from '../server/lib/portal-billing.js';
 import { abnValid } from '../server/lib/portal.js';
 import { topUpExpiry } from '../server/lib/portal-ai.js';
@@ -197,7 +197,8 @@ test('issueOrgToken output is accepted by the AI branch contract: { oid, lid, ro
   const cfg = { entitlementSecret: 's3cret' };
   const token = await issueOrgToken({ orgId: 'org_1', loginId: 'u_1', role: 'client', cap: 300 }, cfg, T0);
   const p = await verifyToken(token, 's3cret', Math.floor(T0 / 1000));
-  assert.equal(p, null, 'verifyToken requires eid and pid, so an org token is never accepted as a Plan Pack token');
+  assert.equal(p.oid, 'org_1', 'verifyToken accepts a signed org token; authenticate() refuses it for Plan Pack routes');
+  await assert.rejects(authenticate(new Request('https://x/api/credits', { headers: { authorization: `Bearer ${token}` } }), { store: {}, config: cfg, now: () => T0 }), /Plan Pack/);
   const [body] = token.split('.');
   const payload = JSON.parse(Buffer.from(body.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString());
   assert.deepEqual(Object.keys(payload).sort(), ['cap', 'exp', 'lid', 'oid', 'role']);
