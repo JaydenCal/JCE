@@ -1,0 +1,876 @@
+{
+ "lga_slug": "hawkesbury-city-council",
+ "council": "Hawkesbury City Council",
+ "lgaNames": [
+  "HAWKESBURY",
+  "HAWKESBURY CITY",
+  "HAWKESBURY CITY COUNCIL"
+ ],
+ "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+ "lep": "Hawkesbury Local Environmental Plan 2012",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "hawkesbury-city-council-001",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Jacaranda DCP area"
+   },
+   "conditionText": [
+    "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R2: front building line (minimum)",
+    "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R2: rear setback (minimum)",
+    "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R2: secondary setback (minimum)"
+   ],
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     15519
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     15523
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     15521
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    15519,
+    15521,
+    15523
+   ],
+   "evidence": [
+    {
+     "id": 15519,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front building line (minimum) 8m 10m",
+     "clause": "Appendix C",
+     "page": 71,
+     "source_file": "DCP/Jacaranda-DCP-2021.txt",
+     "condition": "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R2: front building line (minimum)",
+     "edition": "Jacaranda DCP, 11 June 2021"
+    },
+    {
+     "id": 15523,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Setback (minimum) 4.5m 4.5m",
+     "clause": "Appendix C",
+     "page": 71,
+     "source_file": "DCP/Jacaranda-DCP-2021.txt",
+     "condition": "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R2: secondary setback (minimum)",
+     "edition": "Jacaranda DCP, 11 June 2021"
+    },
+    {
+     "id": 15521,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Setback (minimum) 5m 10m",
+     "clause": "Appendix C",
+     "page": 71,
+     "source_file": "DCP/Jacaranda-DCP-2021.txt",
+     "condition": "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R2: rear setback (minimum)",
+     "edition": "Jacaranda DCP, 11 June 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Front building line (minimum) 8m 10m",
+   "clause": "Appendix C",
+   "page": 71,
+   "source_file": "DCP/Jacaranda-DCP-2021.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Jacaranda DCP, 11 June 2021"
+  },
+  {
+   "id": "hawkesbury-city-council-002",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Jacaranda DCP area"
+   },
+   "conditionText": [
+    "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R5: front building line (minimum)",
+    "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R5: rear setback (minimum)",
+    "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R5: secondary setback (minimum)"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     15520
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     15524
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     15522
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    15520,
+    15522,
+    15524
+   ],
+   "evidence": [
+    {
+     "id": 15520,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front building line (minimum) 8m 10m",
+     "clause": "Appendix C",
+     "page": 71,
+     "source_file": "DCP/Jacaranda-DCP-2021.txt",
+     "condition": "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R5: front building line (minimum)",
+     "edition": "Jacaranda DCP, 11 June 2021"
+    },
+    {
+     "id": 15524,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Setback (minimum) 4.5m 4.5m",
+     "clause": "Appendix C",
+     "page": 71,
+     "source_file": "DCP/Jacaranda-DCP-2021.txt",
+     "condition": "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R5: secondary setback (minimum)",
+     "edition": "Jacaranda DCP, 11 June 2021"
+    },
+    {
+     "id": 15522,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Setback (minimum) 5m 10m",
+     "clause": "Appendix C",
+     "page": 71,
+     "source_file": "DCP/Jacaranda-DCP-2021.txt",
+     "condition": "Jacaranda DCP area (Spinks Road, Glossodia) Appendix C dwelling house key controls, zone R5: rear setback (minimum)",
+     "edition": "Jacaranda DCP, 11 June 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Front building line (minimum) 8m 10m",
+   "clause": "Appendix C",
+   "page": 71,
+   "source_file": "DCP/Jacaranda-DCP-2021.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Jacaranda DCP, 11 June 2021"
+  },
+  {
+   "id": "hawkesbury-city-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground",
+    "lotWidthMinM": 9.0
+   },
+   "conditionText": [
+    "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: rear setback minimum, ground level",
+    "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: side setback minimum, detached boundary, ground floor"
+   ],
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     15466
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     15464
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    15464,
+    15466
+   ],
+   "evidence": [
+    {
+     "id": 15466,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4m (ground level) and 6m (upper levels)",
+     "clause": "Table 5-4",
+     "page": 82,
+     "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+     "condition": "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: rear setback minimum, ground level",
+     "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017"
+    },
+    {
+     "id": 15464,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Ground Floor: 0.9m",
+     "clause": "Table 5-4",
+     "page": 82,
+     "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+     "condition": "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: side setback minimum, detached boundary, ground floor",
+     "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4m (ground level) and 6m (upper levels)",
+   "clause": "Table 5-4",
+   "page": 82,
+   "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017"
+  },
+  {
+   "id": "hawkesbury-city-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper",
+    "lotWidthMinM": 9.0
+   },
+   "conditionText": "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: rear setback minimum, upper levels",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     15467
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    15467
+   ],
+   "evidence": [
+    {
+     "id": 15467,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "4m (ground level) and 6m (upper levels)",
+     "clause": "Table 5-4",
+     "page": 82,
+     "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+     "condition": "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: rear setback minimum, upper levels",
+     "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4m (ground level) and 6m (upper levels)",
+   "clause": "Table 5-4",
+   "page": 82,
+   "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017"
+  },
+  {
+   "id": "hawkesbury-city-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 9.0,
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: side setback minimum where boundary adjoins public recreation or drainage land",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     15465
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15465
+   ],
+   "evidence": [
+    {
+     "id": 15465,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Where a boundary adjoins Public Recreation or Drainage land: 3m",
+     "clause": "Table 5-4",
+     "page": 82,
+     "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+     "condition": "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: side setback minimum where boundary adjoins public recreation or drainage land",
+     "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "Where a boundary adjoins Public Recreation or Drainage land: 3m",
+   "clause": "Table 5-4",
+   "page": 82,
+   "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
+  },
+  {
+   "id": "hawkesbury-city-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 9.0,
+    "qualifiers": [
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: front setback to building facade fronting open space or drainage land",
+   "front": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     15462
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15462
+   ],
+   "evidence": [
+    {
+     "id": 15462,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "3.5m to building façade fronting open space or drainage land",
+     "clause": "Table 5-4",
+     "page": 82,
+     "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+     "condition": "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: front setback to building facade fronting open space or drainage land",
+     "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "3.5m to building façade fronting open space or drainage land",
+   "clause": "Table 5-4",
+   "page": 82,
+   "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
+  },
+  {
+   "id": "hawkesbury-city-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 9.0
+   },
+   "conditionText": [
+    "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: corner lots secondary street setback minimum",
+    "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: front setback minimum to building facade line"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     15461
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     15468
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15461,
+    15468
+   ],
+   "evidence": [
+    {
+     "id": 15461,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m to building facade line",
+     "clause": "Table 5-4",
+     "page": 82,
+     "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+     "condition": "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: front setback minimum to building facade line",
+     "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017"
+    },
+    {
+     "id": 15468,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Corner lots secondary street 2m setback (minimum)",
+     "clause": "Table 5-4",
+     "page": 82,
+     "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+     "condition": "Vineyard Precinct: Table 5-4 key controls for lots with frontage width >= 9m and <= 15m, front accessed dwellings: corner lots secondary street setback minimum",
+     "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5m to building facade line",
+   "clause": "Table 5-4",
+   "page": 82,
+   "source_file": "DCP/20171213-Hawkesbury-Vineyard-DCP.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury Growth Centres Precinct DCP 2017 (Vineyard), 13/12/2017"
+  },
+  {
+   "id": "hawkesbury-city-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Hawkesbury DCP Part D: Ch1 residential: internal lots, general setback from rear boundary of the property in front",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     15242
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    15242
+   ],
+   "evidence": [
+    {
+     "id": 15242,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "For internal lots the general setback from the rear boundary of the property in front is to be 6 metres",
+     "clause": "D1.4(c)",
+     "page": 12,
+     "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+     "condition": "Hawkesbury DCP Part D: Ch1 residential: internal lots, general setback from rear boundary of the property in front",
+     "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "For internal lots the general setback from the rear boundary of the property in front is to be 6 metres",
+   "clause": "D1.4(c)",
+   "page": 12,
+   "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)"
+  },
+  {
+   "id": "hawkesbury-city-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Hawkesbury DCP Part D: Ch1 residential: sites fronting Main, Arterial or Collector roads",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     15240
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15240
+   ],
+   "evidence": [
+    {
+     "id": 15240,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "For sites fronting Main, Arterial or Collector roads, buildings are to be set 10 metres back from the front boundary",
+     "clause": "D1.4(a)",
+     "page": 12,
+     "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+     "condition": "Hawkesbury DCP Part D: Ch1 residential: sites fronting Main, Arterial or Collector roads",
+     "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "For sites fronting Main, Arterial or Collector roads, buildings are to be set 10 metres back from the front boundary",
+   "clause": "D1.4(a)",
+   "page": 12,
+   "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)"
+  },
+  {
+   "id": "hawkesbury-city-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Hawkesbury DCP Part D: Ch1 residential: minor frontage on corner blocks, minimum building setback",
+    "Hawkesbury DCP Part D: Ch1 residential: sites fronting a local road"
+   ],
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     15241
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     15243
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15241,
+    15243
+   ],
+   "evidence": [
+    {
+     "id": 15241,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "For sites fronting a local road buildings are to be set 7.5m back from the front boundary",
+     "clause": "D1.4(b)",
+     "page": 12,
+     "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+     "condition": "Hawkesbury DCP Part D: Ch1 residential: sites fronting a local road",
+     "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)"
+    },
+    {
+     "id": 15243,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "For the minor frontage on corner blocks, the minimum building setback is to be 2 metres",
+     "clause": "D1.4(d)",
+     "page": 12,
+     "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+     "condition": "Hawkesbury DCP Part D: Ch1 residential: minor frontage on corner blocks, minimum building setback",
+     "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "For sites fronting a local road buildings are to be set 7.5m back from the front boundary",
+   "clause": "D1.4(b)",
+   "page": 12,
+   "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)"
+  },
+  {
+   "id": "hawkesbury-city-council-011",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Hawkesbury DCP Part D: Ch2 industrial: arterial or sub arterial roads front setback",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     15250
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15250
+   ],
+   "evidence": [
+    {
+     "id": 15250,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "On arterial or sub arterial roads all buildings are to be setback 15 metres from the front property boundary",
+     "clause": "D2.2(a)",
+     "page": 38,
+     "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+     "condition": "Hawkesbury DCP Part D: Ch2 industrial: arterial or sub arterial roads front setback",
+     "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "On arterial or sub arterial roads all buildings are to be setback 15 metres from the front property boundary",
+   "clause": "D2.2(a)",
+   "page": 38,
+   "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  },
+  {
+   "id": "hawkesbury-city-council-012",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Hawkesbury DCP Part D: Ch2 industrial: all other streets front setback",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     15251
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15251
+   ],
+   "evidence": [
+    {
+     "id": 15251,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "On all other streets, buildings are to be setback 10 metres from the front property boundary",
+     "clause": "D2.2(b)",
+     "page": 38,
+     "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+     "condition": "Hawkesbury DCP Part D: Ch2 industrial: all other streets front setback",
+     "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "On all other streets, buildings are to be setback 10 metres from the front property boundary",
+   "clause": "D2.2(b)",
+   "page": 38,
+   "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  },
+  {
+   "id": "hawkesbury-city-council-013",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Hawkesbury DCP Part D: Ch2 industrial: reduced front setback possible where high design standard demonstrated",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     15252
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    15252
+   ],
+   "evidence": [
+    {
+     "id": 15252,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Consideration will be given to reducing the setback to 4 metres",
+     "clause": "D2.2(b)",
+     "page": 38,
+     "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+     "condition": "Hawkesbury DCP Part D: Ch2 industrial: reduced front setback possible where high design standard demonstrated",
+     "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Consideration will be given to reducing the setback to 4 metres",
+   "clause": "D2.2(b)",
+   "page": 38,
+   "source_file": "DCP/6DCP_PARTD-Chapters-1-to-7.txt",
+   "dcp": "Hawkesbury Development Control Plan 2023 (Parts A and B, Chapter 5 Traffic, Access, Street Design and Parking); older Hawkesbury DCP Parts C, D and E chapters, Vineyard Precinct DCP 2017 (13/12/2017) and Jacaranda DCP 2021 (11/06/2021) also used",
+   "edition": "Hawkesbury DCP Part D (older DCP; edition date not shown in text)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 15463",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): EDM Table 18 / Appendix E Table 8.11 OSD PSD and SSV values (Residential/Medium Density/Commercial v Industrial column mapping unclear in extracted text) and EDM Table 21 Fairfield PSD rates (other council) not recorded | DCP 2023 Chapter 5 non-residential parking rates recorded only for a selection of uses; Part A/E and Heritage chapters, Pitt Town water strategy (20151109-Pitt-Town-Development-Water-Management-Strategy.txt) and DCPAppendix_EPart3 standard drawings, AppendixABCD.txt, Chapter 7 and 9, Macquarie/Bridge Streets and Farm Buildings chapters not extracted | Precinct DCPs (Redbank, Pitt Town, Jacaranda, Vineyard): only lot size, street width and key dwelling controls recorded; Vin"
+ ],
+ "notes": "Built from 21 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R2": {
+   "front": true,
+   "side": false,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "R5": {
+   "front": true,
+   "side": false,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 8
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  }
+ },
+ "precincts": [
+  "Jacaranda DCP area"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 21,
+  "rules": 13,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 5
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
+ }
+}

@@ -1,0 +1,527 @@
+{
+ "lga_slug": "waverley-council",
+ "council": "Waverley Council",
+ "lgaNames": [
+  "WAVERLEY",
+  "WAVERLEY COUNCIL"
+ ],
+ "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
+ "lep": "Waverley Local Environmental Plan 2012 (lot size, height, FSR maps not in saved text)",
+ "status": "none",
+ "rules": [
+  {
+   "id": "waverley-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "C1 Table 1: ground floor",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     36840
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36840
+   ],
+   "evidence": [
+    {
+     "id": 36840,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Ground Floor 0.9m",
+     "clause": "C1.2.2 Table 1",
+     "page": 8,
+     "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+     "condition": "C1 Table 1: ground floor",
+     "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Ground Floor 0.9m",
+   "clause": "C1.2.2 Table 1",
+   "page": 8,
+   "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+   "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
+   "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+  },
+  {
+   "id": "waverley-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "C1 Table 1: first floor",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     36841
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36841
+   ],
+   "evidence": [
+    {
+     "id": 36841,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "First Floor 0.9m",
+     "clause": "C1.2.2 Table 1",
+     "page": 8,
+     "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+     "condition": "C1 Table 1: first floor",
+     "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "First Floor 0.9m",
+   "clause": "C1.2.2 Table 1",
+   "page": 8,
+   "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+   "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
+   "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+  },
+  {
+   "id": "waverley-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "C1 Table 1: second floor",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     36842
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36842
+   ],
+   "evidence": [
+    {
+     "id": 36842,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Second Floor 1.5m",
+     "clause": "C1.2.2 Table 1",
+     "page": 9,
+     "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+     "condition": "C1 Table 1: second floor",
+     "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "Second Floor 1.5m",
+   "clause": "C1.2.2 Table 1",
+   "page": 9,
+   "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+   "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
+   "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
+  },
+  {
+   "id": "waverley-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "C1: new buildings extend no further than predominant front and rear building lines",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "predominant building line based on three adjacent neighbours either side",
+    "sources": [
+     36844
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36844
+   ],
+   "evidence": [
+    {
+     "id": 36844,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "predominant building line can be considered to be the three adjacent",
+     "clause": "C1.2.1(a)",
+     "page": 7,
+     "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+     "condition": "C1: new buildings extend no further than predominant front and rear building lines",
+     "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "predominant building line can be considered to be the three adjacent",
+   "clause": "C1.2.1(a)",
+   "page": 7,
+   "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+   "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
+   "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+  },
+  {
+   "id": "waverley-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 3
+   },
+   "conditionText": "C1: brand new three storey structure, all floors",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     36843
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36843
+   ],
+   "evidence": [
+    {
+     "id": 36843,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "all floors must be setback by 1.5m",
+     "clause": "C1.2.2(f)",
+     "page": 9,
+     "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+     "condition": "C1: brand new three storey structure, all floors",
+     "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "all floors must be setback by 1.5m",
+   "clause": "C1.2.2(f)",
+   "page": 9,
+   "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+   "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
+   "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+  },
+  {
+   "id": "waverley-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 12.5
+   },
+   "conditionText": "C2 Table 3: height up to 12.5 m",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     36848
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36848
+   ],
+   "evidence": [
+    {
+     "id": 36848,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Height up to 12.5m 1.5m",
+     "clause": "C2.3.2 Table 3",
+     "page": 43,
+     "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+     "condition": "C2 Table 3: height up to 12.5 m",
+     "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Height up to 12.5m 1.5m",
+   "clause": "C2.3.2 Table 3",
+   "page": 43,
+   "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+   "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
+   "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+  },
+  {
+   "id": "waverley-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 4.5
+   },
+   "conditionText": "C2 Table 3: height up to 4.5 m",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     36847
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36847
+   ],
+   "evidence": [
+    {
+     "id": 36847,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Height up to 4.5m 0.9m",
+     "clause": "C2.3.2 Table 3",
+     "page": 43,
+     "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+     "condition": "C2 Table 3: height up to 4.5 m",
+     "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Height up to 4.5m 0.9m",
+   "clause": "C2.3.2 Table 3",
+   "page": 43,
+   "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+   "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
+   "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+  },
+  {
+   "id": "waverley-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightOverM": 12.5
+   },
+   "conditionText": "C2 Table 3: height above 12.5 m",
+   "side": {
+    "minM": null,
+    "rangeM": [
+     1.5,
+     2.5
+    ],
+    "basis": "text",
+    "sources": [
+     36849
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36849
+   ],
+   "evidence": [
+    {
+     "id": 36849,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Height above 12.5m 1.5 – 2.5m",
+     "clause": "C2.3.2 Table 3",
+     "page": 43,
+     "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+     "condition": "C2 Table 3: height above 12.5 m",
+     "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "range printed (1.5 to 2.5); band not resolved",
+   "quote": "Height above 12.5m 1.5 – 2.5m",
+   "clause": "C2.3.2 Table 3",
+   "page": 43,
+   "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+   "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
+   "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)",
+   "flag": "check_with_council",
+   "flagReason": "range printed (1.5 to 2.5); band not resolved"
+  },
+  {
+   "id": "waverley-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "C2: new buildings and extensions, minimum rear setback or predominant rear building line, whichever is greater",
+    "C2: street setbacks"
+   ],
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "consistent with predominant building line setback along the street",
+    "sources": [
+     36845
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     36846
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    36845,
+    36846
+   ],
+   "evidence": [
+    {
+     "id": 36845,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "consistent with the predominant building line setback",
+     "clause": "C2.3.1(a)",
+     "page": 42,
+     "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+     "condition": "C2: street setbacks",
+     "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+    },
+    {
+     "id": 36846,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "a minimum 6m",
+     "clause": "C2.3.2(a)",
+     "page": 42,
+     "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+     "condition": "C2: new buildings and extensions, minimum rear setback or predominant rear building line, whichever is greater",
+     "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "consistent with the predominant building line setback",
+   "clause": "C2.3.1(a)",
+   "page": 42,
+   "source_file": "DCP/Waverley_DCP_2022_Part_C_-_Residential_Development.pdf",
+   "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
+   "edition": "Waverley DCP 2022 (Amendment 6, adopted 10/03/2026)"
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP B5.2 Table 2 flood planning controls matrix not resolved to cells (layout garbled) | Table 6 loading rates and Table 4 bicycle rates other than residential visitors not recorded"
+ ],
+ "notes": "Built from 10 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 9
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 10,
+  "rules": 9,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  }
+ }
+}

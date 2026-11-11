@@ -1,0 +1,530 @@
+{
+ "lga_slug": "glen-innes-severn-council",
+ "council": "Glen Innes Severn Council",
+ "lgaNames": [
+  "GLEN INNES SEVERN",
+  "GLEN INNES SEVERN COUNCIL"
+ ],
+ "dcp": "Glen Innes Severn Development Control Plan 2014 (version date 16/08/2024); an earlier copy \"as amended Mar 2015\" is also saved with the same key values",
+ "lep": "Glen Innes Severn Local Environmental Plan 2012",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "glen-innes-severn-council-001",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Zones R1 and RU5, dwelling and dual occupancy, single storey (Table 3.2)",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     13621
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13621
+   ],
+   "evidence": [
+    {
+     "id": 13621,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Single storey – 900 mm",
+     "clause": "3.5 Table 3.2",
+     "page": 21,
+     "source_file": "DCP/development-control-plan-2014.pdf",
+     "condition": "Zones R1 and RU5, dwelling and dual occupancy, single storey (Table 3.2)",
+     "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Single storey – 900 mm",
+   "clause": "3.5 Table 3.2",
+   "page": 21,
+   "source_file": "DCP/development-control-plan-2014.pdf",
+   "dcp": "Glen Innes Severn Development Control Plan 2014 (version date 16/08/2024); an earlier copy \"as amended Mar 2015\" is also saved with the same key values",
+   "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+  },
+  {
+   "id": "glen-innes-severn-council-002",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 3.0
+   },
+   "conditionText": "Zones R1 and RU5, dwelling and dual occupancy, walls greater than 3 m in height (Table 3.2)",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     13622
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13622
+   ],
+   "evidence": [
+    {
+     "id": 13622,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Walls greater than 3 m in height - 2 m",
+     "clause": "3.5 Table 3.2",
+     "page": 21,
+     "source_file": "DCP/development-control-plan-2014.pdf",
+     "condition": "Zones R1 and RU5, dwelling and dual occupancy, walls greater than 3 m in height (Table 3.2)",
+     "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Walls greater than 3 m in height - 2 m",
+   "clause": "3.5 Table 3.2",
+   "page": 21,
+   "source_file": "DCP/development-control-plan-2014.pdf",
+   "dcp": "Glen Innes Severn Development Control Plan 2014 (version date 16/08/2024); an earlier copy \"as amended Mar 2015\" is also saved with the same key values",
+   "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+  },
+  {
+   "id": "glen-innes-severn-council-003",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Zones R1 and RU5, dwelling and dual occupancy (Table 3.2)",
+    "Zones R1 and RU5, dwelling and dual occupancy, corner allotment (Table 3.2)"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     13619
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     13620
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13619,
+    13620
+   ],
+   "evidence": [
+    {
+     "id": 13619,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6m to main frontage –if corner allotment 3m",
+     "clause": "3.5 Table 3.2",
+     "page": 21,
+     "source_file": "DCP/development-control-plan-2014.pdf",
+     "condition": "Zones R1 and RU5, dwelling and dual occupancy (Table 3.2)",
+     "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+    },
+    {
+     "id": 13620,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "6m to main frontage –if corner allotment 3m",
+     "clause": "3.5 Table 3.2",
+     "page": 21,
+     "source_file": "DCP/development-control-plan-2014.pdf",
+     "condition": "Zones R1 and RU5, dwelling and dual occupancy, corner allotment (Table 3.2)",
+     "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "6m to main frontage –if corner allotment 3m",
+   "clause": "3.5 Table 3.2",
+   "page": 21,
+   "source_file": "DCP/development-control-plan-2014.pdf",
+   "dcp": "Glen Innes Severn Development Control Plan 2014 (version date 16/08/2024); an earlier copy \"as amended Mar 2015\" is also saved with the same key values",
+   "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+  },
+  {
+   "id": "glen-innes-severn-council-004",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeysMax": 2
+   },
+   "conditionText": "Zones R1 and RU5, multi dwelling housing and residential flat buildings up to two storeys (Table 3.2)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     13623
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13623
+   ],
+   "evidence": [
+    {
+     "id": 13623,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6m to main frontage – if corner",
+     "clause": "3.5 Table 3.2",
+     "page": 21,
+     "source_file": "DCP/development-control-plan-2014.pdf",
+     "condition": "Zones R1 and RU5, multi dwelling housing and residential flat buildings up to two storeys (Table 3.2)",
+     "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "6m to main frontage – if corner",
+   "clause": "3.5 Table 3.2",
+   "page": 21,
+   "source_file": "DCP/development-control-plan-2014.pdf",
+   "dcp": "Glen Innes Severn Development Control Plan 2014 (version date 16/08/2024); an earlier copy \"as amended Mar 2015\" is also saved with the same key values",
+   "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+  },
+  {
+   "id": "glen-innes-severn-council-005",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Zones R1 and RU5, multi dwelling housing and residential flat buildings, side and rear (Table 3.2)",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     13624
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13624
+   ],
+   "evidence": [
+    {
+     "id": 13624,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "allotment 3m to secondary frontage Side/Rear – 3 m",
+     "clause": "3.5 Table 3.2",
+     "page": 21,
+     "source_file": "DCP/development-control-plan-2014.pdf",
+     "condition": "Zones R1 and RU5, multi dwelling housing and residential flat buildings, side and rear (Table 3.2)",
+     "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "allotment 3m to secondary frontage Side/Rear – 3 m",
+   "clause": "3.5 Table 3.2",
+   "page": 21,
+   "source_file": "DCP/development-control-plan-2014.pdf",
+   "dcp": "Glen Innes Severn Development Control Plan 2014 (version date 16/08/2024); an earlier copy \"as amended Mar 2015\" is also saved with the same key values",
+   "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+  },
+  {
+   "id": "glen-innes-severn-council-006",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Zone R5, dwelling and dual occupancy (Table 3.2)",
+    "Zone R5, dwelling and dual occupancy, side and rear (Table 3.2)"
+   ],
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     13625
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     13626
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13625,
+    13626
+   ],
+   "evidence": [
+    {
+     "id": 13625,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front – 15 m",
+     "clause": "3.5 Table 3.2",
+     "page": 21,
+     "source_file": "DCP/development-control-plan-2014.pdf",
+     "condition": "Zone R5, dwelling and dual occupancy (Table 3.2)",
+     "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+    },
+    {
+     "id": 13626,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Front – 15 m Side/Rear – 3 m",
+     "clause": "3.5 Table 3.2",
+     "page": 21,
+     "source_file": "DCP/development-control-plan-2014.pdf",
+     "condition": "Zone R5, dwelling and dual occupancy, side and rear (Table 3.2)",
+     "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Front – 15 m",
+   "clause": "3.5 Table 3.2",
+   "page": 21,
+   "source_file": "DCP/development-control-plan-2014.pdf",
+   "dcp": "Glen Innes Severn Development Control Plan 2014 (version date 16/08/2024); an earlier copy \"as amended Mar 2015\" is also saved with the same key values",
+   "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+  },
+  {
+   "id": "glen-innes-severn-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 3.0
+   },
+   "conditionText": "Side or rear walls less than 3 m in height may be built close to boundary",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     13628
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13628
+   ],
+   "evidence": [
+    {
+     "id": 13628,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "less than 3 metres in height may be built to within 900mm of the boundary",
+     "clause": "3.5",
+     "page": 21,
+     "source_file": "DCP/development-control-plan-2014.pdf",
+     "condition": "Side or rear walls less than 3 m in height may be built close to boundary",
+     "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "less than 3 metres in height may be built to within 900mm of the boundary",
+   "clause": "3.5",
+   "page": 21,
+   "source_file": "DCP/development-control-plan-2014.pdf",
+   "dcp": "Glen Innes Severn Development Control Plan 2014 (version date 16/08/2024); an earlier copy \"as amended Mar 2015\" is also saved with the same key values",
+   "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+  },
+  {
+   "id": "glen-innes-severn-council-008",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Rural buildings, front property boundary with frontage to public road",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     13627
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13627
+   ],
+   "evidence": [
+    {
+     "id": 13627,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "All buildings should be setback at least 15 metres from the front property boundary",
+     "clause": "4.4",
+     "page": 32,
+     "source_file": "DCP/development-control-plan-2014.pdf",
+     "condition": "Rural buildings, front property boundary with frontage to public road",
+     "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "All buildings should be setback at least 15 metres from the front property boundary",
+   "clause": "4.4",
+   "page": 32,
+   "source_file": "DCP/development-control-plan-2014.pdf",
+   "dcp": "Glen Innes Severn Development Control Plan 2014 (version date 16/08/2024); an earlier copy \"as amended Mar 2015\" is also saved with the same key values",
+   "edition": "Glen Innes Severn Development Control Plan 2014 (document set version date 16/08/2024)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
+  }
+ ],
+ "gaps": [
+  "R1: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "R5: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "RU5: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP copy \"as amended Mar 2015\" not separately recorded: key values checked identical to the 2014 (2024 version) copy"
+ ],
+ "notes": "Built from 10 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": false,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 10,
+  "rules": 8,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 2
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (glen-innes-severn-council-001, glen-innes-severn-council-002)); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (glen-innes-severn-council-006, glen-innes-severn-council-007)); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (glen-innes-severn-council-001, glen-innes-severn-council-002)); rear (no rule for this zone/use/lot)"
+  }
+ }
+}

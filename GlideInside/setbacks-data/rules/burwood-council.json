@@ -1,0 +1,752 @@
+{
+ "lga_slug": "burwood-council",
+ "council": "Burwood Council",
+ "lgaNames": [
+  "BURWOOD",
+  "BURWOOD COUNCIL"
+ ],
+ "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+ "lep": "Burwood Local Environmental Plan 2012",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "burwood-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "level": "upper"
+   },
+   "conditionText": "dual occupancy, upper level of two storey dwelling",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     5940
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5944
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     5942
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    5940,
+    5942,
+    5944
+   ],
+   "evidence": [
+    {
+     "id": 5940,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "9 metres to the upper level of a two storey dwelling",
+     "clause": "4.4.3 Setbacks P9",
+     "page": 205,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "dual occupancy, upper level of two storey dwelling",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    },
+    {
+     "id": 5944,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "6 metres setback to the upper level of a two storey dwelling",
+     "clause": "4.4.3 Setbacks P11",
+     "page": 205,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "dual occupancy, upper level of two storey dwelling",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    },
+    {
+     "id": 5942,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5 metres to the upper level of a two storey dwelling",
+     "clause": "4.4.3 Setbacks P10",
+     "page": 205,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "dual occupancy, upper level of two storey dwelling",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "9 metres to the upper level of a two storey dwelling",
+   "clause": "4.4.3 Setbacks P9",
+   "page": 205,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "level": "ground"
+   },
+   "conditionText": "dual occupancy, ground floor or single storey",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     5941
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5941
+   ],
+   "evidence": [
+    {
+     "id": 5941,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "900 millimetres to the ground floor level or single storey elevation",
+     "clause": "4.4.3 Setbacks P10",
+     "page": 205,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "dual occupancy, ground floor or single storey",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "900 millimetres to the ground floor level or single storey elevation",
+   "clause": "4.4.3 Setbacks P10",
+   "page": 205,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "dual occupancy, ground floor",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5943
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    5943
+   ],
+   "evidence": [
+    {
+     "id": 5943,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "3 metres setback to the ground floor level of a dwelling",
+     "clause": "4.4.3 Setbacks P11",
+     "page": 205,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "dual occupancy, ground floor",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "3 metres setback to the ground floor level of a dwelling",
+   "clause": "4.4.3 Setbacks P11",
+   "page": 205,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {},
+   "conditionText": "dual occupancy, corner property",
+   "secondaryFront": {
+    "minM": null,
+    "basis": "text",
+    "note": "Existing building line to the secondary street; upper level 600 mm behind ground floor if both dwellings two storeys in R1 or R3",
+    "sources": [
+     5945
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5945
+   ],
+   "evidence": [
+    {
+     "id": 5945,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "The existing building line to that secondary street",
+     "clause": "4.4.3 Setbacks P12",
+     "page": 205,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "dual occupancy, corner property",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The existing building line to that secondary street",
+   "clause": "4.4.3 Setbacks P12",
+   "page": 205,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "level": "upper"
+   },
+   "conditionText": "single dwellings, two storey, second storey component only",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     5929
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5933
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     5931
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    5929,
+    5931,
+    5933
+   ],
+   "evidence": [
+    {
+     "id": 5929,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "(i) Two storey 9m",
+     "clause": "4.5.2 Table 3",
+     "page": 221,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "single dwellings, two storey, second storey component only",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    },
+    {
+     "id": 5933,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "(i) Two storey 6m",
+     "clause": "4.5.2 Table 3",
+     "page": 221,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "single dwellings, two storey, second storey component only",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    },
+    {
+     "id": 5931,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "(i) Two storey 1.5m",
+     "clause": "4.5.2 Table 3",
+     "page": 221,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "single dwellings, two storey, second storey component only",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "(i) Two storey 9m",
+   "clause": "4.5.2 Table 3",
+   "page": 221,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "single dwellings, single storey front setback",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average of localised existing building line",
+    "sources": [
+     5930
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5930
+   ],
+   "evidence": [
+    {
+     "id": 5930,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "Average of localised existing building line",
+     "clause": "4.5.2 Table 3",
+     "page": 221,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "single dwellings, single storey front setback",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Average of localised existing building line",
+   "clause": "4.5.2 Table 3",
+   "page": 221,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "single dwellings, single storey",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5934
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     5932
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    5932,
+    5934
+   ],
+   "evidence": [
+    {
+     "id": 5934,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "(ii) Single storey 3m",
+     "clause": "4.5.2 Table 3",
+     "page": 221,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "single dwellings, single storey",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    },
+    {
+     "id": 5932,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "(ii) Single storey 900mm",
+     "clause": "4.5.2 Table 3",
+     "page": 221,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "single dwellings, single storey",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "(ii) Single storey 3m",
+   "clause": "4.5.2 Table 3",
+   "page": 221,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "single dwellings, corner property side street",
+   "secondaryFront": {
+    "minM": null,
+    "basis": "text",
+    "note": "As per side setback",
+    "sources": [
+     5935
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5935
+   ],
+   "evidence": [
+    {
+     "id": 5935,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "(ii) Side Street As per side setback",
+     "clause": "4.5.2 Table 3",
+     "page": 221,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "single dwellings, corner property side street",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "(ii) Side Street As per side setback",
+   "clause": "4.5.2 Table 3",
+   "page": 221,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "garages, side boundary and rear boundary for garage walls",
+   "garage": {
+    "minM": 0.9,
+    "sources": [
+     5946
+    ],
+    "printed": "900 mm"
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    5946
+   ],
+   "evidence": [
+    {
+     "id": 5946,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "A minimum 900mm side and 3m rear boundary setback is required for garage walls",
+     "clause": "4.5.3.1 Garages P10",
+     "page": 228,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "garages, side boundary and rear boundary for garage walls",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A minimum 900mm side and 3m rear boundary setback is required for garage walls",
+   "clause": "4.5.3.1 Garages P10",
+   "page": 228,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "multi dwelling housing, ground floor",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     5937
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5937
+   ],
+   "evidence": [
+    {
+     "id": 5937,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side setbacks are to be a minimum of 2 metres for the ground floor level",
+     "clause": "4.3.2 Setbacks P2",
+     "page": 195,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "multi dwelling housing, ground floor",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Side setbacks are to be a minimum of 2 metres for the ground floor level",
+   "clause": "4.3.2 Setbacks P2",
+   "page": 195,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "multi dwelling housing, first floor or above",
+   "side": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     5938
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5938
+   ],
+   "evidence": [
+    {
+     "id": 5938,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "and 3.5 metres for the first floor level or above",
+     "clause": "4.3.2 Setbacks P2",
+     "page": 195,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "multi dwelling housing, first floor or above",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "and 3.5 metres for the first floor level or above",
+   "clause": "4.3.2 Setbacks P2",
+   "page": 195,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  },
+  {
+   "id": "burwood-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "multi dwelling housing",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5936
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     5939
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    5936,
+    5939
+   ],
+   "evidence": [
+    {
+     "id": 5936,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "The front setback of a building is to be a minimum of 6m",
+     "clause": "4.3.2 Setbacks P1",
+     "page": 195,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "multi dwelling housing",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    },
+    {
+     "id": 5939,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "The rear setback of a building is to be a minimum of 3 metres",
+     "clause": "4.3.2 Setbacks P3",
+     "page": 196,
+     "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+     "condition": "multi dwelling housing",
+     "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The front setback of a building is to be a minimum of 6m",
+   "clause": "4.3.2 Setbacks P1",
+   "page": 195,
+   "source_file": "DCP/Burwood-DCP-Version-14-Adopted-2026-02-17.pdf",
+   "dcp": "Burwood Development Control Plan, Version 14, adopted 17/02/2026 (Burwood DCP, BDCP); 42-60 Railway Parade Site Specific DCP also supplied",
+   "edition": "Burwood DCP Version 14, adopted 17/02/2026"
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): No flood planning level or freeboard in DCP 6.4 (refers to draft flood studies and LEP clause 5.21); no AEP given | DCP 3.9 Table 2 centres and corridors parking rates (complex table) and 5.8 non-residential parking not recorded"
+ ],
+ "notes": "Built from 18 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 12
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 18,
+  "rules": 12,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  }
+ }
+}

@@ -1,0 +1,2943 @@
+{
+ "lga_slug": "snowy-monaro-regional-council",
+ "council": "Snowy Monaro Regional Council",
+ "lgaNames": [
+  "SNOWY MONARO REGIONAL",
+  "SNOWY MONARO",
+  "SNOWY MONARO REGIONAL COUNCIL"
+ ],
+ "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+ "lep": "UNVERIFIED",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "snowy-monaro-regional-council-001",
+   "zones": [
+    "R1",
+    "R2",
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area",
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Cooma-Monaro DCP area: lots accessed by battle-axe handle or ROW as sole frontage, R1, R2, RU5: setback from boundary created by handle replaces front setback",
+   "garage": {
+    "minM": 4.0,
+    "sources": [
+     31245
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    31245
+   ],
+   "evidence": [
+    {
+     "id": 31245,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "but a setback of 4",
+     "clause": "Table 2",
+     "page": 21,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: lots accessed by battle-axe handle or ROW as sole frontage, R1, R2, RU5: setback from boundary created by handle replaces front setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "but a setback of 4",
+   "clause": "Table 2",
+   "page": 21,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-002",
+   "zones": [
+    "R1",
+    "R2",
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area",
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Cooma-Monaro DCP area: R1, R2 and RU5: front setback less than 6 m acceptable where average of setbacks of buildings on adjoining lots",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     31241
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    31241
+   ],
+   "evidence": [
+    {
+     "id": 31241,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "A front setback of less than 6m can be considered acceptable where it is the average of the setbacks",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R1, R2 and RU5: front setback less than 6 m acceptable where average of setbacks of buildings on adjoining lots",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "A front setback of less than 6m can be considered acceptable where it is the average of the setbacks",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "snowy-monaro-regional-council-003",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": [
+    "Cooma-Monaro DCP area: R1 and R2 zones, corner lot secondary frontage setback",
+    "Cooma-Monaro DCP area: R1 and R2 zones, front setback",
+    "Cooma-Monaro DCP area: R1 and R2 zones, rear setback",
+    "Cooma-Monaro DCP area: R1 and R2 zones, side setback"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     31197
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     31200
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     31199
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     31198
+    ]
+   },
+   "garage": null,
+   "sources": [
+    31197,
+    31198,
+    31199,
+    31200
+   ],
+   "evidence": [
+    {
+     "id": 31197,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R1 & R2 6 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R1 and R2 zones, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31200,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "R1 & R2 6 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R1 and R2 zones, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31199,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "R1 & R2 6 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R1 and R2 zones, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31198,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R1 & R2 6 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R1 and R2 zones, side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R1 & R2 6 0.9 3 4",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-004",
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": "Cooma-Monaro DCP area: R1 and R2: domestic outbuildings, garages and sheds, rear setback range (no windows with sill below 2 m facing rear)",
+   "rear": {
+    "minM": null,
+    "rangeM": [
+     0.9,
+     3.0
+    ],
+    "basis": "text",
+    "sources": [
+     31243
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    31243
+   ],
+   "evidence": [
+    {
+     "id": 31243,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "may have a rear setback of 0.9m-3m",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R1 and R2: domestic outbuildings, garages and sheds, rear setback range (no windows with sill below 2 m facing rear)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "range printed (0.9 to 3.0); band not resolved",
+   "quote": "may have a rear setback of 0.9m-3m",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "range printed (0.9 to 3.0); band not resolved"
+  },
+  {
+   "id": "snowy-monaro-regional-council-005",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 4000.0,
+    "lotAreaMinM2": 1800.0,
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": [
+    "Cooma-Monaro DCP area: R5 zone, minimum lot size >1800m2 but <4000m2, corner lot secondary frontage setback",
+    "Cooma-Monaro DCP area: R5 zone, minimum lot size >1800m2 but <4000m2, front setback",
+    "Cooma-Monaro DCP area: R5 zone, minimum lot size >1800m2 but <4000m2, rear setback",
+    "Cooma-Monaro DCP area: R5 zone, minimum lot size >1800m2 but <4000m2, side setback"
+   ],
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     31201
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     31202
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     31203
+    ]
+   },
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     31204
+    ]
+   },
+   "garage": null,
+   "sources": [
+    31201,
+    31202,
+    31203,
+    31204
+   ],
+   "evidence": [
+    {
+     "id": 31201,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "R5 8 0.9 5 6 minimum lot size >1800m2 but <4000m2",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size >1800m2 but <4000m2, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31202,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "R5 8 0.9 5 6 minimum lot size >1800m2 but <4000m2",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size >1800m2 but <4000m2, side setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31203,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "R5 8 0.9 5 6 minimum lot size >1800m2 but <4000m2",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size >1800m2 but <4000m2, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31204,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "R5 8 0.9 5 6 minimum lot size >1800m2 but <4000m2",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size >1800m2 but <4000m2, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R5 8 0.9 5 6 minimum lot size >1800m2 but <4000m2",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-006",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": [
+    "Cooma-Monaro DCP area: R5 zone, minimum lot size <2ha, corner lot secondary frontage setback",
+    "Cooma-Monaro DCP area: R5 zone, minimum lot size <2ha, front setback",
+    "Cooma-Monaro DCP area: R5 zone, minimum lot size <2ha, rear setback",
+    "Cooma-Monaro DCP area: R5 zone, minimum lot size <2ha, side setback"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     31205
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     31206
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     31207
+    ]
+   },
+   "secondaryFront": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     31208
+    ]
+   },
+   "garage": null,
+   "sources": [
+    31205,
+    31206,
+    31207,
+    31208
+   ],
+   "evidence": [
+    {
+     "id": 31205,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "R5 10 5 10 10 minimum lot size <2ha",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size <2ha, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31206,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "R5 10 5 10 10 minimum lot size <2ha",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size <2ha, side setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31207,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "R5 10 5 10 10 minimum lot size <2ha",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size <2ha, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31208,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "R5 10 5 10 10 minimum lot size <2ha",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size <2ha, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R5 10 5 10 10 minimum lot size <2ha",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-007",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": "Cooma-Monaro DCP area: R5 zone, minimum lot size >2ha, front setback",
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31209
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    31209
+   ],
+   "evidence": [
+    {
+     "id": 31209,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "R5 50 10 25 25 Domestic outbuildings",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size >2ha, front setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "R5 50 10 25 25 Domestic outbuildings",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "snowy-monaro-regional-council-008",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": "Cooma-Monaro DCP area: R5 zone, minimum lot size >2ha, side setback",
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     31210
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    31210
+   ],
+   "evidence": [
+    {
+     "id": 31210,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "R5 50 10 25 25 Domestic outbuildings",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size >2ha, side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "R5 50 10 25 25 Domestic outbuildings",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
+  },
+  {
+   "id": "snowy-monaro-regional-council-009",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": "Cooma-Monaro DCP area: R5 zone, minimum lot size >2ha, rear setback",
+   "rear": {
+    "minM": 25.0,
+    "basis": "fixed",
+    "sources": [
+     31211
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    31211
+   ],
+   "evidence": [
+    {
+     "id": 31211,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "R5 50 10 25 25 Domestic outbuildings",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size >2ha, rear setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "R5 50 10 25 25 Domestic outbuildings",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "snowy-monaro-regional-council-010",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": "Cooma-Monaro DCP area: R5 zone, minimum lot size >2ha, corner lot secondary frontage setback",
+   "secondaryFront": {
+    "minM": 25.0,
+    "basis": "fixed",
+    "sources": [
+     31212
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    31212
+   ],
+   "evidence": [
+    {
+     "id": 31212,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "R5 50 10 25 25 Domestic outbuildings",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: R5 zone, minimum lot size >2ha, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen",
+   "quote": "R5 50 10 25 25 Domestic outbuildings",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
+  },
+  {
+   "id": "snowy-monaro-regional-council-011",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Bombala DCP area"
+   },
+   "conditionText": "Bombala DCP area: R5 rural residential: buildings setback from all boundaries including formed road boundaries",
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     30946
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30946
+   ],
+   "evidence": [
+    {
+     "id": 30946,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "at least 30 metres from all boundaries",
+     "clause": "4.3.1 A2",
+     "page": 76,
+     "source_file": "DCP/bombala-development-control-plan.txt",
+     "condition": "Bombala DCP area: R5 rural residential: buildings setback from all boundaries including formed road boundaries",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "at least 30 metres from all boundaries",
+   "clause": "4.3.1 A2",
+   "page": 76,
+   "source_file": "DCP/bombala-development-control-plan.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-012",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": [
+    "Cooma-Monaro DCP area: RU5 zone, corner lot secondary frontage setback",
+    "Cooma-Monaro DCP area: RU5 zone, front setback",
+    "Cooma-Monaro DCP area: RU5 zone, rear setback",
+    "Cooma-Monaro DCP area: RU5 zone, side setback"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     31237
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     31240
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     31239
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     31238
+    ]
+   },
+   "garage": null,
+   "sources": [
+    31237,
+    31238,
+    31239,
+    31240
+   ],
+   "evidence": [
+    {
+     "id": 31237,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "RU5 6 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: RU5 zone, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31240,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "RU5 6 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: RU5 zone, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31239,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "RU5 6 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: RU5 zone, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31238,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "RU5 6 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: RU5 zone, side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU5 6 0.9 3 4",
+   "clause": "Table 3: General setback requirements",
+   "page": 23,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-013",
+   "zones": [
+    "R5",
+    "RU1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area",
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Cooma-Monaro DCP area: lots fronting a classified road in RU1 and R5: front setback increased by 25 m to 75 m or 35 m",
+   "front": {
+    "minM": 25.0,
+    "basis": "fixed",
+    "note": "increased by 25 m to 75 m (RU1) or 35 m (R5)",
+    "sources": [
+     31246
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    31246
+   ],
+   "evidence": [
+    {
+     "id": 31246,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "minimum front setback is increased by 25 metres to 75m or 35m",
+     "clause": "Table 2",
+     "page": 21,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: lots fronting a classified road in RU1 and R5: front setback increased by 25 m to 75 m or 35 m",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "minimum front setback is increased by 25 metres to 75m or 35m",
+   "clause": "Table 2",
+   "page": 21,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-014",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": [
+    "Cooma-Monaro DCP area: RU1 zone, corner lot secondary frontage setback",
+    "Cooma-Monaro DCP area: RU1 zone, front setback",
+    "Cooma-Monaro DCP area: RU1 zone, rear setback",
+    "Cooma-Monaro DCP area: RU1 zone, side setback"
+   ],
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31225
+    ]
+   },
+   "side": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31226
+    ]
+   },
+   "rear": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31227
+    ]
+   },
+   "secondaryFront": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31228
+    ]
+   },
+   "garage": null,
+   "sources": [
+    31225,
+    31226,
+    31227,
+    31228
+   ],
+   "evidence": [
+    {
+     "id": 31225,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "RU1 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: RU1 zone, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31226,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "RU1 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: RU1 zone, side setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31227,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "RU1 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: RU1 zone, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31228,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "RU1 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: RU1 zone, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU1 50 50 50 50",
+   "clause": "Table 3: General setback requirements",
+   "page": 23,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-015",
+   "zones": [
+    "E4"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": [
+    "Cooma-Monaro DCP area: E4 zone, corner lot secondary frontage setback",
+    "Cooma-Monaro DCP area: E4 zone, front setback",
+    "Cooma-Monaro DCP area: E4 zone, rear setback",
+    "Cooma-Monaro DCP area: E4 zone, side setback"
+   ],
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31233
+    ]
+   },
+   "side": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31234
+    ]
+   },
+   "rear": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31235
+    ]
+   },
+   "secondaryFront": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31236
+    ]
+   },
+   "garage": null,
+   "sources": [
+    31233,
+    31234,
+    31235,
+    31236
+   ],
+   "evidence": [
+    {
+     "id": 31233,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "E4 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: E4 zone, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31234,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "E4 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: E4 zone, side setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31235,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "E4 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: E4 zone, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31236,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "E4 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: E4 zone, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "E4 50 50 50 50",
+   "clause": "Table 3: General setback requirements",
+   "page": 23,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-016",
+   "zones": [
+    "E3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": [
+    "Cooma-Monaro DCP area: E3 zone, corner lot secondary frontage setback",
+    "Cooma-Monaro DCP area: E3 zone, front setback",
+    "Cooma-Monaro DCP area: E3 zone, rear setback",
+    "Cooma-Monaro DCP area: E3 zone, side setback"
+   ],
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31229
+    ]
+   },
+   "side": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31230
+    ]
+   },
+   "rear": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31231
+    ]
+   },
+   "secondaryFront": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     31232
+    ]
+   },
+   "garage": null,
+   "sources": [
+    31229,
+    31230,
+    31231,
+    31232
+   ],
+   "evidence": [
+    {
+     "id": 31229,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "E3 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: E3 zone, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31230,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "E3 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: E3 zone, side setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31231,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "E3 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: E3 zone, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31232,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "E3 50 50 50 50",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: E3 zone, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "E3 50 50 50 50",
+   "clause": "Table 3: General setback requirements",
+   "page": 23,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotWidthMaxM": 7.0,
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "waterfront"
+    ]
+   },
+   "conditionText": "Snowy River DCP area: corner sites, primary frontage less than 7 m wide: secondary street setback",
+   "secondaryFront": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     32070
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32070
+   ],
+   "evidence": [
+    {
+     "id": 32070,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "900mm for allotments with primary frontage width of less than 7 metres",
+     "clause": "D1.2-4(b)",
+     "page": 184,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: corner sites, primary frontage less than 7 m wide: secondary street setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "900mm for allotments with primary frontage width of less than 7 metres",
+   "clause": "D1.2-4(b)",
+   "page": 184,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area",
+    "qualifiers": [
+     "adjoins_other",
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Cooma-Monaro DCP area: lots burdened by ROW or adjacent to battle-axe handle: side setback measured from edge of ROW; doubled if unsealed",
+   "side": {
+    "minM": null,
+    "basis": "text",
+    "note": "side setback measured from edge of ROW/handle; doubled if access unsealed",
+    "sources": [
+     31247
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    31247
+   ],
+   "evidence": [
+    {
+     "id": 31247,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "If the access is unsealed the minimum setback must be doubled",
+     "clause": "Table 2",
+     "page": 21,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: lots burdened by ROW or adjacent to battle-axe handle: side setback measured from edge of ROW; doubled if unsealed",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "If the access is unsealed the minimum setback must be doubled",
+   "clause": "Table 2",
+   "page": 21,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
+  },
+  {
+   "id": "snowy-monaro-regional-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": "Cooma-Monaro DCP area: all zones: increase for floors above two storeys (front and rear)",
+   "front": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "note": "front and rear setbacks increased by at least 1 m above two storeys",
+    "sources": [
+     31244
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    31244
+   ],
+   "evidence": [
+    {
+     "id": 31244,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "increased by at least 1 metre for any floors above two storeys",
+     "clause": "2.3.1 Prescriptive requirements",
+     "page": 21,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: all zones: increase for floors above two storeys (front and rear)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "increased by at least 1 metre for any floors above two storeys",
+   "clause": "2.3.1 Prescriptive requirements",
+   "page": 21,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "building_element",
+     "waterfront"
+    ]
+   },
+   "conditionText": "Snowy River DCP area: minimum distance to boundary where eaves, gutters and fascias encroach up to 0.675 m",
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     32072
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32072
+   ],
+   "evidence": [
+    {
+     "id": 32072,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Provided the distance is not less than 1 metre to a boundary",
+     "clause": "D1.2-5(c)",
+     "page": 184,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: minimum distance to boundary where eaves, gutters and fascias encroach up to 0.675 m",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Provided the distance is not less than 1 metre to a boundary",
+   "clause": "D1.2-5(c)",
+   "page": 184,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "waterfront"
+    ]
+   },
+   "conditionText": "Snowy River DCP area: corner sites, all other sites: secondary street setback",
+   "secondaryFront": {
+    "minM": 1.5,
+    "printed": "1500 mm",
+    "basis": "fixed",
+    "sources": [
+     32071
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32071
+   ],
+   "evidence": [
+    {
+     "id": 32071,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "1500mm for all other sites",
+     "clause": "D1.2-4(b)",
+     "page": 184,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: corner sites, all other sites: secondary street setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1500mm for all other sites",
+   "clause": "D1.2-4(b)",
+   "page": 184,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "precinct": "Tyrolean DCP area"
+   },
+   "conditionText": "Tyrolean DCP area: corner allotments, single storey, secondary frontage",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     32128
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32128
+   ],
+   "evidence": [
+    {
+     "id": 32128,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "a setback of 3m",
+     "clause": "5.3.1 A2.1",
+     "page": 41,
+     "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+     "condition": "Tyrolean DCP area: corner allotments, single storey, secondary frontage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a setback of 3m",
+   "clause": "5.3.1 A2.1",
+   "page": 41,
+   "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "precinct": "Tyrolean DCP area"
+   },
+   "conditionText": "Tyrolean DCP area: corner allotments, two storey, secondary frontage",
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     32129
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32129
+   ],
+   "evidence": [
+    {
+     "id": 32129,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "4m for two storey",
+     "clause": "5.3.1 A2.1",
+     "page": 41,
+     "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+     "condition": "Tyrolean DCP area: corner allotments, two storey, secondary frontage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4m for two storey",
+   "clause": "5.3.1 A2.1",
+   "page": 41,
+   "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-024",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "precinct": "Tyrolean DCP area"
+   },
+   "conditionText": "Tyrolean DCP area: single storey dwellings, dual occupancy, medium density and integrated development, front setback",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     32127
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32127
+   ],
+   "evidence": [
+    {
+     "id": 32127,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Single storey dwellings, dual 6",
+     "clause": "5.3.1 A1.1",
+     "page": 40,
+     "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+     "condition": "Tyrolean DCP area: single storey dwellings, dual occupancy, medium density and integrated development, front setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single storey dwellings, dual 6",
+   "clause": "5.3.1 A1.1",
+   "page": 40,
+   "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-025",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Tyrolean DCP area"
+   },
+   "conditionText": "Tyrolean DCP area: single dwellings, dual occupancy, medium density and integrated development, side and rear setback",
+   "rear": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     32131
+    ]
+   },
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     32130
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    32130,
+    32131
+   ],
+   "evidence": [
+    {
+     "id": 32131,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "single dwellings, dual occupancy, 1m",
+     "clause": "5.3.2 A1",
+     "page": 42,
+     "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+     "condition": "Tyrolean DCP area: single dwellings, dual occupancy, medium density and integrated development, side and rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32130,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "single dwellings, dual occupancy, 1m",
+     "clause": "5.3.2 A1",
+     "page": 42,
+     "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+     "condition": "Tyrolean DCP area: single dwellings, dual occupancy, medium density and integrated development, side and rear setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "single dwellings, dual occupancy, 1m",
+   "clause": "5.3.2 A1",
+   "page": 42,
+   "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-026",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "building_element",
+     "waterfront"
+    ]
+   },
+   "conditionText": "Snowy River DCP area: dwelling house etc, 1 storey, side setback (gutter)",
+   "side": {
+    "minM": 0.675,
+    "printed": "675 mm",
+    "basis": "fixed",
+    "sources": [
+     32074
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32074
+   ],
+   "evidence": [
+    {
+     "id": 32074,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Dwelling house 1&2 1 storey 6.0 675mm 900mm",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: dwelling house etc, 1 storey, side setback (gutter)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Dwelling house 1&2 1 storey 6.0 675mm 900mm",
+   "clause": "Minimum Setback Requirements for Residential Accommodation",
+   "page": 185,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-027",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "building_element",
+     "waterfront"
+    ]
+   },
+   "conditionText": [
+    "Snowy River DCP area: dwelling house etc, 2 storey (gutter side setback), front setback",
+    "Snowy River DCP area: dwelling house etc, 2 storey (gutter side setback), rear setback",
+    "Snowy River DCP area: dwelling house etc, 2 storey (gutter side setback), side setback"
+   ],
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     32076
+    ]
+   },
+   "rear": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     32078
+    ]
+   },
+   "side": {
+    "minM": 1.125,
+    "printed": "1125 mm",
+    "basis": "fixed",
+    "sources": [
+     32077
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    32076,
+    32077,
+    32078
+   ],
+   "evidence": [
+    {
+     "id": 32076,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "2 storey 8.0m 1125mm 1.5m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: dwelling house etc, 2 storey (gutter side setback), front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32078,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "2 storey 8.0m 1125mm 1.5m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: dwelling house etc, 2 storey (gutter side setback), rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32077,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "2 storey 8.0m 1125mm 1.5m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: dwelling house etc, 2 storey (gutter side setback), side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2 storey 8.0m 1125mm 1.5m",
+   "clause": "Minimum Setback Requirements for Residential Accommodation",
+   "page": 185,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-028",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 3,
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "building_element",
+     "waterfront"
+    ]
+   },
+   "conditionText": [
+    "Snowy River DCP area: dwelling house etc, 3 storey (gutter side setback), front setback",
+    "Snowy River DCP area: dwelling house etc, 3 storey (gutter side setback), rear setback",
+    "Snowy River DCP area: dwelling house etc, 3 storey (gutter side setback), side setback"
+   ],
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     32079
+    ]
+   },
+   "rear": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     32081
+    ]
+   },
+   "side": {
+    "minM": 1.125,
+    "printed": "1125 mm",
+    "basis": "fixed",
+    "sources": [
+     32080
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    32079,
+    32080,
+    32081
+   ],
+   "evidence": [
+    {
+     "id": 32079,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "3 storey 8.0m 1125mm 2.5m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: dwelling house etc, 3 storey (gutter side setback), front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32081,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "3 storey 8.0m 1125mm 2.5m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: dwelling house etc, 3 storey (gutter side setback), rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32080,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3 storey 8.0m 1125mm 2.5m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: dwelling house etc, 3 storey (gutter side setback), side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "3 storey 8.0m 1125mm 2.5m",
+   "clause": "Minimum Setback Requirements for Residential Accommodation",
+   "page": 185,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-029",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "no_adjoining_buildings",
+     "waterfront"
+    ],
+    "qualifiersNot": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Snowy River DCP area: dwelling house etc, 1 storey, front setback (where no adjoining dwellings)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     32073
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    32073
+   ],
+   "evidence": [
+    {
+     "id": 32073,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Dwelling house 1&2 1 storey 6.0 675mm 900mm",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: dwelling house etc, 1 storey, front setback (where no adjoining dwellings)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Dwelling house 1&2 1 storey 6.0 675mm 900mm",
+   "clause": "Minimum Setback Requirements for Residential Accommodation",
+   "page": 185,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-030",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "waterfront"
+    ]
+   },
+   "conditionText": "Snowy River DCP area: dwelling house etc, 1 storey, rear setback",
+   "rear": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     32075
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    32075
+   ],
+   "evidence": [
+    {
+     "id": 32075,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Dwelling house 1&2 1 storey 6.0 675mm 900mm",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: dwelling house etc, 1 storey, rear setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Dwelling house 1&2 1 storey 6.0 675mm 900mm",
+   "clause": "Minimum Setback Requirements for Residential Accommodation",
+   "page": 185,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-031",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "waterfront"
+    ]
+   },
+   "conditionText": [
+    "Snowy River DCP area: multi dwelling housing and residential flat buildings, 1 storey, front setback",
+    "Snowy River DCP area: multi dwelling housing and residential flat buildings, 1 storey, rear setback",
+    "Snowy River DCP area: multi dwelling housing and residential flat buildings, 1 storey, side setback"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     32082
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     32084
+    ]
+   },
+   "side": {
+    "minM": 2.29,
+    "printed": "2290 mm",
+    "basis": "fixed",
+    "sources": [
+     32083
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    32082,
+    32083,
+    32084
+   ],
+   "evidence": [
+    {
+     "id": 32082,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "1 storey 6.0m 2290mm 3.0m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: multi dwelling housing and residential flat buildings, 1 storey, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32084,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "1 storey 6.0m 2290mm 3.0m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: multi dwelling housing and residential flat buildings, 1 storey, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32083,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1 storey 6.0m 2290mm 3.0m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: multi dwelling housing and residential flat buildings, 1 storey, side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1 storey 6.0m 2290mm 3.0m",
+   "clause": "Minimum Setback Requirements for Residential Accommodation",
+   "page": 185,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-032",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "waterfront"
+    ]
+   },
+   "conditionText": [
+    "Snowy River DCP area: multi dwelling housing and residential flat buildings, 2 storey, front setback",
+    "Snowy River DCP area: multi dwelling housing and residential flat buildings, 2 storey, rear setback",
+    "Snowy River DCP area: multi dwelling housing and residential flat buildings, 2 storey, side setback"
+   ],
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     32085
+    ]
+   },
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     32087
+    ]
+   },
+   "side": {
+    "minM": 2.29,
+    "printed": "2290 mm",
+    "basis": "fixed",
+    "sources": [
+     32086
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    32085,
+    32086,
+    32087
+   ],
+   "evidence": [
+    {
+     "id": 32085,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "2 storey 8.0m 2290mm 4.0m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: multi dwelling housing and residential flat buildings, 2 storey, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32087,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "2 storey 8.0m 2290mm 4.0m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: multi dwelling housing and residential flat buildings, 2 storey, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32086,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "2 storey 8.0m 2290mm 4.0m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: multi dwelling housing and residential flat buildings, 2 storey, side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2 storey 8.0m 2290mm 4.0m",
+   "clause": "Minimum Setback Requirements for Residential Accommodation",
+   "page": 185,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-033",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 3,
+    "precinct": "Snowy River DCP area",
+    "qualifiers": [
+     "waterfront"
+    ]
+   },
+   "conditionText": [
+    "Snowy River DCP area: multi dwelling housing and residential flat buildings, 3 storey, front setback",
+    "Snowy River DCP area: multi dwelling housing and residential flat buildings, 3 storey, rear setback",
+    "Snowy River DCP area: multi dwelling housing and residential flat buildings, 3 storey, side setback"
+   ],
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     32088
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     32090
+    ]
+   },
+   "side": {
+    "minM": 2.74,
+    "printed": "2740 mm",
+    "basis": "fixed",
+    "sources": [
+     32089
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    32088,
+    32089,
+    32090
+   ],
+   "evidence": [
+    {
+     "id": 32088,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "3 storey 8.0m 2740mm 5.0m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: multi dwelling housing and residential flat buildings, 3 storey, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32090,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "3 storey 8.0m 2740mm 5.0m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: multi dwelling housing and residential flat buildings, 3 storey, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32089,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3 storey 8.0m 2740mm 5.0m",
+     "clause": "Minimum Setback Requirements for Residential Accommodation",
+     "page": 185,
+     "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+     "condition": "Snowy River DCP area: multi dwelling housing and residential flat buildings, 3 storey, side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "3 storey 8.0m 2740mm 5.0m",
+   "clause": "Minimum Setback Requirements for Residential Accommodation",
+   "page": 185,
+   "source_file": "DCP/2023-03-23-snowy-river-dcp-2013-amendment-3.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-034",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {
+    "precinct": "Tyrolean DCP area"
+   },
+   "conditionText": "Tyrolean DCP area: residential flat buildings, side and rear setback",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     32133
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     32132
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    32132,
+    32133
+   ],
+   "evidence": [
+    {
+     "id": 32133,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "residential flat buildings 3m",
+     "clause": "5.3.2 A1",
+     "page": 42,
+     "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+     "condition": "Tyrolean DCP area: residential flat buildings, side and rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 32132,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "residential flat buildings 3m",
+     "clause": "5.3.2 A1",
+     "page": 42,
+     "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+     "condition": "Tyrolean DCP area: residential flat buildings, side and rear setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "residential flat buildings 3m",
+   "clause": "5.3.2 A1",
+   "page": 42,
+   "source_file": "DCP/22-38430-2012-11-16-ed-11-31636-tyrolean-dcp-_t2_-stage-3-adopted.doc.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-035",
+   "zones": [
+    "B1",
+    "B2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": "Cooma-Monaro DCP area: B1 and B2 zones",
+   "front": {
+    "minM": null,
+    "basis": "text",
+    "note": "new buildings to match existing street alignment; side, rear and corner 0 m",
+    "sources": [
+     31242
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    31242
+   ],
+   "evidence": [
+    {
+     "id": 31242,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "B1 & B2 New 0 0 0",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: B1 and B2 zones",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "B1 & B2 New 0 0 0",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  },
+  {
+   "id": "snowy-monaro-regional-council-036",
+   "zones": [
+    "B3"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": [
+    "Cooma-Monaro DCP area: B3 zone, corner lot secondary frontage setback",
+    "Cooma-Monaro DCP area: B3 zone, front setback",
+    "Cooma-Monaro DCP area: B3 zone, rear setback",
+    "Cooma-Monaro DCP area: B3 zone, side setback"
+   ],
+   "front": {
+    "minM": 0.0,
+    "basis": "fixed",
+    "sources": [
+     31217
+    ]
+   },
+   "side": {
+    "minM": 0.0,
+    "basis": "fixed",
+    "sources": [
+     31218
+    ]
+   },
+   "rear": {
+    "minM": 0.0,
+    "basis": "fixed",
+    "sources": [
+     31219
+    ]
+   },
+   "secondaryFront": {
+    "minM": 0.0,
+    "basis": "fixed",
+    "sources": [
+     31220
+    ]
+   },
+   "garage": null,
+   "sources": [
+    31217,
+    31218,
+    31219,
+    31220
+   ],
+   "evidence": [
+    {
+     "id": 31217,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "B3 0 0 0 0",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: B3 zone, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31218,
+     "parameter": "setback_commercial",
+     "slot": "side",
+     "quote": "B3 0 0 0 0",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: B3 zone, side setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31219,
+     "parameter": "setback_commercial",
+     "slot": "rear",
+     "quote": "B3 0 0 0 0",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: B3 zone, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31220,
+     "parameter": "setback_commercial",
+     "slot": "secondaryFront",
+     "quote": "B3 0 0 0 0",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: B3 zone, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "B3 0 0 0 0",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-037",
+   "zones": [
+    "B4",
+    "B5"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": [
+    "Cooma-Monaro DCP area: B4 and B5 zones, corner lot secondary frontage setback",
+    "Cooma-Monaro DCP area: B4 and B5 zones, front setback",
+    "Cooma-Monaro DCP area: B4 and B5 zones, rear setback",
+    "Cooma-Monaro DCP area: B4 and B5 zones, side setback"
+   ],
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     31213
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     31214
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     31215
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     31216
+    ]
+   },
+   "garage": null,
+   "sources": [
+    31213,
+    31214,
+    31215,
+    31216
+   ],
+   "evidence": [
+    {
+     "id": 31213,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "B4 & B5 4 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: B4 and B5 zones, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31214,
+     "parameter": "setback_commercial",
+     "slot": "side",
+     "quote": "B4 & B5 4 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: B4 and B5 zones, side setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31215,
+     "parameter": "setback_commercial",
+     "slot": "rear",
+     "quote": "B4 & B5 4 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: B4 and B5 zones, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31216,
+     "parameter": "setback_commercial",
+     "slot": "secondaryFront",
+     "quote": "B4 & B5 4 0.9 3 4",
+     "clause": "Table 3: General setback requirements",
+     "page": 22,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: B4 and B5 zones, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "B4 & B5 4 0.9 3 4",
+   "clause": "Table 3: General setback requirements",
+   "page": 22,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "snowy-monaro-regional-council-038",
+   "zones": [
+    "IN1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "precinct": "Cooma-Monaro DCP area"
+   },
+   "conditionText": [
+    "Cooma-Monaro DCP area: IN1 zone, corner lot secondary frontage setback",
+    "Cooma-Monaro DCP area: IN1 zone, front setback",
+    "Cooma-Monaro DCP area: IN1 zone, rear setback",
+    "Cooma-Monaro DCP area: IN1 zone, side setback"
+   ],
+   "front": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     31221
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     31222
+    ]
+   },
+   "rear": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     31223
+    ]
+   },
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     31224
+    ]
+   },
+   "garage": null,
+   "sources": [
+    31221,
+    31222,
+    31223,
+    31224
+   ],
+   "evidence": [
+    {
+     "id": 31221,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "IN1 12 0.9 0.9 6",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: IN1 zone, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31222,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "IN1 12 0.9 0.9 6",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: IN1 zone, side setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31223,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "IN1 12 0.9 0.9 6",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: IN1 zone, rear setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 31224,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "IN1 12 0.9 0.9 6",
+     "clause": "Table 3: General setback requirements",
+     "page": 23,
+     "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+     "condition": "Cooma-Monaro DCP area: IN1 zone, corner lot secondary frontage setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "IN1 12 0.9 0.9 6",
+   "clause": "Table 3: General setback requirements",
+   "page": 23,
+   "source_file": "DCP/22-34442-2022-04-05-17-14389-cooma-monaro-shire-development-control-plan-2014-amendment-4.txt",
+   "dcp": "Legacy DCPs retained, no single merged DCP: Cooma-Monaro Shire DCP 2014 (Amendment 4, 05/04/2022); Snowy River DCP 2013 (Amendment 3, 23/03/2023); Bombala DCP 2012; Jindabyne DCP 2024; Tyrolean Village DCP T2 Stage 3 (2012). Conditions are prefixed with the area name. Edition currency UNVERIFIED.",
+   "edition": "UNVERIFIED"
+  }
+ ],
+ "gaps": [
+  "All residential rules are tied to named precincts or DCP areas (4); the app must supply the precinct for a lot",
+  "3 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 30947, 30948, 30949",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Not extracted: Snowy River DCP F-series estate controls (Highview, Cobbin Creek, Lakewood, High Country, Three Rivers), Snowy River C1 large lot residential detail, Jindabyne DCP growth sub-precinct tables (C1) and Jindabyne B1 amenity controls; Jindabyne DCP multi-column layout limited some tables | Quotes from two-column Jindabyne and Bombala DCP pages use the shortest contiguous fragment containing the value; row or column labels are not always in the quote because the text extraction interleaves columns"
+ ],
+ "notes": "Built from 83 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 4
+  },
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 4
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 3
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 8
+  },
+  "RU1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 2
+  },
+  "E4": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "E3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 18
+  },
+  "B1": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "B2": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "B3": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "B4": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "B5": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN1": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [
+  "Bombala DCP area",
+  "Cooma-Monaro DCP area",
+  "Snowy River DCP area",
+  "Tyrolean DCP area"
+ ],
+ "needsPrecinct": true,
+ "counts": {
+  "records": 83,
+  "rules": 38,
+  "recordsNotModelled": 3,
+  "otherSetbackKeysNotModelled": 7
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
+ }
+}

@@ -1,0 +1,369 @@
+{
+  "id": "nsw-housing-code",
+  "jurisdiction": "NSW",
+  "basisLabel": "SEPP Housing Code",
+  "instrument": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
+  "clauseNumbersVerified": "cl 3.1(3) and cl 3.10 verified from AustLII text; cl 3.11 (exceptions) and Part 3A clauses NOT read",
+  "retrieved": "11/11/2026",
+  "currencyWarning": "Text read from AustLII consolidation (index marked 'As at 5 July 2024'). legislation.nsw.gov.au could not be fetched (egress blocked / fetch error), so currency against the in-force 2026 text is NOT verified. Clause numbers 3.1, 3.10 verified against that text only. Verify before relying.",
+  "metadata": {
+    "zonesApply": "R1, R2, R3, R4, RU5 (cl 3.1(3)(a), min lot area 200m2, min width 6m at building line)",
+    "note": "Earlier assumption that setbacks sit in cl 3.10/3.11 confirmed: cl 3.10 = minimum setbacks and maximum height and length of boundary walls; cl 3.11 = exceptions to setbacks."
+  },
+  "rules": [
+    {
+      "basisLabel": "SEPP Housing Code",
+      "zones": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "RU5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {
+        "lotAreaMinM2": 200,
+        "lotWidthMinM": 6
+      },
+      "front": {
+        "minM": null,
+        "basis": "average_neighbours",
+        "note": "Not less than the average primary road setback of the 2 nearest dwelling houses on the same side of the road (excl. battle-axe lots, other-lot attached/detached development, articulation-zone elements). If fewer than 2 dwellings within 40m, use bands."
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": null
+      },
+      "rear": {
+        "minM": null
+      },
+      "garage": {
+        "minM": null,
+        "note": "Garage/carport attached to dwelling is covered by the dwelling front/secondary rules; side and rear apply expressly to a carport or garage (cl 3.10(4)(b), (10)(b)). No separate garage-behind-line rule in cl 3.10."
+      },
+      "sourceUrl": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
+      "document": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
+      "clause": "cl 3.10(1)-(3) primary road",
+      "page": null,
+      "quote": "If there are not 2 dwelling houses within 40m of the lot on the same side of the primary road",
+      "confidence": "medium",
+      "needsReview": true,
+      "bands": {
+        "front": [
+          {
+            "lotAreaMinM2": 200,
+            "lotAreaMaxM2": 300,
+            "minM": 3.0
+          },
+          {
+            "lotAreaMinM2": 300.01,
+            "lotAreaMaxM2": 900,
+            "minM": 4.5
+          },
+          {
+            "lotAreaMinM2": 900.01,
+            "lotAreaMaxM2": 1500,
+            "minM": 6.5
+          },
+          {
+            "lotAreaMinM2": 1500.01,
+            "minM": 10.0
+          }
+        ]
+      },
+      "zonesSource": "cl 3.1(3)(a): 'the lot must be in Zone R1, R2, R3, R4 or RU5' (extraction-tool text; verify)",
+      "extraQuotes": {
+        "averageRule": "must not be less than the average setback from the primary road of the 2 nearest dwelling houses",
+        "frontBands": "200m2-300m2 3m / >300m2-900m2 4.5m / >900m2-1,500m2 6.5m / >1,500m2 10m"
+      }
+    },
+    {
+      "basisLabel": "SEPP Housing Code",
+      "zones": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "RU5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {
+        "cornerLot": true
+      },
+      "front": {
+        "minM": null,
+        "basis": "fixed",
+        "note": "See primary rule."
+      },
+      "secondaryFront": {
+        "minM": null,
+        "basis": "by_lot_area",
+        "note": "cl 3.10(11) secondary road setbacks for corner lots; applies despite any other standard."
+      },
+      "side": {
+        "minM": null
+      },
+      "rear": {
+        "minM": null
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
+      "document": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
+      "clause": "cl 3.10(11) secondary road",
+      "page": null,
+      "quote": "must have a minimum setback from a boundary with a secondary road as shown in the following table",
+      "confidence": "medium",
+      "needsReview": true,
+      "bands": {
+        "secondaryFront": [
+          {
+            "lotAreaMinM2": 200,
+            "lotAreaMaxM2": 600,
+            "minM": 2.0
+          },
+          {
+            "lotAreaMinM2": 600.01,
+            "lotAreaMaxM2": 1500,
+            "minM": 3.0
+          },
+          {
+            "lotAreaMinM2": 1500.01,
+            "minM": 5.0
+          }
+        ]
+      }
+    },
+    {
+      "basisLabel": "SEPP Housing Code",
+      "zones": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "RU5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": null
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": 0.9,
+        "perStorey": null,
+        "formula": "see bands.side; lot width measured at building line; height at any point"
+      },
+      "rear": {
+        "minM": null
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
+      "document": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
+      "clause": "cl 3.10(4) side setbacks",
+      "page": null,
+      "quote": "Lot width at the building line | Building height at any point | Minimum required setback from each side boundary",
+      "confidence": "medium",
+      "needsReview": true,
+      "bands": {
+        "side": [
+          {
+            "lotWidthMinM": 6,
+            "lotWidthMaxM": 10,
+            "heightMinM": 0,
+            "heightMaxM": 5.5,
+            "minM": 0.9
+          },
+          {
+            "lotWidthMinM": 6,
+            "lotWidthMaxM": 10,
+            "heightMinM": 5.5,
+            "heightMaxM": 8.5,
+            "formula": "(building height - 5.5) / 4 + 0.9"
+          },
+          {
+            "lotWidthMinM": 10,
+            "lotWidthMaxM": 18,
+            "heightMinM": 0,
+            "heightMaxM": 4.5,
+            "minM": 0.9
+          },
+          {
+            "lotWidthMinM": 10,
+            "lotWidthMaxM": 18,
+            "heightMinM": 4.5,
+            "heightMaxM": 8.5,
+            "formula": "(building height - 4.5) / 4 + 0.9"
+          },
+          {
+            "lotWidthMinM": 18,
+            "lotWidthMaxM": 24,
+            "heightMinM": 0,
+            "heightMaxM": 4.5,
+            "minM": 1.5
+          },
+          {
+            "lotWidthMinM": 18,
+            "lotWidthMaxM": 24,
+            "heightMinM": 4.5,
+            "heightMaxM": 8.5,
+            "formula": "(building height - 4.5) / 4 + 1.5"
+          },
+          {
+            "lotWidthMinM": 24,
+            "heightMinM": 0,
+            "heightMaxM": 8.5,
+            "minM": 2.5
+          }
+        ]
+      },
+      "builtToBoundary": "cl 3.10(5): lots 6m-8m wide (not corner) may build to 1 or both side boundaries; cl 3.10(6): lots >8m-12.5m wide may build to 1 side boundary, subject to masonry/no-openings conditions; cl 3.10(7) wall within 900mm max height 3.3m (or adjoining wall up to 8.5m); cl 3.10(8) max length 20m or 50% lot depth (6-10m wide), 10m (>10-12.5m wide)."
+    },
+    {
+      "basisLabel": "SEPP Housing Code",
+      "zones": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "RU5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": null
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": null
+      },
+      "rear": {
+        "minM": 3.0,
+        "note": "Bands by lot area and height; excludes lots with only 3 boundaries. Lane exceptions in cl 3.11(5), not read."
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
+      "document": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
+      "clause": "cl 3.10(10) rear setbacks",
+      "page": null,
+      "quote": "Lot area | Building height | Minimum setback from rear boundary",
+      "confidence": "medium",
+      "needsReview": true,
+      "bands": {
+        "rear": [
+          {
+            "lotAreaMinM2": 200,
+            "lotAreaMaxM2": 300,
+            "heightMinM": 0,
+            "heightMaxM": 4.5,
+            "minM": 3.0
+          },
+          {
+            "lotAreaMinM2": 200,
+            "lotAreaMaxM2": 300,
+            "heightMinM": 4.5,
+            "heightMaxM": 8.5,
+            "minM": 10.0,
+            "alternative": "or the average rear setback of the 2 adjoining dwelling houses measured at 4.5m above ground level (existing), whichever is the lesser"
+          },
+          {
+            "lotAreaMinM2": 300.01,
+            "lotAreaMaxM2": 900,
+            "heightMinM": 0,
+            "heightMaxM": 4.5,
+            "minM": 3.0
+          },
+          {
+            "lotAreaMinM2": 300.01,
+            "lotAreaMaxM2": 900,
+            "heightMinM": 4.5,
+            "heightMaxM": 8.5,
+            "minM": 8.0
+          },
+          {
+            "lotAreaMinM2": 900.01,
+            "lotAreaMaxM2": 1500,
+            "heightMinM": 0,
+            "heightMaxM": 4.5,
+            "minM": 5.0
+          },
+          {
+            "lotAreaMinM2": 900.01,
+            "lotAreaMaxM2": 1500,
+            "heightMinM": 4.5,
+            "heightMaxM": 8.5,
+            "minM": 12.0
+          },
+          {
+            "lotAreaMinM2": 1500.01,
+            "heightMinM": 0,
+            "heightMaxM": 4.5,
+            "minM": 10.0
+          },
+          {
+            "lotAreaMinM2": 1500.01,
+            "heightMinM": 4.5,
+            "heightMaxM": 8.5,
+            "minM": 15.0
+          }
+        ]
+      }
+    },
+    {
+      "basisLabel": "SEPP Housing Code",
+      "zones": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "RU5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": null
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": null
+      },
+      "rear": {
+        "minM": null
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
+      "document": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
+      "clause": "cl 3.10(12)-(15) other setbacks",
+      "page": null,
+      "quote": "must have a setback from a boundary with a parallel road of at least 3m",
+      "confidence": "medium",
+      "needsReview": true,
+      "otherSetbacks": {
+        "parallelRoadM": 3.0,
+        "classifiedRoadM": 9.0,
+        "classifiedRoadNote": "at least the setback in another EPI, or if none, 9m (cl 3.10(13))",
+        "publicReserveM": 3.0,
+        "battleAxeRearOfLotInFrontM": 3.0
+      }
+    }
+  ],
+  "ruralHousingCodePart3A": {
+    "basisLabel": "SEPP Housing Code",
+    "status": "not_verified",
+    "note": "Part 3A Rural Housing Code setback clauses 3A.15 (roads), 3A.16 (side), 3A.17 (rear), 3A.18 (outbuildings), 3A.19-3A.20 and land clause 3A.1 exist per the consolidation index (as at 5 July 2024), but the clause text could not be fetched (austlii and legislation.nsw.gov.au errors). No values recorded; do not infer R5/RU values."
+  },
+  "inlandCodeNote": "Part 3D Inland Code (cl 3D.1(1)): applies on land in Zones RU1, RU2, RU3, RU4, RU5, RU6, R1, R2, R3, R4 and R5 in inland local government areas (69 LGAs incl. Balranald, Cabonne, Cobar, Gwydir, Hay, Liverpool Plains, Warren, Carrathool); Housing Code and Rural Housing Code do not apply there except as cl 3D.2 provides.",
+  "gaps": [
+    "Currency vs in-force text unverified",
+    "Part 3A rural/R5 values not retrieved",
+    "cl 3.11 exceptions not read",
+    "Side-setback quote values come via an extraction tool, not copied verbatim from the page by hand"
+  ]
+}

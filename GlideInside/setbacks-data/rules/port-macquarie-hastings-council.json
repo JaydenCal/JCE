@@ -1,0 +1,920 @@
+{
+ "lga_slug": "port-macquarie-hastings-council",
+ "council": "Port Macquarie-Hastings Council",
+ "lgaNames": [
+  "PORT MACQUARIE-HASTINGS",
+  "PORT MACQUARIE-HASTINGS COUNCIL"
+ ],
+ "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+ "lep": "Port Macquarie-Hastings Local Environmental Plan 2011 (not supplied; lot size, height, FSR and flood planning map are LEP controls)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "port-macquarie-hastings-council-001",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "R1 established street",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Primary setback within 20% of average setback of adjoining buildings",
+    "sources": [
+     26855
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    26855
+   ],
+   "evidence": [
+    {
+     "id": 26855,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "the primary setback should be within 20% of the average",
+     "clause": "C2 59 a)",
+     "page": 64,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "R1 established street",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the primary setback should be within 20% of the average",
+   "clause": "C2 59 a)",
+   "page": 64,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-002",
+   "zones": [
+    "R3",
+    "R4"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {},
+   "conditionText": "Residential flat, R3 and R4 zones",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     26854
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    26854
+   ],
+   "evidence": [
+    {
+     "id": 26854,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A minimum setback of 3.0m is required from all street frontages in a R3 Medium Density",
+     "clause": "C2 59 b)",
+     "page": 64,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Residential flat, R3 and R4 zones",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "A minimum setback of 3.0m is required from all street frontages in a R3 Medium Density",
+   "clause": "C2 59 b)",
+   "page": 64,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Ground floor (floor less than 1m above ground)",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     26791
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    26791
+   ],
+   "evidence": [
+    {
+     "id": 26791,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "900mm from side boundaries.",
+     "clause": "C1 47 a)",
+     "page": 57,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Ground floor (floor less than 1m above ground)",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "900mm from side boundaries.",
+   "clause": "C1 47 a)",
+   "page": 57,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "First floor and above",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     26792
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    26792
+   ],
+   "evidence": [
+    {
+     "id": 26792,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "minimum of 3m from the side boundary, or reduced down to 900mm where it can be",
+     "clause": "C1 47 b)",
+     "page": 57,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "First floor and above",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "minimum of 3m from the side boundary, or reduced down to 900mm where it can be",
+   "clause": "C1 47 b)",
+   "page": 57,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Articulation zone to street frontage",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     26783
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    26783
+   ],
+   "evidence": [
+    {
+     "id": 26783,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Dwellings may incorporate an articulation zone to a street frontage at no less than 3m",
+     "clause": "C1 44 a)",
+     "page": 55,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Articulation zone to street frontage",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Dwellings may incorporate an articulation zone to a street frontage at no less than 3m",
+   "clause": "C1 44 a)",
+   "page": 55,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "Ancillary lane",
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     26781
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    26781
+   ],
+   "evidence": [
+    {
+     "id": 26781,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Ancillary Lane 2.0m",
+     "clause": "C1 Table 4",
+     "page": 55,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Ancillary lane",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Ancillary Lane 2.0m",
+   "clause": "C1 Table 4",
+   "page": 55,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dwelling setback 4.5m or more",
+    "Dwelling setback less than 4.5m"
+   ],
+   "garage": {
+    "minM": 5.5,
+    "behindBuildingLineM": 1.0,
+    "sources": [
+     26784,
+     26785
+    ],
+    "note": "At least 1m behind the building line"
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    26784,
+    26785
+   ],
+   "evidence": [
+    {
+     "id": 26784,
+     "parameter": "garage_setback",
+     "slot": "garageBehind",
+     "quote": "be at least 1m behind the building line, where the dwelling(s) has a setback from a",
+     "clause": "C1 45 a)",
+     "page": 56,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Dwelling setback 4.5m or more",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    },
+    {
+     "id": 26785,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "be at least 5.5m from a front boundary, where the dwelling(s) has a setback of less",
+     "clause": "C1 45 a)",
+     "page": 56,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Dwelling setback less than 4.5m",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "be at least 1m behind the building line, where the dwelling(s) has a setback from a",
+   "clause": "C1 45 a)",
+   "page": 56,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Dual occupancy / attached dwellings, classified road any frontage",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     26778
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    26778
+   ],
+   "evidence": [
+    {
+     "id": 26778,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Classified road – any frontage 6.0m",
+     "clause": "C1 Table 4",
+     "page": 55,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Dual occupancy / attached dwellings, classified road any frontage",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Classified road – any frontage 6.0m",
+   "clause": "C1 Table 4",
+   "page": 55,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dual occupancy / attached dwellings, primary frontage",
+    "Dual occupancy / attached dwellings, secondary frontage"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     26779
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     26780
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    26779,
+    26780
+   ],
+   "evidence": [
+    {
+     "id": 26779,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Primary Frontage 4.5m",
+     "clause": "C1 Table 4",
+     "page": 55,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Dual occupancy / attached dwellings, primary frontage",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    },
+    {
+     "id": 26780,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Frontage 3.0m",
+     "clause": "C1 Table 4",
+     "page": 55,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Dual occupancy / attached dwellings, secondary frontage",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Primary Frontage 4.5m",
+   "clause": "C1 Table 4",
+   "page": 55,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Garage behind building line",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 1.0,
+    "sources": [
+     26786
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    26786
+   ],
+   "evidence": [
+    {
+     "id": 26786,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "at least 1m behind the building line",
+     "clause": "C1 45 a)",
+     "page": 56,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Garage behind building line",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "at least 1m behind the building line",
+   "clause": "C1 45 a)",
+   "page": 56,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "swimming_pool"
+   ],
+   "conditions": {},
+   "conditionText": "Sheds and swimming pools",
+   "rear": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     26790
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    26790
+   ],
+   "evidence": [
+    {
+     "id": 26790,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A minimum rear boundary setback of 900mm applies to sheds and swimming pools",
+     "clause": "C1 46 b)",
+     "page": 56,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Sheds and swimming pools",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A minimum rear boundary setback of 900mm applies to sheds and swimming pools",
+   "clause": "C1 46 b)",
+   "page": 56,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Corner sites, residential flat",
+    "Residential flat / mixed use"
+   ],
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     26858
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     26857
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "note": "1.5m min for maximum 75% of building depth; windows in side walls 3m; adjacent strata building 3m",
+    "sources": [
+     26856
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    26856,
+    26857,
+    26858
+   ],
+   "evidence": [
+    {
+     "id": 26858,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "a minimum setback of 6.0m should extend to the secondary street",
+     "clause": "C2 64 b)",
+     "page": 66,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Corner sites, residential flat",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    },
+    {
+     "id": 26857,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A minimum rear setback of 6.0m from the building and sub basements is required.",
+     "clause": "C2 61 c)",
+     "page": 65,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Residential flat / mixed use",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    },
+    {
+     "id": 26856,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Buildings should be set back a minimum of 1.5m from side boundaries, for a",
+     "clause": "C2 61 a)",
+     "page": 65,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Residential flat / mixed use",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a minimum setback of 6.0m should extend to the secondary street",
+   "clause": "C2 64 b)",
+   "page": 66,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "verandah_deck",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dwellings including verandahs, patios, decks",
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     26789
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    26789
+   ],
+   "evidence": [
+    {
+     "id": 26789,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A minimum rear boundary setback of 4m is to be provided to dwellings (including",
+     "clause": "C1 46 a)",
+     "page": 56,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Dwellings including verandahs, patios, decks",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A minimum rear boundary setback of 4m is to be provided to dwellings (including",
+   "clause": "C1 46 a)",
+   "page": 56,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+  },
+  {
+   "id": "port-macquarie-hastings-council-014",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Classified road",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     26862
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    26862
+   ],
+   "evidence": [
+    {
+     "id": 26862,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "10m from a classified road;",
+     "clause": "C4 133 a)",
+     "page": 94,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Classified road",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "10m from a classified road;",
+   "clause": "C4 133 a)",
+   "page": 94,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  },
+  {
+   "id": "port-macquarie-hastings-council-015",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Any other road boundary",
+    "Secondary road frontage"
+   ],
+   "front": {
+    "minM": 7.6,
+    "basis": "fixed",
+    "sources": [
+     26863
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     26864
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    26863,
+    26864
+   ],
+   "evidence": [
+    {
+     "id": 26863,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "7.6m from any other road boundary;",
+     "clause": "C4 133 a)",
+     "page": 94,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Any other road boundary",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    },
+    {
+     "id": 26864,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "3m from any secondary road frontage.",
+     "clause": "C4 133 a)",
+     "page": 94,
+     "source_file": "DCP/dcp-2013-march-2024.pdf",
+     "condition": "Secondary road frontage",
+     "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "7.6m from any other road boundary;",
+   "clause": "C4 133 a)",
+   "page": 94,
+   "source_file": "DCP/dcp-2013-march-2024.pdf",
+   "dcp": "Port Macquarie-Hastings Development Control Plan 2013, Version 14, March 2024 (adoption date UNVERIFIED)",
+   "edition": "Port Macquarie-Hastings DCP 2013, Version 14, March 2024",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  }
+ ],
+ "gaps": [
+  "3 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 26860, 26861, 26782",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): earthworks: fill_max_depth_exempt, cut_max_depth_exempt, retaining_wall_max_height_exempt (exempt development in SEPP), retaining_wall_setback_boundary, sediment_basin_requirement numeric | DCP localities D1-D10 (precinct-specific setbacks, lot sizes, road widths) only partly extracted: Sancrox flood, Lake Cathie FPL and Camden Haven flood recorded; Thrumster and other precinct road cross-sections not extracted"
+ ],
+ "notes": "Built from 23 extract records (review status: reviewed (Opus pilot review and full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "R3": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "R4": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 11
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 23,
+  "rules": 15,
+  "recordsNotModelled": 3,
+  "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  }
+ }
+}

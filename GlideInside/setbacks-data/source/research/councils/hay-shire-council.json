@@ -1,0 +1,23 @@
+{
+  "lga_slug": "hay-shire-council",
+  "council": "Hay Shire Council",
+  "dcp": {
+    "name": null,
+    "url": null,
+    "adopted": null
+  },
+  "status": "none",
+  "rules": [],
+  "gaps": [
+    "No DCP residential setback controls located; dwellings rely on the LEP and the Codes SEPP."
+  ],
+  "notes": "No residential DCP setback controls found. Part 3D Inland Code of the Codes SEPP applies to this LGA (named in cl 3D.1(4)); see fallback/nsw-inland-code.json. Not a DCP control. Council policies register not read.",
+  "evidence": [
+    {
+      "url": "https://www.hay.nsw.gov.au/Building-Planning-Environment/Planning",
+      "document": "Council planning page",
+      "finding": "States controls are Hay LEP 2011 and 'relevant policies'; no DCP or setback policy listed (extraction tool statement)."
+    }
+  ],
+  "fallback": "NSW Codes SEPP Part 3D Inland Code"
+}

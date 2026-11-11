@@ -1,0 +1,1554 @@
+{
+ "lga_slug": "upper-hunter-shire-council",
+ "council": "Upper Hunter Shire Council",
+ "lgaNames": [
+  "UPPER HUNTER",
+  "UPPER HUNTER SHIRE",
+  "UPPER HUNTER SHIRE COUNCIL"
+ ],
+ "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+ "lep": "Upper Hunter Local Environmental Plan 2013 (lot size, height, FSR maps not in saved text)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "upper-hunter-shire-council-001",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table 1, R1 and RU5 local street, single dwellings etc, corner lot secondary frontage",
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     35037
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35037
+   ],
+   "evidence": [
+    {
+     "id": 35037,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "4.5 metres for secondary road frontage on a corner lot",
+     "clause": "Table 1",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 1, R1 and RU5 local street, single dwellings etc, corner lot secondary frontage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "4.5 metres for secondary road frontage on a corner lot",
+   "clause": "Table 1",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-002",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Table 1, R1 and RU5 local street, any garage or carport",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     35038
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    35038
+   ],
+   "evidence": [
+    {
+     "id": 35038,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Minimum 5.5 metres to any garage or carport",
+     "clause": "Table 1",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 1, R1 and RU5 local street, any garage or carport",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Minimum 5.5 metres to any garage or carport",
+   "clause": "Table 1",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-003",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table 1, R1 only, multi-dwelling housing etc, corner lot secondary frontage",
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     35040
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35040
+   ],
+   "evidence": [
+    {
+     "id": 35040,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "6.0 m for secondary road frontage on a corner lot",
+     "clause": "Table 1",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 1, R1 only, multi-dwelling housing etc, corner lot secondary frontage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "6.0 m for secondary road frontage on a corner lot",
+   "clause": "Table 1",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-004",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table 1, R1 only, multi-dwelling housing, residential flat buildings and attached dwellings, primary frontage",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     35039
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35039
+   ],
+   "evidence": [
+    {
+     "id": 35039,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6.0 metres for primary road frontage",
+     "clause": "Table 1",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 1, R1 only, multi-dwelling housing, residential flat buildings and attached dwellings, primary frontage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "6.0 metres for primary road frontage",
+   "clause": "Table 1",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-005",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "secondary_dwelling",
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table 1, R1 and RU5 local street, single dwellings, secondary dwellings, dual occupancies, semi-detached, primary frontage",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     35036
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35036
+   ],
+   "evidence": [
+    {
+     "id": 35036,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5 metres for primary road frontage",
+     "clause": "Table 1",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 1, R1 and RU5 local street, single dwellings, secondary dwellings, dual occupancies, semi-detached, primary frontage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "4.5 metres for primary road frontage",
+   "clause": "Table 1",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-006",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table 1, local street in R5 Large Lot Residential, all residential development",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     35041
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35041
+   ],
+   "evidence": [
+    {
+     "id": 35041,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "All types of Residential 10 metres",
+     "clause": "Table 1",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 1, local street in R5 Large Lot Residential, all residential development",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "All types of Residential 10 metres",
+   "clause": "Table 1",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-007",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Table 1, RU1 Primary Production, road frontage to bitumen sealed road",
+    "Table 1, RU1 Primary Production, side and rear"
+   ],
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     35133
+    ]
+   },
+   "side": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     35134
+    ]
+   },
+   "rear": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     35134
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    35133,
+    35134,
+    35134
+   ],
+   "evidence": [
+    {
+     "id": 35133,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "RU1 Primary Production 50 m to bitumen sealed road 30 m",
+     "clause": "Table 1",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-7-rural-development.pdf",
+     "condition": "Table 1, RU1 Primary Production, road frontage to bitumen sealed road",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35134,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "RU1 Primary Production 50 m to bitumen sealed road 30 m",
+     "clause": "Table 1",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-7-rural-development.pdf",
+     "condition": "Table 1, RU1 Primary Production, side and rear",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35134,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "RU1 Primary Production 50 m to bitumen sealed road 30 m",
+     "clause": "Table 1",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-7-rural-development.pdf",
+     "condition": "Table 1, RU1 Primary Production, side and rear",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU1 Primary Production 50 m to bitumen sealed road 30 m",
+   "clause": "Table 1",
+   "page": 8,
+   "source_file": "DCP/uh-dcp-2023-7-rural-development.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-008",
+   "zones": [
+    "C3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Table 1, C3 Environmental Management, road frontage to bitumen sealed road",
+    "Table 1, C3 Environmental Management, side and rear"
+   ],
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     35135
+    ]
+   },
+   "side": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     35136
+    ]
+   },
+   "rear": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     35136
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    35135,
+    35136,
+    35136
+   ],
+   "evidence": [
+    {
+     "id": 35135,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "C3 Environmental Management 50 m to bitumen sealed road 30 m",
+     "clause": "Table 1",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-7-rural-development.pdf",
+     "condition": "Table 1, C3 Environmental Management, road frontage to bitumen sealed road",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35136,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "C3 Environmental Management 50 m to bitumen sealed road 30 m",
+     "clause": "Table 1",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-7-rural-development.pdf",
+     "condition": "Table 1, C3 Environmental Management, side and rear",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35136,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "C3 Environmental Management 50 m to bitumen sealed road 30 m",
+     "clause": "Table 1",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-7-rural-development.pdf",
+     "condition": "Table 1, C3 Environmental Management, side and rear",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "C3 Environmental Management 50 m to bitumen sealed road 30 m",
+   "clause": "Table 1",
+   "page": 8,
+   "source_file": "DCP/uh-dcp-2023-7-rural-development.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Hunter Valley Equine Precinct DCP area"
+   },
+   "conditionText": "Hunter Valley Equine Precinct DCP area: minimum from front or principal boundary",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     35148
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35148
+   ],
+   "evidence": [
+    {
+     "id": 35148,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "setback at least 10.0m from the front",
+     "clause": "13e Item K",
+     "page": 9,
+     "source_file": "DCP/uh-dcp-2023-13e-hunter-valley-equine-precinct.pdf",
+     "condition": "Hunter Valley Equine Precinct DCP area: minimum from front or principal boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "setback at least 10.0m from the front",
+   "clause": "13e Item K",
+   "page": 9,
+   "source_file": "DCP/uh-dcp-2023-13e-hunter-valley-equine-precinct.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "St Aubin’s Estate DCP area"
+   },
+   "conditionText": [
+    "St Aubin’s Estate DCP area: minimum front setback to main building line",
+    "St Aubin’s Estate DCP area: minimum side setback"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     35143
+    ]
+   },
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     35144
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35143,
+    35144
+   ],
+   "evidence": [
+    {
+     "id": 35143,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front Setback (Min.): 6 m to main front building line",
+     "clause": "Table 1",
+     "page": 17,
+     "source_file": "DCP/uh-dcp-2023-13a-st-aubins-estate.pdf",
+     "condition": "St Aubin’s Estate DCP area: minimum front setback to main building line",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35144,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback (Min.): 1 m",
+     "clause": "Table 1",
+     "page": 17,
+     "source_file": "DCP/uh-dcp-2023-13a-st-aubins-estate.pdf",
+     "condition": "St Aubin’s Estate DCP area: minimum side setback",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Front Setback (Min.): 6 m to main front building line",
+   "clause": "Table 1",
+   "page": 17,
+   "source_file": "DCP/uh-dcp-2023-13a-st-aubins-estate.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Table 1, properties fronting New England Highway in any zone",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     35042
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35042
+   ],
+   "evidence": [
+    {
+     "id": 35042,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "Properties fronting All types of Residential 10 metres",
+     "clause": "Table 1",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 1, properties fronting New England Highway in any zone",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Properties fronting All types of Residential 10 metres",
+   "clause": "Table 1",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Walls to side or rear boundary permitted where maximum wall height is 3 m",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35053
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35053
+   ],
+   "evidence": [
+    {
+     "id": 35053,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "the maximum wall height is 3 m",
+     "clause": "4a Item F",
+     "page": 11,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Walls to side or rear boundary permitted where maximum wall height is 3 m",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the maximum wall height is 3 m",
+   "clause": "4a Item F",
+   "page": 11,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Table 2, dual occupancies and semi-detached dwellings, single storey",
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     35046
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35046
+   ],
+   "evidence": [
+    {
+     "id": 35046,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.0 metres single storey",
+     "clause": "Table 2",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 2, dual occupancies and semi-detached dwellings, single storey",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.0 metres single storey",
+   "clause": "Table 2",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Table 2, dual occupancies and semi-detached dwellings, two storey",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     35047
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35047
+   ],
+   "evidence": [
+    {
+     "id": 35047,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5 metres two storey",
+     "clause": "Table 2",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 2, dual occupancies and semi-detached dwellings, two storey",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.5 metres two storey",
+   "clause": "Table 2",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table 2, dual occupancies and semi-detached dwellings",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35048
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    35048
+   ],
+   "evidence": [
+    {
+     "id": 35048,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "1.0 metres single storey 3.0 metres",
+     "clause": "Table 2",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 2, dual occupancies and semi-detached dwellings",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.0 metres single storey 3.0 metres",
+   "clause": "Table 2",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "established_area"
+    ]
+   },
+   "conditionText": "Where adjoining dwellings exist",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "match adjoining primary facades; average where setbacks differ; Table 1 applies where no adjoining dwellings within 40 m",
+    "sources": [
+     35052
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35052
+   ],
+   "evidence": [
+    {
+     "id": 35052,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "the average of the setbacks of",
+     "clause": "4a Item E",
+     "page": 10,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Where adjoining dwellings exist",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "the average of the setbacks of",
+   "clause": "4a Item E",
+   "page": 10,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
+  },
+  {
+   "id": "upper-hunter-shire-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Detached garages, carports and outbuildings, front setback",
+    "Garages, carports and sheds, side or rear boundary"
+   ],
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     35075
+    ]
+   },
+   "side": {
+    "minM": 0.45,
+    "printed": "450 mm",
+    "basis": "fixed",
+    "sources": [
+     35076
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "sources": [
+    35075,
+    35076
+   ],
+   "evidence": [
+    {
+     "id": 35075,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages shall have a minimum front setback of 5.5 metres",
+     "clause": "4b Item B",
+     "page": 29,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Detached garages, carports and outbuildings, front setback",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35076,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "setback at least 450 mm from a side or rear boundary",
+     "clause": "4b Item B",
+     "page": 29,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Garages, carports and sheds, side or rear boundary",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Garages shall have a minimum front setback of 5.5 metres",
+   "clause": "4b Item B",
+   "page": 29,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Table 2, multi-dwelling housing, residential flat buildings and attached dwellings, single storey",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     35049
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35049
+   ],
+   "evidence": [
+    {
+     "id": 35049,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5 metres single storey",
+     "clause": "Table 2",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 2, multi-dwelling housing, residential flat buildings and attached dwellings, single storey",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.5 metres single storey",
+   "clause": "Table 2",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Table 2, multi-dwelling housing, residential flat buildings and attached dwellings, two storey",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35050
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35050
+   ],
+   "evidence": [
+    {
+     "id": 35050,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3.0 metres two storey",
+     "clause": "Table 2",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 2, multi-dwelling housing, residential flat buildings and attached dwellings, two storey",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "3.0 metres two storey",
+   "clause": "Table 2",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table 2, multi-dwelling housing, residential flat buildings and attached dwellings",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35051
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    35051
+   ],
+   "evidence": [
+    {
+     "id": 35051,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "1.5 metres single storey 3.0 metres",
+     "clause": "Table 2",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 2, multi-dwelling housing, residential flat buildings and attached dwellings",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.5 metres single storey 3.0 metres",
+   "clause": "Table 2",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "secondary_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Table 2, single and secondary dwellings, single storey",
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     35043
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35043
+   ],
+   "evidence": [
+    {
+     "id": 35043,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.0 metre single storey",
+     "clause": "Table 2",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 2, single and secondary dwellings, single storey",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.0 metre single storey",
+   "clause": "Table 2",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "secondary_dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Table 2, single and secondary dwellings, two storey",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     35044
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35044
+   ],
+   "evidence": [
+    {
+     "id": 35044,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.5 metre two storey",
+     "clause": "Table 2",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 2, single and secondary dwellings, two storey",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.5 metre two storey",
+   "clause": "Table 2",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "secondary_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table 2, single and secondary dwellings",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35045
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    35045
+   ],
+   "evidence": [
+    {
+     "id": 35045,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "1.0 metre single storey 3.0 metres",
+     "clause": "Table 2",
+     "page": 12,
+     "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+     "condition": "Table 2, single and secondary dwellings",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.0 metre single storey 3.0 metres",
+   "clause": "Table 2",
+   "page": 12,
+   "source_file": "DCP/uh-dcp-2023-4-urban-dwellings-2023.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "upper-hunter-shire-council-024",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 2000.0
+   },
+   "conditionText": [
+    "Industrial, site area under 2000 m2, front boundary",
+    "Industrial, site area under 2000 m2, secondary frontage for corner lots",
+    "Industrial, site area under 2000 m2, side and rear boundaries"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     35137
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35138
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35138
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     35139
+    ]
+   },
+   "garage": null,
+   "sources": [
+    35137,
+    35138,
+    35138,
+    35139
+   ],
+   "evidence": [
+    {
+     "id": 35137,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Less than 6m 3m 4m",
+     "clause": "6a Item B",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-6-industrial-development.pdf",
+     "condition": "Industrial, site area under 2000 m2, front boundary",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35138,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "Less than 6m 3m 4m",
+     "clause": "6a Item B",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-6-industrial-development.pdf",
+     "condition": "Industrial, site area under 2000 m2, side and rear boundaries",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35138,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "Less than 6m 3m 4m",
+     "clause": "6a Item B",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-6-industrial-development.pdf",
+     "condition": "Industrial, site area under 2000 m2, side and rear boundaries",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35139,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "Less than 6m 3m 4m",
+     "clause": "6a Item B",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-6-industrial-development.pdf",
+     "condition": "Industrial, site area under 2000 m2, secondary frontage for corner lots",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Less than 6m 3m 4m",
+   "clause": "6a Item B",
+   "page": 8,
+   "source_file": "DCP/uh-dcp-2023-6-industrial-development.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  },
+  {
+   "id": "upper-hunter-shire-council-025",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 2001.0
+   },
+   "conditionText": [
+    "Industrial, site area over 2001 m2, front boundary",
+    "Industrial, site area over 2001 m2, secondary frontage for corner lots",
+    "Industrial, site area over 2001 m2, side and rear boundaries"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     35140
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35141
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35141
+    ]
+   },
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     35142
+    ]
+   },
+   "garage": null,
+   "sources": [
+    35140,
+    35141,
+    35141,
+    35142
+   ],
+   "evidence": [
+    {
+     "id": 35140,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Over 10m 3m 6m",
+     "clause": "6a Item B",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-6-industrial-development.pdf",
+     "condition": "Industrial, site area over 2001 m2, front boundary",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35141,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "Over 10m 3m 6m",
+     "clause": "6a Item B",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-6-industrial-development.pdf",
+     "condition": "Industrial, site area over 2001 m2, side and rear boundaries",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35141,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "Over 10m 3m 6m",
+     "clause": "6a Item B",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-6-industrial-development.pdf",
+     "condition": "Industrial, site area over 2001 m2, side and rear boundaries",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 35142,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "Over 10m 3m 6m",
+     "clause": "6a Item B",
+     "page": 8,
+     "source_file": "DCP/uh-dcp-2023-6-industrial-development.pdf",
+     "condition": "Industrial, site area over 2001 m2, secondary frontage for corner lots",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Over 10m 3m 6m",
+   "clause": "6a Item B",
+   "page": 8,
+   "source_file": "DCP/uh-dcp-2023-6-industrial-development.pdf",
+   "dcp": "Upper Hunter Development Control Plan 2023 (parts saved individually and as combined document; adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 35054"
+ ],
+ "notes": "Built from 34 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "RU5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 3
+  },
+  "R5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "C3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 15
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [
+  "Hunter Valley Equine Precinct DCP area",
+  "St Aubin’s Estate DCP area"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 34,
+  "rules": 25,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 2
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
+ }
+}

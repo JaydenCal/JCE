@@ -1,0 +1,28 @@
+{
+  "lga_slug": "cobar-shire-council",
+  "council": "Cobar Shire Council",
+  "dcp": {
+    "name": null,
+    "url": null,
+    "adopted": null
+  },
+  "status": "none",
+  "rules": [],
+  "gaps": [
+    "No DCP residential setback controls located; dwellings rely on the LEP and the Codes SEPP."
+  ],
+  "notes": "No residential DCP setback controls found. Part 3D Inland Code of the Codes SEPP applies to this LGA (named in cl 3D.1(4)); see fallback/nsw-inland-code.json. Not a DCP control. Council policies register not read; a setback policy (as at Balranald) cannot be excluded.",
+  "evidence": [
+    {
+      "url": "https://www.cobar.nsw.gov.au/services/building-and-development/planning-and-development/planning-policies-and-resources/",
+      "document": "Council planning policies and resources page",
+      "finding": "Lists Cobar LEP 2012, zone maps, LSPS, Far West Regional Plan; no DCP linked (extraction tool statement). Developer Contribution Plans only."
+    },
+    {
+      "url": "https://cobar.lgsoftwaresolutions.com.au/Pulse/Public.aspx?page=publicpolicies",
+      "document": "Council policies register",
+      "finding": "Not read."
+    }
+  ],
+  "fallback": "NSW Codes SEPP Part 3D Inland Code"
+}

@@ -1,0 +1,238 @@
+{
+ "lga_slug": "canada-bay-council-city-of",
+ "council": "City of Canada Bay",
+ "lgaNames": [
+  "CANADA BAY",
+  "CITY OF CANADA BAY"
+ ],
+ "dcp": "City of Canada Bay DCP (adopted 04/09/2007, effective 07/03/2008, most recent amendment effective 02/10/2026)",
+ "lep": "Canada Bay Local Environmental Plan 2013",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "canada-bay-council-city-of-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "hardstand forward of building alignment, front boundary to building minimum",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     8420
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    8420
+   ],
+   "evidence": [
+    {
+     "id": 8420,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "The distance between the front property boundary and building is to be a minimum of 5.5m",
+     "clause": "B3.2 C4",
+     "page": 14,
+     "source_file": "DCP/DCP---Part-B-General-Control.pdf",
+     "condition": "hardstand forward of building alignment, front boundary to building minimum",
+     "edition": "City of Canada Bay DCP Part B General Controls, Version 9, 26/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The distance between the front property boundary and building is to be a minimum of 5.5m",
+   "clause": "B3.2 C4",
+   "page": 14,
+   "source_file": "DCP/DCP---Part-B-General-Control.pdf",
+   "dcp": "City of Canada Bay DCP (adopted 04/09/2007, effective 07/03/2008, most recent amendment effective 02/10/2026)",
+   "edition": "City of Canada Bay DCP Part B General Controls, Version 9, 26/06/2025"
+  },
+  {
+   "id": "canada-bay-council-city-of-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "carport forward of front building alignment, minimum distance building to front boundary",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     8421
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    8421
+   ],
+   "evidence": [
+    {
+     "id": 8421,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "minimum of 5.5 metres;",
+     "clause": "B3.2 C7(c)",
+     "page": 15,
+     "source_file": "DCP/DCP---Part-B-General-Control.pdf",
+     "condition": "carport forward of front building alignment, minimum distance building to front boundary",
+     "edition": "City of Canada Bay DCP Part B General Controls, Version 9, 26/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "minimum of 5.5 metres;",
+   "clause": "B3.2 C7(c)",
+   "page": 15,
+   "source_file": "DCP/DCP---Part-B-General-Control.pdf",
+   "dcp": "City of Canada Bay DCP (adopted 04/09/2007, effective 07/03/2008, most recent amendment effective 02/10/2026)",
+   "edition": "City of Canada Bay DCP Part B General Controls, Version 9, 26/06/2025"
+  },
+  {
+   "zones": [
+    "R1",
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "front": {
+    "minM": 4.5,
+    "basis": "greater_of",
+    "note": "C1 (p E-18): minimum 4.5m or no less than the Prevailing Street Setback (average of five adjoining residential properties on both sides), whichever is greater. DCP notes many setbacks are 7.5m or more."
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "note": "C7 (p E-19): secondary street setback minimum 2m for the first 25m from the corner; prevailing secondary street setback applies from 25m to rear boundary (C9).",
+    "basis": "fixed"
+   },
+   "side": {
+    "minM": 0.9,
+    "note": "C10 (p E-19): single storey 900mm; second storey of all dwellings 1500mm.",
+    "bands": [
+     {
+      "minM": 0.9,
+      "storeys": 1
+     },
+     {
+      "minM": 1.5,
+      "storeys": 2
+     }
+    ],
+    "basis": "fixed"
+   },
+   "rear": {
+    "minM": 6.0,
+    "note": "C11 (p E-22): minimum rear setback 6.0m; C12: living room on upper floor minimum rear setback 9.0m.",
+    "basis": "fixed"
+   },
+   "garage": {
+    "minM": null,
+    "note": "No garage setback in E4.2. E2.1 C3 (p E-3): attached garage must not be located within the primary facade. Part B3.2 C4 (p B-14): 'distance between the front property boundary and building is to be a minimum of 5.5m' for hardstands."
+   },
+   "sourceUrl": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW+Planning+Portal+Exhibitions/City+of+Canada+Bay+Development+Control+Plan+-+as+amended+26+August+2022_S-5314.pdf",
+   "document": "City of Canada Bay Development Control Plan, Amendment 14 (adopted 15 Mar 2022, effective 26 Aug 2022), Part E Section E4.2 Building setbacks",
+   "clause": "E4.2 C1, C7, C9, C10, C11, C12",
+   "page": "pp E-18 to E-22",
+   "quote": "is to have a minimum rear setback of 6.0 metres",
+   "confidence": "medium",
+   "needsReview": "Extracted via tool. Verbatim fragments: 'is to be a minimum of 4.5 metres or no less than the Prevailing Street Setback'; 'must have a secondary street (side setback) of a minimum of 2m for the first 25m'; 'The second storey of all dwellings are to be set back a minimum of 1500mm from side boundaries'. Amendment 14 effective 26/08/2022; check for later amendments or a replacement DCP.",
+   "reviewReason": "Extracted via tool. Verbatim fragments: 'is to be a minimum of 4.5 metres or no less than the Prevailing Street Setback'; 'must have a secondary street (side setback) of a minimum of 2m for the first 25m'; 'The second storey of all dwellings are to be set back a minimum of 1500mm from side boundaries'. Amendment 14 effective 26/08/2022; check for later amendments or a replacement DCP.",
+   "prevailingSetbackDefinition": "average of five adjoining residential properties on both sides",
+   "extraQuotes": {
+    "front": "is to be a minimum of 4.5 metres or no less than the Prevailing Street Setback",
+    "secondary": "must have a secondary street (side setback) of a minimum of 2m for the first 25m",
+    "side": "The second storey of all dwellings are to be set back a minimum of 1500mm from side boundaries"
+   },
+   "dcp": "City of Canada Bay DCP (Amendment 14), Part E (15/03/2022 (effective 26/08/2022))",
+   "edition": "15/03/2022 (effective 26/08/2022)",
+   "source_file": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW+Planning+Portal+Exhibitions/City+of+Canada+Bay+Development+Control+Plan+-+as+amended+26+August+2022_S-5314.pdf",
+   "sources": [],
+   "origin": "research",
+   "id": "canada-bay-council-city-of-RES-001",
+   "flag": "check_with_council",
+   "flagReason": "Extracted via tool. Verbatim fragments: 'is to be a minimum of 4.5 metres or no less than the Prevailing Street Setback'; 'must have a secondary street (side..."
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Flood planning matrix (Part B / flood DCP) not tabulated: columns unresolved | Setbacks, site coverage, landscaped area, lot size and private open space controls in Parts C, E, F, H not extracted (inside Whole-Document file)",
+  "Research: Side setbacks given by storey only, not lot width or wall height.",
+  "Research: Corner-lot rear-dwelling setbacks (C13: rear 1.5m, side 4m) and outbuilding 900mm not mapped to rules.",
+  "Research: R3 zone not covered by Part E per E1 (Part E generally applies to R1 and R2); R3 controls not located."
+ ],
+ "notes": "Built from 2 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text. | Research merged from research-setbacks/councils/canada-bay-council-city-of.json",
+ "coverage": {
+  "*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": true,
+   "rules": 2
+  },
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 1
+  },
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 2,
+  "rules": 3,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
+ }
+}

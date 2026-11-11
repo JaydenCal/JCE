@@ -1,0 +1,23 @@
+{
+  "lga_slug": "cabonne-council",
+  "council": "Cabonne Council",
+  "dcp": {
+    "name": "No residential DCP; only rural/industrial/special-purpose DCPs (DCP-2 to DCP-16)",
+    "url": "https://www.cabonne.nsw.gov.au/Development/Development-Plans-Policies-Maps-Strategies",
+    "adopted": null
+  },
+  "status": "none",
+  "rules": [],
+  "gaps": [
+    "No town/village residential DCP chapter. DCP-5 General Rural Zones (1 Dec 1992) and DCP-6 Rural Small Holdings may carry rural dwelling setbacks but could not be read (fetch of https://www.cabonne.nsw.gov.au/files/sharedassets/public/v/1/planning-and-development/local-environment-plan/dcp-5-general-rural-zones.pdf was blocked by a permission timeout)."
+  ],
+  "notes": "Council page lists 12 adopted DCPs (none residential; DCP-15 Relocatable and Transportable Homes 29 May 2024 is closest, not read for setbacks). Part 3D Inland Code of the Codes SEPP applies to this LGA (named in cl 3D.1(4)); see fallback/nsw-inland-code.json. Not a DCP control.",
+  "evidence": [
+    {
+      "url": "https://www.cabonne.nsw.gov.au/Development/Development-Plans-Policies-Maps-Strategies",
+      "document": "Council 'Development Plans, Policies, Maps & Strategies' page",
+      "finding": "Lists DCP-2 to DCP-16; no residential or town/village dwelling DCP (extraction tool statement, not verbatim)."
+    }
+  ],
+  "fallback": "NSW Codes SEPP Part 3D Inland Code"
+}

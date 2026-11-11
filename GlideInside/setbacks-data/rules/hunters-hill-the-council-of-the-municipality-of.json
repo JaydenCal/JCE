@@ -1,0 +1,529 @@
+{
+ "lga_slug": "hunters-hill-the-council-of-the-municipality-of",
+ "council": "Hunters Hill Council (The Council of the Municipality of Hunters Hill)",
+ "lgaNames": [
+  "HUNTERS HILL",
+  "HUNTERS HILL COUNCIL"
+ ],
+ "dcp": "Hunters Hill Consolidated Development Control Plan 2013 (adopted 24 June 2013, effective 12 August 2013); Chapter 4.4 Gladesville Village Centre saved separately; stormwater now governed by Consolidated Stormwater Management Policy Part 1 (09/07/2024)",
+ "lep": "Hunters Hill Local Environmental Plan 2012",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "hunters-hill-the-council-of-the-municipality-of-001",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Ryde Road Precinct (R3)",
+   "front": {
+    "minM": 6.5,
+    "basis": "fixed",
+    "sources": [
+     16369
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16369
+   ],
+   "evidence": [
+    {
+     "id": 16369,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front setbacks should be a minimum of 6.5 metres",
+     "clause": "3.4.7 Ryde Road Precinct",
+     "page": 56,
+     "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+     "condition": "Ryde Road Precinct (R3)",
+     "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Front setbacks should be a minimum of 6.5 metres",
+   "clause": "3.4.7 Ryde Road Precinct",
+   "page": 56,
+   "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+   "dcp": "Hunters Hill Consolidated Development Control Plan 2013 (adopted 24 June 2013, effective 12 August 2013); Chapter 4.4 Gladesville Village Centre saved separately; stormwater now governed by Consolidated Stormwater Management Policy Part 1 (09/07/2024)",
+   "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+  },
+  {
+   "id": "hunters-hill-the-council-of-the-municipality-of-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "Ryde Road Precinct, first floor",
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16370
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    16370
+   ],
+   "evidence": [
+    {
+     "id": 16370,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "For the first floor (second storey): a minimum of 10 metres",
+     "clause": "3.4.7 Ryde Road Precinct",
+     "page": 56,
+     "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+     "condition": "Ryde Road Precinct, first floor",
+     "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "For the first floor (second storey): a minimum of 10 metres",
+   "clause": "3.4.7 Ryde Road Precinct",
+   "page": 56,
+   "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+   "dcp": "Hunters Hill Consolidated Development Control Plan 2013 (adopted 24 June 2013, effective 12 August 2013); Chapter 4.4 Gladesville Village Centre saved separately; stormwater now governed by Consolidated Stormwater Management Policy Part 1 (09/07/2024)",
+   "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+  },
+  {
+   "id": "hunters-hill-the-council-of-the-municipality-of-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dual occupancy and multi dwelling housing",
+   "side": {
+    "minM": 1.5,
+    "basis": "greater_of",
+    "note": "Or one third of exterior wall height, whichever is greater",
+    "sources": [
+     16366
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16366
+   ],
+   "evidence": [
+    {
+     "id": 16366,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "not be less than 1.5 metres, or one third of the height of the exterior walls",
+     "clause": "3.4.3",
+     "page": 51,
+     "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+     "condition": "Dual occupancy and multi dwelling housing",
+     "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "not be less than 1.5 metres, or one third of the height of the exterior walls",
+   "clause": "3.4.3",
+   "page": 51,
+   "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+   "dcp": "Hunters Hill Consolidated Development Control Plan 2013 (adopted 24 June 2013, effective 12 August 2013); Chapter 4.4 Gladesville Village Centre saved separately; stormwater now governed by Consolidated Stormwater Management Policy Part 1 (09/07/2024)",
+   "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+  },
+  {
+   "id": "hunters-hill-the-council-of-the-municipality-of-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "level": "upper"
+   },
+   "conditionText": "Dwelling houses, second storey where single storey predominant",
+   "front": {
+    "minM": null,
+    "formula": "5 m behind ground floor facade",
+    "basis": "text",
+    "sources": [
+     16362
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16362
+   ],
+   "evidence": [
+    {
+     "id": 16362,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a minimum of 5 metres behind the alignment of the ground floor",
+     "clause": "3.3.3",
+     "page": 43,
+     "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+     "condition": "Dwelling houses, second storey where single storey predominant",
+     "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "a minimum of 5 metres behind the alignment of the ground floor",
+   "clause": "3.3.3",
+   "page": 43,
+   "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+   "dcp": "Hunters Hill Consolidated Development Control Plan 2013 (adopted 24 June 2013, effective 12 August 2013); Chapter 4.4 Gladesville Village Centre saved separately; stormwater now governed by Consolidated Stormwater Management Policy Part 1 (09/07/2024)",
+   "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  },
+  {
+   "id": "hunters-hill-the-council-of-the-municipality-of-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "boundary_wall"
+    ]
+   },
+   "conditionText": "Dwelling houses, single storey zero setback wall height",
+   "rear": {
+    "minM": null,
+    "formula": "2.4 m wall height",
+    "basis": "text",
+    "note": "Zero rear setback; wall not more than 33% of rear boundary",
+    "sources": [
+     16365
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    16365
+   ],
+   "evidence": [
+    {
+     "id": 16365,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "provided that external walls would not be taller than 2.4 metres",
+     "clause": "3.3.3",
+     "page": 44,
+     "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+     "condition": "Dwelling houses, single storey zero setback wall height",
+     "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "provided that external walls would not be taller than 2.4 metres",
+   "clause": "3.3.3",
+   "page": 44,
+   "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+   "dcp": "Hunters Hill Consolidated Development Control Plan 2013 (adopted 24 June 2013, effective 12 August 2013); Chapter 4.4 Gladesville Village Centre saved separately; stormwater now governed by Consolidated Stormwater Management Policy Part 1 (09/07/2024)",
+   "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  },
+  {
+   "id": "hunters-hill-the-council-of-the-municipality-of-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Dwelling houses",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average of front setbacks of adjoining buildings",
+    "sources": [
+     16361
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16361
+   ],
+   "evidence": [
+    {
+     "id": 16361,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "Front boundary setbacks should be the average of front setbacks for existing buildings that adjoin the development site",
+     "clause": "3.3.3",
+     "page": 43,
+     "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+     "condition": "Dwelling houses",
+     "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Front boundary setbacks should be the average of front setbacks for existing buildings that adjoin the development site",
+   "clause": "3.3.3",
+   "page": 43,
+   "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+   "dcp": "Hunters Hill Consolidated Development Control Plan 2013 (adopted 24 June 2013, effective 12 August 2013); Chapter 4.4 Gladesville Village Centre saved separately; stormwater now governed by Consolidated Stormwater Management Policy Part 1 (09/07/2024)",
+   "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+  },
+  {
+   "id": "hunters-hill-the-council-of-the-municipality-of-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dwelling houses",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     16364
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     16363
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    16363,
+    16364
+   ],
+   "evidence": [
+    {
+     "id": 16364,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear boundary setbacks should be a minimum of 6 metres",
+     "clause": "3.3.3",
+     "page": 44,
+     "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+     "condition": "Dwelling houses",
+     "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+    },
+    {
+     "id": 16363,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Generally, side boundary setbacks should not be less than 1.5 metres",
+     "clause": "3.3.3",
+     "page": 44,
+     "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+     "condition": "Dwelling houses",
+     "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Rear boundary setbacks should be a minimum of 6 metres",
+   "clause": "3.3.3",
+   "page": 44,
+   "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+   "dcp": "Hunters Hill Consolidated Development Control Plan 2013 (adopted 24 June 2013, effective 12 August 2013); Chapter 4.4 Gladesville Village Centre saved separately; stormwater now governed by Consolidated Stormwater Management Policy Part 1 (09/07/2024)",
+   "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+  },
+  {
+   "id": "hunters-hill-the-council-of-the-municipality-of-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Multi-unit residential",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     16368
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    16368
+   ],
+   "evidence": [
+    {
+     "id": 16368,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear boundary setbacks should be a minimum of 6 metres",
+     "clause": "3.4.3",
+     "page": 51,
+     "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+     "condition": "Multi-unit residential",
+     "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Rear boundary setbacks should be a minimum of 6 metres",
+   "clause": "3.4.3",
+   "page": 51,
+   "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+   "dcp": "Hunters Hill Consolidated Development Control Plan 2013 (adopted 24 June 2013, effective 12 August 2013); Chapter 4.4 Gladesville Village Centre saved separately; stormwater now governed by Consolidated Stormwater Management Policy Part 1 (09/07/2024)",
+   "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+  },
+  {
+   "id": "hunters-hill-the-council-of-the-municipality-of-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {},
+   "conditionText": "Residential flat buildings",
+   "side": {
+    "minM": 1.5,
+    "basis": "greater_of",
+    "note": "1.5 m or one half of exterior wall height, whichever is greater",
+    "sources": [
+     16367
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16367
+   ],
+   "evidence": [
+    {
+     "id": 16367,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "less than 1.5 metres, or one half of the height of the exterior walls",
+     "clause": "3.4.3",
+     "page": 51,
+     "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+     "condition": "Residential flat buildings",
+     "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "less than 1.5 metres, or one half of the height of the exterior walls",
+   "clause": "3.4.3",
+   "page": 51,
+   "source_file": "DCP/hunters-hill-consolidated-development-control-plan-2013.pdf",
+   "dcp": "Hunters Hill Consolidated Development Control Plan 2013 (adopted 24 June 2013, effective 12 August 2013); Chapter 4.4 Gladesville Village Centre saved separately; stormwater now governed by Consolidated Stormwater Management Policy Part 1 (09/07/2024)",
+   "edition": "Hunters Hill Consolidated DCP 2013 (adopted 24/06/2013, effective 12/08/2013)"
+  }
+ ],
+ "gaps": [
+  "No secondary (corner lot) frontage setback rule",
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Policy Figure 5.1 Zone Map (OSD catchment zones 1 to 3) is an image: zone boundaries cannot be extracted | DCP Chapters 2.2 to 2.4 (character, trees, heritage), 4.2 to 4.5 (child care, commercial, Gladesville and Hunters Hill village centres), 5.2, 5.5, 5.7 not extracted (planning detail, not engineering parameters); Chapter 4.4 Gladesville file not read | DCP Chapter 3.6 Garages and Carports numeric controls (garage width and setbacks) and Chapter 3.5 solar access numbers not extracted"
+ ],
+ "notes": "Built from 10 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R3": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 8
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 10,
+  "rules": 9,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for the ground level)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for the ground level)"
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for the ground level)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for the ground level)"
+  }
+ }
+}

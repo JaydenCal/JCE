@@ -1,0 +1,1284 @@
+{
+ "lga_slug": "ku-ring-gai-council",
+ "council": "Ku-ring-gai Council",
+ "lgaNames": [
+  "KU-RING-GAI",
+  "KU-RING-GAI COUNCIL"
+ ],
+ "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+ "lep": "Ku-ring-gai Local Environmental Plan 2015 (KLEP)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "ku-ring-gai-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotWidthMaxM": 20.0
+   },
+   "conditionText": "Part 4A.2 site width less than 20 m, single storey building",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     18228
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18228
+   ],
+   "evidence": [
+    {
+     "id": 18228,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Less than 20m 1.5m 2m",
+     "clause": "4A.2 control 8",
+     "page": 7,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 site width less than 20 m, single storey building",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Less than 20m 1.5m 2m",
+   "clause": "4A.2 control 8",
+   "page": 7,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "lotWidthMaxM": 20.0
+   },
+   "conditionText": "Part 4A.2 site width less than 20 m, two storey building",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     18229
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18229
+   ],
+   "evidence": [
+    {
+     "id": 18229,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Less than 20m 1.5m 2m",
+     "clause": "4A.2 control 8",
+     "page": 7,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 site width less than 20 m, two storey building",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Less than 20m 1.5m 2m",
+   "clause": "4A.2 control 8",
+   "page": 7,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotWidthMaxM": 25.0
+   },
+   "conditionText": "Part 5A.3 Side-Side layout, parent lot width under 25 m, single storey elements",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     18279
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18279
+   ],
+   "evidence": [
+    {
+     "id": 18279,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Less than 25m 1.5m 2m",
+     "clause": "5A.3 control 8",
+     "page": 8,
+     "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+     "condition": "Part 5A.3 Side-Side layout, parent lot width under 25 m, single storey elements",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Less than 25m 1.5m 2m",
+   "clause": "5A.3 control 8",
+   "page": 8,
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "lotWidthMaxM": 25.0
+   },
+   "conditionText": "Part 5A.3 Side-Side layout, parent lot width under 25 m, double storey elements",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     18280
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18280
+   ],
+   "evidence": [
+    {
+     "id": 18280,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Less than 25m 1.5m 2m",
+     "clause": "5A.3 control 8",
+     "page": 8,
+     "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+     "condition": "Part 5A.3 Side-Side layout, parent lot width under 25 m, double storey elements",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Less than 25m 1.5m 2m",
+   "clause": "5A.3 control 8",
+   "page": 8,
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotWidthMinM": 25.0,
+    "lotWidthMaxM": 36.0
+   },
+   "conditionText": "Part 5A.3 Side-Side layout, parent lot width 25 to 36 m, single storey elements",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     18281
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18281
+   ],
+   "evidence": [
+    {
+     "id": 18281,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "25-36m 1.5m 2.5m",
+     "clause": "5A.3 control 8",
+     "page": 8,
+     "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+     "condition": "Part 5A.3 Side-Side layout, parent lot width 25 to 36 m, single storey elements",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "25-36m 1.5m 2.5m",
+   "clause": "5A.3 control 8",
+   "page": 8,
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "lotWidthMinM": 25.0,
+    "lotWidthMaxM": 36.0
+   },
+   "conditionText": "Part 5A.3 Side-Side layout, parent lot width 25 to 36 m, double storey elements",
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     18282
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18282
+   ],
+   "evidence": [
+    {
+     "id": 18282,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "25-36m 1.5m 2.5m",
+     "clause": "5A.3 control 8",
+     "page": 8,
+     "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+     "condition": "Part 5A.3 Side-Side layout, parent lot width 25 to 36 m, double storey elements",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "25-36m 1.5m 2.5m",
+   "clause": "5A.3 control 8",
+   "page": 8,
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotWidthMinM": 20.0
+   },
+   "conditionText": "Part 4A.2 site width 20 m or more, single storey building",
+   "side": {
+    "minM": null,
+    "formula": "9% of site width",
+    "basis": "text",
+    "sources": [
+     18230
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18230
+   ],
+   "evidence": [
+    {
+     "id": 18230,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "20m or more 9% of site width 12% of site width",
+     "clause": "4A.2 control 8",
+     "page": 7,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 site width 20 m or more, single storey building",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "20m or more 9% of site width 12% of site width",
+   "clause": "4A.2 control 8",
+   "page": 7,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  },
+  {
+   "id": "ku-ring-gai-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "lotWidthMinM": 20.0
+   },
+   "conditionText": "Part 4A.2 site width 20 m or more, two storey building",
+   "side": {
+    "minM": null,
+    "formula": "12% of site width",
+    "basis": "text",
+    "sources": [
+     18231
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18231
+   ],
+   "evidence": [
+    {
+     "id": 18231,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "20m or more 9% of site width 12% of site width",
+     "clause": "4A.2 control 8",
+     "page": 7,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 site width 20 m or more, two storey building",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "20m or more 9% of site width 12% of site width",
+   "clause": "4A.2 control 8",
+   "page": 7,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  },
+  {
+   "id": "ku-ring-gai-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotWidthMinM": 36.0
+   },
+   "conditionText": "Part 5A.3 Side-Side layout, parent lot width over 36 m, single storey elements",
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     18283
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18283
+   ],
+   "evidence": [
+    {
+     "id": 18283,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Greater than 36m 2.5m 2.5m",
+     "clause": "5A.3 control 8",
+     "page": 8,
+     "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+     "condition": "Part 5A.3 Side-Side layout, parent lot width over 36 m, single storey elements",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Greater than 36m 2.5m 2.5m",
+   "clause": "5A.3 control 8",
+   "page": 8,
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "lotWidthMinM": 36.0
+   },
+   "conditionText": "Part 5A.3 Side-Side layout, parent lot width over 36 m, double storey elements",
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     18284
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18284
+   ],
+   "evidence": [
+    {
+     "id": 18284,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Greater than 36m 2.5m 2.5m",
+     "clause": "5A.3 control 8",
+     "page": 8,
+     "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+     "condition": "Part 5A.3 Side-Side layout, parent lot width over 36 m, double storey elements",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Greater than 36m 2.5m 2.5m",
+   "clause": "5A.3 control 8",
+   "page": 8,
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Part 4A.2 single storey, street low side, minimum",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     18222
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18222
+   ],
+   "evidence": [
+    {
+     "id": 18222,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Low side 9 metres Low side 9 metres 11 metres",
+     "clause": "4A.2 control 3",
+     "page": 6,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 single storey, street low side, minimum",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Low side 9 metres Low side 9 metres 11 metres",
+   "clause": "4A.2 control 3",
+   "page": 6,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Part 4A.2 single storey, street high side, minimum",
+   "front": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     18223
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18223
+   ],
+   "evidence": [
+    {
+     "id": 18223,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "High side 12 metres High side 12 metres 14 metres",
+     "clause": "4A.2 control 3",
+     "page": 6,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 single storey, street high side, minimum",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "High side 12 metres High side 12 metres 14 metres",
+   "clause": "4A.2 control 3",
+   "page": 6,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "ku-ring-gai-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Part 4A.2 two storey, street low side, average",
+   "front": {
+    "minM": 11.0,
+    "basis": "fixed",
+    "sources": [
+     18224
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18224
+   ],
+   "evidence": [
+    {
+     "id": 18224,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Low side 9 metres Low side 9 metres 11 metres",
+     "clause": "4A.2 control 3",
+     "page": 6,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 two storey, street low side, average",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Low side 9 metres Low side 9 metres 11 metres",
+   "clause": "4A.2 control 3",
+   "page": 6,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "ku-ring-gai-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Part 4A.2 two storey, street high side, average",
+   "front": {
+    "minM": 14.0,
+    "basis": "fixed",
+    "sources": [
+     18225
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18225
+   ],
+   "evidence": [
+    {
+     "id": 18225,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "High side 12 metres High side 12 metres 14 metres",
+     "clause": "4A.2 control 3",
+     "page": 6,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 two storey, street high side, average",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "averaging alternative printed beside the fixed value; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "High side 12 metres High side 12 metres 14 metres",
+   "clause": "4A.2 control 3",
+   "page": 6,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; CONFLICT: another rule with the same applicability gives a different front value; both retained, no win..."
+  },
+  {
+   "id": "ku-ring-gai-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Part 4A.2 corner sites, secondary street minimum",
+    "Part 4A.2 sites deeper than 48 m",
+    "Part 5A.3 Front-Back layout, parent lot depth greater than 48 m"
+   ],
+   "secondaryFront": {
+    "minM": 3.8,
+    "basis": "fixed",
+    "sources": [
+     18232
+    ]
+   },
+   "rear": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     18226,
+     18286
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18226,
+    18232,
+    18286
+   ],
+   "evidence": [
+    {
+     "id": 18232,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Setback 3.8m 4.5m",
+     "clause": "4A.2 control 13",
+     "page": 9,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 corner sites, secondary street minimum",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    },
+    {
+     "id": 18226,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "For sites with a depth greater than 48m, a minimum 12m rear",
+     "clause": "4A.2 control 6",
+     "page": 7,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 sites deeper than 48 m",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    },
+    {
+     "id": 18286,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Greater than 48m 12m",
+     "clause": "5A.3 control 14",
+     "page": 10,
+     "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+     "condition": "Part 5A.3 Front-Back layout, parent lot depth greater than 48 m",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Setback 3.8m 4.5m",
+   "clause": "4A.2 control 13",
+   "page": 9,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Part 4A.2 corner sites, secondary street average",
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     18233
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18233
+   ],
+   "evidence": [
+    {
+     "id": 18233,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Setback 3.8m 4.5m",
+     "clause": "4A.2 control 13",
+     "page": 9,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 corner sites, secondary street average",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen",
+   "quote": "Setback 3.8m 4.5m",
+   "clause": "4A.2 control 13",
+   "page": 9,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
+  },
+  {
+   "id": "ku-ring-gai-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Part 4A.2 sites shallower than 48 m: share of average site depth",
+   "rear": {
+    "minM": null,
+    "basis": "text",
+    "note": "25% of average site depth",
+    "sources": [
+     18227
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18227
+   ],
+   "evidence": [
+    {
+     "id": 18227,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "a minimum rear setback",
+     "clause": "4A.2 control 7",
+     "page": 7,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4A.2 sites shallower than 48 m: share of average site depth",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "a minimum rear setback",
+   "clause": "4A.2 control 7",
+   "page": 7,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "ku-ring-gai-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Part 5A.3 Front-Back layout, parent lot depth 48 m or less",
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     18285
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18285
+   ],
+   "evidence": [
+    {
+     "id": 18285,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "48m or less 8m",
+     "clause": "5A.3 control 14",
+     "page": 10,
+     "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+     "condition": "Part 5A.3 Front-Back layout, parent lot depth 48 m or less",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "48m or less 8m",
+   "clause": "5A.3 control 14",
+   "page": 10,
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "ku-ring-gai-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Part 5A.3 Side-Side layout: front setback for each dwelling",
+    "Part 5A.3 Side-Side layout: rear setback for each dwelling"
+   ],
+   "front": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     18277
+    ]
+   },
+   "rear": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     18278
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18277,
+    18278
+   ],
+   "evidence": [
+    {
+     "id": 18277,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "dwelling is to be a minimum of 12m.",
+     "clause": "5A.3 control 6",
+     "page": 8,
+     "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+     "condition": "Part 5A.3 Side-Side layout: front setback for each dwelling",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    },
+    {
+     "id": 18278,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "minimum of 12m.",
+     "clause": "5A.3 control 7",
+     "page": 8,
+     "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+     "condition": "Part 5A.3 Side-Side layout: rear setback for each dwelling",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "dwelling is to be a minimum of 12m.",
+   "clause": "5A.3 control 6",
+   "page": 8,
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Part 4B.3 detached carports setback from boundary",
+   "garage": {
+    "minM": 0.6,
+    "sources": [
+     18236
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    18236
+   ],
+   "evidence": [
+    {
+     "id": 18236,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Detached carports are to be single storey and set back 0.6m",
+     "clause": "4B.3 control 11",
+     "page": 19,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4B.3 detached carports setback from boundary",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Detached carports are to be single storey and set back 0.6m",
+   "clause": "4B.3 control 11",
+   "page": 19,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Part 4B.3 detached garages setback from boundary",
+   "garage": {
+    "minM": 1.5,
+    "sources": [
+     18235
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    18235
+   ],
+   "evidence": [
+    {
+     "id": 18235,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Detached garages are to be single storey and set back 1.5m",
+     "clause": "4B.3 control 10",
+     "page": 19,
+     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+     "condition": "Part 4B.3 detached garages setback from boundary",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Detached garages are to be single storey and set back 1.5m",
+   "clause": "4B.3 control 10",
+   "page": 19,
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {},
+   "conditionText": "Part 7A.3 residential flat buildings: side boundary up to the fourth storey",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18313
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18313
+   ],
+   "evidence": [
+    {
+     "id": 18313,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a minimum of 6m from the side boundary for all levels up to the",
+     "clause": "7A.3 control 5(i)",
+     "page": 11,
+     "source_file": "DCP/kdcp-section-a-part-7-residential-flat-buildings.txt",
+     "condition": "Part 7A.3 residential flat buildings: side boundary up to the fourth storey",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a minimum of 6m from the side boundary for all levels up to the",
+   "clause": "7A.3 control 5(i)",
+   "page": 11,
+   "source_file": "DCP/kdcp-section-a-part-7-residential-flat-buildings.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  },
+  {
+   "id": "ku-ring-gai-council-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {},
+   "conditionText": "Part 7A.3 residential flat buildings: fifth storey and above",
+   "side": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     18314
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18314
+   ],
+   "evidence": [
+    {
+     "id": 18314,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "ii) a minimum of 9m to the fifth storey and above",
+     "clause": "7A.3 control 5(ii)",
+     "page": 11,
+     "source_file": "DCP/kdcp-section-a-part-7-residential-flat-buildings.txt",
+     "condition": "Part 7A.3 residential flat buildings: fifth storey and above",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "ii) a minimum of 9m to the fifth storey and above",
+   "clause": "7A.3 control 5(ii)",
+   "page": 11,
+   "source_file": "DCP/kdcp-section-a-part-7-residential-flat-buildings.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
+  },
+  {
+   "id": "ku-ring-gai-council-024",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "secondary_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Part 4.1A.3 secondary dwellings, minimum rear setback",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18270
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18270
+   ],
+   "evidence": [
+    {
+     "id": 18270,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear setbacks for secondary dwellings are to be a minimum of 6m",
+     "clause": "4.1A.3 control 2",
+     "page": 7,
+     "source_file": "DCP/kdcp-section-a-part-4.1-secondary-dwellings.txt",
+     "condition": "Part 4.1A.3 secondary dwellings, minimum rear setback",
+     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Rear setbacks for secondary dwellings are to be a minimum of 6m",
+   "clause": "4.1A.3 control 2",
+   "page": 7,
+   "source_file": "DCP/kdcp-section-a-part-4.1-secondary-dwellings.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 18253, 18234",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP Part 6 and 7 side, rear and street setback diagrams and Part 4C.1 envelope diagrams are graphics; only table text recorded | Dual occupancy front setback built-upon area by layout table (Part 5A.4 control 2) and garage width percentage table (Part 5B.2) layouts could not be resolved from text; not recorded"
+ ],
+ "notes": "Built from 29 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 24
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 29,
+  "rules": 24,
+  "recordsNotModelled": 2,
+  "otherSetbackKeysNotModelled": 6
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); side (conflicting rules of equal specificity (ku-ring-gai-council-007, ku-ring-gai-council-009))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); side (conflicting rules of equal specificity (ku-ring-gai-council-001, ku-ring-gai-council-003, ku-ring-gai-council-007))"
+  }
+ }
+}

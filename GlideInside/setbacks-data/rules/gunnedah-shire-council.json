@@ -1,0 +1,856 @@
+{
+ "lga_slug": "gunnedah-shire-council",
+ "council": "Gunnedah Shire Council",
+ "lgaNames": [
+  "GUNNEDAH",
+  "GUNNEDAH SHIRE",
+  "GUNNEDAH SHIRE COUNCIL"
+ ],
+ "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+ "lep": "Gunnedah Local Environmental Plan 2012 (lot size map, height and FSR set by LEP, not reproduced)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "gunnedah-shire-council-001",
+   "zones": [
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "R2 R3 RU5",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average of adjoining dwellings where less than standard setback",
+    "sources": [
+     14806
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    14806
+   ],
+   "evidence": [
+    {
+     "id": 14806,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "Primary Frontage 6.5m or the average of the 4.5m or the average of 6.5m or the average",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Primary Frontage 6.5m or the average of the 4.5m or the average of 6.5m or the average",
+   "clause": "C.1.1 Table 2",
+   "page": 37,
+   "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+   "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+   "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+  },
+  {
+   "id": "gunnedah-shire-council-002",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R2",
+    "R2 R3 RU5"
+   ],
+   "front": {
+    "minM": 6.5,
+    "basis": "lesser_of",
+    "note": "6.5 m or average of adjoining dwellings, whichever is less",
+    "sources": [
+     14803
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "note": "3 m building wall; 5.5 m garage or carport attached to building wall",
+    "sources": [
+     14809
+    ]
+   },
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 1.0,
+    "sources": [
+     14795
+    ]
+   },
+   "rear": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "note": "0.9 m or compliance with BCA",
+    "sources": [
+     14808
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "note": "0.9 m or compliance with BCA; less than 0.9 m considered where BCA fire rating satisfied",
+    "sources": [
+     14807
+    ]
+   },
+   "sources": [
+    14795,
+    14803,
+    14807,
+    14808,
+    14809
+   ],
+   "evidence": [
+    {
+     "id": 14803,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Primary Frontage 6.5m or the average of the 4.5m or the average of 6.5m or the average",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14809,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary 3m for a building wall and 3m for a building wall 3.6m",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14795,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "Garage Min. 1m behind the front",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14808,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Side and rear 0.9m or compliance with the 0.9m or compliance with 0.9m or compliance",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14807,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side and rear 0.9m or compliance with the 0.9m or compliance with 0.9m or compliance",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Primary Frontage 6.5m or the average of the 4.5m or the average of 6.5m or the average",
+   "clause": "C.1.1 Table 2",
+   "page": 37,
+   "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+   "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+   "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "gunnedah-shire-council-003",
+   "zones": [
+    "R2",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Outbuildings and garages R2 R3 RU5",
+   "garage": {
+    "minM": 5.5,
+    "note": "Carports min 1.5 m from frontages",
+    "sources": [
+     14812
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    14812
+   ],
+   "evidence": [
+    {
+     "id": 14812,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Outbuildings and Garages must be setback a minimum of 5.5 metres from the primary and secondary",
+     "clause": "C.4 additional controls a",
+     "page": 43,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "Outbuildings and garages R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Outbuildings and Garages must be setback a minimum of 5.5 metres from the primary and secondary",
+   "clause": "C.4 additional controls a",
+   "page": 43,
+   "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+   "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+   "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+  },
+  {
+   "id": "gunnedah-shire-council-004",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R2 R3 RU5",
+    "R3"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "lesser_of",
+    "note": "4.5 m or average of adjoining dwellings, whichever is less",
+    "sources": [
+     14804
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "note": "3 m building wall; 5.5 m attached garage or carport",
+    "sources": [
+     14810
+    ]
+   },
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 1.0,
+    "sources": [
+     14795
+    ]
+   },
+   "rear": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "note": "0.9 m or compliance with BCA",
+    "sources": [
+     14808
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "note": "0.9 m or compliance with BCA; less than 0.9 m considered where BCA fire rating satisfied",
+    "sources": [
+     14807
+    ]
+   },
+   "sources": [
+    14795,
+    14804,
+    14807,
+    14808,
+    14810
+   ],
+   "evidence": [
+    {
+     "id": 14804,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Primary Frontage 6.5m or the average of the 4.5m or the average of 6.5m or the average",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R3",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14810,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary 3m for a building wall and 3m for a building wall 3.6m",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R3",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14795,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "Garage Min. 1m behind the front",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14808,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Side and rear 0.9m or compliance with the 0.9m or compliance with 0.9m or compliance",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14807,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side and rear 0.9m or compliance with the 0.9m or compliance with 0.9m or compliance",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Primary Frontage 6.5m or the average of the 4.5m or the average of 6.5m or the average",
+   "clause": "C.1.1 Table 2",
+   "page": 37,
+   "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+   "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+   "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "gunnedah-shire-council-005",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R2 R3 RU5",
+    "RU5"
+   ],
+   "front": {
+    "minM": 6.5,
+    "basis": "lesser_of",
+    "note": "6.5 m or average of adjoining dwellings, whichever is less",
+    "sources": [
+     14805
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.6,
+    "basis": "fixed",
+    "sources": [
+     14811
+    ]
+   },
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 1.0,
+    "sources": [
+     14795
+    ]
+   },
+   "rear": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "note": "0.9 m or compliance with BCA",
+    "sources": [
+     14808
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "note": "0.9 m or compliance with BCA; less than 0.9 m considered where BCA fire rating satisfied",
+    "sources": [
+     14807
+    ]
+   },
+   "sources": [
+    14795,
+    14805,
+    14807,
+    14808,
+    14811
+   ],
+   "evidence": [
+    {
+     "id": 14805,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Primary Frontage 6.5m or the average of the 4.5m or the average of 6.5m or the average",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14811,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary 3m for a building wall and 3m for a building wall 3.6m",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14795,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "Garage Min. 1m behind the front",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14808,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Side and rear 0.9m or compliance with the 0.9m or compliance with 0.9m or compliance",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    },
+    {
+     "id": 14807,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side and rear 0.9m or compliance with the 0.9m or compliance with 0.9m or compliance",
+     "clause": "C.1.1 Table 2",
+     "page": 37,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "R2 R3 RU5",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Primary Frontage 6.5m or the average of the 4.5m or the average of 6.5m or the average",
+   "clause": "C.1.1 Table 2",
+   "page": 37,
+   "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+   "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+   "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "gunnedah-shire-council-006",
+   "zones": [
+    "RU1",
+    "RU4",
+    "RU6"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "RU1 RU4 RU6 C3 unsealed road",
+   "front": {
+    "minM": 200.0,
+    "basis": "fixed",
+    "sources": [
+     14816
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    14816
+   ],
+   "evidence": [
+    {
+     "id": 14816,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "200m (unsealed road)",
+     "clause": "D.2 Table 6",
+     "page": 45,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "RU1 RU4 RU6 C3 unsealed road",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "200m (unsealed road)",
+   "clause": "D.2 Table 6",
+   "page": 45,
+   "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+   "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+   "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+  },
+  {
+   "id": "gunnedah-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Industrial classified road frontage",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "note": "Secondary street of non-classified road 3 m",
+    "sources": [
+     14822
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    14822
+   ],
+   "evidence": [
+    {
+     "id": 14822,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "b. Buildings are to be setback a minimum of 3m from the secondary street of a non-classified road.",
+     "clause": "F.1 control b",
+     "page": 62,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "Industrial classified road frontage",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "b. Buildings are to be setback a minimum of 3m from the secondary street of a non-classified road.",
+   "clause": "F.1 control b",
+   "page": 62,
+   "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+   "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+   "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+  },
+  {
+   "id": "gunnedah-shire-council-008",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial, major roads",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "note": "10 m on Mullaley Road, Farrar Road, Quia Road, Blackjack Road; 7.5 m other streets; side and rear per BCA; secondary street min 3 m",
+    "sources": [
+     14819
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    14819
+   ],
+   "evidence": [
+    {
+     "id": 14819,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Mullaley Road (Oxley Highway) 10m Building Code of Australia (BCA)",
+     "clause": "F.1 Table 10",
+     "page": 62,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "Industrial, major roads",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Mullaley Road (Oxley Highway) 10m Building Code of Australia (BCA)",
+   "clause": "F.1 Table 10",
+   "page": 62,
+   "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+   "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+   "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  },
+  {
+   "id": "gunnedah-shire-council-009",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial, other streets",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     14820
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    14820
+   ],
+   "evidence": [
+    {
+     "id": 14820,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Other 7.5m BCA",
+     "clause": "F.1 Table 10",
+     "page": 62,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "Industrial, other streets",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Other 7.5m BCA",
+   "clause": "F.1 Table 10",
+   "page": 62,
+   "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+   "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+   "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
+  },
+  {
+   "id": "gunnedah-shire-council-010",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Rural industry, primary frontage",
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "note": "Side and rear: lots under 20 ha 15 m; 20-100 ha 25 m; over 100 ha 50 m",
+    "sources": [
+     14818
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    14818
+   ],
+   "evidence": [
+    {
+     "id": 14818,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Primary Frontage 50m",
+     "clause": "D.6 Table 7",
+     "page": 48,
+     "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+     "condition": "Rural industry, primary frontage",
+     "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Primary Frontage 50m",
+   "clause": "D.6 Table 7",
+   "page": 48,
+   "source_file": "DCP/gsc-development-control-plan-2025-adopted-18-june-2025.pdf",
+   "dcp": "Gunnedah Shire Council Development Control Plan 2025, Version 1.0, adopted 18/06/2025 (Resolution 17.6/25); the 2012 DCP is saved as repealed 18/06/2025 and was not used",
+   "edition": "Version 1.0, adopted 18/06/2025 (Res 17.6/25)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
+  }
+ ],
+ "gaps": [
+  "5 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 14821, 14813, 14814, 14815, 14817",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Table 2-C per-zone reserve and carriageway widths (column mapping lost in text; only ranges recorded) | front fence height limit (2025 DCP gives no numeric limit in extracted text) | scanned, no text: Engineering/standard-drawing-vehicle-access-rural-residential.pdf"
+ ],
+ "notes": "Built from 21 extract records (review status: reviewed (Opus pilot review and full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 3
+  },
+  "R3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 3
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 3
+  },
+  "RU1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU4": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU6": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 21,
+  "rules": 10,
+  "recordsNotModelled": 5,
+  "otherSetbackKeysNotModelled": 2
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (gunnedah-shire-council-005, gunnedah-shire-council-010))"
+  }
+ }
+}

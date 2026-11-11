@@ -1,0 +1,60 @@
+{
+  "lga_slug": "strathfield-municipal-council",
+  "council": "Strathfield Municipal Council",
+  "dcp": {
+    "name": "Strathfield Consolidated DCP 2005 Part A",
+    "url": "https://www.strathfield.nsw.gov.au/files/assets/public/v/1/develop/part-a-of-scdcp-2005-dwelling-houses-and-ancillary-structures-adopted-by-council-010920.pdf",
+    "adopted": "01/09/2020"
+  },
+  "status": "partial",
+  "rules": [
+    {
+      "zones": [
+        "R2"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": 9.0,
+        "basis": "fixed",
+        "note": "Table A.1. Less than 9m may be considered where predominant street setback is smaller, not less than the existing dwelling, or no streetscape conflict (cl 4.2.3.1(2)(a)-(c), p 15). Battle-axe lots: 4.5m."
+      },
+      "secondaryFront": {
+        "minM": 3.0,
+        "note": "Table A.1: 3m where the main entrance is from the secondary frontage. Value for other corner cases not extracted."
+      },
+      "side": {
+        "minM": 1.2,
+        "formula": "combined side setback = 20% of lot width, minimum 1.2m each side (25% for irregular lots)",
+        "note": "Not varied by storey or wall height."
+      },
+      "rear": {
+        "minM": 6.0,
+        "note": "Dwellings minimum rear setback 6m."
+      },
+      "garage": {
+        "minM": 0.5,
+        "note": "Garages 0.5m from side and rear boundaries (1.5m where side faces a secondary frontage); carports open on three sides nil (Table A.2)."
+      },
+      "sourceUrl": "https://www.strathfield.nsw.gov.au/files/assets/public/v/1/develop/part-a-of-scdcp-2005-dwelling-houses-and-ancillary-structures-adopted-by-council-010920.pdf",
+      "document": "Strathfield Consolidated DCP 2005, Part A Dwelling Houses and Ancillary Structures (adopted 1 Sep 2020, in force 8 Sep 2020)",
+      "clause": "cl 4.2.3.1(1) Table A.1 (front, secondary); cl 4.2.3.2(1) (side); cl 4.2.3.2(2) (rear); cl 4.2.3.2(4) Table A.2 (garage)",
+      "page": "pp 14-17",
+      "quote": "Dwellings are to have a minimum rear setback of 6m",
+      "confidence": "medium",
+      "needsReview": true,
+      "reviewReason": "Values via extraction tool; verbatim fragments returned: 'Primary street setback 9m'; 'combined side setback equivalent to 20% of the width of the block'; 'a minimum side setback of 1.2m is provided on each side'; 'Minimum setback from side and rear boundaries 0.5m'. Page numbers are footer labels and may be offset. Confirm Strathfield has not adopted a newer DCP superseding the 2005 consolidated plan.",
+      "extraQuotes": {
+        "front": "Primary street setback 9m",
+        "side": "a minimum side setback of 1.2m is provided on each side",
+        "garage": "Minimum setback from side and rear boundaries 0.5m"
+      }
+    }
+  ],
+  "gaps": [
+    "Part A applies to R2 only (s 1.1); R3 and other zones not extracted (Part B Dual Occupancy separately adopted 01/09/2020, not read).",
+    "Corner-lot rule for entrances not on the secondary street not extracted.",
+    "Currency of the 2005 consolidated DCP versus any newer Strathfield DCP not verified."
+  ],
+  "notes": "Earlier note said setbacks not extracted because of 'prevailing setback'; they are fixed (9m with prevailing-setback variation) here."
+}

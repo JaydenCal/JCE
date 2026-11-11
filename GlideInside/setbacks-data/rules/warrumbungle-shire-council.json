@@ -1,0 +1,837 @@
+{
+ "lga_slug": "warrumbungle-shire-council",
+ "council": "Warrumbungle Shire Council",
+ "lgaNames": [
+  "WARRUMBUNGLE",
+  "WARRUMBUNGLE SHIRE",
+  "WARRUMBUNGLE SHIRE COUNCIL"
+ ],
+ "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+ "lep": "Warrumbungle Local Environmental Plan 2013",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "warrumbungle-shire-council-001",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dwelling house (R1/RU5)",
+    "Dwelling house (R1/RU5): primary street"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     36675
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     36678
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36675,
+    36678
+   ],
+   "evidence": [
+    {
+     "id": 36675,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "from the primary street frontage is to be a minimum of 6 metres",
+     "clause": "Front and Rear Building Setbacks",
+     "page": 85,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Dwelling house (R1/RU5): primary street",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    },
+    {
+     "id": 36678,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "The building lines of side boundaries are to be a minimum of 0.9m",
+     "clause": "Front and Rear Building Setbacks",
+     "page": 85,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Dwelling house (R1/RU5)",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "from the primary street frontage is to be a minimum of 6 metres",
+   "clause": "Front and Rear Building Setbacks",
+   "page": 85,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  },
+  {
+   "id": "warrumbungle-shire-council-002",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dwelling house (R1/RU5), excluding detached ancillary structures",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     36679
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    36679
+   ],
+   "evidence": [
+    {
+     "id": 36679,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "shall be at least 3 metres",
+     "clause": "Front and Rear Building Setbacks",
+     "page": 85,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Dwelling house (R1/RU5), excluding detached ancillary structures",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "shall be at least 3 metres",
+   "clause": "Front and Rear Building Setbacks",
+   "page": 85,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  },
+  {
+   "id": "warrumbungle-shire-council-003",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 20000.0,
+    "lotAreaMaxM2": 40000.0,
+    "qualifiers": [
+     "height_plane"
+    ]
+   },
+   "conditionText": "R5 zone, lots 2 ha to 4 ha: side and rear building envelope setback",
+   "side": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     36596
+    ]
+   },
+   "rear": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     36596
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    36596,
+    36596
+   ],
+   "evidence": [
+    {
+     "id": 36596,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "minimum 15m setbacks to side and rear boundaries for lot sizes 2ha - 4ha",
+     "clause": "Side and rear setbacks for building envelopes in R5 Zones",
+     "page": 26,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "R5 zone, lots 2 ha to 4 ha: side and rear building envelope setback",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    },
+    {
+     "id": 36596,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "minimum 15m setbacks to side and rear boundaries for lot sizes 2ha - 4ha",
+     "clause": "Side and rear setbacks for building envelopes in R5 Zones",
+     "page": 26,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "R5 zone, lots 2 ha to 4 ha: side and rear building envelope setback",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
+   "quote": "minimum 15m setbacks to side and rear boundaries for lot sizes 2ha - 4ha",
+   "clause": "Side and rear setbacks for building envelopes in R5 Zones",
+   "page": 26,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
+  },
+  {
+   "id": "warrumbungle-shire-council-004",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 40000.0,
+    "qualifiers": [
+     "height_plane"
+    ]
+   },
+   "conditionText": "R5 zone, lots greater than 4 ha: side and rear building envelope setback",
+   "side": {
+    "minM": 25.0,
+    "basis": "fixed",
+    "sources": [
+     36597
+    ]
+   },
+   "rear": {
+    "minM": 25.0,
+    "basis": "fixed",
+    "sources": [
+     36597
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    36597,
+    36597
+   ],
+   "evidence": [
+    {
+     "id": 36597,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "minimum 25m for side and rear setbacks for lot sizes greater than 4ha",
+     "clause": "Side and rear setbacks for building envelopes in R5 Zones",
+     "page": 26,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "R5 zone, lots greater than 4 ha: side and rear building envelope setback",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    },
+    {
+     "id": 36597,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "minimum 25m for side and rear setbacks for lot sizes greater than 4ha",
+     "clause": "Side and rear setbacks for building envelopes in R5 Zones",
+     "page": 26,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "R5 zone, lots greater than 4 ha: side and rear building envelope setback",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
+   "quote": "minimum 25m for side and rear setbacks for lot sizes greater than 4ha",
+   "clause": "Side and rear setbacks for building envelopes in R5 Zones",
+   "page": 26,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
+  },
+  {
+   "id": "warrumbungle-shire-council-005",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "R5 zone: building setback from public road frontage",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     36598
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36598
+   ],
+   "evidence": [
+    {
+     "id": 36598,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "All buildings should be setback at least 20 metres from the public road frontage in R5 Zone",
+     "clause": "Rural dwellings - New buildings",
+     "page": 79,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "R5 zone: building setback from public road frontage",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "All buildings should be setback at least 20 metres from the public road frontage in R5 Zone",
+   "clause": "Rural dwellings - New buildings",
+   "page": 79,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  },
+  {
+   "id": "warrumbungle-shire-council-006",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "RU1 zone: building setback from public road frontage",
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     36599
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36599
+   ],
+   "evidence": [
+    {
+     "id": 36599,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "and 50m from the public road frontage in RU1 Zone",
+     "clause": "Rural dwellings - New buildings",
+     "page": 79,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "RU1 zone: building setback from public road frontage",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "and 50m from the public road frontage in RU1 Zone",
+   "clause": "Rural dwellings - New buildings",
+   "page": 79,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  },
+  {
+   "id": "warrumbungle-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Industrial zones: primary street",
+    "Industrial zones: secondary frontage"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     36686
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     36687
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36686,
+    36687
+   ],
+   "evidence": [
+    {
+     "id": 36686,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Primary street setback must be a minimum of 6 metres and 3 metres for secondary frontage",
+     "clause": "Industrial - Building Setbacks",
+     "page": 99,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Industrial zones: primary street",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    },
+    {
+     "id": 36687,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Primary street setback must be a minimum of 6 metres and 3 metres for secondary frontage",
+     "clause": "Industrial - Building Setbacks",
+     "page": 99,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Industrial zones: secondary frontage",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Primary street setback must be a minimum of 6 metres and 3 metres for secondary frontage",
+   "clause": "Industrial - Building Setbacks",
+   "page": 99,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  },
+  {
+   "id": "warrumbungle-shire-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Dual occupancy and multi dwelling housing, single storey",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     36682
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36682
+   ],
+   "evidence": [
+    {
+     "id": 36682,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "The side setbacks are three (3) metres for single storey development",
+     "clause": "Setbacks to Boundaries",
+     "page": 92,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Dual occupancy and multi dwelling housing, single storey",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The side setbacks are three (3) metres for single storey development",
+   "clause": "Setbacks to Boundaries",
+   "page": 92,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  },
+  {
+   "id": "warrumbungle-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Dual occupancy and multi dwelling housing, two storey",
+   "side": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     36683
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36683
+   ],
+   "evidence": [
+    {
+     "id": 36683,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "3.5 metres for two storey developments",
+     "clause": "Setbacks to Boundaries",
+     "page": 92,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Dual occupancy and multi dwelling housing, two storey",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "3.5 metres for two storey developments",
+   "clause": "Setbacks to Boundaries",
+   "page": 92,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  },
+  {
+   "id": "warrumbungle-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dual occupancy and multi dwelling housing",
+    "Dual occupancy and multi dwelling housing, all developments"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     36681
+    ]
+   },
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     36685
+    ]
+   },
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     36684
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "sources": [
+    36681,
+    36684,
+    36685
+   ],
+   "evidence": [
+    {
+     "id": 36681,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "The minimum front building setback for the development is six (6) metres",
+     "clause": "Dual Occupancy and Multi-Dwelling Housing - Setbacks to Boundaries",
+     "page": 92,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Dual occupancy and multi dwelling housing",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    },
+    {
+     "id": 36685,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "The minimum setback for garage fronting a road is 5.5 metres",
+     "clause": "Carports and Garages",
+     "page": 93,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Dual occupancy and multi dwelling housing",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    },
+    {
+     "id": 36684,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "The rear setback for all developments is to be 4 metres",
+     "clause": "Setbacks to Boundaries",
+     "page": 92,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Dual occupancy and multi dwelling housing, all developments",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "The minimum front building setback for the development is six (6) metres",
+   "clause": "Dual Occupancy and Multi-Dwelling Housing - Setbacks to Boundaries",
+   "page": 92,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  },
+  {
+   "id": "warrumbungle-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Established residential areas",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Consistent with neighbouring houses sharing the same primary street frontage",
+    "sources": [
+     36677
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36677
+   ],
+   "evidence": [
+    {
+     "id": 36677,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "In established residential areas the setback will be consistent with neighbouring houses",
+     "clause": "Front and Rear Building Setbacks",
+     "page": 85,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Established residential areas",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "In established residential areas the setback will be consistent with neighbouring houses",
+   "clause": "Front and Rear Building Setbacks",
+   "page": 85,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  },
+  {
+   "id": "warrumbungle-shire-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dwelling house corner block: one street setback may be reduced to",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     36676
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36676
+   ],
+   "evidence": [
+    {
+     "id": 36676,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "one of the street boundary setbacks may be reduced up to 3 metres",
+     "clause": "Front and Rear Building Setbacks",
+     "page": 85,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Dwelling house corner block: one street setback may be reduced to",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "one of the street boundary setbacks may be reduced up to 3 metres",
+   "clause": "Front and Rear Building Setbacks",
+   "page": 85,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  },
+  {
+   "id": "warrumbungle-shire-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Dwelling house garages and carports",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     36680
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    36680
+   ],
+   "evidence": [
+    {
+     "id": 36680,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages and carports must be setback a minimum of 5.5 metres",
+     "clause": "Outbuildings, Garages and Carports",
+     "page": 87,
+     "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+     "condition": "Dwelling house garages and carports",
+     "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Garages and carports must be setback a minimum of 5.5 metres",
+   "clause": "Outbuildings, Garages and Carports",
+   "page": 87,
+   "source_file": "DCP/Warrumbungle-DCP-review-adopted-2023-04-20.txt",
+   "dcp": "Warrumbungle Development Control Plan 2015, reviewed; adopted 20/04/2023 (per filename); original adoption 17/09/2015",
+   "edition": "Warrumbungle DCP 2015, reviewed and adopted 20/04/2023 (per filename)"
+  }
+ ],
+ "gaps": [],
+ "notes": "Built from 17 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  },
+  "RU1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 7
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 17,
+  "rules": 13,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 0
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
+ }
+}

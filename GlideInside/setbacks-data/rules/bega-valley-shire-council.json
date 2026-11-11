@@ -1,0 +1,351 @@
+{
+ "lga_slug": "bega-valley-shire-council",
+ "council": "Bega Valley Shire Council",
+ "lgaNames": [
+  "BEGA VALLEY",
+  "BEGA VALLEY SHIRE",
+  "BEGA VALLEY SHIRE COUNCIL"
+ ],
+ "dcp": "Bega Valley Development Control Plan 2013 (September 2026 consolidation; section 5.10 Subdivision standards and 5.13 Roads and access effective 15 September 2026; main DCP sections 3 (residential), 5.4 flood, 5.5 parking, 5.14 and 5.15 servicing)",
+ "lep": "Bega Valley Local Environmental Plan 2013 (cited, not reproduced)",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "bega-valley-shire-council-001",
+   "zones": [
+    "R2",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 550.0,
+    "lotAreaMaxM2": 900.0
+   },
+   "conditionText": "Table 3.2, R2 Low Density Residential and RU5 Village, lot size 550-900m2, single storey: front setback (or the average distance between the two nearest dwellings)",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     3083
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3083
+   ],
+   "evidence": [
+    {
+     "id": 3083,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "5m or the average",
+     "clause": "3.2 Table 3.2 Minimum development setback",
+     "page": 94,
+     "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+     "condition": "Table 3.2, R2 Low Density Residential and RU5 Village, lot size 550-900m2, single storey: front setback (or the average distance between the two nearest dwellings)",
+     "edition": "DCP September 2026"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "5m or the average",
+   "clause": "3.2 Table 3.2 Minimum development setback",
+   "page": 94,
+   "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+   "dcp": "Bega Valley Development Control Plan 2013 (September 2026 consolidation; section 5.10 Subdivision standards and 5.13 Roads and access effective 15 September 2026; main DCP sections 3 (residential), 5.4 flood, 5.5 parking, 5.14 and 5.15 servicing)",
+   "edition": "DCP September 2026",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "bega-valley-shire-council-002",
+   "zones": [
+    "R2",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 900.0
+   },
+   "conditionText": "Table 3.2, R2 Low Density Residential and RU5 Village, lot size 900m2+: front setback (or the average distance between the two nearest dwellings)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     3084
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3084
+   ],
+   "evidence": [
+    {
+     "id": 3084,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "900m2+ 6 m or the average",
+     "clause": "3.2 Table 3.2 Minimum development setback",
+     "page": 94,
+     "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+     "condition": "Table 3.2, R2 Low Density Residential and RU5 Village, lot size 900m2+: front setback (or the average distance between the two nearest dwellings)",
+     "edition": "DCP September 2026"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "900m2+ 6 m or the average",
+   "clause": "3.2 Table 3.2 Minimum development setback",
+   "page": 94,
+   "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+   "dcp": "Bega Valley Development Control Plan 2013 (September 2026 consolidation; section 5.10 Subdivision standards and 5.13 Roads and access effective 15 September 2026; main DCP sections 3 (residential), 5.4 flood, 5.5 parking, 5.14 and 5.15 servicing)",
+   "edition": "DCP September 2026",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "bega-valley-shire-council-003",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Table 3.2, R3 Medium Density Residential, any lot size: corner lots, secondary frontage",
+    "Table 3.2, R3 Medium Density Residential, any lot size: front (public roads or front boundary), ground floor and second storey (a further 3m for the third storey)",
+    "Table 3.2, R3 Medium Density Residential, any lot size: rear boundary (4m or in context with neighbouring development)",
+    "Table 3.2, R3 Medium Density Residential, any lot size: side boundaries"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     3079
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     3080
+    ]
+   },
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "note": "4 m or in context with neighbouring development",
+    "sources": [
+     3081
+    ]
+   },
+   "side": {
+    "minM": 2.5,
+    "basis": "fixed",
+    "sources": [
+     3082
+    ]
+   },
+   "garage": null,
+   "sources": [
+    3079,
+    3080,
+    3081,
+    3082
+   ],
+   "evidence": [
+    {
+     "id": 3079,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Any size 6m for ground floor 3m 4 m or in 2.5 m accommodation in and second storey",
+     "clause": "3.2 Table 3.2 Minimum development setback",
+     "page": 94,
+     "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+     "condition": "Table 3.2, R3 Medium Density Residential, any lot size: front (public roads or front boundary), ground floor and second storey (a further 3m for the third storey)",
+     "edition": "DCP September 2026"
+    },
+    {
+     "id": 3080,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Any size 6m for ground floor 3m 4 m or in 2.5 m accommodation in and second storey",
+     "clause": "3.2 Table 3.2 Minimum development setback",
+     "page": 94,
+     "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+     "condition": "Table 3.2, R3 Medium Density Residential, any lot size: corner lots, secondary frontage",
+     "edition": "DCP September 2026"
+    },
+    {
+     "id": 3081,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Any size 6m for ground floor 3m 4 m or in 2.5 m accommodation in and second storey",
+     "clause": "3.2 Table 3.2 Minimum development setback",
+     "page": 94,
+     "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+     "condition": "Table 3.2, R3 Medium Density Residential, any lot size: rear boundary (4m or in context with neighbouring development)",
+     "edition": "DCP September 2026"
+    },
+    {
+     "id": 3082,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Any size 6m for ground floor 3m 4 m or in 2.5 m accommodation in and second storey",
+     "clause": "3.2 Table 3.2 Minimum development setback",
+     "page": 94,
+     "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+     "condition": "Table 3.2, R3 Medium Density Residential, any lot size: side boundaries",
+     "edition": "DCP September 2026"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Any size 6m for ground floor 3m 4 m or in 2.5 m accommodation in and second storey",
+   "clause": "3.2 Table 3.2 Minimum development setback",
+   "page": 94,
+   "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+   "dcp": "Bega Valley Development Control Plan 2013 (September 2026 consolidation; section 5.10 Subdivision standards and 5.13 Roads and access effective 15 September 2026; main DCP sections 3 (residential), 5.4 flood, 5.5 parking, 5.14 and 5.15 servicing)",
+   "edition": "DCP September 2026"
+  },
+  {
+   "id": "bega-valley-shire-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Table 3.2, battle-axe lots: setback from the rear boundary of the lot in front",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     3085
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    3085
+   ],
+   "evidence": [
+    {
+     "id": 3085,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Battle-axe lots: 3m",
+     "clause": "3.2 Table 3.2 Minimum development setback",
+     "page": 94,
+     "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+     "condition": "Table 3.2, battle-axe lots: setback from the rear boundary of the lot in front",
+     "edition": "DCP September 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Battle-axe lots: 3m",
+   "clause": "3.2 Table 3.2 Minimum development setback",
+   "page": 94,
+   "source_file": "DCP/Bega-Valley-Development-Control-Plan-2013-September-2026.pdf",
+   "dcp": "Bega Valley Development Control Plan 2013 (September 2026 consolidation; section 5.10 Subdivision standards and 5.13 Roads and access effective 15 September 2026; main DCP sections 3 (residential), 5.4 flood, 5.5 parking, 5.14 and 5.15 servicing)",
+   "edition": "DCP September 2026"
+  }
+ ],
+ "gaps": [
+  "R2: no numeric side setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "RU5: no numeric side setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 3086",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP 5.13 Table 5.13-8: the second line of the maximum grade row (16% for distances up to 150m / 12% for distances up to 150m, columns not resolvable) not recorded; parking, kerb and design vehicle rows for residential way not recorded as separate cells. | DCP 5.13 Table 5.13-9 rural roads: minimum reserve, posted speed, shoulder width and maximum grade rows have merged cells that cannot be mapped to columns; only traffic lane width, design ADT and wearing course recorded. | DCP Table 3.2 setbacks: R2 and RU5 secondary frontage, rear and side columns (by storey) and the 350-550m2 front row are interleaved merged cells and were not recorded. | DCP section 5.4 flood matrix (Table 5.4b) and the "
+ ],
+ "notes": "Built from 8 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R2": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "R3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": false,
+   "side": false,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 8,
+  "rules": 4,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
+ }
+}

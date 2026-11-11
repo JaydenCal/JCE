@@ -1,0 +1,1097 @@
+{
+ "lga_slug": "shellharbour-city-council",
+ "council": "Shellharbour City Council",
+ "lgaNames": [
+  "SHELLHARBOUR",
+  "SHELLHARBOUR CITY",
+  "SHELLHARBOUR CITY COUNCIL"
+ ],
+ "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+ "lep": "Shellharbour Local Environmental Plan 2013",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "shellharbour-city-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "adjoins_other",
+     "subdivision_stage"
+    ]
+   },
+   "conditionText": "Shell Cove Stage 6 adjacent to golf course: single storey component",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     29925
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    29925
+   ],
+   "evidence": [
+    {
+     "id": 29925,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Shell Cove - Stage 6 6 metres",
+     "clause": "Table 3.4",
+     "page": 34,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Shell Cove Stage 6 adjacent to golf course: single storey component",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other, subdivision_stage); see conditionText",
+   "quote": "Shell Cove - Stage 6 6 metres",
+   "clause": "Table 3.4",
+   "page": 34,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other, subdivision_stage); see conditionText"
+  },
+  {
+   "id": "shellharbour-city-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Single storey component, corner lots",
+   "secondaryFront": {
+    "minM": 2.4,
+    "basis": "fixed",
+    "sources": [
+     29911
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    29911
+   ],
+   "evidence": [
+    {
+     "id": 29911,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Single storey 2.4 metres",
+     "clause": "Table 3.2",
+     "page": 29,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Single storey component, corner lots",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single storey 2.4 metres",
+   "clause": "Table 3.2",
+   "page": 29,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Two storey component, single dwelling and dual occupancy, corner lots",
+   "secondaryFront": {
+    "minM": 2.4,
+    "basis": "fixed",
+    "sources": [
+     29912
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    29912
+   ],
+   "evidence": [
+    {
+     "id": 29912,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "2 storey 2.4 metres",
+     "clause": "Table 3.2",
+     "page": 29,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Two storey component, single dwelling and dual occupancy, corner lots",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2 storey 2.4 metres",
+   "clause": "Table 3.2",
+   "page": 29,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "ground"
+   },
+   "conditionText": "Single dwellings, dual occupancy, multi dwelling: ground floor",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     29920
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    29920
+   ],
+   "evidence": [
+    {
+     "id": 29920,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Ground floor – 3.0 metres",
+     "clause": "Table 3.4",
+     "page": 32,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Single dwellings, dual occupancy, multi dwelling: ground floor",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Ground floor – 3.0 metres",
+   "clause": "Table 3.4",
+   "page": 32,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "Single dwellings, dual occupancy, multi dwelling: first floor",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     29921
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    29921
+   ],
+   "evidence": [
+    {
+     "id": 29921,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "First floor – 6.0 metres",
+     "clause": "Table 3.4",
+     "page": 32,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Single dwellings, dual occupancy, multi dwelling: first floor",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "First floor – 6.0 metres",
+   "clause": "Table 3.4",
+   "page": 32,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Single storey component of single dwelling, dual occupancy, multi dwelling",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     29905
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    29905
+   ],
+   "evidence": [
+    {
+     "id": 29905,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Single storey 4.5 metres",
+     "clause": "Table 3.1",
+     "page": 27,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Single storey component of single dwelling, dual occupancy, multi dwelling",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single storey 4.5 metres",
+   "clause": "Table 3.1",
+   "page": 27,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Two storey component of single dwelling, dual occupancy, multi dwelling",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     29906
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    29906
+   ],
+   "evidence": [
+    {
+     "id": 29906,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "2 storey 6.0 metres",
+     "clause": "Table 3.1",
+     "page": 27,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Two storey component of single dwelling, dual occupancy, multi dwelling",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2 storey 6.0 metres",
+   "clause": "Table 3.1",
+   "page": 27,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "classified_road"
+    ]
+   },
+   "conditionText": "Dwellings adjoining classified road: building lines not less than Table 3.1 prescribed lines",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "acoustic report recommended lines cannot reduce below Table 3.1 building lines",
+    "sources": [
+     29926
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    29926
+   ],
+   "evidence": [
+    {
+     "id": 29926,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "not be less than the above prescribed building lines.",
+     "clause": "Table 3.1",
+     "page": 28,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Dwellings adjoining classified road: building lines not less than Table 3.1 prescribed lines",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "not be less than the above prescribed building lines.",
+   "clause": "Table 3.1",
+   "page": 28,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
+  },
+  {
+   "id": "shellharbour-city-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "waterfront"
+    ]
+   },
+   "conditionText": "Dwellings and structures directly adjoining a lake or ocean",
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     29923
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    29923
+   ],
+   "evidence": [
+    {
+     "id": 29923,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "All dwellings and 10 metres",
+     "clause": "Table 3.4",
+     "page": 32,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Dwellings and structures directly adjoining a lake or ocean",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "All dwellings and 10 metres",
+   "clause": "Table 3.4",
+   "page": 32,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
+  },
+  {
+   "id": "shellharbour-city-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Single storey component of dwellings",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     29916
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    29916
+   ],
+   "evidence": [
+    {
+     "id": 29916,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Single storey 900mm from the",
+     "clause": "Table 3.3",
+     "page": 30,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Single storey component of dwellings",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single storey 900mm from the",
+   "clause": "Table 3.3",
+   "page": 30,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Two storey component of dwellings",
+   "side": {
+    "minM": 1.2,
+    "printed": "1200 mm",
+    "basis": "fixed",
+    "sources": [
+     29917
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    29917
+   ],
+   "evidence": [
+    {
+     "id": 29917,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Two storey 1200mm from the",
+     "clause": "Table 3.3",
+     "page": 30,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Two storey component of dwellings",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Two storey 1200mm from the",
+   "clause": "Table 3.3",
+   "page": 30,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Garages (secondary frontage), no stack parking",
+   "garage": {
+    "minM": 5.0,
+    "sources": [
+     29914
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    29914
+   ],
+   "evidence": [
+    {
+     "id": 29914,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages 5.0 metres Where stack parking is not proposed.",
+     "clause": "Table 3.2",
+     "page": 29,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Garages (secondary frontage), no stack parking",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Garages 5.0 metres Where stack parking is not proposed.",
+   "clause": "Table 3.2",
+   "page": 29,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Garage with stack parking (secondary frontage)",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     29915
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    29915
+   ],
+   "evidence": [
+    {
+     "id": 29915,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garage with 5.5 metres",
+     "clause": "Table 3.2",
+     "page": 29,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Garage with stack parking (secondary frontage)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen",
+   "quote": "Garage with 5.5 metres",
+   "clause": "Table 3.2",
+   "page": 29,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen"
+  },
+  {
+   "id": "shellharbour-city-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "subdivision_stage"
+    ]
+   },
+   "conditionText": "Shell Cove Stage 6F lots 6321 to 6327 garages",
+   "garage": {
+    "minM": 3.0,
+    "sources": [
+     29910
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    29910
+   ],
+   "evidence": [
+    {
+     "id": 29910,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages at 3.0 metres",
+     "clause": "Table 3.1",
+     "page": 28,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Shell Cove Stage 6F lots 6321 to 6327 garages",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (subdivision_stage); see conditionText",
+   "quote": "Garages at 3.0 metres",
+   "clause": "Table 3.1",
+   "page": 28,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (subdivision_stage); see conditionText"
+  },
+  {
+   "id": "shellharbour-city-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Single storey, no garage or carport: side setback for vehicular access to rear",
+   "side": {
+    "minM": 2.7,
+    "basis": "fixed",
+    "sources": [
+     29918
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    29918
+   ],
+   "evidence": [
+    {
+     "id": 29918,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a minimum side boundary setback of 2.7m must be",
+     "clause": "Table 3.3",
+     "page": 30,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Single storey, no garage or carport: side setback for vehicular access to rear",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a minimum side boundary setback of 2.7m must be",
+   "clause": "Table 3.3",
+   "page": 30,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Garages, no stack parking (front primary)",
+    "Open carports (front primary)"
+   ],
+   "garage": {
+    "minM": 5.0,
+    "sources": [
+     29907,
+     29909
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    29907,
+    29909
+   ],
+   "evidence": [
+    {
+     "id": 29907,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garages 5.0 metres Where no stack parking is proposed.",
+     "clause": "Table 3.1",
+     "page": 27,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Garages, no stack parking (front primary)",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 29909,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Open Carports 5.0 metres",
+     "clause": "Table 3.1",
+     "page": 27,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Open carports (front primary)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Garages 5.0 metres Where no stack parking is proposed.",
+   "clause": "Table 3.1",
+   "page": 27,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Garage with stack car parking space in front",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     29908
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    29908
+   ],
+   "evidence": [
+    {
+     "id": 29908,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "Garage with a 5.5 metres",
+     "clause": "Table 3.1",
+     "page": 27,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Garage with stack car parking space in front",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen",
+   "quote": "Garage with a 5.5 metres",
+   "clause": "Table 3.1",
+   "page": 27,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen"
+  },
+  {
+   "id": "shellharbour-city-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2
+   },
+   "conditionText": "Two storey component of dwelling in multi-dwelling housing, corner lots",
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     29913
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    29913
+   ],
+   "evidence": [
+    {
+     "id": 29913,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "2 storey 4.0 metres",
+     "clause": "Table 3.2",
+     "page": 29,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Two storey component of dwelling in multi-dwelling housing, corner lots",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2 storey 4.0 metres",
+   "clause": "Table 3.2",
+   "page": 29,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "shellharbour-city-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Dwellings and ancillary structures adjoining a public reserve",
+   "rear": {
+    "minM": 2.4,
+    "basis": "fixed",
+    "sources": [
+     29922
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    29922
+   ],
+   "evidence": [
+    {
+     "id": 29922,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "All dwellings and 2.4 metres",
+     "clause": "Table 3.4",
+     "page": 32,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Dwellings and ancillary structures adjoining a public reserve",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText",
+   "quote": "All dwellings and 2.4 metres",
+   "clause": "Table 3.4",
+   "page": 32,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText"
+  },
+  {
+   "id": "shellharbour-city-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "garage",
+    "verandah_deck",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Carports, pergolas, outbuildings and detached garages greater than 900 mm from dwelling",
+    "Carports, pergolas, outbuildings, detached garages less than 900 mm from dwelling"
+   ],
+   "rear": {
+    "minM": 0.5,
+    "printed": "500 mm",
+    "basis": "fixed",
+    "sources": [
+     29924
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     29919
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    29919,
+    29924
+   ],
+   "evidence": [
+    {
+     "id": 29924,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Carports, pergolas, 500 mm outbuildings and detached garages greater than 900mm",
+     "clause": "Table 3.4",
+     "page": 32,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Carports, pergolas, outbuildings and detached garages greater than 900 mm from dwelling",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 29919,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Carports, 900mm",
+     "clause": "Table 3.3",
+     "page": 30,
+     "source_file": "DCP/development-control-plan.txt",
+     "condition": "Carports, pergolas, outbuildings, detached garages less than 900 mm from dwelling",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Carports, pergolas, 500 mm outbuildings and detached garages greater than 900mm",
+   "clause": "Table 3.4",
+   "page": 32,
+   "source_file": "DCP/development-control-plan.txt",
+   "dcp": "Shellharbour Development Control Plan (in effect 26/06/2013, amended to Amendment 6 effective 11/09/2026); Calderwood Urban Development Project Development Control Strategy (August 2021) for Calderwood; Appendix 13 Tullimbar (not extracted)",
+   "edition": "UNVERIFIED"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule"
+ ],
+ "notes": "Built from 22 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 20
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 22,
+  "rules": 20,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
+ }
+}

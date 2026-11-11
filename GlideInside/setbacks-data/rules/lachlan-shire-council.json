@@ -1,0 +1,597 @@
+{
+ "lga_slug": "lachlan-shire-council",
+ "council": "Lachlan Shire Council",
+ "lgaNames": [
+  "LACHLAN",
+  "LACHLAN SHIRE",
+  "LACHLAN SHIRE COUNCIL"
+ ],
+ "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+ "lep": "Lachlan Local Environmental Plan 2013",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "lachlan-shire-council-001",
+   "zones": [
+    "R5",
+    "RU5",
+    "RU1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "3.3 Industrial development RU5, RU1 and R5, front boundary landscaped area minimum depth",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     18606
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18606
+   ],
+   "evidence": [
+    {
+     "id": 18606,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "provision of landscaped area to a minimum depth of three metres,",
+     "clause": "3.3.3 Front Boundary",
+     "page": 29,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.3 Industrial development RU5, RU1 and R5, front boundary landscaped area minimum depth",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "provision of landscaped area to a minimum depth of three metres,",
+   "clause": "3.3.3 Front Boundary",
+   "page": 29,
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+  },
+  {
+   "id": "lachlan-shire-council-002",
+   "zones": [
+    "R5",
+    "RU5",
+    "RU1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "3.3 Industrial development RU5, RU1 and R5, main roads: all buildings setback",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18601
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18601
+   ],
+   "evidence": [
+    {
+     "id": 18601,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "All buildings shall be setback six metres to provide for adequate landscaping",
+     "clause": "3.3.3 Main Roads",
+     "page": 29,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.3 Industrial development RU5, RU1 and R5, main roads: all buildings setback",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "All buildings shall be setback six metres to provide for adequate landscaping",
+   "clause": "3.3.3 Main Roads",
+   "page": 29,
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+  },
+  {
+   "id": "lachlan-shire-council-003",
+   "zones": [
+    "R5",
+    "RU5",
+    "RU1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "3.3 Industrial development RU5, RU1 and R5, car parking setback from front boundary, main roads",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     18607
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18607
+   ],
+   "evidence": [
+    {
+     "id": 18607,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Car parking shall be setback a minimum of three metres from the front",
+     "clause": "3.3.3 Controls - landscaping and car parking",
+     "page": 29,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.3 Industrial development RU5, RU1 and R5, car parking setback from front boundary, main roads",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Car parking shall be setback a minimum of three metres from the front",
+   "clause": "3.3.3 Controls - landscaping and car parking",
+   "page": 29,
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "lachlan-shire-council-004",
+   "zones": [
+    "R5",
+    "RU5",
+    "RU1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "3.3 Industrial development RU5, RU1 and R5, other roads: minimum front boundary setback",
+    "3.3 Industrial development RU5, RU1 and R5, secondary street frontage minimum",
+    "3.3 Industrial development RU5, RU1 and R5, side and rear boundaries (no setbacks; comply with National Construction Code)"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18602
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     18603
+    ]
+   },
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "No side or rear setback; comply with National Construction Code",
+    "sources": [
+     18604
+    ]
+   },
+   "rear": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "No side or rear setback; comply with National Construction Code",
+    "sources": [
+     18604
+    ]
+   },
+   "garage": null,
+   "sources": [
+    18602,
+    18603,
+    18604
+   ],
+   "evidence": [
+    {
+     "id": 18602,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "buildings are to be set back from all other front boundaries a minimum of six metres",
+     "clause": "3.3.3 Other Roads",
+     "page": 29,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.3 Industrial development RU5, RU1 and R5, other roads: minimum front boundary setback",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    },
+    {
+     "id": 18603,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "other street shall be three metres minimum",
+     "clause": "3.3.3 Other Roads",
+     "page": 29,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.3 Industrial development RU5, RU1 and R5, secondary street frontage minimum",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    },
+    {
+     "id": 18604,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "There are no side and rear boundary setbacks",
+     "clause": "3.3.3",
+     "page": 29,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.3 Industrial development RU5, RU1 and R5, side and rear boundaries (no setbacks; comply with National Construction Code)",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    },
+    {
+     "id": 18604,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "There are no side and rear boundary setbacks",
+     "clause": "3.3.3",
+     "page": 29,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.3 Industrial development RU5, RU1 and R5, side and rear boundaries (no setbacks; comply with National Construction Code)",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "buildings are to be set back from all other front boundaries a minimum of six metres",
+   "clause": "3.3.3 Other Roads",
+   "page": 29,
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  },
+  {
+   "id": "lachlan-shire-council-005",
+   "zones": [
+    "R5",
+    "RU5",
+    "RU1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "3.3 Industrial development RU5, RU1 and R5, car parking setback from front boundary, other roads",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     18608
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18608
+   ],
+   "evidence": [
+    {
+     "id": 18608,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Car parking shall be setback a minimum of three metres from the front",
+     "clause": "3.3.3 Controls - landscaping and car parking",
+     "page": 30,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.3 Industrial development RU5, RU1 and R5, car parking setback from front boundary, other roads",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Car parking shall be setback a minimum of three metres from the front",
+   "clause": "3.3.3 Controls - landscaping and car parking",
+   "page": 30,
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "lachlan-shire-council-006",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "3.1.2 Building line, all land, except corner allotment (also applies in RU1)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18587
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18587
+   ],
+   "evidence": [
+    {
+     "id": 18587,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "at which a building may be erected is 6.0 metres",
+     "clause": "3.1.2 Controls",
+     "page": 20,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.1.2 Building line, all land, except corner allotment (also applies in RU1)",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "at which a building may be erected is 6.0 metres",
+   "clause": "3.1.2 Controls",
+   "page": 20,
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+  },
+  {
+   "id": "lachlan-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "3.1.2 Building line, corner allotment, distance from one street may be reduced to",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     18588
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18588
+   ],
+   "evidence": [
+    {
+     "id": 18588,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "the distance from one street may be reduced to 3.0 metres",
+     "clause": "3.1.2 Controls",
+     "page": 20,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.1.2 Building line, corner allotment, distance from one street may be reduced to",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the distance from one street may be reduced to 3.0 metres",
+   "clause": "3.1.2 Controls",
+   "page": 20,
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+  },
+  {
+   "id": "lachlan-shire-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "3.4 Albert, Burcher, Derriwong, Fifield and Tullibigeal residential, except corner allotment",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18589
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18589
+   ],
+   "evidence": [
+    {
+     "id": 18589,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a street alignment at which a building may be erected is 6m",
+     "clause": "3.4.2 Setbacks",
+     "page": 42,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.4 Albert, Burcher, Derriwong, Fifield and Tullibigeal residential, except corner allotment",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a street alignment at which a building may be erected is 6m",
+   "clause": "3.4.2 Setbacks",
+   "page": 42,
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+  },
+  {
+   "id": "lachlan-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "3.4 Albert, Burcher, Derriwong, Fifield and Tullibigeal residential, corner allotment, one street",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     18590
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18590
+   ],
+   "evidence": [
+    {
+     "id": 18590,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "distance from one street may be reduced to 3m",
+     "clause": "3.4.2 Setbacks",
+     "page": 42,
+     "source_file": "DCP/dcp-2018-amendment-2.pdf",
+     "condition": "3.4 Albert, Burcher, Derriwong, Fifield and Tullibigeal residential, corner allotment, one street",
+     "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "distance from one street may be reduced to 3m",
+   "clause": "3.4.2 Setbacks",
+   "page": 42,
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
+  }
+ ],
+ "gaps": [
+  "R5: no numeric side/rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "RU5: no numeric side/rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No garage setback rule",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 18605, 18600",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Residential setbacks for towns (Condobolin, Lake Cargelligo, Tottenham) are by building line only (6.0 m, 3.0 m corner); side and rear not given in numbers"
+ ],
+ "notes": "Built from 13 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R5": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 5
+  },
+  "RU5": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 5
+  },
+  "RU1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 6
+  },
+  "*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 3
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 13,
+  "rules": 9,
+  "recordsNotModelled": 2,
+  "otherSetbackKeysNotModelled": 0
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
+ }
+}

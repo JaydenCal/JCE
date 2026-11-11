@@ -1,0 +1,656 @@
+{
+ "lga_slug": "moree-plains-shire-council",
+ "council": "Moree Plains Shire Council",
+ "lgaNames": [
+  "MOREE PLAINS",
+  "MOREE PLAINS SHIRE",
+  "MOREE PLAINS SHIRE COUNCIL"
+ ],
+ "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+ "lep": "Moree Plains Local Environmental Plan 2011",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "moree-plains-shire-council-001",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 3.5
+   },
+   "conditionText": "Zone R1 and RU5, walls less than 3.5 m in height",
+   "rear": {
+    "minM": 2.4,
+    "basis": "fixed",
+    "sources": [
+     22957
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     22956
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    22956,
+    22957
+   ],
+   "evidence": [
+    {
+     "id": 22957,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear setback – 2.4m Walls less than 3.5 m in height",
+     "clause": "Table 3.2",
+     "page": 44,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R1 and RU5, walls less than 3.5 m in height",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    },
+    {
+     "id": 22956,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side setback – 900mm Walls less than 3.5 m in height",
+     "clause": "Table 3.2",
+     "page": 44,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R1 and RU5, walls less than 3.5 m in height",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Rear setback – 2.4m Walls less than 3.5 m in height",
+   "clause": "Table 3.2",
+   "page": 44,
+   "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+   "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+   "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+  },
+  {
+   "id": "moree-plains-shire-council-002",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Zone R1 and RU5 corner lot: 4 m to secondary street frontage (6 m primary)",
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     22958
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22958
+   ],
+   "evidence": [
+    {
+     "id": 22958,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "6 m to the primary street frontage; 4m to the secondary street",
+     "clause": "Table 3.2",
+     "page": 44,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R1 and RU5 corner lot: 4 m to secondary street frontage (6 m primary)",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "6 m to the primary street frontage; 4m to the secondary street",
+   "clause": "Table 3.2",
+   "page": 44,
+   "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+   "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+   "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+  },
+  {
+   "id": "moree-plains-shire-council-003",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Zone R1 and RU5: 6 m or average of adjoining dwellings, whichever is the lesser",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     22955
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22955
+   ],
+   "evidence": [
+    {
+     "id": 22955,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front setback – 6m or the Nil average of the adjoining dwellings, whichever is the lesser",
+     "clause": "Table 3.2",
+     "page": 44,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R1 and RU5: 6 m or average of adjoining dwellings, whichever is the lesser",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front setback – 6m or the Nil average of the adjoining dwellings, whichever is the lesser",
+   "clause": "Table 3.2",
+   "page": 44,
+   "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+   "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+   "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "moree-plains-shire-council-004",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 3.5
+   },
+   "conditionText": "Zone R2, walls less than 3.5 m in height",
+   "rear": {
+    "minM": 3.2,
+    "basis": "fixed",
+    "sources": [
+     22961
+    ]
+   },
+   "side": {
+    "minM": 1.6,
+    "basis": "fixed",
+    "sources": [
+     22960
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    22960,
+    22961
+   ],
+   "evidence": [
+    {
+     "id": 22961,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear setback – 3.2 m Walls less than 3.5 m in height",
+     "clause": "Table 3.2",
+     "page": 44,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R2, walls less than 3.5 m in height",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    },
+    {
+     "id": 22960,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side setback – 1.6 m Walls less than 3.5 m in height",
+     "clause": "Table 3.2",
+     "page": 44,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R2, walls less than 3.5 m in height",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Rear setback – 3.2 m Walls less than 3.5 m in height",
+   "clause": "Table 3.2",
+   "page": 44,
+   "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+   "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+   "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+  },
+  {
+   "id": "moree-plains-shire-council-005",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Zone R2 corner lot: 6 m to secondary frontage (8 m primary)",
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     22962
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22962
+   ],
+   "evidence": [
+    {
+     "id": 22962,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "8 m setback to the primary frontage; 6 m setback to the",
+     "clause": "Table 3.2",
+     "page": 45,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R2 corner lot: 6 m to secondary frontage (8 m primary)",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "8 m setback to the primary frontage; 6 m setback to the",
+   "clause": "Table 3.2",
+   "page": 45,
+   "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+   "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+   "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+  },
+  {
+   "id": "moree-plains-shire-council-006",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Zone R2: 8 m or average of adjoining dwellings, whichever is the lesser",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     22959
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22959
+   ],
+   "evidence": [
+    {
+     "id": 22959,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front setback – 8m or the Nil average of the adjoining dwellings, whichever is the lesser",
+     "clause": "Table 3.2",
+     "page": 44,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R2: 8 m or average of adjoining dwellings, whichever is the lesser",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front setback – 8m or the Nil average of the adjoining dwellings, whichever is the lesser",
+   "clause": "Table 3.2",
+   "page": 44,
+   "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+   "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+   "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "moree-plains-shire-council-007",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Zone R5 large lot residential, front setback (or average of adjoining)",
+    "Zone R5 large lot residential, side and rear setback any wall"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     22963
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     22964
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     22964
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    22963,
+    22964,
+    22964
+   ],
+   "evidence": [
+    {
+     "id": 22963,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Front Setback – 20m or the average of the",
+     "clause": "Table 3.2",
+     "page": 45,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R5 large lot residential, front setback (or average of adjoining)",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    },
+    {
+     "id": 22964,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Side and rear setback – 10m Any wall",
+     "clause": "Table 3.2",
+     "page": 45,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R5 large lot residential, side and rear setback any wall",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    },
+    {
+     "id": 22964,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "Side and rear setback – 10m Any wall",
+     "clause": "Table 3.2",
+     "page": 45,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Zone R5 large lot residential, side and rear setback any wall",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front Setback – 20m or the average of the",
+   "clause": "Table 3.2",
+   "page": 45,
+   "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+   "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+   "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "moree-plains-shire-council-008",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 4.0
+   },
+   "conditionText": "Industrial development, primary street frontage, building element up to 4 m in height",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     22971
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22971
+   ],
+   "evidence": [
+    {
+     "id": 22971,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "at least 6 m to any building element not exceeding 4 m in height;",
+     "clause": "Chapter 8",
+     "page": 82,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Industrial development, primary street frontage, building element up to 4 m in height",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "at least 6 m to any building element not exceeding 4 m in height;",
+   "clause": "Chapter 8",
+   "page": 82,
+   "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+   "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+   "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  },
+  {
+   "id": "moree-plains-shire-council-009",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "wallHeightOverM": 4.0
+   },
+   "conditionText": "Industrial development, primary street frontage, building element over 4 m in height",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     22972
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22972
+   ],
+   "evidence": [
+    {
+     "id": 22972,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "at least 9 m to any building element exceeding 4 m in height.",
+     "clause": "Chapter 8",
+     "page": 82,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Industrial development, primary street frontage, building element over 4 m in height",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "at least 9 m to any building element exceeding 4 m in height.",
+   "clause": "Chapter 8",
+   "page": 82,
+   "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+   "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+   "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  },
+  {
+   "id": "moree-plains-shire-council-010",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial development, secondary street frontage",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     22973
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22973
+   ],
+   "evidence": [
+    {
+     "id": 22973,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "Provide a building setback from any secondary street frontage of at least 3 m.",
+     "clause": "Chapter 8",
+     "page": 82,
+     "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+     "condition": "Industrial development, secondary street frontage",
+     "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Provide a building setback from any secondary street frontage of at least 3 m.",
+   "clause": "Chapter 8",
+   "page": 82,
+   "source_file": "DCP/Development-Control-Plan-32351972.pdf",
+   "dcp": "Moree Plains Development Control Plan 2013, adopted 11/04/2013 (chapters 2 Parking, 3 Residential, 8 Industrial subdivision, 9 Rural, 12 Floodplain development and management, others)",
+   "edition": "Moree Plains DCP 2013 (adopted 11/04/2013)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): roads: no local road width, reserve, grade, kerb return or cul-de-sac standards in saved documents (residential subdivision roads not covered; only industrial) | DCP chapters 4, 5, 6, 7, 10, 11 not relevant to engineering parameters"
+ ],
+ "notes": "Built from 13 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 3
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 3
+  },
+  "R2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 3
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 13,
+  "rules": 10,
+  "recordsNotModelled": 0,
+  "otherSetbackKeysNotModelled": 0
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
+ }
+}

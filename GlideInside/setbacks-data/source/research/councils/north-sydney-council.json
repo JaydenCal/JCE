@@ -1,0 +1,106 @@
+{
+  "lga_slug": "north-sydney-council",
+  "council": "North Sydney Council",
+  "dcp": {
+    "name": "North Sydney DCP 2025 (Part E Section 1)",
+    "url": "https://www.northsydney.nsw.gov.au/downloads/file/4342/nsdcp-2025-part-e---development-types",
+    "adopted": null
+  },
+  "status": "partial",
+  "rules": [
+    {
+      "zones": [
+        "R2",
+        "R3",
+        "C4"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": null,
+        "basis": "average_neighbours",
+        "note": "Front setback must match the alignment of primary facades on adjoining properties; where they differ, use their average."
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": 0.9,
+        "perStorey": [
+          {
+            "storey": 1,
+            "wallHeightMaxM": 4.0,
+            "minM": 0.9
+          },
+          {
+            "storey": 2,
+            "wallHeightMaxM": 7.0,
+            "minM": 1.5
+          },
+          {
+            "storey": 3,
+            "wallHeightMinM": 7.0,
+            "minM": 2.5
+          }
+        ],
+        "note": "Table E-1.2: 1st storey (up to 4m) 900mm; 2nd storey (up to 7m) 1.5m; 3rd storey or higher (greater than 7m) 2.5m."
+      },
+      "rear": {
+        "minM": null,
+        "note": "Rear setbacks to match adjoining properties; if not characteristic use Part F Planning Area character statement."
+      },
+      "garage": {
+        "minM": null,
+        "note": "No street-setback value; garages/carports not between street frontage and primary facade (2013 DCP s1.5.4 P10); laneway 1.2m."
+      },
+      "sourceUrl": "https://www.northsydney.nsw.gov.au/downloads/file/4342/nsdcp-2025-part-e---development-types",
+      "document": "North Sydney Development Control Plan 2025, Part E Section 1 Residential Development",
+      "clause": "cl 1.3.5 P1 (front); Table E-1.2 (side); P5 (rear)",
+      "page": "E1-4 to E1-7",
+      "quote": "The front setback must match the alignment of the primary facades of buildings on adjoining properties.",
+      "confidence": "medium",
+      "needsReview": true,
+      "reviewReason": "Extracted via tool. Verbatim fragments: '1st storey (up to 4m) 900mm'; '2nd storey (up to 7m) 1.5m'; '3rd storey or higher (greater than 7m) 2.5m'; 'Provide rear building setbacks that match those on adjoining properties'. DCP adoption date not stated in the content read; text read to char 100,000 of 151,852.",
+      "extraQuotes": {
+        "side": "2nd storey (up to 7m) 1.5m",
+        "rear": "Provide rear building setbacks that match those on adjoining properties"
+      }
+    },
+    {
+      "zones": [
+        "R4"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": null,
+        "basis": "average_neighbours",
+        "note": "As above (P1)."
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": 1.5,
+        "formula": "plus building height plane commencing at 3.5m above existing ground level projected at 45 degrees (Figure E-1.1)"
+      },
+      "rear": {
+        "minM": 1.5,
+        "note": "Minimum 1.5m from rear boundary plus height plane (land with height limit 12m or less)."
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://www.northsydney.nsw.gov.au/downloads/file/4342/nsdcp-2025-part-e---development-types",
+      "document": "North Sydney Development Control Plan 2025, Part E Section 1 Residential Development",
+      "clause": "Table E-1.2, Figure E-1.1; cl 1.3.5 P6(a)",
+      "page": "E1-6 to E1-7",
+      "quote": "must be setback a minimum of 1.5m from the rear boundary",
+      "confidence": "medium",
+      "needsReview": true,
+      "reviewReason": "Extracted via tool; verify."
+    }
+  ],
+  "gaps": [
+    "No dwelling secondary (corner) setback control found.",
+    "No street-frontage garage setback figure found (only laneway 1.2m).",
+    "Front and rear are relational (adjoining / Part F character statements), so no fixed metres; Part F planning-area statements not read."
+  ],
+  "notes": "NSDCP 2025 appears to supersede NSDCP 2013 Part B Section 1 (https://www.northsydney.nsw.gov.au/downloads/file/3223/dcp-2013-part-b-section-1-residential) which carries the same controls. Part 3 Housing Code applies as CDC fallback."
+}

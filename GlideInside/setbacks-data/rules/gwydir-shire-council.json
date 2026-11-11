@@ -1,0 +1,52 @@
+{
+ "lga_slug": "gwydir-shire-council",
+ "council": "Gwydir Shire Council",
+ "lgaNames": [
+  "GWYDIR",
+  "GWYDIR SHIRE",
+  "GWYDIR SHIRE COUNCIL"
+ ],
+ "dcp": "UNVERIFIED (no DCP saved); Gwydir Shire Council Subdivision Guidelines v1.2 (first adopted 17/03/2004, reviewed June 2024) tabled at Ordinary Meeting 20/02/2025",
+ "lep": "Gwydir Local Environmental Plan 2013",
+ "status": "none",
+ "rules": [],
+ "gaps": [
+  "No setback records in the extract (no front, side, rear, garage, rural, commercial, industrial or classified road setback values found in the saved council documents).",
+  "Extraction gaps noted for this council (verbatim): No DCP: no residential setbacks, parking rates, flood planning level, site coverage, OSD, WSUD",
+  "Research: No DCP residential setback controls located; dwellings rely on the LEP and the Codes SEPP."
+ ],
+ "notes": "Extract reviewed: reviewed (Opus full-set audit 01/11/2026). | Research merged from research-setbacks/councils/gwydir-shire-council.json",
+ "counts": {
+  "records": 0,
+  "rules": 0
+ },
+ "coverage": {},
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  }
+ }
+}

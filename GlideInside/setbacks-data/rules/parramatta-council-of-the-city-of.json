@@ -1,0 +1,1106 @@
+{
+ "lga_slug": "parramatta-council-of-the-city-of",
+ "council": "City of Parramatta Council (Parramatta Council of the City of)",
+ "lgaNames": [
+  "PARRAMATTA",
+  "CITY OF PARRAMATTA",
+  "CITY OF PARRAMATTA COUNCIL"
+ ],
+ "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+ "lep": "Parramatta LEP 2023 (also Parramatta LEP 2011, Auburn LEP 2010, The Hills LEP 2012, Holroyd LEP 2013, Hornsby LEP 2013 referenced by the guidelines)",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "parramatta-council-of-the-city-of-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "corner lots, dwelling houses and dual occupancies",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25753
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25753
+   ],
+   "evidence": [
+    {
+     "id": 25753,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "On corner lots, the secondary street setback must be a minimum of 3 metres",
+     "clause": "3.3.1.2 C.06",
+     "page": 15,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "corner lots, dwelling houses and dual occupancies",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "On corner lots, the secondary street setback must be a minimum of 3 metres",
+   "clause": "3.3.1.2 C.06",
+   "page": 15,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "dual occupancy garages on secondary frontage of corner lots",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 5.5,
+    "sources": [
+     25772
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    25772
+   ],
+   "evidence": [
+    {
+     "id": 25772,
+     "parameter": "garage_setback",
+     "slot": "garageBehind",
+     "quote": "must be set back a minimum of 1 metre behind the front wall of the building and a minimum of 5.5 metres",
+     "clause": "3.3.2.5 C.03",
+     "page": 26,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dual occupancy garages on secondary frontage of corner lots",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "must be set back a minimum of 1 metre behind the front wall of the building and a minimum of 5.5 metres",
+   "clause": "3.3.2.5 C.03",
+   "page": 26,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "dual occupancy, garage or carport behind front wall",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 1.0,
+    "sources": [
+     25713
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    25713
+   ],
+   "evidence": [
+    {
+     "id": 25713,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "be located a minimum of 1 metre behind the front wall of the building",
+     "clause": "3.3.2.5 C.02",
+     "page": 26,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dual occupancy, garage or carport behind front wall",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "be located a minimum of 1 metre behind the front wall of the building",
+   "clause": "3.3.2.5 C.02",
+   "page": 26,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "dual occupancy corner sites",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     25766
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25766
+   ],
+   "evidence": [
+    {
+     "id": 25766,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "For corner sites, rear setbacks must be a minimum of 6 metres",
+     "clause": "3.3.2.2 C.15",
+     "page": 23,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dual occupancy corner sites",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "For corner sites, rear setbacks must be a minimum of 6 metres",
+   "clause": "3.3.2.2 C.15",
+   "page": 23,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "dual occupancies",
+    "dual occupancies, 30% of site length or 10 m whichever greater",
+    "dual occupancies; buildings occupy maximum 80% of lot width"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     25748
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     25765
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     25757
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    25748,
+    25757,
+    25765
+   ],
+   "evidence": [
+    {
+     "id": 25748,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Buildings must be set back a minimum of 6 metres from the street boundary",
+     "clause": "3.3.2.2 C.05",
+     "page": 22,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dual occupancies",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25765,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A rear setback equal to 30% of the site length or 10 metres, whichever is greater",
+     "clause": "3.3.2.2 C.14",
+     "page": 23,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dual occupancies, 30% of site length or 10 m whichever greater",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25757,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Buildings must be set back a minimum of 1.5 metres from side boundaries",
+     "clause": "3.3.2.2 C.09",
+     "page": 22,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dual occupancies; buildings occupy maximum 80% of lot width",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Buildings must be set back a minimum of 6 metres from the street boundary",
+   "clause": "3.3.2.2 C.05",
+   "page": 22,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "dwelling houses",
+    "dwelling houses, percentage of site length"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     25747
+    ]
+   },
+   "rear": {
+    "minM": null,
+    "formula": "30% of site length",
+    "basis": "text",
+    "sources": [
+     25764
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     25756
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    25747,
+    25756,
+    25764
+   ],
+   "evidence": [
+    {
+     "id": 25747,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Buildings must be setback a minimum of 6 metres and be consistent with the prevailing setback",
+     "clause": "3.3.1.2 C.05",
+     "page": 15,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dwelling houses",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25764,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A rear setback equal to 30% of the site length",
+     "clause": "3.3.1.2 C.10",
+     "page": 15,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dwelling houses, percentage of site length",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25756,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Buildings must be setback a minimum of 900mm from side boundaries",
+     "clause": "3.3.1.2 C.08",
+     "page": 15,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dwelling houses",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "Buildings must be setback a minimum of 6 metres and be consistent with the prevailing setback",
+   "clause": "3.3.1.2 C.05",
+   "page": 15,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "dwelling houses, at-grade garages and carports from front boundary",
+    "dwelling houses, garage or carport behind front wall"
+   ],
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     25771,
+     25712
+    ],
+    "behindBuildingLineM": 0.3
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    25712,
+    25771
+   ],
+   "evidence": [
+    {
+     "id": 25771,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "At grade garages and carports are to be setback a minimum 5.5 metres from the front boundary",
+     "clause": "3.3.1.5 C.02",
+     "page": 18,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dwelling houses, at-grade garages and carports from front boundary",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25712,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "located a minimum of 300mm behind the front wall of the building",
+     "clause": "3.3.1.5 C.02",
+     "page": 18,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "dwelling houses, garage or carport behind front wall",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "At grade garages and carports are to be setback a minimum 5.5 metres from the front boundary",
+   "clause": "3.3.1.5 C.02",
+   "page": 18,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "townhouses where rear dwellings have primary pedestrian access along the side boundary",
+   "side": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     25759
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25759
+   ],
+   "evidence": [
+    {
+     "id": 25759,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a minimum 3.5 metre side setback must be provided",
+     "clause": "3.4.1.2 C.12",
+     "page": 36,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "townhouses where rear dwellings have primary pedestrian access along the side boundary",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a minimum 3.5 metre side setback must be provided",
+   "clause": "3.4.1.2 C.12",
+   "page": 36,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "terraces on a laneway",
+   "front": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     25752
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25752
+   ],
+   "evidence": [
+    {
+     "id": 25752,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Where terraces are located on a laneway, buildings must be setback a minimum of 2 metres",
+     "clause": "3.4.2.2 C.07",
+     "page": 44,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "terraces on a laneway",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Where terraces are located on a laneway, buildings must be setback a minimum of 2 metres",
+   "clause": "3.4.2.2 C.07",
+   "page": 44,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "townhouses where principal private open space addresses the side boundary",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     25760
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25760
+   ],
+   "evidence": [
+    {
+     "id": 25760,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a minimum 6 metre side setback must be provided",
+     "clause": "3.4.1.2 C.14",
+     "page": 36,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "townhouses where principal private open space addresses the side boundary",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "a minimum 6 metre side setback must be provided",
+   "clause": "3.4.1.2 C.14",
+   "page": 36,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "corner lots, townhouses and terraces",
+    "terraces",
+    "terraces, normal minimum",
+    "townhouses oriented to street or rear",
+    "townhouses, 15% of site length or 6 m whichever greater",
+    "townhouses, normal minimum (4 m may be considered after street character assessment)"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     25749,
+     25751
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     25754
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     25767
+    ]
+   },
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     25758,
+     25761
+    ]
+   },
+   "garage": null,
+   "sources": [
+    25749,
+    25751,
+    25754,
+    25758,
+    25761,
+    25767
+   ],
+   "evidence": [
+    {
+     "id": 25749,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A minimum front setback of 6 metres is required",
+     "clause": "3.4.1.2 C.07",
+     "page": 35,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "townhouses, normal minimum (4 m may be considered after street character assessment)",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25751,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A minimum front setback of 6 metres is required however, a lesser front setback, to a minimum",
+     "clause": "3.4.2.2 C.05",
+     "page": 44,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "terraces, normal minimum",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25754,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "On corner lots, the secondary street setback must be a minimum of 4 metres",
+     "clause": "3.4.1.2 C.08",
+     "page": 35,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "corner lots, townhouses and terraces",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25767,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "a minimum rear setback equal to 15% of the site length or 6m, whichever is greater",
+     "clause": "3.4.1.2 C.16",
+     "page": 36,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "townhouses, 15% of site length or 6 m whichever greater",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25758,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "A minimum side setback of 1.5 metres must be provided where dwellings are orientated towards",
+     "clause": "3.4.1.2 C.11",
+     "page": 36,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "townhouses oriented to street or rear",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25761,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "A minimum side setback of 1.5 metres must be provided, as per Figure 3.4.2.2.1",
+     "clause": "3.4.2.2 C.10",
+     "page": 44,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "terraces",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A minimum front setback of 6 metres is required",
+   "clause": "3.4.1.2 C.07",
+   "page": 35,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "townhouses, reduced minimum subject to local street character assessment",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     25750
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25750
+   ],
+   "evidence": [
+    {
+     "id": 25750,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a lesser front setback, to a minimum of 4 metres may be considered",
+     "clause": "3.4.1.2 C.07",
+     "page": 35,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "townhouses, reduced minimum subject to local street character assessment",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "a lesser front setback, to a minimum of 4 metres may be considered",
+   "clause": "3.4.1.2 C.07",
+   "page": 35,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "terraces, percentage of site length",
+   "rear": {
+    "minM": null,
+    "formula": "30% of site length",
+    "basis": "text",
+    "sources": [
+     25768
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25768
+   ],
+   "evidence": [
+    {
+     "id": 25768,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "The rear setback must be equal to 30% of the site length",
+     "clause": "3.4.2.2 C.12",
+     "page": 44,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "terraces, percentage of site length",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "The rear setback must be equal to 30% of the site length",
+   "clause": "3.4.2.2 C.12",
+   "page": 44,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "outbuilding"
+   ],
+   "conditions": {},
+   "conditionText": "outbuildings",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25769
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     25763
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    25763,
+    25769
+   ],
+   "evidence": [
+    {
+     "id": 25769,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Outbuildings must provide a minimum 3 metre rear setback",
+     "clause": "3.2.5 C.04",
+     "page": 13,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "outbuildings",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25763,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Outbuildings must be setback a minimum of 900mm from side boundaries",
+     "clause": "3.2.5 C.03",
+     "page": 13,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "outbuildings",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Outbuildings must provide a minimum 3 metre rear setback",
+   "clause": "3.2.5 C.04",
+   "page": 13,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "secondary_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "secondary dwellings up to 1 storey",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25770
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     25762
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    25762,
+    25770
+   ],
+   "evidence": [
+    {
+     "id": 25770,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "minimum 3 metre rear setback for buildings up to 1 storey in height",
+     "clause": "3.3.3.2 C.12",
+     "page": 31,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "secondary dwellings up to 1 storey",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    },
+    {
+     "id": 25762,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "minimum of 900mm from side boundaries for buildings up to 1 storey in height",
+     "clause": "3.3.3.2 C.11",
+     "page": 31,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "secondary dwellings up to 1 storey",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "minimum 3 metre rear setback for buildings up to 1 storey in height",
+   "clause": "3.3.3.2 C.12",
+   "page": 31,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "secondary_dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "corner lots, secondary dwellings",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25755
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25755
+   ],
+   "evidence": [
+    {
+     "id": 25755,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "On corner lots, the secondary street setback must setback a minimum of 3 metres",
+     "clause": "3.3.3.2 C.09",
+     "page": 31,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "corner lots, secondary dwellings",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "On corner lots, the secondary street setback must setback a minimum of 3 metres",
+   "clause": "3.3.3.2 C.09",
+   "page": 31,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-017",
+   "zones": [
+    "B*"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {},
+   "conditionText": "side setback, business and commercial development",
+   "side": {
+    "minM": null,
+    "basis": "text",
+    "note": "Nil where no impact on streetscape or adjoining amenity; front setback consistent with prevailing front setback",
+    "sources": [
+     25776
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25776
+   ],
+   "evidence": [
+    {
+     "id": 25776,
+     "parameter": "setback_commercial",
+     "slot": "side",
+     "quote": "Nil where there will be no impact on streetscape or amenity of adjoining development",
+     "clause": "Table 4.2.1",
+     "page": 6,
+     "source_file": "DCP/dcp-part-4-non-residential-development.txt",
+     "condition": "side setback, business and commercial development",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).",
+   "quote": "Nil where there will be no impact on streetscape or amenity of adjoining development",
+   "clause": "Table 4.2.1",
+   "page": 6,
+   "source_file": "DCP/dcp-part-4-non-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
+  }
+ ],
+ "gaps": [
+  "3 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 25773, 25774, 25775",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): stormwater: DCP 2023 Part 8 precinct chapters (Melrose Park, Carter Street, Wentworth Point, Homebush Bay West, North Rocks and others) and superseded legacy DCPs (Auburn, Holroyd, Hornsby, The Hills, Parramatta 2011) not mined for differing values | setbacks: setback_rural, front_infill_rule numbers (prevailing setback rule only); Part 3 apartment building and Part 9 city centre setbacks not extracted | earthworks: fill_max_depth_exempt, cut_max_depth_exempt, retaining_wall_max_height_exempt, retaining_wall_setback_boundary, retaining_wall_terracing, batter_slope_max, fill_compaction_standard, lot_grading_min, sediment_basin_requirement"
+ ],
+ "notes": "Built from 32 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 16
+  },
+  "B*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 32,
+  "rules": 17,
+  "recordsNotModelled": 3,
+  "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parramatta-council-of-the-city-of-006, parramatta-council-of-the-city-of-008)); rear"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parramatta-council-of-the-city-of-006, parramatta-council-of-the-city-of-008)); rear"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parramatta-council-of-the-city-of-006, parramatta-council-of-the-city-of-008)); rear"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parramatta-council-of-the-city-of-006, parramatta-council-of-the-city-of-008)); rear"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parramatta-council-of-the-city-of-006, parramatta-council-of-the-city-of-008)); rear"
+  }
+ }
+}

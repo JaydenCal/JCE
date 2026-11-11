@@ -1,0 +1,128 @@
+{
+ "lga_slug": "balranald-shire-council",
+ "council": "Balranald Shire Council",
+ "lgaNames": [
+  "BALRANALD",
+  "BALRANALD SHIRE",
+  "BALRANALD SHIRE COUNCIL"
+ ],
+ "dcp": "None adopted in saved documents. May 2013 agenda records a comprehensive DCP in preparation (Draft Element 1 Notification Provisions only); August 2025 agenda states no DCP applies to the land in the item assessed. Building Setback draft policy referred to in the August 2025 agenda is not in the saved text",
+ "lep": "Balranald Local Environmental Plan 2010",
+ "status": "partial",
+ "rules": [
+  {
+   "zones": [
+    "all residential (no zones specified)"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "note": "6m from primary street boundary, all roads and streets."
+   },
+   "secondaryFront": {
+    "minM": null,
+    "basis": "by_lot_area",
+    "note": "Table 1: 2m (200-600m2); 3m (>600-1,500m2); 5m (>1,500m2).",
+    "bands": [
+     {
+      "lotAreaMinM2": 200,
+      "lotAreaMaxM2": 600,
+      "minM": 2.0
+     },
+     {
+      "lotAreaMinM2": 600.01,
+      "lotAreaMaxM2": 1500,
+      "minM": 3.0
+     },
+     {
+      "lotAreaMinM2": 1500.01,
+      "minM": 5.0
+     }
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": {
+    "minM": null,
+    "note": "Not addressed."
+   },
+   "sourceUrl": "https://balranald.nsw.gov.au/wp-content/uploads/2025/09/Policy-Building-Setback-Policy-2025.pdf",
+   "document": "Balranald Shire Council Building Setback Policy (v2.0, adopted 2018 Min 08.18.4387, reviewed August 2025 Min 2025/140)",
+   "clause": "cl 1 (front), cl 2 and Table 1 (secondary), cl 3 (cul-de-sac), cl 4 (reduction)",
+   "page": null,
+   "quote": "A general residential building line setback of 6m minimum, measured from the primary street boundary",
+   "confidence": "medium",
+   "needsReview": "Extracted via tool; page numbers not available. Secondary table quote: 'A setback in accordance with Table 1 applies to the secondary street frontage on corner allotments.' Cul-de-sac: 'minimum 4m in the straight area and minimum 3m in the turning area' (cl 3). Cl 4: 'Residential building line setbacks may be reduced by Council in exceptional circumstances.'",
+   "reviewReason": "Extracted via tool; page numbers not available. Secondary table quote: 'A setback in accordance with Table 1 applies to the secondary street frontage on corner allotments.' Cul-de-sac: 'minimum 4m in the straight area and minimum 3m in the turning area' (cl 3). Cl 4: 'Residential building line setbacks may be reduced by Council in exceptional circumstances.'",
+   "cuLDeSac": {
+    "straightM": 4.0,
+    "turningM": 3.0
+   },
+   "slotNotes": {
+    "side": "Not addressed in policy.",
+    "rear": "Not addressed in policy."
+   },
+   "dcp": "No DCP located. Council policy: Building Setback Policy (not a DCP) (2018 (reviewed 08/2025, no amendments))",
+   "edition": "2018 (reviewed 08/2025, no amendments)",
+   "source_file": "https://balranald.nsw.gov.au/wp-content/uploads/2025/09/Policy-Building-Setback-Policy-2025.pdf",
+   "sources": [],
+   "origin": "research",
+   "id": "balranald-shire-council-RES-001",
+   "flag": "check_with_council",
+   "flagReason": "Extracted via tool; page numbers not available. Secondary table quote: 'A setback in accordance with Table 1 applies to the secondary street frontage on corn..."
+  }
+ ],
+ "gaps": [
+  "No setback records in the extract (no front, side, rear, garage, rural, commercial, industrial or classified road setback values found in the saved council documents).",
+  "Extraction gaps noted for this council (verbatim): dev_controls: lot sizes, site coverage, parking rates (no DCP saved; agendas contain no general controls) | setbacks (Building Setback policy not in saved text)",
+  "Research: Policy is a council policy, not a DCP; it states no side, rear or garage setbacks.",
+  "Research: No Balranald DCP found on council site (planning page lists the LEP and a 'Building setback Policy' only)."
+ ],
+ "notes": "Extract reviewed: reviewed (Opus full-set audit 01/11/2026). | Research merged from research-setbacks/councils/balranald-shire-council.json",
+ "counts": {
+  "records": 0,
+  "rules": 1
+ },
+ "coverage": {
+  "all residential (no zones specified)": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": true,
+   "rules": 1
+  }
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
+ }
+}

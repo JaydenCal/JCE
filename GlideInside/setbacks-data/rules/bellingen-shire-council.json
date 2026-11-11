@@ -1,0 +1,547 @@
+{
+ "lga_slug": "bellingen-shire-council",
+ "council": "Bellingen Shire Council",
+ "lgaNames": [
+  "BELLINGEN",
+  "BELLINGEN SHIRE",
+  "BELLINGEN SHIRE COUNCIL"
+ ],
+ "dcp": "Bellingen Shire Development Control Plan 2017 (adopted 22/11/2017, commenced 06/12/2017). Chapters 1, 2, 3, 5, 8, 9, 10, 12 and 17 used; the saved Chapter 3, 8 and 12 files are extracts.",
+ "lep": "Bellingen Local Environmental Plan 2010 (BLEP 2010)",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "bellingen-shire-council-001",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "R1 zoned land, secondary road frontage including rear lanes",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     3183
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3183
+   ],
+   "evidence": [
+    {
+     "id": 3183,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "R1 zoned land 4.5 metres or 3 metres 900mm from",
+     "clause": "DCP Ch1 Table 1.1",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "R1 zoned land, secondary road frontage including rear lanes",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R1 zoned land 4.5 metres or 3 metres 900mm from",
+   "clause": "DCP Ch1 Table 1.1",
+   "page": 5,
+   "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+   "dcp": "Bellingen Shire Development Control Plan 2017 (adopted 22/11/2017, commenced 06/12/2017). Chapters 1, 2, 3, 5, 8, 9, 10, 12 and 17 used; the saved Chapter 3, 8 and 12 files are extracts.",
+   "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+  },
+  {
+   "id": "bellingen-shire-council-002",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "R1 zoned land",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "note": "900 mm from the wall and 450 mm from eaves gutter to the boundary",
+    "sources": [
+     3184
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3184
+   ],
+   "evidence": [
+    {
+     "id": 3184,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R1 zoned land 4.5 metres or 3 metres 900mm from",
+     "clause": "DCP Ch1 Table 1.1",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "R1 zoned land",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R1 zoned land 4.5 metres or 3 metres 900mm from",
+   "clause": "DCP Ch1 Table 1.1",
+   "page": 5,
+   "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+   "dcp": "Bellingen Shire Development Control Plan 2017 (adopted 22/11/2017, commenced 06/12/2017). Chapters 1, 2, 3, 5, 8, 9, 10, 12 and 17 used; the saved Chapter 3, 8 and 12 files are extracts.",
+   "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+  },
+  {
+   "id": "bellingen-shire-council-003",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "R1 zoned land (dwellings)",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average setback of the two nearest dwellings where greater than 4.5 m",
+    "sources": [
+     3182
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3182
+   ],
+   "evidence": [
+    {
+     "id": 3182,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "R1 zoned land 4.5 metres or 3 metres 900mm from",
+     "clause": "DCP Ch1 Table 1.1",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "R1 zoned land (dwellings)",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "R1 zoned land 4.5 metres or 3 metres 900mm from",
+   "clause": "DCP Ch1 Table 1.1",
+   "page": 5,
+   "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+   "dcp": "Bellingen Shire Development Control Plan 2017 (adopted 22/11/2017, commenced 06/12/2017). Chapters 1, 2, 3, 5, 8, 9, 10, 12 and 17 used; the saved Chapter 3, 8 and 12 files are extracts.",
+   "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+  },
+  {
+   "id": "bellingen-shire-council-004",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "R1 zoned land (dwellings)",
+   "front": {
+    "minM": 4.5,
+    "basis": "greater_of",
+    "note": "4.5 m or the average setback of the two nearest dwellings, whichever is greater",
+    "sources": [
+     3181
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3181
+   ],
+   "evidence": [
+    {
+     "id": 3181,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R1 zoned land 4.5 metres or 3 metres 900mm from",
+     "clause": "DCP Ch1 Table 1.1",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "R1 zoned land (dwellings)",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "R1 zoned land 4.5 metres or 3 metres 900mm from",
+   "clause": "DCP Ch1 Table 1.1",
+   "page": 5,
+   "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+   "dcp": "Bellingen Shire Development Control Plan 2017 (adopted 22/11/2017, commenced 06/12/2017). Chapters 1, 2, 3, 5, 8, 9, 10, 12 and 17 used; the saved Chapter 3, 8 and 12 files are extracts.",
+   "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "bellingen-shire-council-005",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R5 zoned land, front and secondary frontage",
+    "R5 zoned land, side and rear boundary"
+   ],
+   "secondaryFront": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     3185
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     3186
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     3186
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    3185,
+    3186,
+    3186
+   ],
+   "evidence": [
+    {
+     "id": 3185,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "R5 zoned land 10 metres 10 metres 5 metres 5 metres",
+     "clause": "DCP Ch1 Table 1.1",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "R5 zoned land, front and secondary frontage",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    },
+    {
+     "id": 3186,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "R5 zoned land 10 metres 10 metres 5 metres 5 metres",
+     "clause": "DCP Ch1 Table 1.1",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "R5 zoned land, side and rear boundary",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    },
+    {
+     "id": 3186,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "R5 zoned land 10 metres 10 metres 5 metres 5 metres",
+     "clause": "DCP Ch1 Table 1.1",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "R5 zoned land, side and rear boundary",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R5 zoned land 10 metres 10 metres 5 metres 5 metres",
+   "clause": "DCP Ch1 Table 1.1",
+   "page": 5,
+   "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+   "dcp": "Bellingen Shire Development Control Plan 2017 (adopted 22/11/2017, commenced 06/12/2017). Chapters 1, 2, 3, 5, 8, 9, 10, 12 and 17 used; the saved Chapter 3, 8 and 12 files are extracts.",
+   "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+  },
+  {
+   "id": "bellingen-shire-council-006",
+   "zones": [
+    "RU1",
+    "RU2",
+    "RU4",
+    "E4",
+    "E3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "RU1, RU2, RU4, E3, E4 zones, front and secondary frontage",
+    "RU1, RU2, RU4, E3, E4 zones, side and rear boundary"
+   ],
+   "secondaryFront": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     3187
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     3188
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     3188
+    ]
+   },
+   "front": null,
+   "garage": null,
+   "sources": [
+    3187,
+    3188
+   ],
+   "evidence": [
+    {
+     "id": 3187,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "Rural & 20 metres 20 metres 10 metres 10 metres",
+     "clause": "DCP Ch1 Table 1.1",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "RU1, RU2, RU4, E3, E4 zones, front and secondary frontage",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    },
+    {
+     "id": 3188,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Rural & 20 metres 20 metres 10 metres 10 metres",
+     "clause": "DCP Ch1 Table 1.1",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "RU1, RU2, RU4, E3, E4 zones, side and rear boundary",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    },
+    {
+     "id": 3188,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "Rural & 20 metres 20 metres 10 metres 10 metres",
+     "clause": "DCP Ch1 Table 1.1",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "RU1, RU2, RU4, E3, E4 zones, side and rear boundary",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Rural & 20 metres 20 metres 10 metres 10 metres",
+   "clause": "DCP Ch1 Table 1.1",
+   "page": 5,
+   "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+   "dcp": "Bellingen Shire Development Control Plan 2017 (adopted 22/11/2017, commenced 06/12/2017). Chapters 1, 2, 3, 5, 8, 9, 10, 12 and 17 used; the saved Chapter 3, 8 and 12 files are extracts.",
+   "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+  },
+  {
+   "id": "bellingen-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "dwellings fronting busy or noisy roads",
+   "front": {
+    "minM": null,
+    "basis": "text",
+    "note": "Greater setback may be warranted; no figure given",
+    "sources": [
+     3189
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    3189
+   ],
+   "evidence": [
+    {
+     "id": 3189,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "Greater distances to the road frontage may be warranted depending upon the nature of the adjoining road",
+     "clause": "DCP Ch1 Table 1.1 note",
+     "page": 5,
+     "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+     "condition": "dwellings fronting busy or noisy roads",
+     "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "Greater distances to the road frontage may be warranted depending upon the nature of the adjoining road",
+   "clause": "DCP Ch1 Table 1.1 note",
+   "page": 5,
+   "source_file": "DCP/bellingen-shire-dcp-2017-chapter-1-single-dwellings.pdf",
+   "dcp": "Bellingen Shire Development Control Plan 2017 (adopted 22/11/2017, commenced 06/12/2017). Chapters 1, 2, 3, 5, 8, 9, 10, 12 and 17 used; the saved Chapter 3, 8 and 12 files are extracts.",
+   "edition": "Bellingen Shire DCP 2017 (adopted 22/11/2017, commenced 06/12/2017)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  }
+ ],
+ "gaps": [
+  "R1: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "R5: no numeric front setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 3148",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): setbacks: rear_setback for R1, setback_industrial, setback_commercial (not found in saved DCP chapters; Chapters 2 and 4 only refer back to Chapter 1)"
+ ],
+ "notes": "Built from 10 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 4
+  },
+  "R5": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "RU1": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "RU2": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "RU4": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "E4": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "E3": {
+   "front": false,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 10,
+  "rules": 7,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
+ }
+}

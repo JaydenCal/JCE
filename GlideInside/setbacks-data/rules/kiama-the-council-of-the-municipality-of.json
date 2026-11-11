@@ -1,0 +1,1183 @@
+{
+ "lga_slug": "kiama-the-council-of-the-municipality-of",
+ "council": "Kiama Municipal Council",
+ "lgaNames": [
+  "KIAMA",
+  "KIAMA MUNICIPAL",
+  "KIAMA MUNICIPAL COUNCIL"
+ ],
+ "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+ "lep": "Kiama Local Environmental Plan 2011",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "kiama-the-council-of-the-municipality-of-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 300.0,
+    "lotAreaMaxM2": 1000.0,
+    "precinct": "South Kiama Urban Release Area"
+   },
+   "conditionText": [
+    "South Kiama Urban Release Area (Topic 12.11): lots 300 to 1000 m2",
+    "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2 and over 1000 m2: secondary street frontage",
+    "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2: building facade line on primary street"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     18030
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     18033
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18039
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    18030,
+    18033,
+    18039
+   ],
+   "evidence": [
+    {
+     "id": 18030,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5 metres to building facade line on primary street",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2: building facade line on primary street",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    },
+    {
+     "id": 18033,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "3.5 metres to building facade line on secondary street",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2 and over 1000 m2: secondary street frontage",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    },
+    {
+     "id": 18039,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear setback • 6 metres",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots 300 to 1000 m2",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5 metres to building facade line on primary street",
+   "clause": "12.11.145 Table 2",
+   "page": 48,
+   "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 1000.0,
+    "precinct": "South Kiama Urban Release Area"
+   },
+   "conditionText": [
+    "South Kiama Urban Release Area (Topic 12.11): lots over 1000 m2",
+    "South Kiama Urban Release Area (Topic 12.11): lots over 1000 m2: building facade line on primary street"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18034
+    ]
+   },
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     18040
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     18038
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    18034,
+    18038,
+    18040
+   ],
+   "evidence": [
+    {
+     "id": 18034,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6 metres to building facade line on primary street frontage.",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots over 1000 m2: building facade line on primary street",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    },
+    {
+     "id": 18040,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear setback • 8 metres",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots over 1000 m2",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    },
+    {
+     "id": 18038,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side setback • 3 metres",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots over 1000 m2",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "6 metres to building facade line on primary street frontage.",
+   "clause": "12.11.145 Table 2",
+   "page": 48,
+   "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "garaging, any garaging set back to allow stacked parking",
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 6.0,
+    "sources": [
+     17984
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    17984
+   ],
+   "evidence": [
+    {
+     "id": 17984,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "Any garaging must be set back a minimum of 6m to allow for stacked",
+     "clause": "6.1.69",
+     "page": 16,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "garaging, any garaging set back to allow stacked parking",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Any garaging must be set back a minimum of 6m to allow for stacked",
+   "clause": "6.1.69",
+   "page": 16,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "level": "upper",
+    "lotAreaMinM2": 300.0,
+    "lotAreaMaxM2": 1000.0,
+    "precinct": "South Kiama Urban Release Area"
+   },
+   "conditionText": "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2: second storey component of a dwelling",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18031
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18031
+   ],
+   "evidence": [
+    {
+     "id": 18031,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6 metres to second storey component of a dwelling",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2: second storey component of a dwelling",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "6 metres to second storey component of a dwelling",
+   "clause": "12.11.145 Table 2",
+   "page": 48,
+   "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 300.0,
+    "lotAreaMaxM2": 1000.0,
+    "precinct": "South Kiama Urban Release Area"
+   },
+   "conditionText": "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2: single storey dwelling",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     18035
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18035
+   ],
+   "evidence": [
+    {
+     "id": 18035,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "0.9 metre (single storey dwelling)",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2: single storey dwelling",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "0.9 metre (single storey dwelling)",
+   "clause": "12.11.145 Table 2",
+   "page": 48,
+   "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "lotAreaMinM2": 300.0,
+    "lotAreaMaxM2": 1000.0,
+    "precinct": "South Kiama Urban Release Area"
+   },
+   "conditionText": "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2: double storey dwelling",
+   "side": {
+    "minM": 1.2,
+    "basis": "fixed",
+    "sources": [
+     18036
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18036
+   ],
+   "evidence": [
+    {
+     "id": 18036,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "1.2 metres (double storey dwelling)",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2: double storey dwelling",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "1.2 metres (double storey dwelling)",
+   "clause": "12.11.145 Table 2",
+   "page": 48,
+   "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "dwelling house, edge of gutter, eaves or fascia",
+   "side": {
+    "minM": 0.675,
+    "printed": "675 mm",
+    "basis": "fixed",
+    "sources": [
+     17982
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    17982
+   ],
+   "evidence": [
+    {
+     "id": 17982,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "set back from the edge of the gutter, eaves or fascia is 675mm",
+     "clause": "6.1.23",
+     "page": 9,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "dwelling house, edge of gutter, eaves or fascia",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "set back from the edge of the gutter, eaves or fascia is 675mm",
+   "clause": "6.1.23",
+   "page": 9,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "dwelling house, unmapped site",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Greater of 4.5 m or average setback of the 2 nearest dwelling houses on the same side of the primary road",
+    "sources": [
+     17977
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    17977
+   ],
+   "evidence": [
+    {
+     "id": 17977,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "or the average setback from the primary road of the 2 nearest dwelling houses",
+     "clause": "6.1.17",
+     "page": 9,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "dwelling house, unmapped site",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "or the average setback from the primary road of the 2 nearest dwelling houses",
+   "clause": "6.1.17",
+   "page": 9,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "dwelling house, corner allotment secondary building line",
+    "dwelling house, rear building line unless identified on Building Line Maps",
+    "dwelling house, site not mapped by building line maps: 4.5 m or average of 2 nearest dwellings on same side, whichever is greater",
+    "dwelling house, wall to vertical member"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     17976
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     17978
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     17980
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     17981
+    ]
+   },
+   "garage": null,
+   "sources": [
+    17976,
+    17978,
+    17980,
+    17981
+   ],
+   "evidence": [
+    {
+     "id": 17976,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "the front building line shall be 4.5m or the average setback",
+     "clause": "6.1.17",
+     "page": 9,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "dwelling house, site not mapped by building line maps: 4.5 m or average of 2 nearest dwellings on same side, whichever is greater",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    },
+    {
+     "id": 17978,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary building lines shall be a minimum of 3.5 metres",
+     "clause": "6.1.18",
+     "page": 9,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "dwelling house, corner allotment secondary building line",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    },
+    {
+     "id": 17980,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear building lines are 6 metres",
+     "clause": "6.1.20",
+     "page": 9,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "dwelling house, rear building line unless identified on Building Line Maps",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    },
+    {
+     "id": 17981,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "shall be 900mm, as measured from the boundary to a vertical",
+     "clause": "6.1.23",
+     "page": 9,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "dwelling house, wall to vertical member",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "the front building line shall be 4.5m or the average setback",
+   "clause": "6.1.17",
+   "page": 9,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "dwelling house, parallel road allotment secondary building line",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     17979
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    17979
+   ],
+   "evidence": [
+    {
+     "id": 17979,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary building lines shall be a minimum of 3 metres",
+     "clause": "6.1.19",
+     "page": 9,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "dwelling house, parallel road allotment secondary building line",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen",
+   "quote": "Secondary building lines shall be a minimum of 3 metres",
+   "clause": "6.1.19",
+   "page": 9,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 300.0,
+    "lotAreaMaxM2": 1000.0,
+    "precinct": "South Kiama Urban Release Area"
+   },
+   "conditionText": [
+    "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2 with no garage or carport: minimum side boundary setback for vehicle access",
+    "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2: garage line (1 m behind the building facade line)"
+   ],
+   "garage": {
+    "minM": null,
+    "behindBuildingLineM": 5.5,
+    "sources": [
+     18032
+    ]
+   },
+   "side": {
+    "minM": 2.7,
+    "basis": "fixed",
+    "sources": [
+     18037
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "sources": [
+    18032,
+    18037
+   ],
+   "evidence": [
+    {
+     "id": 18032,
+     "parameter": "garage_setback",
+     "slot": "garageBehind",
+     "quote": "5.5 metres to garage line and 1 metre behind the building",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2: garage line (1 m behind the building facade line)",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    },
+    {
+     "id": 18037,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "the minimum side boundary setback is 2.7m",
+     "clause": "12.11.145 Table 2",
+     "page": 48,
+     "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+     "condition": "South Kiama Urban Release Area (Topic 12.11): lots 300 to under 1000 m2 with no garage or carport: minimum side boundary setback for vehicle access",
+     "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5 metres to garage line and 1 metre behind the building",
+   "clause": "12.11.145 Table 2",
+   "page": 48,
+   "source_file": "DCP/dcp-chapter-12.11-south-kiama-urban-release.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 12 Topic 12.11 South Kiama Urban Release Area, effective 06/03/2025"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "dwelling house where front building line is under 6.0 m, garage or carport from street boundary",
+   "garage": {
+    "minM": 6.0,
+    "sources": [
+     17983
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    17983
+   ],
+   "evidence": [
+    {
+     "id": 17983,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "shall be setback a minimum distance of 6.0 metres from the street boundary",
+     "clause": "6.1.25",
+     "page": 10,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "dwelling house where front building line is under 6.0 m, garage or carport from street boundary",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "shall be setback a minimum distance of 6.0 metres from the street boundary",
+   "clause": "6.1.25",
+   "page": 10,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "verandah_deck"
+   ],
+   "conditions": {
+    "storeysMax": 2,
+    "level": "ground",
+    "qualifiers": [
+     "habitable"
+    ]
+   },
+   "conditionText": "medium density, up to 2 storeys: ground floor, habitable rooms and balconies / terraces",
+   "side": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18000
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18000
+   ],
+   "evidence": [
+    {
+     "id": 18000,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Setback (Ground Floor) 6m for habitable rooms and balconies/terraces",
+     "clause": "6.5.9",
+     "page": 35,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "medium density, up to 2 storeys: ground floor, habitable rooms and balconies / terraces",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Side Setback (Ground Floor) 6m for habitable rooms and balconies/terraces",
+   "clause": "6.5.9",
+   "page": 35,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeysMax": 2,
+    "level": "ground",
+    "qualifiers": [
+     "non_habitable"
+    ]
+   },
+   "conditionText": "medium density, up to 2 storeys: ground floor, non-habitable rooms",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     17999
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    17999
+   ],
+   "evidence": [
+    {
+     "id": 17999,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "0.9m for non-habitable rooms",
+     "clause": "6.5.9",
+     "page": 35,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "medium density, up to 2 storeys: ground floor, non-habitable rooms",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "0.9m for non-habitable rooms",
+   "clause": "6.5.9",
+   "page": 35,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeysMax": 2
+   },
+   "conditionText": [
+    "medium density, up to 2 storeys and 8.5 m height",
+    "medium density, up to 2 storeys and 8.5 m height: primary street frontage",
+    "medium density, up to 2 storeys and 8.5 m height: secondary street frontage (corner sites)"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     17996
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     17997
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     17998
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    17996,
+    17997,
+    17998
+   ],
+   "evidence": [
+    {
+     "id": 17996,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Primary street frontage 4.5 metres",
+     "clause": "6.5.9",
+     "page": 35,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "medium density, up to 2 storeys and 8.5 m height: primary street frontage",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    },
+    {
+     "id": 17997,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary street frontage 3.5 metres",
+     "clause": "6.5.9",
+     "page": 35,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "medium density, up to 2 storeys and 8.5 m height: secondary street frontage (corner sites)",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    },
+    {
+     "id": 17998,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear setback 6 metres",
+     "clause": "6.5.9",
+     "page": 35,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "medium density, up to 2 storeys and 8.5 m height",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Primary street frontage 4.5 metres",
+   "clause": "6.5.9",
+   "page": 35,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeysMin": 3
+   },
+   "conditionText": [
+    "medium density, 3 or more storeys and/or over 8.5 m to 11 m: primary street frontage",
+    "medium density, 3 or more storeys: rear setback where no building line applies"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18001
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18002
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18001,
+    18002
+   ],
+   "evidence": [
+    {
+     "id": 18001,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Primary street frontage Minimum of 6 m",
+     "clause": "6.5.11",
+     "page": 35,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "medium density, 3 or more storeys and/or over 8.5 m to 11 m: primary street frontage",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    },
+    {
+     "id": 18002,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "otherwise: 6m",
+     "clause": "6.5.11",
+     "page": 35,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "medium density, 3 or more storeys: rear setback where no building line applies",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Primary street frontage Minimum of 6 m",
+   "clause": "6.5.11",
+   "page": 35,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-017",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "dwelling in rural areas, from boundary with public road frontage",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     17985
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    17985
+   ],
+   "evidence": [
+    {
+     "id": 17985,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Buildings in rural areas shall be setback at least 15.0 metres",
+     "clause": "6.1.26",
+     "page": 10,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "dwelling in rural areas, from boundary with public road frontage",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Buildings in rural areas shall be setback at least 15.0 metres",
+   "clause": "6.1.26",
+   "page": 10,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
+  },
+  {
+   "id": "kiama-the-council-of-the-municipality-of-018",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "dwelling and ancillary development, from a private road where practical without clearing native vegetation",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     17986
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    17986
+   ],
+   "evidence": [
+    {
+     "id": 17986,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "from a private road by a distance of at least 10 metres",
+     "clause": "6.1.30",
+     "page": 10,
+     "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+     "condition": "dwelling and ancillary development, from a private road where practical without clearing native vegetation",
+     "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "from a private road by a distance of at least 10 metres",
+   "clause": "6.1.30",
+   "page": 10,
+   "source_file": "DCP/kiama-development-control-plan-2020-chapter-6-residential-accommodation.pdf",
+   "dcp": "Kiama Development Control Plan 2020 (Chapters 1 to 13; approved 17/03/2020, effective 04/04/2020; Chapter 5 effective 06/04/2020); Chapter 12 Topic 12.11 South Kiama Urban Release Area effective 06/03/2025",
+   "edition": "Kiama DCP 2020 Chapter 6, approved 17/03/2020, effective 04/04/2020",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; CONFLICT: another rule with the same applicability gives..."
+  }
+ ],
+ "gaps": [
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 17987",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): scanned, no text: Engineering/technical-specifications-for-rainwater-tanks-on-residential-properties-elambra-estate.pdf and ...cedar-grove-estate-stage-1.pdf (about 120 chars each) | DCP Chapter 3 Topic 3.6.67 road characteristics table: footpath, shared path and pavement type columns are scrambled in the extraction and not recorded; only carriageway, verge, reserve, speed and volume were recorded (reconciled by carriageway + 2 x verge = reserve) | DCP Chapter 3 rural private access road / battle axe row (3.6.68) not recorded because the table columns could not be reliably separated | Kerb return radius, kerb type, design vehicle by road class (other than D1.17 and DCP parking), street tree "
+ ],
+ "notes": "Built from 30 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 16
+  },
+  "RU*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [
+  "South Kiama Urban Release Area"
+ ],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 30,
+  "rules": 18,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (kiama-the-council-of-the-municipality-of-017, kiama-the-council-of-the-municipality-of-018))"
+  }
+ }
+}

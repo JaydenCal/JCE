@@ -1,0 +1,2294 @@
+{
+ "lga_slug": "parkes-shire-council",
+ "council": "Parkes Shire Council",
+ "lgaNames": [
+  "PARKES",
+  "PARKES SHIRE",
+  "PARKES SHIRE COUNCIL"
+ ],
+ "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+ "lep": "Parkes Local Environmental Plan 2012",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "parkes-shire-council-001",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": [
+    "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: Side boundary (not adjoining a road)",
+    "Part C.5 Large lot dwellings, R5 zone, 4,000m2 lot size area: Side boundary (not adjoining a road)"
+   ],
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     25435,
+     25439
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25435,
+    25439
+   ],
+   "evidence": [
+    {
+     "id": 25435,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "5m Side boundary (not adjoining a road)",
+     "clause": "C.5.4 Setbacks",
+     "page": 113,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 4,000m2 lot size area: Side boundary (not adjoining a road)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25439,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "5m Side boundary (not adjoining a road)",
+     "clause": "C.5.4 Setbacks",
+     "page": 114,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: Side boundary (not adjoining a road)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "5m Side boundary (not adjoining a road)",
+   "clause": "C.5.4 Setbacks",
+   "page": 113,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
+  },
+  {
+   "id": "parkes-shire-council-002",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Part C.5 Large lot dwellings, R5 zone, 4 hectare lot size area: Side boundary (not adjoining a road)",
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     25443
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25443
+   ],
+   "evidence": [
+    {
+     "id": 25443,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "10m Side boundary (not adjoining a road)",
+     "clause": "C.5.4 Setbacks",
+     "page": 115,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 4 hectare lot size area: Side boundary (not adjoining a road)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText; CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "10m Side boundary (not adjoining a road)",
+   "clause": "C.5.4 Setbacks",
+   "page": 115,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText; CONFLICT: another rule with the same applicability gives a different s..."
+  },
+  {
+   "id": "parkes-shire-council-003",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: Rear boundary",
+    "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: Secondary road corridor",
+    "Part C.5 Large lot dwellings, R5 zone, 4 hectare lot size area: Secondary road corridor",
+    "Part C.5 Large lot dwellings, R5 zone, 4,000m2 lot size area: Rear boundary",
+    "Part C.5 Large lot dwellings, R5 zone, 4,000m2 lot size area: Secondary road corridor",
+    "Part C.5 Large lot dwellings, R5 zone, 4,000m2 lot size area: primary road corridor (or average building line)"
+   ],
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     25432
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     25434,
+     25438
+    ]
+   },
+   "secondaryFront": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     25433,
+     25437,
+     25441
+    ]
+   },
+   "side": null,
+   "garage": null,
+   "sources": [
+    25432,
+    25433,
+    25434,
+    25437,
+    25438,
+    25441
+   ],
+   "evidence": [
+    {
+     "id": 25432,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "15m or the average building line Primary road corridor",
+     "clause": "C.5.4 Setbacks",
+     "page": 113,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 4,000m2 lot size area: primary road corridor (or average building line)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25434,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "10m Rear boundary",
+     "clause": "C.5.4 Setbacks",
+     "page": 113,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 4,000m2 lot size area: Rear boundary",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25438,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "10m Rear boundary",
+     "clause": "C.5.4 Setbacks",
+     "page": 114,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: Rear boundary",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25433,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "10m Secondary road corridor",
+     "clause": "C.5.4 Setbacks",
+     "page": 113,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 4,000m2 lot size area: Secondary road corridor",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25437,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "10m Secondary road corridor",
+     "clause": "C.5.4 Setbacks",
+     "page": 114,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: Secondary road corridor",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25441,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "10m Secondary road corridor",
+     "clause": "C.5.4 Setbacks",
+     "page": 115,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 4 hectare lot size area: Secondary road corridor",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "15m or the average building line Primary road corridor",
+   "clause": "C.5.4 Setbacks",
+   "page": 113,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "parkes-shire-council-004",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: primary road corridor (or average building line)",
+    "Part C.5 Large lot dwellings, R5 zone, 4 hectare lot size area: primary road corridor (or average building line)"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     25436,
+     25440
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25436,
+    25440
+   ],
+   "evidence": [
+    {
+     "id": 25436,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "20m or the average building line Primary road corridor",
+     "clause": "C.5.4 Setbacks",
+     "page": 114,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: primary road corridor (or average building line)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25440,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "20m or the average building line setback of Primary road corridor",
+     "clause": "C.5.4 Setbacks",
+     "page": 115,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 4 hectare lot size area: primary road corridor (or average building line)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "averaging alternative printed beside the fixed value; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "20m or the average building line Primary road corridor",
+   "clause": "C.5.4 Setbacks",
+   "page": 114,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; CONFLICT: another rule with the same applicability gives a different front value; both retained, no win..."
+  },
+  {
+   "id": "parkes-shire-council-005",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: land zoned RU1 Primary Production",
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     25444
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25444
+   ],
+   "evidence": [
+    {
+     "id": 25444,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "50m Land zoned RU1 Primary Production",
+     "clause": "C.5.4 Setbacks (b)",
+     "page": 114,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: land zoned RU1 Primary Production",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "50m Land zoned RU1 Primary Production",
+   "clause": "C.5.4 Setbacks (b)",
+   "page": 114,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "parkes-shire-council-006",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Part C.5 Large lot dwellings, R5 zone, 4 hectare lot size area: Rear boundary",
+   "rear": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     25442
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25442
+   ],
+   "evidence": [
+    {
+     "id": 25442,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "20m Rear boundary",
+     "clause": "C.5.4 Setbacks",
+     "page": 115,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 4 hectare lot size area: Rear boundary",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "20m Rear boundary",
+   "clause": "C.5.4 Setbacks",
+   "page": 115,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "parkes-shire-council-007",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {},
+   "conditionText": "Part E Commercial, RU5 Village zone: front setback (or average of two nearest buildings)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     25448
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25448
+   ],
+   "evidence": [
+    {
+     "id": 25448,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "6 metres from the front property boundary, or is the average of the two",
+     "clause": "E.1.4 Setbacks (RU5 a)(ii)",
+     "page": 162,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part E Commercial, RU5 Village zone: front setback (or average of two nearest buildings)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "6 metres from the front property boundary, or is the average of the two",
+   "clause": "E.1.4 Setbacks (RU5 a)(ii)",
+   "page": 162,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "parkes-shire-council-008",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Part F Industrial, RU5 Village zone: front setback (or average of nearest buildings within 40 m)",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     25457
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25457
+   ],
+   "evidence": [
+    {
+     "id": 25457,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "i. 7.5 metres from the front property boundary, or is the average of the",
+     "clause": "F.1.4 Setbacks (RU5 a)(i)",
+     "page": 184,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part F Industrial, RU5 Village zone: front setback (or average of nearest buildings within 40 m)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "i. 7.5 metres from the front property boundary, or is the average of the",
+   "clause": "F.1.4 Setbacks (RU5 a)(i)",
+   "page": 184,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "parkes-shire-council-009",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: land zoned RU1 Primary Production",
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     25444
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25444
+   ],
+   "evidence": [
+    {
+     "id": 25444,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "50m Land zoned RU1 Primary Production",
+     "clause": "C.5.4 Setbacks (b)",
+     "page": 114,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.5 Large lot dwellings, R5 zone, 1 hectare lot size area: land zoned RU1 Primary Production",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "50m Land zoned RU1 Primary Production",
+   "clause": "C.5.4 Setbacks (b)",
+   "page": 114,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMaxM2": 600.0,
+    "cornerLot": true
+   },
+   "conditionText": "Part C.2 Urban dwellings, corner lots: rear boundary, single storey, lot under 600m2",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25421
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25421
+   ],
+   "evidence": [
+    {
+     "id": 25421,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Boundary Single Storey 3m 5m",
+     "clause": "C.2.4 table",
+     "page": 82,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, corner lots: rear boundary, single storey, lot under 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Rear Boundary Single Storey 3m 5m",
+   "clause": "C.2.4 table",
+   "page": 82,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMaxM2": 600.0,
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "Part C.2 Urban dwellings, laneway lots: rear laneway boundary, single storey, lot under 600m2",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25423
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25423
+   ],
+   "evidence": [
+    {
+     "id": 25423,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Single Storey 3m 5m",
+     "clause": "C.2.4 table",
+     "page": 83,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, laneway lots: rear laneway boundary, single storey, lot under 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single Storey 3m 5m",
+   "clause": "C.2.4 table",
+   "page": 83,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": [
+    "Part C.2 Urban dwellings, standard lots: primary road, single storey, lot under 600m2 (average building line or this distance)",
+    "Part C.2 Urban dwellings, standard lots: rear boundary, single storey, lot under 600m2"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     25405
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25409
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25405,
+    25409
+   ],
+   "evidence": [
+    {
+     "id": 25405,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "line or 4.5m line or 6m",
+     "clause": "C.2.4 Setbacks standard lots table",
+     "page": 79,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, standard lots: primary road, single storey, lot under 600m2 (average building line or this distance)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25409,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Boundary Single Storey 3m 5m",
+     "clause": "C.2.4 table",
+     "page": 79,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, standard lots: rear boundary, single storey, lot under 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "line or 4.5m line or 6m",
+   "clause": "C.2.4 Setbacks standard lots table",
+   "page": 79,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "parkes-shire-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": "Part C.2 Urban dwellings, standard lots: rear boundary, more than single storey, lot under 600m2",
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     25411
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25411
+   ],
+   "evidence": [
+    {
+     "id": 25411,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">Single Storey 5m 8m",
+     "clause": "C.2.4 table",
+     "page": 79,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, standard lots: rear boundary, more than single storey, lot under 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": ">Single Storey 5m 8m",
+   "clause": "C.2.4 table",
+   "page": 79,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "parkes-shire-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 600.0,
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Part C.2 Urban dwellings, battle-axe lots (greater than 600m2): rear boundary, single storey",
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     25418
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25418
+   ],
+   "evidence": [
+    {
+     "id": 25418,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Boundary Single Storey 5m",
+     "clause": "C.2.4 table",
+     "page": 81,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, battle-axe lots (greater than 600m2): rear boundary, single storey",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Rear Boundary Single Storey 5m",
+   "clause": "C.2.4 table",
+   "page": 81,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 600.0,
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": "Part C.2 Urban dwellings, battle-axe lots (greater than 600m2): rear boundary, more than single storey",
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     25419
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25419
+   ],
+   "evidence": [
+    {
+     "id": 25419,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">Single Storey 8m",
+     "clause": "C.2.4 table",
+     "page": 81,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, battle-axe lots (greater than 600m2): rear boundary, more than single storey",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": ">Single Storey 8m",
+   "clause": "C.2.4 table",
+   "page": 81,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "parkes-shire-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 600.0,
+    "qualifiers": [
+     "battle_axe"
+    ]
+   },
+   "conditionText": [
+    "Part C.2 Urban dwellings, battle-axe lots (greater than 600m2): front boundary, dwelling",
+    "Part C.2 Urban dwellings, battle-axe lots (greater than 600m2): side boundary, dwelling"
+   ],
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25416
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     25417
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25416,
+    25417
+   ],
+   "evidence": [
+    {
+     "id": 25416,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front Boundary Dwelling 3m",
+     "clause": "C.2.4 table",
+     "page": 81,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, battle-axe lots (greater than 600m2): front boundary, dwelling",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25417,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Boundary Dwelling 0.9m or BCA",
+     "clause": "C.2.4 table",
+     "page": 81,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, battle-axe lots (greater than 600m2): side boundary, dwelling",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Front Boundary Dwelling 3m",
+   "clause": "C.2.4 table",
+   "page": 81,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 600.0,
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "Part C.2 Urban dwellings, laneway lots: rear laneway boundary, single storey, lot over 600m2",
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     25424
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25424
+   ],
+   "evidence": [
+    {
+     "id": 25424,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Single Storey 3m 5m",
+     "clause": "C.2.4 table",
+     "page": 83,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, laneway lots: rear laneway boundary, single storey, lot over 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Single Storey 3m 5m",
+   "clause": "C.2.4 table",
+   "page": 83,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 600.0
+   },
+   "conditionText": [
+    "Part C.2 Urban dwellings, standard lots: primary road, single storey, lot over 600m2 (average building line or this distance)",
+    "Part C.2 Urban dwellings, standard lots: rear boundary, single storey, lot over 600m2"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     25406
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     25410
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25406,
+    25410
+   ],
+   "evidence": [
+    {
+     "id": 25406,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "line or 4.5m line or 6m",
+     "clause": "C.2.4 Setbacks standard lots table",
+     "page": 79,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, standard lots: primary road, single storey, lot over 600m2 (average building line or this distance)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25410,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Boundary Single Storey 3m 5m",
+     "clause": "C.2.4 table",
+     "page": 79,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, standard lots: rear boundary, single storey, lot over 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "line or 4.5m line or 6m",
+   "clause": "C.2.4 Setbacks standard lots table",
+   "page": 79,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "parkes-shire-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 600.0
+   },
+   "conditionText": "Part C.2 Urban dwellings, standard lots: rear boundary, more than single storey, lot over 600m2",
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     25412
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25412
+   ],
+   "evidence": [
+    {
+     "id": 25412,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">Single Storey 5m 8m",
+     "clause": "C.2.4 table",
+     "page": 79,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, standard lots: rear boundary, more than single storey, lot over 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": ">Single Storey 5m 8m",
+   "clause": "C.2.4 table",
+   "page": 79,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "parkes-shire-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "qualifiers": [
+     "laneway"
+    ]
+   },
+   "conditionText": "Part C.2 Urban dwellings, laneway lots: side laneway boundary, single storey",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     25422
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25422
+   ],
+   "evidence": [
+    {
+     "id": 25422,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Laneway Single Storey 0.9m or BCA 0.9m or BCA",
+     "clause": "C.2.4 table",
+     "page": 83,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, laneway lots: side laneway boundary, single storey",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Side Laneway Single Storey 0.9m or BCA 0.9m or BCA",
+   "clause": "C.2.4 table",
+   "page": 83,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": [
+    "Part C.2 Urban dwellings, parallel road lots: rear boundary, single storey, both lot sizes",
+    "Part C.2 Urban dwellings, parallel road lots: side boundary, single storey",
+    "Part C.2 Urban dwellings, standard lots: side boundary, single storey, both lot sizes"
+   ],
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     25413
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     25407,
+     25415
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    25407,
+    25413,
+    25415
+   ],
+   "evidence": [
+    {
+     "id": 25413,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Boundary Single Storey 5m 5m",
+     "clause": "C.2.4 table",
+     "page": 80,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, parallel road lots: rear boundary, single storey, both lot sizes",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25407,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Boundary Single Storey 0.9m or BCA 0.9m or BCA",
+     "clause": "C.2.4 table",
+     "page": 79,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, standard lots: side boundary, single storey, both lot sizes",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25415,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Boundary Single Storey 0.9m or BCA 0.9m or BCA",
+     "clause": "C.2.4 table",
+     "page": 80,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, parallel road lots: side boundary, single storey",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Rear Boundary Single Storey 5m 5m",
+   "clause": "C.2.4 table",
+   "page": 80,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Part C.2 Urban dwellings, parallel road lots: rear boundary, more than single storey, both lot sizes",
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     25414
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25414
+   ],
+   "evidence": [
+    {
+     "id": 25414,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">Single Storey 8m 8m",
+     "clause": "C.2.4 table",
+     "page": 80,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, parallel road lots: rear boundary, more than single storey, both lot sizes",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": ">Single Storey 8m 8m",
+   "clause": "C.2.4 table",
+   "page": 80,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "parkes-shire-council-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Part C.2 Urban dwellings, standard lots: side boundary, more than single storey, both lot sizes",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     25408
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25408
+   ],
+   "evidence": [
+    {
+     "id": 25408,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": ">Single Storey 1.5m or BCA 1.5m or BCA",
+     "clause": "C.2.4 table",
+     "page": 79,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, standard lots: side boundary, more than single storey, both lot sizes",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": ">Single Storey 1.5m or BCA 1.5m or BCA",
+   "clause": "C.2.4 table",
+   "page": 79,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
+  },
+  {
+   "id": "parkes-shire-council-024",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Part C.2 Urban dwellings, corner lots: secondary road, dwelling, both lot sizes",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25420
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25420
+   ],
+   "evidence": [
+    {
+     "id": 25420,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Road Dwelling 3m 3m",
+     "clause": "C.2.4 table",
+     "page": 82,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings, corner lots: secondary road, dwelling, both lot sizes",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Secondary Road Dwelling 3m 3m",
+   "clause": "C.2.4 table",
+   "page": 82,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-025",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Part C.2 Urban dwellings: attached garages from primary or secondary street boundary",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     25393
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    25393
+   ],
+   "evidence": [
+    {
+     "id": 25393,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5 metres from the property boundary (primary street or secondary",
+     "clause": "C.2.3 Streetscape (d)",
+     "page": 78,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.2 Urban dwellings: attached garages from primary or secondary street boundary",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5 metres from the property boundary (primary street or secondary",
+   "clause": "C.2.3 Streetscape (d)",
+   "page": 78,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-026",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Part C.3 Medium density, corner lots: secondary road, dwelling, both lot sizes",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25431
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25431
+   ],
+   "evidence": [
+    {
+     "id": 25431,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Secondary Road Dwelling 3m 3m",
+     "clause": "C.3.5 table",
+     "page": 97,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.3 Medium density, corner lots: secondary road, dwelling, both lot sizes",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Secondary Road Dwelling 3m 3m",
+   "clause": "C.3.5 table",
+   "page": 97,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-027",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "garage"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Part C.3 Medium density: attached garages from primary or secondary street boundary",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     25394
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    25394
+   ],
+   "evidence": [
+    {
+     "id": 25394,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5 metres from the property boundary (primary street or secondary",
+     "clause": "C.3.3 Streetscape (d)",
+     "page": 93,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.3 Medium density: attached garages from primary or secondary street boundary",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5 metres from the property boundary (primary street or secondary",
+   "clause": "C.3.3 Streetscape (d)",
+   "page": 93,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-028",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": "Part C.3 Medium density, standard lots: rear boundary, single storey, lot under 600m2",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     25427
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25427
+   ],
+   "evidence": [
+    {
+     "id": 25427,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Boundary Single Storey 3m 5m",
+     "clause": "C.3.5 table",
+     "page": 94,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.3 Medium density, standard lots: rear boundary, single storey, lot under 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Rear Boundary Single Storey 3m 5m",
+   "clause": "C.3.5 table",
+   "page": 94,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-029",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": "Part C.3 Medium density, standard lots: rear boundary, more than single storey, lot under 600m2",
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     25429
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25429
+   ],
+   "evidence": [
+    {
+     "id": 25429,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">Single Storey 5m 8m",
+     "clause": "C.3.5 table",
+     "page": 94,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.3 Medium density, standard lots: rear boundary, more than single storey, lot under 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": ">Single Storey 5m 8m",
+   "clause": "C.3.5 table",
+   "page": 94,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "parkes-shire-council-030",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 600.0
+   },
+   "conditionText": "Part C.3 Medium density, standard lots: rear boundary, single storey, lot over 600m2",
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     25428
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25428
+   ],
+   "evidence": [
+    {
+     "id": 25428,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Boundary Single Storey 3m 5m",
+     "clause": "C.3.5 table",
+     "page": 94,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.3 Medium density, standard lots: rear boundary, single storey, lot over 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Rear Boundary Single Storey 3m 5m",
+   "clause": "C.3.5 table",
+   "page": 94,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-031",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 600.0
+   },
+   "conditionText": "Part C.3 Medium density, standard lots: rear boundary, more than single storey, lot over 600m2",
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     25430
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25430
+   ],
+   "evidence": [
+    {
+     "id": 25430,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": ">Single Storey 5m 8m",
+     "clause": "C.3.5 table",
+     "page": 94,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.3 Medium density, standard lots: rear boundary, more than single storey, lot over 600m2",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": ">Single Storey 5m 8m",
+   "clause": "C.3.5 table",
+   "page": 94,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "parkes-shire-council-032",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Part C.3 Medium density, standard lots: side boundary, single storey",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     25425
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25425
+   ],
+   "evidence": [
+    {
+     "id": 25425,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Boundary Single Storey 0.9m or BCA 0.9m or BCA",
+     "clause": "C.3.5 table",
+     "page": 94,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.3 Medium density, standard lots: side boundary, single storey",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Side Boundary Single Storey 0.9m or BCA 0.9m or BCA",
+   "clause": "C.3.5 table",
+   "page": 94,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-033",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Part C.3 Medium density, standard lots: side boundary, more than single storey",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     25426
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25426
+   ],
+   "evidence": [
+    {
+     "id": 25426,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": ">Single Storey 1.5m or BCA 1.5m or BCA",
+     "clause": "C.3.5 table",
+     "page": 94,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part C.3 Medium density, standard lots: side boundary, more than single storey",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": ">Single Storey 1.5m or BCA 1.5m or BCA",
+   "clause": "C.3.5 table",
+   "page": 94,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
+  },
+  {
+   "id": "parkes-shire-council-034",
+   "zones": [
+    "B*"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {},
+   "conditionText": "Part G Airport: front setback",
+   "front": {
+    "minM": 0.0,
+    "basis": "fixed",
+    "note": "Zero front setback",
+    "sources": [
+     25459
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25459
+   ],
+   "evidence": [
+    {
+     "id": 25459,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "(i.e. zero front setback), except where space is approved for front landscaping /",
+     "clause": "G.1.6 Setbacks (a)",
+     "page": 204,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part G Airport: front setback",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).",
+   "quote": "(i.e. zero front setback), except where space is approved for front landscaping /",
+   "clause": "G.1.6 Setbacks (a)",
+   "page": 204,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
+  },
+  {
+   "id": "parkes-shire-council-035",
+   "zones": [
+    "B2"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {},
+   "conditionText": "Part E Commercial, B2 Local Centre: front setback",
+   "front": {
+    "minM": 0.0,
+    "basis": "fixed",
+    "note": "Zero front setback, building to street alignment",
+    "sources": [
+     25450
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25450
+   ],
+   "evidence": [
+    {
+     "id": 25450,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "extend to the street alignment (i.e. zero",
+     "clause": "E.1.4 Setbacks (B2 a)",
+     "page": 161,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part E Commercial, B2 Local Centre: front setback",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "extend to the street alignment (i.e. zero",
+   "clause": "E.1.4 Setbacks (B2 a)",
+   "page": 161,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-036",
+   "zones": [
+    "B4"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Part F Industrial, B4 Mixed Use zone: front setback (or average of two nearest buildings)",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     25456
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25456
+   ],
+   "evidence": [
+    {
+     "id": 25456,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "i. 7.5 metres from the front property boundary, or a distance that is the average",
+     "clause": "F.1.4 Setbacks (B4 a)(i)",
+     "page": 183,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part F Industrial, B4 Mixed Use zone: front setback (or average of two nearest buildings)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "i. 7.5 metres from the front property boundary, or a distance that is the average",
+   "clause": "F.1.4 Setbacks (B4 a)(i)",
+   "page": 183,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "parkes-shire-council-037",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Part G Airport: building setback from rear boundary adjoining airside land",
+   "rear": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     25458
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    25458
+   ],
+   "evidence": [
+    {
+     "id": 25458,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "c. Buildings are setback a minimum distance of 15 metres from",
+     "clause": "G.1.6 Setbacks (c)",
+     "page": 204,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part G Airport: building setback from rear boundary adjoining airside land",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "c. Buildings are setback a minimum distance of 15 metres from",
+   "clause": "G.1.6 Setbacks (c)",
+   "page": 204,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
+  },
+  {
+   "id": "parkes-shire-council-038",
+   "zones": [
+    "IN1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Part F Industrial, IN1: front setback to Newell Highway or Saleyards Road",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     25452
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25452
+   ],
+   "evidence": [
+    {
+     "id": 25452,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "i. 15 metres from the Newell Highway or Saleyards Road",
+     "clause": "F.1.4 Setbacks (IN1 a)(i)",
+     "page": 181,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part F Industrial, IN1: front setback to Newell Highway or Saleyards Road",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "i. 15 metres from the Newell Highway or Saleyards Road",
+   "clause": "F.1.4 Setbacks (IN1 a)(i)",
+   "page": 181,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+  },
+  {
+   "id": "parkes-shire-council-039",
+   "zones": [
+    "IN1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Part F Industrial, IN1: front setback (or average of two nearest buildings)",
+    "Part F Industrial, IN1: setback to secondary road boundary"
+   ],
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     25453
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     25454
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25453,
+    25454
+   ],
+   "evidence": [
+    {
+     "id": 25453,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "ii. 7.5 metres from the front property boundary, or a distance that is the average",
+     "clause": "F.1.4 Setbacks (IN1 a)(ii)",
+     "page": 181,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part F Industrial, IN1: front setback (or average of two nearest buildings)",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    },
+    {
+     "id": 25454,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "iii. 4 metres from a property boundary fronting a secondary road.",
+     "clause": "F.1.4 Setbacks (IN1 a)(iii)",
+     "page": 181,
+     "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+     "condition": "Part F Industrial, IN1: setback to secondary road boundary",
+     "edition": "Parkes Shire DCP 2021, adopted 21/09/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "ii. 7.5 metres from the front property boundary, or a distance that is the average",
+   "clause": "F.1.4 Setbacks (IN1 a)(ii)",
+   "page": 181,
+   "source_file": "DCP/Parkes-Shire-DCP-2021-Full-Version.pdf",
+   "dcp": "Parkes Shire Development Control Plan 2021, adopted 21/09/2021 (Parts A to G, full version)",
+   "edition": "Parkes Shire DCP 2021, adopted 21/09/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  }
+ ],
+ "gaps": [
+  "6 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 25449, 25451, 25455, 25445, 25446, 25447",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Part C.6 rural dwelling setback table (p122) and Part C.5 R5 secondary rows read but table layout ambiguous in text, not recorded; Part D rural outbuilding setbacks not recorded | Residential site coverage and landscaped area not stated as numbers"
+ ],
+ "notes": "Built from 57 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 6
+  },
+  "RU5": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": true,
+   "rules": 24
+  },
+  "B*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "B2": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "B4": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN1": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 57,
+  "rules": 39,
+  "recordsNotModelled": 6,
+  "otherSetbackKeysNotModelled": 1
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-018)); side (conflicting rules of equal specificity (parkes-shire-council-021, parkes-shire-council-023)); rear (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-013, parkes-shire-council-018, parkes-shire-council-019))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-018)); side (conflicting rules of equal specificity (parkes-shire-council-021, parkes-shire-council-023)); rear (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-013, parkes-shire-council-018, parkes-shire-council-019))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-018)); side (conflicting rules of equal specificity (parkes-shire-council-021, parkes-shire-council-023)); rear (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-013, parkes-shire-council-018, parkes-shire-council-019))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (parkes-shire-council-003, parkes-shire-council-004, parkes-shire-council-005, parkes-shire-council-018)); side (conflicting rules of equal specificity (parkes-shire-council-021, parkes-shire-council-023)); rear (conflicting rules of equal specificity (parkes-shire-council-003, parkes-shire-council-006, parkes-shire-council-018, parkes-shire-council-019))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parkes-shire-council-021, parkes-shire-council-023)); rear (conflicting rules of equal specificity (parkes-shire-council-018, parkes-shire-council-019))"
+  }
+ }
+}

@@ -1,0 +1,1058 @@
+{
+ "lga_slug": "upper-lachlan-shire-council",
+ "council": "Upper Lachlan Shire Council",
+ "lgaNames": [
+  "UPPER LACHLAN",
+  "UPPER LACHLAN SHIRE",
+  "UPPER LACHLAN SHIRE COUNCIL"
+ ],
+ "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+ "lep": "Upper Lachlan Local Environmental Plan 2010",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "upper-lachlan-shire-council-001",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper",
+    "lotAreaMaxM2": 800.0
+   },
+   "conditionText": [
+    "C.1.3 Standard lots, rear boundary, second storey elements, lots under 800 m2",
+    "C.1.4 Corner lots, secondary road, second storey elements, lots under 800 m2"
+   ],
+   "secondaryFront": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     35328
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     35324
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    35324,
+    35328
+   ],
+   "evidence": [
+    {
+     "id": 35328,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "5m for second storey 6.5m for second storey",
+     "clause": "Table 2",
+     "page": 8,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.4 Corner lots, secondary road, second storey elements, lots under 800 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    },
+    {
+     "id": 35324,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "5m for second storey",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.3 Standard lots, rear boundary, second storey elements, lots under 800 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5m for second storey 6.5m for second storey",
+   "clause": "Table 2",
+   "page": 8,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+  },
+  {
+   "id": "upper-lachlan-shire-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper",
+    "lotAreaMinM2": 800.0
+   },
+   "conditionText": [
+    "C.1.3 Standard lots, rear boundary, second storey elements, lots over 800 m2",
+    "C.1.4 Corner lots, secondary road, second storey elements, lots over 800 m2"
+   ],
+   "secondaryFront": {
+    "minM": 6.5,
+    "basis": "fixed",
+    "sources": [
+     35329
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     35325
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    35325,
+    35329
+   ],
+   "evidence": [
+    {
+     "id": 35329,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "5m for second storey 6.5m for second storey",
+     "clause": "Table 2",
+     "page": 8,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.4 Corner lots, secondary road, second storey elements, lots over 800 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    },
+    {
+     "id": 35325,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "6m for second storey",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.3 Standard lots, rear boundary, second storey elements, lots over 800 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5m for second storey 6.5m for second storey",
+   "clause": "Table 2",
+   "page": 8,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+  },
+  {
+   "id": "upper-lachlan-shire-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "level": "upper"
+   },
+   "conditionText": "C.1.3 Standard lots, side boundary, second storey building elements",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     35321
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35321
+   ],
+   "evidence": [
+    {
+     "id": 35321,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "2m for second storey",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.3 Standard lots, side boundary, second storey building elements",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2m for second storey",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+  },
+  {
+   "id": "upper-lachlan-shire-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMaxM2": 800.0
+   },
+   "conditionText": [
+    "C.1.3 Standard lots, rear boundary, single storey, lots under 800 m2",
+    "C.1.4 Corner lots, secondary road, single storey elements, lots under 800 m2"
+   ],
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35326
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35322
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    35322,
+    35326
+   ],
+   "evidence": [
+    {
+     "id": 35326,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "3m for single storey 4.5m for single storey",
+     "clause": "Table 2",
+     "page": 8,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.4 Corner lots, secondary road, single storey elements, lots under 800 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    },
+    {
+     "id": 35322,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Boundary Single Storey 3m 5m",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.3 Standard lots, rear boundary, single storey, lots under 800 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "3m for single storey 4.5m for single storey",
+   "clause": "Table 2",
+   "page": 8,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+  },
+  {
+   "id": "upper-lachlan-shire-council-005",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 800.0
+   },
+   "conditionText": "C.1.3 Standard lots (urban and village), primary road, lots under 800 m2, average building line or",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     35318
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35318
+   ],
+   "evidence": [
+    {
+     "id": 35318,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Average building line or Average building line or b. Development of building articulation 4.5m 6m",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.3 Standard lots (urban and village), primary road, lots under 800 m2, average building line or",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Average building line or Average building line or b. Development of building articulation 4.5m 6m",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "upper-lachlan-shire-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "lotAreaMinM2": 800.0
+   },
+   "conditionText": [
+    "C.1.3 Standard lots, rear boundary, single storey, lots over 800 m2",
+    "C.1.4 Corner lots, secondary road, single storey elements, lots over 800 m2"
+   ],
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     35327
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     35323
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    35323,
+    35327
+   ],
+   "evidence": [
+    {
+     "id": 35327,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "3m for single storey 4.5m for single storey",
+     "clause": "Table 2",
+     "page": 8,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.4 Corner lots, secondary road, single storey elements, lots over 800 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    },
+    {
+     "id": 35323,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Rear Boundary Single Storey 3m 5m",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.3 Standard lots, rear boundary, single storey, lots over 800 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "3m for single storey 4.5m for single storey",
+   "clause": "Table 2",
+   "page": 8,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+  },
+  {
+   "id": "upper-lachlan-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 800.0
+   },
+   "conditionText": "C.1.3 Standard lots (urban and village), primary road, lots over 800 m2, average building line or",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     35319
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35319
+   ],
+   "evidence": [
+    {
+     "id": 35319,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Average building line or Average building line or b. Development of building articulation 4.5m 6m",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.3 Standard lots (urban and village), primary road, lots over 800 m2, average building line or",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Average building line or Average building line or b. Development of building articulation 4.5m 6m",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "upper-lachlan-shire-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "C.1.3 Standard lots, side boundary, single storey (or BCA if greater)",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     35320
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35320
+   ],
+   "evidence": [
+    {
+     "id": 35320,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side Boundary Single Storey 0.9m or BCA 0.9m or BCA",
+     "clause": "Table 1",
+     "page": 7,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.1.3 Standard lots, side boundary, single storey (or BCA if greater)",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Side Boundary Single Storey 0.9m or BCA 0.9m or BCA",
+   "clause": "Table 1",
+   "page": 7,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+  },
+  {
+   "id": "upper-lachlan-shire-council-009",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "building_element"
+    ]
+   },
+   "conditionText": "F1.3 corner lot minimum side setback adjoining secondary street (with 1 m landscaping strip)",
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     35437
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35437
+   ],
+   "evidence": [
+    {
+     "id": 35437,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "designed with a minimum 4m side",
+     "clause": "F1.3(c)",
+     "page": 6,
+     "source_file": "DCP/DRAFT-2026-Part-F-Industrial-4.pdf",
+     "condition": "F1.3 corner lot minimum side setback adjoining secondary street (with 1 m landscaping strip)",
+     "edition": "DRAFT 2026 Part F Industrial (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "designed with a minimum 4m side",
+   "clause": "F1.3(c)",
+   "page": 6,
+   "source_file": "DCP/DRAFT-2026-Part-F-Industrial-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part F Industrial (Upper Lachlan DCP 2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
+  },
+  {
+   "id": "upper-lachlan-shire-council-010",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "F1.3 side and rear setback from adjoining land used for residential purposes",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35438
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     35438
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    35438,
+    35438
+   ],
+   "evidence": [
+    {
+     "id": 35438,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "minimum 3m setbacks from adjoining",
+     "clause": "F1.3(d)",
+     "page": 6,
+     "source_file": "DCP/DRAFT-2026-Part-F-Industrial-4.pdf",
+     "condition": "F1.3 side and rear setback from adjoining land used for residential purposes",
+     "edition": "DRAFT 2026 Part F Industrial (Upper Lachlan DCP 2026)"
+    },
+    {
+     "id": 35438,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "minimum 3m setbacks from adjoining",
+     "clause": "F1.3(d)",
+     "page": 6,
+     "source_file": "DCP/DRAFT-2026-Part-F-Industrial-4.pdf",
+     "condition": "F1.3 side and rear setback from adjoining land used for residential purposes",
+     "edition": "DRAFT 2026 Part F Industrial (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "minimum 3m setbacks from adjoining",
+   "clause": "F1.3(d)",
+   "page": 6,
+   "source_file": "DCP/DRAFT-2026-Part-F-Industrial-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part F Industrial (Upper Lachlan DCP 2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
+  },
+  {
+   "id": "upper-lachlan-shire-council-011",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "F1.3 front setback from primary street frontage (or average of two nearest adjoining buildings), min 3 m landscaped",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     35436
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35436
+   ],
+   "evidence": [
+    {
+     "id": 35436,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "8m from the primary street frontage",
+     "clause": "F1.3(a)(i)",
+     "page": 6,
+     "source_file": "DCP/DRAFT-2026-Part-F-Industrial-4.pdf",
+     "condition": "F1.3 front setback from primary street frontage (or average of two nearest adjoining buildings), min 3 m landscaped",
+     "edition": "DRAFT 2026 Part F Industrial (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "8m from the primary street frontage",
+   "clause": "F1.3(a)(i)",
+   "page": 6,
+   "source_file": "DCP/DRAFT-2026-Part-F-Industrial-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part F Industrial (Upper Lachlan DCP 2026)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  },
+  {
+   "id": "upper-lachlan-shire-council-012",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 20000.0
+   },
+   "conditionText": [
+    "C.4.3 Large lot housing, lots under 20,000 m2, setback to primary road (or average of adjoining)",
+    "C.4.3 Large lot housing, setback to rear boundary, lots under 20,000 m2",
+    "C.4.3 Large lot housing, setback to side boundary, lots under 20,000 m2"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     35330
+    ]
+   },
+   "rear": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     35333
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     35335
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    35330,
+    35333,
+    35335
+   ],
+   "evidence": [
+    {
+     "id": 35330,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Setback to primary road 10m or average setback of adjoining",
+     "clause": "Table 13",
+     "page": 39,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.4.3 Large lot housing, lots under 20,000 m2, setback to primary road (or average of adjoining)",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    },
+    {
+     "id": 35333,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "Setback to rear boundary 8m 10m",
+     "clause": "Table 13",
+     "page": 39,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.4.3 Large lot housing, setback to rear boundary, lots under 20,000 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    },
+    {
+     "id": 35335,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Setback to side boundary 5m 10m",
+     "clause": "Table 13",
+     "page": 39,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.4.3 Large lot housing, setback to side boundary, lots under 20,000 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Setback to primary road 10m or average setback of adjoining",
+   "clause": "Table 13",
+   "page": 39,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
+  },
+  {
+   "id": "upper-lachlan-shire-council-013",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 20000.0
+   },
+   "conditionText": [
+    "C.4.3 Large lot housing, lots over 20,000 m2, setback to primary road (or average of adjoining)",
+    "C.4.3 Large lot housing, setback to rear boundary, lots over 20,000 m2",
+    "C.4.3 Large lot housing, setback to side boundary, lots over 20,000 m2"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     35331
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     35334
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     35336
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    35331,
+    35334,
+    35336
+   ],
+   "evidence": [
+    {
+     "id": 35331,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "20m or average setback of adjoining",
+     "clause": "Table 13",
+     "page": 39,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.4.3 Large lot housing, lots over 20,000 m2, setback to primary road (or average of adjoining)",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    },
+    {
+     "id": 35334,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "Setback to rear boundary 8m 10m",
+     "clause": "Table 13",
+     "page": 39,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.4.3 Large lot housing, setback to rear boundary, lots over 20,000 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    },
+    {
+     "id": 35336,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "Setback to side boundary 5m 10m",
+     "clause": "Table 13",
+     "page": 39,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.4.3 Large lot housing, setback to side boundary, lots over 20,000 m2",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "20m or average setback of adjoining",
+   "clause": "Table 13",
+   "page": 39,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
+  },
+  {
+   "id": "upper-lachlan-shire-council-014",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "C.4.3 Large lot housing, setback to secondary road, both lot size bands",
+   "secondaryFront": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     35332
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35332
+   ],
+   "evidence": [
+    {
+     "id": 35332,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "Setback to secondary road 10m 10m",
+     "clause": "Table 13",
+     "page": 39,
+     "source_file": "DCP/Part-C-Residential-4.pdf",
+     "condition": "C.4.3 Large lot housing, setback to secondary road, both lot size bands",
+     "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Setback to secondary road 10m 10m",
+   "clause": "Table 13",
+   "page": 39,
+   "source_file": "DCP/Part-C-Residential-4.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part C Housing and Ancillary Development (Upper Lachlan DCP 2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
+  },
+  {
+   "id": "upper-lachlan-shire-council-015",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "outbuilding",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table 1 farm buildings: primary road (may reduce to 20 m behind building line of existing dwelling)",
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     35439
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35439
+   ],
+   "evidence": [
+    {
+     "id": 35439,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Primary Road 50m1",
+     "clause": "D Table 1",
+     "page": 4,
+     "source_file": "DCP/DRAFT-2026-Part-D-Rural-6.pdf",
+     "condition": "Table 1 farm buildings: primary road (may reduce to 20 m behind building line of existing dwelling)",
+     "edition": "DRAFT 2026 Part D Rural (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Primary Road 50m1",
+   "clause": "D Table 1",
+   "page": 4,
+   "source_file": "DCP/DRAFT-2026-Part-D-Rural-6.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part D Rural (Upper Lachlan DCP 2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
+  },
+  {
+   "id": "upper-lachlan-shire-council-016",
+   "zones": [
+    "RU*"
+   ],
+   "appliesTo": [
+    "outbuilding"
+   ],
+   "conditions": {},
+   "conditionText": "Table 1 farm buildings: any boundary not shared with a primary road",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     35442
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    35442
+   ],
+   "evidence": [
+    {
+     "id": 35442,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Any boundary not shared with a primary road 15m2",
+     "clause": "D Table 1",
+     "page": 4,
+     "source_file": "DCP/DRAFT-2026-Part-D-Rural-6.pdf",
+     "condition": "Table 1 farm buildings: any boundary not shared with a primary road",
+     "edition": "DRAFT 2026 Part D Rural (Upper Lachlan DCP 2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
+   "quote": "Any boundary not shared with a primary road 15m2",
+   "clause": "D Table 1",
+   "page": 4,
+   "source_file": "DCP/DRAFT-2026-Part-D-Rural-6.pdf",
+   "dcp": "Upper Lachlan DCP 2010 Amendment No. 6 (adopted 16/06/2022, effective June 2022 / 28/06/2022) is the adopted plan; a DRAFT 2026 DCP (Parts A to I, in review) is also saved and was recorded with its draft edition shown on each record",
+   "edition": "DRAFT 2026 Part D Rural (Upper Lachlan DCP 2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "4 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 35338, 35337, 35440, 35441",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Part D Rural Tables 2 and 3 headings not resolved so not recorded; Part C medium density, laneway and ancillary setbacks not extracted; Part E commercial, H heritage, I environmental not extracted"
+ ],
+ "notes": "Built from 28 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 8
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  },
+  "RU*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 28,
+  "rules": 16,
+  "recordsNotModelled": 4,
+  "otherSetbackKeysNotModelled": 3
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (upper-lachlan-shire-council-008, upper-lachlan-shire-council-012)); rear (conflicting rules of equal specificity (upper-lachlan-shire-council-004, upper-lachlan-shire-council-006, upper-lachlan-shire-council-012))"
+  }
+ }
+}

@@ -1,0 +1,1849 @@
+{
+ "lga_slug": "kyogle-council",
+ "council": "Kyogle Council",
+ "lgaNames": [
+  "KYOGLE",
+  "KYOGLE COUNCIL"
+ ],
+ "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+ "lep": "Kyogle Local Environmental Plan 2012",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "kyogle-council-001",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Dual occupancy R1, R3, R5, RU5 (Chapter 10 s3): corner allotments, Zones R1, R3 and RU5: side boundaries",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     18535
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18535
+   ],
+   "evidence": [
+    {
+     "id": 18535,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "to side boundaries* is 2 metres in Zones R1, R3",
+     "clause": "Ch 10 A9.4",
+     "page": 198,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dual occupancy R1, R3, R5, RU5 (Chapter 10 s3): corner allotments, Zones R1, R3 and RU5: side boundaries",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "to side boundaries* is 2 metres in Zones R1, R3",
+   "clause": "Ch 10 A9.4",
+   "page": 198,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-002",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Dual occupancy R1, R3, R5, RU5 (Chapter 10 s3): sites fronting a classified road, Zone R1, R3 or RU5",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     18537
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18537
+   ],
+   "evidence": [
+    {
+     "id": 18537,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Where in Zone R1, R3 or RU5:- 9 metres",
+     "clause": "Ch 10 A3.2 equivalent",
+     "page": 197,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dual occupancy R1, R3, R5, RU5 (Chapter 10 s3): sites fronting a classified road, Zone R1, R3 or RU5",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Where in Zone R1, R3 or RU5:- 9 metres",
+   "clause": "Ch 10 A3.2 equivalent",
+   "page": 197,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-003",
+   "zones": [
+    "R1",
+    "R3",
+    "R5",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {},
+   "conditionText": "Dual occupancy R1, R3, R5, RU5 (Chapter 10 s3): corner allotments, Zones R1, R3 and RU5: secondary road frontage",
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     18536
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18536
+   ],
+   "evidence": [
+    {
+     "id": 18536,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "to the secondary road frontage is at least 4 metres",
+     "clause": "Ch 10 A9.3",
+     "page": 198,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dual occupancy R1, R3, R5, RU5 (Chapter 10 s3): corner allotments, Zones R1, R3 and RU5: secondary road frontage",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "to the secondary road frontage is at least 4 metres",
+   "clause": "Ch 10 A9.3",
+   "page": 198,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-004",
+   "zones": [
+    "R1",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "cornerLot": true
+   },
+   "conditionText": "Dwelling houses, Chapter 3: corner allotments, Zones R1, R3 and RU5: side boundaries",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     18421
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18421
+   ],
+   "evidence": [
+    {
+     "id": 18421,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "boundaries* is 2 metres in Zones R1, R3 and RU5 and 5",
+     "clause": "Ch 3 A6.5",
+     "page": 112,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: corner allotments, Zones R1, R3 and RU5: side boundaries",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "boundaries* is 2 metres in Zones R1, R3 and RU5 and 5",
+   "clause": "Ch 3 A6.5",
+   "page": 112,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-005",
+   "zones": [
+    "R1",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other",
+     "building_element"
+    ]
+   },
+   "conditionText": "Dwelling houses, Chapter 3: Zones R1, R3, RU5, wall adjacent to side boundary under 4.5m high: to eave or gutter",
+   "side": {
+    "minM": 0.45,
+    "basis": "fixed",
+    "sources": [
+     18413
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18413
+   ],
+   "evidence": [
+    {
+     "id": 18413,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "0.45 metres to outer edge of eave or gutter",
+     "clause": "Ch 3 A4.1",
+     "page": 111,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: Zones R1, R3, RU5, wall adjacent to side boundary under 4.5m high: to eave or gutter",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "0.45 metres to outer edge of eave or gutter",
+   "clause": "Ch 3 A4.1",
+   "page": 111,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
+  },
+  {
+   "id": "kyogle-council-006",
+   "zones": [
+    "R1",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Dwelling houses, Chapter 3: Zones R1, R3, RU5, wall adjacent to side boundary under 4.5m high: to wall",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     18412
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18412
+   ],
+   "evidence": [
+    {
+     "id": 18412,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "the side boundary a minimum 0.9 metres to wall and",
+     "clause": "Ch 3 A4.1",
+     "page": 111,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: Zones R1, R3, RU5, wall adjacent to side boundary under 4.5m high: to wall",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "the side boundary a minimum 0.9 metres to wall and",
+   "clause": "Ch 3 A4.1",
+   "page": 111,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
+  },
+  {
+   "id": "kyogle-council-007",
+   "zones": [
+    "R1",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Dwelling houses, Chapter 3: Zones R1, R3, RU5, wall adjacent to side boundary over 4.5m high: to wall",
+   "side": {
+    "minM": 1.5,
+    "basis": "fixed",
+    "sources": [
+     18414
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18414
+   ],
+   "evidence": [
+    {
+     "id": 18414,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "the side boundary a minimum 1.5 metres (to wall) plus",
+     "clause": "Ch 3 A4.2",
+     "page": 111,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: Zones R1, R3, RU5, wall adjacent to side boundary over 4.5m high: to wall",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText; CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "the side boundary a minimum 1.5 metres (to wall) plus",
+   "clause": "Ch 3 A4.2",
+   "page": 111,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText; CONFLICT: another rule with the same applicability gives a different s..."
+  },
+  {
+   "id": "kyogle-council-008",
+   "zones": [
+    "R1",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Dwelling houses, Chapter 3: sites fronting a classified road, Zone R1, R3 or RU5",
+   "front": {
+    "minM": 9.0,
+    "basis": "fixed",
+    "sources": [
+     18410
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18410
+   ],
+   "evidence": [
+    {
+     "id": 18410,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Where in Zone R1, R3 or RU5:- 9 metres",
+     "clause": "Ch 3 A3.2",
+     "page": 110,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: sites fronting a classified road, Zone R1, R3 or RU5",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Where in Zone R1, R3 or RU5:- 9 metres",
+   "clause": "Ch 3 A3.2",
+   "page": 110,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-009",
+   "zones": [
+    "R1",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "laneway",
+     "open_space_frontage"
+    ]
+   },
+   "conditionText": "Dwelling houses, Chapter 3: Zones R1, R3, RU5 with rear boundary to laneway, road or public reserve: to house",
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     18417
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18417
+   ],
+   "evidence": [
+    {
+     "id": 18417,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A5.2 Rear boundary setback is a minimum of 4 metres to",
+     "clause": "Ch 3 A5.2",
+     "page": 111,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: Zones R1, R3, RU5 with rear boundary to laneway, road or public reserve: to house",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "A5.2 Rear boundary setback is a minimum of 4 metres to",
+   "clause": "Ch 3 A5.2",
+   "page": 111,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
+  },
+  {
+   "id": "kyogle-council-010",
+   "zones": [
+    "R1",
+    "R3",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dwelling houses, Chapter 3: Zones R1, R3, RU5",
+    "Dwelling houses, Chapter 3: corner allotments, Zones R1, R3 and RU5: secondary road frontage"
+   ],
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     18419
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18416
+    ]
+   },
+   "front": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18416,
+    18419
+   ],
+   "evidence": [
+    {
+     "id": 18419,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "secondary road frontage is at least 4 metres in Zones R1,",
+     "clause": "Ch 3 A6.4",
+     "page": 112,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: corner allotments, Zones R1, R3 and RU5: secondary road frontage",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18416,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A5.1 Rear boundary setback is a minimum of 6 metres",
+     "clause": "Ch 3 A5.1",
+     "page": 111,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: Zones R1, R3, RU5",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "secondary road frontage is at least 4 metres in Zones R1,",
+   "clause": "Ch 3 A6.4",
+   "page": 112,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 4.5,
+    "lotAreaMaxM2": 201.0
+   },
+   "conditionText": "Table C11.1 dwellings on small  lots, lot size <201m2: side boundary setback up to 4.5m high (plus one quarter of additional height above 4.5m)",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     18465
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18465
+   ],
+   "evidence": [
+    {
+     "id": 18465,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "0.9m up to 4.5m high, 0.9m + ¼ 0.9m up to 4.5m high, 0.9m up to 4.5m high, 0.9m up to 4.5m high,",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small  lots, lot size <201m2: side boundary setback up to 4.5m high (plus one quarter of additional height above 4.5m)",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "0.9m up to 4.5m high, 0.9m + ¼ 0.9m up to 4.5m high, 0.9m up to 4.5m high, 0.9m up to 4.5m high,",
+   "clause": "Table C11.1",
+   "page": 219,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 201.0
+   },
+   "conditionText": "Table C11.1 dwellings on small lots, lot size <201m2: minimum front boundary setback (lesser of this or average of adjoining dwellings)",
+   "front": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     18469
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18469
+   ],
+   "evidence": [
+    {
+     "id": 18469,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "The lesser of 3.5m or the",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small lots, lot size <201m2: minimum front boundary setback (lesser of this or average of adjoining dwellings)",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "The lesser of 3.5m or the",
+   "clause": "Table C11.1",
+   "page": 219,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "kyogle-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 4.5,
+    "lotAreaMinM2": 201.0,
+    "lotAreaMaxM2": 300.0
+   },
+   "conditionText": "Table C11.1 dwellings on small  lots, lot size 201-300m2: side boundary setback up to 4.5m high (plus one quarter of additional height above 4.5m)",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     18466
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18466
+   ],
+   "evidence": [
+    {
+     "id": 18466,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "0.9m up to 4.5m high, 0.9m + ¼ 0.9m up to 4.5m high, 0.9m up to 4.5m high, 0.9m up to 4.5m high,",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small  lots, lot size 201-300m2: side boundary setback up to 4.5m high (plus one quarter of additional height above 4.5m)",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "0.9m up to 4.5m high, 0.9m + ¼ 0.9m up to 4.5m high, 0.9m up to 4.5m high, 0.9m up to 4.5m high,",
+   "clause": "Table C11.1",
+   "page": 219,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 201.0,
+    "lotAreaMaxM2": 300.0
+   },
+   "conditionText": [
+    "Table C11.1 dwellings on small lots, lot size 201-300m2: minimum front boundary setback (lesser of this or average of adjoining dwellings)",
+    "Table C11.1 dwellings on small lots, lot size <201m2 and 201-300m2: rear boundary setback for building up to 4.5m high"
+   ],
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     18470
+    ]
+   },
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     18473
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18470,
+    18473
+   ],
+   "evidence": [
+    {
+     "id": 18470,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "The lesser of 4m or average of",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small lots, lot size 201-300m2: minimum front boundary setback (lesser of this or average of adjoining dwellings)",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18473,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Up to 4.5m building height=3m Up to 4.5m building height=3m",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small lots, lot size <201m2 and 201-300m2: rear boundary setback for building up to 4.5m high",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "The lesser of 4m or average of",
+   "clause": "Table C11.1",
+   "page": 219,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "kyogle-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 4.5,
+    "lotAreaMinM2": 301.0,
+    "lotAreaMaxM2": 400.0
+   },
+   "conditionText": "Table C11.1 dwellings on small  lots, lot size 301-400m2: side boundary setback up to 4.5m high (plus one quarter of additional height above 4.5m)",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     18467
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18467
+   ],
+   "evidence": [
+    {
+     "id": 18467,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "0.9m up to 4.5m high, 0.9m + ¼ 0.9m up to 4.5m high, 0.9m up to 4.5m high, 0.9m up to 4.5m high,",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small  lots, lot size 301-400m2: side boundary setback up to 4.5m high (plus one quarter of additional height above 4.5m)",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "0.9m up to 4.5m high, 0.9m + ¼ 0.9m up to 4.5m high, 0.9m up to 4.5m high, 0.9m up to 4.5m high,",
+   "clause": "Table C11.1",
+   "page": 219,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-016",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 301.0,
+    "lotAreaMaxM2": 400.0
+   },
+   "conditionText": [
+    "Table C11.1 dwellings on small lots, lot size 301-400m2: minimum front boundary setback (lesser of this or average of adjoining dwellings)",
+    "Table C11.1 dwellings on small lots, lot size 301-400m2: rear boundary setback for building up to 4.5m high"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     18471
+    ]
+   },
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     18474
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18471,
+    18474
+   ],
+   "evidence": [
+    {
+     "id": 18471,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "The lesser of 4.5m or the average",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small lots, lot size 301-400m2: minimum front boundary setback (lesser of this or average of adjoining dwellings)",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18474,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Up to 4.5m building height=4m",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small lots, lot size 301-400m2: rear boundary setback for building up to 4.5m high",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "The lesser of 4.5m or the average",
+   "clause": "Table C11.1",
+   "page": 219,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "kyogle-council-017",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 4.5,
+    "lotAreaMinM2": 401.0,
+    "lotAreaMaxM2": 500.0
+   },
+   "conditionText": "Table C11.1 dwellings on small  lots, lot size 401-500m2: side boundary setback up to 4.5m high (plus one quarter of additional height above 4.5m)",
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     18468
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18468
+   ],
+   "evidence": [
+    {
+     "id": 18468,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "0.9m up to 4.5m high, 0.9m + ¼ 0.9m up to 4.5m high, 0.9m up to 4.5m high, 0.9m up to 4.5m high,",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small  lots, lot size 401-500m2: side boundary setback up to 4.5m high (plus one quarter of additional height above 4.5m)",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "0.9m up to 4.5m high, 0.9m + ¼ 0.9m up to 4.5m high, 0.9m up to 4.5m high, 0.9m up to 4.5m high,",
+   "clause": "Table C11.1",
+   "page": 219,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-018",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 401.0,
+    "lotAreaMaxM2": 500.0
+   },
+   "conditionText": [
+    "Table C11.1 dwellings on small lots, lot size 401-500m2: minimum front boundary setback (lesser of this or average of adjoining dwellings)",
+    "Table C11.1 dwellings on small lots, lot size 401-500m2: rear boundary setback for building up to 4.5m high"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     18472
+    ]
+   },
+   "rear": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     18475
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18472,
+    18475
+   ],
+   "evidence": [
+    {
+     "id": 18472,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "The lesser of 4.5m or the average",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small lots, lot size 401-500m2: minimum front boundary setback (lesser of this or average of adjoining dwellings)",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18475,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Up to 4.5m building height=4.5m",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small lots, lot size 401-500m2: rear boundary setback for building up to 4.5m high",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "The lesser of 4.5m or the average",
+   "clause": "Table C11.1",
+   "page": 219,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "kyogle-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 300.0,
+    "lotAreaMaxM2": 900.0,
+    "qualifiers": [
+     "no_adjoining_buildings"
+    ],
+    "qualifiersNot": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Table C3.2: no adjoining houses within 40 metres, lot area at least 300m2 but less than 900m2",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     18432
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18432
+   ],
+   "evidence": [
+    {
+     "id": 18432,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5 metres where lot has an area of at least 300m2 but",
+     "clause": "Table C3.2",
+     "page": 125,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C3.2: no adjoining houses within 40 metres, lot area at least 300m2 but less than 900m2",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "4.5 metres where lot has an area of at least 300m2 but",
+   "clause": "Table C3.2",
+   "page": 125,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 900.0,
+    "qualifiers": [
+     "no_adjoining_buildings"
+    ],
+    "qualifiersNot": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Table C3.2: no adjoining houses within 40 metres, lot area greater than 900m2",
+   "front": {
+    "minM": 5.5,
+    "basis": "fixed",
+    "sources": [
+     18433
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18433
+   ],
+   "evidence": [
+    {
+     "id": 18433,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "5.5m where the lot has an area of greater than 900m2",
+     "clause": "Table C3.2",
+     "page": 125,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C3.2: no adjoining houses within 40 metres, lot area greater than 900m2",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5m where the lot has an area of greater than 900m2",
+   "clause": "Table C3.2",
+   "page": 125,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 4.5
+   },
+   "conditionText": "Table C11.1 dwellings on small lots, all lot sizes: rear boundary setback above 4.5m building height (or average of adjoining, whichever is the lesser)",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18476
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    18476
+   ],
+   "evidence": [
+    {
+     "id": 18476,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Above 4.5m building height= 6m or",
+     "clause": "Table C11.1",
+     "page": 219,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C11.1 dwellings on small lots, all lot sizes: rear boundary setback above 4.5m building height (or average of adjoining, whichever is the lesser)",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Above 4.5m building height= 6m or",
+   "clause": "Table C11.1",
+   "page": 219,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Table C3.2: adjoining houses within 40 metres fronting the same street: lesser of this or average of adjoining",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     18431
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18431
+   ],
+   "evidence": [
+    {
+     "id": 18431,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5 metres or the average of the setback of adjoining",
+     "clause": "Table C3.2",
+     "page": 125,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C3.2: adjoining houses within 40 metres fronting the same street: lesser of this or average of adjoining",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "4.5 metres or the average of the setback of adjoining",
+   "clause": "Table C3.2",
+   "page": 125,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "kyogle-council-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dwelling houses, Chapter 3: car accommodation set back behind the front building facade",
+    "Table C3.2: garage or carport where dwelling has setback of more than 4.5 metres: behind front building line",
+    "Table C3.2: garage or carport where dwelling house has setback of less than 4.5 metres"
+   ],
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     18435,
+     18436,
+     18423
+    ],
+    "behindBuildingLineM": 1.0
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    18423,
+    18435,
+    18436
+   ],
+   "evidence": [
+    {
+     "id": 18435,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5 metres where dwelling house has a setback of less",
+     "clause": "Table C3.2",
+     "page": 125,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C3.2: garage or carport where dwelling house has setback of less than 4.5 metres",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18436,
+     "parameter": "garage_setback",
+     "slot": "garageBehind",
+     "quote": "1 metre behind front building line of house where the",
+     "clause": "Table C3.2",
+     "page": 125,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C3.2: garage or carport where dwelling has setback of more than 4.5 metres: behind front building line",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18423,
+     "parameter": "garage_setback_behind_facade",
+     "slot": "garageBehind",
+     "quote": "Car accommodation is set back at least 1 metre",
+     "clause": "Ch 3 A9.1",
+     "page": 113,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: car accommodation set back behind the front building facade",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "5.5 metres where dwelling house has a setback of less",
+   "clause": "Table C3.2",
+   "page": 125,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-024",
+   "zones": [
+    "IN1",
+    "IN2"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": [
+    "Industrial IN1 and IN2 (Chapter 7): rear boundary adjoining a residential or rural area, buildings and structures",
+    "Industrial IN1 and IN2 (Chapter 7): side boundary adjoining a residential or rural area"
+   ],
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     18521
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     18523
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    18521,
+    18523
+   ],
+   "evidence": [
+    {
+     "id": 18521,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "of 5 metres from that side boundary",
+     "clause": "Ch 7 A9.2",
+     "page": 150,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Industrial IN1 and IN2 (Chapter 7): side boundary adjoining a residential or rural area",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18523,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "of 10 metres from rear boundary and hardstand areas",
+     "clause": "Ch 7 A10.2",
+     "page": 150,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Industrial IN1 and IN2 (Chapter 7): rear boundary adjoining a residential or rural area, buildings and structures",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "of 5 metres from that side boundary",
+   "clause": "Ch 7 A9.2",
+   "page": 150,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
+  },
+  {
+   "id": "kyogle-council-025",
+   "zones": [
+    "IN1",
+    "IN2"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": [
+    "Industrial IN1 and IN2 (Chapter 7): primary road frontage is a classified road",
+    "Industrial IN1 and IN2 (Chapter 7): secondary road frontage (not classified road)"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     18519
+    ]
+   },
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18524
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18519,
+    18524
+   ],
+   "evidence": [
+    {
+     "id": 18519,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "primary road frontage a minimum of 20 metres",
+     "clause": "Ch 7 A8.3",
+     "page": 150,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Industrial IN1 and IN2 (Chapter 7): primary road frontage is a classified road",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18524,
+     "parameter": "setback_industrial",
+     "slot": "secondaryFront",
+     "quote": "is a minimum of 6 metres or at least the",
+     "clause": "Ch 7 A11.2",
+     "page": 151,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Industrial IN1 and IN2 (Chapter 7): secondary road frontage (not classified road)",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "primary road frontage a minimum of 20 metres",
+   "clause": "Ch 7 A8.3",
+   "page": 150,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-026",
+   "zones": [
+    "IN1",
+    "IN2"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Industrial IN1 and IN2 (Chapter 7): primary road frontage, no parking in front of building",
+    "Industrial IN1 and IN2 (Chapter 7): rear boundary, buildings and structures",
+    "Industrial IN1 and IN2 (Chapter 7): side boundaries"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18517
+    ]
+   },
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     18520
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     18522
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    18517,
+    18520,
+    18522
+   ],
+   "evidence": [
+    {
+     "id": 18517,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "primary road frontage a minimum 6 metres",
+     "clause": "Ch 7 A8.1",
+     "page": 150,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Industrial IN1 and IN2 (Chapter 7): primary road frontage, no parking in front of building",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18520,
+     "parameter": "setback_industrial",
+     "slot": "side",
+     "quote": "boundaries a minimum of 3 metres",
+     "clause": "Ch 7 A9.1",
+     "page": 150,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Industrial IN1 and IN2 (Chapter 7): side boundaries",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18522,
+     "parameter": "setback_industrial",
+     "slot": "rear",
+     "quote": "of 6 metres from rear boundary and hardstand areas",
+     "clause": "Ch 7 A10.1",
+     "page": 150,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Industrial IN1 and IN2 (Chapter 7): rear boundary, buildings and structures",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "primary road frontage a minimum 6 metres",
+   "clause": "Ch 7 A8.1",
+   "page": 150,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-027",
+   "zones": [
+    "IN1",
+    "IN2"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial IN1 and IN2 (Chapter 7): primary road frontage, parking in front of building",
+   "front": {
+    "minM": 12.0,
+    "basis": "fixed",
+    "sources": [
+     18518
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18518
+   ],
+   "evidence": [
+    {
+     "id": 18518,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "primary road frontage a minimum 12 metres",
+     "clause": "Ch 7 A8.2",
+     "page": 150,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Industrial IN1 and IN2 (Chapter 7): primary road frontage, parking in front of building",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "primary road frontage a minimum 12 metres",
+   "clause": "Ch 7 A8.2",
+   "page": 150,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "kyogle-council-028",
+   "zones": [
+    "R5",
+    "RE2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 4000.0,
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Dwelling houses, Chapter 3: sites fronting a classified road, Zone RE2 or R5 with lot area of at least 4000m2",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     18411
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    18411
+   ],
+   "evidence": [
+    {
+     "id": 18411,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4000m2):- 15 metres",
+     "clause": "Ch 3 A3.2",
+     "page": 110,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: sites fronting a classified road, Zone RE2 or R5 with lot area of at least 4000m2",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "4000m2):- 15 metres",
+   "clause": "Ch 3 A3.2",
+   "page": 110,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021"
+  },
+  {
+   "id": "kyogle-council-029",
+   "zones": [
+    "R5",
+    "RE2"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dwelling houses, Chapter 3: Zones RE2 and R5",
+    "Dwelling houses, Chapter 3: corner allotments, Zones RE2 and R5: secondary road frontage",
+    "Table C3.2: Zones RE2 and R5: lesser of this or average of existing adjoining houses"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     18434
+    ]
+   },
+   "secondaryFront": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     18420
+    ]
+   },
+   "rear": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     18418
+    ]
+   },
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     18415
+    ]
+   },
+   "garage": null,
+   "sources": [
+    18415,
+    18418,
+    18420,
+    18434
+   ],
+   "evidence": [
+    {
+     "id": 18434,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "10 metres or the average of the setback of existing",
+     "clause": "Table C3.2",
+     "page": 125,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Table C3.2: Zones RE2 and R5: lesser of this or average of existing adjoining houses",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18420,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "R3 and RU5 and at least 10 metres in Zones RE2 and R5",
+     "clause": "Ch 3 A6.4",
+     "page": 112,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: corner allotments, Zones RE2 and R5: secondary road frontage",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18418,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "the rear boundary a minimum of 15 metres",
+     "clause": "Ch 3 A5.3",
+     "page": 111,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: Zones RE2 and R5",
+     "edition": "Version 9, 12/04/2021"
+    },
+    {
+     "id": 18415,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "the side boundary a minimum of 5 metres",
+     "clause": "Ch 3 A4.3",
+     "page": 111,
+     "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+     "condition": "Dwelling houses, Chapter 3: Zones RE2 and R5",
+     "edition": "Version 9, 12/04/2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "10 metres or the average of the setback of existing",
+   "clause": "Table C3.2",
+   "page": 125,
+   "source_file": "DCP/Kyogle-DCP-2014-April-2021_S-3708.pdf",
+   "dcp": "Kyogle Development Control Plan 2014, Version 9 (12/04/2021, Chapter 12 amendment), file Kyogle-DCP-2014-April-2021_S-3708.pdf; the second saved file Kyogle_Development_Control_Plan_2014.pdf is an earlier version (version history ends at version 8, 18/10/2019) and was not used for values",
+   "edition": "Version 9, 12/04/2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 18526",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): stormwater: pipe sizes, grades, cover, pit spacing, blockage, ARR/IFD basis, OSD, WSUD targets (Northern Rivers manuals not saved; DCP gives no numbers) | Chapters 1, 5 (rural non-residential), 4 signage, 6, 9, 12 Kyogle town centre not extracted; Twelve Preferred Areas governed by a separate Structure Plan not saved | second saved file Kyogle_Development_Control_Plan_2014.pdf (earlier version) not used for values; DCP 2014 Chapter 2 Table C2.1 buffer distances not extracted"
+ ],
+ "notes": "Built from 43 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 10
+  },
+  "R3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 10
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 5
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 10
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 13
+  },
+  "IN1": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 4
+  },
+  "IN2": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 4
+  },
+  "RE2": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 2
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 43,
+  "rules": 29,
+  "recordsNotModelled": 1,
+  "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  }
+ }
+}

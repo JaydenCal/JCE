@@ -1,0 +1,989 @@
+{
+ "lga_slug": "wentworth-shire-council",
+ "council": "Wentworth Shire Council",
+ "lgaNames": [
+  "WENTWORTH",
+  "WENTWORTH SHIRE",
+  "WENTWORTH SHIRE COUNCIL"
+ ],
+ "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+ "lep": "Wentworth Local Environmental Plan 2011",
+ "status": "ready",
+ "rules": [
+  {
+   "id": "wentworth-shire-council-001",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Newly subdivided areas, R5 Large Lot Residential",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     37054
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37054
+   ],
+   "evidence": [
+    {
+     "id": 37054,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "and a minimum 15m for R5 Large Lot Residential zoned land.",
+     "clause": "Ch 4 s4.1.3",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Newly subdivided areas, R5 Large Lot Residential",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "and a minimum 15m for R5 Large Lot Residential zoned land.",
+   "clause": "Ch 4 s4.1.3",
+   "page": 46,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-002",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "R5 Large Lot Residential, rural dwellings: front",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     37067
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37067
+   ],
+   "evidence": [
+    {
+     "id": 37067,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "15 metres in R5 Large Lot Residential",
+     "clause": "Ch 5 s5.3 a",
+     "page": 55,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "R5 Large Lot Residential, rural dwellings: front",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "15 metres in R5 Large Lot Residential",
+   "clause": "Ch 5 s5.3 a",
+   "page": 55,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-003",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "garage",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dwellings with entry or garage on secondary street, R5 Large Lot Residential",
+   "secondaryFront": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     37058
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37058
+   ],
+   "evidence": [
+    {
+     "id": 37058,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "shall be a minimum of 4.5m for RU5 Village zoned land and 15m for R5",
+     "clause": "Ch 4 s4.1.3",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Dwellings with entry or garage on secondary street, R5 Large Lot Residential",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "shall be a minimum of 4.5m for RU5 Village zoned land and 15m for R5",
+   "clause": "Ch 4 s4.1.3",
+   "page": 46,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-004",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "verandah_deck",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Newly subdivided areas, single storey dwelling, dual occupancy, multi-dwelling housing, RU5 Village (including verandah or porch)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     37053
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37053
+   ],
+   "evidence": [
+    {
+     "id": 37053,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "a minimum of 6 metres for single storey buildings",
+     "clause": "Ch 4 s4.1.3",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Newly subdivided areas, single storey dwelling, dual occupancy, multi-dwelling housing, RU5 Village (including verandah or porch)",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "a minimum of 6 metres for single storey buildings",
+   "clause": "Ch 4 s4.1.3",
+   "page": 46,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-005",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "garage",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dwellings with entry or garage on secondary street, RU5 Village",
+   "secondaryFront": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     37057
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37057
+   ],
+   "evidence": [
+    {
+     "id": 37057,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "shall be a minimum of 4.5m for RU5 Village zoned land and 15m for R5",
+     "clause": "Ch 4 s4.1.3",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Dwellings with entry or garage on secondary street, RU5 Village",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "shall be a minimum of 4.5m for RU5 Village zoned land and 15m for R5",
+   "clause": "Ch 4 s4.1.3",
+   "page": 46,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-006",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "RU1 Primary Production, lot in the 10000ha area: front",
+   "front": {
+    "minM": 50.0,
+    "basis": "fixed",
+    "sources": [
+     37068
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37068
+   ],
+   "evidence": [
+    {
+     "id": 37068,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "50 metres in the RU1 Primary Production Zone where the lot is in the 10000ha area",
+     "clause": "Ch 5 s5.3 a",
+     "page": 55,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "RU1 Primary Production, lot in the 10000ha area: front",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "50 metres in the RU1 Primary Production Zone where the lot is in the 10000ha area",
+   "clause": "Ch 5 s5.3 a",
+   "page": 55,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-007",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "RU1 Primary Production, lot in the 10ha area: front",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     37069
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37069
+   ],
+   "evidence": [
+    {
+     "id": 37069,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "15 metres in the RU1 Primary Production Zone where the lot is in the 10ha area",
+     "clause": "Ch 5 s5.3 a",
+     "page": 55,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "RU1 Primary Production, lot in the 10ha area: front",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "15 metres in the RU1 Primary Production Zone where the lot is in the 10ha area",
+   "clause": "Ch 5 s5.3 a",
+   "page": 55,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "wentworth-shire-council-008",
+   "zones": [
+    "RU4"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "RU4 Rural Small Holdings: front",
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     37070
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37070
+   ],
+   "evidence": [
+    {
+     "id": 37070,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "15 metres in the RU4 Rural Small Holdings Zone.",
+     "clause": "Ch 5 s5.3 a",
+     "page": 55,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "RU4 Rural Small Holdings: front",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "15 metres in the RU4 Rural Small Holdings Zone.",
+   "clause": "Ch 5 s5.3 a",
+   "page": 55,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "cornerLot": true
+   },
+   "conditionText": "Corner lots with two side boundaries, single storey",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     37062
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37062
+   ],
+   "evidence": [
+    {
+     "id": 37062,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Corner lots having two side boundaries a minimum of 2m for single storey buildings",
+     "clause": "Ch 4 s4.1.4",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Corner lots with two side boundaries, single storey",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Corner lots having two side boundaries a minimum of 2m for single storey buildings",
+   "clause": "Ch 4 s4.1.4",
+   "page": 46,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "level": "upper"
+   },
+   "conditionText": "Two storey development: second storey component",
+   "rear": {
+    "minM": 6.5,
+    "basis": "fixed",
+    "sources": [
+     37065
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    37065
+   ],
+   "evidence": [
+    {
+     "id": 37065,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "a minimum of 6.5m for the second storey component of the development.",
+     "clause": "Ch 4 s4.1.5",
+     "page": 47,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Two storey development: second storey component",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a minimum of 6.5m for the second storey component of the development.",
+   "clause": "Ch 4 s4.1.5",
+   "page": 47,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-011",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Established areas of Wentworth, Dareton and Pooncarie",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Same as one adjoining building if their setbacks differ by 2 m or less, otherwise the average of the adjoining setbacks",
+    "sources": [
+     37059
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37059
+   ],
+   "evidence": [
+    {
+     "id": 37059,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "infill development is to be setback the same distance as one of other adjoining buildings provided the difference",
+     "clause": "Ch 4 s4.1.3",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Established areas of Wentworth, Dareton and Pooncarie",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "infill development is to be setback the same distance as one of other adjoining buildings provided the difference",
+   "clause": "Ch 4 s4.1.3",
+   "page": 46,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Single storey buildings: combined total of both side setbacks",
+   "side": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     37061
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37061
+   ],
+   "evidence": [
+    {
+     "id": 37061,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a minimum of 1m and a combined total of 4.5m.",
+     "clause": "Ch 4 s4.1.4",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Single storey buildings: combined total of both side setbacks",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a minimum of 1m and a combined total of 4.5m.",
+   "clause": "Ch 4 s4.1.4",
+   "page": 46,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "Corner lots: secondary frontage, wall length not exceeding 8 m",
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     37056
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37056
+   ],
+   "evidence": [
+    {
+     "id": 37056,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "On corner lots a minimum setback of 4m is required to the secondary frontage",
+     "clause": "Ch 4 s4.1.3",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Corner lots: secondary frontage, wall length not exceeding 8 m",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "On corner lots a minimum setback of 4m is required to the secondary frontage",
+   "clause": "Ch 4 s4.1.3",
+   "page": 46,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-014",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": [
+    "Single storey dwelling, dual occupancy, multi-dwelling housing",
+    "Single storey dwelling, dual occupancy, multi-dwelling housing: each side minimum"
+   ],
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     37064
+    ]
+   },
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     37060
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    37060,
+    37064
+   ],
+   "evidence": [
+    {
+     "id": 37064,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "of 3m.",
+     "clause": "Ch 4 s4.1.5",
+     "page": 47,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Single storey dwelling, dual occupancy, multi-dwelling housing",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    },
+    {
+     "id": 37060,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a minimum of 1m and a combined total of 4.5m.",
+     "clause": "Ch 4 s4.1.4",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Single storey dwelling, dual occupancy, multi-dwelling housing: each side minimum",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "of 3m.",
+   "clause": "Ch 4 s4.1.5",
+   "page": 47,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)"
+  },
+  {
+   "id": "wentworth-shire-council-015",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Newly developed areas, residential flat buildings: average off a minimum of 6 m",
+    "Residential flat buildings"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     37055
+    ]
+   },
+   "rear": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     37066
+    ]
+   },
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     37063
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    37055,
+    37063,
+    37066
+   ],
+   "evidence": [
+    {
+     "id": 37055,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "residential flat buildings should be 4.5m average off a minimum of 6m.",
+     "clause": "Ch 4 s4.1.3",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Newly developed areas, residential flat buildings: average off a minimum of 6 m",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    },
+    {
+     "id": 37066,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Residential flat buildings – a minimum of 7.5m and other setbacks subject to individual site design analysis.",
+     "clause": "Ch 4 s4.1.5",
+     "page": 47,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Residential flat buildings",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    },
+    {
+     "id": 37063,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Residential flat buildings – a minimum of 1m and other setbacks subject to individual site design",
+     "clause": "Ch 4 s4.1.4",
+     "page": 46,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Residential flat buildings",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "residential flat buildings should be 4.5m average off a minimum of 6m.",
+   "clause": "Ch 4 s4.1.3",
+   "page": 46,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "wentworth-shire-council-016",
+   "zones": [
+    "B*"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {},
+   "conditionText": "Commercial buildings: side boundaries",
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "In accordance with the Building Code of Australia; road frontage setbacks assessed individually",
+    "sources": [
+     37072
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37072
+   ],
+   "evidence": [
+    {
+     "id": 37072,
+     "parameter": "setback_commercial",
+     "slot": "side",
+     "quote": "Setbacks to side boundaries are to be in accordance with the Building Code of Australia",
+     "clause": "Ch 6 s6.1.3",
+     "page": 67,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Commercial buildings: side boundaries",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).",
+   "quote": "Setbacks to side boundaries are to be in accordance with the Building Code of Australia",
+   "clause": "Ch 6 s6.1.3",
+   "page": 67,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
+  },
+  {
+   "id": "wentworth-shire-council-017",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Industrial buildings: front",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     37071
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    37071
+   ],
+   "evidence": [
+    {
+     "id": 37071,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Front setback for all industrial buildings is to be a minimum of 6 metres.",
+     "clause": "Ch 7 s7.1.3",
+     "page": 73,
+     "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+     "condition": "Industrial buildings: front",
+     "edition": "Wentworth DCP, December 2011 (published copy)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Front setback for all industrial buildings is to be a minimum of 6 metres.",
+   "clause": "Ch 7 s7.1.3",
+   "page": 73,
+   "source_file": "DCP/Wentworth-DCP-2011-published-copy.pdf",
+   "dcp": "Wentworth Development Control Plan 2011 (published copy dated December 2011; cover shows 2010); Council resolution of 18/03/2026 amends flood freeboard and proposes flood DCP chapter",
+   "edition": "Wentworth DCP, December 2011 (published copy)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
+  }
+ ],
+ "gaps": [
+  "No garage setback rule",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 37046, 37073",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Minimum lot size for urban zones sits on LEP lot size map"
+ ],
+ "notes": "Built from 22 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 3
+  },
+  "RU5": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 2
+  },
+  "RU1": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 2
+  },
+  "RU4": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 7
+  },
+  "B*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 22,
+  "rules": 17,
+  "recordsNotModelled": 2,
+  "otherSetbackKeysNotModelled": 3
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
+ }
+}

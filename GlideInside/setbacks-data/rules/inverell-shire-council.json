@@ -1,0 +1,848 @@
+{
+ "lga_slug": "inverell-shire-council",
+ "council": "Inverell Shire Council",
+ "lgaNames": [
+  "INVERELL",
+  "INVERELL SHIRE",
+  "INVERELL SHIRE COUNCIL"
+ ],
+ "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+ "lep": "Inverell Local Environmental Plan (ILEP), lot size maps referenced",
+ "status": "partial",
+ "rules": [
+  {
+   "id": "inverell-shire-council-001",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dwelling / dual occupancy side/rear, R1 zone",
+    "Dwelling / dual occupancy, R1 zone"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     16732
+    ]
+   },
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "BCA",
+    "sources": [
+     16733
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16732,
+    16733
+   ],
+   "evidence": [
+    {
+     "id": 16732,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R1 4.5m BCA 4.5m BCA 4.5m 2m Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy, R1 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    },
+    {
+     "id": 16733,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R1 4.5m BCA 4.5m BCA 4.5m 2m Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy side/rear, R1 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "R1 4.5m BCA 4.5m BCA 4.5m 2m Merit Merit",
+   "clause": "3.8 Setbacks, table",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  },
+  {
+   "id": "inverell-shire-council-002",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Dwelling / dual occupancy, R1 zone: front setback to garage",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     16735
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    16735
+   ],
+   "evidence": [
+    {
+     "id": 16735,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "5.5m to",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy, R1 zone: front setback to garage",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "5.5m to",
+   "clause": "3.8 Setbacks, table",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013"
+  },
+  {
+   "id": "inverell-shire-council-003",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeysMin": 2
+   },
+   "conditionText": "2+ storey multi dwelling housing / residential flat building side/rear, R1 zone",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     16734
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16734
+   ],
+   "evidence": [
+    {
+     "id": 16734,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "R1 4.5m BCA 4.5m BCA 4.5m 2m Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "2+ storey multi dwelling housing / residential flat building side/rear, R1 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R1 4.5m BCA 4.5m BCA 4.5m 2m Merit Merit",
+   "clause": "3.8 Setbacks, table",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013"
+  },
+  {
+   "id": "inverell-shire-council-004",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dwelling / dual occupancy side and rear, R5 zone",
+    "Dwelling / dual occupancy, R5 zone"
+   ],
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     16725
+    ]
+   },
+   "side": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     16726
+    ]
+   },
+   "rear": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     16726
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    16725,
+    16726,
+    16726
+   ],
+   "evidence": [
+    {
+     "id": 16725,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "R5 15m 4m N/A N/A N/A N/A Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy, R5 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    },
+    {
+     "id": 16726,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "R5 15m 4m N/A N/A N/A N/A Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy side and rear, R5 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    },
+    {
+     "id": 16726,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "R5 15m 4m N/A N/A N/A N/A Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy side and rear, R5 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R5 15m 4m N/A N/A N/A N/A Merit Merit",
+   "clause": "3.8 Setbacks, table",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013"
+  },
+  {
+   "id": "inverell-shire-council-005",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Dwelling / dual occupancy side/rear, RU5 zone",
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "BCA",
+    "sources": [
+     16730
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16730
+   ],
+   "evidence": [
+    {
+     "id": 16730,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "RU5 6m BCA 6m BCA 6m 2m Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy side/rear, RU5 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "RU5 6m BCA 6m BCA 6m 2m Merit Merit",
+   "clause": "3.8 Setbacks, table",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  },
+  {
+   "id": "inverell-shire-council-006",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "residential_flat_building",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1
+   },
+   "conditionText": "Dwelling / dual occupancy and 1 storey multi dwelling or RFB, RU5 zone",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     16729
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16729
+   ],
+   "evidence": [
+    {
+     "id": 16729,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "RU5 6m BCA 6m BCA 6m 2m Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy and 1 storey multi dwelling or RFB, RU5 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU5 6m BCA 6m BCA 6m 2m Merit Merit",
+   "clause": "3.8 Setbacks, table",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013"
+  },
+  {
+   "id": "inverell-shire-council-007",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling"
+   ],
+   "conditions": {
+    "storeysMin": 2
+   },
+   "conditionText": "2+ storey multi dwelling housing / residential flat building side/rear, RU5 zone",
+   "side": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     16731
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16731
+   ],
+   "evidence": [
+    {
+     "id": 16731,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "RU5 6m BCA 6m BCA 6m 2m Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "2+ storey multi dwelling housing / residential flat building side/rear, RU5 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU5 6m BCA 6m BCA 6m 2m Merit Merit",
+   "clause": "3.8 Setbacks, table",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013"
+  },
+  {
+   "id": "inverell-shire-council-008",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dwelling / dual occupancy side and rear, RU1 zone",
+    "Dwelling / dual occupancy, RU1 zone"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     16723
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16724
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16724
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    16723,
+    16724,
+    16724
+   ],
+   "evidence": [
+    {
+     "id": 16723,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "RU1 20m 10m N/A N/A N/A N/A Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy, RU1 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    },
+    {
+     "id": 16724,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "RU1 20m 10m N/A N/A N/A N/A Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy side and rear, RU1 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    },
+    {
+     "id": 16724,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "RU1 20m 10m N/A N/A N/A N/A Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy side and rear, RU1 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "RU1 20m 10m N/A N/A N/A N/A Merit Merit",
+   "clause": "3.8 Setbacks, table",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013"
+  },
+  {
+   "id": "inverell-shire-council-009",
+   "zones": [
+    "E3"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "Dwelling / dual occupancy side and rear, E3 zone",
+    "Dwelling / dual occupancy, E3 zone"
+   ],
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     16727
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16728
+    ]
+   },
+   "rear": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16728
+    ]
+   },
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    16727,
+    16728,
+    16728
+   ],
+   "evidence": [
+    {
+     "id": 16727,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "E3 20m 10m N/A N/A N/A N/A Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy, E3 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    },
+    {
+     "id": 16728,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "E3 20m 10m N/A N/A N/A N/A Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy side and rear, E3 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    },
+    {
+     "id": 16728,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "E3 20m 10m N/A N/A N/A N/A Merit Merit",
+     "clause": "3.8 Setbacks, table",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Dwelling / dual occupancy side and rear, E3 zone",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "E3 20m 10m N/A N/A N/A N/A Merit Merit",
+   "clause": "3.8 Setbacks, table",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013"
+  },
+  {
+   "id": "inverell-shire-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Established residential areas (infill)",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Consistent with the established setback of adjoining buildings",
+    "sources": [
+     16736
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16736
+   ],
+   "evidence": [
+    {
+     "id": 16736,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "the front setback should generally be consistent with the established setback/building line of adjoining buildings.",
+     "clause": "3.8 Setbacks",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+     "condition": "Established residential areas (infill)",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the front setback should generally be consistent with the established setback/building line of adjoining buildings.",
+   "clause": "3.8 Setbacks",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-3-Residential-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013"
+  },
+  {
+   "id": "inverell-shire-council-011",
+   "zones": [
+    "B*"
+   ],
+   "appliesTo": [
+    "commercial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Industrial landscaping strip along street frontage excluding driveways",
+   "front": {
+    "minM": null,
+    "basis": "text",
+    "note": "Industrial development: 2 m landscape strip to street frontage, 1 m along side boundaries",
+    "sources": [
+     16739
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16739
+   ],
+   "evidence": [
+    {
+     "id": 16739,
+     "parameter": "setback_commercial",
+     "slot": "front",
+     "quote": "minimum 2 metre landscaping strip along a street frontage",
+     "clause": "4.10 Landscaping",
+     "page": 4,
+     "source_file": "DCP/IDCP-2013-Chapter-4-Commercial-and-Industrial-Development.pdf",
+     "condition": "Industrial landscaping strip along street frontage excluding driveways",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).",
+   "quote": "minimum 2 metre landscaping strip along a street frontage",
+   "clause": "4.10 Landscaping",
+   "page": 4,
+   "source_file": "DCP/IDCP-2013-Chapter-4-Commercial-and-Industrial-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
+  },
+  {
+   "id": "inverell-shire-council-012",
+   "zones": [
+    "IN1"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "IN1 General Industrial zone: primary frontage",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     16737
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    16737
+   ],
+   "evidence": [
+    {
+     "id": 16737,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "Buildings in the IN1 General Industrial zone should be set back 10 metres from the primary frontage",
+     "clause": "4.5 Setbacks",
+     "page": 3,
+     "source_file": "DCP/IDCP-2013-Chapter-4-Commercial-and-Industrial-Development.pdf",
+     "condition": "IN1 General Industrial zone: primary frontage",
+     "edition": "Inverell DCP 2013, 19 July 2013"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Buildings in the IN1 General Industrial zone should be set back 10 metres from the primary frontage",
+   "clause": "4.5 Setbacks",
+   "page": 3,
+   "source_file": "DCP/IDCP-2013-Chapter-4-Commercial-and-Industrial-Development.pdf",
+   "dcp": "Inverell Development Control Plan 2013, 19 July 2013 (chapters 2 to 6 used; chapters 1, 7 to 10 and glossary read for relevance only)",
+   "edition": "Inverell DCP 2013, 19 July 2013"
+  }
+ ],
+ "gaps": [
+  "R1: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "RU5: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
+  "No secondary (corner lot) frontage setback rule",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 16722, 16738",
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Chapter 2 average lot size for new residential areas unreadable in garbled text layer | Setbacks table for R1 secondary frontage and rear not separated (BCA reference)"
+ ],
+ "notes": "Built from 18 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "coverage": {
+  "R1": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": true,
+   "rules": 3
+  },
+  "R5": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "RU5": {
+   "front": true,
+   "side": true,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 3
+  },
+  "RU1": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "E3": {
+   "front": true,
+   "side": true,
+   "rear": true,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "*": {
+   "front": true,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "B*": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  },
+  "IN1": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": false,
+   "garage": false,
+   "rules": 1
+  }
+ },
+ "precincts": [],
+ "needsPrecinct": false,
+ "counts": {
+  "records": 18,
+  "rules": 12,
+  "recordsNotModelled": 2,
+  "otherSetbackKeysNotModelled": 0
+ },
+ "fallbackSet": "NSW_INLAND",
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side; rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side; rear (no rule for this zone/use/lot)"
+  }
+ }
+}
