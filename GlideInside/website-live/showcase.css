@@ -1,0 +1,16 @@
+/* How it works showcase: five cards, 3 + 2 on desktop, a swipe row on phones. Loaded from the how section of index.html. */
+#how .seq{grid-template-columns:repeat(6,1fr)}
+#how .seq>li{grid-column:span 2}
+#how .seq>li.seq-clip{grid-column:span 3}
+#how .seq .vis video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:var(--night-2)}
+#how .seq>li.seq-clip .vis{aspect-ratio:16/9}
+#how .seq>li.seq-clip{transition:transform .35s ease,border-color .35s ease}
+#how .seq>li.seq-clip:hover{border-color:rgba(233,182,111,.45);transform:translateY(-3px)}
+#how .seq>li.seq-clip .vis::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 -60px 60px -40px rgba(8,12,24,.5)}
+@media(max-width:900px){
+  #how .seq{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;margin:0 calc(var(--gut)*-1);padding:2px var(--gut) 14px;scroll-padding:0 var(--gut);scrollbar-width:thin}
+  #how .seq>li,#how .seq>li.seq-clip{flex:0 0 min(84vw,420px);scroll-snap-align:start}
+  #how .seq .vis,#how .seq>li.seq-clip .vis{aspect-ratio:4/3}
+}
+@media(prefers-reduced-motion:reduce){#how .seq>li.seq-clip{transition:none}#how .seq>li.seq-clip:hover{transform:none}}
+#how .seq>li[hidden]{display:none}
