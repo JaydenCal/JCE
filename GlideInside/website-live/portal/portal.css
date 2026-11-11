@@ -132,3 +132,7 @@
 .pp-menu{position:relative;display:inline-block}.pp-menu summary{list-style:none;cursor:pointer}.pp-menu summary::-webkit-details-marker{display:none}
 .pp-menu-list{position:absolute;right:0;z-index:20;min-width:190px;margin-top:4px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);display:grid;gap:2px}
 .pp-menu-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 10px;border:0;border-radius:6px;background:none;font:600 14px var(--font);color:var(--ink);cursor:pointer}.pp-menu-item:hover{background:var(--scene)}.pp-menu-item--danger{color:#9b2c1a}
+/* Builder picker: branded sign in header and the "not on Glide Inside yet" state */
+.pp-brandbox{display:flex;align-items:center;gap:14px;margin:0 0 16px;padding-bottom:14px;border-bottom:1px solid var(--line)}.pp-brandbox[hidden]{display:none}
+.pp-brandbox-logo{max-height:44px;max-width:140px;width:auto;object-fit:contain}.pp-brandbox-name{margin:0;font-weight:800;font-size:18px;letter-spacing:-.01em}
+.pp-nobuilder h2{font-size:clamp(22px,3.4vw,28px);margin:0 0 8px}

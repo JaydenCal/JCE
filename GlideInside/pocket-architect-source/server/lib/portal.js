@@ -6,6 +6,7 @@ import { migrate, validate } from '../../src/model/schema.js';
 import { GLIDE_LIBRARY } from '../../src/portal/glide-library.generated.js';
 import { houseStats } from '../../src/portal/house-stats.js';
 import { validateColours } from '../../src/portal/theme.js';
+import { slugify, cleanSlug } from '../../src/portal/builders.js';
 import { projectToSvg } from '../../src/portal/thumbnail.js';
 import { generateUsername, generatePassword, passwordProblem } from '../../src/portal/credentials.js';
 import { monthKey, NEW_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, formatAud, LOGIN_TIER_2_MAX } from '../../src/portal/billing.js';
@@ -669,9 +670,34 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const base = (shortCode || name.replace(/[^A-Za-z]/g, '').slice(0, 3)).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'ORG';
     let code = base;
     for (let n = 2; await pstore.getOrgByShortCode(code); n += 1) code = `${base}${n}`;
-    const org = { id: rid('org'), name, shortCode: code, displayName: name, logoDataUrl: null, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
+    let slug = cleanSlug(slugify(name)) || 'builder';
+    const slugBase = slug;
+    for (let n = 2; await pstore.getOrgBySlug(slug); n += 1) slug = `${slugBase}-${n}`;
+    const org = { id: rid('org'), name, shortCode: code, slug, displayName: name, logoDataUrl: null, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
     if (!(await pstore.createOrg(org))) throw new HttpError('CONFLICT', 'That organisation already exists.');
     return org;
+  }
+  /** GET /portal/brand/:slug (public). Only the name, logo and colours of an existing organisation, for the branded sign in page. */
+  async function brandBySlug(r, slug) {
+    if ((await store.hitRate(`brand:ip:${clientIp(r.request)}`, 600, now())) > 120) throw new HttpError('RATE_LIMITED', 'Too many requests. Please wait a moment.', { retryAfter: 600 });
+    const clean = cleanSlug(slug);
+    const org = clean ? await pstore.getOrgBySlug(clean) : null;
+    if (!org) throw new HttpError('NOT_FOUND', 'That builder is not on Glide Inside.');
+    const res = json({ name: org.displayName || org.name, logoUrl: org.logoDataUrl || null, colours: coloursOf(org) });
+    res.headers.set('cache-control', 'public, max-age=60');
+    return res;
+  }
+  // Owner sets the builder slug the home page picker uses: { slug: "hunter-homes" } or { slug: null } to clear it.
+  async function adminSlug(r, id) {
+    await adminAuth(r.request);
+    const org = await adminOrg(r, id);
+    const b = await readJson(r.request, 512).catch(() => ({}));
+    const slug = b.slug === null ? null : cleanSlug(typeof b.slug === 'string' ? b.slug.trim().toLowerCase() : '');
+    if (b.slug !== null && !slug) throw new HttpError('BAD_REQUEST', 'Use lower case letters, digits and single hyphens, up to 40 characters.');
+    const other = slug ? await pstore.getOrgBySlug(slug) : null;
+    if (other && other.id !== org.id) throw new HttpError('CONFLICT', 'Another organisation already uses that slug.');
+    await pstore.updateOrg(org.id, { slug });
+    return json({ id: org.id, slug });
   }
   async function createOrg(r) {
     await adminAuth(r.request);
@@ -939,7 +965,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     ['PUT', '/org/branding', setBranding], ['PATCH', '/org/settings', setSettings],
     ['POST', '/admin/orgs', createOrg, { token: true }],
     ['POST', '/billing/setup', billingSetup], ['POST', '/billing/setup/confirm', billingSetupConfirm],
-    ['POST', '/trial-request', trialRequest, { noCsrf: true }],
+    ['POST', '/trial-request', trialRequest, { noCsrf: true }], ['GET', `/brand/${ID}`, brandBySlug, { noCsrf: true }], ['POST', `/admin/orgs/${ID}/slug`, adminSlug, { token: true }],
     ['GET', '/admin/trial-requests', adminRequests, { token: true }], ['POST', `/admin/trial-requests/${ID}/approve`, adminApprove, { token: true }], ['POST', `/admin/trial-requests/${ID}/decline`, adminDecline, { token: true }],
     ['GET', '/admin/orgs', adminOrgs, { token: true }], ['POST', `/admin/orgs/${ID}/extend-trial`, adminExtend, { token: true }], ['POST', `/admin/orgs/${ID}/convert`, adminConvert, { token: true }], ['POST', `/admin/orgs/${ID}/login-rate`, adminLoginRate, { token: true }], ['POST', `/admin/orgs/${ID}/brand-colours`, adminBrandColours, { token: true }], ['POST', `/admin/orgs/${ID}/reset-admin`, adminResetAdmin, { token: true }],
   ].map(([method, p, handler, opts]) => ({ method, re: new RegExp(`^${p}$`), handler, opts: opts || {} }));
@@ -953,7 +979,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (!path.startsWith('/portal/')) return null;
     const sub = path.slice('/portal'.length);
     // Builder and client logins stay closed until PORTAL_ENABLED=1 (public launch first). Creating organisations is an admin job and stays open.
-    const alwaysOpen = sub === '/trial-request' || sub.startsWith('/admin/'); // requests are collected, and the owner works, before logins open
+    const alwaysOpen = sub === '/trial-request' || sub.startsWith('/brand/') || sub.startsWith('/admin/'); // requests are collected, and the owner works, before logins open
     if (!config.portalEnabled && !alwaysOpen) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not open yet.');
     const r = { request, url, setCookie: null };
     let matchedPath = false;

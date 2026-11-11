@@ -14,6 +14,7 @@ import { ddmmyyyy } from '../billing.js';
 import { trialBanner, handleBillingReturn } from './trial-ui.js';
 import { CONFIG } from '../../config.js';
 import { applyBrandTheme, clearBrandTheme } from '../theme-css.js';
+import { readPick } from '../builders.js';
 
 const TABS = [
   { id: 'houses', label: 'House designs', render: renderHouses },
@@ -35,8 +36,10 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
     return;
   }
 
+  const pick = readPick(location.search); // ?builder=<slug>&role=client|builder from the Glide Inside home page picker
+  const pickSearch = pick.builder ? `?builder=${pick.builder}${pick.role ? `&role=${pick.role}` : ''}` : '';
   const setView = (node) => { clear(root); root.append(node); document.title = `${node.dataset?.title || 'Portal'} | Glide Inside`; };
-  const toSignIn = () => { clearBrandTheme(); history.replaceState(null, '', location.pathname + (params.get('client') ? '?client=1' : '')); setView(signInView({ api, client: !!params.get('client'), onSignedIn: start, goForgot: () => setView(forgotView({ api, goBack: toSignIn, goReset: (t) => setView(resetView({ api, token: t, goBack: toSignIn })) })) })); };
+  const toSignIn = () => { clearBrandTheme(); history.replaceState(null, '', location.pathname + (params.get('client') ? '?client=1' : '') + pickSearch); setView(signInView({ api, client: !!params.get('client'), builder: pick.builder, role: pick.role, onSignedIn: start, goForgot: () => setView(forgotView({ api, goBack: toSignIn, goReset: (t) => setView(resetView({ api, token: t, goBack: toSignIn })) })) })); };
 
   async function signOut() {
     await api.signOut();

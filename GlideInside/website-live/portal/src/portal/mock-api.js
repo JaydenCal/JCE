@@ -233,6 +233,13 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
   }
 
   const api = {
+    /** Public: the branded sign in page. Only the sample builder exists in review mode. */
+    async getBrand(slug) {
+      await wait();
+      if (slug !== 'sample-homes') throw err('NOT_FOUND', 'That builder is not on Glide Inside.', 404);
+      const o = load().orgs[0];
+      return { name: o.branding.displayName || o.name, logoUrl: o.branding.logoDataUrl || null, colours: clone(o.branding.colours) };
+    },
     // Session -------------------------------------------------------------------------------------------------------------
     async signIn({ identifier, password } = {}) {
       await wait();

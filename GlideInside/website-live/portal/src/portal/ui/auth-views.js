@@ -4,6 +4,8 @@ import { h, field, busy, toast, errorMessage, icon } from './kit.js';
 import { DEMO_LOGINS } from '../mock-api.js';
 import { CONFIG } from '../../config.js';
 import { MIN_PASSWORD_LENGTH } from '../credentials.js';
+import { builderName } from '../builders.js';
+import { applyBrandTheme } from '../theme-css.js';
 
 const authShell = (title, intro, ...children) =>
   h('section', { class: 'pp-auth' }, h('div', { class: 'pp-auth-card' }, h('h1', null, title), intro ? h('p', { class: 'pp-lead' }, intro) : null, ...children));
@@ -13,10 +15,31 @@ function errorBox() {
 }
 const showError = (box, msg) => { box.textContent = msg; box.hidden = !msg; };
 
-/** Builder and client sign in on one page. ?client=1 opens the client tab. */
-export function signInView({ api, client = false, onSignedIn, goForgot }) {
-  let mode = client ? 'client' : 'builder';
+/** Builder and client sign in on one page. ?client=1 or ?role=client opens the client tab. ?builder=<slug> shows that builder's name, logo and colours. */
+export function signInView({ api, client = false, onSignedIn, goForgot, builder = null, role = null }) {
+  let mode = client || role === 'client' ? 'client' : 'builder';
+  let brand = null, missing = false;
+  const brandBox = h('div', { class: 'pp-brandbox', hidden: true });
   const host = h('div');
+  function paintBrand() {
+    brandBox.hidden = !(brand || missing);
+    brandBox.replaceChildren(...(brand ? [brand.logoUrl && h('img', { class: 'pp-brandbox-logo', src: brand.logoUrl, alt: '' }), h('p', { class: 'pp-brandbox-name' }, brand.name)].filter(Boolean) : []));
+  }
+  function renderMissing() {
+    const name = builderName(builder) || 'That builder';
+    host.replaceChildren(h('div', { class: 'pp-nobuilder' },
+      h('h2', null, `${name} isn't using Glide Inside yet.`),
+      mode === 'client'
+        ? h('p', { class: 'pp-lead pp-lead--sm' }, 'Ask your consultant about designing with Glide Inside.')
+        : h('p', { class: 'pp-lead pp-lead--sm' }, 'Builder staff can try it free for 14 days.'),
+      mode === 'builder' ? h('a', { class: 'pp-btn pp-btn--primary pp-btn--block', href: `/for-builders/?builder=${encodeURIComponent(builder)}#trial` }, 'Start a free 14 day trial') : null,
+      h('p', { class: 'pp-center' }, h('a', { href: '/' }, 'Choose a different builder'))));
+  }
+  if (builder && api.getBrand) {
+    api.getBrand(builder).then((b) => { brand = b; applyBrandTheme(b.colours); paintBrand(); }, (e) => {
+      if (e && (e.code === 'NOT_FOUND' || e.status === 404)) { missing = true; paintBrand(); render(); }
+    });
+  }
   const demo = CONFIG.portalMock ? h('details', { class: 'pp-demo' },
     h('summary', null, 'Review mode: sample logins'),
     h('p', null, 'This is a front end review build. Nothing is sent anywhere; sample data stays in this browser.'),
@@ -26,6 +49,7 @@ export function signInView({ api, client = false, onSignedIn, goForgot }) {
       h('li', null, h('strong', null, 'Client: '), h('code', null, DEMO_LOGINS.client.identifier), ' / ', h('code', null, DEMO_LOGINS.client.password)))) : null;
 
   function render() {
+    if (missing) return renderMissing();
     const err = errorBox();
     const idInput = (id) => h('input', { id, type: mode === 'builder' ? 'email' : 'text', name: 'username', autocomplete: 'username', required: true, autocapitalize: 'none', spellcheck: 'false', placeholder: mode === 'builder' ? 'you@yourbuilder.com.au' : 'sarah-4821' });
     const pwInput = (id) => h('input', { id, type: 'password', name: 'password', autocomplete: 'current-password', required: true });
@@ -58,7 +82,7 @@ export function signInView({ api, client = false, onSignedIn, goForgot }) {
     form.elements.username.focus();
   }
   render();
-  return authShell('Sign in to Pocket Architect', null, host);
+  return authShell('Sign in to Pocket Architect', null, brandBox, host);
 }
 
 export function forgotView({ api, goBack, goReset }) {

@@ -12,7 +12,7 @@ const SPECS = {
       allowClientTopUps: 'allow_client_topups:b', allowClientEnquiries: 'allow_client_enquiries:b', showGlideToClients: 'show_glide_to_clients:b',
       allowClientCadExports: 'allow_client_cad_exports:b', aiMonthlyCap: 'ai_monthly_cap', legalName: 'legal_name', abn: 'abn',
       billingName: 'billing_name', billingEmail: 'billing_email', billingPhone: 'billing_phone', stripeCustomerId: 'stripe_customer_id', createdAt: 'created_at',
-      brandPrimary: 'brand_primary', brandAccent: 'brand_accent', brandDarkInk: 'brand_dark_ink', brandDarkBg: 'brand_dark_bg', // builder colours (migration 0010)
+      brandPrimary: 'brand_primary', brandAccent: 'brand_accent', brandDarkInk: 'brand_dark_ink', brandDarkBg: 'brand_dark_bg', slug: 'slug', // builder colours (migration 0010)
       customLoginCents: 'custom_login_cents', // nullable: the owner's per-login price for this org (migration 0008)
     },
   },
@@ -137,6 +137,10 @@ export function createD1PortalStore(db) {
     getOrg: async (id) => withAccount(await one(SPECS.orgs, 'id = ?1', id), await one(SPECS.orgAccounts, 'org_id = ?1', id)),
     getOrgByShortCode: async (code) => {
       const o = await one(SPECS.orgs, 'short_code = ?1', code);
+      return o && withAccount(o, await one(SPECS.orgAccounts, 'org_id = ?1', o.id));
+    },
+    getOrgBySlug: async (slug) => {
+      const o = await one(SPECS.orgs, 'slug = ?1', slug);
       return o && withAccount(o, await one(SPECS.orgAccounts, 'org_id = ?1', o.id));
     },
     async listOrgs() {
@@ -287,6 +291,10 @@ export function createMemoryPortalStore() {
     getOrg: async (id) => (T.orgs.has(id) ? { ...cp(T.orgs.get(id)), status: T.orgs.get(id).status || 'active' } : null),
     getOrgByShortCode: async (code) => {
       const o = [...T.orgs.values()].find((x) => x.shortCode === code);
+      return o ? { ...cp(o), status: o.status || 'active' } : null;
+    },
+    getOrgBySlug: async (slug) => {
+      const o = [...T.orgs.values()].find((x) => x.slug === slug);
       return o ? { ...cp(o), status: o.status || 'active' } : null;
     },
     listOrgs: async () => [...T.orgs.values()].sort((a, b) => a.createdAt.localeCompare(b.createdAt)).map((o) => ({ ...cp(o), status: o.status || 'active' })),
