@@ -132,7 +132,11 @@ export function signedArea(ring) {
 export const ringArea = (ring) => Math.abs(signedArea(ring));
 
 export function ringCentroid(ring) {
-  const r = openRing(ring);
+  const r0 = openRing(ring);
+  // Work relative to the first vertex: MGA coordinates are about 1e6 and 1e7, and the cross products would lose metres to rounding.
+  const ox = r0.length ? r0[0][0] : 0;
+  const oy = r0.length ? r0[0][1] : 0;
+  const r = r0.map((p) => [p[0] - ox, p[1] - oy]);
   let a = 0;
   let cx = 0;
   let cy = 0;
@@ -146,9 +150,9 @@ export function ringCentroid(ring) {
   }
   if (Math.abs(a) < 1e-12) {
     const bb = bboxOf(r);
-    return [(bb.minX + bb.maxX) / 2, (bb.minY + bb.maxY) / 2];
+    return [(bb.minX + bb.maxX) / 2 + ox, (bb.minY + bb.maxY) / 2 + oy];
   }
-  return [cx / (3 * a), cy / (3 * a)];
+  return [cx / (3 * a) + ox, cy / (3 * a) + oy];
 }
 
 export function bboxOf(points) {

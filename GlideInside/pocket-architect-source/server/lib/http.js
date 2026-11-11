@@ -18,6 +18,9 @@ export const ERROR_STATUS = {
   PAYMENTS_UNAVAILABLE: 503,
   EXPORT_UNAVAILABLE: 503,
   SERVER_NOT_CONFIGURED: 500,
+  // Site lookup (server/lib/site.js).
+  UNSUPPORTED_AREA: 422,
+  SITE_UPSTREAM: 502,
 };
 
 export class HttpError extends Error {
@@ -37,7 +40,7 @@ export function corsHeaders(request, config) {
     headers['Access-Control-Allow-Origin'] = origin;
     headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
     headers['Access-Control-Allow-Headers'] = 'authorization, content-type';
-    headers['Access-Control-Expose-Headers'] = 'content-disposition';
+    headers['Access-Control-Expose-Headers'] = 'content-disposition, x-site-meta';
     headers['Access-Control-Max-Age'] = '600';
   }
   return headers;

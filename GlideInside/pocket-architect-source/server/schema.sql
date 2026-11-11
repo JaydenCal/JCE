@@ -62,3 +62,11 @@ CREATE TABLE IF NOT EXISTS events (
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_events_type ON events(type, created_at);
+
+-- Site lookup (server/lib/site.js): cached lot and address search JSON, with an expiry in epoch milliseconds.
+CREATE TABLE IF NOT EXISTS site_cache (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  expires_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_site_cache_expiry ON site_cache(expires_at);

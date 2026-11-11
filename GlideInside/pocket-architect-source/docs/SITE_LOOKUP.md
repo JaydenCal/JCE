@@ -3,8 +3,9 @@
 Type an NSW or QLD street address and the design opens on the real lot: lot boundary, neighbouring lots with lot and plan labels, an aerial image
 placed to scale, ground contours, council and zone. The house is then placed on that lot in plan and in 3D.
 
-Status (11/11/2026): the front end is built against recorded-shape sample responses (`CONFIG.siteMock = true`, `src/site/fixtures/`). The live
-back end (`server/lib/site.js`, `/api/site/*`) is the next stage. Setbacks are a separate stage: `site.lot.setbacks` and `site.lot.envelope` are `null` hooks.
+Status (11/11/2026): the front end runs against recorded-shape sample responses (`CONFIG.siteMock = true`, `src/site/fixtures/`). The live
+back end (`server/lib/site.js`, `/api/site/*`) is written and tested against mocked upstreams, but has NOT been run against the real government
+services (the build sandbox cannot reach them). Leave `siteMock` true until `/api/site/health` is green and one real lot has been looked at. Setbacks are a separate stage: `site.lot.setbacks` and `site.lot.envelope` are `null` hooks.
 
 ## Where things are
 
@@ -92,3 +93,23 @@ read "... indicative only; detailed survey required". Boundaries are always labe
 | QLD DEM (`QldDem`) | Not stated by the service | CC BY-SA is the owner's instruction in the earlier JCE site work. The mosaic includes SRTM and bathymetry (deepreef.org) |
 
 CC BY-SA on the QLD imagery and DEM has a share-alike effect on anything derived from them. Decision needed on whether plan sets that embed the QLD aerial are acceptable under that.
+
+## Back end (`server/lib/site.js`)
+
+Endpoints (all GET, no auth, rate limited per IP with `store.hitRate`: search 60/min, lot and aerial 20/min, contours 12/min, 800 lookups a day):
+
+- `/api/site/search?q=` up to 8 `{ label, state, lon, lat }`. NSW: NSW_Property layers 1 to 4, `address` field, LIKE per word. QLD: LandParcelPropertyFramework layer 0 (Addresses).
+- `/api/site/lot?lon=&lat=&state=` parcel at the point (largest parcel if strata lots stack), neighbours within 60 m (road parcels flagged `isRoad`), LGA, zoning (NSW only), road centrelines (NSW only), `origin` (MGA centroid), all coordinates relative to the origin in metres.
+- `/api/site/aerial?state=&srid=&bbox=` image bytes plus `x-site-meta` (URL encoded JSON: georef, bbox, size, source, attribution, capture date). If the service refuses an MGA export the server returns a web mercator image (`georef: 'web-mercator'`) and the browser re-samples it (`src/site/warp.js`).
+- `/api/site/contours?state=&srid=&bbox=&buffer=&origin=` DEM grid on an MGA grid (NSW 2 m, QLD 1 m, at most about 160k nodes), marching squares contours (minor 0.5 m, major 2.5 m, `minor` and `major` configurable), provenance.
+- `/api/site/health` probes 13 upstream services with an 8 s timeout (memoised 60 s). `ok` is false if a required service (lot or address) is down.
+
+Raster format: the DEM is requested as TIFF F32 (`exportImage`, `noData=-9999`) in web mercator and decoded by `src/site/tiff.js`, a small pure JS reader
+(uncompressed, LZW, Deflate, strips or tiles, predictors 1, 2, 3). No LERC and no `getSamples` (about 30 s for 40 points in earlier work). Cells are resampled bilinearly onto the MGA grid.
+
+Caching: lot and search JSON in D1 table `site_cache` (`server/schema.sql`, TTL 7 days and 1 hour); aerial and contours in the Worker Cache API with an in-memory fallback (7 days).
+Run `wrangler d1 execute <db> --file=server/schema.sql` once to add the table. Stores without `getSiteCache` (file, Upstash) simply skip the cache.
+
+Not confirmed against live services (see the header of `server/lib/site.js` for the full list with the confirmation date): the actual query behaviour of every layer
+(point query with `inSR=7844`, `outSR=785x`), the NSW address text format, MGA `imageSR` on NSW_Imagery export, the TIFF produced by `exportImage`, and the field names of
+QLD imagery catalogue items used to reject Planet fill. If the QLD open-imagery check cannot establish that the imagery is open aerial the aerial is withheld and the app carries on without it.

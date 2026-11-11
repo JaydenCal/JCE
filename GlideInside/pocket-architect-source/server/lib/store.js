@@ -129,6 +129,19 @@ export function createD1Store(db) {
       );
       return Number(row?.count ?? 1);
     },
+    // Site lookup cache (JSON strings with an expiry).
+    async getSiteCache(key, nowMs) {
+      const row = await first('SELECT value FROM site_cache WHERE key = ?1 AND expires_at > ?2', key, nowMs);
+      return row?.value ?? null;
+    },
+    async putSiteCache(key, value, ttlSec, nowMs) {
+      await run(
+        `INSERT INTO site_cache (key, value, expires_at) VALUES (?1, ?2, ?3)
+         ON CONFLICT(key) DO UPDATE SET value = ?2, expires_at = ?3`,
+        key, value, nowMs + ttlSec * 1000,
+      );
+      if (Math.random() < 0.02) await run('DELETE FROM site_cache WHERE expires_at < ?1', nowMs);
+    },
     async logEvent({ id, type, detail, createdAt }) {
       return changed(await run('INSERT OR IGNORE INTO events (id, type, detail, created_at) VALUES (?1, ?2, ?3, ?4)', id, type, detail ? JSON.stringify(detail) : null, createdAt));
     },
@@ -146,6 +159,7 @@ export function createMemoryStore() {
   const spend = new Map();
   const hooks = new Map();
   const rates = new Map();
+  const siteCache = new Map();
   const events = new Map();
   const copy = (o) => (o ? { ...o } : null);
   const byEmail = (e, email) => e.email && email && e.email.toLowerCase() === String(email).toLowerCase();
@@ -255,6 +269,14 @@ export function createMemoryStore() {
       const count = row && row.start === start ? row.count + 1 : 1;
       rates.set(key, { start, count });
       return count;
+    },
+    async getSiteCache(key, nowMs) {
+      const row = siteCache.get(key);
+      return row && row.expires > nowMs ? row.value : null;
+    },
+    async putSiteCache(key, value, ttlSec, nowMs) {
+      siteCache.set(key, { value, expires: nowMs + ttlSec * 1000 });
+      if (siteCache.size > 500) siteCache.delete(siteCache.keys().next().value);
     },
     async logEvent({ id, type, detail, createdAt }) {
       if (events.has(id)) return false;

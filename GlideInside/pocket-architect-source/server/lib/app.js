@@ -14,6 +14,7 @@ import { authenticate, issueToken } from './entitlement.js';
 import * as stripe from './stripe.js';
 import * as credits from './credits.js';
 import * as anthropic from './anthropic.js';
+import { createSite } from './site.js';
 
 const EXPORT_TYPES = ['pdf', 'dxf', 'glb', 'obj'];
 const WEBHOOK_MAX_BYTES = 1_000_000;
@@ -25,6 +26,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   const doFetch = fetchImpl || ((...a) => globalThis.fetch(...a));
   const iso = (ms = now()) => new Date(ms).toISOString();
 
+  const site = createSite({ store, fetchImpl, now });
   let toolsCache = null;
   let catalogueCache = null;
   const getCatalogue = async () => {
@@ -321,6 +323,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (path === '/credits') return allow('GET'), creditsGet(request, url);
     if (path === '/ai/estimate') return allow('POST'), aiEstimate(request);
     if (path === '/ai/edit') return allow('POST'), aiEdit(request);
+    const sub = /^\/site(\/[a-z]+)$/.exec(path);
+    if (sub) return site.handle(sub[1], request, url);
     const exp = /^\/export\/([a-z0-9]+)$/.exec(path);
     if (exp) return allow('POST'), exportFile(request, exp[1]);
     throw new HttpError('NOT_FOUND', 'No such endpoint.');
