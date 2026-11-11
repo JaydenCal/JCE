@@ -5,9 +5,28 @@
   document.querySelectorAll("[data-cfg]").forEach(function (el) { var v = cfg[el.dataset.cfg]; if (v != null) el.textContent = v; });
   var fs = document.querySelector('script[src*="framework.js"]'), root = fs ? fs.src.replace(/framework\.js.*$/, "") : "";
   document.querySelectorAll("[data-cfg-href]").forEach(function (el) { var v = cfg[el.dataset.cfgHref]; if (!v) return; if (!/^(https?:|mailto:|tel:|#)/.test(v)) v = new URL(v, root || location.href).href; if (el.dataset.template) { var u = new URL(v, location.href); u.searchParams.set("template", el.dataset.template); v = u.href; } el.setAttribute("href", v); el.removeAttribute("aria-disabled"); });
+  // portal links (Builder login, Client login) show only when site.config.js sets portalLive: true
+  document.querySelectorAll("[data-portal]").forEach(function (el) { el.hidden = !cfg.portalLive; });
   // mobile nav
   var t = document.querySelector(".nav-toggle"), n = document.querySelector(".site-nav");
-  if (t && n) t.addEventListener("click", function () { var o = n.classList.toggle("open"); t.setAttribute("aria-expanded", o); });
+  if (t && n) {
+    t.addEventListener("click", function () { var o = n.classList.toggle("open"); t.setAttribute("aria-expanded", o); t.textContent = o ? "Close" : "Menu"; });
+    n.addEventListener("click", function (e) { if (e.target.closest("a")) { n.classList.remove("open"); t.setAttribute("aria-expanded", "false"); t.textContent = "Menu"; } });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && n.classList.contains("open")) { n.classList.remove("open"); t.setAttribute("aria-expanded", "false"); t.textContent = "Menu"; t.focus(); } });
+  }
+  // click-to-load live editor: button[data-live-src] fills its .live-stage with the app, so the 3 MB app never slows first paint
+  document.querySelectorAll("[data-live-src]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var st = b.closest(".live-stage"); if (!st) return;
+      var f = document.createElement("iframe");
+      f.title = b.dataset.liveTitle || "Pocket Architect";
+      f.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-pointer-lock");
+      f.setAttribute("allow", "fullscreen; pointer-lock; clipboard-write");
+      f.src = new URL(b.dataset.liveSrc, root || location.href).href;
+      st.innerHTML = ""; st.appendChild(f);
+      try { if (window.gtag) window.gtag("event", "live_editor_loaded", {}); } catch (e) {}
+    });
+  });
   // tabs: [data-tabs] > [role=tab][data-tab=id]; panels [data-panel=id] anywhere inside the same [data-demo] or [data-tabs] root
   document.querySelectorAll("[data-tabs]").forEach(function (root) {
     var scope = root.closest("[data-demo]") || root;
@@ -61,6 +80,6 @@
   if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
     document.documentElement.classList.add("js");
     var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: .12 });
-    document.querySelectorAll(".section-head,.card,.steps li,.faq details,.product-card").forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+    document.querySelectorAll(".section-head,.feature,.audience .card,.price-card,.flow,.rules,.steps li").forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
   }
 })();

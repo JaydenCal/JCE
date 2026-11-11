@@ -15,10 +15,12 @@
 <meta name="twitter:title" content="Granny Flat Designs and Floor Plans in 3D | Glide Inside">
 <meta name="twitter:description" content="Start from a 2 bedroom granny flat template, edit the floor plan and view it in 3D. Free to draw, no sign-up. Concept designs only.">
 <meta name="twitter:image" content="https://glideinside.com.au/assets/og-cover.jpg">
+<meta name="theme-color" content="#12231c">
 <link rel="icon" href="../assets/Glideinside_Favicon_v4.svg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="../framework.css?v=20261015">
-<script src="../site.config.js?v=20261016"></script><script src="../framework.js" defer></script><script src="../analytics.js" defer></script>
+<link rel="preload" href="../assets/fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../framework.css?v=20261111">
+<script src="../site.config.js?v=20261111"></script><script src="../framework.js" defer></script><script src="../analytics.js" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://glideinside.com.au/"},{"@type":"ListItem","position":2,"name":"Granny flat designs","item":"https://glideinside.com.au/granny-flat-designs/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a granny flat?","acceptedAnswer":{"@type":"Answer","text":"A granny flat is a small, self-contained home on the same lot as a main house. In NSW the planning term is a secondary dwelling."}},{"@type":"Question","name":"How big can a granny flat be in NSW?","acceptedAnswer":{"@type":"Answer","text":"Under the Housing SEPP 2021 and the Codes SEPP, a secondary dwelling is generally limited to 60 m² of floor area outside rural zones. Always confirm the limits for your lot with your council."}},{"@type":"Question","name":"Do I need approval to build a granny flat?","acceptedAnswer":{"@type":"Answer","text":"Yes, approval is always required in NSW. It can be a complying development certificate from council or a private certifier if all the standards are met, or a development application. The minimum lot size for complying development is 450 m². Confirm with your council."}},{"@type":"Question","name":"Can I design a 1 bedroom granny flat?","acceptedAnswer":{"@type":"Answer","text":"Yes. Open the 2 bedroom template and remove a bedroom, or start from a blank plan and draw only one. You can also upload a JPG or PNG plan and trace it."}},{"@type":"Question","name":"What do I get for A$35?","acceptedAnswer":{"@type":"Answer","text":"One PDF plan set (A3 sheets to scale, with schedules and a title block), a DXF for CAD and a 3D model file (GLB and OBJ) for one job, including GST, plus 500 AI assistant credits. Drawing and viewing are free, and you only pay at the end, when you export."}},{"@type":"Question","name":"Do I need to sign up?","acceptedAnswer":{"@type":"Answer","text":"No. You can draw and view in 3D without an account. Your work saves in your browser. If you buy a job, Stripe collects your email at checkout and we use it to restore your purchase."}}]}</script>
 <style>.plan-links{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding:0;margin:0}.plan-links a{text-decoration:none}.price-line{font-weight:600}</style>
@@ -27,35 +29,42 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header"><div class="shell">
   <a class="logo" href="../index.html" aria-label="Glide Inside home"><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
-  <nav class="site-nav" aria-label="Main">
-    <a href="../plan-studio/index.html">Pocket Architect</a>
-    <a href="../plans/index.html">Plan library</a>
-    <a href="../subdivision/index.html">Subdivision</a>
-    <a href="../index.html#how">How it works</a>
-    <a href="../index.html#faq">FAQ</a>
-    <a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au">Contact</a>
+  <nav class="site-nav" id="site-nav" aria-label="Main">
+    <a href="../index.html">Pocket Architect</a>
+    <a href="../for-builders/">For builders</a>
+    <a href="../subdivision/">Subdivisions</a>
+    <a href="../plans/" aria-current="page">Plans</a>
+    <a href="../pricing/">Pricing</a>
+    <div class="nav-logins">
+      <a href="/portal/" data-portal hidden>Builder login</a>
+      <a href="/portal/?client=1" data-portal hidden>Client login</a>
+      <a class="btn" data-cfg-href="toolUrl" href="../plan-studio/launch/">Start designing</a>
+    </div>
   </nav>
-  <a class="btn btn-sm" data-cfg-href="toolUrl" href="../plan-studio/launch/">Start free</a>
-  <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="head-end">
+    <a class="login" href="/portal/" data-portal hidden>Builder login</a>
+    <a class="login" href="/portal/?client=1" data-portal hidden>Client login</a>
+    <a class="btn btn-sm" data-cfg-href="toolUrl" href="../plan-studio/launch/">Start designing</a>
+  </div>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 </div></header>
 <main id="main">
 <div class="shell">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../index.html">Home</a><span>/</span>Granny flat designs</nav>
   <section class="product-hero">
     <div>
-      <p class="eyebrow">GRANNY FLAT DESIGNS</p>
+      <p class="eyebrow">Granny flat designs</p>
       <h1>Granny flat designs and floor plans you can edit in <em>3D</em></h1>
       <p class="lead" style="margin:24px 0 32px">Start from a 2 bedroom granny flat, change the layout to suit your block and walk through it before you talk to a designer or your council.</p>
       <div class="hero-cta"><a class="btn" data-cfg-href="toolUrl" data-template="granny_flat" href="../plan-studio/launch/?template=granny_flat">Start free <span aria-hidden="true">→</span></a></div>
-      <p class="price-line" style="margin-top:16px">Free to draw and view, with no sign-up. A$35 per job (incl. GST) unlocks one PDF plan set, a DXF for CAD and a 3D model file. You only pay at the end, when you export.</p>
       
       <p class="fineprint">Concept designs only. Not for construction or council lodgement.</p>
     </div>
-    <div class="card">
+    <div class="hero-side"><div class="appframe "><div class="bar"><i></i><i></i><i></i><span>glideinside.com.au/plan-studio</span></div><img src="../assets/app-plan.webp" srcset="../assets/app-plan-800.webp 800w, ../assets/app-plan.webp 1600w" sizes="(max-width:960px) 92vw, 50vw" width="1600" height="1000" alt="Pocket Architect plan editor with a floor plan and room areas" fetchpriority="high"></div><div class="card">
       <p class="eyebrow" style="margin-bottom:12px">The starting plan</p>
       <p style="margin:0">A 2 bedroom granny flat of about 9.85 x 6.65 m with 61 m² of indoor space, a deck and a 5,000 L rainwater tank.</p>
       <p class="muted" style="margin:16px 0 0;font-size:14px">If you already have a design saved in this browser, the tool opens that first. Choose New design to start fresh.</p>
-    </div>
+    </div></div>
   </section>
 </div>
 
@@ -113,9 +122,12 @@
 </section>
 </main>
 <footer class="site-footer"><div class="shell">
-  <div><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside" style="height:30px;width:auto;margin-bottom:12px"><p>Glide Inside · ABN 11 549 431 925<br><a href="mailto:hello@glideinside.com.au">hello@glideinside.com.au</a> · 0477 207 027</p></div>
-  <nav aria-label="Products"><a href="../plan-studio/index.html">Pocket Architect</a><a href="../plans/index.html">Plan library</a><a href="../subdivision/index.html">Subdivision modelling</a><a href="../plan-studio/index.html#addons">Plan add-ons</a></nav>
-  <nav aria-label="Legal"><a href="../terms.html">Order terms</a><a href="../privacy.html">Privacy</a></nav>
+  <div class="brand"><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"><p>Site planning and house design in 3D for regional New South Wales and Queensland.</p></div>
+  <nav aria-label="Product"><h4>Product</h4><a href="../index.html">Pocket Architect</a><a href="../plan-studio/index.html">How it works</a><a href="../pricing/">Pricing</a><a href="../plan-studio/index.html#addons">Add-ons</a><a href="../subdivision/">Subdivisions</a></nav>
+  <nav aria-label="Builders and plans"><h4>Builders and plans</h4><a href="../for-builders/">For builders</a><a href="/portal/" data-portal hidden>Builder login</a><a href="/portal/?client=1" data-portal hidden>Client login</a><a href="../plans/">Plan library</a><a href="../granny-flat-designs/">Granny flat designs</a><a href="../shed-with-living-quarters/">Shed with living quarters</a><a href="../3d-floor-plan-maker/">3D floor plan maker</a></nav>
+  <nav aria-label="Company"><h4>Glide Inside</h4><span>Sole trader, ABN <span data-cfg="abn">11 549 431 925</span></span><a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au"><span data-cfg="email">hello@glideinside.com.au</span></a><span data-cfg="phone">0477 207 027</span><a href="../terms.html">Order terms</a><a href="../privacy.html">Privacy</a></nav>
+  <p class="legal-line">Glide Inside provides concept planning tools only. Setbacks and other planning controls shown are indicative, are not a planning or building approval, and must be checked with the relevant council and a suitably qualified person before you rely on them. Prices include GST.</p>
+  <p class="legal-line attrib">Cadastre and imagery &copy; NSW Spatial Services (CC BY 3.0 AU); Queensland Government data.</p>
 </div></footer>
 </body>
 </html>

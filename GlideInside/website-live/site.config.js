@@ -14,6 +14,10 @@ window.GI_CONFIG = {
   premiumEnabled: true,
   orderUrl: "mailto:hello@glideinside.com.au?subject=Glide%20Inside%20enquiry",
   planOrderUrl: "mailto:hello@glideinside.com.au?subject=Pocket%20Architect%20enquiry",
+  // Builder accounts launch after the public Find my block tool. Register interest and demo links are mailto until a form exists.
+  builderInterestUrl: "mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20register%20interest",
+  builderDemoUrl: "mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20book%20a%20demo",
+  portalLive: false,              // true shows the Builder login and Client login links (/portal/). Keep false until the portal is live.
   subdivisionOrderUrl: "mailto:hello@glideinside.com.au?subject=Subdivision%20quote%20request", // or a quote form inside the app
   // Tracking (leave empty until the owner creates the accounts; see docs/marketing/TRACKING.md)
   ga4Id: "G-8TLHQ55DN4",                      // GA4 Measurement ID, for example "G-XXXXXXXXXX". Empty = no analytics loaded.

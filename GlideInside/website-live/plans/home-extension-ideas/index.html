@@ -15,10 +15,12 @@
 <meta name="twitter:title" content="Home Extension Ideas and Plans to Edit in 3D | Glide Inside">
 <meta name="twitter:description" content="Test home extension ideas on a starting plan with an existing house and a new rear family room. Edit it and view it in 3D. Concept designs only.">
 <meta name="twitter:image" content="https://glideinside.com.au/assets/og-cover.jpg">
+<meta name="theme-color" content="#12231c">
 <link rel="icon" href="../../assets/Glideinside_Favicon_v4.svg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="../../framework.css?v=20261015">
-<script src="../../site.config.js?v=20261016"></script><script src="../../framework.js" defer></script><script src="../../analytics.js" defer></script>
+<link rel="preload" href="../../assets/fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../framework.css?v=20261111">
+<script src="../../site.config.js?v=20261111"></script><script src="../../framework.js" defer></script><script src="../../analytics.js" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://glideinside.com.au/"},{"@type":"ListItem","position":2,"name":"Plan library","item":"https://glideinside.com.au/plans/"},{"@type":"ListItem","position":3,"name":"Home extension ideas","item":"https://glideinside.com.au/plans/home-extension-ideas/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does extension mode work?","acceptedAnswer":{"@type":"Answer","text":"The existing house is marked as existing and the new work as new. You can mark a wall for demolition and draw the extension against it, then check the result in 3D."}},{"@type":"Question","name":"Can I trace my own house plan?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can place a plan behind your drawing as an underlay and trace over it, then add your extension."}},{"@type":"Question","name":"Do I need council approval for an extension?","acceptedAnswer":{"@type":"Answer","text":"It depends on your site, your state and the size and type of work. Pocket Architect does not assess this. Ask your council or use the NSW Planning Portal for sites in NSW."}},{"@type":"Question","name":"How much does a home extension cost?","acceptedAnswer":{"@type":"Answer","text":"Cost depends on size, finishes, site conditions and the builder, so we do not give a figure. Pocket Architect shows floor areas you can take to builders when you ask for quotes."}},{"@type":"Question","name":"What do I get for A$35?","acceptedAnswer":{"@type":"Answer","text":"One PDF plan set, a DXF for CAD and a 3D model file (GLB and OBJ) for one job, including GST, plus 500 AI assistant credits. Drawing and viewing are free."}}]}</script>
 <style>.plan-links{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding:0;margin:0}.plan-links a{text-decoration:none}.price-line{font-weight:600}</style>
@@ -27,35 +29,42 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header"><div class="shell">
   <a class="logo" href="../../index.html" aria-label="Glide Inside home"><img src="../../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
-  <nav class="site-nav" aria-label="Main">
-    <a href="../../plan-studio/index.html">Pocket Architect</a>
-    <a href="../../plans/index.html" aria-current="page">Plan library</a>
-    <a href="../../subdivision/index.html">Subdivision</a>
-    <a href="../../index.html#how">How it works</a>
-    <a href="../../index.html#faq">FAQ</a>
-    <a data-cfg-href="orderUrl" href="/cdn-cgi/l/email-protection#046c6168686b4463686d60616d6a776d60612a676b692a6571">Contact</a>
+  <nav class="site-nav" id="site-nav" aria-label="Main">
+    <a href="../../index.html">Pocket Architect</a>
+    <a href="../../for-builders/">For builders</a>
+    <a href="../../subdivision/">Subdivisions</a>
+    <a href="../../plans/" aria-current="page">Plans</a>
+    <a href="../../pricing/">Pricing</a>
+    <div class="nav-logins">
+      <a href="/portal/" data-portal hidden>Builder login</a>
+      <a href="/portal/?client=1" data-portal hidden>Client login</a>
+      <a class="btn" data-cfg-href="toolUrl" href="../../plan-studio/launch/">Start designing</a>
+    </div>
   </nav>
-  <a class="btn btn-sm" data-cfg-href="toolUrl" href="../../plan-studio/launch/">Start designing</a>
-  <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="head-end">
+    <a class="login" href="/portal/" data-portal hidden>Builder login</a>
+    <a class="login" href="/portal/?client=1" data-portal hidden>Client login</a>
+    <a class="btn btn-sm" data-cfg-href="toolUrl" href="../../plan-studio/launch/">Start designing</a>
+  </div>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 </div></header>
 <main id="main">
 <div class="shell">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a><span>/</span><a href="../../plans/index.html">Plan library</a><span>/</span>Home extension ideas</nav>
   <section class="product-hero">
     <div>
-      <p class="eyebrow">PLAN LIBRARY · EXTENSION</p>
+      <p class="eyebrow">Plan library, extension</p>
       <h1>Home extension ideas you can draw and see in <em>3D</em></h1>
       <p class="lead" style="margin:24px 0 32px">Try an extension on a plan with the existing house marked, then see how it sits.</p>
       <div class="hero-cta"><a class="btn" data-cfg-href="toolUrl" data-template="extension_starter" href="../../plan-studio/launch/?template=extension_starter">Start this design free <span aria-hidden="true">→</span></a></div>
-      <p class="price-line" style="margin-top:16px">Free to draw and view, with no sign-up. A$35 per job (incl. GST) unlocks one PDF plan set, a DXF for CAD and a 3D model file.</p>
       
       <p class="fineprint">Concept designs only. Not for construction or council lodgement.</p>
     </div>
-    <div class="card">
+    <div class="hero-side"><div class="appframe "><div class="bar"><i></i><i></i><i></i><span>glideinside.com.au/plan-studio</span></div><img src="../../assets/app-plan.webp" srcset="../../assets/app-plan-800.webp 800w, ../../assets/app-plan.webp 1600w" sizes="(max-width:960px) 92vw, 50vw" width="1600" height="1000" alt="Pocket Architect plan editor with a floor plan and room areas" fetchpriority="high"></div><div class="card">
       <p class="eyebrow" style="margin-bottom:12px">The starting plan</p>
       <p style="margin:0">An existing 3 bedroom house, marked as existing, with a new rear family room and deck. One section of the existing rear wall is marked for demolition where the house opens into the new room.</p>
       <p class="muted" style="margin:16px 0 0;font-size:14px">If you already have a design saved in this browser, the tool opens that first. Choose New design and pick the template to start fresh.</p>
-    </div>
+    </div></div>
   </section>
 </div>
 
@@ -93,9 +102,12 @@
 </section>
 </main>
 <footer class="site-footer"><div class="shell">
-  <div><img src="../../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside" style="height:30px;width:auto;margin-bottom:12px"><p>Glide Inside · ABN 11 549 431 925<br><a href="/cdn-cgi/l/email-protection#ddb5b8b1b1b29dbab1b4b9b8b4b3aeb4b9b8f3beb2b0f3bca8"><span class="__cf_email__" data-cfemail="6e060b0202012e0902070a0b07001d070a0b400d0103400f1b">[email&#160;protected]</span></a> · 0477 207 027</p></div>
-  <nav aria-label="Products"><a href="../../plan-studio/index.html">Pocket Architect</a><a href="../../plans/index.html">Plan library</a><a href="../../subdivision/index.html">Subdivision modelling</a><a href="../../plan-studio/index.html#addons">Plan add-ons</a></nav>
-  <nav aria-label="Legal"><a href="../../terms.html">Order terms</a><a href="../../privacy.html">Privacy</a></nav>
+  <div class="brand"><img src="../../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"><p>Site planning and house design in 3D for regional New South Wales and Queensland.</p></div>
+  <nav aria-label="Product"><h4>Product</h4><a href="../../index.html">Pocket Architect</a><a href="../../plan-studio/index.html">How it works</a><a href="../../pricing/">Pricing</a><a href="../../plan-studio/index.html#addons">Add-ons</a><a href="../../subdivision/">Subdivisions</a></nav>
+  <nav aria-label="Builders and plans"><h4>Builders and plans</h4><a href="../../for-builders/">For builders</a><a href="/portal/" data-portal hidden>Builder login</a><a href="/portal/?client=1" data-portal hidden>Client login</a><a href="../../plans/">Plan library</a><a href="../../granny-flat-designs/">Granny flat designs</a><a href="../../shed-with-living-quarters/">Shed with living quarters</a><a href="../../3d-floor-plan-maker/">3D floor plan maker</a></nav>
+  <nav aria-label="Company"><h4>Glide Inside</h4><span>Sole trader, ABN <span data-cfg="abn">11 549 431 925</span></span><a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au"><span data-cfg="email">hello@glideinside.com.au</span></a><span data-cfg="phone">0477 207 027</span><a href="../../terms.html">Order terms</a><a href="../../privacy.html">Privacy</a></nav>
+  <p class="legal-line">Glide Inside provides concept planning tools only. Setbacks and other planning controls shown are indicative, are not a planning or building approval, and must be checked with the relevant council and a suitably qualified person before you rely on them. Prices include GST.</p>
+  <p class="legal-line attrib">Cadastre and imagery &copy; NSW Spatial Services (CC BY 3.0 AU); Queensland Government data.</p>
 </div></footer>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
 </html>
