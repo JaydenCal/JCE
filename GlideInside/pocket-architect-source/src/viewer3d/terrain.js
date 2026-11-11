@@ -1,7 +1,7 @@
 // Site for the 3D model, built from site.lot whenever a lot is loaded (the elevation grid and the aerial are optional):
 //   * terrain mesh over the full aerial extent (a clean rectangle), with the aerial draped on it,
 //   * a level building pad at floor RL under the house with a short 1:3 batter to the natural ground,
-//   * a ring beyond the terrain that fades to the horizon colour (no fog, no hard edge),
+//   * a ring beyond the terrain that fades to a neutral ground colour (no fog, no pale haze),
 //   * the lot boundary (bold red), neighbouring lots (thin), the dashed setback envelope, the street frontage and optional contours,
 //     all draped on the drawn surface, plus lot and DP labels as billboards.
 // No DOM access except the label canvas, which is skipped when there is no document (tests).
@@ -19,7 +19,7 @@ import { addSiteExtras } from './site-extras.js';
 export { PAD_MARGIN_M } from './site-geom.js';
 
 const GRASS = '#6f8a58';
-const HORIZON = '#c9dcee'; // matches the sky horizon in viewer.js
+const HORIZON = '#9aa88a'; // the far edge of the ground ring: a neutral ground colour, not a pale haze towards the sky
 
 // Footprint (plan mm bbox) of the lowest level: walls and rooms. null when there is nothing drawn.
 export function footprintBox(project) {

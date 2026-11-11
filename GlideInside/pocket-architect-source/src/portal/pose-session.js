@@ -74,7 +74,7 @@ export function fitSummary(c) {
  */
 export function runPoseSession({ store, editor, host = document.getElementById('ps-stage'), title, apply, initialPose, describe = '', fit = null, commitLabel = 'Place house', commitText = 'Place house', reposeOnLot = null, onDone, onCancel }) {
   injectPoseStyles();
-  store.setUI({ view: planView(store.ui.view) });
+  store.setUI({ view: planView(store.ui.view), placing: true }); // the frontage panel stays out of the way while a house is placed
   let pose = { rotation: 0, mirrored: false, ...initialPose };
   let preview = null;
   let state = { messages: [] };
@@ -259,6 +259,7 @@ export function runPoseSession({ store, editor, host = document.getElementById('
   });
 
   function teardown() {
+    store.setUI({ placing: false });
     offProject?.();
     document.removeEventListener('keydown', onKey, true);
     editor.clearPreview?.();

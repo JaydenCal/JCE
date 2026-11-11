@@ -31,6 +31,7 @@ import { builderDesigns } from '../lotcard/designs.js';
 const LOGO_KEY = 'ps.logo';
 const AUTOSAVE = () => CONFIG.autosaveKey;
 const OWNER_KEY = 'ps.portal.owner';
+const EMPTY_LIBRARY = 'Your builder has not added house designs yet. Ask them to add one, or draw your own with Edit floor plan.';
 
 export async function initPortalMode(app, { api = getPortalApi(), location: loc = globalThis.location } = {}) {
   if (!CONFIG.portalEnabled) return null;
@@ -63,8 +64,9 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   let reviewOwner = null; // the client whose saved project staff opened as that client sees it
   const brand = me.org.branding || {};
   applyBrandTheme(brand.colours); // builder colour scheme over the app chrome; the 3D scene, aerial and setback states keep their own colours
-  let lot = { ...SAMPLE_LOT, address: me.lotAddress || '' }; // review builds start with the sample lot so ranking can be shown
-  let lotIsSample = true;
+  // A real client starts with no lot: the sample lot only exists in the review (mock) build, so designs are never ranked against it.
+  let lot = CONFIG.portalMock ? { ...SAMPLE_LOT, address: me.lotAddress || '' } : null;
+  let lotIsSample = !!lot;
   let envelope = null;
   let currentProjectId = null;
   let credits = me.ai;
@@ -168,7 +170,18 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   function findMyBlock() {
     if (typeof globalThis.openSiteSearch === 'function') return globalThis.openSiteSearch();
     // The real Find my block (NSW and QLD cadastre). The sample lot stays as a fallback only if the dialog cannot load.
-    return import('../ui/find-block.js').then((m) => m.openFindBlock(store)).catch(() => sampleLotDialog());
+    return import('../ui/find-block.js').then((m) => m.openFindBlock(store, { onDone: onBlockFound })).catch(() => (CONFIG.portalMock ? sampleLotDialog() : toast('Could not open Find my block. Check your connection and try again.', { kind: 'error' })));
+  }
+  // The block was found: the strip follows it and the House designs picker opens (or says the library is empty).
+  async function onBlockFound(found) {
+    const sl = lotOf(store.project);
+    const label = sl?.address || found?.address || found?.lotLabel || sl?.lotLabel || '';
+    statusLine.textContent = label ? `Lot: ${label}` : '';
+    if (sl) lotIsSample = false; // the found lot now stands in for the sample; the design carries it, so no portal lot is faked
+    let count = null;
+    try { count = (await loadDesigns()).length; } catch { /* the picker reports the error itself */ }
+    if (count === 0) toast(EMPTY_LIBRARY, { kind: 'warn', timeout: 7000 });
+    else openPicker();
   }
   function sampleLotDialog() {
     modal('Find my block', h('div', null,
@@ -177,11 +190,19 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     [{ label: 'Use a sample lot', primary: true, fn: async () => { lot = { ...SAMPLE_LOT, address: me.lotAddress || '' }; lotIsSample = true; await refreshEnvelope(); statusLine.textContent = `Lot: ${SAMPLE_LOT.name}`; toast('Sample lot ready. Choose a house design to see which ones fit.', { kind: 'ok' }); } }]);
   }
   app.portal = {
-    async setLot(next) { lot = { ...next }; lotIsSample = false; await refreshEnvelope(); statusLine.textContent = lot.address ? `Lot: ${lot.address}` : ''; },
-    getLot: () => ({ address: lot.address || '', lot: lot.lot || '', dp: lot.dp || '', lga: lot.lga || '', zone: lot.zone || '' }),
+    async setLot(next) { lot = { ...next }; lotIsSample = false; await refreshEnvelope(); paintLot(); },
+    getLot: () => ({ address: lot?.address || '', lot: lot?.lot || '', dp: lot?.dp || '', lga: lot?.lga || '', zone: lot?.zone || '' }),
     me, refreshCredits,
   };
-  if (lot.address) statusLine.textContent = `Lot: ${lot.address}`; else statusLine.textContent = lotIsSample ? SAMPLE_LOT.name : '';
+  // The strip text always follows the lot on the open design (Find my block), else the portal lot, else says so.
+  function paintLot() {
+    if (reviewOwner) return;
+    const sl = lotOf(store.project);
+    const label = sl ? (sl.address || sl.lotLabel || '') : (lot?.address || '');
+    statusLine.textContent = label ? `Lot: ${label}` : lotIsSample && lot ? SAMPLE_LOT.name : 'No block yet';
+  }
+  paintLot();
+  store.on?.('project', paintLot);
 
   // House designs -------------------------------------------------------------------------------------------------------------
   async function loadDesigns() {
@@ -199,9 +220,23 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   };
   async function openPicker() {
     const list = h('div', { class: 'pas-list' }, h('p', { class: 'pas-empty' }, 'Loading designs...'));
-    const m = modal('House designs', h('div', null, h('p', null, envelopeNow() ? `Ranked for ${lotOf(store.project)?.address || (lotIsSample ? SAMPLE_LOT.name : lot.address) || 'your lot'}. Designs that do not fit can still be placed.` : lotOf(store.project) ? 'Setbacks are not available for this lot, so designs are not ranked. Check with council.' : 'Find your block to see which designs fit.'), list), []);
+    // A client with no block yet is asked to find it first: designs are never ranked against a sample lot.
+    const noLot = clientLike && !lotOf(store.project) && !envelope;
+    const m = modal('House designs', h('div', null, noLot ? null : h('p', null, envelopeNow() ? `Ranked for ${lotOf(store.project)?.address || (lotIsSample ? SAMPLE_LOT.name : lot.address) || 'your lot'}. Designs that do not fit can still be placed.` : lotOf(store.project) ? 'Setbacks are not available for this lot, so designs are not ranked. Check with council.' : 'Find your block to see which designs fit.'), list), []);
     let designs;
     try { designs = await loadDesigns(); } catch (e) { list.replaceChildren(h('p', { class: 'pas-empty' }, e.message || 'Could not load designs.')); return; }
+    if (!designs.length) {
+      list.replaceChildren(designMode
+        ? h('p', { class: 'pas-empty' }, h('a', { href: portalUrl('#/houses'), target: '_blank', rel: 'noopener' }, 'Add a house in the Houses tab'), '.')
+        : h('p', { class: 'pas-empty' }, EMPTY_LIBRARY));
+      return;
+    }
+    if (noLot) {
+      list.replaceChildren(h('div', { class: 'pas-findfirst' },
+        h('p', { class: 'pas-empty' }, h('strong', null, 'Find your block first'), ' so the designs can be checked against your lot and setbacks.'),
+        h('button', { class: 'pas-btn pas-btn--primary', type: 'button', onclick: () => { m.close(); findMyBlock(); } }, 'Find my block')));
+      return;
+    }
     // The builder's own designs first, then the Glide Inside library; within each, best fit first.
     const byGroup = (g) => (envelopeNow() ? rankDesigns(designs.filter((d) => d.group === g), envelopeNow()) : designs.filter((d) => d.group === g).map((d) => ({ ...d, fit: null })));
     const ranked = [...byGroup('builder'), ...byGroup('glide')];
@@ -227,7 +262,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     house.name = d.name;
     const fit = d.fit;
     // A builder lot (no Find my block) becomes the design's lot, so the road, setbacks, clearances and driveway draw under the house.
-    if (!lotOf(store.project) && lot?.polygonMm && envelope) {
+    if (!lotOf(store.project) && !lotIsSample && lot?.polygonMm && envelope) {
       store.apply('Set lot', (p) => { p.site.lot = portalLotToSiteLot(lot, envelope); p.site.northDeg = 0; });
       editor.zoomToFit?.();
     }
@@ -252,7 +287,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   // Projects ----------------------------------------------------------------------------------------------------------------------
   async function saveProject() {
     try {
-      const saved = await api.saveProject({ id: currentProjectId || undefined, name: store.project.name, project: store.project, lotAddress: lot.address || '' });
+      const saved = await api.saveProject({ id: currentProjectId || undefined, name: store.project.name, project: store.project, lotAddress: lotOf(store.project)?.address || lot?.address || '' });
       currentProjectId = saved.id;
       toast(reviewOwner ? `Saved to ${reviewOwner}'s project. It is recorded as edited by staff.` : 'Project saved to your account.', { kind: 'ok' });
     } catch (e) { toast(e.message || 'Could not save.', { kind: 'error' }); }
@@ -277,7 +312,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
       app.replaceProject(p.project);
       currentProjectId = p.id;
       reviewOwner = !isClient && p.ownerId && p.ownerId !== me.user.id ? p.ownerName || 'the client' : null;
-      if (p.lotAddress) { lot = { ...lot, address: p.lotAddress }; lotIsSample = false; }
+      if (p.lotAddress) { lot = { ...(lot || {}), address: p.lotAddress }; lotIsSample = false; }
       statusLine.textContent = `${reviewOwner ? `Client view of ${reviewOwner}'s project. ` : ''}${p.lotAddress ? `Lot: ${p.lotAddress}` : ''}`;
     } catch (e) { toast(e.message || 'Could not open that project.', { kind: 'error' }); }
   }

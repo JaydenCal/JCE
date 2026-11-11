@@ -86,7 +86,7 @@ export function createTopbarUI({ root, config, getState, actions }) {
       slot.append(el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => actions.unlock('topbar') },
         icon('lock', 14), `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`));
     } else {
-      slot.append(el('button', { class: 'psp-btn', type: 'button', disabled: true, title: 'The Plan Pack (AI assistant and exports) is coming soon.' }, icon('lock', 14), 'Plan Pack coming soon'));
+      slot.append(el('button', { class: 'psp-btn', type: 'button', disabled: true, title: 'The Plan Pack (AI assistant and exports) is unavailable right now. Try again shortly.' }, icon('lock', 14), 'Plan Pack unavailable, try again'));
     }
   }
 

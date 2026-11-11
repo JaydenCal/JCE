@@ -155,7 +155,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   const hints = document.createElement('div');
   hints.className = 'ps3d-hints';
   // No how-to panel over the model: one short chip that fades on its own. The view buttons sit at the bottom left.
-  const HINTS_DEFAULT = '<span class="ps3d-chip">Drag to orbit, scroll to zoom</span>';
+  const touchOnly = (() => { try { return !!globalThis.matchMedia?.('(hover: none) and (pointer: coarse)').matches; } catch { return false; } })();
+  const HINTS_DEFAULT = `<span class="ps3d-chip">${touchOnly ? 'Drag to orbit, pinch to zoom' : 'Drag to orbit, scroll to zoom'}</span>`;
   hints.innerHTML = HINTS_DEFAULT;
   rootEl.appendChild(hints);
   let hintTimer = null;

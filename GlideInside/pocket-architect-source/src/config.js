@@ -15,7 +15,8 @@ export const CONFIG = {
   // Same origin: the Cloudflare Worker is routed at glideinside.com.au/api/* (one site, no CORS, cookie sessions stay same-site).
   apiBase: '/api',
   aiMock: false, // true serves canned assistant replies in the browser (review builds only)
-  premiumEnabled: false, // Phase 1: premium shows as "coming soon" until the back end is live
+  // On unless the host page sets GI_CONFIG.premiumEnabled = false. The paid version is only switched off when /api/health explicitly says payments are not configured.
+  premiumEnabled: hasWindow && typeof window.GI_CONFIG?.premiumEnabled === 'boolean' ? window.GI_CONFIG.premiumEnabled : true,
   planPack: { priceAud: 30, gstInclusive: true, credits: 500, reexportMonths: 12 },
   links: {
     engineering: '', // engineering enquiry URL (configurable)

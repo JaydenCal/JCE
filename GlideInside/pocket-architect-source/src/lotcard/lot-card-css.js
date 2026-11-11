@@ -89,6 +89,10 @@ export const LOT_CARD_CSS = `
 .lc-root[data-view="2d"] .lc-sp-rooms,.lc-root[data-view="split"] .lc-sp-rooms{display:none}
 .lc-root[data-view="2d"] .lc-fit,.lc-root[data-view="split"] .lc-fit{min-height:34px}
 .lc-root[data-view="2d"] .lc-btn,.lc-root[data-view="split"] .lc-btn{height:36px;font-size:11.5px;padding:0 16px!important}
+/* Wide screens: the carousel docks to the right, under the top view thumbnail, so it never covers the card (which runs to the left of both). */
+.lc-root:not(.is-compact) .lc-pager{left:auto;right:12px;width:min(21%,210px);min-width:110px;box-sizing:border-box;transform:none;justify-content:space-between}
+.lc-root:not(.is-compact) .lc-pgt{min-width:0;max-width:none;flex:1;font-size:9.5px;letter-spacing:.1em}
+.lc-root:not(.is-compact) .lc-mini{bottom:66px}
 .lc-root.is-phone .lc-card{left:0;right:0;bottom:0;width:auto;border-radius:14px 14px 0 0;border-bottom:0}
 .lc-root.is-phone .lc-pager{bottom:112px}
 .lc-root.is-compact .lc-pager{bottom:124px;left:12px;transform:none;height:36px}

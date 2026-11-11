@@ -361,17 +361,30 @@ export function createPremium(store, options = {}) {
     try {
       const h = await api.health();
       if (disposed || !h || h.ok !== true) return null;
+      if (h.paymentsConfigured === false) return null; // the back end says payments are off: the Plan Pack stays unavailable
       cfg.premiumEnabled = true;
       const back = activate();
       publish();
       if (h.devGrant) await devGrant();
       return back ? await back : null;
     } catch {
-      return null; // no back end here: the Plan Pack stays "coming soon"
+      return null; // no back end here: the Plan Pack stays unavailable
     }
   }
 
-  if (live()) ready = Promise.resolve(activate()).then((r) => r);
+  // Switch the paid version off only when the back end explicitly says payments are not configured; a failed or silent health check leaves it on.
+  async function checkPaymentsOff() {
+    try {
+      const h = await api.health();
+      if (disposed || !h || h.paymentsConfigured !== false) return;
+      cfg.premiumEnabled = false;
+      publish();
+    } catch { /* unreachable: leave it on */ }
+  }
+  if (live()) {
+    ready = Promise.resolve(activate()).then((r) => r);
+    if (probe && !mockOn) ready = ready.then(async (r) => { await checkPaymentsOff(); return r; });
+  }
   else {
     publish();
     if (aiToken()) refreshCredits(); // a login or mock session needs no Plan Pack to show its credits
