@@ -85,6 +85,7 @@ export function attachSetbacks(store, { fetchImpl = null, base = null, delayMs =
   async function run() {
     timer = null;
     const lot = store.project.site?.lot;
+    if (lot?.source === 'builder' && (lot.setbacks || lot.envelope)) return; // the builder's own setbacks for this lot are never replaced by the council lookup
     if (!lot || !lot.frontageConfirmed || !(lot.frontEdges || []).length) {
       if (lot && (lot.setbacks || lot.envelope) && !lot.frontageConfirmed) setSilently(null, null, null, []);
       return;

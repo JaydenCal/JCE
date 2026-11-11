@@ -95,6 +95,8 @@ export const LOT_CARD_CSS = `
 .lc-root.is-phone:has(.lc-card.is-open) .lc-pager,.lc-root.is-compact:has(.lc-card.is-open) .lc-pager{display:none}
 .lc-root.is-compact .lc-pager button{width:32px;height:32px;line-height:30px}
 .lc-root.is-compact .lc-pgt{min-width:0;max-width:120px;font-size:9.5px}
+/* In a room view the card folds to its header and the room pills so it never covers the view. */
+.lc-root[data-room="1"]:not(.is-compact) .lc-card :is(.lc-stats,.lc-sp:not(.lc-sp-rooms),.lc-acts,.lc-fit){display:none}
 .lc-compact.lc-on .ps3d-viewbar{top:auto;bottom:170px;left:12px;transform:none}
 .lc-compact.lc-on .ps3d-hints{display:none}
 @media (max-width:640px){.lc-plan{width:110px;height:74px}.lc-stats{gap:10px}.lc-btn{height:34px;padding:0 12px!important}}

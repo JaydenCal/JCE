@@ -110,7 +110,9 @@ export function initOnboarding(ps = window.__ps) {
     if (disposed || !enabled || ls.get(KEYS.tourDone) === '1') return;
     if (window.innerWidth < 600) return; // narrow screens: no automatic tour (it can still be started from Demo tips)
     // One prompt at a time: wait while the welcome card or the street frontage bar is on screen.
-    if (document.querySelector('.ps-welcome') || document.querySelector('.ps-frontage:not([hidden])')) { autoTimer = setTimeout(startWhenQuiet, 1500); return; }
+    // Also wait while any dialog (Find my block and others) is open, and never auto start once a lot has been loaded.
+    if (ps.store?.project?.site?.lot) return;
+    if (document.querySelector('.ps-welcome') || document.querySelector('.ps-frontage:not([hidden])') || document.querySelector('.ps-modal-head')) { autoTimer = setTimeout(startWhenQuiet, 1500); return; }
     // Also wait while the person is in a 3D or walk view, or placing a house (arrange bar): the steps start on the plan. Split counts as the plan.
     const view = ps.store?.ui?.view;
     if ((view && view !== '2d' && view !== 'split') || document.querySelector('.pas-pose')) { autoTimer = setTimeout(startWhenQuiet, 1500); return; }

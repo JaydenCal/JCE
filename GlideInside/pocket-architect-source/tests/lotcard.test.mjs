@@ -129,11 +129,11 @@ test('setback line: amber when no rule is loaded, red names the edges, green ins
   q.site.lot.setbacks = { front: slot(0), side: slot(0), rear: slot(0), secondaryFront: slot(0) };
   const ok = setbackStatusLine(q);
   assert.ok(['inside', 'check'].includes(ok.state));
-  if (ok.state === 'inside') assert.equal(ok.text, 'Inside the setbacks');
+  if (ok.state === 'inside') assert.equal(ok.text, 'Fits the setbacks');
   if (ok.state === 'inside') {
     q.site.lot.setbacks.flag = 'check';
     assert.equal(setbackStatusLine(q).state, 'check');
-    assert.equal(setbackStatusLine(q).text, 'Inside the setbacks, check with council');
+    assert.equal(setbackStatusLine(q).text, 'Fits the setbacks, check with council');
   }
 });
 
