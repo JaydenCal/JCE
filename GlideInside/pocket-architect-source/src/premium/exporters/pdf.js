@@ -11,6 +11,7 @@ import { BRAND, LOGO_PNG } from '../brand/logo.js';
 import {
   AREA, SCALE_LIST, paperOf, ddmmyyyy, levelContent, chooseScale, scaleBarSpec, barLabel, titleBlockValues, sheetList,
 } from './drawing.js';
+import { creditsOneLine, INDICATIVE as SITE_INDICATIVE } from '../../site/credits.js';
 import { furnitureStrokes, placeLabel, placeBeside, boxOf } from './symbols.js';
 
 export { ddmmyyyy, AREA };
@@ -295,7 +296,14 @@ function frame(doc, ctx, { title, scaleLabel, sheet }) {
   doc.setFontSize(5.5);
   ink(doc, GREY);
   const note = ascii(config.disclaimer || DEFAULT_DISCLAIMER);
-  doc.text(fit(doc, note, SHEET_W - 2 * M - 4), x0 + 2, TB_DISC + 3.9);
+  const lot = project.site?.lot;
+  if (lot) {
+    // With a real lot the footer carries two lines: the disclaimer, then the data credits and accuracy of the site layers.
+    doc.text(fit(doc, note, SHEET_W - 2 * M - 4), x0 + 2, TB_DISC + 2.1);
+    doc.setFontSize(4.2);
+    const rows = doc.splitTextToSize(ascii(`Site data: ${creditsOneLine(lot)} ${SITE_INDICATIVE}`), SHEET_W - 2 * M - 4);
+    rows.slice(0, 3).forEach((r, i) => doc.text(r, x0 + 2, TB_DISC + 3.6 + i * 1.3));
+  } else doc.text(fit(doc, note, SHEET_W - 2 * M - 4), x0 + 2, TB_DISC + 3.9);
 }
 
 function northArrow(doc, cx, cy, deg) {

@@ -7,7 +7,8 @@ import * as M from './math.js';
 import { readTheme } from './theme.js';
 import { buildScene, drawGrid, drawUnderlay, drawGhostLevel, drawRooms, drawRoomLabels, drawWalls } from './draw-plan.js';
 import { drawOpenings, drawStairs, drawFurniture, drawTanks } from './draw-items.js';
-import { drawSite } from './draw-site.js';
+import { drawSite, drawCredits } from './draw-site.js';
+import { nearestEdge, toggleEdge, isCorner } from '../site/frontage.js';
 import { drawOverallDims, drawSelection, drawHover, drawNorthArrow, drawScaleBar } from './draw-annot.js';
 import { loadBitmap, removeImage, registerUnderlayEditor, setUnderlayFromBlob, setUnderlayFromCanvas } from './underlay.js';
 import { clashIds, createClashNotifier } from './clash.js';
@@ -263,6 +264,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       statusView: store.ui.statusView,
       tool: store.ui.tool,
       underlayBitmap: state.underlayBitmap,
+      frontageEdit: !!store.ui.frontageEdit,
       furnSize: ed.furnSize,
     };
     const clashes = currentClashes(project);
@@ -289,6 +291,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     current?.draw?.(ctx, st, ed);
     drawNorthArrow(ctx, st);
     drawScaleBar(ctx, st);
+    drawCredits(ctx, st);
   }
 
   // View ---------------------------------------------------------------------------------------------------
@@ -388,6 +391,19 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       return;
     }
     if (e.button !== 0) return;
+    if (store.ui.frontageEdit && store.project.site?.lot?.boundary?.length) {
+      // "Confirm your street frontage": a click on a boundary edge toggles it as front or not.
+      const lot = store.project.site.lot;
+      const i = nearestEdge(lot.boundary, ev.world, 24 / state.view.scale);
+      if (i >= 0) {
+        store.apply('Toggle frontage edge', (p) => {
+          p.site.lot.frontEdges = toggleEdge(p.site.lot.frontEdges || [], i);
+          p.site.lot.cornerLot = isCorner(p.site.lot, p.site.lot.frontEdges);
+          p.site.lot.frontageConfirmed = false;
+        });
+      }
+      return;
+    }
     if (ed.hasPopover()) {
       current?.cancel?.();
       ed.closePopover();

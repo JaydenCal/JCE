@@ -18,6 +18,7 @@ import { createStatusBar } from './ui/statusbar.js';
 import { createStageChips, createWelcome } from './ui/stage-ui.js';
 import { openTemplatePicker } from './ui/templates.js';
 import { openFindBlock } from './ui/find-block.js';
+import { createFrontageBar } from './ui/frontage.js';
 import { saveDesign, pickDesignFile } from './ui/files.js';
 import { createEmbed } from './ui/embed.js';
 import { createViewManager } from './ui/views.js';
@@ -196,6 +197,7 @@ async function main() {
   const drawer = createDrawer(refs.drawer, store, { catalogue, onInventory: openInventory });
   const statusbar = createStatusBar(refs.statusbar, store, { editor });
   const chips = createStageChips(refs.chips, store);
+  createFrontageBar(refs.stage, store);
   statusbar.setAutosave(!noAutosave);
 
   let premiumLoading = null;

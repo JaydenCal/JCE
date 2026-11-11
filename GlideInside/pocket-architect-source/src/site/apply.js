@@ -70,6 +70,8 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
     if (!tb.council && lot.lga) tb.council = titleCase(lot.lga);
   });
   if (oldKey && oldKey !== aerialKey && store.project.site.underlay?.key === aerialKey) removeImage(oldKey);
+  // Next the person confirms which edges are the street frontage (setbacks depend on it).
+  store.setUI({ view: '2d', frontageEdit: true });
   return { lot, warnings };
 }
 
@@ -81,5 +83,6 @@ export function removeSiteLot(store) {
     p.site.lot = null;
     if (p.site.underlay?.site) p.site.underlay = null;
   });
+  store.setUI({ frontageEdit: false });
   if (drop) removeImage(drop);
 }

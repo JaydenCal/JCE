@@ -8,6 +8,7 @@ import { removeSiteLot } from '../site/apply.js';
 import { CONFIG } from '../config.js';
 import { floorRLOf, defaultFloorRL, centroidRL } from '../site/model.js';
 import { askConfirm } from './modal.js';
+import { siteCredits, INDICATIVE } from '../site/credits.js';
 
 const LAYER_LABELS = [
   ['boundary', 'Lot boundary'], ['dimensions', 'Boundary lengths'], ['neighbours', 'Neighbouring lots'],
@@ -21,7 +22,7 @@ export function buildSiteSection(ctx) {
   let fb = formBuilder();
   let finder = null;
   const lotOf = () => store.project.site?.lot || null;
-  const keyOf = () => (lotOf() ? `lot:${lotOf().origin?.e}:${lotOf().lotLabel}` : 'none');
+  const keyOf = () => (lotOf() ? `lot:${lotOf().origin?.e}:${lotOf().lotLabel}:${(lotOf().frontEdges || []).join(',')}:${!!lotOf().frontageConfirmed}` : 'none');
 
   const fact = (k, v) => h('tr', null, h('td', null, k), h('td', { class: 'num', style: { textAlign: 'right' } }, v));
 
@@ -46,11 +47,13 @@ export function buildSiteSection(ctx) {
       fact('Area', `${lot.areaM2.toLocaleString('en-AU', { maximumFractionDigits: 1 })} m²`),
       fact('Council', lot.lga || 'Not found'),
       fact('Zone', lot.zoning ? `${lot.zoning.code} ${lot.zoning.name}` : 'Not looked up'),
-      crl != null ? fact('Ground RL at lot centre', `${crl.toFixed(2)} m`) : null);
+      crl != null ? fact('Ground RL at lot centre', `${crl.toFixed(2)} m`) : null,
+      fact('Street frontage', (lot.frontEdges || []).length ? `Edge${lot.frontEdges.length > 1 ? 's' : ''} ${lot.frontEdges.map((i) => i + 1).join(', ')}${lot.cornerLot ? ' (corner lot)' : ''}${lot.frontageConfirmed ? '' : ', not confirmed'}` : 'Not set'));
     const sec = section('Site', h('table', { class: 'ps-table ps-site-facts' }, rows));
     if (!lot.zoning && lot.zoneNote) sec.append(h('p', { class: 'ps-hint' }, lot.zoneNote));
     sec.append(h('p', { class: 'ps-hint' }, `Coordinates are MGA2020 zone ${lot.zone}, plan up is grid north.`));
 
+    sec.append(h('div', { class: 'ps-sec' }, button('Confirm street frontage', () => store.setUI({ view: '2d', frontageEdit: true }), { title: 'Click the edges of your lot that face the street' })));
     const layers = h('div', { class: 'ps-sec', style: { marginTop: '8px' } }, h('h4', null, 'Layers'));
     for (const [id, label] of LAYER_LABELS) {
       if (id === 'aerial' && !lot.aerial) continue;
@@ -78,13 +81,10 @@ export function buildSiteSection(ctx) {
       sec.append(h('p', { class: 'ps-hint' }, `Starts at the lot centre RL plus 0.15 m (${defaultFloorRL(lot)?.toFixed(2)} m). The 3D view sits the house at this level.`));
     }
 
-    const prov = [];
-    if (lot.provenance?.aerial?.attribution) prov.push(lot.provenance.aerial.attribution);
-    if (lot.provenance?.lot?.attribution) prov.push(lot.provenance.lot.attribution);
-    if (lot.provenance?.elevation?.note) prov.push(lot.provenance.elevation.note);
-    prov.push('Boundaries are from the cadastre and are indicative. A registered survey is needed for any construction or approval.');
-    if (lot.sample) prov.unshift('SAMPLE DATA: this lot is invented for testing.');
-    sec.append(h('p', { class: 'ps-hint' }, prov.join(' ')));
+    const credits = siteCredits(lot).map((c) => c.text);
+    credits.push(INDICATIVE);
+    if (lot.sample) credits.unshift('SAMPLE DATA: this lot is invented for testing.');
+    sec.append(h('div', { class: 'ps-hint' }, ...credits.map((t) => h('p', { style: { margin: '0 0 4px' } }, t))));
 
     // Searching again replaces the lot (one undo step).
     finder = createFindBlock(store, { compact: true });

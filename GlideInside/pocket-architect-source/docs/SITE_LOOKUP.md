@@ -1,0 +1,94 @@
+# Site lookup ("Find my block")
+
+Type an NSW or QLD street address and the design opens on the real lot: lot boundary, neighbouring lots with lot and plan labels, an aerial image
+placed to scale, ground contours, council and zone. The house is then placed on that lot in plan and in 3D.
+
+Status (11/11/2026): the front end is built against recorded-shape sample responses (`CONFIG.siteMock = true`, `src/site/fixtures/`). The live
+back end (`server/lib/site.js`, `/api/site/*`) is the next stage. Setbacks are a separate stage: `site.lot.setbacks` and `site.lot.envelope` are `null` hooks.
+
+## Where things are
+
+| Piece | File |
+|---|---|
+| Single lot schema, MGA to plan conversion | `src/site/model.js` (`buildSiteLot`) |
+| Geometry: MGA zones and projection, polygon helpers | `src/site/geo.js` |
+| Contours (marching squares) | `src/site/contours.js` |
+| Street frontage | `src/site/frontage.js` |
+| Attribution and accuracy wording | `src/site/credits.js` |
+| Browser client (search, lot, aerial, contours) | `src/site/client.js` |
+| Apply to a project (one undo step) | `src/site/apply.js` |
+| Sample responses and their generator | `src/site/fixtures/`, `tools/make-site-fixtures.mjs` |
+| Search box, panel section, frontage bar | `src/ui/find-block.js`, `src/ui/panel-site.js`, `src/ui/frontage.js` |
+| 2D layers | `src/editor2d/draw-site.js` |
+| 3D terrain | `src/viewer3d/terrain.js` |
+
+Feature flags in `src/config.js`: `siteLookupEnabled` (true), `siteMock` (true until the API is deployed), `siteAerialMarginM` (30).
+
+## Coordinates
+
+- Source data is MGA2020 (GDA2020 / MGA zone 54, 55 or 56, EPSG 7854 to 7856), metres. The zone comes from longitude (54: 138 to 144 E, 55: 144 to 150 E, 56: 150 to 156 E).
+- The lot centroid, in MGA, is the origin. Everything stored in the project is relative to it.
+- Plan millimetres, y down. MGA northing maps to **-y**, easting to +x. Plan up is MGA grid north, so `site.northDeg` is 0 (grid north, not true north).
+- Plan `(0, 0)` is the lot centroid. The first lot added moves the existing design so its footprint is centred there.
+
+## Schema 2: `project.site.lot`
+
+`schema` is now 2. `migrate()` loads schema 1 projects with `site.lot = null`. Everything below is plan mm unless stated. `model.js` is the single definition.
+
+| Field | Meaning |
+|---|---|
+| `source` | `sample`, `nsw` or `qld` |
+| `address`, `state`, `srid`, `zone` | Address text as picked, `NSW` or `QLD`, EPSG code, MGA zone number |
+| `origin { e, n }` | MGA easting and northing (m) of plan (0, 0) |
+| `northRef` | `MGA grid north` |
+| `lotLabel`, `lotNumber`, `planLabel` | For example `Lot 24 DP 1234567`, `24`, `DP 1234567` |
+| `areaM2`, `registeredAreaM2` | Area from the polygon, and the area the register states |
+| `lga`, `zoning { code, name, instrument }`, `zoneNote` | Council. NSW zone from the Planning Portal. QLD zone is `null` with a note (schemes are per council) |
+| `boundary [{x, y}]`, `holes` | The lot ring. Edge `i` runs from `boundary[i]` to `boundary[(i + 1) % n]` |
+| `frontEdges [i]` | Indices of the street frontage edges (derived, then confirmed by the person) |
+| `cornerLot` | True when two front edges meet at a clear bend (45 to 135 degrees) |
+| `frontageConfirmed`, `frontageMethod` | Whether the person has confirmed the frontage, and how it was derived (`roads`, `no-lot-beyond`, `longest-edge`) |
+| `neighbours [{ id, lotNumber, planLabel, areaM2, isRoad, ring, holes }]` | Lots within about 60 m. `isRoad` marks road parcels (QLD) |
+| `roads [{ name, pts }]` | Road centrelines near the lot (NSW, best effort), flat `[x, y, ...]` |
+| `contours [{ level, major, closed, pts }]`, `contourInterval` | Flat `[x, y, ...]`, RL in metres. Minor 0.5 m, major 2.5 m |
+| `terrain { cols, rows, cellMm, x0, y0, values }` | Elevation grid. Node `(i, j)` is at `(x0 + i * cellMm, y0 + j * cellMm)`, row 0 is the north edge, values are RL metres |
+| `aerial { key, source, attribution, captureDate, extent {x0,y0,x1,y1}, mmPerPx }` | The image is in IndexedDB under `key` and is also `site.underlay` (placed to scale, locked, `site: true`) |
+| `floorRL`, `floorRLAuto` | Finished floor level (m). Default is the lot centroid RL plus 0.15 m. Editable in the panel |
+| `layers { boundary, dimensions, neighbours, labels, aerial, contours }` | Layer visibility (all true by default) |
+| `setbacks`, `envelope` | `null`. Reserved for the setback stage. Nothing is invented here |
+| `provenance { lot, aerial, elevation }` | Where each layer came from. `elevation` holds source, resolution, datum, accuracy, copyright, note |
+| `warnings`, `sample` | Messages from the lookup (for example "No aerial image"), and true for sample data |
+
+"levels": the design's own `levels[]` are unchanged. A level's `elevation` is relative to the ground floor; the ground floor sits at `floorRL`.
+
+## Street frontage ("Confirm your street frontage")
+
+After a lookup the plan shows the derived front edges in blue and a bar asks the person to confirm. Clicking an edge toggles it (corner lots have two,
+a battle-axe lot has its frontage at the end of the handle). "Confirm frontage" sets `frontageConfirmed`. Derivation (`src/site/frontage.js`):
+
+1. An edge is front when most of the ground just outside it is not another lot (the cadastre lots do not include the road), or is a neighbouring road parcel.
+2. When road centrelines are known and an edge runs within 15 m of one for half its length, only those edges are kept (drops rear boundaries on reserves and creeks).
+3. If nothing qualifies, the longest edge is suggested.
+
+## 3D
+
+`src/viewer3d/terrain.js` builds the ground from `site.lot.terrain`: a mesh draped with the aerial (full resolution, mipmapped, no blur when magnified), a flat pad
+under the house blended into the natural ground over 3 m, and the lot boundary as a red ribbon on the ground. The house sits at `floorRL`. Without a lot, or without
+an elevation grid, the old flat ground is used. The terrain does not model cut and fill; it is for placement, not earthworks.
+
+## Attribution, licences and accuracy (checked 11/11/2026)
+
+The credits are printed on the plan (bottom right), in the panel and in the footer of every PDF sheet (`src/site/credits.js`). Contour source and accuracy always
+read "... indicative only; detailed survey required". Boundaries are always labelled indicative.
+
+| Layer | Licence found | Notes |
+|---|---|---|
+| NSW cadastre | CC BY (data.nsw.gov.au). LPI statement: CC BY 3.0 Australia for the DCDB and NSW Imagery | Version on the data.nsw page not stated; 3.0 AU is from the LPI statement quoted on the OpenStreetMap wiki |
+| NSW imagery | LPI lists CC BY 3.0 AU | Service metadata says it includes third party imagery (AAM, Jacobs Group Ausimage, Landsat) and states no licence. Credit text is kept. Verify terms before commercial use |
+| NSW 5 m DEM | Not stated (copyright "DFSI 2019") | Accuracy not stated by the service |
+| NSW land zoning | Not checked | Attributed to the Planning Portal |
+| QLD cadastral parcels | CC BY 4.0 (Queensland Spatial Catalogue, "Cadastral data - Queensland series") | The service layer used is the same dataset family; not separately confirmed |
+| QLD imagery (`LatestStateProgram_AllUsers`) | Service states CC BY-SA | It includes Planet satellite fill "reproduced under licence from Planet and Geoplex, all rights reserved", which is NOT openly licensed. Only SISP aerial three years or older is open. The server must use QLD imagery only where the displayed item is such aerial |
+| QLD DEM (`QldDem`) | Not stated by the service | CC BY-SA is the owner's instruction in the earlier JCE site work. The mosaic includes SRTM and bathymetry (deepreef.org) |
+
+CC BY-SA on the QLD imagery and DEM has a share-alike effect on anything derived from them. Decision needed on whether plan sets that embed the QLD aerial are acceptable under that.

@@ -795,3 +795,10 @@ svg { display: block; }
 .ps-find--compact .ps-find-input { height: 30px; }
 .ps-welcome .ps-find { margin: 0 0 8px; }
 .ps-site-facts { width: 100%; }
+.ps-frontage {
+  position: absolute; left: 50%; top: 14px; z-index: 6; transform: translateX(-50%);
+  width: min(520px, calc(100% - 24px)); display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px;
+  background: var(--ps-panel); border: 1px solid var(--ps-accent); border-radius: var(--ps-radius-lg); box-shadow: var(--ps-shadow);
+}
+.ps-frontage h3 { margin: 0 0 2px; font-size: 14px; font-weight: 600; }
+.ps-frontage-text { color: var(--ps-muted); font-size: 12.5px; }

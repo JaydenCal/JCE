@@ -5,7 +5,8 @@
 //   northRef: 'MGA grid north'                            plan up = grid north, so site.northDeg is 0
 //   lotLabel, lotNumber, planLabel, areaM2, lga, zoning {code, name, instrument} | null, zoneNote
 //   boundary [{x, y}], holes [[{x, y}]]                   the lot, plan mm (MGA northing maps to -y)
-//   neighbours [{ id, lotNumber, planLabel, ring, holes }]
+//   neighbours [{ id, lotNumber, planLabel, areaM2, isRoad, ring, holes }]
+//   frontEdges [i], cornerLot, frontageConfirmed, roads    street frontage (indices into boundary, edge i = boundary[i] to boundary[i + 1]); see site/frontage.js
 //   contours [{ level, major, closed, pts: [x0, y0, x1, y1, ...] }]   plan mm, flat arrays to keep the project small
 //   terrain { cols, rows, cellMm, x0, y0, values[] }      node (i, j) at x0 + i * cellMm, y0 + j * cellMm; row 0 is the north edge
 //   aerial { key, source, attribution, captureDate, extent {x0, y0, x1, y1}, mmPerPx }  the image itself lives in IndexedDB (site.underlay)
@@ -15,6 +16,7 @@
 //   provenance { lot, aerial, elevation }                 what each layer came from and how far to trust it
 
 import { siteToPlan, planToSite, ringEdges, round } from './geo.js';
+import { deriveFrontage } from './frontage.js';
 
 export const FLOOR_ABOVE_GROUND_M = 0.15;
 export const DEFAULT_LAYERS = { boundary: true, neighbours: true, aerial: true, contours: true, labels: true, dimensions: true };
@@ -82,8 +84,12 @@ export function buildSiteLot({ lot, aerialMeta = null, aerialKey = null, contour
     holes: (poly.holes || []).map(ringToPlan),
     neighbours: (lot.neighbours || []).map((n, i) => {
       const np = polyOf(n);
-      return { id: `n_${i}`, lotNumber: n.lotNumber, planLabel: n.planLabel, areaM2: n.areaM2, ring: ringToPlan(np.outer), holes: (np.holes || []).map(ringToPlan) };
+      return { id: `n_${i}`, lotNumber: n.lotNumber, planLabel: n.planLabel, areaM2: n.areaM2, isRoad: !!n.isRoad, ring: ringToPlan(np.outer), holes: (np.holes || []).map(ringToPlan) };
     }),
+    roads: (lot.roads || []).map((r) => ({ name: r.name || '', pts: r.points.flatMap((p) => { const q = siteToPlan(p); return [Math.round(q.x), Math.round(q.y)]; }) })),
+    frontEdges: [],
+    cornerLot: false,
+    frontageConfirmed: false,
     contours: buildContours(contours),
     contourInterval: contours ? { minor: contours.minor, major: contours.major } : null,
     terrain,
@@ -109,6 +115,10 @@ export function buildSiteLot({ lot, aerialMeta = null, aerialKey = null, contour
     sample: !!lot.sample,
   };
   out.floorRL = defaultFloorRL(out);
+  const fr = deriveFrontage(out);
+  out.frontEdges = fr.frontEdges;
+  out.cornerLot = fr.cornerLot;
+  out.frontageMethod = fr.method;
   return out;
 }
 

@@ -5,6 +5,7 @@
 import { worldToScreen } from './math.js';
 import { boundaryEdges } from '../site/model.js';
 import { ringCentroid, signedArea } from '../site/geo.js';
+import { siteCredits } from '../site/credits.js';
 
 const BOUNDARY = '#d62828'; // red, so the lot reads clearly over an aerial and is never mistaken for proposed work
 const CONTOUR_MINOR = 'rgba(150,102,48,0.6)';
@@ -147,6 +148,42 @@ export function drawLot(ctx, st) {
   ctx.lineWidth = 2.6;
   ctx.stroke();
 
+  // Street frontage: the confirmed front edges in blue, with the edge numbers while the person is confirming them.
+  const front = new Set(lot.frontEdges || []);
+  const editing = !!st.frontageEdit;
+  if (front.size || editing) {
+    const edges = boundaryEdges(lot);
+    ctx.lineCap = 'round';
+    edges.forEach((e, i) => {
+      const a = toScreen(view, e.a);
+      const b = toScreen(view, e.b);
+      const isFront = front.has(i);
+      if (isFront) {
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = theme.c.accent;
+        ctx.lineWidth = 5;
+        ctx.stroke();
+      }
+      if (editing) {
+        const m = toScreen(view, e.mid);
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, 11, 0, Math.PI * 2);
+        ctx.fillStyle = isFront ? theme.c.accent : theme.c.canvas;
+        ctx.fill();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = isFront ? theme.c.accent : BOUNDARY;
+        ctx.stroke();
+        ctx.fillStyle = isFront ? '#fff' : BOUNDARY;
+        ctx.font = `700 11px ${theme.f.ui}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(isFront ? 'F' : String(i + 1), m.x, m.y + 0.5);
+      }
+    });
+  }
+
   if (layerOn(lot, 'dimensions')) {
     const area = signedArea(lot.boundary.map((p) => [p.x, p.y]));
     ctx.font = `600 11.5px ${theme.f.ui}`;
@@ -188,6 +225,43 @@ export function drawLot(ctx, st) {
     halo(ctx, lot.planLabel || '', s.x, s.y + 6, theme);
     ctx.font = `500 11px ${theme.f.ui}`;
     halo(ctx, `${Math.round(lot.areaM2).toLocaleString('en-AU')} m²`, s.x, s.y + 21, theme);
+  }
+  ctx.restore();
+}
+
+// Attribution and contour accuracy, small, bottom right. Required wherever the data is shown.
+export function drawCredits(ctx, st) {
+  const lot = st.project.site?.lot;
+  if (!lot || st.size.w < 520) return;
+  const lines = siteCredits(lot).filter((c) => c.id !== 'zoning' && (c.id !== 'aerial' || layerOn(lot, 'aerial')) && (c.id !== 'contours' || layerOn(lot, 'contours')));
+  if (!lines.length) return;
+  ctx.save();
+  ctx.font = `10px ${st.theme.f.ui}`;
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = st.theme.c.muted;
+  const maxW = Math.min(st.size.w - 40, 560);
+  let y = st.size.h - 10;
+  for (const c of lines.slice().reverse()) {
+    // wrap to maxW
+    const words = c.text.split(' ');
+    const rows = [];
+    let cur = '';
+    for (const w of words) {
+      const t = cur ? `${cur} ${w}` : w;
+      if (ctx.measureText(t).width > maxW && cur) {
+        rows.push(cur);
+        cur = w;
+      } else cur = t;
+    }
+    rows.push(cur);
+    for (const r of rows.reverse()) {
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = st.theme.c.canvas;
+      ctx.strokeText(r, st.size.w - 12, y);
+      ctx.fillText(r, st.size.w - 12, y);
+      y -= 12;
+    }
   }
   ctx.restore();
 }

@@ -337,3 +337,104 @@ test('buildModel drapes the site terrain and keeps the flat ground without a lot
 test('templates still build with schema 2', () => {
   for (const t of TEMPLATES.slice(0, 3)) assert.ok(buildModel(migrate(t.create())));
 });
+
+// Frontage ------------------------------------------------------------------------------------------------------------------------
+import { deriveFrontage, toggleEdge, nearestEdge, isCorner } from '../src/site/frontage.js';
+import { siteCredits, creditsOneLine, contourNote, INDICATIVE } from '../src/site/credits.js';
+
+const sq = (x0, y0, x1, y1) => [{ x: x0, y: y0 }, { x: x1, y: y0 }, { x: x1, y: y1 }, { x: x0, y: y1 }];
+
+test('frontage: the sample street lot gets its one street edge, not a corner lot', () => {
+  for (const i of [0, 1]) {
+    const lot = lotFromFixture(i);
+    assert.deepEqual(lot.frontEdges, [2], `fixture ${i}`);
+    assert.equal(lot.cornerLot, false);
+    assert.equal(lot.frontageConfirmed, false);
+    assert.equal(lot.frontageMethod, 'no-lot-beyond');
+  }
+});
+
+test('frontage: a corner lot has two adjacent street edges; a through lot is not a corner', () => {
+  // Lot 0..20 x 0..30 (plan mm, y down). Neighbours on the east (x 20..40) and south (y 30..60): the west and north edges face the street.
+  const lot = { boundary: sq(0, 0, 20000, 30000), neighbours: [{ ring: sq(20000, 0, 40000, 30000) }, { ring: sq(0, 30000, 20000, 60000) }] };
+  const f = deriveFrontage(lot);
+  assert.deepEqual(f.frontEdges, [0, 3]); // north edge (0) and west edge (3)
+  assert.equal(f.cornerLot, true);
+  assert.equal(isCorner(lot, [0, 3]), true);
+  // Through lot: neighbours east and west only, so north and south are both street edges, opposite each other
+  const through = { boundary: sq(0, 0, 20000, 30000), neighbours: [{ ring: sq(20000, 0, 40000, 30000) }, { ring: sq(-20000, 0, 0, 30000) }] };
+  const t = deriveFrontage(through);
+  assert.deepEqual(t.frontEdges, [0, 2]);
+  assert.equal(t.cornerLot, false);
+  // Fully enclosed (all neighbours): falls back to the longest edge
+  const boxed = { boundary: sq(0, 0, 20000, 30000), neighbours: [sq(20000, 0, 40000, 30000), sq(-20000, 0, 0, 30000), sq(0, 30000, 20000, 60000), sq(0, -30000, 20000, 0)].map((ring) => ({ ring })) };
+  const b = deriveFrontage(boxed);
+  assert.equal(b.method, 'longest-edge');
+  assert.equal(b.frontEdges.length, 1);
+});
+
+test('frontage: a road parcel next door counts as street, road centrelines pick the real frontage', () => {
+  const lot = { boundary: sq(0, 0, 20000, 30000), neighbours: [{ ring: sq(0, -10000, 20000, 0), isRoad: true }, { ring: sq(20000, 0, 40000, 30000) }] };
+  assert.deepEqual(deriveFrontage(lot).frontEdges.includes(0), true);
+  // Three open sides (west, north, south) but the road runs along the north only
+  const open = { boundary: sq(0, 0, 20000, 30000), neighbours: [{ ring: sq(20000, 0, 40000, 30000) }], roads: [{ name: 'MAIN ST', pts: [-5000, -8000, 25000, -8000] }] };
+  const f = deriveFrontage(open);
+  assert.deepEqual(f.frontEdges, [0]);
+  assert.equal(f.method, 'roads');
+});
+
+test('frontage: clicking toggles edges; nearest edge uses a tolerance', () => {
+  assert.deepEqual(toggleEdge([2], 3), [2, 3]);
+  assert.deepEqual(toggleEdge([2, 3], 2), [3]);
+  const b = sq(0, 0, 20000, 30000);
+  assert.equal(nearestEdge(b, { x: 10000, y: -200 }, 500), 0);
+  assert.equal(nearestEdge(b, { x: 20100, y: 15000 }, 500), 1);
+  assert.equal(nearestEdge(b, { x: 10000, y: 15000 }, 500), -1);
+});
+
+// Credits and accuracy ----------------------------------------------------------------------------------------------------------
+test('credits name the licence and the contour accuracy on every lot', () => {
+  const nsw = siteCredits(lotFromFixture(0));
+  const qld = siteCredits(lotFromFixture(1));
+  const nswText = nsw.map((c) => c.text).join(' ');
+  const qldText = qld.map((c) => c.text).join(' ');
+  assert.match(nswText, /CC BY 3\.0 AU/);
+  assert.match(nswText, /NSW 5 m DEM, indicative only; detailed survey required/);
+  assert.match(qldText, /CC BY 4\.0/);
+  assert.match(qldText, /no warranty/);
+  assert.match(qldText, /Queensland DEM, indicative only; detailed survey required/);
+  assert.ok(nsw.some((c) => c.id === 'zoning'));
+  assert.ok(!qld.some((c) => c.id === 'zoning'));
+  assert.match(contourNote(null), /indicative only/);
+  assert.match(INDICATIVE, /registered survey/);
+  assert.ok(creditsOneLine(lotFromFixture(0)).length > 100);
+  assert.deepEqual(siteCredits(null), []);
+});
+
+test('the PDF footer carries the site credits when a lot is present', async () => {
+  const { jsPDF } = await import('jspdf');
+  const { toPDF } = await import('../src/premium/exporters/pdf.js');
+  const p = designOnLot();
+  const withLot = toPDF(p, { jsPDF });
+  const without = toPDF(createProject(), { jsPDF });
+  assert.ok(withLot.length > 1000 && without.length > 1000);
+  // jsPDF writes text uncompressed in the content streams only when compression is off, so check through a spy doc instead
+  const seen = [];
+  const Spy = function (...args) {
+    const d = new jsPDF(...args);
+    const orig = d.text.bind(d);
+    d.text = (t, ...rest) => {
+      seen.push(Array.isArray(t) ? t.join(' ') : String(t));
+      return orig(t, ...rest);
+    };
+    return d;
+  };
+  toPDF(p, { jsPDF: Spy });
+  const all = seen.join('\n');
+  assert.match(all, /Site data:/);
+  assert.match(all, /CC BY 3\.0 AU/);
+  assert.match(all, /indicative only/);
+  seen.length = 0;
+  toPDF(createProject(), { jsPDF: Spy });
+  assert.doesNotMatch(seen.join('\n'), /Site data:/);
+});
