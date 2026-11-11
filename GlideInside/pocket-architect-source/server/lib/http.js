@@ -35,6 +35,15 @@ export const ERROR_STATUS = {
   CONFLICT: 409,
   PORTAL_NOT_CONFIGURED: 503,
   BILLING_UNAVAILABLE: 502,
+  // Save and share (carried over from the live Worker, same codes and statuses).
+  SHARING_UNAVAILABLE: 503,
+  PROJECT_TOO_LARGE: 413,
+  BAD_PROJECT: 400,
+  BAD_EMAIL: 400,
+  BAD_EDIT_KEY: 403,
+  EXPIRED: 410,
+  PDF_LIMIT_REACHED: 403,
+  EXPORT_FAILED: 500,
 };
 
 export class HttpError extends Error {
@@ -53,7 +62,7 @@ export function corsHeaders(request, config) {
   if (origin && config.siteOrigin && origin === config.siteOrigin) {
     headers['Access-Control-Allow-Origin'] = origin;
     headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
-    headers['Access-Control-Allow-Headers'] = 'authorization, content-type, x-gi-request';
+    headers['Access-Control-Allow-Headers'] = 'authorization, content-type, x-gi-request, x-edit-key';
     headers['Access-Control-Allow-Credentials'] = 'true'; // only ever sent for the configured site origin
     headers['Access-Control-Expose-Headers'] = 'content-disposition, x-site-meta';
     headers['Access-Control-Max-Age'] = '600';

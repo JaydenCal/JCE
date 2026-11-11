@@ -10,26 +10,30 @@ import { estimateTokens } from '../../src/premium/ai/context.js';
 import { buildTools } from '../../src/premium/ai/tools.js';
 import { readConfig } from './config.js';
 import { HttpError, json, errorResponse, corsHeaders, readJson, readText, clientIp } from './http.js';
-import { authenticate, issueToken, readOrgToken as readOrgTokenRaw } from './entitlement.js';
+import { authenticate, issueToken, coversProject, readOrgToken as readOrgTokenRaw } from './entitlement.js';
 import * as stripe from './stripe.js';
 import * as credits from './credits.js';
 import * as anthropic from './anthropic.js';
 import { createSite } from './site.js';
 import { handleEnquiry } from './enquiry.js';
 import { createPortal } from './portal.js';
+import { createProjects } from './projects.js';
 import { createMemoryPortalStore } from './portal-store.js';
 
 const EXPORT_TYPES = ['pdf', 'dxf', 'glb', 'obj'];
 const WEBHOOK_MAX_BYTES = 1_000_000;
 const randomId = (prefix) => `${prefix}_${[...crypto.getRandomValues(new Uint8Array(10))].map((b) => b.toString(16).padStart(2, '0')).join('')}`;
 
-export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), catalogue = null, loadExporters = null, loadJsPDF = null, devGrant = false, portalStore = undefined, loadTemplates = undefined } = {}) {
+// `files` is the R2 bucket binding (env.FILES on the Worker): shared designs under projects/<id>.json and issued PDF sets under pdf/<entitlement>.pdf.
+// Without it Save and share answers 503 SHARING_UNAVAILABLE and the one-PDF-set rule is not enforced (hosts without R2).
+export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), catalogue = null, loadExporters = null, loadJsPDF = null, devGrant = false, portalStore = undefined, loadTemplates = undefined, files = null } = {}) {
   if (!store) throw new Error('createApp needs a store');
   const config = readConfig(env);
   const doFetch = fetchImpl || ((...a) => globalThis.fetch(...a));
   const iso = (ms = now()) => new Date(ms).toISOString();
 
   const site = createSite({ store, fetchImpl, now });
+  const projects = createProjects({ store, files, config, now });
   // Builder and client portal (lib/portal.js). It needs a portal store: D1 in production (the Worker passes one), memory in tests
   // and local development. Other stores (Upstash) cannot hold it, so those hosts answer 503 PORTAL_NOT_CONFIGURED.
   const pstore = portalStore !== undefined ? portalStore : ['memory', 'file'].includes(store.kind) ? createMemoryPortalStore() : null;
@@ -67,8 +71,15 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   };
 
   // Handlers --------------------------------------------------------------------------------------
+  // The live Worker's health body is kept: sharing (R2 and the projects table are there), aiPaused, paymentsConfigured.
   async function health() {
-    return json({ ok: true, aiPaused: !!(await credits.globalPause(store, config, now())), ...(devGrant ? { devGrant: true } : {}) });
+    return json({
+      ok: true,
+      sharing: projects.available(),
+      aiPaused: !config.anthropicApiKey || !!(await credits.globalPause(store, config, now())),
+      paymentsConfigured: !!(config.stripeSecretKey && config.stripeWebhookSecret && config.entitlementSecret),
+      ...(devGrant ? { devGrant: true } : {}),
+    });
   }
 
   async function checkout(request) {
@@ -76,7 +87,9 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const projectId = str(body.projectId, 'projectId', { max: 80 });
     if (!/^[A-Za-z0-9_-]+$/.test(projectId)) throw new HttpError('BAD_REQUEST', 'projectId is invalid.');
     const projectName = typeof body.projectName === 'string' ? body.projectName.trim().slice(0, 80) : '';
-    const session = await stripe.createCheckoutSession({ config, fetchImpl: doFetch, projectId, projectName });
+    const byIp = await store.hitRate(`checkout:ip:${clientIp(request)}`, 3600, now());
+    if (byIp > config.checkoutRateMax) throw new HttpError('RATE_LIMITED', 'Too many attempts. Please wait a while and try again.', { retryAfter: 600 });
+    const session = await stripe.createCheckoutSession({ config, fetchImpl: doFetch, projectId, projectName, email: body.email });
     return json({ url: session.url });
   }
 
@@ -155,11 +168,31 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const byIp = await store.hitRate(`restore:ip:${clientIp(request)}`, 600, nowMs);
     const byEmail = await store.hitRate(`restore:email:${email}`, 3600, nowMs);
     if (byIp > 8 || byEmail > 5) throw new HttpError('RATE_LIMITED', 'Too many attempts. Try again later.', { retryAfter: 600 });
+    // Friends and testing code (live Worker behaviour): the same Restore box, any project.
+    if (config.testCodes.includes(ref) && store.grantTestCode) return restoreWithCode(email, ref, body.projectId, nowMs);
     const ent = await store.findForRestore(email, ref);
     if (!ent || ent.status !== 'active' || (ent.expiresAt && Date.parse(ent.expiresAt) <= nowMs)) {
       throw new HttpError('NOT_ENTITLED', 'We could not find a Plan Pack with those details.');
     }
-    return json({ token: await issueToken(ent, config, nowMs), projectId: ent.projectId, credits: balanceOf(ent), receipt: ent.id, expiresAt: ent.expiresAt });
+    // `project` is the field name the live Worker used; kept so an older app still reads it.
+    return json({ token: await issueToken(ent, config, nowMs), projectId: ent.projectId, project: ent.projectId, credits: balanceOf(ent), receipt: ent.id, expiresAt: ent.expiresAt });
+  }
+
+  async function restoreWithCode(email, code, projectId, nowMs) {
+    const day30 = 30 * 86400000;
+    let ent = await store.grantTestCode({
+      id: `ent_${[...crypto.getRandomValues(new Uint8Array(8))].map((b) => b.toString(16).padStart(2, '0')).join('')}`,
+      email, stripeSessionId: `code:${code}:${email}`, prefix: `code:${code}:`, creditsTotal: config.planPackCredits,
+      pdfAllowed: config.testCodePdfSets, maxUses: config.testCodeMaxUses, createdAt: iso(nowMs), expiresAt: iso(nowMs + day30),
+    });
+    if (!ent) throw new HttpError('NOT_ENTITLED', 'That code has been used too many times.', { code: 'CODE_EXHAUSTED' }, 403);
+    if (ent.status !== 'active') throw new HttpError('NOT_ENTITLED', 'This Plan Pack is no longer active.');
+    if (ent.expiresAt && Date.parse(ent.expiresAt) <= nowMs) {
+      await store.setEntitlementExpiry(ent.id, iso(nowMs + day30));
+      ent = await store.getEntitlement(ent.id);
+    }
+    const pid = typeof projectId === 'string' && /^[\w-]{4,64}$/.test(projectId) ? projectId : '*';
+    return json({ token: await issueToken(ent, config, nowMs, pid), projectId: pid, project: pid, credits: balanceOf(ent), receipt: ent.id, expiresAt: ent.expiresAt });
   }
 
   // Builder and client logins sit behind PORTAL_ENABLED (the public launch comes first).
@@ -240,7 +273,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
 
   function packAccount(ent) {
     return {
-      kind: 'pack', id: ent.id, rateKey: ent.projectId,
+      kind: 'pack', id: ent.id, rateKey: ent.projectId === '*' ? ent.id : ent.projectId,
       snapshot: async () => balanceOf((await store.getEntitlement(ent.id)) || ent),
       available: async () => credits.balance((await store.getEntitlement(ent.id)) || ent).remaining,
       reserve: async (n, nowIso) => ((await store.reserveCredits(ent.id, n, nowIso)) ? { m: n, t: 0 } : null),
@@ -265,7 +298,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (org) return json(await (await orgAccount(org)).snapshot());
     const ent = await authenticate(request, { store, config, now });
     const project = url.searchParams.get('project');
-    if (project && project !== ent.projectId) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
+    if (project && !coversProject(ent, project)) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
     return json({ ...balanceOf(ent), reserved: ent.creditsReserved || 0 });
   }
 
@@ -288,7 +321,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const { message, context, body } = await aiBody(request);
     const { systemTokens } = await getTools();
     const est = credits.estimateRequest({ config, context, message, history: anthropic.cleanHistory(body.history), systemTokens });
-    return json({ estimatedCredits: est.credits, remaining: await acct.available(), requiresConfirm: est.credits > config.largeRequestCredits });
+    // `total` is in the live Worker's estimate body, which an older cached app reads.
+    return json({ estimatedCredits: est.credits, remaining: await acct.available(), total: (await acct.snapshot()).total, requiresConfirm: est.credits > config.largeRequestCredits });
   }
 
   async function aiEdit(request) {
@@ -401,6 +435,24 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     return json({ clientTopUps: body.enabled });
   }
 
+  // The PDF set already issued for this pack, from R2 (key recorded on the entitlement row), or null.
+  async function redeliverPdf(entId) {
+    const own = await store.getEntitlement(entId);
+    if (!own?.pdfFile) return null;
+    const f = await files.get(own.pdfFile);
+    if (!f) return null;
+    const name = f.customMetadata?.filename || 'plans.pdf';
+    return new Response(f.body, {
+      status: 200,
+      headers: {
+        'content-type': 'application/pdf',
+        'content-disposition': `attachment; filename="${String(name).replace(/[^\w.\- ]+/g, '_').slice(0, 80)}"`,
+        'cache-control': 'no-store',
+        'x-content-type-options': 'nosniff',
+      },
+    });
+  }
+
   async function exportFile(request, type) {
     if (!EXPORT_TYPES.includes(type)) throw new HttpError('BAD_REQUEST', `Unknown export type. Use one of: ${EXPORT_TYPES.join(', ')}.`);
     const ent = await authenticate(request, { store, config, now, missing: 'NOT_ENTITLED' });
@@ -414,14 +466,36 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (JSON.stringify(body.project).length > config.exportMaxProjectBytes) throw new HttpError('PAYLOAD_TOO_LARGE', 'This project is too large to export.');
     const problems = validate(project);
     if (problems.length) throw new HttpError('BAD_REQUEST', 'The project has problems and cannot be exported.', { details: problems.slice(0, 5) });
-    if (project.id !== ent.projectId) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
+    if (!coversProject(ent, project.id)) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
     const image = typeof body.image === 'string' && /^data:image\/png;base64,/.test(body.image) && body.image.length < 1_900_000 ? body.image : null;
+
+    // Carried over from the live Worker: a per Plan Pack limit, then ONE PDF plan set per job (a repeat gets the same file back).
+    const exportCount = await store.hitRate(`export:${ent.id}`, 3600, now());
+    if (exportCount > config.exportRatePerHour) throw new HttpError('RATE_LIMITED', 'Too many exports in the last hour. Please wait a few minutes and try again.', { limitPerHour: config.exportRatePerHour, retryAfter: 300 });
+    const pdfGuard = type === 'pdf' && config.pdfSetLimit && !!files && typeof store.claimPdfSet === 'function';
+    if (pdfGuard) {
+      const again = await redeliverPdf(ent.id);
+      if (again) return again;
+      if (!(await store.claimPdfSet(ent.id))) {
+        // A simultaneous first request may still be building the one set: wait briefly for it and hand that file over.
+        for (let waited = 0; waited < config.pdfWaitMs; waited += 500) {
+          await new Promise((r) => setTimeout(r, 500));
+          const late = await redeliverPdf(ent.id);
+          if (late) return late;
+        }
+        throw new HttpError('PDF_LIMIT_REACHED', 'The PDF plan set for this job has already been issued.');
+      }
+    }
+    const giveBack = async () => {
+      if (pdfGuard) await store.releasePdfSet(ent.id).catch(() => null);
+    };
 
     let mod;
     try {
       mod = await exporters();
     } catch (e) {
       console.error('export module failed to load', e?.message);
+      await giveBack();
       throw new HttpError('EXPORT_UNAVAILABLE', 'Exports are not available right now. Try again later.');
     }
     const exportConfig = {
@@ -441,7 +515,19 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
       });
     } catch (e) {
       console.error(JSON.stringify({ event: 'export_failed', type, message: e?.message }));
+      await giveBack();
       throw new HttpError('EXPORT_UNAVAILABLE', 'That export could not be built. Try again, or try a different format.');
+    }
+    if (pdfGuard) {
+      try {
+        const key = `pdf/${ent.id}.pdf`;
+        await files.put(key, file.bytes, { httpMetadata: { contentType: 'application/pdf' }, customMetadata: { filename: file.filename } });
+        await store.setPdfFile(ent.id, key);
+      } catch (e) {
+        console.error(JSON.stringify({ event: 'pdf_store_failed', message: e?.message }));
+        await giveBack();
+        throw new HttpError('EXPORT_FAILED', 'Could not store the PDF. You have not been charged a set.');
+      }
     }
     await store.logEvent({ id: randomId('export'), type: 'export', detail: { eid: ent.id, type }, createdAt: iso() });
     return new Response(file.bytes, {
@@ -474,6 +560,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (path === '/stripe/webhook') return allow('POST'), webhook(request);
     if (path === '/entitlement') return allow('GET'), entitlementGet(request, url);
     if (path === '/entitlement/restore') return allow('POST'), restore(request);
+    // Save and share (live Worker routes, no entitlement needed). Not under /portal/, so they never touch the portal tables.
+    if (path === '/projects' || path.startsWith('/projects/')) return projects.handle(request, path);
     if (path === '/credits') return allow('GET'), creditsGet(request, url);
     if (path === '/ai/estimate') return allow('POST'), aiEstimate(request);
     if (path === '/ai/edit') return allow('POST'), aiEdit(request);

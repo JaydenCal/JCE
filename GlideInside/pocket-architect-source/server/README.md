@@ -358,3 +358,13 @@ turns it on only in `next dev` with `PLAN_STUDIO_DEV_GRANT=1`) and adds `devGran
 endpoints answer 503 `AI_NOT_CONFIGURED` ("AI not configured"); without Stripe keys checkout answers 503
 `PAYMENTS_UNAVAILABLE` ("Payments not configured"). The store contract test also runs the Upstash store against a real
 `redis-server` when one is installed. See the site's `docs/11-plan-studio-paid.md` for setup.
+
+## Merged with the live Pocket Architect API (11/11/2026)
+
+This server also serves everything the live Worker `pocket-architect-api` (15/10/2026) served, so a deploy of it replaces that Worker without breaking links or purchases. Details and the route table are in `golive/GO-LIVE.md` Step 0 and the merge report.
+
+- Save and share: `lib/projects.js` (`POST /api/projects`, `GET` and `PUT /api/projects/:id`), R2 binding `FILES` under `projects/<id>.json`, D1 table `projects`. The builder portal's saved projects are in `portal_projects`.
+- D1 shape: the live `entitlements` table is the one in use (payment intent in `payment_intent`, `pdf_used`, `pdf_allowed`, `pdf_file`) plus `credits_reserved`. Schema changes go in `migrations/` (applied with `wrangler d1 migrations apply pocket-architect --remote`); `schema.sql` is the same end shape for a fresh database and the tests.
+- Tokens use the live format (HMAC over the base64url payload text); the first release format is still accepted.
+- Kept from live: friends code (`TEST_CODES`), one PDF set per job (`pdf/<entitlement>.pdf`), per IP and per pack limits, dispute and out-of-order refund handling, `metadata.app`, A$35 minimum and AUD check.
+- Tests: `tests/live-merge.test.mjs` (migrations on a live shaped SQLite database, live links and tokens, ported live share and payment suites).

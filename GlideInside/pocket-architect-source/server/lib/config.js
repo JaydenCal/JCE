@@ -29,7 +29,7 @@ export function readConfig(env = {}) {
     })(),
     appUrl: str(env.APP_URL) || `${siteUrl}/floor-plan-designer/app/`,
     anthropicApiKey: str(env.ANTHROPIC_API_KEY),
-    anthropicModel: str(env.ANTHROPIC_MODEL, 'claude-haiku-5-5'),
+    anthropicModel: str(env.ANTHROPIC_MODEL) || str(env.AI_MODEL) || 'claude-haiku-5-5', // AI_MODEL is the live Worker's name for it
     priceInPerMtok: num(env.PRICE_IN_PER_MTOK_USD, 0.1),
     priceOutPerMtok: num(env.PRICE_OUT_PER_MTOK_USD, 0.5),
     maxOutputTokens: Math.round(num(env.AI_MAX_OUTPUT_TOKENS, 1500)),
@@ -62,7 +62,7 @@ export function readConfig(env = {}) {
     stripeSecretKey: str(env.STRIPE_SECRET_KEY),
     stripeWebhookSecret: str(env.STRIPE_WEBHOOK_SECRET),
     stripePriceId: str(env.STRIPE_PRICE_ID),
-    planPackPriceCents: Math.round(num(env.PLAN_PACK_PRICE_CENTS, 3500)),
+    planPackPriceCents: Math.round(num(env.PLAN_PACK_PRICE_CENTS, num(env.PLAN_PRICE_CENTS, 3500))), // PLAN_PRICE_CENTS is the live Worker's name for it
     entitlementSecret: str(env.ENTITLEMENT_SECRET),
     entitlementDays: num(env.ENTITLEMENT_DAYS, 365),
     exportMaxProjectBytes: Math.round(num(env.EXPORT_MAX_PROJECT_BYTES, 2000000)),
@@ -85,5 +85,22 @@ export function readConfig(env = {}) {
     stripeGstTaxRateId: str(env.STRIPE_GST_TAX_RATE_ID),
     // Printed on the PDF title block. Defaults come from src/config.js (decision 17.1).
     disclaimer: str(env.DISCLAIMER),
+    // Carried over from the live Pocket Architect API (Worker "pocket-architect-api", 15/10/2026).
+    // Save and share (lib/projects.js): designs live in R2 under projects/<id>.json, a small row in D1 holds the lookup.
+    ipHashSalt: str(env.IP_HASH_SALT),
+    projectMaxBytes: num(env.PROJECT_MAX_BYTES, 0) > 0 ? Math.round(num(env.PROJECT_MAX_BYTES, 0)) : 2000000,
+    projectTtlDays: num(env.PROJECT_TTL_DAYS, 0) > 0 ? num(env.PROJECT_TTL_DAYS, 0) : 365,
+    projectSaveRateMax: num(env.PROJECT_SAVE_RATE_MAX, 0) > 0 ? Math.round(num(env.PROJECT_SAVE_RATE_MAX, 0)) : 20,
+    projectReadRateMax: num(env.PROJECT_READ_RATE_MAX, 0) > 0 ? Math.round(num(env.PROJECT_READ_RATE_MAX, 0)) : 600,
+    // Friends and testing codes (comma separated), accepted by /entitlement/restore exactly as on the live Worker.
+    testCodes: str(env.TEST_CODES).split(',').map((c) => c.trim()).filter(Boolean),
+    testCodePdfSets: Math.round(num(env.TEST_CODE_PDF_SETS, 20)),
+    testCodeMaxUses: Math.round(num(env.TEST_CODE_MAX_USES, 25)),
+    checkoutRateMax: Math.round(num(env.CHECKOUT_RATE_MAX, 20)), // per IP address per hour
+    restoreRateMax: Math.round(num(env.RESTORE_RATE_MAX, 10)), // per IP address per 10 minutes
+    exportRatePerHour: Math.round(num(env.EXPORT_RATE_PER_HOUR, 20)), // per Plan Pack
+    // One PDF plan set per job (the live rule and the site wording). A repeat request gets the same file back. 0 turns it off.
+    pdfSetLimit: !['0', 'false', 'off', 'no'].includes(str(env.PDF_SET_LIMIT, '1').toLowerCase()),
+    pdfWaitMs: Math.round(num(env.EXPORT_PDF_WAIT_MS, 10000)),
   };
 }

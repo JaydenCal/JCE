@@ -11,52 +11,81 @@ Plain rules for this pack:
 
 ---
 
-## Step 0. STOP and read this first (the live Worker has code that is not in the repo)
+## Step 0. The live server code is merged (read this, then do the checks)
 
-Your live API answers `https://glideinside.com.au/api/health` with `{"ok":true,"sharing":true,...}`. The word `sharing` means the deployed Worker has the save-and-share feature and the R2 bucket `pocket-architect-files`. **That code is not in the repository branch this release was built from** (there is no share route, no R2 binding and no "sharing" in `server/`). If you deploy the Worker from this repo as it stands, the deploy replaces the live Worker and the share links and renders stop working.
+The live Worker `pocket-architect-api` (deployed 15/10/2026) had Save and share, R2 file storage and its own D1 tables that were not in this repository. They are now merged into `server/` (branch `claude/glide-server-merge`). Deploying this release **replaces** that Worker. It was built so that nothing live breaks:
 
-So:
-1. Do **not** run Steps 4 to 6 (the Worker deploy) until the live server code is merged into the repo. Steps 1 to 3 and the website upload (Step 7) are safe on their own, and the website works with the old Worker for everything except the new features (see "What works without the new Worker" at the end of this step).
-2. To merge: copy the folder `Downloads\glideinside-v6\server` (the one you ran `deploy.ps1` from, including its `wrangler.toml`) to a place Claude can read and ask for the share and R2 code to be merged into `GlideInside/pocket-architect-source/server/`. The merge must keep every route the live Worker serves and keep the bindings: D1 `DB`, the R2 bucket, and any others listed in that `wrangler.toml`.
-3. Check what the live Worker serves today and keep the result (it is your "before" picture):
+- Same Worker name `pocket-architect-api`, same route `glideinside.com.au/api/*`, same D1 database `pocket-architect` (id `fccdf1f7-e48c-4c72-8723-b343b3f2fad4`), same R2 bucket `pocket-architect-files`. All of it is in `wrangler.toml`, so there is no name or id to edit.
+- Every live route still answers: `/api/health` (still with `"sharing":true`), `/api/projects` (Save and share, so every share link already handed out keeps working), `/api/checkout`, `/api/stripe/webhook`, `/api/entitlement`, `/api/entitlement/restore`, `/api/credits`, `/api/ai/estimate`, `/api/ai/edit`, `/api/export/pdf|dxf|glb|obj`.
+- The database change is additive only (one new column and new tables). No live table, column or row is dropped or rewritten. Existing Plan Pack purchases (test mode so far) keep their credits and PDF set. Tokens already in customers' browsers stay valid as long as `ENTITLEMENT_SECRET` is not changed.
+- The live secrets stay as they are. Do NOT change `ENTITLEMENT_SECRET` or `IP_HASH_SALT`. The only secrets you set are in Step 3.
+
+Before you deploy, write down the "before" picture and have ready **one real share link** you already gave out (`https://glideinside.com.au/plan-studio/app/?share=...`). The part after `share=` is the id.
 
 ```powershell
 curl.exe -s https://glideinside.com.au/api/health
-curl.exe -s -o NUL -w "%{http_code}`n" https://glideinside.com.au/api/site/health
+# expect {"ok":true,"sharing":true,"aiPaused":false,"paymentsConfigured":true}
+curl.exe -s https://glideinside.com.au/api/projects/<THE SHARE ID>
+# expect JSON containing "project"
 ```
 
-What works without the new Worker: the redesigned pages and the setbacks (they need no API: the rules are static files). Find my block, Send to JCE and the setbacks-aware AI helper need the new Worker (`/api/site/*`, `/api/enquiry/jce`, new AI tools).
-
-The repo `wrangler.toml` has a deliberately invalid name (`REPLACE-WITH-THE-LIVE-WORKER-NAME`) and a `REPLACE-WITH` database id, so a deploy fails until you edit them. That is a safety catch.
-
----
+Differences from the live Worker to decide on before you deploy (none breaks a link or a purchase):
+1. **The release app has no Save and share button.** The server serves old links, but the release `plan-studio/app/index.html` does not open `?share=` links and cannot create new ones. If you upload the release app, old share links will not open in the browser. Either keep the old app file until the button is added to the release app, or have it added first.
+2. **The "interactive HTML" export is gone** (`/api/export/html` answers 400). The release app has no button for it, but the plans pages and the FAQ still list it in the Plan Pack. Change the wording or have it added back.
+3. A Checkout session unlocks a pack only if it is a one-off AUD payment of at least A$35 for this app (same rule as live). A price set to A$30 unlocks nothing.
+4. The assistant (`/api/ai/*`) uses the release tools and context. An old cached copy of the old app asking the new assistant for an edit may get changes it cannot apply. Upload the website straight after the Worker deploy (Steps 6 to 8), in a quiet period.
+5. Assistant spend limits are now the release ones (US$5 a day, US$50 a month, 6 requests a minute) in place of the live `AI_DAILY_TOKEN_CAP`. Change `AI_DAILY_CAP_USD` and `AI_MONTHLY_CAP_USD` in `wrangler.toml` if you want others.
+6. One PDF plan set per job is still enforced exactly as live (the set is kept in R2 under `pdf/` and a repeat request returns the same file). `PDF_SET_LIMIT = "0"` turns it off.
 
 ## 1. Cloudflare account and Wrangler login (already set up, 2 minute check)
 
 You already have the Cloudflare account, the zone glideinside.com.au, the Workers Paid plan, D1 and R2. The Paid plan matters: contour and PDF requests need more than the free plan's 10 ms of CPU.
 
-1. Open PowerShell and go to the server package folder (the one that holds `wrangler.toml`):
-   `cd $env:USERPROFILE\Downloads\glideinside-v6\server` (after Step 0 this is the merged `pocket-architect-source` folder instead).
+1. Open PowerShell and go to the folder that holds `wrangler.toml` and `package.json` (`GlideInside\pocket-architect-source`), then run `npm ci`.
 2. `npx wrangler login`. A browser window opens. Click **Allow**.
 3. `npx wrangler whoami`. It should list your account and `workers_write` and `d1_write`.
-4. Open the Cloudflare dashboard, **Workers and Pages**, and write down the name of the existing Worker (the one on the route `glideinside.com.au/api/*`). Put that name on the `name =` line of `wrangler.toml`. Put the D1 `database_id` from **Storage and databases > D1 > your database** on the `database_id =` line.
+4. Nothing to edit: `wrangler.toml` already has the live Worker name, route, D1 database id and R2 bucket. Check it says `name = "pocket-architect-api"` and `database_id = "fccdf1f7-e48c-4c72-8723-b343b3f2fad4"`.
 
-## 2. D1: apply the updated schema (additive, safe to repeat)
+## 2. D1: apply the migrations (additive, in order)
 
-The new schema adds tables (`site_cache`, `jce_enquiries` and the portal tables). It does not change or delete existing tables.
+The database is the live one, `pocket-architect` (not `plan-studio`). Its tables came from the live `schema.sql` and migrations 0002 to 0005. The release adds `server/migrations/0001_base.sql` (the live base, a no-op on the live database), `0006_release.sql` and `0007_portal.sql`. 0006 adds one column to `entitlements` (`credits_reserved`) and new tables. 0007 adds the portal tables (unused while `PORTAL_ENABLED` is 0). Nothing is dropped, renamed or rewritten, so the previous Worker version keeps working on this database if you roll back.
+
+Take a backup first:
 
 ```powershell
-# find the database name if you are not sure
-npx wrangler d1 list
-# apply (the database is called plan-studio unless the list says otherwise)
-npx wrangler d1 execute plan-studio --remote --file server/schema.sql
+npx wrangler d1 export pocket-architect --remote --output "$env:USERPROFILE\Downloads\pocket-architect-before-release.sql"
 ```
 
-Check: `npx wrangler d1 execute plan-studio --remote --command "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"` should list `site_cache` and `jce_enquiries`.
+List what will run, then apply. Wrangler records what it applied, so a second run does nothing (the 0006 column cannot be added twice, which is why you use this command and not `d1 execute --file`):
+
+```powershell
+npx wrangler d1 migrations list pocket-architect --remote
+npx wrangler d1 migrations apply pocket-architect --remote
+```
+
+On the live database 0001 to 0005 show as not yet recorded, because they were run by hand on 15/10/2026. That is fine: they are repeatable and change nothing there. At the end 0001 to 0007 are all marked done.
+
+Check:
+
+```powershell
+npx wrangler d1 execute pocket-architect --remote --command "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+npx wrangler d1 execute pocket-architect --remote --command "SELECT COUNT(*) AS purchases, SUM(credits_reserved) AS reserved FROM entitlements"
+npx wrangler d1 execute pocket-architect --remote --command "SELECT COUNT(*) AS shared_designs FROM projects"
+```
+
+The table list must include `ai_requests`, `site_cache`, `jce_enquiries`, and still `projects` and `entitlements`. `reserved` must be 0 and `shared_designs` the same number as before.
+
+Only if an assistant request was running on the old Worker at the moment you deployed: the old code held credits by adding them to `credits_used`. Check for open holds (normally none):
+
+```powershell
+npx wrangler d1 execute pocket-architect --remote --command "SELECT id, eid, credits FROM ai_reservations WHERE settled=0"
+```
+
+A hold older than a few minutes means a crashed request; give those credits back with `UPDATE entitlements SET credits_used = MAX(0, credits_used - <credits>) WHERE id = '<eid>'`.
 
 ## 3. Secrets and variables
 
-Already set, do not touch: `ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID`, `ENTITLEMENT_SECRET` (if it is not set the AI and checkout would not work, so it is).
+Already set on the live Worker, leave them: `ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID`, `ENTITLEMENT_SECRET`, `IP_HASH_SALT`, and `TEST_CODES` if you set it. The release reads all of them under the same names. Check with `npx wrangler secret list`.
 
 New secrets (each command asks you to paste the value):
 
@@ -65,13 +94,27 @@ npx wrangler secret put RESEND_API_KEY      # from Step 4 below (starts with re_
 npx wrangler secret put ADMIN_TOKEN         # any long random string; make one with the next lines
 ```
 
-Make an ADMIN_TOKEN and keep it in your password manager:
-
 ```powershell
 $b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); ($b | ForEach-Object { $_.ToString('x2') }) -join ''
 ```
 
-New variables (already in the repo `wrangler.toml` under `[vars]`, so the deploy sets them):
+**Stripe live keys (only when you take real payments, you said you will switch at this launch).** Do this in the Stripe dashboard in LIVE mode, then set the three secrets, then deploy (Step 6):
+
+1. Create the Plan Pack product in live mode: A$35.00, one-off, **Include tax in price** ticked. Copy its `price_...` id.
+2. Developers > Webhooks > Add endpoint: `https://glideinside.com.au/api/stripe/webhook`, events `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, `charge.dispute.created`, `charge.dispute.closed`. Copy the signing secret (`whsec_...`) of this live endpoint.
+3. Set the three secrets (live values):
+
+```powershell
+npx wrangler secret put STRIPE_SECRET_KEY       # sk_live_... (a restricted key with Checkout Sessions write is enough)
+npx wrangler secret put STRIPE_WEBHOOK_SECRET   # whsec_... from the LIVE endpoint
+npx wrangler secret put STRIPE_PRICE_ID         # price_... of the live A$35 price
+```
+
+The live and test webhooks are different endpoints with different secrets. Keep the test endpoint until the live test purchase works, then delete it.
+
+**What happens to test-mode purchases when Stripe goes live:** they stay in the database and keep working (credits, PDF set, Restore purchase), because the server never asks Stripe about them again. A refund or dispute for a test payment will never arrive at the live webhook, so test purchases are never revoked. They expire on their own date (365 days after purchase). If you want them gone before launch: `npx wrangler d1 execute pocket-architect --remote --command "UPDATE entitlements SET status='expired' WHERE stripe_session_id LIKE 'cs_test_%'"` (this is a change to rows, take the backup in Step 2 first). The friends code (`TEST_CODES`) packs are not Stripe payments and are not affected. Test sessions already open in a browser at the switch cannot be paid after the key changes.
+
+Variables already in `wrangler.toml` under `[vars]` (the deploy sets them):
 
 | Name | Value |
 |---|---|
@@ -81,12 +124,11 @@ New variables (already in the repo `wrangler.toml` under `[vars]`, so the deploy
 | `ENQUIRY_FROM` | `Glide Inside <plans@glideinside.com.au>` |
 | `SELLER_NAME` | `JCE Infrastructure Pty Ltd trading as Glide Inside` |
 | `SELLER_ABN` | `29 699 165 663` |
-| `PLAN_PACK_PRICE_CENTS` | `3500` (only used if `STRIPE_PRICE_ID` is empty) |
-| `PORTAL_ENABLED` | `0` (portal stays closed) |
+| `PLAN_PACK_PRICE_CENTS` | `3500` (also the least a payment may be worth to unlock a pack) |
+| `PORTAL_ENABLED` | `0` (portal stays closed, no billing cron) |
+| `PROJECT_MAX_BYTES`, `PROJECT_TTL_DAYS`, `PROJECT_SAVE_RATE_MAX`, `EXPORT_RATE_PER_HOUR`, `PDF_SET_LIMIT` | the live defaults |
 
-Important: if `STRIPE_PRICE_ID` is set, the price shown at Stripe checkout comes from that Stripe price, not from the Worker. Open **Stripe (test mode) > Product catalogue > Plan Pack** and check the price is A$35.00. If it is A$30.00, create a new A$35 price, copy its `price_...` id and run `npx wrangler secret put STRIPE_PRICE_ID`.
-
-Stripe stays as it is. The Stripe secrets you set on 15/10/2026 are test mode keys, so the Plan Pack takes **test payments only** until you switch to live keys (see "Later: real payments" at the end). That is your decision, not part of this go-live.
+The price shown at Stripe checkout comes from `STRIPE_PRICE_ID` (a secret). Never add a `[vars]` line for a secret's name: it would replace the secret on deploy (a test checks this).
 
 ## 4. Resend (email for Send to JCE)
 
@@ -103,26 +145,38 @@ These Resend records live on the `send` and `resend._domainkey` names. They do n
 
 Nothing to do. The API stays on the same site at `https://glideinside.com.au/api/*` through the Cloudflare route you already have, so there is no `api.` subdomain, no CORS and cookies stay same-site for the portal later. Check the route is still there: Cloudflare dashboard, **Workers and Pages**, your Worker, **Settings > Domains and Routes**. It should list `glideinside.com.au/api/*`. The repo `wrangler.toml` repeats it, so a deploy keeps it.
 
-## 6. Deploy the Worker (only after Step 0 is cleared)
+## 6. Deploy the Worker (after Steps 1 to 4 are done)
 
-From the folder that holds `wrangler.toml`:
+From the folder that holds `wrangler.toml`. Do a dry run first (it bundles and lists the bindings, it deploys nothing and calls nothing):
 
 ```powershell
-# one command: schema, any missing secrets, deploy (skips secrets that are already set)
+npx wrangler deploy --dry-run
+# must list env.DB (pocket-architect), env.FILES (pocket-architect-files) and finish with: --dry-run: exiting now.
+```
+
+Then the deploy. The script `golive\deploy-golive.ps1` runs the migrations (Step 2), asks only for the new secrets that are missing, and deploys:
+
+```powershell
 powershell -ExecutionPolicy Bypass -File <PATH TO>\golive\deploy-golive.ps1
 ```
 
-Or by hand: `npx wrangler deploy --keep-vars` (`--keep-vars` keeps any variable you set only in the dashboard).
+By hand: `npx wrangler deploy --keep-vars` (`--keep-vars` keeps any variable you set only in the dashboard). Note the version id it prints, you need it for rollback.
 
-## 7. Checks on the API (before the website upload)
+## 7. Smoke test of the API (before the website upload)
 
 ```powershell
 curl.exe -s https://glideinside.com.au/api/health
 curl.exe -s https://glideinside.com.au/api/site/health
+curl.exe -s https://glideinside.com.au/api/projects/<THE SHARE ID YOU NOTED IN STEP 0>
+curl.exe -s -o NUL -w "%{http_code}`n" https://glideinside.com.au/api/projects/doesnotexist1234567
 ```
 
-- `/api/health` must still show `"ok":true` and `"sharing":true` (that proves the share feature survived) and `"paymentsConfigured":true`.
-- `/api/site/health` lists each government service. `"ok":true` is enough to launch (it means the address and lot services answer). `"allOk":false` with one aerial or elevation service down is a warning, not a stop: the app carries on without that layer. If `"ok":false`, do not upload the website yet; wait and retry in 10 minutes.
+- `/api/health` must be exactly `{"ok":true,"sharing":true,"aiPaused":false,"paymentsConfigured":true}`. `"sharing":true` proves R2 and the share table are bound. `"paymentsConfigured":false` means a Stripe secret is missing: roll back.
+- The **existing share link must return its design** (`"project":{...}`). This is the test that matters. If it does not, roll back (Step 11) and tell Claude.
+- The made up id must give `404`.
+- `/api/site/health`: `"ok":true` is enough to launch. `"ok":false`: wait 10 minutes and retry before uploading the site.
+- With the old app still on the site, press Restore purchase with a test purchase email and its `cs_test_...` reference: it must unlock (this proves the old purchases are read).
+- Do not run these against a real customer's data beyond reading.
 
 ## 8. Upload the website (cPanel, VentraIP account `glideins`)
 
@@ -162,7 +216,7 @@ node tools/reskin-subdivision.mjs C:\Users\<YOU>\Downloads\sub\index.html C:\Use
 
 ## 10. Ten minute live test
 
-Use a laptop and a private window. The Plan Pack is in Stripe test mode, so you can pay with the test card.
+Use a laptop and a private window. If you have NOT switched Stripe to live keys (Step 3) the Plan Pack is in test mode and you pay with the test card. If you have, use a real card for A$35 and refund it afterwards in Stripe.
 
 1. Open https://glideinside.com.au/plan-studio/launch/ and click **Launch the tool**. Look for **Find my block** in the top bar.
 2. **NSW test.** Click **Find my block** and type a real residential street address in Tamworth (an address you know well). Pick it from the list.
@@ -191,7 +245,7 @@ npx wrangler deploy --keep-vars
 ```
 
    (the repo `wrangler.toml` holds `ENQUIRY_TO = "enquiries@jceinfrastructure.com.au"`). Confirm with one more test send only if you want to; it would email JCE.
-11. Check the save-and-share feature you already had still works (make a share link and open it in a second window), because it lives in the same Worker.
+11. Save and share: if the app you uploaded has the Save and share button, make a link and open it in a private window, then open the old link from Step 0. If it has no button (see Step 0, point 1), open the old link on the OLD app only, and do not delete the old app file.
 
 If any step fails, go to Section 11 (rollback) and message Claude with the step number and a screenshot.
 
@@ -203,15 +257,16 @@ Website:
 3. Purge the Cloudflare cache (Caching > Configuration > Purge Everything).
 
 Worker:
-1. Cloudflare dashboard, **Workers and Pages**, your Worker, **Deployments** (or **Versions**). Find the version from before today, click **Rollback to this version**. Or from PowerShell: `npx wrangler rollback` and pick the previous version.
-2. The database change is additive (new tables only), so nothing needs undoing there.
-3. To stop only the new features without a rollback: delete the `RESEND_API_KEY` secret (`npx wrangler secret delete RESEND_API_KEY`). Send to JCE then says it is not configured and nothing else is affected.
+1. `npx wrangler rollback` (pick the version that was live before, the one printed before your deploy; `npx wrangler deployments list` shows them), or Cloudflare dashboard, **Workers and Pages**, `pocket-architect-api`, **Deployments**, **Rollback to this version**. The old code runs again on the same route.
+2. The database does not need undoing. The migrations only added a column and tables, and the old code ignores them. Entitlements and share links written while the release ran are readable by the old Worker (the release keeps the live column `payment_intent`, the live token format and the live `projects` table and R2 keys). Credits the release had reserved for a request still running at that moment (column `credits_reserved`) are simply ignored by the old code, so nobody loses credits.
+3. If the release had taken real Stripe payments before the rollback, the old Worker still needs the live Stripe secrets (they are the same secrets), so nothing else changes.
+4. To stop only the new features without a rollback: `npx wrangler secret delete RESEND_API_KEY` (Send to JCE then says it is not configured and nothing else is affected).
 
 ---
 
-## Later: real payments (not part of this go-live)
+## Real payments
 
-The Plan Pack uses the Stripe test keys you set on 15/10/2026, so customers cannot really pay yet. When you decide to take real money: create the A$35 Plan Pack price in Stripe **live** mode, create the live webhook `https://glideinside.com.au/api/stripe/webhook` for `checkout.session.completed`, `checkout.session.async_payment_succeeded` and `charge.refunded`, then run `npx wrangler secret put STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` and `STRIPE_PRICE_ID` with the live values and redeploy. Say the word and Claude will write the click by click steps.
+Covered in Step 3 (Stripe live keys). After setting the live secrets and deploying, do one real A$35 purchase on a private window, check it unlocks and the Stripe invoice arrives, then refund it in Stripe and confirm access stops (the `charge.refunded` event reaches the live webhook).
 
 ## When the builder portal launches later
 

@@ -30,7 +30,7 @@ const SPECS = {
     },
   },
   projects: {
-    table: 'projects',
+    table: 'portal_projects',
     cols: {
       id: 'id', orgId: 'org_id', ownerId: 'owner_id', name: 'name', lotAddress: 'lot_address', houseNames: 'house_names:j', project: 'project_json:j',
       createdAt: 'created_at', updatedAt: 'updated_at',
@@ -118,13 +118,13 @@ export function createD1PortalStore(db) {
     countActiveAdmins: async (orgId, exceptId = '') => Number((await first("SELECT COUNT(*) AS n FROM users WHERE org_id = ?1 AND role = 'admin' AND status = 'active' AND id <> ?2", orgId, exceptId))?.n ?? 0),
     updateUser: (id, patch) => update(SPECS.users, 'id = ?1', [id], patch),
     async deleteUser(orgId, id) {
-      const n = Number((await first('SELECT COUNT(*) AS n FROM projects WHERE owner_id = ?1 AND org_id = ?2', id, orgId))?.n ?? 0);
-      await run('DELETE FROM projects WHERE owner_id = ?1 AND org_id = ?2', id, orgId);
+      const n = Number((await first('SELECT COUNT(*) AS n FROM portal_projects WHERE owner_id = ?1 AND org_id = ?2', id, orgId))?.n ?? 0);
+      await run('DELETE FROM portal_projects WHERE owner_id = ?1 AND org_id = ?2', id, orgId);
       await run('DELETE FROM sessions WHERE user_id = ?1', id);
       await run('DELETE FROM users WHERE id = ?1 AND org_id = ?2', id, orgId);
       return { removedProjects: n };
     },
-    countProjectsByOwner: async (orgId) => Object.fromEntries((await all('SELECT owner_id AS o, COUNT(*) AS n FROM projects WHERE org_id = ?1 GROUP BY owner_id', orgId)).map((r) => [r.o, Number(r.n)])),
+    countProjectsByOwner: async (orgId) => Object.fromEntries((await all('SELECT owner_id AS o, COUNT(*) AS n FROM portal_projects WHERE org_id = ?1 GROUP BY owner_id', orgId)).map((r) => [r.o, Number(r.n)])),
     // Sessions
     async createSession(s) {
       await run('INSERT INTO sessions (id_hash, user_id, created_at, last_seen_at, expires_at) VALUES (?1, ?2, ?3, ?4, ?5)', s.idHash, s.userId, s.createdAt, s.lastSeenAt, s.expiresAt);
@@ -179,7 +179,7 @@ export function createD1PortalStore(db) {
     getHouse: (orgId, id) => one(SPECS.houses, 'id = ?1 AND org_id = ?2', id, orgId),
     listHouses: (orgId) => many(SPECS.houses, 'org_id = ?1', [orgId], 'ORDER BY name COLLATE NOCASE', ['project']),
     async saveProject(p) {
-      const exists = await first('SELECT 1 AS x FROM projects WHERE id = ?1 AND org_id = ?2', p.id, p.orgId);
+      const exists = await first('SELECT 1 AS x FROM portal_projects WHERE id = ?1 AND org_id = ?2', p.id, p.orgId);
       if (exists) return update(SPECS.projects, 'id = ?1 AND org_id = ?2', [p.id, p.orgId], { ...p, id: undefined, orgId: undefined, ownerId: undefined, createdAt: undefined });
       return insert(SPECS.projects, p);
     },

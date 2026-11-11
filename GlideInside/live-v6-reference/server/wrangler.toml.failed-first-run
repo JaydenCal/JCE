@@ -1,0 +1,33 @@
+name = "pocket-architect-api"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+routes = [{ pattern = "glideinside.com.au/api/*", zone_name = "glideinside.com.au" }]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pocket-architect"
+database_id = "PASTE_ID"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "pocket-architect-files"
+
+[vars]
+SITE_URL = "https://glideinside.com.au"
+APP_URL = "https://glideinside.com.au/plan-studio/app/"
+PLAN_PRICE_CENTS = "3500"
+PLAN_PACK_CREDITS = "500"
+ENTITLEMENT_DAYS = "365"
+AI_MODEL = "claude-haiku-5-5"
+AI_DAILY_TOKEN_CAP = "2000000"
+EXPORT_RATE_PER_HOUR = "20"
+# Save and share (optional, these are the defaults)
+PROJECT_MAX_BYTES = "2000000"
+PROJECT_TTL_DAYS = "365"
+PROJECT_SAVE_RATE_MAX = "20"
+# Secrets (wrangler secret put): STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ENTITLEMENT_SECRET, STRIPE_PRICE_ID,
+# ANTHROPIC_API_KEY, IP_HASH_SALT, TEST_CODES (optional)
+
+# Needs the Workers Paid plan (exports use 0.1 to 0.5 s CPU per request; the free plan allows 10 ms).
+[limits]
+cpu_ms = 30000

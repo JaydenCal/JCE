@@ -1,26 +1,112 @@
--- Plan Studio back end schema (docs/SCOPE.md 11.3). SQLite / Cloudflare D1.
--- Additions to the brief: stripe_payment_intent on entitlements (refund lookup) and the events table
--- (pause and export log for review). Safe to run more than once.
+-- Glide Inside / Plan Studio API: the whole database in its FINAL shape, for a FRESH database (and for the tests).
+--
+-- *** An existing database (the live "pocket-architect" D1) is changed by the migrations, not by this file: ***
+--       npx wrangler d1 migrations apply pocket-architect --remote
+--     The migrations in migrations/ build exactly this shape on top of the live tables (a test checks that they match).
+--     This file is repeatable (CREATE ... IF NOT EXISTS) but it cannot add a column to a table that already exists.
+--
+-- Tables kept from the live Worker (15/10/2026): entitlements, webhook_events, export_log, ai_usage, ai_daily, ai_rate, ai_reservations,
+-- ip_rate, projects (Save and share). The release code uses entitlements, webhook_events and projects; export_log, ai_usage, ai_daily,
+-- ai_rate, ai_reservations and ip_rate are no longer written but stay, so nothing is dropped and a rollback to the live Worker works.
+-- Rollback of the new tables means ignoring them: no live table depends on them.
 
+-- ===== Plan Pack (live 0001, plus credits_reserved from 0006) =====
 CREATE TABLE IF NOT EXISTS entitlements (
-  id TEXT PRIMARY KEY,
-  project_id TEXT NOT NULL,
-  email TEXT,
-  stripe_session_id TEXT UNIQUE,
-  stripe_payment_intent TEXT,
-  amount_cents INTEGER,
-  currency TEXT,
-  credits_total INTEGER NOT NULL,
-  credits_used INTEGER NOT NULL DEFAULT 0,
+  id TEXT PRIMARY KEY, project_id TEXT NOT NULL, email TEXT, stripe_session_id TEXT UNIQUE, payment_intent TEXT,
+  amount_cents INTEGER, currency TEXT, credits_total INTEGER NOT NULL, credits_used INTEGER NOT NULL DEFAULT 0,
   credits_reserved INTEGER NOT NULL DEFAULT 0,
-  status TEXT NOT NULL,            -- active | refunded | expired
-  created_at TEXT NOT NULL,
-  expires_at TEXT
-);
-CREATE INDEX IF NOT EXISTS idx_entitlements_project ON entitlements(project_id);
-CREATE INDEX IF NOT EXISTS idx_entitlements_payment_intent ON entitlements(stripe_payment_intent);
-CREATE INDEX IF NOT EXISTS idx_entitlements_email ON entitlements(email);
+  pdf_used INTEGER NOT NULL DEFAULT 0, pdf_allowed INTEGER NOT NULL DEFAULT 1, pdf_file TEXT,
+  status TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT);
+CREATE INDEX IF NOT EXISTS idx_ent_project ON entitlements(project_id);
+CREATE INDEX IF NOT EXISTS idx_ent_email ON entitlements(email);
+CREATE TABLE IF NOT EXISTS webhook_events (id TEXT PRIMARY KEY, type TEXT, received_at TEXT);
 
+-- ===== live 0002_exports.sql =====
+-- Export log and rate limiting. Apply after schema.sql:
+--   wrangler d1 execute pocket-architect --remote --file=migrations/0002_exports.sql
+-- Safe to run more than once.
+
+-- One row per export request that passed authentication and the rate limit check.
+-- ip_hash = SHA-256 hex of (IP_HASH_SALT + cf-connecting-ip); the raw address is never stored.
+CREATE TABLE IF NOT EXISTS export_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  entitlement_id TEXT NOT NULL,
+  type TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  ip_hash TEXT);
+CREATE INDEX IF NOT EXISTS idx_export_log_ent ON export_log(entitlement_id, created_at);
+
+-- ===== live 0003_ai.sql =====
+-- AI assistant tables. Apply after schema.sql:
+--   wrangler d1 execute pocket-architect --remote --file=migrations/0003_ai.sql
+-- Safe to run more than once.
+
+-- One row per upstream attempt. credits = what the customer was charged (0 on failure).
+CREATE TABLE IF NOT EXISTS ai_usage (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  entitlement_id TEXT NOT NULL,
+  model TEXT,
+  input_tokens INTEGER NOT NULL DEFAULT 0,        -- uncached input tokens
+  output_tokens INTEGER NOT NULL DEFAULT 0,
+  cache_write_tokens INTEGER NOT NULL DEFAULT 0,  -- cache_creation_input_tokens
+  cache_read_tokens INTEGER NOT NULL DEFAULT 0,   -- cache_read_input_tokens
+  credits INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'ok',              -- ok | error:<code>
+  created_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_ai_usage_ent ON ai_usage(entitlement_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_ai_usage_day ON ai_usage(created_at);
+
+-- Global daily spend ceiling in weighted tokens (see AI_DAILY_TOKEN_CAP). One row per UTC day.
+CREATE TABLE IF NOT EXISTS ai_daily (day TEXT PRIMARY KEY, weighted INTEGER NOT NULL DEFAULT 0);
+
+-- Per entitlement fixed one minute window request counter (see AI_RATE_PER_MIN).
+CREATE TABLE IF NOT EXISTS ai_rate (eid TEXT NOT NULL, win INTEGER NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (eid, win));
+
+-- ===== live 0004_hardening.sql =====
+-- Hardening. Apply after the earlier migrations (also included in schema.sql). Safe to run more than once.
+--   wrangler d1 execute pocket-architect --remote --file=migrations/0004_hardening.sql
+
+-- AI credit and daily-cap reservations. settled: 0 open, 1 settled by the request, 2 released by the stale sweeper.
+CREATE TABLE IF NOT EXISTS ai_reservations (
+  id TEXT PRIMARY KEY, eid TEXT NOT NULL, credits INTEGER NOT NULL DEFAULT 0, weighted INTEGER NOT NULL DEFAULT 0,
+  day TEXT NOT NULL, created_at INTEGER NOT NULL, settled INTEGER NOT NULL DEFAULT 0);
+CREATE INDEX IF NOT EXISTS idx_ai_res_open ON ai_reservations(settled, created_at);
+
+-- Per-IP fixed window counters for /entitlement/restore and /checkout. key = scope:SHA-256(IP_HASH_SALT + ip).
+CREATE TABLE IF NOT EXISTS ip_rate (key TEXT NOT NULL, win INTEGER NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (key, win));
+
+-- ===== live 0005_projects.sql =====
+-- Save and share. Apply after the earlier migrations (also included in schema.sql). Safe to run more than once.
+--   wrangler d1 execute pocket-architect --remote --file=migrations/0005_projects.sql
+-- The design itself lives in R2 under projects/<id>.json. This table holds the lookup, the hashed edit key and the expiry.
+-- email is an optional lead the visitor typed. It is stored only. Nothing sends email.
+CREATE TABLE IF NOT EXISTS projects (
+  id TEXT PRIMARY KEY,
+  edit_key_hash TEXT NOT NULL,       -- SHA-256 hex of the edit key; the key itself is never stored
+  name TEXT,
+  email TEXT,
+  bytes INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,          -- extended each time the owner saves (PROJECT_TTL_DAYS)
+  ip_hash TEXT);
+CREATE INDEX IF NOT EXISTS idx_projects_expires ON projects(expires_at);
+
+-- ===== release 0006 (the credits_reserved column is in the entitlements table above) =====
+-- 0006 release: what the Glide Inside go-live server needs on top of the live database (0001 to 0005).
+-- ADDITIVE ONLY. Nothing is dropped, renamed or rewritten, and every live column, table and row stays as it is, so the previous
+-- Worker version keeps running on this database if the deploy is rolled back.
+--
+-- NOT repeatable: ALTER TABLE ... ADD COLUMN fails if run a second time. Apply with
+--   npx wrangler d1 migrations apply pocket-architect --remote
+-- which records what it has applied and skips it next time. (The migrations before this one are repeatable.)
+
+-- 1. entitlements: the release code reserves AI credits before the model call (the live code deducted them at once).
+--    The Stripe payment intent stays in the live column payment_intent, the release code reads and writes that column.
+CREATE INDEX IF NOT EXISTS idx_entitlements_payment_intent ON entitlements(payment_intent);
+
+-- 2. AI request log, spend ceilings and rate counters of the release AI (the live ai_usage, ai_daily, ai_rate and ai_reservations
+--    tables stay in place and are simply no longer written).
 CREATE TABLE IF NOT EXISTS ai_requests (
   id TEXT PRIMARY KEY,
   entitlement_id TEXT NOT NULL,
@@ -43,12 +129,6 @@ CREATE TABLE IF NOT EXISTS spend (
   cost_usd_micros INTEGER NOT NULL DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS webhook_events (
-  id TEXT PRIMARY KEY,
-  type TEXT,
-  received_at TEXT
-);
-
 CREATE TABLE IF NOT EXISTS rate_limits (
   key TEXT PRIMARY KEY,
   window_start INTEGER,
@@ -57,21 +137,21 @@ CREATE TABLE IF NOT EXISTS rate_limits (
 
 CREATE TABLE IF NOT EXISTS events (
   id TEXT PRIMARY KEY,
-  type TEXT NOT NULL,              -- ai_paused | export
+  type TEXT NOT NULL,              -- ai_paused | export | org_budget | ai_topup ...
   detail TEXT,
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_events_type ON events(type, created_at);
 
--- Site lookup (server/lib/site.js): cached lot and address search JSON, with an expiry in epoch milliseconds.
+-- 3. Find my block (lib/site.js): cached lot and address search JSON, with an expiry in epoch milliseconds.
 CREATE TABLE IF NOT EXISTS site_cache (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL,
   expires_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_site_cache_expiry ON site_cache(expires_at);
--- "Send to JCE for engineering and DA plans" (lib/enquiry.js). A copy of every enquiry, kept even when the email fails.
--- The PDF is not stored (D1 rows are limited to 2 MB); it can be rebuilt from project_json.
+
+-- 4. "Send to JCE for engineering and DA plans" (lib/enquiry.js). A copy of every enquiry, kept even when the email fails.
 CREATE TABLE IF NOT EXISTS jce_enquiries (
   id TEXT PRIMARY KEY,
   reference TEXT NOT NULL UNIQUE,   -- GI-XXXXX, shown to the person
@@ -96,11 +176,14 @@ CREATE TABLE IF NOT EXISTS jce_enquiries (
 CREATE INDEX IF NOT EXISTS idx_jce_enquiries_created ON jce_enquiries(created_at);
 CREATE INDEX IF NOT EXISTS idx_jce_enquiries_email ON jce_enquiries(email);
 
+-- ===== release 0007 =====
+-- 0007 portal: builder and client portal tables (lib/portal*.js, docs/PORTAL_API.md). Repeatable (CREATE ... IF NOT EXISTS).
+-- Created now so that switching the portal on later (PORTAL_ENABLED = 1) is a variable change, not a database change.
 -- =====================================================================================================================
 -- Builder and client portal (docs/PORTAL_API.md, lib/portal*.js). Everything below is CREATE ... IF NOT EXISTS, so the whole
--- file can be re-applied. MIGRATION: this is purely additive (no existing table changes). Apply the file again after
--- deploying this version:  wrangler d1 execute plan-studio --remote --file server/schema.sql
--- Rolling back means dropping the tables below; nothing in the Plan Pack tables above depends on them.
+-- file can be re-applied. This is purely additive (no existing table changes) and repeatable.
+-- The portal's saved projects are in portal_projects. The name "projects" belongs to the live Save and share table.
+-- Nothing in the Plan Pack tables depends on these tables, and the portal stays off while PORTAL_ENABLED is 0.
 -- Money is integer cents (A$ incl. GST). Months are Sydney calendar months, 'YYYY-MM'. Times are ISO 8601 UTC text.
 -- =====================================================================================================================
 
@@ -178,7 +261,7 @@ CREATE TABLE IF NOT EXISTS houses (
 );
 CREATE INDEX IF NOT EXISTS idx_houses_org ON houses(org_id, archived);
 
-CREATE TABLE IF NOT EXISTS projects (
+CREATE TABLE IF NOT EXISTS portal_projects (
   id TEXT PRIMARY KEY,
   org_id TEXT NOT NULL REFERENCES orgs(id),
   owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -189,7 +272,7 @@ CREATE TABLE IF NOT EXISTS projects (
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
-CREATE INDEX IF NOT EXISTS idx_projects_org ON projects(org_id, owner_id);
+CREATE INDEX IF NOT EXISTS idx_portal_projects_org ON portal_projects(org_id, owner_id);
 
 -- One row per client login, created at the login's first successful sign in. login_id is the primary key, so the A$20
 -- charge can only ever exist once. No foreign key: the row stays (financial record) when the client login is deleted.

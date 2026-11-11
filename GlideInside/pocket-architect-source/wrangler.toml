@@ -1,16 +1,20 @@
-# Cloudflare Workers configuration for the Plan Studio API (reference deployment).
-# Copy to wrangler.toml (in the project root, next to package.json) and edit the marked lines.
-# Secrets are NOT set here. Use `wrangler secret put NAME` (see server/README.md).
+# Cloudflare Workers configuration for the Glide Inside API.
+# This is the LIVE Worker's identity (name, route, D1 database, R2 bucket from the 15/10/2026 deploy) with the release code, so
+# `wrangler deploy` REPLACES the running Worker "pocket-architect-api". Nothing here is a secret. Secrets are set with
+# `wrangler secret put NAME` (list in golive/GO-LIVE.md). The live secrets stay as they are.
 
-name = "REPLACE-WITH-THE-LIVE-WORKER-NAME"
+name = "pocket-architect-api"
 main = "server/worker.js"
 compatibility_date = "2026-09-01"
 # jsPDF and three.js use a few Node built-ins when they build exports.
 compatibility_flags = ["nodejs_compat"]
 
-# Glide Inside: the live Worker is routed on the site itself (zone glideinside.com.au is on Cloudflare), so the browser uses /api (same origin).
-# EDIT `name` to the name of the Worker that is already deployed (Cloudflare dashboard > Workers & Pages), or a deploy creates a second one.
+# Same-origin: the zone glideinside.com.au is on Cloudflare, so the browser calls /api on the site itself (no CORS needed).
 routes = [{ pattern = "glideinside.com.au/api/*", zone_name = "glideinside.com.au" }]
+
+# Needs the Workers Paid plan (exports and contours use far more than the free plan's 10 ms of CPU). The live Worker set the same limit.
+[limits]
+cpu_ms = 30000
 
 # Reads docs/SCOPE.md 11.6. Plain values only. Anything secret goes in `wrangler secret put`.
 [vars]
@@ -30,13 +34,22 @@ AI_RATE_PER_DAY = "150"
 AI_DAILY_CAP_USD = "5"
 AI_MONTHLY_CAP_USD = "50"
 FX_AUD_PER_USD = "1.67"
-PLAN_PACK_PRICE_CENTS = "3500"                             # A$35 incl. GST; used when STRIPE_PRICE_ID is empty
+PLAN_PACK_PRICE_CENTS = "3500"                             # A$35 incl. GST; also the least a Checkout session may be worth to unlock a pack
 ENTITLEMENT_DAYS = "365"
 EXPORT_MAX_PROJECT_BYTES = "2000000"
+# Kept from the live Worker (same names, same defaults): Save and share, export limits.
+PROJECT_MAX_BYTES = "2000000"                              # largest design that can be saved online
+PROJECT_TTL_DAYS = "365"                                   # how long a shared link lasts after the last save (each save extends it)
+PROJECT_SAVE_RATE_MAX = "20"                               # saves per hour per visitor address (reads: PROJECT_READ_RATE_MAX, 600)
+EXPORT_RATE_PER_HOUR = "20"                                # exports per Plan Pack per hour
+PDF_SET_LIMIT = "1"                                        # ONE PDF plan set per job, repeat requests get the same file. "0" turns it off
+# Secrets the live Worker already has, read under the same names: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_ID,
+# ENTITLEMENT_SECRET, ANTHROPIC_API_KEY, IP_HASH_SALT, TEST_CODES (optional). New secrets: RESEND_API_KEY, ADMIN_TOKEN.
 # Printed on the PDF title block (default to src/config.js when empty).
 ENQUIRY_TO = "enquiries@jceinfrastructure.com.au"            # where "Send to JCE" enquiries go
 ENQUIRY_FROM = "Glide Inside <plans@glideinside.com.au>"   # must be on a domain verified in Resend (glideinside.com.au)
-STRIPE_PRICE_ID = ""                                       # optional: a Stripe price for the Plan Pack
+# STRIPE_PRICE_ID is a SECRET on the live Worker. Never put it (or any secret name) under [vars]: a plain variable with the same name
+# would replace the secret on deploy.
 
 # Builder portal (docs/PORTAL_API.md). Off until launch. Secrets (wrangler secret put): ADMIN_TOKEN, STRIPE_SECRET_KEY (test key only).
 PORTAL_ENABLED = "0"                                       # launch: leave "0" (builder and client portal stay closed)
@@ -49,12 +62,20 @@ TOPUP_AMOUNT_CENTS = "1000"                                # A$10 incl. GST
 # STRIPE_LIVE_BILLING_APPROVED stays unset: live Stripe keys are refused without the owner's written go-ahead.
 
 # Month end invoices: 06:00 on the 1st, Sydney time (19:00 UTC in AEDT, 20:00 UTC in AEST). The handler checks the Sydney clock.
-[triggers]
-crons = ["0 19 * * *", "0 20 * * *"]
+# OFF while PORTAL_ENABLED is "0": a cron with nothing to bill only adds noise. When the portal launches, set PORTAL_ENABLED to "1"
+# and remove the leading # from the next three lines.
+# [triggers]
+# crons = ["0 19 * * *", "0 20 * * *"]
 
-# D1 (SQLite). Create it with `wrangler d1 create plan-studio`, paste the id below,
-# then apply the schema: `wrangler d1 execute plan-studio --remote --file server/schema.sql`
+# D1 (SQLite): the LIVE database. Its schema is changed only by the migrations in server/migrations:
+#   npx wrangler d1 migrations apply pocket-architect --remote
 [[d1_databases]]
 binding = "DB"
-database_name = "plan-studio"
-database_id = "REPLACE-WITH-THE-ID-FROM-wrangler-d1-create"
+database_name = "pocket-architect"
+database_id = "fccdf1f7-e48c-4c72-8723-b343b3f2fad4"
+migrations_dir = "server/migrations"
+
+# R2: the LIVE bucket. Shared designs (projects/<id>.json) and issued PDF sets (pdf/<entitlement>.pdf) are in it.
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "pocket-architect-files"

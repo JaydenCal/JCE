@@ -1,0 +1,1112 @@
+[
+  {
+    "name": "add_room",
+    "description": "Add a rectangular room. (x, y) is the north-west (top-left) corner in mm; width runs east (+x), depth runs south (+y). Walls are created on edges that are not already walled. Decks, patios and carports get no walls by default.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "description": "Level id or name. Defaults to the active level."
+        },
+        "name": {
+          "type": "string",
+          "description": "Room name, e.g. \"Bed 2\""
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "living",
+            "family",
+            "kitchen",
+            "dining",
+            "bedroom",
+            "bathroom",
+            "ensuite",
+            "wc",
+            "laundry",
+            "garage",
+            "carport",
+            "study",
+            "entry",
+            "hall",
+            "robe",
+            "pantry",
+            "media",
+            "rumpus",
+            "workshop",
+            "store",
+            "deck",
+            "patio",
+            "alfresco",
+            "verandah",
+            "other"
+          ],
+          "description": "Room type"
+        },
+        "x": {
+          "type": "number",
+          "description": "West edge, mm"
+        },
+        "y": {
+          "type": "number",
+          "description": "North edge, mm"
+        },
+        "width": {
+          "type": "number",
+          "description": "East-west size, mm"
+        },
+        "depth": {
+          "type": "number",
+          "description": "North-south size, mm"
+        },
+        "walls": {
+          "type": "boolean",
+          "description": "Create walls (default true for indoor rooms)"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "new",
+            "existing",
+            "demolish"
+          ],
+          "description": "Extension status. Default new."
+        }
+      },
+      "required": [
+        "type",
+        "x",
+        "y",
+        "width",
+        "depth"
+      ]
+    }
+  },
+  {
+    "name": "add_room_polygon",
+    "description": "Add a room with any outline, given as corner points in mm in order.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "description": "Level id or name. Defaults to the active level."
+        },
+        "name": {
+          "type": "string",
+          "description": "Room name"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "living",
+            "family",
+            "kitchen",
+            "dining",
+            "bedroom",
+            "bathroom",
+            "ensuite",
+            "wc",
+            "laundry",
+            "garage",
+            "carport",
+            "study",
+            "entry",
+            "hall",
+            "robe",
+            "pantry",
+            "media",
+            "rumpus",
+            "workshop",
+            "store",
+            "deck",
+            "patio",
+            "alfresco",
+            "verandah",
+            "other"
+          ],
+          "description": "Room type"
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ]
+          },
+          "description": "Corner points in order"
+        },
+        "walls": {
+          "type": "boolean",
+          "description": "Create walls"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "new",
+            "existing",
+            "demolish"
+          ],
+          "description": "Extension status. Default new."
+        }
+      },
+      "required": [
+        "type",
+        "points"
+      ]
+    }
+  },
+  {
+    "name": "update_room",
+    "description": "Rename or retype a room, set its floor finish, or set deck options.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Room id"
+        },
+        "name": {
+          "type": "string",
+          "description": "New name"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "living",
+            "family",
+            "kitchen",
+            "dining",
+            "bedroom",
+            "bathroom",
+            "ensuite",
+            "wc",
+            "laundry",
+            "garage",
+            "carport",
+            "study",
+            "entry",
+            "hall",
+            "robe",
+            "pantry",
+            "media",
+            "rumpus",
+            "workshop",
+            "store",
+            "deck",
+            "patio",
+            "alfresco",
+            "verandah",
+            "other"
+          ],
+          "description": "New type"
+        },
+        "floor_material": {
+          "type": "string",
+          "description": "Floor material id"
+        },
+        "floor_colour": {
+          "type": "string",
+          "description": "Floor colour id"
+        },
+        "roofed": {
+          "type": "boolean",
+          "description": "Outdoor area sits under the main roof"
+        },
+        "balustrade": {
+          "type": "boolean",
+          "description": "Show a balustrade around a deck"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "new",
+            "existing",
+            "demolish"
+          ],
+          "description": "Extension status. Default new."
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  {
+    "name": "resize_room",
+    "description": "Push or pull one side of a room. Positive delta grows the room outward on that side. Walls on that side move and connected walls stretch; a neighbouring room on that side shrinks. north = top of plan (-y), south = +y, east = +x, west = -x.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Room id"
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "north",
+            "south",
+            "east",
+            "west"
+          ],
+          "description": "Side to move"
+        },
+        "delta": {
+          "type": "number",
+          "description": "Distance in mm, positive grows the room"
+        }
+      },
+      "required": [
+        "id",
+        "side",
+        "delta"
+      ]
+    }
+  },
+  {
+    "name": "add_wall",
+    "description": "Add a straight wall between two points (mm).",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "description": "Level id or name. Defaults to the active level."
+        },
+        "x1": {
+          "type": "number",
+          "description": "Start x"
+        },
+        "y1": {
+          "type": "number",
+          "description": "Start y"
+        },
+        "x2": {
+          "type": "number",
+          "description": "End x"
+        },
+        "y2": {
+          "type": "number",
+          "description": "End y"
+        },
+        "thickness": {
+          "type": "number",
+          "description": "Thickness in mm (default automatic)"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "new",
+            "existing",
+            "demolish"
+          ],
+          "description": "Extension status. Default new."
+        }
+      },
+      "required": [
+        "x1",
+        "y1",
+        "x2",
+        "y2"
+      ]
+    }
+  },
+  {
+    "name": "update_wall",
+    "description": "Change a wall thickness, height, extension status or give it its own external finish.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Wall id"
+        },
+        "thickness": {
+          "type": "number",
+          "description": "Thickness mm"
+        },
+        "height": {
+          "type": "number",
+          "description": "Wall height mm (omit to follow the level)"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "new",
+            "existing",
+            "demolish"
+          ],
+          "description": "Extension status. Default new."
+        },
+        "finish_material": {
+          "type": "string",
+          "description": "Wall material id for this wall only"
+        },
+        "finish_colour": {
+          "type": "string",
+          "description": "Wall colour id for this wall only"
+        },
+        "clear_finish": {
+          "type": "boolean",
+          "description": "Remove this wall’s own finish so it follows the house"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  {
+    "name": "move_wall",
+    "description": "Move a wall by (dx, dy) mm. Walls connected to it stretch and rooms bounded by it change shape.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Wall id"
+        },
+        "dx": {
+          "type": "number",
+          "description": "mm east"
+        },
+        "dy": {
+          "type": "number",
+          "description": "mm south"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  {
+    "name": "add_opening",
+    "description": "Add a window, door, sliding door, garage door, roller door or plain opening to a wall. Give either the wall id (with optional offset of the opening centre from the wall start) or a point (x, y) near the wall.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "description": "Level id or name. Defaults to the active level."
+        },
+        "wall": {
+          "type": "string",
+          "description": "Wall id"
+        },
+        "x": {
+          "type": "number",
+          "description": "Point near the wall, mm"
+        },
+        "y": {
+          "type": "number",
+          "description": "Point near the wall, mm"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "window",
+            "door",
+            "sliding_door",
+            "garage_door",
+            "roller_door",
+            "opening"
+          ],
+          "description": "Opening kind"
+        },
+        "offset": {
+          "type": "number",
+          "description": "Distance from wall start to opening centre, mm"
+        },
+        "width": {
+          "type": "number",
+          "description": "Width mm"
+        },
+        "height": {
+          "type": "number",
+          "description": "Height mm"
+        },
+        "sill": {
+          "type": "number",
+          "description": "Sill height mm (windows)"
+        },
+        "style": {
+          "type": "string",
+          "description": "Window style: sliding, awning, fixed, double_hung, louvre"
+        },
+        "hinge": {
+          "type": "string",
+          "enum": [
+            "a",
+            "b"
+          ],
+          "description": "Door hinge end"
+        },
+        "side": {
+          "type": "number",
+          "description": "Door swing side: 1 or -1"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "new",
+            "existing",
+            "demolish"
+          ],
+          "description": "Extension status. Default new."
+        }
+      },
+      "required": [
+        "kind"
+      ]
+    }
+  },
+  {
+    "name": "update_opening",
+    "description": "Change an opening size, position along its wall, style or swing.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Opening id"
+        },
+        "width": {
+          "type": "number",
+          "description": "Width mm"
+        },
+        "height": {
+          "type": "number",
+          "description": "Height mm"
+        },
+        "sill": {
+          "type": "number",
+          "description": "Sill mm"
+        },
+        "offset": {
+          "type": "number",
+          "description": "Centre offset from wall start mm"
+        },
+        "style": {
+          "type": "string",
+          "description": "Window style"
+        },
+        "hinge": {
+          "type": "string",
+          "enum": [
+            "a",
+            "b"
+          ],
+          "description": "Door hinge end"
+        },
+        "side": {
+          "type": "number",
+          "description": "1 or -1"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "new",
+            "existing",
+            "demolish"
+          ],
+          "description": "Extension status. Default new."
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  {
+    "name": "add_furniture",
+    "description": "Place a furniture item from the catalogue at (x, y) mm, or in the middle of a room.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "description": "Level id or name. Defaults to the active level."
+        },
+        "item": {
+          "type": "string",
+          "description": "Catalogue item id"
+        },
+        "x": {
+          "type": "number",
+          "description": "Centre x mm"
+        },
+        "y": {
+          "type": "number",
+          "description": "Centre y mm"
+        },
+        "room": {
+          "type": "string",
+          "description": "Room id to place it in"
+        },
+        "rotation": {
+          "type": "number",
+          "description": "Degrees clockwise"
+        },
+        "w": {
+          "type": "number",
+          "description": "Override width mm"
+        },
+        "d": {
+          "type": "number",
+          "description": "Override depth mm"
+        }
+      },
+      "required": [
+        "item"
+      ]
+    }
+  },
+  {
+    "name": "update_furniture",
+    "description": "Move, rotate or resize a furniture item.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Furniture id"
+        },
+        "x": {
+          "type": "number",
+          "description": "Centre x mm"
+        },
+        "y": {
+          "type": "number",
+          "description": "Centre y mm"
+        },
+        "rotation": {
+          "type": "number",
+          "description": "Degrees clockwise"
+        },
+        "w": {
+          "type": "number",
+          "description": "Width mm"
+        },
+        "d": {
+          "type": "number",
+          "description": "Depth mm"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  {
+    "name": "move",
+    "description": "Move furniture, a tank, stairs, an opening (slides along its wall), a wall, or an outdoor room by (dx, dy) mm.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Element id"
+        },
+        "dx": {
+          "type": "number",
+          "description": "mm east"
+        },
+        "dy": {
+          "type": "number",
+          "description": "mm south"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  {
+    "name": "delete",
+    "description": "Delete any element by id. Deleting a room also removes walls that only bound that room, and the furniture inside it.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Element id"
+        },
+        "keep_walls": {
+          "type": "boolean",
+          "description": "Keep the room walls"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  {
+    "name": "set_finish",
+    "description": "Set a material and or colour for the whole design: external walls, internal walls, roof, fascia and gutters, window and door frames, or default floors.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "enum": [
+            "external_walls",
+            "internal_walls",
+            "roof",
+            "fascia",
+            "frames",
+            "floors"
+          ],
+          "description": "What to change"
+        },
+        "material": {
+          "type": "string",
+          "description": "Material id"
+        },
+        "colour": {
+          "type": "string",
+          "description": "Colour id"
+        }
+      },
+      "required": [
+        "target"
+      ]
+    }
+  },
+  {
+    "name": "set_roof",
+    "description": "Set the roof type, pitch (degrees), eave overhang (mm) or turn the roof off for a level.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "description": "Level id or name. Defaults to the active level."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "hip",
+            "gable",
+            "skillion",
+            "flat"
+          ],
+          "description": "Roof type"
+        },
+        "pitch": {
+          "type": "number",
+          "description": "Degrees"
+        },
+        "overhang": {
+          "type": "number",
+          "description": "Eave overhang mm"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Roof on or off"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "add_tank",
+    "description": "Add a round rainwater tank. Standard sizes 2000, 5000, 10000 and 22500 litres. Without x and y it is placed beside the building.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number",
+          "description": "Centre x mm"
+        },
+        "y": {
+          "type": "number",
+          "description": "Centre y mm"
+        },
+        "capacity_l": {
+          "type": "number",
+          "description": "Litres"
+        },
+        "colour": {
+          "type": "string",
+          "description": "Colour id"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "new",
+            "existing",
+            "demolish"
+          ],
+          "description": "Extension status. Default new."
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "update_tank",
+    "description": "Change a rainwater tank size, colour or position.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Tank id"
+        },
+        "capacity_l": {
+          "type": "number",
+          "description": "Litres"
+        },
+        "colour": {
+          "type": "string",
+          "description": "Colour id"
+        },
+        "x": {
+          "type": "number",
+          "description": "Centre x mm"
+        },
+        "y": {
+          "type": "number",
+          "description": "Centre y mm"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  {
+    "name": "mirror_plan",
+    "description": "Mirror the whole design, e.g. to put the garage on the other side. left_right flips east and west; top_bottom flips north and south.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "axis": {
+          "type": "string",
+          "enum": [
+            "left_right",
+            "top_bottom"
+          ],
+          "description": "Mirror direction"
+        }
+      },
+      "required": [
+        "axis"
+      ]
+    }
+  },
+  {
+    "name": "add_level",
+    "description": "Add a storey above the top level. copy_outline copies the external walls of the level below as a starting point.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Level name"
+        },
+        "copy_outline": {
+          "type": "boolean",
+          "description": "Copy external walls from below (default true)"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "update_level",
+    "description": "Rename a level or change its ceiling height or floor level (mm).",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Level id or name"
+        },
+        "name": {
+          "type": "string",
+          "description": "New name"
+        },
+        "ceiling_height": {
+          "type": "number",
+          "description": "Ceiling height mm"
+        },
+        "elevation": {
+          "type": "number",
+          "description": "Floor level above ground floor mm"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  {
+    "name": "add_stair",
+    "description": "Add a straight stair. (x, y) is its centre; length runs along the climb.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "description": "Level id or name. Defaults to the active level."
+        },
+        "x": {
+          "type": "number",
+          "description": "Centre x mm"
+        },
+        "y": {
+          "type": "number",
+          "description": "Centre y mm"
+        },
+        "width": {
+          "type": "number",
+          "description": "mm, default 1000"
+        },
+        "length": {
+          "type": "number",
+          "description": "mm, default 3600"
+        },
+        "rotation": {
+          "type": "number",
+          "description": "Degrees clockwise"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ]
+    }
+  },
+  {
+    "name": "set_status",
+    "description": "Mark walls, rooms, openings or tanks as existing, new or to be demolished. ids [\"*\"] means everything.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Element ids, or [\"*\"] for all"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "new",
+            "existing",
+            "demolish"
+          ],
+          "description": "Status"
+        }
+      },
+      "required": [
+        "ids",
+        "status"
+      ]
+    }
+  },
+  {
+    "name": "set_project",
+    "description": "Rename the design or change its type.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Design name"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "house",
+            "unit",
+            "shed",
+            "extension"
+          ],
+          "description": "Design type"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "update_stair",
+    "description": "Move, resize or rotate stairs.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stair id"
+        },
+        "x": {
+          "type": "number",
+          "description": "Centre x mm"
+        },
+        "y": {
+          "type": "number",
+          "description": "Centre y mm"
+        },
+        "width": {
+          "type": "number",
+          "description": "mm"
+        },
+        "length": {
+          "type": "number",
+          "description": "mm"
+        },
+        "rotation": {
+          "type": "number",
+          "description": "Degrees clockwise"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  {
+    "name": "set_site",
+    "description": "Set the north arrow direction in degrees clockwise from the top of the plan, and the display units (metric or imperial).",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "north_deg": {
+          "type": "number",
+          "description": "Degrees"
+        },
+        "units": {
+          "type": "string",
+          "enum": [
+            "metric",
+            "imperial"
+          ],
+          "description": "Display units: metric (mm, m) or imperial (feet and inches). Measurements in tools are always millimetres."
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "set_wall_defaults",
+    "description": "Set the default external and internal wall thickness in mm. Every wall that has not been given its own thickness updates.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "external": {
+          "type": "number",
+          "description": "External wall mm, e.g. 250 brick veneer, 150 weatherboard"
+        },
+        "internal": {
+          "type": "number",
+          "description": "Internal wall mm, e.g. 100"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "set_titleblock",
+    "description": "Fill in drawing title block fields: projectName, client, address, lotDp, council, company, drawnBy, checkedBy, jobNumber, drawingPrefix, revision, issuePurpose, date, notes.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "projectName": {
+          "type": "string",
+          "description": "Project"
+        },
+        "client": {
+          "type": "string",
+          "description": "Client"
+        },
+        "address": {
+          "type": "string",
+          "description": "Site address"
+        },
+        "lotDp": {
+          "type": "string",
+          "description": "Lot and DP"
+        },
+        "council": {
+          "type": "string",
+          "description": "Council"
+        },
+        "company": {
+          "type": "string",
+          "description": "Prepared by (company)"
+        },
+        "drawnBy": {
+          "type": "string",
+          "description": "Drawn"
+        },
+        "checkedBy": {
+          "type": "string",
+          "description": "Checked"
+        },
+        "jobNumber": {
+          "type": "string",
+          "description": "Job number"
+        },
+        "drawingPrefix": {
+          "type": "string",
+          "description": "Drawing number prefix"
+        },
+        "revision": {
+          "type": "string",
+          "description": "Revision"
+        },
+        "issuePurpose": {
+          "type": "string",
+          "description": "Issue purpose"
+        },
+        "date": {
+          "type": "string",
+          "description": "Date (DD/MM/YYYY)"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Notes"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "set_drawing",
+    "description": "Set the drawing scale (auto, 20, 50, 75, 100, 125, 150, 200, 250 or 500 meaning 1:n) and paper size (A3 or A1) for exported plans.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "scale": {
+          "type": "string",
+          "description": "auto or 1:n as a number"
+        },
+        "paper": {
+          "type": "string",
+          "enum": [
+            "A3",
+            "A1"
+          ],
+          "description": "Paper size"
+        }
+      },
+      "required": []
+    }
+  }
+]

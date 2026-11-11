@@ -305,7 +305,7 @@ test('8. GET /api/entitlement waits for the webhook, then returns a token (and c
   assert.equal(pending.status, 404);
   assert.equal(pending.json.pending, true);
   // Webhook slower than the return: Stripe says the session is paid, so the entitlement is created once.
-  w.stripeSessions.set('cs_late', { id: 'cs_late', payment_status: 'paid', client_reference_id: 'p_1', metadata: { projectId: 'p_1' }, amount_total: 3000, currency: 'aud', customer_details: { email: 'late@example.com' }, payment_intent: 'pi_late' });
+  w.stripeSessions.set('cs_late', { id: 'cs_late', payment_status: 'paid', client_reference_id: 'p_1', metadata: { projectId: 'p_1' }, amount_total: 3500, currency: 'aud', customer_details: { email: 'late@example.com' }, payment_intent: 'pi_late' });
   const got = await w.call('GET', '/api/entitlement?session_id=cs_late&project=p_1');
   assert.equal(got.status, 200);
   assert.ok(got.json.token);

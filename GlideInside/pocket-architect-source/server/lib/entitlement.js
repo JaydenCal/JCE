@@ -1,4 +1,4 @@
-// Entitlement tokens (docs/SCOPE.md 11.5): base64url(payload).base64url(HMAC-SHA256(payload, secret)),
+// Entitlement tokens (docs/SCOPE.md 11.5): base64url(payload).base64url(HMAC-SHA256(base64url(payload), secret)),
 // payload { eid, pid, exp } with exp in seconds. The token alone grants nothing: the database is checked
 // on every request for status, expiry and credits.
 
@@ -32,10 +32,14 @@ export function safeEqual(a, b) {
   return diff === 0;
 }
 
+// TOKEN FORMAT. The live Worker (15/10/2026) signs the base64url TEXT of the payload: sig = HMAC(secret, "<payload b64u>").
+// The first release build signed the raw payload bytes instead. Tokens are now issued in the live format, so a token from this server also
+// works if the deploy is rolled back to the live Worker, and verification accepts both, so tokens already sitting in customers' browsers
+// (issued by the live Worker) keep working.
 export async function signToken(payload, secret) {
   if (!secret) throw new HttpError('SERVER_NOT_CONFIGURED', 'ENTITLEMENT_SECRET is not set.');
-  const body = enc.encode(JSON.stringify(payload));
-  return `${toB64u(body)}.${toB64u(await hmacSha256(secret, body))}`;
+  const text = toB64u(enc.encode(JSON.stringify(payload)));
+  return `${text}.${toB64u(await hmacSha256(secret, text))}`;
 }
 
 /** Returns the payload when the signature is valid and the token has not expired, otherwise null. */
@@ -45,8 +49,11 @@ export async function verifyToken(token, secret, nowSec) {
   if (!p || !s || extra !== undefined) return null;
   try {
     const body = fromB64u(p);
-    const expected = await hmacSha256(secret, body);
-    if (!safeEqual(expected, fromB64u(s))) return null;
+    const given = fromB64u(s);
+    // live format (HMAC over the base64url text) or the first release format (HMAC over the decoded bytes); both are checked in full
+    const liveOk = safeEqual(await hmacSha256(secret, p), given);
+    const rawOk = safeEqual(await hmacSha256(secret, body), given);
+    if (!liveOk && !rawOk) return null;
     const payload = JSON.parse(dec.decode(body));
     if (!(payload?.eid && payload?.pid) && !(payload?.oid && payload?.lid)) return null;
     if (typeof payload.exp === 'number' && payload.exp <= nowSec) return null;
@@ -56,10 +63,13 @@ export async function verifyToken(token, secret, nowSec) {
   }
 }
 
-export async function issueToken(ent, config, nowMs) {
+export async function issueToken(ent, config, nowMs, projectId = ent.projectId) {
   const exp = ent.expiresAt ? Math.floor(Date.parse(ent.expiresAt) / 1000) : Math.floor(nowMs / 1000) + Math.round(config.entitlementDays * 86400);
-  return signToken({ eid: ent.id, pid: ent.projectId, exp }, config.entitlementSecret);
+  return signToken({ eid: ent.id, pid: projectId, exp }, config.entitlementSecret);
 }
+
+/** True when the pack may be used for this project (a code pack, project '*', works for any project). */
+export const coversProject = (ent, projectId) => ent.projectId === '*' || ent.projectId === projectId;
 
 /**
  * Authenticate a request and load its entitlement from the database.
@@ -73,7 +83,8 @@ export async function authenticate(request, { store, config, now, missing = 'UNA
     throw new HttpError('UNAUTHORISED', 'Your Plan Pack could not be verified. Restore your purchase to continue.');
   }
   const ent = await store.getEntitlement(payload.eid);
-  if (!ent || ent.projectId !== payload.pid) throw new HttpError('NOT_ENTITLED', 'No Plan Pack was found for this project.');
+  // projectId '*' is a friends and testing code pack (live Worker behaviour): valid for whichever project the token names.
+  if (!ent || (ent.projectId !== payload.pid && ent.projectId !== '*')) throw new HttpError('NOT_ENTITLED', 'No Plan Pack was found for this project.');
   if (ent.status !== 'active') {
     throw new HttpError('NOT_ENTITLED', ent.status === 'refunded' ? 'This Plan Pack has been refunded.' : 'This Plan Pack is no longer active.');
   }

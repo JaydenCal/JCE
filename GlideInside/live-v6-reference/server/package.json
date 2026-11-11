@@ -1,0 +1,11 @@
+{
+  "name": "pocket-architect-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/worker.test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.42.0"
+  }
+}

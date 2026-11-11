@@ -20,6 +20,8 @@ function appFor(env) {
         store: createD1Store(env.DB),
         portalStore: createD1PortalStore(env.DB),
         env,
+        // R2 bucket (binding FILES): shared designs (projects/<id>.json) and issued PDF sets (pdf/<entitlement>.pdf).
+        files: env.FILES || null,
         // The catalogue supplies furniture, material and colour ids for the assistant's tools.
         catalogue: () => import('../src/catalogue/index.js').then((m) => m.catalogue ?? m.default ?? m),
         loadJsPDF: () => import('jspdf').then((m) => m.jsPDF || m.default?.jsPDF || m.default),
