@@ -1,4 +1,4 @@
-# Files in glideinside-site-upload.zip, built 11/11/2026 from d5b4a70 (base a7e153a).
+# Files in glideinside-site-upload.zip, built 11/11/2026 from 59a9a7d (base a7e153a).
 # Extract into public_html. Do not upload subdivision/, .htaccess, .user.ini or contact-config.php.
 3d-floor-plan-maker/index.html
 analytics.js
@@ -23,6 +23,8 @@ assets/room-living.webp
 assets/room-master.webp
 assets/step-block.webp
 assets/step-house.webp
+builder-picker.css
+builder-picker.js
 commercial/index.html
 for-builders/index.html
 framework.css
@@ -48,16 +50,24 @@ portal/src/portal/api.js
 portal/src/portal/arrange.js
 portal/src/portal/auto-place.js
 portal/src/portal/billing.js
+portal/src/portal/builders.js
 portal/src/portal/envelope.js
 portal/src/portal/glide-library.generated.js
 portal/src/portal/mock-api.js
 portal/src/portal/place-house.js
 portal/src/portal/pose-session.js
+portal/src/portal/theme-css.js
+portal/src/portal/theme.js
 portal/src/portal/ui/admin-app.js
+portal/src/portal/ui/auth-views.js
 portal/src/portal/ui/billing-tab.js
+portal/src/portal/ui/branding-tab.js
 portal/src/portal/ui/clients-tab.js
+portal/src/portal/ui/glide-tab.js
+portal/src/portal/ui/houses-tab.js
 portal/src/portal/ui/portal-app.js
 portal/src/portal/ui/trial-ui.js
+portal/src/premium/api.js
 pricing/index.html
 privacy.html
 shed-with-living-quarters/index.html

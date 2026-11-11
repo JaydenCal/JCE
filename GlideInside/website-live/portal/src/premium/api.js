@@ -34,10 +34,11 @@ export function createApi({ base = '/api', fetchImpl = null, timeoutMs = 45000 }
   const root = String(base || '/api').replace(/\/+$/, '');
   const doFetch = (...args) => (fetchImpl || globalThis.fetch).call(globalThis, ...args);
 
-  async function send(method, path, { token, body, query, timeout = timeoutMs } = {}) {
+  async function send(method, path, { token, body, query, timeout = timeoutMs, headers: extra } = {}) {
     const qs = query ? `?${new URLSearchParams(query)}` : '';
     const headers = { accept: 'application/json' };
     if (token) headers.authorization = `Bearer ${token}`;
+    if (extra) Object.assign(headers, extra);
     if (body !== undefined) headers['content-type'] = 'application/json';
     const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
     const timer = controller ? setTimeout(() => controller.abort(), timeout) : null;
@@ -113,6 +114,12 @@ export function createApi({ base = '/api', fetchImpl = null, timeoutMs = 45000 }
     edit: (token, body) => json('POST', '/ai/edit', { token, body, timeout: 45000 }),
     /** "Send to JCE for engineering and DA plans". Resolves { ok, reference }. 503 ENQUIRY_NOT_CONFIGURED until the Worker has RESEND_API_KEY. */
     enquiryJce: (body) => json('POST', '/enquiry/jce', { body, timeout: 60000 }),
+    /** Builder or client login export (cookie session). The server decides the free trial watermark from the org account state. */
+    async portalExportFile(type, body, fallbackName = `export.${type}`) {
+      const res = await send('POST', `/portal/export/${type}`, { body, timeout: 90000, headers: { 'x-gi-request': '1' } });
+      if (!res.ok) return failure(res);
+      return { blob: await res.blob(), filename: filenameFrom(res, fallbackName) };
+    },
     /** Paid export. Resolves { blob, filename }. */
     async exportFile(token, type, body, fallbackName = `export.${type}`) {
       const res = await send('POST', `/export/${type}`, { token, body, timeout: 90000 });
