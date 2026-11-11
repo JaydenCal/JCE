@@ -26,13 +26,13 @@ export function addFloorPoly(b, slot, polygon, y, up = true, holes = []) {
   }
 }
 
-export function addGround(ctx, root, bounds) {
+export function addGround(ctx, root, bounds, yOverride = null) {
   const cx = bounds ? (bounds.min.x + bounds.max.x) / 2 : 0;
   const cz = bounds ? (bounds.min.z + bounds.max.z) / 2 : 0;
   const R = Math.max(150, bounds ? Math.hypot(bounds.max.x - bounds.min.x, bounds.max.z - bounds.min.z) * 6 : 0);
   const b = new GeoBuilder();
   const seg = 48;
-  const y = ctx.groundY;
+  const y = yOverride ?? ctx.groundY;
   for (let i = 0; i < seg; i++) {
     const a0 = (i / seg) * Math.PI * 2;
     const a1 = ((i + 1) / seg) * Math.PI * 2;

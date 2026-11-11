@@ -40,11 +40,12 @@ export function levelsBetween(min, max, interval) {
   if (!(interval > 0) || !Number.isFinite(min) || !Number.isFinite(max)) return out;
   const first = Math.ceil(min / interval - 1e-9);
   const last = Math.floor(max / interval + 1e-9);
-  for (let k = first; k <= last; k++) out.push(Math.round(k * interval * 1000) / 1000);
+  for (let k = first; k <= last; k++) out.push(Math.round(k * interval * 1000) / 1000 + 0);
   return out;
 }
 
-const key = (p) => `${Math.round(p[0] * 1e4)},${Math.round(p[1] * 1e4)}`;
+// Points carry the id of the grid edge they lie on, so two cells always agree on a shared point exactly.
+const key = (p) => p[2];
 
 // Line segments of one level in one cell, with linear interpolation along the cell edges.
 function cellSegments(grid, i, j, level, out) {
@@ -63,10 +64,10 @@ function cellSegments(grid, i, j, level, out) {
   const yT = grid.y0 - j * grid.cell;
   const c = grid.cell;
   const t = (a, b) => (b === a ? 0.5 : (level - a) / (b - a));
-  const top = () => [x + t(v00, v10) * c, yT];
-  const right = () => [x + c, yT - t(v10, v11) * c];
-  const bottom = () => [x + t(v01, v11) * c, yT - c];
-  const left = () => [x, yT - t(v00, v01) * c];
+  const top = () => [x + t(v00, v10) * c, yT, `h${i},${j}`];
+  const right = () => [x + c, yT - t(v10, v11) * c, `v${i + 1},${j}`];
+  const bottom = () => [x + t(v01, v11) * c, yT - c, `h${i},${j + 1}`];
+  const left = () => [x, yT - t(v00, v01) * c, `v${i},${j}`];
   const seg = (a, b) => out.push([a, b]);
   switch (idx) {
     case 1: case 14: seg(left(), top()); break;
@@ -140,7 +141,9 @@ export function contourLines(grid, { minor = 0.5, major = 2.5 } = {}) {
   const out = [];
   for (const level of levelsBetween(min, max, minor)) {
     const segs = [];
-    for (let j = 0; j < grid.rows - 1; j++) for (let i = 0; i < grid.cols - 1; i++) cellSegments(grid, i, j, level, segs);
+    // A node exactly on the level would make several segments share one point and split the chains, so nudge the level a hair.
+    const probe = level + 1e-7;
+    for (let j = 0; j < grid.rows - 1; j++) for (let i = 0; i < grid.cols - 1; i++) cellSegments(grid, i, j, probe, segs);
     const isMajor = major > 0 && Math.abs(level / major - Math.round(level / major)) < 1e-6;
     for (const l of chainSegments(segs)) {
       out.push({ level, major: isMajor, closed: l.closed, points: l.points.map((p) => [Math.round(p[0] * 1000) / 1000, Math.round(p[1] * 1000) / 1000]) });

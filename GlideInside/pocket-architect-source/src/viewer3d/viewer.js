@@ -12,6 +12,7 @@ import { createDoors } from './doors.js';
 import { createEdit } from './edit.js';
 import { createAhead } from './ahead.js';
 import { VIEWER_CSS } from './viewer-css.js';
+import { loadBitmap } from '../editor2d/underlay.js';
 
 const STYLE_ID = 'ps3d-style';
 const RAD = Math.PI / 180;
@@ -227,6 +228,28 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   };
 
   // Model ---------------------------------------------------------------------------------------------
+  // Aerial texture for the site terrain: loaded from the underlay store, rebuilt when the image changes.
+  const site = { key: null, texture: null, loading: null };
+  function syncSiteTexture() {
+    const key = store.project.site?.lot?.aerial?.key || null;
+    if (key === site.key) return;
+    site.key = key;
+    site.texture?.dispose();
+    site.texture = null;
+    if (!key) return;
+    site.loading = loadBitmap(key).then((bmp) => {
+      if (!bmp || site.key !== key) return;
+      // A canvas copy keeps the usual flipY behaviour (an ImageBitmap cannot be flipped) and is drawn 1:1 for a sharp texture.
+      const c = document.createElement('canvas');
+      c.width = bmp.w;
+      c.height = bmp.h;
+      c.getContext('2d').drawImage(bmp.img, 0, 0);
+      site.texture = new THREE.CanvasTexture(c);
+      site.texture.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
+      scheduleRebuild(20);
+    });
+  }
+
   function uiOptions() {
     const ui = store.ui;
     return {
@@ -236,6 +259,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       showRoof: ui.showRoof !== false,
       statusView: ui.statusView || 'proposed',
       walk: mode === 'walk',
+      siteTexture: site.texture,
     };
   }
 
@@ -638,10 +662,12 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
 
   // Store events --------------------------------------------------------------------------------------
   const offProject = store.on('project', (info) => {
-    if (info?.label === 'Open project') framed = false;
+    if (info?.label === 'Open project' || info?.label === 'Find my block') framed = false;
+    syncSiteTexture();
     scheduleRebuild(120);
     if (mode === 'walk') walk.refresh();
   });
+  syncSiteTexture();
   const offUI = store.on('ui', (patch) => {
     if (!patch) return;
     if ('view' in patch) {
@@ -710,6 +736,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       disposeModel(model);
       model = null;
     }
+    site.texture?.dispose();
     sky.geometry.dispose();
     sky.material.dispose();
     envTarget.dispose();

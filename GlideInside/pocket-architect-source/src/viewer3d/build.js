@@ -13,6 +13,7 @@ import { buildWallBody, buildOpeningFittings, computeJoins } from './walls.js';
 import { buildLevelRoof } from './roof.js';
 import * as F from './footprint.js';
 import { makeMesh, modelBounds } from './model-util.js';
+import { addSiteTerrain } from './terrain.js';
 import { addFloorPoly, addGround, addDeck, addStair, addTank, addFurniture, shade } from './site.js';
 
 export { disposeModel, modelBounds } from './model-util.js';
@@ -312,7 +313,10 @@ export function buildModel(project, opts = {}) {
 
   // ground last so it can size itself to the model
   const bounds = modelBounds(root);
-  const groundR = addGround(ctx, root, bounds);
+  // With a lot that has an elevation grid the ground is the real terrain (aerial draped when a texture is given); the flat disc then
+  // only continues it beyond the grid. Without a lot nothing changes.
+  const terrain = project.site?.lot?.terrain ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null }) : null;
+  const groundR = addGround(ctx, root, bounds, terrain ? terrain.edgeY - 0.02 : null);
   root.userData = { groundY, groundR, levelIds: levels.map((l) => l.id), cutIdx };
   return root;
 }
