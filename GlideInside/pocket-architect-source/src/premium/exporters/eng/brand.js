@@ -65,7 +65,7 @@ export function attribution(lot, { aerial = false } = {}) {
   else base = lot.state === 'QLD' ? qld : nsw;
   const a = aerial ? lot?.aerial : null;
   if (!a) return base;
-  const when = a.captureDate ? ` Aerial captured ${clean(String(a.captureDate))}.` : '';
-  const src = clean(a.attribution || a.source || '');
-  return `${base} Aerial underlay${src ? `: ${src}` : ''}, reduced resolution, not for measurement.${when}`;
+  const when = a.captureDate ? ` Aerial captured ${normDate(clean(String(a.captureDate)))}.` : '';
+  const src = clean(a.attribution || a.source || '').replace(/^\s*(aerial underlay|aerial|imagery)\s*:\s*/i, '').replace(/[\s.,;]+$/, '');
+  return `${base} Aerial underlay${src ? `: ${src}` : ''}. Reduced resolution, not for measurement.${when}`;
 }

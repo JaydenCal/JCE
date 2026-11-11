@@ -7,7 +7,7 @@ import { buildingRings, roadReserve, deriveDriveway, clearances, lotLabelLines }
 import { northArrow, placeImage, imageInfo } from '../pdf.js';
 import { PEN, TXT, clean, wrap, fit, ink, polygon, viewTitle, clippedPolyline, clipPolygon, labelOn, hatch, haloText } from './kit.js';
 import { BODY } from './frame.js';
-import { drawLocality, siteFacts, lotBounds, chooseSiteScale, makeT } from './siteplan.js';
+import { drawLocality, siteFacts, lotBounds, chooseSiteScale, makeT, paletteFor } from './siteplan.js';
 
 const cap = (t) => { const x = String(t ?? ''); return x ? x[0].toUpperCase() + x.slice(1) : x; };
 import { ddmmyyyy, normDate } from './brand.js';
@@ -147,10 +147,20 @@ export function drawCover(doc, ctx, list) {
   ink(doc, PEN.grey);
   const note = 'This is a concept design for discussion. Setbacks, levels and boundaries are indicative and have not been checked by a surveyor, certifier or council. Where a council rule is marked check with council it has not been confirmed.';
   wrap(doc, note, 190).forEach((l, i) => doc.text(l, x0, BODY.y1 - 10 + i * 3.3));
-  if (brand.mode === 'builder') doc.text(clean(brand.credit), x0, BODY.y1 - 0.5);
+  doc.text(clean(brand.mode === 'builder' ? brand.credit : brand.name ? `Prepared by ${brand.name}` : 'Prepared with Glide Inside'), x0, BODY.y1 - 0.5);
 }
 
 // Site analysis and setback table -----------------------------------------------------------------------------------------
+/** The one true scale of the analysis diagram, so the sheet title, the title block and the diagram say the same thing. */
+export function analysisScale(project, k = 1) {
+  const facts = siteFacts(project);
+  if (!facts?.lot) return null;
+  const left = { x0: BODY.x0, y0: BODY.y0, x1: 206, y1: BODY.y1 };
+  const vp = { x0: left.x0 + 2, y0: left.y0 + 14, x1: left.x1 - 2, y1: left.y1 - 2 };
+  const b = lotBounds(project, facts);
+  return chooseSiteScale([{ x: b.minX, y: b.minY }, { x: b.maxX, y: b.maxY }], vp, k).n;
+}
+
 export function drawAnalysis(doc, ctx) {
   const { project } = ctx;
   const facts = siteFacts(project);
@@ -159,7 +169,6 @@ export function drawAnalysis(doc, ctx) {
   doc.setDrawColor(...PEN.ink);
   doc.setLineWidth(0.35);
   doc.rect(left.x0, left.y0, left.x1 - left.x0, left.y1 - left.y0);
-  viewTitle(doc, left.x0 + 3, left.y0 + 8.4, 'Site analysis', 'NTS', { size: TXT.title });
   const rx = 211;
   const rw = BODY.x1 - rx;
   if (!lot) {
@@ -174,11 +183,13 @@ export function drawAnalysis(doc, ctx) {
   const vp = { x0: left.x0 + 2, y0: left.y0 + 14, x1: left.x1 - 2, y1: left.y1 - 2 };
   const bounds = lotBounds(project, facts);
   const { n, ds } = chooseSiteScale([{ x: bounds.minX, y: bounds.minY }, { x: bounds.maxX, y: bounds.maxY }], vp, ctx.k || 1);
+  const pal = paletteFor(!!ctx.hasAerial);
+  viewTitle(doc, left.x0 + 3, left.y0 + 8.4, 'Site analysis', `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.title });
   const T = makeT(bounds, vp, ds);
   const rect = { x0: vp.x0, y0: vp.y0, x1: vp.x1, y1: vp.y1 };
   const line = (pts, closed = true) => clippedPolyline(doc, pts.map(T), rect, closed);
-  doc.setDrawColor(...PEN.neighbour);
-  doc.setLineWidth(0.12);
+  doc.setDrawColor(...pal.neighbour);
+  doc.setLineWidth(pal.neighbourW);
   for (const nb of lot.neighbours || []) if (!nb.isRoad) line(nb.ring);
   for (const r of facts.reserve) {
     const L = r.lines;
@@ -195,13 +206,13 @@ export function drawAnalysis(doc, ctx) {
   }
   const own = clipPolygon(lot.boundary.map(T), rect);
   if (own.length > 2) { doc.setFillColor(226, 240, 230); polygon(doc, own, 'F'); }
-  doc.setDrawColor(...PEN.boundary);
+  doc.setDrawColor(...pal.boundary);
   doc.setLineWidth(0.8);
   line(lot.boundary);
   if (lot.envelope?.length > 2) {
-    doc.setDrawColor(...PEN.envelope);
-    doc.setLineWidth(0.4);
-    doc.setLineDashPattern([3, 1.6], 0);
+    doc.setDrawColor(...pal.envelope);
+    doc.setLineWidth(0.5);
+    doc.setLineDashPattern([4, 2], 0);
     line(lot.envelope);
     doc.setLineDashPattern([], 0);
   }
@@ -238,9 +249,9 @@ export function drawAnalysis(doc, ctx) {
     labelOn(doc, `STREET FRONTAGE ${dim.frontageM ? dim.frontageM.toFixed(1) : ''} m`, mid.x + out.x * 11, mid.y + out.y * 11, { size: TXT.body, bold: true, colour: PEN.road });
   }
   const ll = lotLabelLines(lot);
-  labelOn(doc, `${ll.first} ${ll.second}`.trim(), centre.x, T({ x: G.bbox(lot.boundary).minX, y: G.bbox(lot.boundary).minY }).y + 7, { size: TXT.strong, bold: true, colour: PEN.boundary });
+  labelOn(doc, `${ll.first} ${ll.second}`.trim(), centre.x, T({ x: G.bbox(lot.boundary).minX, y: G.bbox(lot.boundary).minY }).y + 7, { size: TXT.strong, bold: true, colour: pal.boundary });
   northArrow(doc, left.x1 - 14, left.y0 + 24, project.site?.northDeg || 0);
-  labelOn(doc, `Diagram only, 1:${n} @ ${ctx.paper || 'A3'}`, left.x0 + 4, left.y1 - 4, { size: TXT.body, align: 'left', colour: PEN.grey });
+  labelOn(doc, 'Diagram only, not a survey', left.x0 + 4, left.y1 - 4, { size: TXT.body, align: 'left', colour: PEN.grey });
 
   // Facts
   let y = BODY.y0 + 8;
@@ -252,7 +263,7 @@ export function drawAnalysis(doc, ctx) {
     ['Lot and DP', `${ll.first} ${ll.second}`.trim()],
     ['Council', cap(String(lot.lga || project.titleBlock?.council || 'Not stated').toLowerCase().replace(/\b([a-z])/g, (m) => m.toUpperCase()))],
     ['Zone', z ? `${z.code || ''} ${z.name || ''}`.trim() : 'Not stated'],
-    ['Site area', lot.areaM2 ? `${Math.round(lot.areaM2)} m²${lot.registeredAreaM2 ? ` (registered ${Math.round(lot.registeredAreaM2)} m²)` : ' (from the cadastre)'}` : 'Not stated'],
+    ['Site area', lot.areaM2 ? `${Math.round(lot.areaM2)} m²${lot.registeredAreaM2 ? (Math.round(lot.registeredAreaM2) === Math.round(lot.areaM2) ? '' : ` (registered ${Math.round(lot.registeredAreaM2)} m²)`) : ' (from the cadastre)'}` : 'Not stated'],
     ['Frontage and depth', `${dim.frontageM ? dim.frontageM.toFixed(1) : '-'} m by ${dim.depthM ? dim.depthM.toFixed(1) : '-'} m`],
     ['Corner lot', lot.cornerLot ? 'Yes' : 'No'],
     ['Ground fall', fall ? `${fall.fallM} m across the lot, ${fall.slopePct}%${fall.direction ? ` towards the ${compassWord(fall.direction)}` : ''}` : 'Not available'],
@@ -266,10 +277,17 @@ export function drawAnalysis(doc, ctx) {
   heading(doc, 'Setbacks: required and provided', rx, y);
   y += 4.5;
   const cols = [{ w: 28, head: 'BOUNDARY' }, { w: 20, head: 'REQUIRED', align: 'right' }, { w: 20, head: 'PROVIDED', align: 'right' }, { w: 50, head: 'RESULT' }, { w: rw - 118, head: 'SOURCE AND CHECK' }];
+  const tbc = (t) => String(t || '').replace(/\bcl\.?\s*[0-9][\w.()-]*(\s*(?:to|and|-)\s*\(?[\w.()-]+\)?)?/gi, '(clause to be confirmed)').replace(/\(\(clause to be confirmed\)/g, '(clause to be confirmed');
+  const topMm = Math.max(0, ...project.levels.map((l) => (l.elevation || 0) + (l.height || 0)));
+  const tall = topMm > 4500; // parts of the building more than 4.5 m above ground
+  const AMBER = [176, 104, 0];
   const rows = facts.clear.rows.map((r) => {
-    const res = r.status === 'inside' ? 'Inside the indicative setback envelope' : r.status === 'outside' ? `Outside the indicative setback envelope by ${r.shortByM.toFixed(2)} m` : 'No setback rule loaded';
-    const src = r.requiredM == null ? 'Council rule not loaded. Check with council.' : `${clean(r.source || 'Source not stated')}${r.flagged ? '. Check with council.' : ''}`;
-    return { cells: [r.label.replace(/^./, (c) => c.toUpperCase()), r.requiredM != null ? `${r.requiredM.toFixed(2)} m` : '-', `${r.clearanceM.toFixed(2)} m`, res, src], colours: [PEN.ink, PEN.ink, PEN.ink, r.status === 'outside' ? PEN.envelope : r.status === 'inside' ? PEN.boundary : PEN.grey, PEN.ink] };
+    const side = /side/i.test(r.label || '') || r.kind === 'side';
+    const check = side && tall && r.status !== 'unknown';
+    let res = r.status === 'inside' ? 'Inside the indicative setback envelope' : r.status === 'outside' ? `Outside the indicative setback envelope by ${r.shortByM.toFixed(2)} m` : 'No setback rule loaded';
+    if (check) res = r.status === 'outside' ? `CHECK. Outside the table minimum by ${r.shortByM.toFixed(2)} m. Parts over 4.5 m high need a larger side setback.` : 'CHECK. Table minimum met. Parts over 4.5 m high need a larger side setback that is not captured.';
+    const src = r.requiredM == null ? 'Council rule not loaded. Check with council.' : `${tbc(clean(r.source || 'Source not stated'))}${r.flagged || check ? '. Check with council.' : ''}`;
+    return { cells: [r.label.replace(/^./, (c) => c.toUpperCase()), r.requiredM != null ? `${r.requiredM.toFixed(2)} m` : '-', `${r.clearanceM.toFixed(2)} m`, res, src], colours: [PEN.ink, PEN.ink, PEN.ink, check ? AMBER : r.status === 'outside' ? PEN.envelope : r.status === 'inside' ? PEN.boundary : PEN.grey, PEN.ink] };
   });
   if (!rows.length) rows.push(['No building on the lot', '', '', '', '']);
   const t2 = table(doc, rx, y, cols, rows, { size: 7, lineH: 3.0, pad: 1.2 });
@@ -279,7 +297,7 @@ export function drawAnalysis(doc, ctx) {
   ink(doc, PEN.grey);
   const sb = lot.setbacks;
   const basis = sb ? `Rule set: ${clean(sb.council || '')}, ${clean(sb.basis || '')}. ${clean(sb.source?.name || '')} (${clean(sb.source?.edition || '')}).` : 'No council setback rule set is loaded for this lot.';
-  const note = wrap(doc, `${basis} Provided distances are the least distance from the building to each boundary, measured from the walls and rooms. A pass here is not an approval.`, rw).slice(0, 7);
+  const note = wrap(doc, `${basis} Provided distances are the least distance from the building to each boundary, measured from the walls and rooms. A result here is not an approval.`, rw).slice(0, 7);
   note.forEach((l, i) => doc.text(l, rx, y + i * 2.9));
   y += note.length * 2.9 + 7;
 
@@ -287,11 +305,11 @@ export function drawAnalysis(doc, ctx) {
   heading(doc, 'Items to confirm', rx, y);
   y += 4.5;
   const confirm = [];
-  const plain = (t) => cap(clean(t).replace(/flagged for review by the research agent/gi, 'not yet confirmed with council'));
+  const plain = (t) => cap(tbc(clean(t)).replace(/flagged for review by the research agent/gi, 'not yet confirmed with council'));
   for (const w of sb?.warnings || []) confirm.push([plain(typeof w === 'string' ? w : w.text || w.message || ''), 'Council']);
   if (!(sb?.warnings || []).length && sb?.flag) confirm.push([plain(sb.flagReason || 'Setback figures are not yet confirmed with council'), 'Council']);
   confirm.push(['Bushfire attack level, flood, heritage and other overlays', 'Council or certifier']);
-  confirm.push(['Easements, sewer and stormwater connection points, Dial Before You Dig plans', 'Surveyor and authorities']);
+  confirm.push(['Easements, sewer and stormwater connection points, Before You Dig Australia plans', 'Surveyor and authorities']);
   confirm.push(['Registered survey: boundaries, levels, trees and existing structures', 'Registered surveyor']);
   confirm.push(['Crossover location, width and levels; driveway grade', 'Council']);
   confirm.push(['Structure, bracing and footings', 'Structural engineer']);
@@ -306,18 +324,45 @@ export function areaFigures(project, roofM2 = null) {
   const ground = levels[0];
   const footprint = (ground?.rooms || []).filter((r) => r.status !== 'demolish' && (!r.outdoor || r.roofed)).reduce((a, r) => a + G.polygonArea(r.polygon) / 1e6, 0);
   const drive = project.site?.lot ? deriveDriveway(project) : null;
-  const driveM2 = drive?.ok ? G.polygonArea(drive.polygon) / 1e6 : 0;
+  const inLot = drive?.ok && lot?.boundary?.length > 2 ? clipConvex(drive.polygon, lot.boundary) : drive?.ok ? drive.polygon : [];
+  const driveM2 = drive?.ok ? (inLot.length > 2 ? G.polygonArea(inLot) / 1e6 : 0) : 0;
+  const crossM2 = drive?.ok && drive.crossover?.polygon ? G.polygonArea(drive.crossover.polygon) / 1e6 : 0;
   const total = data.totals.reduce((a, t) => a + t.indoor, 0);
   const outdoor = data.totals.reduce((a, t) => a + t.outdoor, 0);
   const garage = data.rooms.filter((r) => r.type === 'Garage').reduce((a, r) => a + r.area, 0);
   const site = lot?.areaM2 || null;
-  return { footprint, driveM2, total, outdoor, garage, site, coverage: site ? (footprint / site) * 100 : null, roofM2, perLevel: data.totals, data };
+  return { footprint, driveM2, crossM2, total, outdoor, garage, site, coverage: site ? (footprint / site) * 100 : null, roofM2, perLevel: data.totals, data };
+}
+
+/** Subject polygon clipped to a convex polygon (Sutherland-Hodgman), in either winding. */
+export function clipConvex(subject, clip) {
+  const area2 = clip.reduce((a, p, i) => { const q = clip[(i + 1) % clip.length]; return a + (p.x * q.y - q.x * p.y); }, 0);
+  const sgn = area2 >= 0 ? 1 : -1;
+  let out = subject;
+  for (let i = 0; i < clip.length && out.length; i++) {
+    const a = clip[i];
+    const b = clip[(i + 1) % clip.length];
+    const side = (p) => sgn * ((b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x));
+    const inp = out;
+    out = [];
+    for (let j = 0; j < inp.length; j++) {
+      const p = inp[j];
+      const q = inp[(j + 1) % inp.length];
+      const sp = side(p);
+      const sq = side(q);
+      if (sp >= 0) out.push(p);
+      if ((sp >= 0) !== (sq >= 0)) { const t = sp / (sp - sq); out.push({ x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t }); }
+    }
+  }
+  return out;
 }
 
 /** Areas and coverage, the room schedule and the door and window schedule, laid out in three columns that fill the sheet. */
 export function drawSchedules(doc, ctx, page, extra = {}) {
   const { project } = ctx;
   const f = areaFigures(project, extra.roofM2 ?? null);
+  // Room areas come from the same polygons the plans label, so the schedule and the plan always round alike
+  if (extra.alignedProject) f.data = { ...f.data, rooms: scheduleData(extra.alignedProject).rooms };
   const gap = 8;
   const wA = 132;
   const wC = 128;
@@ -339,7 +384,8 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
     if (f.site) rows.push(['Site area', `${Math.round(f.site)} m²`]);
     if (f.coverage != null) rows.push({ cells: ['Site coverage (footprint over site area)', `${f.coverage.toFixed(1)} %`], bold: true, fill: PEN.band });
     if (f.roofM2 != null) rows.push(['Roof area (from the model, sloped)', `${f.roofM2.toFixed(1)} m²`]);
-    if (f.driveM2 > 0) rows.push(['Driveway (indicative)', `${f.driveM2.toFixed(1)} m²`]);
+    if (f.driveM2 > 0) rows.push(['Driveway within the lot (indicative)', `${f.driveM2.toFixed(1)} m²`]);
+    if (f.crossM2 > 0) rows.push(['Crossover in the road reserve (indicative)', `${f.crossM2.toFixed(1)} m²`]);
     if (f.site && f.driveM2 > 0) rows.push(['Remaining site area (soft and other hard)', `${Math.max(0, f.site - f.footprint - f.driveM2).toFixed(0)} m²`]);
     const t = table(doc, colA, top, [{ w: wA - 32, head: 'ITEM' }, { w: 32, head: 'AREA', align: 'right' }], rows, opt);
     let y = t.y + 5;
@@ -355,7 +401,7 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
       y += 6;
       const parts = [
         ['Building footprint', f.footprint, PEN.proposed],
-        ['Driveway and crossover', f.driveM2, [150, 150, 150]],
+        ['Driveway within the lot', f.driveM2, [150, 150, 150]],
         ['Remaining site area', Math.max(0, f.site - f.footprint - f.driveM2), PEN.proposedFill],
       ].filter((q) => q[1] > 0);
       let bx = colA;
@@ -394,7 +440,13 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
   }
   if (page.index === 0) {
     heading(doc, 'Door and window schedule', colC, BODY.y0 + 6);
-    const rowsO = f.data.openings.map((o) => ({ cells: [cap(o.type + (o.style ? ` ${o.style}` : '')), `${o.width} x ${o.height}`, o.sill ? String(o.sill) : '-', String(o.count)] }));
+    const openName = (o) => {
+      const t = String(o.type || '').toLowerCase();
+      const st = String(o.style || '').toLowerCase();
+      if (!st || t.includes(st)) return cap(t);
+      return /^(window|door)$/.test(t) ? cap(`${st} ${t}`) : cap(`${t} ${st}`);
+    };
+    const rowsO = f.data.openings.map((o) => ({ cells: [openName(o), `${o.width} x ${o.height}`, o.sill ? String(o.sill) : '', String(o.count)] }));
     const ot = table(doc, colC, top, [{ w: wC - 70, head: 'TYPE' }, { w: 30, head: 'W x H (MM)' }, { w: 20, head: 'SILL', align: 'right' }, { w: 20, head: 'QTY', align: 'right' }], rowsO, opt);
     let y = ot.y + 8;
     const total = f.data.openings.reduce((a, o) => a + (Number(o.count) || 0), 0);

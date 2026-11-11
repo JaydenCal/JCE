@@ -8,7 +8,7 @@ import { buildingHull, orientedBox } from '../../../site/lotplan.js';
 import { PEN, TXT, clean, ink, viewTitle, wrap, polygon, hatch, LabelField, haloText, alongLabel, vtext } from './kit.js';
 import { scaleBar } from '../pdf.js';
 
-const KINDS = [['wall', 'wall'], ['opening', 'opening'], ['leaf', 'leaf'], ['roof', 'roof'], ['slab', 'slab'], ['floor', 'floor'], ['stair', 'stair'], ['tank', 'tank']];
+const KINDS = [['wall', 'wall'], ['opening', 'opening'], ['leaf', 'leaf'], ['roof', 'roof'], ['slab', 'slab'], ['floor', 'floor'], ['stair', 'stair']];
 const kindOf = (name) => {
   if (name === 'slab') return 'slab';
   for (const [p, k] of KINDS) if (name.startsWith(`${p}:`) || name === p) return k;
@@ -245,6 +245,27 @@ function groundProfile(project, spec, axes, view, unalign = null) {
 
 const rlText = (floor, z) => (floor != null ? ` RL ${(floor + z / 1000).toFixed(2)}` : '');
 
+/** One source of truth for the building height: the highest point of the model above the ground floor level, plus the height above the lowest natural surface at the house corners. */
+export function heightFacts(project, tris, unalign = null) {
+  let topZ = 0;
+  if (tris && tris.length) for (const sp of elevationSpecs(project)) topZ = Math.max(topZ, -renderView(null, tris, { f: sp.f }).bounds.y0);
+  const lot = project.site?.lot;
+  const floor = lot?.floorRL ?? null;
+  const ax = buildingAxes(project);
+  let nslMin = null;
+  if (ax && lot?.terrain) {
+    const { centre: c, u, v, w, d } = ax.box;
+    for (const [a, b] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+      const q = { x: c.x + u.x * (w / 2) * a + v.x * (d / 2) * b, y: c.y + u.y * (w / 2) * a + v.y * (d / 2) * b };
+      const uq = unalign ? unalign(q) : q;
+      const rl = terrainAt(lot.terrain, uq.x, uq.y);
+      if (rl != null && (nslMin == null || rl < nslMin)) nslMin = rl;
+    }
+  }
+  const ridgeRL = floor != null ? floor + topZ / 1000 : null;
+  return { topZ, floor, ridgeRL, nslMin, aboveNsl: ridgeRL != null && nslMin != null ? ridgeRL - nslMin : null };
+}
+
 // Elevations -------------------------------------------------------------------------------------------------------------------
 const ELEV_MARGIN = { l: 17, r: 21, top: 10, bottom: 21 };
 
@@ -267,6 +288,7 @@ export function drawElevations(doc, ctx, tris, area) {
   const { project, k = 1 } = ctx;
   const axes = buildingAxes(project);
   const { views, cw, ch, n, ds } = elevationLayout(doc, project, tris, area, k);
+  const hf = heightFacts(project, tris, ctx.unalign);
   const lot = project.site?.lot;
   const floor = lot?.floorRL;
   const levels = [...project.levels].sort((a, b) => a.elevation - b.elevation);
@@ -307,11 +329,10 @@ export function drawElevations(doc, ctx, tris, area) {
       doc.setLineDashPattern([4, 1, 0.8, 1], 0);
       doc.line(Math.max(gx0, xl - ELEV_MARGIN.l + 1), yy, xl + 2, yy);
       doc.setLineDashPattern([], 0);
-      doc.setTextColor(...PEN.dim);
-      doc.text(clean(`FFL${rlText(floor, lv.elevation)}`.replace('RL ', '')), xl - 1.2, yy - 1, { align: 'right' });
+      haloText(doc, `FFL${rlText(floor, lv.elevation)}`.replace('RL ', ''), xl - 1.2, yy - 1.4, { size: TXT.small, colour: PEN.dim, align: 'right', halo: 1.2 });
     });
     // Overall height at the right
-    const topZ = -v.r.bounds.y0;
+    const topZ = hf.topZ || -v.r.bounds.y0;
     const dx = Math.min(gx1 - 12, xr + 4);
     doc.setDrawColor(...PEN.dim);
     doc.setLineWidth(0.15);
@@ -539,6 +560,7 @@ export function drawSection(doc, ctx, tris, area) {
 
   // Levels at the left: floor and ceiling of each storey, the ridge, with RLs
   const topZ = -r.bounds.y0;
+  const hfs = heightFacts(project, tris, ctx.unalign);
   const marks = [];
   levels.forEach((lv, li) => {
     marks.push({ z: lv.elevation, text: `${li === 0 ? 'FFL GROUND' : 'FFL FIRST'}${rlText(floor, lv.elevation)}` });
@@ -586,7 +608,13 @@ export function drawSection(doc, ctx, tris, area) {
     else doc.text(text, x + 2.4, (ya + yb) / 2 + 1);
   };
   for (let i = 0; i + 1 < uniq.length; i++) vdim(dx1, uniq[i], uniq[i + 1], `${((uniq[i + 1] - uniq[i]) / 1000).toFixed(2)}`);
-  vdim(dx2, 0, topZ, `${(topZ / 1000).toFixed(2)} m OVERALL`);
+  vdim(dx2, 0, topZ, `${(topZ / 1000).toFixed(2)} m ABOVE FFL`);
+  if (hfs.aboveNsl != null) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(TXT.small);
+    doc.setTextColor(...PEN.dim);
+    doc.text(`Max height above natural surface ${hfs.aboveNsl.toFixed(1)} m (lowest house corner)`, Math.min(area.x1 - 4, dx2 + 4), P(0, topZ).y - 6, { align: 'right' });
+  }
 
   // Roof pitch: the slope triangle on the steepest cut roof segment, labelled in degrees
   const best = cut.roof.filter((sg) => Math.abs(sg[1].sx - sg[0].sx) > 800).sort((q, p) => Math.max(p[0].z, p[1].z) - Math.max(q[0].z, q[1].z))[0];
@@ -616,7 +644,7 @@ export function drawSection(doc, ctx, tris, area) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(TXT.body);
     doc.setTextColor(...PEN.dim);
-    doc.text(`${Math.round(s1 - s0)}`, (P(s0, 0).x + P(s1, 0).x) / 2, y - 1.4, { align: 'center' });
+    haloText(doc, `${Math.round(s1 - s0)}`, (P(s0, 0).x + P(s1, 0).x) / 2, y - 1.4, { size: TXT.body, colour: PEN.dim, align: 'center', halo: 1.8 });
   }
   if (gpts.length > 1) {
     doc.setFont('helvetica', 'normal');
@@ -640,13 +668,24 @@ export function drawSection(doc, ctx, tris, area) {
  * The section line on a floor plan: chain line across the house at the section plane with an arrow at each end looking the way the
  * section looks, and a circle tag "A" at each end. `T` maps plan mm to sheet mm for that sheet.
  */
-export function drawSectionMarker(doc, project, T, sheetNo = null) {
+/** The section line in plan millimetres: { p0, p1, right }, or null. */
+export function sectionLinePlan(project, halfMm = null) {
+  const pl = sectionPlane(project);
+  if (!pl.axes) return null;
+  const e0 = halfMm?.neg ?? pl.axes.widthMm / 2 + 1750;
+  const e1 = halfMm?.pos ?? pl.axes.widthMm / 2 + 1750;
+  const mid = pl.axes.centre;
+  return { p0: { x: mid.x - pl.right.x * e0, y: mid.y - pl.right.y * e0 }, p1: { x: mid.x + pl.right.x * e1, y: mid.y + pl.right.y * e1 }, right: pl.right };
+}
+
+export function drawSectionMarker(doc, project, T, sheetNo = null, halfMm = null) {
   const pl = sectionPlane(project);
   if (!pl.axes) return;
-  const ext = pl.axes.widthMm / 2 + 900;
+  const e0 = halfMm?.neg ?? pl.axes.widthMm / 2 + 1750;
+  const e1 = halfMm?.pos ?? pl.axes.widthMm / 2 + 1750;
   const mid = pl.axes.centre;
-  const p0 = { x: mid.x - pl.right.x * ext, y: mid.y - pl.right.y * ext };
-  const p1 = { x: mid.x + pl.right.x * ext, y: mid.y + pl.right.y * ext };
+  const p0 = { x: mid.x - pl.right.x * e0, y: mid.y - pl.right.y * e0 };
+  const p1 = { x: mid.x + pl.right.x * e1, y: mid.y + pl.right.y * e1 };
   // Put the line on the plane (centre is on it already). Heads point along +a, the looking direction.
   const A = T(p0);
   const B = T(p1);
@@ -850,7 +889,8 @@ export function drawRoofPlan(doc, ctx, tris, area) {
   const over = project.levels.map((l) => l.roof?.overhang).filter((v) => v != null).at(-1);
   const roofM2 = roofTris.reduce((s, t) => s + triArea(t.p), 0) / 1e6;
   const mat = project.levels.map((l) => l.roof?.material).filter(Boolean).at(-1);
-  const topZ = -r.bounds.y0;
+  const hfr = heightFacts(project, tris, ctx.unalign);
+  const topZ = hfr.topZ;
   const floor = project.site?.lot?.floorRL;
   doc.setLineWidth(0.5);
   ink(doc, PEN.ink);
@@ -865,6 +905,7 @@ export function drawRoofPlan(doc, ctx, tris, area) {
     ['Roof area (sloped)', `${roofM2.toFixed(0)} m²`],
     ['Roof sheeting', mat ? cap(String(mat)) : 'Not stated'],
     ['Highest point', `${(topZ / 1000).toFixed(2)} m above FFL${floor != null ? `, RL ${(floor + topZ / 1000).toFixed(2)}` : ''}`],
+    ...(hfr.aboveNsl != null ? [['Above natural surface', `${hfr.aboveNsl.toFixed(1)} m at the lowest house corner`]] : []),
   ];
   let y = area.y0 + 13;
   doc.setFontSize(TXT.body);

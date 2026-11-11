@@ -107,11 +107,11 @@ export function drawFrame(doc, ctx, sheet) {
       const lw = w1 - 12;
       place(brand.glide, { x: x0 + 6, y: y0 + (brand.logo ? h * 0.46 : h * 0.3), w: lw, h: lw / (brand.glide.w / brand.glide.h) });
     }
-    if (brand.name) {
+    {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7);
       ink(doc, PEN.grey);
-      wrap(doc, `Prepared by ${brand.name}`, w1 - 6).slice(0, 2).forEach((l, i) => doc.text(l, x0 + w1 / 2, y0 + h - 6.5 + i * 3.4, { align: 'center' }));
+      wrap(doc, brand.name ? `Prepared by ${brand.name}` : 'Prepared with Glide Inside', w1 - 6).slice(0, 2).forEach((l, i) => doc.text(l, x0 + w1 / 2, y0 + h - 6.5 + i * 3.4, { align: 'center' }));
     }
   }
 
@@ -190,11 +190,12 @@ export function drawFrame(doc, ctx, sheet) {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(6.6);
   ink(doc, PEN.tag);
-  doc.text(fit(doc, DISCLAIMER, SW - 2 * M - 4), x0 + 2, TB_FOOT + 3.4);
+  doc.text(fit(doc, DISCLAIMER, SW - 2 * M - 4), x0 + 2, TB_FOOT + 3);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(5.6);
+  doc.setFontSize(6.2);
   ink(doc, PEN.grey);
   const credit = `${attribution(ctx.lot, { aerial: !!ctx.hasAerial })} ${ctx.extraCredit || ''}`.trim();
-  doc.text(fit(doc, credit, SW - 2 * M - 4), x0 + 2, TB_FOOT + 6.7);
+  const lines = wrap(doc, credit, SW - 2 * M - 4).slice(0, 2);
+  lines.forEach((l, i) => doc.text(l, x0 + 2, TB_FOOT + 5.5 + i * 2.4));
   return no;
 }

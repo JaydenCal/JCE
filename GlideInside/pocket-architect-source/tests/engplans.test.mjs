@@ -86,7 +86,7 @@ test('title block, drawing list and footer carry the required fields', async () 
   assert.ok(/\d+°\d\d'\d\d"/.test(all));
   assert.ok(texts.includes('DP 1234567'));
   assert.ok(texts.some((t) => /^LOT \d+$/.test(t)));
-  assert.ok(texts.some((t) => /^FFL \d+\.\d\d$/.test(t)) && texts.some((t) => /^NSL \d+\.\d\d$/.test(t)));
+  assert.ok(texts.some((t) => /^FFL \d+\.\d\d$/.test(t)) && texts.some((t) => /^NSL \d+\.\d$/.test(t)));
   assert.ok(texts.includes('PROPOSED DRIVEWAY') && texts.includes('PROPOSED CROSSOVER'));
   assert.ok(texts.includes('1:100 @ A3'));
 });
@@ -209,4 +209,72 @@ test('towns, date normalising and the label field', () => {
   assert.equal(normDate('2026-11-11'), '11/11/2026');
   const f = new LabelField();
   assert.ok(f);
+});
+
+import { distanceBearing } from '../src/premium/exporters/eng/towns.js';
+import { roadNameOnly } from '../src/premium/exporters/eng/siteplan.js';
+import { clipConvex } from '../src/premium/exporters/eng/sheets.js';
+import { dimensionsFor, wallShapes } from '../src/premium/exporters/shared.js';
+
+test('bearing and distance to a town: south is 180, east is 90, north west is between 270 and 360', () => {
+  assert.ok(Math.abs(distanceBearing(150, -31, 150, -32).bearingDeg - 180) < 0.01);
+  assert.ok(Math.abs(distanceBearing(150, -31, 150, -32).km - 111.2) < 0.5);
+  assert.ok(Math.abs(distanceBearing(150, -31, 151, -31).bearingDeg - 90) < 0.5);
+  const nw = distanceBearing(150.97, -31.12, 150.93, -31.09).bearingDeg;
+  assert.ok(nw > 270 && nw < 360);
+});
+
+test('road name only: no number, suburb, state or postcode', () => {
+  assert.equal(roadNameOnly('SAMPLE STREET CALALA NSW'), 'SAMPLE STREET');
+  assert.equal(roadNameOnly('14 Sample Street Calala NSW 2340'), 'Sample Street');
+  assert.equal(roadNameOnly('14 Sample Street, Calala NSW'), 'Sample Street');
+});
+
+test('footer attribution has no duplicated label or stray full stop', () => {
+  const t = attribution({ state: 'NSW', aerial: { attribution: 'Imagery: NSW Spatial Services (c) Department of Customer Service 2020. Sample picture only.' } }, { aerial: true });
+  assert.ok(!/Imagery: Imagery/i.test(t) && !/Aerial underlay: Imagery/i.test(t));
+  assert.ok(!/only\.\s*[.,]/.test(t));
+  assert.match(t, /Reduced resolution, not for measurement\./);
+});
+
+test('convex clip keeps the part inside', () => {
+  const sq = [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }];
+  const out = clipConvex([{ x: -5, y: 2 }, { x: 5, y: 2 }, { x: 5, y: 8 }, { x: -5, y: 8 }], sq);
+  const area = Math.abs(out.reduce((a, p, i) => a + (p.x * out[(i + 1) % out.length].y - out[(i + 1) % out.length].x * p.y), 0) / 2);
+  assert.ok(Math.abs(area - 30) < 1e-6);
+});
+
+test('plan dimension chains add up to the overall dimension on every side', () => {
+  const p = sample();
+  for (const level of p.levels) {
+    const dims = dimensionsFor(level, wallShapes(level));
+    for (const side of ['top', 'bottom', 'left', 'right']) {
+      const ds = dims.filter((d) => d.side === side);
+      if (ds.length < 3) continue;
+      const overall = ds.reduce((a, d) => (Number(d.text) > Number(a.text) ? d : a));
+      const chain = ds.filter((d) => d !== overall);
+      assert.equal(chain.reduce((a, d) => a + Number(d.text), 0), Number(overall.text), `${level.name} ${side}`);
+    }
+  }
+});
+
+test('one ridge height on the roof data, elevations and section; no invented initials; CHECK for tall side setbacks', async () => {
+  const p = sample();
+  p.titleBlock.drawnBy = '';
+  p.titleBlock.checkedBy = '';
+  p.titleBlock.company = '';
+  const { Rec, texts } = recorder();
+  const bytes = await toEngineeringPDF(p, { jsPDF: Rec, catalogue, date: new Date(2026, 10, 11) });
+  assert.equal(bytes.layout.sheets.length, 9);
+  const ridge = texts.filter((t) => /^RIDGE( RL)? [\d.]+$/.test(t)).map((t) => t.replace(/[^\d.]/g, ''));
+  assert.ok(ridge.length >= 5);
+  assert.equal(new Set(ridge).size, 1);
+  const hp = texts.find((t) => /m above FFL, RL [\d.]+/.test(t));
+  assert.ok(hp && hp.endsWith(ridge[0]), hp);
+  assert.ok(texts.some((t) => /m ABOVE FFL/.test(t)));
+  assert.ok(!texts.includes('AB') && !texts.includes('CD'));
+  assert.ok(!texts.some((t) => /Sample Designs|heightModelInfo/.test(t)));
+  assert.ok(texts.some((t) => /Prepared with Glide Inside/.test(t)));
+  assert.ok(texts.some((t) => /^CHECK\./.test(t)));
+  assert.ok(texts.some((t) => /NOT CHECKED/.test(t)));
 });

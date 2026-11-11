@@ -9,7 +9,6 @@ import { terrainAt } from '../../../site/model.js';
 import {
   boundaryDims, roadReserve, buildingRings, buildingHull, orientedBox, deriveDriveway, clearances, lotLabelLines,
 } from '../../../site/lotplan.js';
-import { contourNote } from '../../../site/credits.js';
 import { northArrow, scaleBar } from '../pdf.js';
 import {
   PEN, PHANTOM, PHANTOM_LEN, TXT, clean, wrap, fit, ink, polygon, hatch, clippedPolyline, clipPolygon, dimLine, placeCallouts, drawCallouts,
@@ -122,7 +121,8 @@ export function siteView(project, facts, k = 1) {
   else if (facts.obox) base = -facts.obox.angleDeg;
   if (base != null) {
     const norm = (d) => ((((d + 180) % 360) + 360) % 360) - 180;
-    for (const d of [base, base + 90, base - 90, base + 180]) cands.push(norm(d));
+    // The street stays within 45 degrees of horizontal so its name reads across the sheet, never up the page
+    for (const d of road ? [base, base + 180] : [base, base + 90, base - 90, base + 180]) cands.push(norm(d));
   }
   let best = null;
   for (const turnDeg of cands) {
@@ -151,7 +151,14 @@ export const paletteFor = (hasAerial) => ({
 /** Dash pattern for the existing boundary is solid, for a proposed lot boundary long dash, dot (never the same as existing). */
 const PROPOSED_BOUNDARY = [9, 2, 1, 2];
 
-const ROAD_NAME = (lot) => clean(lot.roads?.find((x) => x.name)?.name || (lot.address || '').split(',')[0].replace(/^\d+\s*/, '')).toUpperCase();
+const STREET_TYPES = 'Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl|Crescent|Cres|Close|Cl|Way|Parade|Pde|Highway|Hwy|Boulevard|Blvd|Terrace|Tce|Circuit|Cct|Esplanade|Esp|Grove|Gr';
+/** The road name only: no house number, suburb, state or postcode. */
+export const roadNameOnly = (raw) => {
+  const t = clean(String(raw || '')).split(',')[0].replace(/^\s*(unit|lot)?\s*[\d/]+[a-z]?\s+/i, '').trim();
+  const m = t.match(new RegExp(`^(.*?\\b(?:${STREET_TYPES}))\\b`, 'i'));
+  return (m ? m[1] : t.replace(/\b(NSW|QLD|VIC|SA|WA|TAS|NT|ACT)\b.*$/i, '')).trim();
+};
+const ROAD_NAME = (lot) => roadNameOnly(lot.roads?.find((x) => x.name)?.name || lot.address || '').toUpperCase();
 
 /**
  * Draw the site plan into SITE_VP. Returns { n, ds, label, T, turnDeg, northDeg, facts }.
@@ -182,6 +189,7 @@ export function drawSitePlan(doc, ctx) {
   // 1. Contours (under everything)
   const contourLabels = [];
   for (const c of lot.contours || []) {
+    if (Math.abs(c.level - Math.round(c.level)) > 1e-6) continue; // contours at 1.0 m minimum (5 m DEM)
     const pts = ptsOf(c.pts || []).map(T);
     if (pts.length < 2) continue;
     doc.setDrawColor(...(c.major ? PEN.contourMajor : PEN.contourMinor));
@@ -206,7 +214,7 @@ export function drawSitePlan(doc, ctx) {
     const quad = (A, B) => [A[0], A[1], B[1], B[0]];
     const along = dirOf(T(L.centreline[0]), T(L.centreline[1]));
     const ang = (Math.atan2(along.y, along.x) * 180) / Math.PI;
-    const bit = clipPolygon(quad(L.gutter, L.farGutter).map(T), rect);
+    const bit = clipPolygon(quad(L.kerb, L.farKerb).map(T), rect);
     if (bit.length > 2) hatch(doc, bit, aerial ? 'roadAerial' : 'road', { angle: ang });
     const fp = clipPolygon(quad(L.footpathNear, L.footpathFar).map(T), rect);
     if (fp.length > 2) hatch(doc, fp, 'footpath', { angle: ang + 90 });
@@ -234,7 +242,7 @@ export function drawSitePlan(doc, ctx) {
         const mid = G.lerp(c0, c1, f);
         const at = { x: mid.x + nrm.x * farSide * off, y: mid.y + nrm.y * farSide * off };
         const lab = alongLabel(doc, name, at, along, -TXT.strong * 0.3528 / 2, { size: TXT.strong, colour: PEN.road, bold: true, halo: HALO });
-        if (field.inside(lab.box)) { lab.draw(); roadBoxes.push(field.addBox(lab.box)); break; }
+        if (field.inside(lab.box)) { doc.setFillColor(...(aerial ? [90, 90, 94] : [255, 255, 255])); doc.rect(lab.box.x0, lab.box.y0, lab.box.x1 - lab.box.x0, lab.box.y1 - lab.box.y0, 'F'); lab.draw(); roadBoxes.push(field.addBox(lab.box)); break; }
       }
     }
   }
@@ -323,7 +331,7 @@ export function drawSitePlan(doc, ctx) {
       const s = T(c);
       const lines = [];
       if (floor != null) lines.push(`FFL ${floor.toFixed(2)}`);
-      if (nsl != null) lines.push(`NSL ${nsl.toFixed(2)}`);
+      if (nsl != null) lines.push(`NSL ${nsl.toFixed(1)}`);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(TXT.small);
       const w = Math.max(...lines.map((l) => doc.getTextWidth(l))) + 2.4;
@@ -433,8 +441,11 @@ export function drawSitePlan(doc, ctx) {
     const w = Math.max(w1, w2);
     const h = (l1 ? 3.6 : 0) + (l2 ? 4.2 : 0);
     const bb = G.bbox(ring);
-    for (const [dx, dy] of [[0, 0], [0, -0.18], [0, 0.18], [-0.18, 0], [0.18, 0], [-0.18, -0.18], [0.18, 0.18], [0.18, -0.18], [-0.18, 0.18]]) {
-      const s = { x: c0.x + dx * bb.w, y: c0.y + dy * bb.h };
+    const cands = [[0, 0], [0, -0.18], [0, 0.18], [-0.18, 0], [0.18, 0], [-0.18, -0.18], [0.18, 0.18], [0.18, -0.18], [-0.18, 0.18]].map(([dx, dy]) => ({ x: c0.x + dx * bb.w, y: c0.y + dy * bb.h }));
+    // Lots cut by the viewport edge (across the road, or behind the lot): try the visible part of the lot as well
+    const vx0 = Math.max(bb.minX, rect.x0); const vx1 = Math.min(bb.maxX, rect.x1); const vy0 = Math.max(bb.minY, rect.y0); const vy1 = Math.min(bb.maxY, rect.y1);
+    if (vx1 > vx0 && vy1 > vy0) for (const fx of [0.5, 0.3, 0.7, 0.15, 0.85]) for (const fy of [0.5, 0.3, 0.7, 0.15, 0.85]) cands.push({ x: vx0 + (vx1 - vx0) * fx, y: vy0 + (vy1 - vy0) * fy });
+    for (const s of cands) {
       const b = { x0: s.x - w / 2 - 0.5, y0: s.y - h / 2 - 0.5, x1: s.x + w / 2 + 0.5, y1: s.y + h / 2 + 0.5 };
       if (!field.free(b, { lines: false })) continue;
       if (![{ x: b.x0, y: b.y0 }, { x: b.x1, y: b.y0 }, { x: b.x1, y: b.y1 }, { x: b.x0, y: b.y1 }].every((q) => G.pointInPolygon(q, ring))) continue;
@@ -553,7 +564,19 @@ export function drawSitePanel(doc, ctx, site) {
   ink(doc, PEN.grey);
   doc.text('North is MGA grid north.', x0 + 34, y + 14.5);
   doc.text(Math.abs(site?.turnDeg || 0) < 0.5 ? 'Plan up is north.' : 'Plan is turned to the street. See north point.', x0 + 34, y + 19);
-  if (site?.n) scaleBar(doc, x0 + 34, y + 25, site.n, site.ds);
+  if (site?.n) {
+    // A bar of four parts that fits the panel beside the north arrow
+    const maxW = x1 - (x0 + 34) - 8;
+    const segM = [1, 2, 5, 10, 20, 25, 50].filter((m) => (m * 1000 * 4) / site.ds <= maxW).at(-1) || 1;
+    const seg = (segM * 1000) / site.ds;
+    doc.setLineWidth(0.2);
+    for (let i = 0; i < 4; i++) { doc.setFillColor(...(i % 2 ? [255, 255, 255] : PEN.ink)); ink(doc, PEN.ink); doc.rect(x0 + 34 + i * seg, y + 25, seg, 2, 'FD'); }
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(TXT.small);
+    doc.setTextColor(...PEN.ink);
+    for (let i = 0; i <= 4; i++) doc.text(String(segM * i), x0 + 34 + i * seg, y + 31, { align: 'center' });
+    doc.text('m', x0 + 34 + 4 * seg + 3.5, y + 31);
+  }
   y += NORTH_H + 3;
 
   // Key plan
@@ -581,7 +604,7 @@ export function drawSitePanel(doc, ctx, site) {
     ['Proposed works', sample((cx, cy) => { const p = rectP(cx, cy); hatch(doc, p, 'proposed'); doc.setDrawColor(...PEN.proposed); doc.setLineWidth(0.4); polygon(doc, p, 'S'); })],
     ['Hardstand (driveway)', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'hardstand'))],
     ['Concrete (crossover)', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'concrete'))],
-    ['Road pavement', sample((cx, cy) => hatch(doc, rectP(cx, cy), aerial ? 'roadAerial' : 'road'))],
+    ['Road pavement', sample((cx, cy) => { const q = rectP(cx, cy); hatch(doc, q, 'road', { angle: 0, width: 0.12, colour: [90, 94, 102] }); doc.setDrawColor(...PEN.road); doc.setLineWidth(0.3); doc.line(cx, cy - 1.8, cx + sw, cy - 1.8); doc.line(cx, cy + 1.8, cx + sw, cy + 1.8); })],
     ['Footpath', sample((cx, cy) => hatch(doc, rectP(cx, cy), 'footpath'))],
   ];
   const lh = 5.2;
@@ -632,9 +655,20 @@ export function siteNotes(project, { aerial = false, sheet = null } = {}) {
   if (aerial) out.push('The aerial underlay is reduced in resolution and is for orientation only. It is not for measurement. Cadastre drawn in red over the aerial.');
   if (lot?.setbacks) out.push(`Setbacks are indicative${lot.setbacks.council ? ` (${clean(lot.setbacks.council)})` : ''}. The sources, the figures provided and the items to confirm are on ${sheet ? `sheet ${sheet}` : 'the site analysis sheet'}. A figure marked check with council is not confirmed.`);
   else if (lot) out.push('Council setbacks are not loaded for this lot. The envelope is not shown.');
-  if (lot?.terrain || lot?.contours?.length) out.push(contourNote(lot.provenance?.elevation));
+  if (lot?.terrain || lot?.contours?.length) out.push(`Levels are indicative only, from the ${lot.state === 'QLD' ? 'Queensland' : 'NSW'} 5 m DEM, and are not survey. Contours are at 1.0 m intervals and spot levels are to 0.1 m. A registered survey is required.`);
   if (lot?.floorRL != null) out.push(`FFL ${lot.floorRL.toFixed(2)} m AHD ${lot.floorRLAuto ? 'is assumed from the ground level at the house, not designed' : 'as set by the designer'}. NSL is the natural surface level from the terrain model at each house corner.`);
-  out.push('Services, easements, trees, flood and bushfire overlays are not shown. Dial Before You Dig plans and a section 10.7 or equivalent certificate are required.');
+  if (lot?.floorRL != null && lot?.terrain) {
+    const bx = orientedBox(buildingHull(project));
+    if (bx) {
+      const hw = bx.w / 2; const hd = bx.d / 2;
+      const cut = [[-1, -1], [1, -1], [1, 1], [-1, 1]].some(([a, b]) => {
+        const rl = terrainAt(lot.terrain, bx.centre.x + bx.u.x * hw * a + bx.v.x * hd * b, bx.centre.y + bx.u.y * hw * a + bx.v.y * hd * b);
+        return rl != null && rl > lot.floorRL + 0.05;
+      });
+      if (cut) out.push('FFL is below the natural surface at one or more house corners. Cut is required at those corners: refer to site works.');
+    }
+  }
+  out.push('Services, easements, trees, flood and bushfire overlays are not shown. Before You Dig Australia plans and a section 10.7 or equivalent certificate are required.');
   out.push('Driveway and crossover are indicative. Crossover location, width and levels need council approval.');
   return out;
 }
@@ -650,9 +684,11 @@ export function localityView(project, box, { minSpanM = 280, k = 1 } = {}) {
   const lot = project.site?.lot;
   if (!lot?.boundary?.length) return null;
   const w = box.x1 - box.x0;
-  const pts = [...lot.boundary, ...(lot.neighbours || []).flatMap((nb) => nb.ring || [])];
-  const nb = G.bbox(pts);
   const lc = G.polygonCentroid(lot.boundary);
+  // Only the cadastre near the lot sets the scale: a long run of lots must not push the map out to a tiny scale
+  const near = (lot.neighbours || []).filter((q) => q.ring?.length && Math.hypot(...Object.values(G.sub(G.polygonCentroid(q.ring), lc))) < minSpanM * 600);
+  const pts = [...lot.boundary, ...near.flatMap((q) => q.ring)];
+  const nb = G.bbox(pts);
   const needW = Math.max(minSpanM * 1000, nb.w * 1.15);
   const needH = Math.max(minSpanM * 1000 * ((box.y1 - box.y0) / w), nb.h * 1.15);
   const n = LOCALITY_SCALES.find((s) => needW / (s * k) <= w && needH / (s * k) <= box.y1 - box.y0) || LOCALITY_SCALES.at(-1);
