@@ -1,0 +1,350 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>hero scene</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script src="three-bundle.js"></script>
+<script src="treelib.js"></script>
+</head><body>
+<script>window.onerror=function(m){console.log('ERR '+m);window.__err=1};</script>
+<script>
+// Glide Inside hero scene: generic single storey 4 bedroom on a 40 x 50 m rural residential lot.
+THREE.ColorManagement.legacyMode=false;
+const Q=new URLSearchParams(location.search);
+const VW=+Q.get('w')||1600,VH=+Q.get('h')||900;
+let seed=+(Q.get('seed')||7);function rnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646}
+const R=(a,b)=>a+(b-a)*rnd();
+const LOT_W=40,LOT_D=50,W2=20,D2=25,VERGE=4.5,ROAD=9,FP=1.5;
+const kerbZ=D2+VERGE,roadZ0=kerbZ+0.45,roadZ1=roadZ0+ROAD,roadC=(roadZ0+roadZ1)/2;
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(window.devicePixelRatio||1);renderer.setSize(VW,VH);document.body.appendChild(renderer.domElement);
+renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=+(Q.get('exp')||0.92);
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(+(Q.get('fov')||30),VW/VH,1,4000);
+
+// ---------- sky and haze
+const HOR=new THREE.Color().setRGB(0.86,0.74,0.60),ZEN=new THREE.Color().setRGB(0.22,0.36,0.62);
+const sunAz=+(Q.get('az')||-72)*Math.PI/180,sunEl=+(Q.get('el')||24)*Math.PI/180;
+const SUNV=new THREE.Vector3(Math.sin(sunAz)*Math.cos(sunEl),Math.sin(sunEl),Math.cos(sunAz)*Math.cos(sunEl));
+const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{sunDir:{value:SUNV},zenith:{value:ZEN},horizon:{value:HOR}},
+ vertexShader:'varying vec3 vDir;void main(){vDir=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+ fragmentShader:'uniform vec3 sunDir;uniform vec3 zenith;uniform vec3 horizon;varying vec3 vDir;void main(){vec3 d=normalize(vDir);float h=max(d.y,0.0);vec3 col=mix(horizon,zenith,smoothstep(0.0,0.5,h));float mu=max(dot(d,sunDir),0.0);col+=vec3(1.0,0.75,0.45)*pow(mu,8.0)*0.35;if(d.y<0.0)col=horizon;gl_FragColor=vec4(col,1.0);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}'});
+const sky=new THREE.Mesh(new THREE.SphereGeometry(2500,32,16),skyMat);scene.add(sky);
+const HAZE=new THREE.Color().setRGB(0.80,0.71,0.60);
+scene.fog=new THREE.Fog(HAZE,+(Q.get('fn')||170),+(Q.get('ff')||900));
+
+// environment map for the standard materials
+{const es=new THREE.Scene();const em=new THREE.Mesh(new THREE.SphereGeometry(100,32,16),skyMat.clone());es.add(em);const pm=new THREE.PMREMGenerator(renderer);window.ENV=pm.fromScene(es,0.04).texture}
+
+const hemi=new THREE.HemisphereLight(0xdfe8ff,0x8a7a5c,+(Q.get('hemi')||0.75));scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffe0b8,+(Q.get('sun')||2.1));sun.position.copy(SUNV).multiplyScalar(220);sun.castShadow=true;
+sun.shadow.mapSize.set(4096,4096);Object.assign(sun.shadow.camera,{left:-95,right:95,top:95,bottom:-95,near:20,far:520});sun.shadow.bias=-0.0004;sun.shadow.normalBias=0.04;sun.shadow.radius=3;
+sun.target.position.set(0,0,10);scene.add(sun);scene.add(sun.target);
+
+// ---------- helpers
+function canvasTex(w,h,draw,rep){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');draw(g,w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=16;t.wrapS=t.wrapT=THREE.RepeatWrapping;if(rep)t.repeat.set(rep[0],rep[1]);return t}
+function speckle(g,w,h,n,amp,sz){for(let i=0;i<n;i++){const v=(rnd()-.5)*amp;g.fillStyle=v>0?'rgba(255,250,235,'+v+')':'rgba(20,18,10,'+(-v)+')';const s=(sz||1.5)*(0.5+rnd());g.fillRect(rnd()*w,rnd()*h,s,s)}}
+function blotch(g,w,h,n,cols,rmin,rmax,a){for(let i=0;i<n;i++){const x=rnd()*w,y=rnd()*h,r=R(rmin,rmax);const gr=g.createRadialGradient(x,y,0,x,y,r);const c=cols[(rnd()*cols.length)|0];gr.addColorStop(0,'rgba('+c+','+a+')');gr.addColorStop(1,'rgba('+c+',0)');g.fillStyle=gr;g.beginPath();g.arc(x,y,r,0,7);g.fill()}}
+const std=(o)=>new THREE.MeshStandardMaterial(Object.assign({roughness:0.9,metalness:0},o));
+function add(m,cast,recv){m.castShadow=!!cast;m.receiveShadow=recv!==false;scene.add(m);return m}
+function boxM(w,h,d,mat,x,y,z,cast){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);return add(m,cast)}
+function flat(w,d,mat,x,y,z,ry){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),mat);m.rotation.x=-Math.PI/2;if(ry)m.rotation.z=ry;m.position.set(x,y,z);return add(m,false)}
+
+// ---------- aerial ground (procedural paddock orthophoto), 720 m square
+const GA=720,GPX=4096,mpp=GA/GPX;
+const W2P=(x,z)=>[(x+GA/2)/mpp,(z+GA/2)/mpp];
+const clumps=[];// 3D tree positions near the lot
+const shadowOff=[-SUNV.x/SUNV.y,-SUNV.z/SUNV.y];
+function blotchAll(g,w,h){for(let i=0;i<5000;i++){const x=rnd()*w,y=rnd()*h,r=R(6,40);const gr=g.createRadialGradient(x,y,0,x,y,r);const dark=rnd()<0.55;gr.addColorStop(0,dark?'rgba(55,60,30,0.16)':'rgba(215,200,150,0.12)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,2*r,2*r)}}
+const aerial=canvasTex(GPX,GPX,(g,w,h)=>{
+ g.fillStyle='#78764f';g.fillRect(0,0,w,h);
+ // paddocks: recursive split aligned to the road
+ const pal=['#7d7a55','#6f7349','#626c42','#8a8462','#736f4f','#6c774a','#58663d','#938a6c','#7a7d52','#55623b','#868062','#506039','#677249','#8c8f6a'];
+ function split(x0,z0,x1,z1,d){const W=x1-x0,D=z1-z0;if(d>4||(W<110&&D<110&&rnd()<0.6)||W<45||D<45){paddock(x0,z0,x1,z1);return}
+  if(W>D){const s=x0+W*R(0.35,0.65);split(x0,z0,s,z1,d+1);split(s,z0,x1,z1,d+1)}else{const s=z0+D*R(0.35,0.65);split(x0,z0,x1,s,d+1);split(x0,s,x1,z1,d+1)}}
+ function paddock(x0,z0,x1,z1){const [a,b]=W2P(x0,z0),[c,d]=W2P(x1,z1);g.fillStyle=pal[(rnd()*pal.length)|0];g.fillRect(a,b,c-a,d-b);
+  g.save();g.beginPath();g.rect(a,b,c-a,d-b);g.clip();
+  // mottling
+  blotch(g,0,0,0,[],1,1,0);
+  const n=Math.round((c-a)*(d-b)/900);for(let i=0;i<n;i++){const x=R(a,c),y=R(b,d),r=R(12,60);const gr=g.createRadialGradient(x,y,0,x,y,r);const dark=rnd()<0.5;gr.addColorStop(0,dark?'rgba(60,70,30,0.10)':'rgba(220,205,160,0.10)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,2*r,2*r)}
+  // cultivation / mowing streaks
+  if(rnd()<0.55){const vert=rnd()<0.5;g.globalAlpha=R(0.04,0.10);g.fillStyle=rnd()<0.5?'#5f5a36':'#e4d8a8';const step=R(3,7);if(vert)for(let x=a;x<c;x+=step)g.fillRect(x,b,step*0.45,d-b);else for(let y=b;y<d;y+=step)g.fillRect(a,y,c-a,step*0.45);g.globalAlpha=1}
+  // stock tracks
+  if(rnd()<0.5){g.strokeStyle='rgba(210,190,140,0.35)';g.lineWidth=R(1.5,3);g.beginPath();let x=R(a,c),y=b;g.moveTo(x,y);while(y<d){x+=R(-8,8);y+=R(10,20);g.lineTo(x,y)}g.stroke()}
+  g.restore();
+  // fence line
+  g.strokeStyle='rgba(70,62,40,0.45)';g.lineWidth=1.2;g.strokeRect(a,b,c-a,d-b);
+  // trees along some fence lines
+  if(rnd()<0.6){const side=(rnd()*4)|0;const L=side%2?d-b:c-a;const cnt=Math.round(L/R(14,40));for(let i=0;i<cnt;i++){const t=rnd();const px=side==0?a+t*(c-a):side==1?c:side==2?a+t*(c-a):a;const py=side==0?b:side==1?b+t*(d-b):side==2?d:b+t*(d-b);
+    const wx=px*mpp-GA/2,wz=py*mpp-GA/2;treeDot(wx,wz,R(2.5,5))}}
+  // scattered paddock trees
+  const k=(rnd()<0.6?2:0)+(rnd()<0.35?4:0);for(let i=0;i<k;i++){const wx=R(x0+5,x1-5),wz=R(z0+5,z1-5);treeDot(wx,wz,R(3.5,6.5))}
+  // a dam
+  if(rnd()<0.12){const cx=R(a+20,c-20),cy=R(b+20,d-20),r=R(10,22);g.fillStyle='#6d6a4a';g.beginPath();g.ellipse(cx,cy,r*1.25,r,R(0,3),0,7);g.fill();g.fillStyle='#4f5a4a';g.beginPath();g.ellipse(cx,cy,r*0.95,r*0.75,R(0,3),0,7);g.fill()}
+  // a farm house and shed
+  if(rnd()<0.10&&(c-a)>80&&(d-b)>80){const hx=R(x0+15,x1-25),hz=R(z0+15,z1-25);farm(hx,hz)}
+ }
+ function treeDot(wx,wz,r){if(Math.abs(wx)<75&&wz>-70&&wz<roadZ1+40)return;// near the lot: real trees only
+  const near=Math.hypot(wx,wz-5)<230;if(near&&rnd()<0.85){clumps.push([wx,wz,r]);return}
+  const [px,py]=W2P(wx,wz),pr=r/mpp;
+  g.fillStyle='rgba(30,30,18,0.45)';g.beginPath();g.ellipse(px+shadowOff[0]*pr*1.6,py+shadowOff[1]*pr*1.6,pr*1.05,pr*0.95,0,0,7);g.fill();
+  for(let i=0;i<6;i++){const ox=R(-.45,.45)*pr,oy=R(-.45,.45)*pr,rr=pr*R(0.45,0.7);g.fillStyle=['#3c4a2a','#46552f','#53613a','#35422a'][i%4];g.beginPath();g.arc(px+ox,py+oy,rr,0,7);g.fill()}
+  g.fillStyle='rgba(150,160,110,0.25)';g.beginPath();g.arc(px-pr*0.25,py-pr*0.25,pr*0.35,0,7);g.fill()}
+ function farm(x,z){const [px,py]=W2P(x,z);const w=R(14,20)/mpp,d=R(9,13)/mpp;g.fillStyle='rgba(30,28,20,0.45)';g.fillRect(px+shadowOff[0]*12,py+shadowOff[1]*12,w,d);g.fillStyle=['#8d9092','#b9b6ae','#6f7377'][(rnd()*3)|0];g.fillRect(px,py,w,d);g.fillStyle='rgba(255,255,255,0.12)';g.fillRect(px,py,w,d/2);
+  const sx=px+w+R(10,25)/mpp,sw=R(12,18)/mpp,sd=R(8,12)/mpp;g.fillStyle='rgba(30,28,20,0.45)';g.fillRect(sx+shadowOff[0]*10,py+shadowOff[1]*10,sw,sd);g.fillStyle='#c7c8c4';g.fillRect(sx,py,sw,sd);
+  g.strokeStyle='rgba(200,185,140,0.7)';g.lineWidth=3;g.beginPath();g.moveTo(px+w/2,py+d);g.lineTo(px+w/2+R(-30,30),W2P(0,roadZ0)[1]);g.stroke()}
+ // north side of the road (behind the lot)
+ split(-GA/2,-GA/2,GA/2,-D2-50,0);
+ // the residential strip either side of our lot behind the street (rural residential lots, 40 m wide)
+ split(-GA/2,-D2-50,-W2-120,kerbZ,1);split(W2+120,-D2-50,GA/2,kerbZ,1);
+ // south side of the road
+ split(-GA/2,roadZ1+0.5+VERGE+50,GA/2,GA/2,0);
+ split(-GA/2,roadZ1+0.5+VERGE,-W2-120,roadZ1+0.5+VERGE+50,1);split(W2+120,roadZ1+0.5+VERGE,GA/2,roadZ1+0.5+VERGE+50,1);
+ // a creek line with dense trees across the back paddocks
+ {let x=-GA/2,z=-230;while(x<GA/2){x+=R(4,8);z+=R(-4,4);z=Math.max(-300,Math.min(-140,z));for(let i=0;i<2;i++)treeDot(x+R(-6,6),z+R(-10,10),R(3,6))}}
+ // general grain
+ blotchAll(g,w,h);speckle(g,w,h,1400000,0.20,1.6);speckle(g,w,h,300000,0.12,4);
+},null);
+aerial.wrapS=aerial.wrapT=THREE.ClampToEdgeWrapping;
+const ground=flat(GA,GA,std({map:aerial,roughness:1}),0,-0.06,0);
+// beyond the aerial: a fogged plain
+flat(5000,5000,std({color:0x9c936c,roughness:1}),0,-0.2,0);
+
+// ---------- grass textures
+const grassTex=(base,stripe)=>canvasTex(512,512,(g,w,h)=>{g.fillStyle=base;g.fillRect(0,0,w,h);
+ blotch(g,w,h,60,['70,85,40','160,150,95','95,110,55'],20,70,0.18);
+ if(stripe){for(let i=0;i<4;i++){g.fillStyle=i%2?'rgba(255,255,230,0.025)':'rgba(30,40,10,0.025)';g.fillRect(i*128,0,128,h)}}
+ for(let i=0;i<70000;i++){const v=rnd();g.fillStyle=v<0.5?'rgba(40,55,20,'+(0.10+rnd()*0.15)+')':v<0.85?'rgba(190,195,130,'+(0.08+rnd()*0.12)+')':'rgba(170,150,95,0.18)';g.fillRect(rnd()*w,rnd()*h,1,1+rnd()*2)}});
+const tLawn=grassTex('#5e6a3c',true),tPad=grassTex('#727049',false),tVerge=grassTex('#66703f',false);
+const lawnMat=std({map:tLawn}),padMat=std({map:tPad}),vergeMat=std({map:tVerge});
+tLawn.repeat.set(LOT_W/16,LOT_D/16);tPad.repeat.set(10,10);tVerge.repeat.set(30,0.6);
+
+// ---------- street: footpath, kerb and gutter, road with line marking
+const asphTex=canvasTex(1024,1024,(g,w,h)=>{g.fillStyle='#3a3b3d';g.fillRect(0,0,w,h);blotch(g,w,h,80,['20,20,22','90,88,84'],30,120,0.18);speckle(g,w,h,260000,0.30,1.6)});asphTex.repeat.set(40,1.2);
+const concTex=canvasTex(512,512,(g,w,h)=>{g.fillStyle='#b9b5ac';g.fillRect(0,0,w,h);blotch(g,w,h,40,['150,145,135','235,232,225'],20,80,0.2);speckle(g,w,h,40000,0.12,1.4)});
+const RL=760;
+flat(RL,VERGE,vergeMat,0,0.0,D2+VERGE/2);
+{const t=concTex.clone();t.needsUpdate=true;t.repeat.set(RL/3,0.6);flat(RL,FP,std({map:t}),0,0.02,D2+1.1)}
+// footpath joints
+for(let x=-RL/2;x<RL/2;x+=1.8)boxM(0.03,0.005,FP,std({color:0x9c988e}),x,0.025,D2+1.1);
+function kerb(z,dir){// roll kerb profile extruded along x
+ const s=new THREE.Shape();const p=[[0,0],[0.15,0],[0.22,0.10],[0.33,0.14],[0.45,0.15],[0.45,0.02]].map(q=>[q[0]*dir,q[1]]);s.moveTo(0,-0.02);p.forEach(q=>s.lineTo(q[0],q[1]));s.lineTo(0.45*dir,-0.02);
+ const geo=new THREE.ExtrudeGeometry(s,{depth:RL,bevelEnabled:false});const m=new THREE.Mesh(geo,std({color:0xd9d6cf,roughness:0.85}));m.rotation.y=Math.PI/2;m.position.set(-RL/2,0,z);return add(m,true)}
+kerb(roadZ0,1);kerb(roadZ1,-1);
+flat(RL,ROAD,std({map:asphTex,roughness:0.95}),0,0.005,roadC);
+const lineMat=std({color:0xeeeeea,roughness:0.7});
+for(let x=-RL/2;x<RL/2;x+=12)flat(3,0.12,lineMat,x,0.012,roadC);
+flat(RL,0.1,lineMat,0,0.012,roadZ0+0.9);flat(RL,0.1,lineMat,0,0.012,roadZ1-0.9);
+flat(RL,VERGE,vergeMat,0,0.0,roadZ1+0.45+VERGE/2);
+{const t=concTex.clone();t.needsUpdate=true;t.repeat.set(RL/3,0.6);flat(RL,FP,std({map:t}),0,0.02,roadZ1+0.45+VERGE-1.1)}
+
+// ---------- lots: our lot and neighbours (mown lawn, paddock grass beyond)
+flat(LOT_W,LOT_D,lawnMat,0,0.01,0);
+const lotXs=[-3,-2,-1,1,2,3];
+lotXs.forEach(i=>{const t=tPad.clone();t.needsUpdate=true;t.repeat.set(LOT_W/14,LOT_D/14);t.offset.set(rnd(),rnd());flat(LOT_W-0.05,LOT_D,std({map:t}),i*LOT_W,0.008,0)});
+// lots across the road
+const zA=roadZ1+0.45+VERGE+D2;
+[-3,-2,-1,0,1,2,3].forEach(i=>{const t=tPad.clone();t.needsUpdate=true;t.repeat.set(LOT_W/14,LOT_D/14);t.offset.set(rnd(),rnd());flat(LOT_W-0.05,LOT_D,std({map:t}),i*LOT_W+12,0.008,zA)});
+// mown lawn patches around neighbour houses
+function mown(x,z,w,d){const t=tLawn.clone();t.needsUpdate=true;t.repeat.set(w/16,d/16);const m=flat(w,d,std({map:t,transparent:false}),x,0.012,z);return m}
+
+// ---------- fences: timber post and rail, low (1.2 m), weathered grey
+const postMat=std({color:0x6e665c,roughness:0.95}),railMat=std({color:0x7a7266,roughness:0.95}),wireMat=new THREE.LineBasicMaterial({color:0x6b665e,transparent:true,opacity:0.6});
+function fence(x1,z1,x2,z2,rails){const L=Math.hypot(x2-x1,z2-z1),n=Math.ceil(L/2.7),ang=-Math.atan2(z2-z1,x2-x1);
+ const posts=new THREE.InstancedMesh(new THREE.BoxGeometry(0.11,1.25,0.11),postMat,n+1);const d=new THREE.Object3D();
+ for(let i=0;i<=n;i++){const t=i/n;d.position.set(x1+(x2-x1)*t,0.62,z1+(z2-z1)*t);d.rotation.set(0,ang,0);d.updateMatrix();posts.setMatrixAt(i,d.matrix)}add(posts,true);
+ (rails||[1.1,0.6]).forEach(y=>{const r=new THREE.Mesh(new THREE.BoxGeometry(L,0.08,0.04),railMat);r.position.set((x1+x2)/2,y,(z1+z2)/2);r.rotation.y=ang;add(r,true)})}
+// our lot: side and rear
+fence(-W2,-D2,W2,-D2);fence(-W2,-D2,-W2,D2);fence(W2,-D2,W2,D2);
+[-3,-2,-1,1,2,3].forEach(i=>{if(i!==-1&&i!==1)fence(i*LOT_W-W2,-D2,i*LOT_W+W2,-D2);fence(i*LOT_W+(i<0?-W2:W2),-D2,i*LOT_W+(i<0?-W2:W2),D2)});
+// low front fence on neighbours only (ours stays open to the street for the drive)
+[-2,-1,1,2].forEach(i=>fence(i*LOT_W-W2+0.5,D2-0.3,i*LOT_W+W2-0.5,D2-0.3,[0.75]));
+[-3,-2,-1,0,1,2,3].forEach(i=>{const x=i*LOT_W+12;fence(x-W2,zA+D2,x+W2,zA+D2);fence(x-W2,zA-D2,x-W2,zA+D2)});
+
+// ---------- hip roof builder
+function hipGeo(w,d,pitch){// footprint w (x) by d (z) at y=0, centred
+ const h=Math.min(w,d)/2*Math.tan(pitch);const pos=[],uv=[];
+ const tri=(a,b,c)=>{pos.push(...a,...b,...c);};
+ const x=w/2,z=d/2;
+ if(w>=d){const r=x-z;const A=[-x,0,z],B=[x,0,z],C=[x,0,-z],D=[-x,0,-z],E=[-r,h,0],F=[r,h,0];
+  tri(A,B,F);tri(A,F,E);tri(C,D,E);tri(C,E,F);tri(B,C,F);tri(D,A,E);var caps=[[E,F],[A,E],[D,E],[B,F],[C,F]]}
+ else{const r=z-x;const A=[-x,0,z],B=[x,0,z],C=[x,0,-z],D=[-x,0,-z],E=[0,h,r],F=[0,h,-r];
+  tri(A,B,E);tri(B,C,F);tri(B,F,E);tri(C,D,F);tri(D,A,E);tri(D,E,F);var caps=[[E,F],[A,E],[B,E],[C,F],[D,F]]}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+ // planar uv per face: u along eave, v up slope (for the sheeting texture)
+ const p=g.attributes.position;const uvs=[];for(let i=0;i<p.count;i+=3){const a=new THREE.Vector3().fromBufferAttribute(p,i),b=new THREE.Vector3().fromBufferAttribute(p,i+1),c=new THREE.Vector3().fromBufferAttribute(p,i+2);
+  const n=new THREE.Vector3().subVectors(b,a).cross(new THREE.Vector3().subVectors(c,a)).normalize();const hor=new THREE.Vector3(n.x,0,n.z).normalize();const along=new THREE.Vector3(-hor.z,0,hor.x);
+  [a,b,c].forEach(v=>{uvs.push(v.dot(along),v.dot(hor)*-1+v.y)})}
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));g.computeVertexNormals();return {g,h,caps}}
+const capMat=new THREE.MeshStandardMaterial({color:0x2c2f32,roughness:0.5,metalness:0.2});
+function capsOn(parent,caps,x,y,z){caps.forEach(([a,b])=>{const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b);const L=A.distanceTo(B);if(L<0.05)return;const m=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.07,L),capMat);m.position.copy(A).add(B).multiplyScalar(0.5).add(new THREE.Vector3(x,y+0.03,z));m.lookAt(B.clone().add(new THREE.Vector3(x,y+0.03,z)));m.castShadow=true;parent.add(m)})}
+const sheetTex=(base)=>canvasTex(256,256,(g,w,h)=>{g.fillStyle=base;g.fillRect(0,0,w,h);for(let x=0;x<w;x+=8){g.fillStyle='rgba(255,255,255,0.06)';g.fillRect(x,0,2,h);g.fillStyle='rgba(0,0,0,0.10)';g.fillRect(x+4,0,2,h)}speckle(g,w,h,3000,0.05,1)});
+function roofMat(base,rough,metal){const t=sheetTex(base);t.repeat.set(1/2.0,1/2.0);return std({map:t,roughness:rough||0.62,metalness:metal==null?0.05:metal,envMapIntensity:0.5,side:THREE.DoubleSide})}
+function hipRoof(cx,cz,w,d,y0,pitch,mat,eave,fasciaMat,soffitMat){const o=eave==null?0.6:eave;const {g,h,caps}=hipGeo(w+2*o,d+2*o,pitch);const m=new THREE.Mesh(g,mat);m.position.set(cx,y0,cz);add(m,true,true);capsOn(scene,caps,cx,y0,cz);
+ // fascia and gutter band
+ if(fasciaMat){const W=w+2*o,D=d+2*o;[[W,0.24,0.06,0,D/2],[W,0.24,0.06,0,-D/2],[0.06,0.24,D,W/2,0],[0.06,0.24,D,-W/2,0]].forEach(q=>boxM(q[0]+0.06,q[1],q[2]+(q[2]>0.1?0.06:0),fasciaMat,cx+q[3],y0-0.08,cz+q[4],true))}
+ if(soffitMat){const s=flat(w+2*o,d+2*o,soffitMat,cx,y0-0.2,cz);s.rotation.x=Math.PI/2;s.receiveShadow=true}
+ return h}
+
+// ---------- the featured house: generic single storey four bedroom (Glide sample)
+const WALL_H=2.7;
+const renderMat=std({color:new THREE.Color('#ddd6c8'),roughness:0.9,envMapIntensity:0.6});
+const renderShade=std({color:new THREE.Color('#d9d2c4'),roughness:0.9});
+const cladMat=std({map:canvasTex(256,256,(g,w,h)=>{g.fillStyle='#5b5f63';g.fillRect(0,0,w,h);for(let x=0;x<w;x+=16){g.fillStyle='rgba(0,0,0,0.25)';g.fillRect(x,0,2,h);g.fillStyle='rgba(255,255,255,0.05)';g.fillRect(x+2,0,2,h)}}),roughness:0.7});
+cladMat.map.repeat.set(1,1);
+const charRoof=roofMat('#45484c',0.6,0.05);
+const fascia=std({color:0x34373a,roughness:0.6,metalness:0.2});
+const soffit=std({color:0xf2efe8,roughness:0.9});
+const frameMat=std({color:0x2b2d30,roughness:0.5,metalness:0.4});
+const glassMat=new THREE.MeshStandardMaterial({color:0x1d2630,roughness:0.08,metalness:0.6,envMap:window.ENV,envMapIntensity:1.0});
+const timber=std({map:canvasTex(256,256,(g,w,h)=>{g.fillStyle='#8a5f3c';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=3){g.fillStyle='rgba('+(rnd()<.5?'40,20,5':'200,150,100')+','+R(0.05,0.18)+')';g.fillRect(0,y,w,2)}}),roughness:0.6});
+const garageDoorMat=std({map:canvasTex(256,256,(g,w,h)=>{g.fillStyle='#4b4e52';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=32){g.fillStyle='rgba(0,0,0,0.35)';g.fillRect(0,y,w,3);g.fillStyle='rgba(255,255,255,0.10)';g.fillRect(0,y+3,w,2)}}),roughness:0.55,metalness:0.3});
+const H=new THREE.Group();scene.add(H);
+function hbox(w,h,d,mat,x,y,z,cast){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=cast!==false;m.receiveShadow=true;H.add(m);return m}
+// window on a wall face: face 'f' (+z), 'b' (-z), 'l' (-x), 'r' (+x); position along wall u, sill y, width, height
+function win(face,wx,wz,u,y,w,h){const t=0.12,fr=0.07;let px,pz,ry;
+ if(face==='f'){px=u;pz=wz+0.02;ry=0}else if(face==='b'){px=u;pz=wz-0.02;ry=Math.PI}else if(face==='r'){px=wx+0.02;pz=u;ry=Math.PI/2}else{px=wx-0.02;pz=u;ry=-Math.PI/2}
+ const g=new THREE.Group();g.position.set(px,y+h/2,pz);g.rotation.y=ry;H.add(g);
+ const gl=new THREE.Mesh(new THREE.PlaneGeometry(w-0.05,h-0.05),glassMat);gl.position.z=0.005;g.add(gl);
+ const fb=(ww,hh,x,y2)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(ww,hh,t),frameMat);m.position.set(x,y2,0.02);m.castShadow=false;m.receiveShadow=true;g.add(m)};
+ fb(w+fr,fr,0,h/2);fb(w+fr,fr,0,-h/2);fb(fr,h,-w/2,0);fb(fr,h,w/2,0);
+ const mull=Math.max(1,Math.round(w/1.0));for(let i=1;i<mull;i++)fb(0.045,h,-w/2+w*i/mull,0);
+ // sill
+ const s=new THREE.Mesh(new THREE.BoxGeometry(w+0.2,0.05,0.16),renderShade);s.position.set(0,-h/2-0.04,0.07);g.add(s)}
+// footprint (x across the street frontage, z towards the street = +)
+// main body 22.0 x 12.4, front left garage 6.6 x 7.0 projecting, front right master wing 5.2 x 4.4 projecting
+const MX=0,MZ=-3.2,MW=22.0,MD=12.4;
+const GX=-MW/2+3.3,GZ=MZ+MD/2+1.6,GW=6.6,GD=7.0+0.2;
+const WX=MW/2-2.6,WZ=MZ+MD/2+1.6,WW=5.2,WD=3.2+0.2;
+hbox(MW,WALL_H,MD,renderMat,MX,WALL_H/2,MZ);
+hbox(GW,WALL_H,GD,renderMat,GX,WALL_H/2,GZ-GD/2+3.5);
+hbox(WW,WALL_H,WD,renderMat,WX,WALL_H/2,WZ);
+// plinth / slab edge
+hbox(MW+0.08,0.25,MD+0.08,renderShade,MX,0.12,MZ,false);
+// feature cladding panel by the entry
+hbox(2.4,WALL_H,0.06,cladMat,-2.6,WALL_H/2,MZ+MD/2+0.03,false);
+// roofs (22.5 degree hip, 600 eave)
+const P=22.5*Math.PI/180;
+hipRoof(MX,MZ,MW,MD,WALL_H,P,charRoof,0.6,fascia,soffit);
+hipRoof(GX,GZ-GD/2+3.5,GW,GD,WALL_H,P,charRoof,0.6,fascia,soffit);
+hipRoof(WX,WZ,WW,WD,WALL_H,P,charRoof,0.6,fascia,soffit);
+// entry portico: flat skillion on two posts between garage and wing
+{const px0=GX+GW/2+0.2,px1=-0.4,pz=MZ+MD/2+1.8;hbox(px1-px0+0.6,0.28,2.4,fascia,(px0+px1)/2,WALL_H-0.05,pz-0.6,true);
+ [px1].forEach(x=>hbox(0.18,WALL_H-0.2,0.18,frameMat,x,(WALL_H-0.2)/2,pz+0.4,true));
+ // front door with sidelight
+ const dz=MZ+MD/2+0.03;const d=new THREE.Mesh(new THREE.PlaneGeometry(1.1,2.3),timber);d.position.set(-1.0,1.15,dz+0.01);H.add(d);
+ win('f',0,dz,-0.15,0.05,0.4,2.25);
+ // entry path paving under portico
+}
+// garage door
+{const gz=GZ-GD/2+3.5+GD/2+0.02;const d=new THREE.Mesh(new THREE.PlaneGeometry(4.8,2.15),garageDoorMat);d.position.set(GX,1.08,gz);d.receiveShadow=true;H.add(d);
+ hbox(5.0,0.08,0.1,frameMat,GX,2.2,gz,false)}
+// windows: front
+const fz=MZ+MD/2,wfz=WZ+WD/2;
+win('f',0,wfz,WX,0.9,2.4,1.5);// master wing front
+win('f',0,fz,3.6,0.9,1.8,1.5);// bed 2? between entry and wing
+win('f',0,fz,1.4,0.9,1.2,1.5);
+// right side (towards +x)
+win('r',MX+MW/2,0,MZ-3.2,0.9,1.8,1.5);win('r',MX+MW/2,0,MZ+1.0,0.9,1.2,1.5);win('r',WX+WW/2,0,WZ,0.9,1.5,1.5);
+// left side (garage side) and the main body rear
+win('l',MX-MW/2,0,MZ-3.0,0.9,1.5,1.5);
+win('b',0,MZ-MD/2,-6,0.0,3.6,2.4);win('b',0,MZ-MD/2,0,0.0,2.4,2.4);win('b',0,MZ-MD/2,6,0.9,1.8,1.5);
+// rear alfresco slab and posts
+hbox(6.0,0.15,4.0,std({color:0xbdb6aa}),-3,0.07,MZ-MD/2-2.0,false);
+// garden beds along the front (mulch) with low shrubs
+const mulch=std({map:canvasTex(256,256,(g,w,h)=>{g.fillStyle='#4a3d30';g.fillRect(0,0,w,h);speckle(g,w,h,20000,0.35,2)}),roughness:1});
+
+flat(1.2,6.0,mulch,MX+MW/2+1.2,0.03,MZ+2).receiveShadow=true;
+
+// house positioned on the lot
+H.position.set(1.0,0,-2.0);
+H.updateMatrixWorld(true);
+// driveway: exposed aggregate from the garage to the kerb, with a gentle curve
+{const dTex=canvasTex(512,512,(g,w,h)=>{g.fillStyle='#a8a095';g.fillRect(0,0,w,h);speckle(g,w,h,90000,0.35,1.6);blotch(g,w,h,20,['120,110,95'],30,90,0.12)});
+ const gx=H.position.x+GX,gz=H.position.z+GZ-GD/2+3.5+GD/2;const sh=new THREE.Shape();const wd=5.6;
+ sh.moveTo(gx-wd/2,-gz);sh.lineTo(gx+wd/2,-gz);sh.lineTo(gx+wd/2,-(kerbZ-1));sh.lineTo(gx+wd/2+1.2,-(kerbZ+0.1));sh.lineTo(gx-wd/2-1.2,-(kerbZ+0.1));sh.lineTo(gx-wd/2,-(kerbZ-1));sh.lineTo(gx-wd/2,-gz);
+ const geo=new THREE.ShapeGeometry(sh);const m=new THREE.Mesh(geo,std({map:dTex,roughness:0.9}));dTex.repeat.set(0.25,0.25);m.rotation.x=-Math.PI/2;m.position.y=0.04;add(m,false);
+ // entry path from portico to drive
+ const ep=flat(1.4,3.4,std({map:dTex,roughness:0.9}),H.position.x-1.0,0.035,H.position.z+fz+1.7);
+ // letterbox
+ boxM(0.35,1.05,0.3,std({color:0x2e3134,roughness:0.6}),gx+wd/2+1.6,0.52,D2-0.4,true);
+ // water tank behind the garage
+ const tk=new THREE.Mesh(new THREE.CylinderGeometry(1.6,1.6,2.3,40),std({color:0x8d9092,roughness:0.5,metalness:0.4}));tk.position.set(H.position.x-MW/2-1.9,1.15,H.position.z+MZ-3.5);add(tk,true)}
+
+// ---------- neighbour houses: neutral massing with hip roofs, muted colours
+const nbRoofs=['#6a6e70','#7c7a74','#5e6266','#74726c','#6c6f71'].map(c=>roofMat(c,0.65,0.05));
+const nbWalls=['#cfc7b8','#c4bcae','#d6cfc2','#bdb4a5','#cbc3b3'].map(c=>std({color:new THREE.Color(c),roughness:0.9}));
+function nbHouse(cx,cz,w,d,face,k){const g=new THREE.Group();scene.add(g);
+ const wm=nbWalls[k%nbWalls.length],rm=nbRoofs[k%nbRoofs.length];
+ const b=(w2,h2,d2,mat,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w2,h2,d2),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m)};
+ b(w,2.6,d,wm,0,1.3,0);const gw=6.2,gd=6.5;b(gw,2.6,gd,wm,-w/2+gw/2,1.3,d/2+1.5-gd/2+1.5);
+ const r1=hipGeo(w+1.2,d+1.2,P).g,r2=hipGeo(gw+1.2,gd+1.2,P).g;const m1=new THREE.Mesh(r1,rm);m1.position.y=2.6;m1.castShadow=true;m1.receiveShadow=true;g.add(m1);
+ const m2=new THREE.Mesh(r2,rm);m2.position.set(-w/2+gw/2,2.6,d/2+3-gd/2);m2.castShadow=true;m2.receiveShadow=true;g.add(m2);
+ // a few dark windows
+ const gm=new THREE.MeshStandardMaterial({color:0x232a31,roughness:0.15,metalness:0.5,envMap:window.ENV,envMapIntensity:0.8});
+ [[0.8,1.4],[w/2-2,1.8],[w/2-5,1.2]].forEach(([x,ww])=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(ww,1.4),gm);p.position.set(x,1.6,d/2+0.02);g.add(p)});
+ const gdm=new THREE.Mesh(new THREE.PlaneGeometry(4.6,2.1),std({color:0x8e8f8d,roughness:0.6}));gdm.position.set(-w/2+gw/2,1.05,d/2+3+0.02);g.add(gdm);
+ g.position.set(cx,0,cz);g.rotation.y=face;return g}
+const NB=[];
+// side neighbours on our street side
+[[-1,-4,-4.5,19,12,0],[1,3.5,-6,18,13,1],[-2,-2,-3,20,12,2],[2,2,-4,19,12,3],[-3,0,-5,18,12,4],[3,0,-3,18,12,0]].forEach(([i,dx,dz,w,d,k])=>{const cx=i*LOT_W+dx,cz=dz;nbHouse(cx,cz,w,d,0,k);mown(cx,cz+2,w+14,d+20);
+ // their driveway
+ const gx=cx-w/2+3.1,len=kerbZ-(cz+d/2+3);const dm=flat(5,len+0.2,std({map:concTex,roughness:0.9}),gx,0.035,cz+d/2+3+len/2);
+ const tk=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,2.2,32),std({color:0x9a9c9c,roughness:0.5,metalness:0.4}));tk.position.set(cx+w/2+1.8,1.1,cz-d/2+1.5);add(tk,true);
+ // a shed out the back
+ const sw=R(6,9),sd=R(5,7);boxM(sw,2.8,sd,std({color:0xb9bab6,roughness:0.6,metalness:0.3}),cx+R(-8,8),1.4,cz-d/2-R(8,12),true);
+});
+// across the road (facing our street, i.e. rotated 180)
+[[-2,0,22,12,1],[-1,2,20,12,3],[0,-1,21,13,2],[1,1,19,12,4],[2,0,20,12,0]].forEach(([i,dx,w,d,k])=>{const cx=i*LOT_W+12+dx,cz=zA+2;nbHouse(cx,cz,w,d,Math.PI,k);mown(cx,cz-2,w+14,d+20);
+ const gx=cx+w/2-3.1;const z0=roadZ1+0.45,len=cz-d/2-3-z0;flat(5,len,std({map:concTex,roughness:0.9}),gx,0.035,z0+len/2)});
+
+// ---------- trees from the planner's leaf card library, lit, instanced
+const treeList=[];
+// street trees on both verges (skip in front of our drive)
+for(let x=-300;x<=300;x+=15){const sx=x+R(-1.5,1.5);if(!(sx>-17&&sx<17))treeList.push([sx,D2+VERGE-1.4,R(0.7,0.85),'street']);treeList.push([x+7+R(-1.5,1.5),roadZ1+0.45+2.2,R(0.7,0.85),'street'])}
+// our lot: a couple of mature gums at the rear corners and a feature tree front right
+treeList.push([-W2+5,-D2+5,1.15,'gum'],[W2-6,-D2+4,1.05,'gum'],[-W2+12,-D2+3,0.9,'gum']);
+treeList.push([W2-3,D2-5,0.75,'street'],[-W2+3,D2-4,0.7,'street']);
+// neighbour lots: gums along back fences
+lotXs.concat([-4,4]).forEach(i=>{for(let k=0;k<3;k++)treeList.push([i*LOT_W+R(-16,16),-D2+R(2,8),R(0.9,1.2),'gum'])});
+// rear paddocks and beyond: clumps from the aerial
+clumps.forEach(([x,z,r])=>treeList.push([x,z,r/4.2,'gum']));
+// a row of trees along the back of the lots behind
+for(let x=-260;x<=260;x+=R(6,14))treeList.push([x,-D2-R(1,4),R(0.9,1.3),'gum']);
+(async function(){
+ const inflate=b64=>{const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()};
+ const gl=await new Promise(async(res,rej)=>new THREE.GLTFLoader().parse(await inflate(TREELIB),'',res,rej));const lib={};gl.scene.traverse(o=>{if(o.isMesh)lib[o.name]=o});
+ const fams={street:['street0','street1','street2'],gum:['gum0','gum1','gum2','gum3']};
+ const Hh={};Object.values(fams).flat().forEach(k=>{const g=lib['tl_'+k+'_l'].geometry;g.computeBoundingBox();Hh[k]=g.boundingBox.max.y});
+ const barkMat=std({color:0x9a8a76,roughness:1,side:THREE.DoubleSide});const lm={};
+ const groups={};treeList.forEach((t,i)=>{const pool=fams[t[3]];const k=pool[i%pool.length];(groups[k]=groups[k]||[]).push(t)});
+ const d=new THREE.Object3D(),col=new THREE.Color();const groupsGeo={};
+ for(const k in groups){const L=groups[k],l=lib['tl_'+k+'_l'],b=lib['tl_'+k+'_b'];const fam=k.replace(/\d+$/,'');
+  if(!lm[fam]){const tex=l.material.map;tex.anisotropy=16;tex.encoding=THREE.sRGBEncoding;tex.needsUpdate=true;lm[fam]=new THREE.MeshStandardMaterial({map:tex,alphaTest:0.45,side:THREE.DoubleSide,roughness:0.85,metalness:0});
+   // flatten lighting variance across leaf cards: point all normals up and out
+  }
+  const lg=l.geometry.clone();if(!lg.attributes.normal)lg.setAttribute('normal',new THREE.Float32BufferAttribute(new Float32Array(lg.attributes.position.count*3),3));{const p=lg.attributes.position,n=lg.attributes.normal;const bb=new THREE.Box3().setFromBufferAttribute(p);const c=bb.getCenter(new THREE.Vector3());for(let i=0;i<p.count;i++){const v=new THREE.Vector3(p.getX(i)-c.x,(p.getY(i)-c.y)*0.8+0.5*(bb.max.y-bb.min.y)*0.5,p.getZ(i)-c.z).normalize();n.setXYZ(i,v.x,v.y,v.z)}n.needsUpdate=true}
+  groupsGeo[k]=lg;const leaf=new THREE.InstancedMesh(lg,lm[fam],L.length),bark=b?new THREE.InstancedMesh(b.geometry,barkMat,L.length):null;
+  L.forEach((t,i)=>{const want=(fam==='gum'?11:7.5)*t[2],sc=want/Math.max(0.5,Hh[k]);d.position.set(t[0],0,t[1]);d.rotation.set(0,rnd()*6.283,0);d.scale.set(sc*R(0.9,1.1),sc*R(0.92,1.08),sc*R(0.9,1.1));d.updateMatrix();leaf.setMatrixAt(i,d.matrix);if(bark)bark.setMatrixAt(i,d.matrix);
+   const gg=R(0.82,1.05);col.setRGB(gg*R(0.95,1.05),gg,gg*R(0.85,0.95));leaf.setColorAt(i,col)});
+  leaf.instanceMatrix.needsUpdate=true;leaf.castShadow=true;leaf.receiveShadow=true;leaf.frustumCulled=false;scene.add(leaf);
+  // soft contact shadows under leaves come from the sun shadow map
+  if(bark){bark.castShadow=true;bark.frustumCulled=false;scene.add(bark)}}
+ // shrubs: small street-tree instances as garden shrubs
+ const sh=[];const hx=H.position.x,hz=H.position.z;
+ for(let x=GX+GW/2+0.8;x<WX-WW/2-0.5;x+=1.6)sh.push([hx+x,hz+fz+3.9+R(-0.2,0.2),R(0.09,0.12)]);
+ 
+ for(let z=MZ-1;z<MZ+5;z+=1.3)sh.push([hx+MW/2+1.2,hz+z,R(0.13,0.18)]);
+ 
+ const sk='street1',sl=lib['tl_'+sk+'_l'];const si=new THREE.InstancedMesh(groupsGeo[sk]||sl.geometry,lm.street,sh.length);
+ sh.forEach((t,i)=>{const sc=7.5*t[2]/Hh[sk]*2.6;d.position.set(t[0],-0.6*sc*0.2,t[1]);d.rotation.set(0,rnd()*6.28,0);d.scale.set(sc,sc*0.7,sc);d.updateMatrix();si.setMatrixAt(i,d.matrix);const gg=R(0.7,0.9);col.setRGB(gg,gg*1.05,gg*0.8);si.setColorAt(i,col)});
+ si.castShadow=true;si.receiveShadow=true;si.frustumCulled=false;scene.add(si);
+ window.__treesReady=true;
+})().catch(e=>{console.log('TREE ERR',e);window.__treesReady=true});
+
+// ---------- camera
+const cp=(Q.get('cam')||'-38,46,92').split(',').map(Number),tg=(Q.get('tgt')||'-14,0,10').split(',').map(Number);
+camera.position.set(...cp);camera.lookAt(...tg);
+if(Q.get('shift')){const s=Q.get('shift').split(',').map(Number);camera.setViewOffset(VW,VH,s[0]*VW,s[1]*VH,VW,VH)}
+window.__render=()=>{renderer.render(scene,camera);return true};
+</script>
+</body></html>

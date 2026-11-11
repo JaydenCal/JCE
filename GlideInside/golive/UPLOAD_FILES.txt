@@ -1,4 +1,4 @@
-# Files in glideinside-site-upload.zip, built 11/11/2026 from a1aa8b5 (base a7e153a).
+# Files in glideinside-site-upload.zip, built 11/11/2026 from e2d0076 (base a7e153a).
 # Extract into public_html. Do not upload subdivision/, .htaccess, .user.ini or contact-config.php.
 3d-floor-plan-maker/index.html
 analytics.js
@@ -11,9 +11,9 @@ assets/app-setbacks.webp
 assets/block-plan.webp
 assets/fonts/newsreader-latin-wght-normal.woff2
 assets/gi-chrome.css
-assets/hero-lot-1600.webp
-assets/hero-lot-2400.webp
-assets/hero-lot-phone.webp
+assets/hero-home-1600.webp
+assets/hero-home-2400.webp
+assets/hero-home-phone.webp
 assets/og-cover.jpg
 assets/planset-cover.webp
 assets/planset-floor.webp
@@ -50,24 +50,16 @@ portal/src/portal/api.js
 portal/src/portal/arrange.js
 portal/src/portal/auto-place.js
 portal/src/portal/billing.js
-portal/src/portal/builders.js
 portal/src/portal/envelope.js
 portal/src/portal/glide-library.generated.js
 portal/src/portal/mock-api.js
 portal/src/portal/place-house.js
 portal/src/portal/pose-session.js
-portal/src/portal/theme-css.js
-portal/src/portal/theme.js
 portal/src/portal/ui/admin-app.js
-portal/src/portal/ui/auth-views.js
 portal/src/portal/ui/billing-tab.js
-portal/src/portal/ui/branding-tab.js
 portal/src/portal/ui/clients-tab.js
-portal/src/portal/ui/glide-tab.js
-portal/src/portal/ui/houses-tab.js
 portal/src/portal/ui/portal-app.js
 portal/src/portal/ui/trial-ui.js
-portal/src/premium/api.js
 pricing/index.html
 privacy.html
 shed-with-living-quarters/index.html
