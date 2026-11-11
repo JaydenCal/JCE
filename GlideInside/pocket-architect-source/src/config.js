@@ -11,7 +11,7 @@ const REVIEW_BUILD = false;
 export const CONFIG = {
   productName: 'Plan Studio',
   // Selling entity printed on paid exports. Placeholder until decision 17.1 is made.
-  seller: { name: 'Glide Inside', abn: '' },
+  seller: { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' },
   apiBase: '/api',
   // Builder and client logins (portal) get the AI included. Off until the public launch is done.
   portalEnabled: false,

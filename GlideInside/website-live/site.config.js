@@ -22,7 +22,7 @@ window.GI_CONFIG = {
   // Tracking (leave empty until the owner creates the accounts; see docs/marketing/TRACKING.md)
   ga4Id: "G-8TLHQ55DN4",                      // GA4 Measurement ID, for example "G-XXXXXXXXXX". Empty = no analytics loaded.
   adsConversion: "",              // Google Ads purchase conversion, "AW-XXXXXXXXX/label". Empty = not sent.
-  abn: "11 549 431 925",
+  abn: "29 699 165 663",
   email: "hello@glideinside.com.au",
   phone: "0477 207 027"
 };
