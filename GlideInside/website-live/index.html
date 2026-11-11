@@ -18,7 +18,7 @@
 <link rel="icon" href="assets/Glideinside_Favicon_v4.svg">
 <link rel="preload" href="assets/fonts/newsreader-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="framework.css?v=20261112">
+<link rel="stylesheet" href="framework.css?v=20261112"><link rel="stylesheet" href="builder-picker.css?v=20261112">
 <link rel="preload" as="image" href="assets/hero-lot-1600.webp" imagesrcset="assets/hero-lot-1600.webp 1600w, assets/hero-lot-2400.webp 2400w" imagesizes="(max-width:760px) 100vw, 92vw">
 <script src="site.config.js?v=20261111"></script><script src="framework.js?v=20261112" defer></script><script src="analytics.js" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Glide Inside","url":"https://glideinside.com.au/","email":"hello@glideinside.com.au","telephone":"0477 207 027","taxID":"29 699 165 663","image":"https://glideinside.com.au/assets/hero-lot-1600.webp","areaServed":[{"@type":"AdministrativeArea","name":"Regional New South Wales, Australia"},{"@type":"AdministrativeArea","name":"Queensland, Australia"}],"makesOffer":{"@type":"Offer","name":"Pocket Architect plan pack (per job)","description":"PDF plan set, DXF, 3D model and interactive HTML exports and 500 AI credits for one job. Concept design only.","price":"30","priceCurrency":"AUD","priceSpecification":{"@type":"PriceSpecification","price":"30","priceCurrency":"AUD","valueAddedTaxIncluded":true},"availability":"https://schema.org/InStock","url":"https://glideinside.com.au/plan-studio/"}}</script>
@@ -50,6 +50,27 @@
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 </div></header>
 <main id="main">
+
+<section class="bp" id="builder-picker" aria-labelledby="bp-title">
+  <div class="shell">
+    <p class="bp-eyebrow">Select your builder</p>
+    <h2 id="bp-title">Who is building your home?</h2>
+    <p class="bp-sub">Choose your builder to sign in to their house designs, set up for your block.</p>
+    <div class="bp-box">
+      <div class="bp-field">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input class="bp-input" id="bp-input" type="text" role="combobox" aria-label="Select your builder" aria-autocomplete="list" aria-expanded="false" aria-controls="bp-list" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Select your builder">
+        <button class="bp-toggle" type="button" tabindex="-1" aria-label="Show all builders" aria-expanded="false" aria-controls="bp-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <ul class="bp-list" id="bp-list" role="listbox" aria-label="Builders" hidden></ul>
+      <div class="bp-acts" hidden>
+        <a class="bp-btn" data-role="client" href="/portal/?role=client">I'm a client</a>
+        <a class="bp-btn" data-role="builder" href="/portal/?role=builder">I'm a builder representative</a>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="builder-picker.js?v=20261112" defer></script>
 
 <section class="cine dark" aria-labelledby="hero-title">
   <div class="shell cine-top">

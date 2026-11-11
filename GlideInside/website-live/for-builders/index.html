@@ -192,6 +192,10 @@
     if (v === "other") { if (cin.value === last) cin.value = ""; last = ""; cin.focus(); }
     else if (v) { if (!cin.value || cin.value === last) cin.value = v; last = v; }
   });
+  try {
+    var qb = new URLSearchParams(location.search).get("builder"), SL = { "mcdonald-jones": "McDonald Jones Homes", "hunter-homes": "Hunter Homes", "masterton": "Masterton Homes", "coral-homes": "Coral Homes", "hotondo": "Hotondo Homes", "mojo": "MOJO Homes", "montgomery": "Montgomery Homes", "allworth": "Allworth Homes", "tulliplan": "Tulliplan Homes", "gj-gardner": "G.J. Gardner Homes", "other": "other" };
+    if (qb && SL[qb]) { bsel.value = SL[qb]; bsel.dispatchEvent(new Event("change")); }
+  } catch (_) {}
   function abnOk(v) {
     var d = String(v || "").replace(/\s+/g, "");
     if (!/^\d{11}$/.test(d)) return false;
