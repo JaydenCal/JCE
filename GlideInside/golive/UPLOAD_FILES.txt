@@ -1,4 +1,4 @@
-# Files in glideinside-site-upload.zip, built 11/11/2026 from 574ff1c (base a7e153a).
+# Files in glideinside-site-upload.zip, built 11/11/2026 from 959e4b8 (base a7e153a).
 # Extract into public_html. Do not upload subdivision/, .htaccess, .user.ini or contact-config.php.
 3d-floor-plan-maker/index.html
 analytics.js
