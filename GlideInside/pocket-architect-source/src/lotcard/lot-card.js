@@ -29,7 +29,7 @@ const DOT = { inside: '#6fd39a', outside: '#ff8a7a', check: '#f2b94b' };
 /** The muted header line: "Builder name · Concept only" in the portal, "Concept only" in the public app. */
 export const mutedLine = (builderName) => (builderName ? `${builderName} · Concept only` : 'Concept only');
 
-export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null }) {
+export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null, onEdit = null, onMini = null }) {
   if (!document.getElementById(STYLE_ID)) {
     const st = document.createElement('style');
     st.id = STYLE_ID;
@@ -47,7 +47,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const stats = E('lc-stats');
   const chips = E('lc-strip', 'div', { role: 'group', 'aria-label': 'Colour schemes' });
   const bWalk = h('button', { class: 'lc-btn lc-pri', type: 'button', dataset: { ps: 'lc-walk' }, onclick: () => store.setUI({ view: 'walk' }) }, 'Walk inside');
-  const bEdit = h('button', { class: 'lc-btn', type: 'button', dataset: { ps: 'lc-edit' }, onclick: () => store.setUI({ view: '2d' }) }, 'Edit floor plan');
+  const bEdit = h('button', { class: 'lc-btn', type: 'button', dataset: { ps: 'lc-edit' }, onclick: () => (onEdit ? onEdit() : store.setUI({ view: '2d' })) }, 'Edit floor plan');
   const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => sitePlanPdf() }, 'Plan set PDF');
   const fit = E('lc-fit', 'div', { role: 'status', 'aria-live': 'polite', dataset: { ps: 'lc-fit' } });
   const more = h('button', { class: 'lc-more', type: 'button', 'aria-expanded': 'false', onclick: () => { card.classList.toggle('is-open'); more.setAttribute('aria-expanded', String(card.classList.contains('is-open'))); sizeInset(); } }, 'Details');
@@ -184,7 +184,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     else { selTab = 'aerial'; schedule(); go(roomId); }
   }
 
-  function toggle2d() { store.setUI({ view: store.ui.view === 'split' ? '3d' : 'split' }); }
+  function toggle2d() { if (onMini) { onMini(); return; } store.setUI({ view: store.ui.view === 'split' ? '3d' : 'split' }); }
 
   // Rendering ---------------------------------------------------------------------------------------------------------------------
   const schemeChip = (s) => {

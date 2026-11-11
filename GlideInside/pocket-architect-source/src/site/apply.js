@@ -64,8 +64,8 @@ const titleCase = (s) => String(s || '').toLowerCase().replace(/\b[a-z]/g, (c) =
  * applySiteLookup(store, selection, { onStep, signal }) -> { lot, warnings }
  * Throws SiteError (readable message) when the lot cannot be found. A missing aerial or elevation grid only adds warnings.
  */
-export async function applySiteLookup(store, selection, { onStep, signal, fetchImpl } = {}) {
-  const res = await fetchSite(selection, { onStep, signal, fetchImpl });
+export async function applySiteLookup(store, selection, { onStep, signal, fetchImpl, prefetched = null } = {}) {
+  const res = prefetched || (await fetchSite(selection, { onStep, signal, fetchImpl }));
   const warnings = [...res.warnings];
   let aerialKey = null;
   if (res.aerial?.blob) {

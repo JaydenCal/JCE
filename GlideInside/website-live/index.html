@@ -18,8 +18,8 @@
 <link rel="icon" href="assets/Glideinside_Favicon_v4.svg">
 <link rel="preload" href="assets/fonts/newsreader-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="framework.css?v=20261112b"><link rel="stylesheet" href="builder-picker.css?v=20261112b">
-<script src="site.config.js?v=20261112b"></script><script src="framework.js?v=20261112b" defer></script><script src="analytics.js" defer></script>
+<link rel="stylesheet" href="framework.css?v=20261112c"><link rel="stylesheet" href="builder-picker.css?v=20261112c">
+<script src="site.config.js?v=20261112c"></script><script src="framework.js?v=20261112c" defer></script><script src="analytics.js" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Glide Inside","url":"https://glideinside.com.au/","email":"hello@glideinside.com.au","telephone":"0477 207 027","taxID":"29 699 165 663","image":"https://glideinside.com.au/assets/hero-home-1600.webp","areaServed":[{"@type":"AdministrativeArea","name":"Regional New South Wales, Australia"},{"@type":"AdministrativeArea","name":"Queensland, Australia"}],"makesOffer":{"@type":"Offer","name":"Pocket Architect plan pack (per job)","description":"PDF plan set, DXF, 3D model and interactive HTML exports and 500 AI credits for one job. Concept design only.","price":"30","priceCurrency":"AUD","priceSpecification":{"@type":"PriceSpecification","price":"30","priceCurrency":"AUD","valueAddedTaxIncluded":true},"availability":"https://schema.org/InStock","url":"https://glideinside.com.au/plan-studio/"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a granny flat?","acceptedAnswer":{"@type":"Answer","text":"A granny flat is a small self contained home on the same lot as a main house, often called a secondary dwelling. Most have one or two bedrooms, a kitchen, a bathroom and a living area."}},{"@type":"Question","name":"How big can a granny flat be in NSW?","acceptedAnswer":{"@type":"Answer","text":"In NSW a secondary dwelling is generally limited to 60 m² of floor area outside rural zones. Rules vary by zone and council, so check with your council before you build."}},{"@type":"Question","name":"Do I need approval to build a granny flat?","acceptedAnswer":{"@type":"Answer","text":"Yes. In NSW a granny flat needs either a complying development certificate from your council or a private certifier, if it meets all the standards, or a development application. Pocket Architect concept plans help you talk it through, but they are not approval documents."}},{"@type":"Question","name":"Can I design a shed with living quarters?","acceptedAnswer":{"@type":"Answer","text":"Yes. Start from the garage and workshop shed or the farm machinery shed, draw the rooms you want inside and view it in 3D. Whether a shed can be lived in depends on your council and the building code."}},{"@type":"Question","name":"Are these plans approved?","acceptedAnswer":{"@type":"Answer","text":"No. Outputs are concept designs. They are not construction drawings or development application documents, and are not checked against planning controls or the National Construction Code."}},{"@type":"Question","name":"How much does Pocket Architect cost?","acceptedAnswer":{"@type":"Answer","text":"Drawing and viewing are free. A$30 per job (incl. GST) unlocks a PDF plan set, a DXF for CAD, a 3D model file and an interactive HTML file that opens offline. A 3D fly-through add-on is A$10 and complex renderings are A$10, made by the Glide Inside team."}},{"@type":"Question","name":"Do I need an account?","acceptedAnswer":{"@type":"Answer","text":"No account is needed to draw. Your work saves in your browser. When you pay, Stripe collects your email and we use it to restore your purchase."}},{"@type":"Question","name":"Can I design a granny flat, duplex or shed?","acceptedAnswer":{"@type":"Answer","text":"Yes. Pocket Architect has starting plans for granny flats, duplexes, 4 bedroom houses, sheds and extensions. Open any of them from the plan library and change it to suit your site."}},{"@type":"Question","name":"Who is behind the subdivision work?","acceptedAnswer":{"@type":"Answer","text":"Glide Inside's director is a qualified civil engineer and can assist with preliminary subdivision feasibility."}},{"@type":"Question","name":"Can I use both products on one project?","acceptedAnswer":{"@type":"Answer","text":"Yes. A common path is a subdivision concept first, then Pocket Architect for the buildings on each lot."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Pocket Architect","applicationCategory":"DesignApplication","operatingSystem":"Web browser","url":"https://glideinside.com.au/plan-studio/","description":"Browser based site planning and house design tool for regional NSW and Queensland. See your block, place a granny flat, house or shed design, edit it in 2D and 3D and export PDF plans, DXF and a 3D model. Concept designs only.","featureList":["Lot boundary, surrounding lots, aerial and LiDAR contours for an address","Council setbacks drawn on the lot","2D plan editor and 3D model with walk through","AI design helper","PDF plans, DXF and 3D model export"],"offers":[{"@type":"Offer","name":"Draw and view in 3D","price":"0","priceCurrency":"AUD"},{"@type":"Offer","name":"Plan Pack (per job)","price":"30","priceCurrency":"AUD","priceSpecification":{"@type":"PriceSpecification","price":"30","priceCurrency":"AUD","valueAddedTaxIncluded":true}}]}</script>
@@ -69,7 +69,7 @@
     </div>
   </div>
 </section>
-<script src="builder-picker.js?v=20261112b" defer></script>
+<script src="builder-picker.js?v=20261112c" defer></script>
 
 <section class="cine dark" aria-labelledby="hero-title">
   <div class="shell cine-top">
@@ -79,15 +79,27 @@
       <div class="hero-cta"><a class="btn" data-cfg-href="toolUrl" href="plan-studio/launch/">Start designing</a><a class="btn btn-ghost" href="for-builders/">For builders</a></div>
     </div>
   </div>
+  <div class="shell live-wrap as-wrap">
+    <form class="as" data-addr-search data-max="6" role="search" autocomplete="off" onsubmit="return false">
+      <div class="as-field">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input class="as-input" data-addr-input id="as-input" type="text" role="combobox" aria-label="Search your address in NSW or QLD" aria-autocomplete="list" aria-expanded="false" aria-controls="as-list" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="120" placeholder="Search your address in NSW or QLD">
+        <button class="as-go" type="submit">Show my block</button>
+      </div>
+      <ul class="as-list" id="as-list" role="listbox" aria-label="Address suggestions" hidden></ul>
+      <p class="as-status" data-addr-status role="status" aria-live="polite"></p>
+    </form>
+  </div>
   <div class="shell live-wrap">
     <div class="live-hero" id="live-tool" data-auto style="--poster:url(assets/hero-home-1600.webp)">
-      <div class="lh-bar"><i></i><i></i><i></i><span>glideinside.com.au/plan-studio</span><a href="plan-studio/launch/">Open full screen</a></div>
+      <div class="lh-bar"><i></i><i></i><i></i><span>glideinside.com.au/plan-studio</span><button class="lh-fs" type="button" data-fs aria-label="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg><span>Full screen</span></button><a class="lh-edit" href="plan-studio/launch/">Open full editor</a></div>
       <div class="lh-stage">
-        <iframe title="Pocket Architect, live editor" data-src="plan-studio/app/" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-pointer-lock" allow="fullscreen; pointer-lock; clipboard-write" tabindex="-1"></iframe>
-        <div class="lh-poster"><div><button class="btn" type="button" data-live-open>Tap to open the live tool</button><p>Loading the live tool. Concept plans, not construction drawings.</p></div></div>
+        <iframe title="Pocket Architect, live 3D viewer" data-src="plan-studio/app/?embed=1" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-pointer-lock allow-top-navigation-by-user-activation" allow="fullscreen; pointer-lock; clipboard-write" tabindex="-1"></iframe>
+        <button class="lh-exit" type="button" data-fs-exit>Exit full screen</button>
+        <div class="lh-poster"><div><button class="btn" type="button" data-live-open>Tap to open the live viewer</button><p>Loading the live tool. Concept plans, not construction drawings.</p></div></div>
       </div>
     </div>
-    <p class="stage-cap">The live Pocket Architect tool. Type an address to start. Concept plans, not construction drawings.</p>
+    <p class="stage-cap">The live Pocket Architect viewer. Search an address above to start. Concept plans, not construction drawings.</p>
   </div>
 </section>
 
@@ -95,7 +107,7 @@
   <div class="shell">
     <div class="sec-head"><h2>Address to house in three steps</h2><p>No drafting software and no site visit to get started. The block, the rules and the house are in the one view.</p></div>
     <ol class="seq">
-      <li><div class="vis"><div class="seq-search" aria-hidden="true"><div class="bar"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.6 3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>14 Sample Street, Cal</span></div><ul><li>14 Sample Street, Calala NSW<small>Lot 27 DP 1234567, Tamworth Regional</small></li><li>14 Sample Lane, Calala NSW<small>Lot 3 DP 7654321</small></li></ul></div></div><div class="txt"><h3>Type the address</h3><p>Find my block looks up the lot from the state cadastre.</p></div></li>
+      <li><div class="vis"><div class="seq-search" data-addr-search data-max="4"><div class="bar"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.6 3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input class="as-input" data-addr-input type="text" role="combobox" aria-label="Type your address" aria-autocomplete="list" aria-expanded="false" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="120" placeholder="Type your address"></div><ul class="as-list" role="listbox" aria-label="Address suggestions" hidden></ul><p class="as-status" data-addr-status role="status" aria-live="polite"></p></div></div><div class="txt"><h3>Type the address</h3><p>Find my block looks up the lot from the state cadastre.</p></div></li>
       <li><div class="vis"><img src="assets/step-block.webp" width="1200" height="900" alt="Plan view of the lot with its boundary, neighbouring lots and the setback envelope drawn as a dashed line" loading="lazy" decoding="async"></div><div class="txt"><h3>See the block</h3><p>The boundary, neighbours, aerial, contours and setbacks load for the site.</p></div></li>
       <li><div class="vis"><img src="assets/step-house.webp" width="1200" height="900" alt="A four bedroom house placed on the lot, seen in 3D from the street" loading="lazy" decoding="async"></div><div class="txt"><h3>Drop in a house</h3><p>Place a design, move it to fit, then walk through it room by room.</p></div></li>
     </ol>

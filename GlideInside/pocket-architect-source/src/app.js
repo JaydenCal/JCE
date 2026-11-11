@@ -37,8 +37,11 @@ import { backTarget, backLabel } from './ui/back-target.js';
 import { startView, readLastView } from './ui/view-mode.js';
 import { portalUrl } from './portal/links.js';
 import { createLotCard } from './lotcard/lot-card.js';
+import { viewerEmbedRequested, addressFromSearch, openFullEditor, initEmbedViewer, loadAddress, mountViewerChrome } from './ui/embed-viewer.js';
 
 const demoMode = () => CONFIG.embedMode === 'demo';
+// ?embed=1 or ?view=viewer: the cinematic single lot 3D view only (the home page frame). See src/ui/embed-viewer.js.
+const VIEWER = viewerEmbedRequested();
 
 async function loadCatalogue() {
   try {
@@ -66,7 +69,7 @@ function projectFromTemplate(catalogue, t) {
 const hasContent = (p) => p.levels.some((l) => l.rooms.length || l.walls.length);
 
 function initialProject(catalogue) {
-  if (!demoMode()) {
+  if (!demoMode() && !VIEWER) {
     const saved = loadAutosave(CONFIG.autosaveKey);
     if (saved) return { project: saved, fromAutosave: true };
   }
@@ -97,6 +100,7 @@ async function main() {
   mountToasts(refs.toasts);
   mountModals(refs.modalRoot);
   refs.shell.dataset.mode = demoMode() ? 'demo' : 'full';
+  if (VIEWER) refs.shell.dataset.embedViewer = '1';
 
   const catalogue = await loadCatalogue();
   const start = initialProject(catalogue);
@@ -105,7 +109,7 @@ async function main() {
   // On small screens the properties panel starts as a collapsed bottom sheet so the plan keeps the room.
   if (narrow) refs.panel.dataset.open = 'false';
   // A demo (teaser) never writes the autosave slot, so it cannot overwrite a visitor's real design.
-  const noAutosave = demoMode();
+  const noAutosave = demoMode() || VIEWER;
   const store = createStore(start.project, { autosaveKey: noAutosave ? null : CONFIG.autosaveKey, opContext: { catalogue } });
 
   // Indicative setbacks and building envelope for a looked-up lot, loaded per council (src/site/setback-stage.js).
@@ -282,7 +286,7 @@ async function main() {
 
   // Save and share (the live app's Share button and ?share=<id> links). The link is opened after the first frame, below.
   share = initShare({ store, refs, config: CONFIG, replaceProject, hasEdits, setAutosaveShown: (on) => statusbar.setAutosave(on) });
-  const shareId = demoMode() ? null : share.linkFromAddress();
+  const shareId = demoMode() || VIEWER ? null : share.linkFromAddress();
 
   // Keyboard -------------------------------------------------------------------------------------------------------------------
   // After a mouse click on a bar button, drop focus so Space (pan) and Delete reach the plan, not the button.
@@ -293,13 +297,13 @@ async function main() {
   });
   // I opens the Inventory (quick slots for the Q wheel). Not while walking, where the pointer is captured by the viewer.
   window.addEventListener('keydown', (e) => {
-    if ((e.key !== 'i' && e.key !== 'I') || e.ctrlKey || e.metaKey || e.altKey || e.repeat || e.defaultPrevented) return;
+    if (VIEWER || (e.key !== 'i' && e.key !== 'I') || e.ctrlKey || e.metaKey || e.altKey || e.repeat || e.defaultPrevented) return;
     if (isTyping(e.target) || document.querySelector('.ps-modal') || store.ui.view === 'walk') return;
     e.preventDefault();
     openInventory();
   });
   window.addEventListener('keydown', (e) => {
-    if (e.defaultPrevented || !(e.ctrlKey || e.metaKey) || e.altKey) return;
+    if (VIEWER || e.defaultPrevented || !(e.ctrlKey || e.metaKey) || e.altKey) return;
     if (isTyping(e.target) || e.target.closest?.('.ps-modal')) return;
     const k = e.key.toLowerCase();
     if (k === 'z') {
@@ -369,6 +373,7 @@ async function main() {
 
   // Start state ------------------------------------------------------------------------------------------------------------------
   const params = new URLSearchParams(location.search);
+  const addressParam = addressFromSearch();
   const phone = window.matchMedia?.('(max-width: 599.98px)').matches;
   let owner = null;
   try {
@@ -382,7 +387,7 @@ async function main() {
   } catch {
     remembered = null;
   }
-  const first = startView({ param: params.get('view'), phone, remembered, demo: demoMode() });
+  const first = VIEWER ? '3d' : startView({ param: params.get('view'), phone, remembered, demo: demoMode() });
   if (first !== '2d') store.setUI({ view: first });
   // With a lot loaded and the house placed, the plan opens on Move house (drag the whole house, ring to turn). It becomes the active tool
   // when a lot first appears on the design; wall and room reshaping stays one click away on Edit (B).
@@ -399,18 +404,31 @@ async function main() {
   defaultTool();
   track('ps_open', { embedMode: CONFIG.embedMode });
 
-  const lotCard = createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer });
+  const openFull = () => openFullEditor(store.project);
+  const lotCard = createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openFull, onMini: () => {} } : {}) });
   api.lotCard = lotCard;
   createMapCredit(refs.stage, store);
-  if (!state.fromAutosave && !demoMode() && !narrow && !shareId) createWelcome(refs.stage, store, { onChoose: openNew });
+  if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam) createWelcome(refs.stage, store, { onChoose: openNew });
 
   embed.ready();
+  if (VIEWER) {
+    mountViewerChrome(refs.stage, store);
+    const ev = initEmbedViewer({ store, catalogue, shell: refs.shell, viewerMode: true, getViewer });
+    api.embedViewer = ev;
+    if (addressParam) ev.run(addressParam);
+    else ev.startDemo();
+  } else if (addressParam) {
+    initEmbedViewer({ store, catalogue, shell: refs.shell, viewerMode: false }); // also answers gi:find-address
+    loadAddress(store, catalogue, addressParam)
+      .then(({ lot }) => toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' }))
+      .catch((e) => toast(e?.message || 'That address could not be loaded.', { kind: 'warn' }));
+  }
   if (shareId) await share.openLink(shareId);
 
   // Plan Pack (optional). Loaded after the first frame; the tool works without it.
   if (!demoMode()) await mountPremium();
-  if (!demoMode() && CONFIG.portalEnabled) await import('./portal/client-mode.js').then((m) => m.initPortalMode(window.__ps)).catch((e) => console.warn('[portal] client mode not available', e));
-  import('./ui/onboarding/index.js').then((m) => m.initOnboarding?.(window.__ps)).catch(() => {});
+  if (!demoMode() && !VIEWER && CONFIG.portalEnabled) await import('./portal/client-mode.js').then((m) => m.initPortalMode(window.__ps)).catch((e) => console.warn('[portal] client mode not available', e));
+  if (!VIEWER) import('./ui/onboarding/index.js').then((m) => m.initOnboarding?.(window.__ps)).catch(() => {});
   return api;
 }
 

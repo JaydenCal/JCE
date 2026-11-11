@@ -27,15 +27,22 @@
       try { if (window.gtag) window.gtag("event", "live_editor_loaded", {}); } catch (e) {}
     });
   });
-  // home live tool: lazy-loads the framed app near the viewport (desktop) or on tap (phone); never steals focus or scroll
+  // home live tool: lazy-loads the framed viewer near the viewport (desktop); on a phone the frame is a poster that opens the viewer full screen
+  var APP = "/plan-studio/app/";
+  var appUrl = function (address) { return APP + "?embed=1" + (address ? "&address=" + encodeURIComponent(address) : ""); };
+  var phoneMq = matchMedia("(max-width: 760px)");
+  var live = { box: null, frame: null, stage: null, start: function () {}, ready: false, pending: null, last: "" };
+  var searches = [];
   document.querySelectorAll(".live-hero").forEach(function (box) {
     var f = box.querySelector("iframe"), note = box.querySelector(".lh-poster p"), btn = box.querySelector("[data-live-open]");
     if (!f) return;
-    var phone = matchMedia("(max-width: 760px)"), started = false;
+    var started = false;
+    live.box = box; live.frame = f; live.stage = box.querySelector(".lh-stage");
     function go() {
       if (started) return; started = true;
       var y = window.scrollY, x = window.scrollX;
       f.addEventListener("load", function () {
+        live.ready = false;
         box.classList.add("is-live");
         try { if (document.activeElement === f) f.blur(); } catch (e) {}
         window.scrollTo(x, y); setTimeout(function () { window.scrollTo(x, y); }, 400);
@@ -43,9 +50,121 @@
       });
       f.src = new URL(f.dataset.src, root || location.href).href;
     }
-    if (phone.matches) { if (note) note.textContent = "Concept plans, not construction drawings."; if (btn) btn.addEventListener("click", go); }
+    live.start = go;
+    if (phoneMq.matches) {
+      if (note) note.textContent = "Concept plans, not construction drawings.";
+      if (btn) btn.addEventListener("click", function () { location.assign(appUrl(live.last)); });
+    }
     else if ("IntersectionObserver" in window) { new IntersectionObserver(function (es, o) { if (es[0].isIntersecting) { o.disconnect(); go(); } }, { rootMargin: "300px 0px" }).observe(box); }
     else go();
+    // Full screen: the Fullscreen API on the frame wrapper; a new tab with the viewer where the browser has none (iPhone).
+    var fsBtn = box.querySelector("[data-fs]"), exitBtn = box.querySelector("[data-fs-exit]"), st = live.stage;
+    var fsOn = function () { return document.fullscreenElement || document.webkitFullscreenElement; };
+    if (fsBtn && st) {
+      var label = fsBtn.querySelector("span");
+      fsBtn.addEventListener("click", function () {
+        if (fsOn()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+        var req = st.requestFullscreen || st.webkitRequestFullscreen;
+        if (!req || document.fullscreenEnabled === false) { window.open(appUrl(live.last), "_blank", "noopener"); return; }
+        go();
+        try { var p = req.call(st); if (p && p.catch) p.catch(function () { window.open(appUrl(live.last), "_blank", "noopener"); }); } catch (e) { window.open(appUrl(live.last), "_blank", "noopener"); }
+      });
+      var sync = function () { var on = !!fsOn(); box.classList.toggle("is-fs", on); if (label) label.textContent = on ? "Exit full screen" : "Full screen"; };
+      document.addEventListener("fullscreenchange", sync); document.addEventListener("webkitfullscreenchange", sync);
+      if (exitBtn) exitBtn.addEventListener("click", function () { (document.exitFullscreen || document.webkitExitFullscreen).call(document); });
+    }
+  });
+  // Address search: one component for the bar above the frame and the field in step 1. Suggestions come from /api/site/search?q=
+  // (the same call the app makes). Choosing one sends gi:find-address to the embedded viewer and scrolls it into view; on a phone it
+  // opens the viewer full screen at that address instead.
+  function postFind(address) {
+    try { live.frame.contentWindow.postMessage({ type: "gi:find-address", address: address }, location.origin); } catch (e) {}
+  }
+  function openAddress(address) {
+    live.last = address;
+    try { if (window.gtag) window.gtag("event", "address_search", {}); } catch (e) {}
+    if (phoneMq.matches || !live.frame) { location.assign(appUrl(address)); return; }
+    live.box.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    live.start();
+    if (live.ready) postFind(address); else live.pending = address;
+  }
+  function setStatus(text, kind) { searches.forEach(function (c) { c.status.textContent = text || ""; c.status.dataset.kind = kind || ""; }); }
+  window.addEventListener("message", function (e) {
+    if (e.origin !== location.origin || !live.frame || e.source !== live.frame.contentWindow) return;
+    var m = e.data; if (!m || typeof m !== "object") return;
+    if (m.type === "gi:ready") { live.ready = true; if (live.pending) { var a = live.pending; live.pending = null; postFind(a); } }
+    else if (m.type === "gi:status") {
+      if (m.state === "loading") setStatus("Loading your block");
+      else if (m.state === "done") { if (m.address) live.last = m.address; setStatus(m.address ? "Showing " + m.address : "", ""); }
+      else if (m.state === "error") setStatus(m.message || "That address could not be loaded.", "warn");
+    }
+  });
+  document.querySelectorAll("[data-addr-search]").forEach(function (root) {
+    var input = root.querySelector("[data-addr-input]"), list = root.querySelector(".as-list"), status = root.querySelector("[data-addr-status]");
+    if (!input || !list) return;
+    var max = Number(root.dataset.max) || 6, results = [], active = -1, ctl = null, timer = 0, seq = 0, uid = "as" + searches.length + "-";
+    var comp = { input: input, status: status || document.createElement("p") };
+    searches.push(comp);
+    function close() { list.hidden = true; input.setAttribute("aria-expanded", "false"); input.removeAttribute("aria-activedescendant"); active = -1; }
+    function paint() {
+      list.textContent = "";
+      results.slice(0, max).forEach(function (r, i) {
+        var li = document.createElement("li"); li.className = "as-opt"; li.id = uid + i; li.setAttribute("role", "option"); li.setAttribute("aria-selected", String(i === active));
+        li.appendChild(document.createTextNode(r.label));
+        if (r.state) { var sm = document.createElement("small"); sm.textContent = r.state; li.appendChild(sm); }
+        li.addEventListener("pointerdown", function (e) { e.preventDefault(); choose(i); });
+        list.appendChild(li);
+      });
+      list.hidden = !results.length;
+      input.setAttribute("aria-expanded", String(!!results.length));
+      if (active >= 0) input.setAttribute("aria-activedescendant", uid + active);
+    }
+    function search(q) {
+      if (ctl) ctl.abort();
+      var my = ++seq;
+      if (!window.fetch) return Promise.resolve([]);
+      ctl = window.AbortController ? new AbortController() : null;
+      return fetch("/api/site/search?q=" + encodeURIComponent(q), ctl ? { signal: ctl.signal } : {})
+        .then(function (res) { if (!res.ok) throw new Error("search " + res.status); return res.json(); })
+        .then(function (body) { if (my !== seq) return null; return (body && body.results) || []; })
+        .catch(function (e) { if (e && e.name === "AbortError") return null; if (my === seq) { setStatus("The address search is not available right now. Try again soon.", "warn"); } return null; });
+    }
+    function run(q) {
+      return search(q).then(function (r) {
+        if (r == null) return null;
+        results = r; active = -1; paint();
+        setStatus(r.length ? "" : "No matching address found. Check the spelling, or try the street name and suburb.", r.length ? "" : "warn");
+        return r;
+      });
+    }
+    function choose(i) {
+      var r = results[i]; if (!r) return;
+      close(); results = [];
+      searches.forEach(function (c) { c.input.value = r.label; });
+      setStatus("");
+      openAddress(r.label);
+    }
+    function submit() {
+      var q = input.value.trim();
+      if (q.length < 3) { setStatus("Type your street address first.", "warn"); return; }
+      if (active >= 0) { choose(active); return; }
+      run(q).then(function (r) { if (r && r.length) choose(0); });
+    }
+    input.addEventListener("input", function () {
+      clearTimeout(timer); var q = input.value.trim();
+      if (q.length < 3) { if (ctl) ctl.abort(); seq++; results = []; paint(); setStatus(""); return; }
+      timer = setTimeout(function () { run(q); }, 250);
+    });
+    input.addEventListener("focus", function () { if (results.length) paint(); });
+    input.addEventListener("blur", function () { setTimeout(close, 140); });
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        if (!results.length) return; e.preventDefault();
+        var n = Math.min(results.length, max); active = (active + (e.key === "ArrowDown" ? 1 : -1) + n) % n; paint();
+      } else if (e.key === "Enter") { e.preventDefault(); submit(); }
+      else if (e.key === "Escape" && !list.hidden) { e.preventDefault(); close(); }
+    });
+    var go = root.querySelector(".as-go"); if (go) go.addEventListener("click", submit);
   });
   // tabs: [data-tabs] > [role=tab][data-tab=id]; panels [data-panel=id] anywhere inside the same [data-demo] or [data-tabs] root
   document.querySelectorAll("[data-tabs]").forEach(function (root) {
