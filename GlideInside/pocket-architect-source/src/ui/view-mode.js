@@ -73,15 +73,24 @@ export function writeSplit(storage, f) {
   }
 }
 
+/** A phone: under 600 px wide, where Split is hidden. */
+export const isPhoneWidth = () => !!globalThis.matchMedia?.('(max-width: 599.98px)').matches;
+
 /**
- * Which view to open with. An explicit ?view= wins, then a phone defaults to 3D, then the remembered view (not in the embedded demo,
- * which always starts on the plan).
+ * The view that shows the plan for a task that needs it (confirming a frontage, placing a house): keep Split when it is already on,
+ * otherwise Split on desktop and the plan alone on a phone.
+ */
+export const planView = (current, phone = isPhoneWidth()) => (current === 'split' ? 'split' : phone ? '2d' : 'split');
+
+/**
+ * Which view to open with. An explicit ?view= wins, then a phone (under 600 px) opens in 3D, then the view chosen earlier in this
+ * session (not in the embedded demo, which always starts on the plan). A new session opens in Split: plan and 3D side by side.
  */
 export function startView({ param, phone = false, remembered = null, demo = false }) {
   if (isView(param)) return param;
   if (phone) return '3d';
   if (demo) return '2d';
-  return remembered && isView(remembered) ? remembered : '2d';
+  return remembered && isView(remembered) ? remembered : 'split';
 }
 
 /**
@@ -91,5 +100,5 @@ export function startView({ param, phone = false, remembered = null, demo = fals
 export function escapeLeavesView({ view, tool = 'select', selection = null, editing = false, modalOpen = false, typing = false, defaultPrevented = false }) {
   if (defaultPrevented || modalOpen || typing || editing) return false;
   if (view !== '3d' && view !== 'split') return false;
-  return tool === 'select' && !selection;
+  return (tool === 'select' || tool === 'movehouse') && !selection;
 }

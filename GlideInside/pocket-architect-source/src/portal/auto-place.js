@@ -73,18 +73,23 @@ export function autoPose(project, house) {
       candidates.push(off);
     }
     let pick = null;
+    let bestScore = Infinity;
     for (const off of candidates) {
       const dx = G.dot(G.sub(mid, hc), u) + off;
       const move = G.add(G.mul(u, dx), G.mul(n, wantDepth - depthIn));
       const pose = { ...pose0, x: Math.round(move.x), y: Math.round(move.y) };
+      const moved = hull.map((p) => ({ x: p.x + move.x, y: p.y + move.y }));
       let fitsEnv = null;
       if (envPoly) {
-        const moved = hull.map((p) => ({ x: p.x + move.x, y: p.y + move.y }));
         // Solids matter for an L shaped envelope; the hull is the safe measure here.
         fitsEnv = worstEncroachment(moved, [], envPoly) <= 5;
       }
       if (fitsEnv === true) { pick = { pose, fits: true }; break; }
-      if (!pick) pick = { pose, fits: envPoly ? false : null };
+      // Nothing fits (yet): keep the house inside the lot boundary where possible, then as far inside the setbacks as it can be.
+      const overBoundary = lot.boundary.length >= 3 ? worstEncroachment(moved, [], lot.boundary) : 0;
+      const overEnv = envPoly ? worstEncroachment(moved, [], envPoly) : 0;
+      const score = Math.max(0, overBoundary) * 100 + Math.max(0, overEnv);
+      if (score < bestScore) { bestScore = score; pick = { pose, fits: envPoly ? false : null }; }
     }
     void acrossNow;
     if (!pick) continue;

@@ -1,6 +1,7 @@
 // Line icons drawn for Plan Studio. 24 px grid, 1.6 px stroke, currentColor.
 
 const PATHS = {
+  movehouse: '<path d="M12 3l3 3.2h-2v4.3h4.3v-2L20.5 12l-3.2 3v-2h-4.3v4.3h2L12 20.5 8.8 17.3h2V13H6.7v2L3.5 12l3.2-3v2H11V6.2H9z"/>',
   select: '<path d="M6 3.5v15.2l4.2-3.9 3 5.7 2.4-1.2-3-5.6 5.6-.5z"/>',
   room: '<rect x="3.5" y="5" width="17" height="14" rx="0.6"/><path d="M3.5 11.5H10v7.5M14 5v4"/>',
   wall: '<path d="M4.5 17.5l15-11"/><circle cx="4.5" cy="17.5" r="1.7"/><circle cx="19.5" cy="6.5" r="1.7"/>',

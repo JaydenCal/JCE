@@ -111,6 +111,9 @@ export function initOnboarding(ps = window.__ps) {
     if (window.innerWidth < 600) return; // narrow screens: no automatic tour (it can still be started from Demo tips)
     // One prompt at a time: wait while the welcome card or the street frontage bar is on screen.
     if (document.querySelector('.ps-welcome') || document.querySelector('.ps-frontage:not([hidden])')) { autoTimer = setTimeout(startWhenQuiet, 1500); return; }
+    // Also wait while the person is in a 3D or walk view, or placing a house (arrange bar): the steps start on the plan. Split counts as the plan.
+    const view = ps.store?.ui?.view;
+    if ((view && view !== '2d' && view !== 'split') || document.querySelector('.pas-pose')) { autoTimer = setTimeout(startWhenQuiet, 1500); return; }
     api.startTour();
   };
   if (enabled && ls.get(KEYS.tourDone) !== '1') autoTimer = setTimeout(startWhenQuiet, 900);

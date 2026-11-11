@@ -10,6 +10,7 @@
 // not part of the design geometry, so it can never be mirrored with the house.
 
 import { h } from '../ui/dom.js';
+import { planView } from '../ui/view-mode.js';
 import { clearances, clearanceText, deriveDriveway, faceGarageAngle } from '../site/lotplan.js';
 import { ringOf, OK, BAD, UNKNOWN } from '../editor2d/draw-lotplan.js';
 import { lotOf } from '../model/placement.js';
@@ -49,8 +50,8 @@ export const normDeg = (d) => {
   return v === -180 ? 180 : v;
 };
 
-/** Snap an angle in degrees: whole degrees, or multiples of 15 with Shift. */
-export const snapAngle = (deg, shift = false) => (shift ? Math.round(deg / 15) * 15 : Math.round(deg));
+/** Angle in degrees: free (to 0.1 degree) by default, multiples of 15 with Shift. */
+export const snapAngle = (deg, shift = false) => (shift ? Math.round(deg / 15) * 15 : Math.round(deg * 10) / 10);
 
 const KIND_ORDER = { front: 0, secondaryFront: 1, side: 2, rear: 3, unknown: 4 };
 const KIND_NAME = { front: 'Front', secondaryFront: 'Secondary front', side: 'Side', rear: 'Rear', unknown: 'Edge' };
@@ -73,7 +74,7 @@ export function fitSummary(c) {
  */
 export function runPoseSession({ store, editor, host = document.getElementById('ps-stage'), title, apply, initialPose, describe = '', fit = null, commitLabel = 'Place house', commitText = 'Place house', onDone, onCancel }) {
   injectPoseStyles();
-  store.setUI({ view: '2d' });
+  store.setUI({ view: planView(store.ui.view) });
   let pose = { rotation: 0, mirrored: false, ...initialPose };
   let preview = null;
   let state = { messages: [] };
@@ -101,7 +102,7 @@ export function runPoseSession({ store, editor, host = document.getElementById('
   const panel = h('div', { class: 'pas-pose', role: 'group', 'aria-label': title },
     h('div', { class: 'pas-col' },
       h('h3', null, title),
-      h('p', null, describe || 'Drag the house to move it. Drag the gold handle to turn it. Arrow keys nudge 0.5 m (Shift 0.1 m). Q and E turn 15 degrees. Ctrl+Z undoes a move.'),
+      h('p', null, describe || 'Drag the house to move it. Drag the gold handle to turn it (Shift for 15 degree steps). Arrow keys nudge 0.5 m (Shift 0.1 m). Q and E turn 15 degrees. Ctrl+Z undoes a move.'),
       fitBadge),
     h('div', { class: 'pas-col' },
       h('div', { class: 'pas-row' }, btn('↶ 15°', () => turn(-15)), btn('15° ↷', () => turn(15)), btn('↶ 1°', () => turn(-1)), btn('1° ↷', () => turn(1))),

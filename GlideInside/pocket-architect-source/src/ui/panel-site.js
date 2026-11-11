@@ -6,6 +6,7 @@ import { section, numberField, checkField, selectField, button, formBuilder } fr
 import { createFindBlock } from './find-block.js';
 import { removeSiteLot } from '../site/apply.js';
 import { CONFIG } from '../config.js';
+import { planView } from './view-mode.js';
 import { floorRLOf, defaultFloorRL, centroidRL } from '../site/model.js';
 import { setbackInputsFor } from '../site/setback-stage.js';
 import { askConfirm } from './modal.js';
@@ -58,7 +59,7 @@ export function buildSiteSection(ctx) {
     if (!lot.zoning && lot.zoneNote) sec.append(h('p', { class: 'ps-hint' }, lot.zoneNote));
     if (lot.zone) sec.append(h('p', { class: 'ps-hint' }, `Coordinates are MGA2020 zone ${lot.zone}, plan up is grid north.`));
 
-    sec.append(h('div', { class: 'ps-sec' }, button('Confirm street frontage', () => store.setUI({ view: '2d', frontageEdit: true }), { title: 'Click the edges of your lot that face the street' })));
+    sec.append(h('div', { class: 'ps-sec' }, button('Confirm street frontage', () => store.setUI({ view: planView(store.ui.view), frontageEdit: true }), { title: 'Click the edges of your lot that face the street' })));
     // The builder's lot planner controls: drag, turn, mirror, face the garage to the street, live clearances.
     sec.append(h('div', { class: 'ps-sec' }, button('Arrange house on lot', async () => {
       try {

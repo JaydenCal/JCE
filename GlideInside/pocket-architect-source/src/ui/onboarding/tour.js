@@ -223,7 +223,7 @@ export function createTour(ps, { layer, onFinish, onActive }) {
     if (n >= steps.length) return end(true);
     i = Math.max(0, n);
     const step = steps[i];
-    if (step.view && store.ui.view !== step.view) store.setUI({ view: step.view });
+    if (step.view && store.ui.view !== step.view && !(step.view === '2d' && store.ui.view === 'split')) store.setUI({ view: step.view });
     const base = step.init?.();
     anim = step.anim ? createAnim(step.anim) : null;
     const last = i === steps.length - 1;

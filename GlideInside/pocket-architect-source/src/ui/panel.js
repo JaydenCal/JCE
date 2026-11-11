@@ -42,7 +42,7 @@ export function createPanel(refs, store, { catalogue, editor } = {}) {
 
   function keyFor() {
     const tool = store.ui.tool;
-    if (tool !== 'select') return `tool:${tool}`;
+    if (tool !== 'select' && tool !== 'movehouse') return `tool:${tool}`;
     const found = store.ui.selection ? store.find(store.ui.selection) : null;
     if (found && found.kind !== 'level') {
       const flag = found.kind === 'room' ? (found.item.outdoor ? ':out' : ':in') : found.kind === 'opening' ? `:${found.item.kind}` : found.kind === 'wall' ? `:${found.item.kind}` : '';
@@ -59,7 +59,7 @@ export function createPanel(refs, store, { catalogue, editor } = {}) {
     }
     clear(propsSection);
     const tool = store.ui.tool;
-    if (tool !== 'select') view = buildToolPanel(ctx, tool);
+    if (tool !== 'select' && tool !== 'movehouse') view = buildToolPanel(ctx, tool);
     else {
       const found = store.ui.selection ? store.find(store.ui.selection) : null;
       view = found && found.kind !== 'level' ? buildElementForm(ctx, found) : buildSummary(ctx);

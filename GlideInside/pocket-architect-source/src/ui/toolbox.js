@@ -5,7 +5,7 @@ import { icon } from './icons.js';
 import { TOOL_DEFS } from '../editor2d/tools-meta.js';
 import { setTool } from './toolstate.js';
 
-const GROUPS = [['select'], ['room', 'wall', 'door', 'window'], ['furniture', 'stairs', 'deck', 'tank'], ['measure', 'underlay', 'status']];
+const GROUPS = [['movehouse', 'select'], ['room', 'wall', 'door', 'window'], ['furniture', 'stairs', 'deck', 'tank'], ['measure', 'underlay', 'status']];
 
 // Options: onWheel() opens the inventory wheel from the button at the foot of the toolbox (for touch, where Q is not available).
 export function createToolbox(el, store, { onWheel } = {}) {

@@ -67,7 +67,7 @@ export const GLIDE_LIBRARY = [
   {
     "id": "glide:house_double",
     "templateId": "house_double",
-    "name": "Double storey, 4 bedroom",
+    "name": "Double storey, 5 bedroom",
     "description": "Ground floor with garage, entry, living, study, open plan kitchen, dining and family and a guest bedroom. First floor with master suite, three bedrooms, bathroom and rumpus around the stair void.",
     "type": "house",
     "category": "House",

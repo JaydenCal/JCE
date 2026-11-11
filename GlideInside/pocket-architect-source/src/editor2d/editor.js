@@ -15,6 +15,7 @@ import { loadBitmap, removeImage, registerUnderlayEditor, setUnderlayFromBlob, s
 import { clashIds, createClashNotifier } from './clash.js';
 import { KEY_TO_TOOL } from './tools-meta.js';
 import { createSelectTool } from './tool-select.js';
+import { createMoveHouseTool } from './tool-movehouse.js';
 import { createDrawTools } from './tool-draw.js';
 import { createPlaceTools } from './tool-place.js';
 import { createMiscTools } from './tool-misc.js';
@@ -563,7 +564,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     if (key === 'Escape') {
       if (current?.cancel?.()) return;
-      if (store.ui.tool !== 'select') setTool(store, 'select');
+      if (store.ui.tool !== 'select' && store.ui.tool !== 'movehouse') setTool(store, 'select');
       else if (store.ui.selection) store.select(null);
       return;
     }
@@ -809,6 +810,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
   // Tools need `ed` and, for the underlay tool, the calibration hooks above.
   tools = {
     ...createSelectTool(ed),
+    ...createMoveHouseTool(ed),
     ...createDrawTools(ed),
     ...createPlaceTools(ed),
     ...createMiscTools(ed, { onCalibrated: () => { state.calibrating = false; store.emit('plan:calibrating', false); } }),

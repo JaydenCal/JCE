@@ -68,7 +68,7 @@ test('start view: ?view= wins, phones open 3D, the demo opens the plan, else the
   assert.equal(V.startView({ param: 'x', phone: true, remembered: 'split' }), '3d');
   assert.equal(V.startView({ remembered: 'split' }), 'split');
   assert.equal(V.startView({ remembered: 'split', demo: true }), '2d');
-  assert.equal(V.startView({}), '2d');
+  assert.equal(V.startView({}), 'split');
 });
 
 test('split divider maths: clamps and follows the pointer both ways', () => {

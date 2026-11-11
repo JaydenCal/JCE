@@ -167,7 +167,7 @@ export function createViewManager({ store, refs, editor, catalogue }) {
     } catch {
       owner = null;
     }
-    writeLastView(ls(), store.ui.view, owner);
+    writeLastView(globalThis.sessionStorage || null, store.ui.view, owner); // the choice lasts for this session only; a new session opens in Split
   });
   apply();
 

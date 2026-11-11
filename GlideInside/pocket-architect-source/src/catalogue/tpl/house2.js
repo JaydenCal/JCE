@@ -10,7 +10,7 @@ const X = (x) => x + OX;
 const Y = (y) => y + OY;
 
 export function houseDouble() {
-  const b = plan({ name: 'Double storey, 4 bedroom', type: 'house' });
+  const b = plan({ name: 'Double storey, 5 bedroom', type: 'house' });
   const ground = b.project.levels[0].id;
   const R = (type, name, x0, y0, x1, y1, extra) => b.room(type, name, X(x0), Y(y0), x1 - x0, y1 - y0, extra);
   const poly = (type, name, pts) => {

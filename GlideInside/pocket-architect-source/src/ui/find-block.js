@@ -12,7 +12,7 @@ import { applySiteLookup } from '../site/apply.js';
 const STEPS = { lot: 'Finding the lot', aerial: 'Loading the aerial image', contours: 'Loading ground levels' };
 let seq = 0;
 
-export function createFindBlock(store, { onDone, autofocus = false, compact = false } = {}) {
+export function createFindBlock(store, { onDone, autofocus = false, compact = false, large = false } = {}) {
   const id = `ps-find-${++seq}`;
   const input = h('input', {
     class: 'ps-input ps-find-input', type: 'search', id, role: 'combobox', 'aria-expanded': 'false', 'aria-controls': `${id}-list`, 'aria-autocomplete': 'list',
@@ -20,8 +20,8 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
   });
   const list = h('ul', { class: 'ps-find-list', id: `${id}-list`, role: 'listbox', hidden: true });
   const status = h('div', { class: 'ps-find-status', role: 'status', 'aria-live': 'polite' });
-  const wrap = h('div', { class: `ps-find${compact ? ' ps-find--compact' : ''}`, dataset: { ps: 'find-block' } },
-    h('div', { class: 'ps-find-box' }, icon('search', { size: 16 }), input),
+  const wrap = h('div', { class: `ps-find${compact ? ' ps-find--compact' : ''}${large ? ' ps-find--large' : ''}`, dataset: { ps: 'find-block' } },
+    h('div', { class: 'ps-find-box' }, icon('search', { size: large ? 22 : 16 }), input),
     list,
     status,
     CONFIG.siteMock ? h('p', { class: 'ps-hint ps-find-mock' }, 'Sample mode: example lots are shown until the live address lookup is switched on.') : null);
@@ -46,7 +46,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
 
   function paint() {
     clear(list);
-    results.forEach((r, i) => {
+    results.slice(0, 8).forEach((r, i) => {
       const li = h('li', { class: 'ps-find-item', role: 'option', id: `${id}-o${i}`, 'aria-selected': String(i === active), dataset: { index: i },
         onpointerdown: (e) => { e.preventDefault(); choose(i); } },
       h('span', { class: 'ps-find-label' }, r.label), h('span', { class: 'ps-tag' }, r.state));
@@ -144,9 +144,9 @@ export function openFindBlock(store) {
   let box = null;
   const modal = openModal({
     title: 'Find my block',
-    size: 'sm',
+    size: 'find',
     body: () => {
-      box = createFindBlock(store, { autofocus: true, onDone: () => modal.close('done') });
+      box = createFindBlock(store, { autofocus: true, large: true, onDone: () => modal.close('done') });
       return h('div', null,
         h('p', { class: 'ps-hint', style: { margin: '0 0 8px' } }, 'Type your street address. The lot boundary, neighbouring lots, an aerial image and ground contours are drawn to scale so you can place the house on the real block.'),
         box.el);

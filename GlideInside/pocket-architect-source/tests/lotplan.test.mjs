@@ -179,8 +179,8 @@ test('mirror flips the house and never the lot', () => {
   assert.equal(JSON.stringify(arranged.site.lot), before);
 });
 
-test('rotation snaps to 1 degree, or 15 with Shift, and wraps to -180..180', () => {
-  assert.equal(snapAngle(37.4, false), 37);
+test('rotation is free by default (0.1 degree), or snaps to 15 with Shift, and wraps to -180..180', () => {
+  assert.equal(snapAngle(37.4, false), 37.4);
   assert.equal(snapAngle(37.4, true), 30);
   assert.equal(snapAngle(38, true), 45);
   assert.equal(snapAngle(40, true), 45);

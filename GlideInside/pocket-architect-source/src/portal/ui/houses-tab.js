@@ -98,7 +98,7 @@ export function renderHouses(host, { api, me, appLinkFor = appLink }) {
   }
 
   host.append(
-    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'House designs'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Your default layouts. Clients you give access to can place these on their lot, together with the Glide Inside library.'))),
+    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'House designs'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Your default layouts. Clients you give access to can place these on their lot. The Glide Inside library is hidden from clients unless you tick Show Glide Inside sample designs to clients.'))),
     canWrite ? h('div', { class: 'pp-add' },
       h('span', { class: 'pp-add-label' }, 'Add a house design'),
       h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: saveCurrent }, icon('plus', 16), 'Save the open design'),

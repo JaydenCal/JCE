@@ -6,7 +6,7 @@ import { icon } from './icons.js';
 import { hasExtensionContent, levelsByElevation } from '../editor2d/math.js';
 import { deleteLevelWithConfirm } from './level-actions.js';
 import { toast } from './toast.js';
-import { createFindBlock } from './find-block.js';
+import { openFindBlock } from './find-block.js';
 import { CONFIG } from '../config.js';
 import { siteCredits } from '../site/credits.js';
 
@@ -152,14 +152,13 @@ export function createWelcome(stage, store, { onChoose } = {}) {
     offs.forEach((o) => o?.());
     if (remember) storage.set(WELCOME_KEY, '1');
   };
-  const find = CONFIG.siteLookupEnabled ? createFindBlock(store, { compact: true }) : null;
+  const find = CONFIG.siteLookupEnabled ? { el: null, dispose() {} } : null;
   const card = h('div', { class: 'ps-welcome', role: 'region', 'aria-label': 'Welcome' },
     h('div', { style: { flex: 1, minWidth: 0 } },
       h('h3', null, find ? 'Start with your block' : 'Start with a real plan'),
       h('p', null, find ? 'Find your block to draw your real lot, its neighbours and the aerial photo under the plan. This design is a starting template: you can also drag walls, add doors and windows, then switch to 3D.' : 'This design is a starting template. Drag walls, add doors and windows, then switch to 3D. Your work saves in this browser as you go.'),
-      find ? find.el : null,
       h('div', { class: 'ps-welcome-actions' },
-        find ? h('button', { class: 'ps-btn ps-btn--primary ps-btn--sm', type: 'button', onclick: () => { (find.el.querySelector('input') || find.el).focus?.(); } }, 'Find my block') : null,
+        find ? h('button', { class: 'ps-btn ps-btn--primary ps-welcome-find', type: 'button', dataset: { ps: 'welcome-find' }, onclick: () => { dismiss(false); openFindBlock(store); } }, icon('search', { size: 20 }), 'Find my block') : null,
         h('button', { class: `ps-btn ${find ? '' : 'ps-btn--primary '}ps-btn--sm`, type: 'button', onclick: () => {
           dismiss();
           onChoose?.();

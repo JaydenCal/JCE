@@ -69,7 +69,7 @@ export function findButton(kind, id) {
   const hook = kind === 'tool' ? `[data-tool="${id}"]` : `button[data-view="${id}"]`;
   const direct = [...document.querySelectorAll(hook)].find(visible) || document.querySelector(hook);
   if (direct) return direct;
-  const words = kind === 'tool' ? { room: 'room', wall: 'wall', window: 'window', door: 'door', select: 'select', measure: 'measure', tank: 'tank', underlay: 'underlay', furniture: 'furniture', stairs: 'stairs', deck: 'deck', status: 'status' } : { '2d': '2d', '3d': '3d', walk: 'walk' };
+  const words = kind === 'tool' ? { room: 'room', wall: 'wall', window: 'window', door: 'door', select: 'select', movehouse: 'move house', measure: 'measure', tank: 'tank', underlay: 'underlay', furniture: 'furniture', stairs: 'stairs', deck: 'deck', status: 'status' } : { '2d': '2d', '3d': '3d', walk: 'walk' };
   const w = words[id] || id;
   return [...document.querySelectorAll('button')].find((b) => (b.title || b.textContent || b.getAttribute('aria-label') || '').toLowerCase().includes(w)) || null;
 }

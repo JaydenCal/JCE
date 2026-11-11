@@ -390,7 +390,8 @@ svg { display: block; }
 }
 .ps-welcome h3 { margin: 0 0 2px; font-size: 15px; font-weight: 600; }
 .ps-welcome p { margin: 0 0 8px; color: var(--ps-muted); }
-.ps-welcome-actions { display: flex; gap: 8px; }
+.ps-welcome-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.ps-welcome-find { height: 48px; padding: 0 22px; font-size: 16px; font-weight: 600; flex: 1 1 100%; justify-content: center; gap: 10px; }
 
 /* Furniture drawer ----------------------------------------------------------- */
 .ps-drawer {
@@ -661,6 +662,9 @@ svg { display: block; }
   .ps-level-tab, .ps-seg-btn { padding: 0 8px; }
   .ps-view-switch .ps-seg-btn { padding: 0 9px; }
 }
+@media (max-width: 599.98px) {
+  .ps-view-switch .ps-seg-btn[data-view="split"] { display: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
 }
@@ -828,8 +832,23 @@ svg { display: block; }
 .ps-find-mock { margin: 4px 0 0; }
 .ps-find--compact .ps-find-input { height: 30px; }
 .ps-welcome .ps-find { margin: 0 0 8px; }
-.ps-site-facts { width: 100%; }
+.ps-scrim--top { place-items: start center; padding-top: min(9vh, 80px); }
+.ps-modal--find { width: min(720px, 92vw); max-height: 80vh; }
+.ps-modal--find .ps-modal-body { display: flex; flex-direction: column; min-height: 0; padding-bottom: 20px; }
+.ps-find--large { display: flex; flex-direction: column; min-height: 0; }
+.ps-find--large .ps-find-input { height: 56px; font-size: 18px; padding-left: 48px; }
+.ps-find--large .ps-find-box svg { left: 15px; }
+.ps-find--large .ps-find-list { position: static; margin: 8px 0 0; box-shadow: none; max-height: none; overflow: visible; flex: 1 1 auto; }
+.ps-find--large .ps-find-item { min-height: 48px; padding: 0 12px; font-size: 15px; }
+.ps-find--large .ps-find-status { font-size: 14px; margin-top: 10px; }
+@media (max-width: 599.98px) {
+  .ps-scrim--top { padding: 0; place-items: stretch; }
+  .ps-modal--find { width: 100%; max-height: 100%; height: 100%; border-radius: 0; }
+}
+.ps-site-facts { width: 100%; table-layout: fixed; }
 .ps-site-facts td { overflow-wrap: anywhere; white-space: normal; }
+.ps-site-facts td:first-child { width: 38%; overflow-wrap: normal; }
+.ps-table.ps-site-facts td.num { white-space: normal; }
 .ps-frontage {
   position: absolute; left: 50%; top: 14px; z-index: 6; transform: translateX(-50%);
   width: min(520px, calc(100% - 24px)); display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px;
@@ -847,3 +866,6 @@ svg { display: block; }
 @media (max-width: 899.98px) {
   .ps-shell[data-view="split"] .ps3d-hints { display: none; }
 }
+
+/* First drag hint for Move house (shown once, no how-to panel) */
+.ps-movehint { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); padding: 6px 12px; border-radius: 999px; background: var(--ps-panel); border: 1px solid var(--ps-border-strong); box-shadow: var(--ps-shadow); font-size: 12.5px; font-weight: 600; pointer-events: none; z-index: 5; }

@@ -336,7 +336,7 @@ export function buildModel(project, opts = {}) {
     for (const f of level.furniture) addFurniture(ctx, group, level, f);
 
     // ceilings in walk mode only
-    if (walk) {
+    if (walk || (showRoof && levelFilter === 'all')) {
       const b = new GeoBuilder();
       const y = elev + level.height / 1000;
       for (const room of rooms) {

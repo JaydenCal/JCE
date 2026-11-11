@@ -357,7 +357,8 @@ test('walk mode adds ceilings, orbit does not', () => {
   const p = lHouse({ furniture: false });
   const names = (g) => inspect(g).meshes.map((m) => m.name);
   assert.ok(names(buildModel(p, { walk: true })).includes('ceiling'));
-  assert.ok(!names(buildModel(p)).includes('ceiling'));
+  assert.ok(names(buildModel(p)).includes('ceiling'), 'room views with the roof on show ceilings, not roof iron');
+  assert.ok(!names(buildModel(p, { showRoof: false })).includes('ceiling'));
 });
 
 test('walk mode roofs do not cast shadows', () => {

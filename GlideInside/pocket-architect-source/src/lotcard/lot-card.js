@@ -233,7 +233,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     drawPlan(p, cur);
 
     pager.hidden = designs.length < 2;
-    pgT.textContent = pagerText(designs, idx);
+    pgT.textContent = pagerText(designs, idx, placed?.name || p.name || '');
     drawMini(p, lot);
     sizeInset();
   }

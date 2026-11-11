@@ -51,7 +51,7 @@ export const TEMPLATES = [
   },
   {
     id: 'house_double',
-    name: 'Double storey, 4 bedroom',
+    name: 'Double storey, 5 bedroom',
     type: 'house',
     description: 'Ground floor with garage, entry, living, study, open plan kitchen, dining and family and a guest bedroom. First floor with master suite, three bedrooms, bathroom and rumpus around the stair void.',
     levels: 2,

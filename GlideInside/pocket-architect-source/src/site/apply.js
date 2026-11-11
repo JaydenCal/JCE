@@ -1,6 +1,7 @@
 // "Find my block": look an address up and put the real lot into the open project (one undo step).
 
 import { fetchSite } from './client.js';
+import { planView } from '../ui/view-mode.js';
 import { buildSiteLot, underlayFor } from './model.js';
 import { faceGarageAngle, buildingHull, orientedBox, roadReserve } from './lotplan.js';
 import { rotateHouse, translateHouse } from '../model/placement.js';
@@ -101,7 +102,7 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
   });
   if (oldKey && oldKey !== aerialKey && store.project.site.underlay?.key === aerialKey) removeImage(oldKey);
   // Next the person confirms which edges are the street frontage (setbacks depend on it).
-  store.setUI({ view: '2d', frontageEdit: true });
+  store.setUI({ view: planView(store.ui.view), frontageEdit: true });
   return { lot, warnings };
 }
 

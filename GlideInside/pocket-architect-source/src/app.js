@@ -1,6 +1,7 @@
 // Plan Studio app shell. Renders into #app: top bar, tools, plan editor, 3D host, right panel and status bar.
 // The catalogue, 3D viewer and Plan Pack are separate modules, loaded on demand and allowed to fail.
 
+import { canMoveHouse } from './editor2d/tool-movehouse.js';
 import { CONFIG } from './config.js';
 import { createStore, loadAutosave } from './model/store.js';
 import { createProject, migrate, validate } from './model/schema.js';
@@ -368,7 +369,7 @@ async function main() {
 
   // Start state ------------------------------------------------------------------------------------------------------------------
   const params = new URLSearchParams(location.search);
-  const phone = window.matchMedia?.('(max-width: 599.98px) and (pointer: coarse)').matches;
+  const phone = window.matchMedia?.('(max-width: 599.98px)').matches;
   let owner = null;
   try {
     owner = localStorage.getItem('ps.portal.owner') || null;
@@ -377,18 +378,31 @@ async function main() {
   }
   let remembered = null;
   try {
-    remembered = readLastView(localStorage, owner) || readLastView(localStorage, null);
+    remembered = readLastView(sessionStorage, owner) || readLastView(sessionStorage, null);
   } catch {
     remembered = null;
   }
   const first = startView({ param: params.get('view'), phone, remembered, demo: demoMode() });
   if (first !== '2d') store.setUI({ view: first });
+  // With a lot loaded and the house placed, the plan opens on Move house (drag the whole house, ring to turn). It becomes the active tool
+  // when a lot first appears on the design; wall and room reshaping stays one click away on Edit (B).
+  let lotSeen = null;
+  const lotKeyOf = (p) => { const l = p.site?.lot; return l ? `${l.address || ''}|${l.lotLabel || ''}|${l.boundary?.length || 0}` : null; };
+  const defaultTool = () => {
+    const key = lotKeyOf(store.project);
+    if (key === lotSeen) return;
+    lotSeen = key;
+    if (key && canMoveHouse(store.project) && store.ui.tool === 'select') store.setUI({ tool: 'movehouse', toolArg: null });
+    else if (!key && store.ui.tool === 'movehouse') store.setUI({ tool: 'select', toolArg: null });
+  };
+  store.on('project', defaultTool);
+  defaultTool();
   track('ps_open', { embedMode: CONFIG.embedMode });
 
   const lotCard = createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer });
   api.lotCard = lotCard;
   createMapCredit(refs.stage, store);
-  if (!state.fromAutosave && !demoMode() && !narrow && first === '2d' && !shareId) createWelcome(refs.stage, store, { onChoose: openNew });
+  if (!state.fromAutosave && !demoMode() && !narrow && !shareId) createWelcome(refs.stage, store, { onChoose: openNew });
 
   embed.ready();
   if (shareId) await share.openLink(shareId);

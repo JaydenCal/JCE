@@ -667,6 +667,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     if (double) {
       lastClick = null;
       picker.close();
+      if (edit.items.selected()) store.select(null); // a double click on furniture with Edit off must not open Rotate and Delete
       // room cutaway (rooms.js) and other handlers may take the double click before the zoom to point
       if (dblHandlers.some((fn) => fn(e) === true)) return;
       focusAt(e.clientX, e.clientY);

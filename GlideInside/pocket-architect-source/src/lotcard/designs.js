@@ -42,7 +42,7 @@ export function publicDesigns(catalogue, project) {
   return rankFor(project, out);
 }
 
-/** Index of the design that is placed now, by saved id, else by name, else 0. */
+/** Index of the design that is placed now, by saved id, else by name. -1 when the placed house is not one of the designs (never guess the first). */
 export function currentIndex(designs, project, uiPlaced = null) {
   const placed = uiPlaced || project?.placedHouse || null;
   if (placed) {
@@ -50,10 +50,11 @@ export function currentIndex(designs, project, uiPlaced = null) {
     if (i >= 0) return i;
   }
   const j = designs.findIndex((d) => d.name === project?.name);
-  return j >= 0 ? j : 0;
+  return j;
 }
 
 /** The carousel title: "NAME · 1 / 4". */
-export const pagerText = (designs, i) => (designs.length ? `${designs[i].name} · ${i + 1} / ${designs.length}` : '');
+/** The carousel title: "NAME · 1 / 4". When the placed house is not one of the designs (i < 0) it is the placed house's own name and the count. */
+export const pagerText = (designs, i, placedName = '') => (!designs.length ? '' : i < 0 ? `${placedName ? `${placedName} · ` : ''}${designs.length} designs` : `${designs[i].name} · ${i + 1} / ${designs.length}`);
 
-export const stepIndex = (n, i, dir) => (n ? (((i + dir) % n) + n) % n : 0);
+export const stepIndex = (n, i, dir) => (!n ? 0 : i < 0 ? (dir > 0 ? 0 : n - 1) : (((i + dir) % n) + n) % n);

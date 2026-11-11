@@ -219,7 +219,10 @@ export function enableRoomCutaway(viewer, projectOrGetter) {
   viewer.controls?.addEventListener?.('change', watch);
 
   const onKey = (e) => {
-    if (e.code === 'Escape' && state) exit();
+    if (e.code === 'Escape' && state) {
+      exit();
+      viewer.snapToRoom?.('aerial', { site: true }); // camera and the Aerial tab agree
+    }
   };
   if (typeof window !== 'undefined') window.addEventListener('keydown', onKey);
 
@@ -232,7 +235,7 @@ export function enableRoomCutaway(viewer, projectOrGetter) {
   const offDbl = viewer.addDoubleClickHandler?.((e) => {
     if (viewer.mode !== 'orbit') return false;
     const hit = viewer.pickAt?.(e.clientX, e.clientY);
-    if (!hit || hit.ground || !hit.point || !['floor', 'wall', 'roof', 'opening'].includes(hit.kind)) return false;
+    if (!hit || hit.ground || !hit.point || !['floor', 'wall', 'roof', 'opening', 'furniture'].includes(hit.kind)) return false;
     const found = roomAtPoint(getProject(), hit.point.x, hit.point.z, hit.levelId || null, hit.point.y);
     if (!found) return false;
     return enter(found.room, found.level);

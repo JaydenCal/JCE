@@ -152,7 +152,7 @@ test('sign in, me and sign out; wrong password and unknown users fail the same w
   const me = await admin(api);
   assert.equal(me.user.role, 'admin');
   assert.equal(me.org.name, 'Sample Homes Pty Ltd');
-  assert.equal(me.ai.monthlyCap, 150);
+  assert.equal(me.ai.monthlyCap, 300);
   await api.signOut();
   assert.equal(await api.me(), null);
 });
@@ -347,9 +347,9 @@ test('client data handling: export a client\'s projects, then delete the client 
 
 test('AI credits: monthly cap per login with a hard stop, top-ups of 300 for A$10, allowClientTopUps switch', async () => {
   const { api, clock } = fresh();
-  await api.signIn(DEMO_LOGINS.client); // Sarah: 62 of 150 used
+  await api.signIn(DEMO_LOGINS.client); // Sarah: 124 of 300 used
   let ai = await api.aiBalance();
-  assert.deepEqual([ai.used, ai.remaining, ai.topUpBalance], [62, 88, 0]);
+  assert.deepEqual([ai.used, ai.remaining, ai.topUpBalance], [124, 176, 0]);
   await api.spendAiCredits({ credits: 80 });
   await rejects(api.spendAiCredits({ credits: 9 }), 'CREDITS_EXHAUSTED');
   const top = await api.aiTopUp();

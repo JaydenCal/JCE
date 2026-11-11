@@ -78,6 +78,7 @@ export const LOT_CARD_CSS = `
 .lc-root.is-phone .lc-card{left:0;right:0;bottom:0;width:auto;border-radius:14px 14px 0 0;border-bottom:0}
 .lc-root.is-phone .lc-pager{bottom:112px}
 .lc-root.is-compact .lc-pager{bottom:124px;left:12px;height:36px}
+.lc-root.is-phone:has(.lc-card.is-open) .lc-pager,.lc-root.is-compact:has(.lc-card.is-open) .lc-pager{display:none}
 .lc-root.is-compact .lc-pager button{width:32px;height:32px;line-height:30px}
 .lc-root.is-compact .lc-pgt{min-width:0;max-width:120px;font-size:9.5px}
 .lc-compact.lc-on .ps3d-viewbar{top:auto;bottom:170px;left:12px;transform:none}

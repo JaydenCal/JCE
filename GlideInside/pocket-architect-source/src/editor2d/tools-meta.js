@@ -3,7 +3,8 @@
 export const DOOR_FAMILY = ['door', 'sliding_door', 'garage_door', 'roller_door', 'opening'];
 
 export const TOOL_DEFS = [
-  { id: 'select', key: 'V', label: 'Select', icon: 'select' },
+  { id: 'movehouse', key: 'H', label: 'Move house', icon: 'movehouse' },
+  { id: 'select', key: 'V', label: 'Edit (select)', icon: 'select' },
   { id: 'room', key: 'R', label: 'Room', icon: 'room' },
   { id: 'wall', key: 'W', label: 'Wall', icon: 'wall' },
   { id: 'door', key: 'D', label: 'Door', icon: 'door', family: DOOR_FAMILY },
@@ -25,7 +26,7 @@ export function rotationStep(e) {
   return (right ? 1 : -1) * (e.shiftKey ? 15 : 90);
 }
 
-export const KEY_TO_TOOL = Object.fromEntries(TOOL_DEFS.map((t) => [t.key.toLowerCase(), t.id]));
+export const KEY_TO_TOOL = { ...Object.fromEntries(TOOL_DEFS.map((t) => [t.key.toLowerCase(), t.id])), b: 'select' }; // B (Edit) is the same tool as V
 
 // Every tool id the editor understands (the door family has one id per opening kind).
 export const ALL_TOOLS = [...new Set([...TOOL_DEFS.map((t) => t.id), ...DOOR_FAMILY])];
