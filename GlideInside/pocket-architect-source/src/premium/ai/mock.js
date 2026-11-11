@@ -5,6 +5,7 @@
 import { ApiError } from '../api.js';
 import { checkToolCall } from './tools.js';
 import { lotOf, fallAcross, checkSetbacks, NOT_LOADED } from '../../model/placement.js';
+import { fitHouse } from '../../site/fit-house.js';
 
 export const MOCK_TOPUP = { credits: 300, amountCents: 1000 };
 const THRESHOLDS = [0.5, 0.8, 0.95];
@@ -22,7 +23,7 @@ export function mockReply(message, project) {
   const t = String(message || '').toLowerCase();
   const lot = lotOf(project);
   const siteIntent = /garage|fit|inside|setback|envelope|position|check|front/.test(t);
-  const noLot = { reply: 'No lot is loaded for this design yet. Load a lot first and I can position the house on it.', ops: [] };
+  const noLot = { reply: 'No lot is loaded for this design yet. Load a lot first and I can position the house on it.', ops: [], free: true };
 
   if (/fall|slope|steep/.test(t)) {
     if (!lot) return noLot;
@@ -46,12 +47,18 @@ export function mockReply(message, project) {
   }
   if (siteIntent) {
     if (!lot) return noLot;
-    if (!lot.setbacks && !lot.envelope) return { reply: `${NOT_LOADED} I can still move or rotate the house, but I will not make any setback claims.`, ops: [] };
+    if (!lot.setbacks && !lot.envelope) return { reply: `${NOT_LOADED} I can still move or rotate the house, but I will not make any setback claims.`, ops: [], free: true };
     const chk = checkSetbacks(project);
     if (/check/.test(t) && !/fit|move/.test(t)) {
       return { reply: chk.status === 'ok' ? 'The house is inside the indicative setback envelope.' : chk.message, ops: [{ op: 'check_setbacks', args: {} }] };
     }
     const align = /garage|front/.test(t) ? 'front' : 'centre';
+    const fit = fitHouse(project);
+    if (!fit.ok || !fit.fits) return { reply: fit.message, ops: [], free: true };
+    if (align !== 'front') return {
+      reply: fit.message,
+      ops: [{ op: 'suggest_site_position', args: { align, apply: true } }, { op: 'check_setbacks', args: {} }],
+    };
     return {
       reply: align === 'front' ? 'Moved the house as far toward the front boundary as the loaded setbacks allow.' : 'Moved the house to sit inside the indicative setback envelope.',
       ops: [{ op: 'suggest_site_position', args: { align, apply: true } }, { op: 'check_setbacks', args: {} }],
@@ -60,7 +67,7 @@ export function mockReply(message, project) {
   if (/roof/.test(t) && /colou?r/.test(t)) {
     return { reply: 'Roof colour set to Charcoal.', ops: [{ op: 'set_finish', args: { target: 'roof', material: 'corrugated', colour: 'steel-charcoal' } }] };
   }
-  return { reply: 'This is a mock assistant, so it only knows a few requests: fit the house inside the setbacks, check the setbacks, how much fall is on the lot, set the floor level, rotate the house, or change the roof colour.', ops: [] };
+  return { free: true, reply: 'This is a mock assistant, so it only knows a few requests: fit the house inside the setbacks, check the setbacks, how much fall is on the lot, set the floor level, rotate the house, or change the roof colour.', ops: [] };
 }
 
 /**
@@ -106,17 +113,18 @@ export function createMockApi({ getProject, session = { kind: 'public' }, cost =
     },
     async edit(_token, body = {}) {
       await wait();
-      if (remaining() + state.topUp < cost) {
+      const plan = mockReply(body.message, getProject());
+      const charge = plan.free && !plan.ops.length ? 0 : cost; // a refusal or an "I can only do..." reply is free
+      if (charge > 0 && remaining() + state.topUp < cost) {
         throw new ApiError('CREDITS_EXHAUSTED', org ? 'All AI credits for this month have been used.' : 'All AI credits in this Plan Pack have been used.', {
           status: 402, details: { remaining: 0, estimatedCredits: cost, ...(org ? { topUp: offer(), monthResetsOn: state.resetsOn } : {}) },
         });
       }
       const before = state.used;
-      const fromMonthly = Math.min(cost, remaining());
+      const fromMonthly = Math.min(charge, remaining());
       state.used += fromMonthly;
-      state.topUp -= cost - fromMonthly;
+      state.topUp -= charge - fromMonthly;
       const crossed = THRESHOLDS.filter((t) => before / state.total < t && state.used / state.total >= t).at(-1) || null;
-      const plan = mockReply(body.message, getProject());
       const ops = [];
       const rejected = [];
       for (const o of plan.ops) {
@@ -126,7 +134,7 @@ export function createMockApi({ getProject, session = { kind: 'public' }, cost =
       }
       return {
         reply: plan.reply, ops, rejected,
-        credits: { charged: cost, ...snapshot() },
+        credits: { charged: charge, ...snapshot() },
         warning: crossed ? { level: crossed, usedPercent: Math.round((state.used / state.total) * 100), remaining: remaining() } : null,
       };
     },

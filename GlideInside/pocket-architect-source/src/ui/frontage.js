@@ -1,6 +1,7 @@
 // "Confirm your street frontage": a bar over the plan while the person clicks boundary edges to mark which ones face the street.
 // The editor handles the clicks (store.ui.frontageEdit); this bar explains the step and finishes it.
 
+import { hasPlan } from './view-mode.js';
 import { h } from './dom.js';
 import { toast } from './toast.js';
 
@@ -33,7 +34,7 @@ export function createFrontageBar(stage, store) {
   }
 
   function sync() {
-    const on = !!store.ui.frontageEdit && store.ui.view === '2d' && !!store.project.site?.lot;
+    const on = !!store.ui.frontageEdit && hasPlan(store.ui.view) && !!store.project.site?.lot;
     bar.hidden = !on;
     if (on) text.textContent = describe();
   }

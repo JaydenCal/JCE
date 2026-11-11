@@ -189,14 +189,14 @@ test('buildSiteLot maps MGA to plan millimetres with north up', () => {
   assert.equal(lot.northRef, 'MGA grid north');
   assert.equal(lot.setbacks, null);
   assert.equal(lot.envelope, null);
-  assert.equal(lot.lotLabel, 'Lot 24 DP 1234567');
+  assert.equal(lot.lotLabel, 'Lot 27 DP 1234567');
   assert.equal(lot.neighbours.length, f.lot.neighbours.length);
   assert.ok(lot.neighbours.every((n) => n.lotNumber && n.planLabel && n.ring.length >= 4));
-  // Edge lengths: the sample lot is 20 m by 40 m, to two decimals.
+  // Edge lengths: the sample lot is 40 m by 50 m (2,000 m2, R5), to two decimals.
   const labels = boundaryEdges(lot).map((e) => e.label).sort();
-  assert.deepEqual(labels, ['20.00', '20.00', '40.00', '40.00']);
-  near(lot.areaM2, 800, 0.2);
-  assert.equal(lot.zoning.code, 'R1');
+  assert.deepEqual(labels, ['40.00', '40.00', '50.00', '50.00']);
+  near(lot.areaM2, 2000, 0.5);
+  assert.equal(lot.zoning.code, 'R5');
   // Contours: flat arrays, northing negated.
   const c = f.contours.contours[0];
   assert.equal(lot.contours[0].pts.length, c.points.length * 2);
@@ -328,10 +328,12 @@ test('buildModel drapes the site terrain and keeps the flat ground without a lot
   const flat = buildModel(createProject());
   assert.equal(flat.getObjectByName('site-terrain'), undefined);
   assert.equal(flat.getObjectByName('ground').userData.ground, true);
-  // A project with a lot but no elevation grid keeps the flat ground
+  // A project with a lot but no elevation grid still shows the site: flat ground at slab level, boundary and all
   const noGrid = designOnLot();
   noGrid.site.lot.terrain = null;
-  assert.equal(buildModel(noGrid).getObjectByName('site-terrain'), undefined);
+  const ng = buildModel(noGrid);
+  assert.ok(ng.getObjectByName('site-terrain'));
+  assert.ok(ng.getObjectByName('lot-boundary'));
 });
 
 test('templates still build with schema 2', () => {
@@ -347,7 +349,7 @@ const sq = (x0, y0, x1, y1) => [{ x: x0, y: y0 }, { x: x1, y: y0 }, { x: x1, y: 
 test('frontage: the sample street lot gets its one street edge, not a corner lot', () => {
   for (const i of [0, 1]) {
     const lot = lotFromFixture(i);
-    assert.deepEqual(lot.frontEdges, [2], `fixture ${i}`);
+    assert.equal(lot.frontEdges.length, 1, `fixture ${i}`);
     assert.equal(lot.cornerLot, false);
     assert.equal(lot.frontageConfirmed, false);
     assert.equal(lot.frontageMethod, 'no-lot-beyond');

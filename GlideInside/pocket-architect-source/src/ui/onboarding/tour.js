@@ -56,7 +56,20 @@ export function buildSteps(ps) {
     const b = findButton(kind, id);
     return b && visible(b) ? b : null;
   };
+  const findBtn = () => {
+    const b = document.querySelector('[data-action="find-block"]');
+    return b && visible(b) ? b : null;
+  };
+  const lotNow = () => !!ps.store.project?.site?.lot;
   return [
+    ...(findBtn() ? [{
+      id: 'find', view: '2d', title: 'Find my block',
+      text: 'Type your street address to draw your real lot, its neighbours and the aerial photo under your plan. You can skip this step and come back to it later.',
+      target: findBtn,
+      init: () => lotNow(),
+      test: (base) => !base && lotNow(),
+      events: ['project'],
+    }] : []),
     {
       id: 'move', anim: 'select', view: '2d', title: 'Move a piece of furniture',
       text: 'Click a piece of furniture to select it, then drag it somewhere new.',

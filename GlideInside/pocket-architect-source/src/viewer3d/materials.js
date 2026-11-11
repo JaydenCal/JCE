@@ -158,6 +158,7 @@ export function createMaterialLibrary({ textures = true, catalogue = null } = {}
       opacity: 0.34,
       side: THREE.DoubleSide,
       depthWrite: false,
+      envMapIntensity: 1.6,
     });
     if (opts.tint === 'demolish') m.color.lerp(TINT.demolish.colour, 0.5);
     return remember(key, m);

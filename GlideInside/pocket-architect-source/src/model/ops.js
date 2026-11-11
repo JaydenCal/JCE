@@ -5,6 +5,7 @@
 import * as S from './schema.js';
 import * as G from './geometry.js';
 import * as SITE from './placement.js';
+import { fitHouse } from '../site/fit-house.js';
 
 export class OpError extends Error {
   constructor(message) {
@@ -919,12 +920,25 @@ export const OPS = {
       }
       const mm = (v) => `${(Math.abs(v) / 1000).toFixed(2)} m`;
       const move = `${mm(s.dx)} ${s.dx >= 0 ? 'east' : 'west'} and ${mm(s.dy)} ${s.dy >= 0 ? 'south' : 'north'}`;
-      if (!s.fits) return { changed: false, fits: false, report: `The house does not fit inside the setbacks at this size; the nearest position (${move}) still breaches by ${s.residualM.toFixed(2)} m.` };
-      if (a.apply === true) {
-        SITE.translateHouse(p, s.dx, s.dy);
-        return { fits: true, dx: s.dx, dy: s.dy, report: `Moved the house ${move} so it sits inside the setbacks.` };
+      if (s.fits) {
+        if (a.apply === true) {
+          SITE.translateHouse(p, s.dx, s.dy);
+          return { fits: true, dx: s.dx, dy: s.dy, report: `Moved the house ${move} so it sits inside the setbacks.` };
+        }
+        return { changed: false, fits: true, dx: s.dx, dy: s.dy, report: `Moving the house ${move} puts it inside the setbacks.` };
       }
-      return { changed: false, fits: true, dx: s.dx, dy: s.dy, report: `Moving the house ${move} puts it inside the setbacks.` };
+      // As drawn it does not fit: try turning it square to the lot and the lot planner's pose before giving up.
+      const f = fitHouse(p);
+      if (f.ok && f.fits) {
+        if (a.apply === true) {
+          if (f.rotateDeg) SITE.rotateHouse(p, f.rotateDeg, SITE.houseCentre(p));
+          SITE.translateHouse(p, f.dx, f.dy);
+          return { fits: true, dx: f.dx, dy: f.dy, rotateDeg: f.rotateDeg, report: f.message };
+        }
+        return { changed: false, fits: true, report: f.message.replace(/^Moved/, 'Moving') };
+      }
+      if (a.apply === true) fail(f.message || 'This house does not fit inside the setbacks.');
+      return { changed: false, fits: false, report: f.message || 'This house does not fit inside the setbacks.' };
     },
   },
   set_project: {

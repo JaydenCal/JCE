@@ -1354,7 +1354,7 @@ test('PDF preview: module never exposes bytes, builds canvases with a baked wate
   assert.doesNotMatch(src, /[–—]/);
   const premium = fs.readFileSync(path.join(ROOT, 'src/premium/premium.js'), 'utf8');
   assert.match(premium, /previewPdf/);
-  assert.match(src, /await import\('\.\/exporters\/pdf\.js'\)/);
+  assert.match(src, /await import\('\.\/exporters\/(pdf|index)\.js'\)/);
 });
 
 test('PDF preview: DXF, GLB and OBJ stay paid only for a free user', async () => {

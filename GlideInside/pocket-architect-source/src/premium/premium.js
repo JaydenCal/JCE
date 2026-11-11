@@ -213,10 +213,22 @@ export function createPremium(store, options = {}) {
       return null;
     }
     const send = state.portal?.sendEnquiry || ((body) => api.enquiryJce(body));
-    const lot = (typeof window !== 'undefined' && window.__ps?.portal?.getLot?.()) || store.project.site?.lot || {};
+    // The found lot (site.lot) first, then whatever the builder portal knows; the person fills in any gaps.
+    const portalLot = (typeof window !== 'undefined' && window.__ps?.portal?.getLot?.()) || {};
+    const sl = store.project.site?.lot || {};
+    const pick = (...v) => v.find((x) => x != null && String(x).trim() !== '') || '';
+    const lot = {
+      address: pick(sl.address, portalLot.address),
+      lot: pick(sl.lotNumber, portalLot.lot),
+      dp: pick(sl.planLabel, portalLot.dp),
+      lga: pick(sl.lga, portalLot.lga),
+      zone: pick(sl.zoning?.code && `${sl.zoning.code}${sl.zoning.name ? ` ${sl.zoning.name}` : ''}`, portalLot.zone),
+    };
+    const user = (typeof window !== 'undefined' && window.__ps?.portal?.me?.user) || {};
+    const prefill = { name: user.name || '', email: user.email || '', phone: user.phone || '' };
     track('ps_enquiry_open');
     return openEnquiry({
-      layer, send, buildPdf: pdfBase64, project: store.project, lot,
+      layer, send, buildPdf: pdfBase64, project: store.project, lot, prefill,
       source: portalOn() ? (state.portal.role === 'client' ? 'client' : 'builder') : 'public', orgName: portalOn() ? state.portal.orgName || '' : '', ...extra,
     });
   }

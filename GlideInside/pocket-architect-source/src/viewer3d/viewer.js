@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { buildModel, disposeModel, modelBounds } from './build.js';
+import { addBreachOverlay } from './breach.js';
 import { createMaterialLibrary } from './materials.js';
 import { createPicker } from './picker.js';
 import { createWalk } from './walk.js';
@@ -13,10 +14,17 @@ import { createEdit } from './edit.js';
 import { createAhead } from './ahead.js';
 import { VIEWER_CSS } from './viewer-css.js';
 import { loadBitmap } from '../editor2d/underlay.js';
+import { edgeColourOf } from './terrain.js';
 
 const STYLE_ID = 'ps3d-style';
 const RAD = Math.PI / 180;
 const SUN_DIR = new THREE.Vector3(-0.45, 0.78, 0.65).normalize();
+// With a lot loaded plan up is grid north and the sun is in the northern sky (southern hemisphere), so a street frontage on the
+// north side is lit. 'warm' is a low afternoon sun from the north west with longer shadows.
+const SUN_PRESETS = {
+  day: { dir: new THREE.Vector3(0.5, 0.72, -0.5).normalize(), color: '#fff3e0', intensity: 2.9, hemi: 1.2, exposure: 1.0 },
+  warm: { dir: new THREE.Vector3(-0.72, 0.36, -0.58).normalize(), color: '#ffd9a8', intensity: 3.3, hemi: 0.95, exposure: 1.05 },
+};
 // Sky and ground are tuned for the white app theme: the horizon is a clear blue grey rather than near white,
 // so the edge of the view reads against a white page and white overlay chips stand out on it.
 const SKY = { top: '#5d92d8', horizon: '#c9dcee', ground: '#9aa28f' };
@@ -85,13 +93,12 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
   const sky = makeSky();
   scene.add(sky);
-  scene.fog = new THREE.Fog(SKY.horizon, 120, 480);
-  scene.fog.color.set(SKY.horizon);
+  // No fog: the owner wants a sharp model. The site fades to the horizon colour by itself (terrain.js, fade ring).
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 2000);
   camera.position.set(14, 10, 16);
 
@@ -111,7 +118,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   scene.add(hemi);
   const sun = new THREE.DirectionalLight('#fff3e0', 2.9);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.mapSize.set(3072, 3072);
   sun.shadow.bias = -0.0004;
   sun.shadow.normalBias = 0.04;
   sun.shadow.radius = 3;
@@ -146,18 +153,23 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
 
   const hints = document.createElement('div');
   hints.className = 'ps3d-hints';
-  const HINTS_DEFAULT = '<span class="ps3d-chip">Drag to orbit, scroll to zoom</span><span class="ps3d-chip">Click a surface to change its finish</span><span class="ps3d-chip">Click furniture to move or delete it</span><span class="ps3d-chip">Press B to edit walls and rooms</span>';
+  // No how-to panel over the model: one short chip that fades on its own. The view buttons sit at the bottom left.
+  const HINTS_DEFAULT = '<span class="ps3d-chip">Drag to orbit, scroll to zoom</span>';
   hints.innerHTML = HINTS_DEFAULT;
   rootEl.appendChild(hints);
   let hintTimer = null;
   const fadeHints = () => hints.classList.add('is-faded');
 
   // State -----------------------------------------------------------------------------------------
+  // In the split view the plan editor and this viewer are on screen together: the viewer only takes keys while the pointer is over it
+  // or it has focus, so a key press is never answered twice.
+  const keysOk = () => store.ui.view !== 'split' || rootEl.matches(':hover') || rootEl.contains(document.activeElement);
   let active = false;
   let mode = store.ui.view === 'walk' ? 'walk' : 'orbit';
   let model = null;
   let bounds = null;
   let points = [];
+  let housePoints = [];
   let dirtyModel = true;
   let framed = false;
   let lastProjectId = null;
@@ -199,6 +211,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     getMode: () => mode,
     isActive: () => active,
     suspended: () => !!ahead?.isArmed,
+    keysOk: () => keysOk(),
   });
   walk.setItems(edit.items);
   const ahead = createAhead({
@@ -206,6 +219,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     pickAt: (x, y) => pickAt(x, y),
     getMode: () => mode,
     isActive: () => active,
+    keysOk: () => keysOk(),
     invalidate,
   });
   // Editing needs a clear view of the rooms, so the roof is hidden while Edit is on and restored after.
@@ -228,22 +242,86 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   };
 
   // Model ---------------------------------------------------------------------------------------------
+  // Site layers the person can switch in the 3D view (a small chip at the bottom). Remembered per browser.
+  const LAYERS_KEY = 'ps.view3d.layers';
+  const layers = { contours: false };
+  try {
+    const saved = JSON.parse(localStorage.getItem(LAYERS_KEY) || 'null');
+    if (saved && typeof saved.contours === 'boolean') layers.contours = saved.contours;
+  } catch {
+    /* storage unavailable: defaults */
+  }
+  const contoursChip = document.createElement('button');
+  contoursChip.type = 'button';
+  contoursChip.className = 'ps3d-chip ps3d-chip--toggle';
+  contoursChip.dataset.ps = 'contours-toggle';
+  const syncContoursChip = () => {
+    const lot = store.project.site?.lot;
+    contoursChip.hidden = !lot?.contours?.length;
+    contoursChip.setAttribute('aria-pressed', String(layers.contours));
+    contoursChip.textContent = layers.contours ? 'Contours on' : 'Contours off';
+  };
+  contoursChip.addEventListener('click', () => {
+    layers.contours = !layers.contours;
+    try {
+      localStorage.setItem(LAYERS_KEY, JSON.stringify(layers));
+    } catch {
+      /* ignore */
+    }
+    syncContoursChip();
+    scheduleRebuild(10);
+  });
+  rootEl.appendChild(contoursChip);
+  // View buttons (bottom left): fly to the street view, the front of the house or the whole lot, and switch the light.
+  const viewBar = document.createElement('div');
+  viewBar.className = 'ps3d-viewbar';
+  const mkBtn = (label, key, title) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'ps3d-chip ps3d-chip--btn';
+    b.dataset.ps = `view3d-${key}`;
+    b.textContent = label;
+    b.title = title;
+    return b;
+  };
+  const vbHero = mkBtn('Street view', 'hero', 'Three quarter view from the street');
+  const vbFront = mkBtn('Front', 'front', 'Close up of the front of the house');
+  const vbAerial = mkBtn('Aerial', 'aerial', 'The whole lot from above');
+  const vbSun = mkBtn('Warm light', 'sun', 'Switch between midday and late afternoon light');
+  vbSun.setAttribute('aria-pressed', 'false');
+  viewBar.append(vbHero, vbFront, vbAerial, vbSun);
+  rootEl.appendChild(viewBar);
+  let sunKey = 'day';
+  try {
+    sunKey = localStorage.getItem('ps.view3d.sun') === 'warm' ? 'warm' : 'day';
+  } catch {
+    /* storage unavailable */
+  }
+  vbSun.setAttribute('aria-pressed', String(sunKey === 'warm'));
   // Aerial texture for the site terrain: loaded from the underlay store, rebuilt when the image changes.
-  const site = { key: null, texture: null, loading: null };
+  const site = { key: null, texture: null, edgeColour: null, loading: null };
   function syncSiteTexture() {
     const key = store.project.site?.lot?.aerial?.key || null;
     if (key === site.key) return;
     site.key = key;
     site.texture?.dispose();
     site.texture = null;
+    site.edgeColour = null;
     if (!key) return;
     site.loading = loadBitmap(key).then((bmp) => {
       if (!bmp || site.key !== key) return;
       // A canvas copy keeps the usual flipY behaviour (an ImageBitmap cannot be flipped) and is drawn 1:1 for a sharp texture.
+      // Full resolution, scaled down only when the GPU cannot take it. No smoothing beyond the resample itself.
+      const maxTex = renderer.capabilities.maxTextureSize || 4096;
+      const k = Math.min(1, maxTex / Math.max(bmp.w, bmp.h));
       const c = document.createElement('canvas');
-      c.width = bmp.w;
-      c.height = bmp.h;
-      c.getContext('2d').drawImage(bmp.img, 0, 0);
+      c.width = Math.max(1, Math.round(bmp.w * k));
+      c.height = Math.max(1, Math.round(bmp.h * k));
+      const cg = c.getContext('2d');
+      cg.imageSmoothingEnabled = true;
+      cg.imageSmoothingQuality = 'high';
+      cg.drawImage(bmp.img, 0, 0, c.width, c.height);
+      site.edgeColour = edgeColourOf(c);
       site.texture = new THREE.CanvasTexture(c);
       site.texture.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
       scheduleRebuild(20);
@@ -260,23 +338,41 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       statusView: ui.statusView || 'proposed',
       walk: mode === 'walk',
       siteTexture: site.texture,
+      siteEdgeColour: site.edgeColour,
+      showContours: layers.contours,
     };
+  }
+
+  function lotRadiusM() {
+    const bd = store.project.site?.lot?.boundary;
+    if (!bd?.length) return 0;
+    const xs = bd.map((q) => q.x);
+    const ys = bd.map((q) => q.y);
+    return Math.hypot(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 2000;
   }
 
   function fitSun() {
     if (!bounds) return;
+    const hasLot = !!store.project.site?.lot?.boundary?.length;
+    const preset = hasLot ? SUN_PRESETS[sunKey] : { dir: SUN_DIR, color: '#fff3e0', intensity: 2.9, hemi: 1.2, exposure: 1.0 };
+    sun.color.set(preset.color);
+    sun.intensity = preset.intensity;
+    hemi.intensity = mode === 'walk' ? 1.7 : preset.hemi;
+    renderer.toneMappingExposure = preset.exposure;
     const sphere = bounds.getBoundingSphere(new THREE.Sphere());
     const r = Math.max(sphere.radius, 4);
+    // The shadow box covers the house and, with a lot loaded, the lot itself (fences, trees and the neighbours' boundary sides),
+    // so shadows stay sharp (about 4 cm per texel on a 2,000 m2 block) without a second light.
+    const e = Math.min(70, Math.max(r * 1.25, lotRadiusM() * 1.02));
     sun.target.position.copy(sphere.center);
-    sun.position.copy(sphere.center).addScaledVector(SUN_DIR, r * 3 + 20);
+    sun.position.copy(sphere.center).addScaledVector(preset.dir, e * 3 + 20);
     const cam = sun.shadow.camera;
-    const e = r * 1.25;
     cam.left = -e;
     cam.right = e;
     cam.top = e;
     cam.bottom = -e;
     cam.near = 1;
-    cam.far = r * 7 + 60;
+    cam.far = e * 7 + 60;
     cam.updateProjectionMatrix();
     sun.target.updateMatrixWorld();
   }
@@ -304,15 +400,14 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       disposeModel(model);
     }
     model = next;
+    try { addBreachOverlay(model, store.project); } catch (e) { console.warn('[viewer3d] breach overlay failed', e); }
     scene.add(model);
     doors.attach(model);
     bounds = modelBounds(model);
     points = collectPoints(model);
+    housePoints = collectPoints(model, true);
     fitSun();
     applyLimits();
-    const R = model.userData.groundR || 200;
-    scene.fog.near = R * 0.3;
-    scene.fog.far = R * 0.97;
     if (!framed || lastProjectId !== store.project.id) {
       frameCamera(false);
       framed = true;
@@ -334,12 +429,13 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
 
   // Camera ------------------------------------------------------------------------------------------
   // World space vertices of the model (without the ground), used to frame the camera tightly.
-  function collectPoints(group) {
+  function collectPoints(group, houseOnly = false) {
     const out = [];
     const v = new THREE.Vector3();
     group.updateMatrixWorld(true);
     group.traverse((o) => {
-      if (!o.isMesh || o.userData?.ground || !o.geometry?.attributes?.position) return;
+      if (!o.isMesh || (o.userData?.ground && !o.userData?.frame) || !o.geometry?.attributes?.position) return;
+      if (houseOnly && o.userData?.frame) return;
       const pos = o.geometry.attributes.position;
       const step = Math.max(1, Math.floor(pos.count / 4000));
       for (let i = 0; i < pos.count; i += step) {
@@ -393,11 +489,51 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     return { pos: target.clone().addScaledVector(dir, dist * 1.06), target };
   }
 
-  function frameCamera(animate) {
+  // Street side of the first frontage edge: { n: outward unit normal (world X, Z), u: along the street, mid } or null.
+  function streetFrame() {
+    const lot = store.project.site?.lot;
+    const bd = lot?.boundary;
+    const fe = (lot?.frontEdges || []).find((i) => Number.isInteger(i) && i >= 0 && i < (bd?.length || 0));
+    if (!bd || fe == null) return null;
+    const a = bd[fe];
+    const b = bd[(fe + 1) % bd.length];
+    const len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+    const u = { x: (b.x - a.x) / len, y: (b.y - a.y) / len };
+    const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    const c = { x: bd.reduce((t, q) => t + q.x, 0) / bd.length, y: bd.reduce((t, q) => t + q.y, 0) / bd.length };
+    let n = { x: -u.y, y: u.x };
+    if (n.x * (mid.x - c.x) + n.y * (mid.y - c.y) < 0) n = { x: -n.x, y: -n.y };
+    return { n, u, mid };
+  }
+
+  // kind: 'hero' (three quarter from the street, slightly low), 'front' (close, square on), 'aerial' (the whole lot), 'fit' (old default)
+  function poseFor(kind) {
     const box = bounds || new THREE.Box3(new THREE.Vector3(-5, 0, -5), new THREE.Vector3(10, 4, 8));
-    const pose = framedPose(camera, points, box);
+    const sf = kind === 'fit' ? null : streetFrame();
+    if (!sf || !housePoints.length) {
+      const k = kind === 'aerial';
+      return framedPose(camera, points, box, k ? 30 : 38, k ? 48 : 30);
+    }
+    const ang = ((kind === 'front' ? 8 : kind === 'aerial' ? 28 : 34) * RAD);
+    const side = Math.cos(ang);
+    const dx = sf.n.x * side + sf.u.x * Math.sin(ang);
+    const dz = sf.n.y * side + sf.u.y * Math.sin(ang);
+    const az = (Math.atan2(dx, dz) * 180) / Math.PI;
+    if (kind === 'aerial') {
+      const pose = framedPose(camera, points, box, az, 46);
+      return pose;
+    }
+    const pose = framedPose(camera, housePoints, box, az, kind === 'front' ? 9 : 19);
+    const k = kind === 'front' ? 1.12 : 1.55;
+    pose.pos.sub(pose.target).multiplyScalar(k).add(pose.target);
+    return pose;
+  }
+
+  function frameCamera(animate, kind = null) {
+    const hasLot = !!store.project.site?.lot?.boundary?.length;
+    const pose = poseFor(kind || (hasLot ? 'hero' : 'fit'));
     if (animate && !reduceMotion && active) {
-      anim = { t0: performance.now(), dur: 520, fromPos: camera.position.clone(), toPos: pose.pos, fromTarget: controls.target.clone(), toTarget: pose.target };
+      anim = { t0: performance.now(), dur: 650, fromPos: camera.position.clone(), toPos: pose.pos, fromTarget: controls.target.clone(), toTarget: pose.target };
     } else {
       anim = null;
       camera.position.copy(pose.pos);
@@ -406,6 +542,25 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     }
     invalidate();
   }
+
+  vbHero.addEventListener('click', () => frameCamera(true, 'hero'));
+  vbFront.addEventListener('click', () => frameCamera(true, 'front'));
+  vbAerial.addEventListener('click', () => frameCamera(true, 'aerial'));
+  vbSun.addEventListener('click', () => {
+    sunKey = sunKey === 'warm' ? 'day' : 'warm';
+    try {
+      localStorage.setItem('ps.view3d.sun', sunKey);
+    } catch {
+      /* ignore */
+    }
+    vbSun.setAttribute('aria-pressed', String(sunKey === 'warm'));
+    fitSun();
+    invalidate();
+  });
+  const syncViewBar = () => {
+    const hasLot = !!store.project.site?.lot?.boundary?.length;
+    viewBar.hidden = !hasLot || mode === 'walk';
+  };
 
   function stepAnim(now) {
     if (!anim) return false;
@@ -421,7 +576,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     if (mode === 'walk') {
       if (camera.near !== 0.05) {
         camera.near = 0.05;
-        camera.far = 600;
+        camera.far = 1600;
         camera.updateProjectionMatrix();
       }
       return;
@@ -528,7 +683,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   // Modes ---------------------------------------------------------------------------------------------
   function applyModeLighting() {
     const w = mode === 'walk';
-    hemi.intensity = w ? 1.7 : 1.2;
+    hemi.intensity = w ? 1.7 : (store.project.site?.lot ? SUN_PRESETS[sunKey].hemi : 1.2);
     hemi.groundColor.set(w ? '#d2d0c8' : '#8d8a7c');
     scene.environmentIntensity = w ? 0.3 : 0.45;
     headlight.intensity = w ? 7 : 0;
@@ -536,6 +691,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     camera.updateProjectionMatrix();
     controls.enabled = !w;
     hints.hidden = w;
+    contoursChip.dataset.walk = String(w);
+    syncViewBar();
     edit.onModeChange();
   }
 
@@ -645,7 +802,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       if (mode === 'walk') walk.enter();
       clearTimeout(hintTimer);
       hints.classList.remove('is-faded');
-      hintTimer = setTimeout(fadeHints, 16000);
+      hintTimer = setTimeout(fadeHints, 6000);
       start();
       invalidate();
       edit.onActiveChange();
@@ -664,15 +821,19 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   const offProject = store.on('project', (info) => {
     if (info?.label === 'Open project' || info?.label === 'Find my block') framed = false;
     syncSiteTexture();
+    syncContoursChip();
+    syncViewBar();
     scheduleRebuild(120);
     if (mode === 'walk') walk.refresh();
   });
   syncSiteTexture();
+  syncContoursChip();
+  syncViewBar();
   const offUI = store.on('ui', (patch) => {
     if (!patch) return;
     if ('view' in patch) {
       if (patch.view === 'walk') setMode('walk');
-      else if (patch.view === '3d') setMode('orbit');
+      else if (patch.view === '3d' || patch.view === 'split') setMode('orbit');
     }
     if ('levelFilter' in patch || 'showRoof' in patch || 'statusView' in patch) {
       scheduleRebuild(20);

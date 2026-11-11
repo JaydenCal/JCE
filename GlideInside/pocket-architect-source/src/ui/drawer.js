@@ -1,5 +1,6 @@
 // Furniture catalogue drawer: category tabs, search and tiles with a small preview drawn by each item's own 2D symbol.
 
+import { hasPlan } from './view-mode.js';
 import { h, clear } from './dom.js';
 import { icon } from './icons.js';
 import { drawItemPreview } from './preview.js';
@@ -97,7 +98,7 @@ export function createDrawer(el, store, { catalogue, onInventory } = {}) {
   }
 
   function open() {
-    if (store.ui.view !== '2d') return;
+    if (!hasPlan(store.ui.view)) return;
     if (!isOpen) {
       isOpen = true;
       el.hidden = false;
@@ -126,7 +127,7 @@ export function createDrawer(el, store, { catalogue, onInventory } = {}) {
   const offs = [
     store.on('plan:open-drawer', open),
     store.on('ui', (patch = {}) => {
-      if (('tool' in patch && store.ui.tool !== 'furniture') || ('view' in patch && store.ui.view !== '2d')) close();
+      if (('tool' in patch && store.ui.tool !== 'furniture') || ('view' in patch && !hasPlan(store.ui.view))) close();
       if (isOpen && ('toolArg' in patch || 'tool' in patch)) syncArmed();
     }),
     onTheme(() => {

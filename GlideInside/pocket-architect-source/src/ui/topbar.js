@@ -6,8 +6,8 @@ import { toast } from './toast.js';
 import { deleteLevelWithConfirm } from './level-actions.js';
 import { hasExtensionContent, levelsByElevation } from '../editor2d/math.js';
 import { CONFIG } from '../config.js';
+import { VIEWS, hasPlan } from './view-mode.js';
 
-const VIEWS = [['2d', 'Plan'], ['3d', '3D'], ['walk', 'Walk']];
 const STATUS_VIEWS = [['existing', 'Existing'], ['proposed', 'Proposed'], ['both', 'Both']];
 const MOD = /Mac|iPhone|iPad/.test(globalThis.navigator?.platform || '') ? 'Cmd' : 'Ctrl';
 
@@ -18,7 +18,10 @@ function textButton({ name, text, title, onClick, cls = '', action }) {
 }
 
 // Handlers: onNew, onOpen, onSave, onOpenFull. `demo` hides the file controls.
-export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, onOpenFull, onFindBlock } = {}) {
+export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, onOpenFull, onFindBlock, onBack } = {}) {
+  // Back: returns to the page the app was opened from (see back-target.js). Hidden in the embedded demo, where there is nothing to go back to.
+  const backBtn = h('button', { class: 'ps-btn ps-btn--wide ps-back', type: 'button', title: 'Back', 'aria-label': 'Back', dataset: { action: 'back' }, onclick: () => onBack?.() }, icon('back', { size: 18 }), h('span', { class: 'ps-btn-text' }, 'Back'));
+  backBtn.hidden = demo || !onBack;
   const brand = h('div', { class: 'ps-brand' }, h('span', { class: 'ps-logo', 'aria-hidden': 'true' }), h('span', { class: 'ps-product' }, CONFIG.productName));
 
   const nameInput = h('input', { class: 'ps-name', type: 'text', maxlength: '80', 'aria-label': 'Design name', spellcheck: 'false', autocomplete: 'off' });
@@ -75,14 +78,14 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
   function addLevel() {
     try {
       const res = store.run('add_level', {});
-      if (res?.id) store.setUI({ activeLevelId: res.id, ...(store.ui.view !== '2d' ? { levelFilter: 'all' } : {}) });
+      if (res?.id) store.setUI({ activeLevelId: res.id, ...(!hasPlan(store.ui.view) ? { levelFilter: 'all' } : {}) });
     } catch (e) {
       toast(e?.message || 'A level could not be added', { kind: 'warn' });
     }
   }
 
   function selectLevel(id) {
-    if (store.ui.view === '2d') store.setUI({ activeLevelId: id });
+    if (hasPlan(store.ui.view)) store.setUI({ activeLevelId: id });
     else store.setUI({ activeLevelId: id, levelFilter: id });
   }
 
@@ -90,7 +93,7 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
     const p = store.project;
     const view = store.ui.view;
     const sorted = levelsByElevation(p);
-    const selected = view === '2d' ? store.ui.activeLevelId : store.ui.levelFilter;
+    const selected = hasPlan(view) ? store.ui.activeLevelId : store.ui.levelFilter;
     const key = [view, selected, ...sorted.map((l) => `${l.id}:${l.name}`)].join('|');
     if (key === levelKey) return;
     levelKey = key;
@@ -106,7 +109,7 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
           deleteLevelWithConfirm(store, l.id);
         } }, icon('close', { size: 10 })) : null));
     }
-    if (view !== '2d') levels.append(tab('all', 'All', 'Show every level'));
+    if (!hasPlan(view)) levels.append(tab('all', 'All', 'Show every level'));
     levels.append(h('button', { class: 'ps-level-tab ps-level-add', type: 'button', title: 'Add a level above the top level', 'aria-label': 'Add a level', onclick: addLevel }, '+ Level'));
   }
 
@@ -128,10 +131,11 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
     siteBtn.hidden = on || !CONFIG.siteLookupEnabled || !onFindBlock;
     premiumSlot.hidden = on;
     fullBtn.hidden = !on;
+    backBtn.hidden = on || !onBack;
   }
   setDemo(demo);
 
-  el.append(brand, nameInput, fileGroup, siteBtn, historyGroup, viewSeg, levels, statusSeg, roofBtn, h('span', { class: 'ps-topbar-spacer' }), fullBtn, premiumSlot);
+  el.append(backBtn, brand, nameInput, fileGroup, siteBtn, historyGroup, viewSeg, levels, statusSeg, roofBtn, h('span', { class: 'ps-topbar-spacer' }), fullBtn, premiumSlot);
 
   // Sync -----------------------------------------------------------------------------------------------------------------------
   function syncHistory() {

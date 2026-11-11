@@ -2,6 +2,9 @@
 
 import { fetchSite } from './client.js';
 import { buildSiteLot, underlayFor } from './model.js';
+import { faceGarageAngle, buildingHull, orientedBox, roadReserve } from './lotplan.js';
+import { rotateHouse, translateHouse } from '../model/placement.js';
+import * as G from '../model/geometry.js';
 import { saveImage, loadBitmap, removeImage, underlayKey } from '../editor2d/underlay.js';
 
 // Move the whole design so the middle of its footprint sits on the lot centroid (plan 0, 0). Only for the first lot.
@@ -25,6 +28,32 @@ export function recentreDesign(p) {
     for (const s of l.stairs) move(s);
   }
   for (const t of p.site?.tanks || []) move(t);
+  return true;
+}
+
+/**
+ * First lot only: turn the house so its garage (or, without one, its entrance side) faces the street, and bring it forward so it
+ * sits about 12 m behind the street boundary on a deep lot. The person can still change this with "Arrange house on lot".
+ */
+export function faceHouseToStreet(p) {
+  const lot = p.site?.lot;
+  if (!lot || (lot.frontEdges || []).length !== 1) return false;
+  const rs = roadReserve(lot)[0];
+  if (!rs) return false;
+  let hull = buildingHull(p);
+  let box = orientedBox(hull);
+  if (!box) return false;
+  const ang = faceGarageAngle(p);
+  if (ang) {
+    rotateHouse(p, ang, box.centre);
+    hull = buildingHull(p);
+    box = orientedBox(hull);
+  }
+  const prop = rs.lines.property;
+  const inward = { x: -rs.outward.x, y: -rs.outward.y };
+  const near = Math.min(...hull.map((q) => G.dot(G.sub(q, prop[0]), inward))) / 1000;
+  const shift = near - 12;
+  if (shift > 0.5) translateHouse(p, Math.round(-inward.x * shift * 1000 / 50) * 50, Math.round(-inward.y * shift * 1000 / 50) * 50);
   return true;
 }
 
@@ -61,6 +90,7 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
   store.apply('Find my block', (p) => {
     if (first) recentreDesign(p);
     p.site.lot = lot;
+    if (first) faceHouseToStreet(p);
     p.site.northDeg = 0; // plan up is MGA grid north
     const u = underlayFor(lot);
     if (u) p.site.underlay = u;

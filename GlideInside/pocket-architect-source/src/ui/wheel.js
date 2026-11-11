@@ -6,6 +6,7 @@
 // Releasing Q (or clicking) over an item arms placement. Esc closes. Hit testing is geometric,
 // so moving the pointer straight out from a category onto its items never loses the category.
 
+import { hasPlan } from './view-mode.js';
 import { h, clear, isTyping } from './dom.js';
 import { icon } from './icons.js';
 import { drawItemPreview } from './preview.js';
@@ -246,7 +247,7 @@ export function createWheel({ store, catalogue, host, getViewer, openInventory }
 
   function open({ x, y, tap = false, mode: wanted } = {}) {
     mode = wanted === 'walk' ? 'walk' : 'plan';
-    if (root || (mode === 'plan' && store.ui.view !== '2d')) return false;
+    if (root || (mode === 'plan' && !hasPlan(store.ui.view))) return false;
     cats = categories().map((c) => ({ ...c }));
     entryList = allEntries(catalogue);
     const byKey = new Map(entryList.map((e) => [e.key, e]));
@@ -320,7 +321,7 @@ export function createWheel({ store, catalogue, host, getViewer, openInventory }
     }
     if ((e.key !== 'q' && e.key !== 'Q') || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
     if (isTyping(e.target) || modalOpen() || e.defaultPrevented) return;
-    if (store.ui.view !== '2d') return; // in Walk mode the 3D viewer opens the wheel itself
+    if (!hasPlan(store.ui.view)) return; // in Walk mode the 3D viewer opens the wheel itself
     e.preventDefault();
     open();
   }
@@ -339,7 +340,7 @@ export function createWheel({ store, catalogue, host, getViewer, openInventory }
   window.addEventListener('keyup', onKeyUp, true);
   window.addEventListener('pointermove', onPointer, { passive: true, capture: true });
   const off = store.on('ui', (patch = {}) => {
-    if ('view' in patch && store.ui.view !== (mode === 'walk' ? 'walk' : '2d')) close();
+    if ('view' in patch && (mode === 'walk' ? store.ui.view !== 'walk' : !hasPlan(store.ui.view))) close();
   });
   window.addEventListener('blur', close);
 

@@ -9,11 +9,15 @@ import { CONFIG } from '../config.js';
 import { floorRLOf, defaultFloorRL, centroidRL } from '../site/model.js';
 import { setbackInputsFor } from '../site/setback-stage.js';
 import { askConfirm } from './modal.js';
+import { plainSetbackReason, edgeWords } from '../site/lot-checks.js';
+import { buildingRings, boundaryDims } from '../site/lotplan.js';
 import { siteCredits, INDICATIVE } from '../site/credits.js';
 
 const LAYER_LABELS = [
   ['boundary', 'Lot boundary'], ['dimensions', 'Boundary lengths'], ['neighbours', 'Neighbouring lots'],
-  ['labels', 'Lot and DP labels'], ['aerial', 'Aerial image'], ['contours', 'Contours'], ['setbacks', 'Setback envelope'],
+  ['labels', 'Lot and DP labels'], ['aerial', 'Aerial image'], ['contours', 'Contours'],
+  ['setbacks', 'Setback envelope'], ['road', 'Road and kerb'], ['driveway', 'Driveway'],
+  ['fences', 'Fences (3D)'], ['houses', 'Neighbour houses (3D)'],
 ];
 
 export function buildSiteSection(ctx) {
@@ -49,18 +53,25 @@ export function buildSiteSection(ctx) {
       fact('Council', lot.lga || 'Not found'),
       fact('Zone', lot.zoning ? `${lot.zoning.code} ${lot.zoning.name}` : 'Not looked up'),
       crl != null ? fact('Ground RL at lot centre', `${crl.toFixed(2)} m`) : null,
-      fact('Street frontage', (lot.frontEdges || []).length ? `Edge${lot.frontEdges.length > 1 ? 's' : ''} ${lot.frontEdges.map((i) => i + 1).join(', ')}${lot.cornerLot ? ' (corner lot)' : ''}${lot.frontageConfirmed ? '' : ', not confirmed'}` : 'Not set'));
+      fact('Street frontage', (lot.frontEdges || []).length ? `${lot.frontEdges.map((i) => { const d = boundaryDims(lot)[i]; return d ? `${edgeWords(lot, i)}, ${d.length} m` : ''; }).filter(Boolean).join('; ')}${lot.cornerLot ? ' (corner lot)' : ''}${lot.frontageConfirmed ? '' : ', not confirmed'}` : 'Not set'));
     const sec = section('Site', h('table', { class: 'ps-table ps-site-facts' }, rows));
     if (!lot.zoning && lot.zoneNote) sec.append(h('p', { class: 'ps-hint' }, lot.zoneNote));
     sec.append(h('p', { class: 'ps-hint' }, `Coordinates are MGA2020 zone ${lot.zone}, plan up is grid north.`));
 
     sec.append(h('div', { class: 'ps-sec' }, button('Confirm street frontage', () => store.setUI({ view: '2d', frontageEdit: true }), { title: 'Click the edges of your lot that face the street' })));
+    // The builder's lot planner controls: drag, turn, mirror, face the garage to the street, live clearances.
+    sec.append(h('div', { class: 'ps-sec' }, button('Arrange house on lot', async () => {
+      try {
+        const { startArrange } = await import('../portal/arrange.js');
+        startArrange({ store, editor: ctx.editor });
+      } catch (e) { sec.append(h('p', { class: 'ps-hint' }, e.message || 'Could not start.')); }
+    }, { title: 'Drag, turn and mirror the house on the lot and see the clearance to each boundary' })));
     const layers = h('div', { class: 'ps-sec', style: { marginTop: '8px' } }, h('h4', null, 'Layers'));
     for (const [id, label] of LAYER_LABELS) {
       if (id === 'aerial' && !lot.aerial) continue;
       if (id === 'contours' && !lot.contours?.length) continue;
       if (id === 'setbacks' && !lot.envelope) continue;
-      layers.append(fb.add(checkField({ label, get: () => lotOf()?.layers?.[id] !== false, commit: (v) => ctx.apply(`${v ? 'Show' : 'Hide'} ${label.toLowerCase()}`, (p) => { p.site.lot.layers[id] = v; }) })));
+      layers.append(fb.add(checkField({ label, get: () => (id === 'houses' && lotOf()?.source !== 'sample' ? lotOf()?.layers?.houses === true : lotOf()?.layers?.[id] !== false), commit: (v) => ctx.apply(`${v ? 'Show' : 'Hide'} ${label.toLowerCase()}`, (p) => { p.site.lot.layers[id] = v; }) })));
     }
     sec.append(layers);
     sec.append(setbackBlock(lot));
@@ -119,7 +130,11 @@ export function buildSiteSection(ctx) {
       fb.add(numberField({ label: 'Storeys', unit: '', step: 1, min: 1, max: 3, allowBlank: true, placeholder: inp.auto.storeys ? 'from design' : '', get: () => lotOf()?.setbackInputs?.storeys ?? null, commit: (n) => setInput({ storeys: n == null ? null : Math.round(n) }, 'Set storeys for setbacks') })),
       fb.add(numberField({ label: 'Wall height', unit: 'm', step: 0.1, min: 2, max: 12, decimals: 2, allowBlank: true, placeholder: inp.wallHeightM != null ? String(inp.wallHeightM) : '', get: () => lotOf()?.setbackInputs?.wallHeightM ?? null, commit: (n) => setInput({ wallHeightM: n }, 'Set wall height for setbacks') })),
       fb.add(numberField({ label: 'Overall height', unit: 'm', step: 0.1, min: 2, max: 14, decimals: 2, allowBlank: true, placeholder: inp.buildingHeightM != null ? String(inp.buildingHeightM) : '', get: () => lotOf()?.setbackInputs?.buildingHeightM ?? null, commit: (n) => setInput({ buildingHeightM: n }, 'Set overall height for setbacks') })));
-    box.append(h('p', { class: 'ps-hint' }, `Blank fields use your drawn design (${inp.storeys ?? '?'} storey${inp.storeys === 1 ? '' : 's'}, wall ${inp.wallHeightM ?? '?'} m, overall ${inp.buildingHeightM ?? '?'} m, roof height estimated).`));
+    const hasHouse = buildingRings(store.project).length > 0;
+    const num = (v) => (Number.isFinite(v) ? String(v) : null);
+    box.append(h('p', { class: 'ps-hint' }, hasHouse && inp.storeys != null && num(inp.wallHeightM) && num(inp.buildingHeightM)
+      ? `Blank fields use your drawn design (${inp.storeys} storey${inp.storeys === 1 ? '' : 's'}, wall ${inp.wallHeightM} m, overall ${inp.buildingHeightM} m, roof height estimated).`
+      : 'Blank fields use your drawn design once a house is placed.'));
     if (lot.state === 'QLD') {
       box.append(fb.add(selectField({ label: 'Street type', options: [['', 'Choose'], ['access', 'Access street'], ['collector', 'Collector street or higher']], get: () => lotOf()?.setbackInputs?.streetType || '', commit: (v) => setInput({ streetType: v || null }, 'Set street type for setbacks') })));
     }
@@ -128,10 +143,11 @@ export function buildSiteSection(ctx) {
       return box;
     }
     if (!sb) {
-      const why = (lot.setbacksAttempts || []).map((a) => a.reason).filter(Boolean)[0];
-      box.append(h('p', { class: 'ps-hint', role: 'status', dataset: { ps: 'setbacks-none' } }, 'Setbacks could not be worked out for this lot from the rules loaded. Check them with the council before you rely on any distance.'),
+      const why = (lot.setbacksAttempts || []).map((a) => plainSetbackReason(a.reason)).filter(Boolean)[0];
+      box.append(h('p', { class: 'ps-hint', role: 'status', dataset: { ps: 'setbacks-none' } }, !buildingRings(store.project).length && (lot.setbacksAttempts || []).some((a) => /storey|height|house|design/i.test(a.reason || '')) ? 'Setbacks appear once a house is placed.' : 'Setbacks not available for this lot, check with council.'),
         lot.state === 'QLD' && lot.areaM2 > 450 ? h('p', { class: 'ps-hint' }, 'The Queensland default setbacks cover lots up to 450 m². This lot is larger, so check the council planning scheme or the Queensland Housing Code.') : null,
-        why ? h('p', { class: 'ps-hint' }, why) : null);
+        why && !/^Setbacks not available/.test(why) ? h('p', { class: 'ps-hint' }, why) : null,
+        why && /^Setbacks not available/.test(why) ? h('p', { class: 'ps-hint' }, 'There is no setback rule loaded for this zone, use or lot size.') : null);
       return box;
     }
     const rows = [];

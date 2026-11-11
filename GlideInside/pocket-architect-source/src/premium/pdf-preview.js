@@ -248,8 +248,8 @@ export function openPdfPreview({ layer, project, store = null, config = {}, cata
         ? await hooks.buildPdf(payload, image)
         : await (async () => {
             const jsPDF = await loadJsPDF();
-            const { toPDF } = await import('./exporters/pdf.js');
-            return toPDF(payload, { jsPDF, image, config, catalogue });
+            const { buildPdfBytes } = await import('./exporters/index.js');
+            return buildPdfBytes(payload, { jsPDF, image, config, catalogue });
           })();
       const layout = bytes.layout;
       setupNote.textContent = layout?.note || '';

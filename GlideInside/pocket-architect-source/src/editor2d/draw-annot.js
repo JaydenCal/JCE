@@ -2,6 +2,7 @@
 
 import * as G from '../model/geometry.js';
 import { worldToScreen, rectCorners, openingFrame, scaleBar } from './math.js';
+import { orientedBox } from '../site/lotplan.js';
 
 export const fmtDim = (mm) => Math.round(mm).toLocaleString('en-AU');
 
@@ -84,11 +85,36 @@ export function drawDim(ctx, st, A, B, offPx, text, { colour = null } = {}) {
 }
 
 // Overall exterior width (below the plan) and depth (right of the plan) of the active level.
+/** Smallest box round the points when it is turned more than half a degree off the page, else null. */
+function turnedBox(pts) {
+  const box = orientedBox(hullOf(pts));
+  if (!box) return null;
+  const a = ((box.angleDeg % 90) + 90) % 90;
+  return a > 0.5 && a < 89.5 ? box : null;
+}
+function hullOf(points) {
+  const p = [...points].sort((a, b) => a.x - b.x || a.y - b.y);
+  const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+  const lower = [];
+  for (const q of p) { while (lower.length >= 2 && cross(lower.at(-2), lower.at(-1), q) <= 0) lower.pop(); lower.push(q); }
+  const upper = [];
+  for (const q of [...p].reverse()) { while (upper.length >= 2 && cross(upper.at(-2), upper.at(-1), q) <= 0) upper.pop(); upper.push(q); }
+  return lower.slice(0, -1).concat(upper.slice(0, -1));
+}
+
 export function drawOverallDims(ctx, st, scene) {
   const ext = scene.pieces.filter((p) => p.wall.kind === 'exterior');
   const pts = (ext.length ? ext : scene.pieces).flatMap((p) => p.poly);
   const bb = G.bbox(pts);
   if (!bb || bb.w < 500) return;
+  // A house turned on its lot: the overall strings follow the house, not the page.
+  const box = pts.length >= 3 ? turnedBox(pts) : null;
+  if (box) {
+    const [, c1, c2, c3] = box.corners;
+    drawDim(ctx, st, c3, c2, { x: box.v.x * 34, y: box.v.y * 34 }, fmtDim(box.w));
+    if (box.d >= 500) drawDim(ctx, st, c1, c2, { x: box.u.x * 34, y: box.u.y * 34 }, fmtDim(box.d));
+    return;
+  }
   drawDim(ctx, st, { x: bb.minX, y: bb.maxY }, { x: bb.maxX, y: bb.maxY }, { x: 0, y: 34 }, fmtDim(bb.w));
   if (bb.h >= 500) drawDim(ctx, st, { x: bb.maxX, y: bb.minY }, { x: bb.maxX, y: bb.maxY }, { x: 34, y: 0 }, fmtDim(bb.h));
 }

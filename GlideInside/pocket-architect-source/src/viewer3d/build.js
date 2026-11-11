@@ -14,6 +14,8 @@ import { buildLevelRoof } from './roof.js';
 import * as F from './footprint.js';
 import { makeMesh, modelBounds } from './model-util.js';
 import { addSiteTerrain } from './terrain.js';
+import { siteReady } from './site-geom.js';
+import { rotateHouse } from '../model/placement.js';
 import { addFloorPoly, addGround, addDeck, addStair, addTank, addFurniture, shade } from './site.js';
 
 export { disposeModel, modelBounds } from './model-util.js';
@@ -73,6 +75,49 @@ export function resolveFloorFinish(room, base, catalogue = null) {
   return { material, colour };
 }
 
+const RAD = Math.PI / 180;
+
+/**
+ * The turn (degrees clockwise on the plan) that puts the building's walls on the plan axes, or null when they already are. Roofs and
+ * slabs are built on an axis aligned grid, so a house that was turned on its lot is built in its own frame and the roof and slab
+ * meshes are turned back into place (crisp roof edges at any angle). Length weighted, so short odd walls do not matter.
+ */
+export function dominantWallAngle(project) {
+  let sx = 0;
+  let sy = 0;
+  const pts = [];
+  for (const l of project.levels || []) {
+    for (const w of l.walls || []) {
+      const dx = w.b.x - w.a.x;
+      const dy = w.b.y - w.a.y;
+      const len = Math.hypot(dx, dy);
+      if (len < 200 || !Number.isFinite(len)) continue;
+      const a = Math.atan2(dy, dx) * 4;
+      sx += Math.cos(a) * len;
+      sy += Math.sin(a) * len;
+      pts.push(w.a, w.b);
+    }
+  }
+  if (!pts.length || Math.hypot(sx, sy) < 1e-6) return null;
+  const deg = (Math.atan2(sy, sx) / 4) / RAD;
+  if (Math.abs(deg) < 0.25) return null;
+  const xs = pts.map((q) => q.x);
+  const ys = pts.map((q) => q.y);
+  return { deg, c: { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 } };
+}
+
+/** Very dark finishes (Monument, charcoal) go black under tone mapping and hide the roof form: keep their lightness above a floor. */
+function liftDark(hexStr, minL) {
+  try {
+    const c = new THREE.Color(hexStr);
+    const hsl = {};
+    c.getHSL(hsl);
+    if (hsl.l >= minL) return hexStr;
+    c.setHSL(hsl.h, hsl.s, minL);
+    return `#${c.getHexString()}`;
+  } catch { return hexStr; }
+}
+
 export function buildModel(project, opts = {}) {
   const { levelFilter = 'all', showRoof = true, statusView = 'proposed', catalogue = null, walk = false } = opts;
   const lib = opts.materials || createMaterialLibrary({ textures: false, catalogue });
@@ -104,10 +149,31 @@ export function buildModel(project, opts = {}) {
   };
 
   const groundY = (levels[0] ? levels[0].elevation / 1000 : 0) - SLAB.ground;
-  const grid = F.makeGrid(project);
+  // Grid work (slabs, roofs, the leftover floor) happens in the building's own frame when it is turned on the lot.
+  const align = dominantWallAngle(project);
+  let frameProject = project;
+  if (align) {
+    const lv = structuredClone(project.levels);
+    rotateHouse({ levels: lv }, -align.deg, align.c);
+    frameProject = { ...project, levels: lv };
+  }
+  const frameLevels = new Map(frameProject.levels.map((l) => [l.id, l]));
+  const toFrame = (p) => (align ? G.rotatePoint(p, align.c, -align.deg) : p);
+  // Put a mesh built in the building's frame back where it belongs (rotation about the vertical axis through align.c).
+  const unframe = (mesh) => {
+    if (!align || !mesh) return mesh;
+    const phi = -align.deg * RAD;
+    const cx = align.c.x / 1000;
+    const cz = align.c.y / 1000;
+    mesh.rotation.y = phi;
+    mesh.position.x += cx - (cx * Math.cos(phi) + cz * Math.sin(phi));
+    mesh.position.z += cz - (-cx * Math.sin(phi) + cz * Math.cos(phi));
+    return mesh;
+  };
+  const grid = F.makeGrid(frameProject);
   const fpCache = new Map();
   const fpOf = (level) => {
-    if (!fpCache.has(level.id)) fpCache.set(level.id, F.rasteriseLevel(grid, level, vis));
+    if (!fpCache.has(level.id)) fpCache.set(level.id, F.rasteriseLevel(grid, frameLevels.get(level.id) || level, vis));
     return fpCache.get(level.id);
   };
 
@@ -151,7 +217,7 @@ export function buildModel(project, opts = {}) {
         slabSides(b, grid, fp.footprint, r, y0, y1);
       }
       const mesh = makeMesh(b.build(), { slab: lib.get('concrete', '#b9b7b1') }, { decor: true, levelId: level.id }, { name: 'slab' });
-      if (mesh) group.add(mesh);
+      if (mesh) group.add(unframe(mesh));
     }
 
     // floors: one mesh per room, plus a default floor on wall-enclosed area with no room
@@ -184,7 +250,7 @@ export function buildModel(project, opts = {}) {
         }
         const f = floorFinish({ type: 'other', floor: null });
         const mesh = makeMesh(b.build(), { floor: lib.get(f.material, f.hex) }, { kind: 'floor', id: `${level.id}:floor`, levelId: level.id, finish: { material: f.material, colour: f.colour } }, { cast: false, name: 'floor:default' });
-        if (mesh) group.add(mesh);
+        if (mesh) group.add(unframe(mesh));
       }
     }
 
@@ -198,7 +264,7 @@ export function buildModel(project, opts = {}) {
           const m = G.wallMid(w);
           const n = G.wallNormal(w);
           const off = (w.thickness || 100) / 2 + 150;
-          if ([0, off, -off].some((o) => F.sampleMask(grid, upperFp.footprint, m.x + n.x * o, m.y + n.y * o))) H = target;
+          if ([0, off, -off].some((o) => { const q = toFrame({ x: m.x + n.x * o, y: m.y + n.y * o }); return F.sampleMask(grid, upperFp.footprint, q.x, q.y); })) H = target;
         }
       }
       const cls = statusView === 'both' ? { kind: w.kind, outside: w.outside || 0 } : viewClass(w, shownIndoor);
@@ -224,14 +290,19 @@ export function buildModel(project, opts = {}) {
         const frameHex = hex(fin.frames.colour);
         const fasciaHex = hex(fin.fascia.colour);
         const exterior = cls.kind !== 'interior';
+        // Door leaves and the garage door are never left black: a dark frame colour gives a timber leaf, and the garage door takes a
+        // lifted tone of the fascia so its panel lines read, with matt paint and no metal sheen to mirror a dark sky.
+        const lum = (h) => { const c = new THREE.Color(h); return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; };
+        const leafHex = lum(frameHex) < 0.2 ? '#7a5233' : frameHex;
+        const garageHex = lum(fasciaHex) < 0.35 ? shade(fasciaHex, 0.35 / Math.max(0.05, lum(fasciaHex))) : fasciaHex;
         const mats = {
-          frame: o.kind === 'garage_door' || o.kind === 'roller_door' ? lib.plain(fasciaHex, { tint: ot, rough: 0.5, metal: 0.3 }) : lib.frame(frameHex, { tint: ot }),
+          frame: o.kind === 'garage_door' || o.kind === 'roller_door' ? lib.plain(garageHex, { tint: ot, rough: 0.55, metal: 0 }) : lib.frame(frameHex, { tint: ot }),
           glass: lib.glass({ tint: ot }),
-          leaf: exterior ? lib.frame(frameHex, { tint: ot }) : lib.plain('#e9e5dd', { tint: ot, rough: 0.6 }),
+          leaf: exterior ? lib.plain(leafHex, { tint: ot, rough: 0.55, metal: 0 }) : lib.plain('#e9e5dd', { tint: ot, rough: 0.6 }),
           handle: lib.plain('#b9bcc2', { tint: ot, rough: 0.35, metal: 0.8 }),
-          panel: lib.plain(fasciaHex, { tint: ot, rough: 0.5, metal: 0.3 }),
-          roller: lib.get('roller', fasciaHex, { tint: ot }),
-          groove: lib.plain(shade(fasciaHex, 0.55), { tint: ot }),
+          panel: lib.plain(garageHex, { tint: ot, rough: 0.55, metal: 0 }),
+          roller: lib.get('roller', garageHex, { tint: ot }),
+          groove: lib.plain(shade(garageHex, 0.6), { tint: ot }),
         };
         const SLOTS = ['frame', 'leaf', 'panel', 'handle', 'roller', 'groove', 'glass'];
         const om = makeMesh(fit.build(SLOTS), mats, { kind: 'opening', id: o.id, levelId: level.id, openingKind: o.kind, wallId: w.id }, { name: `opening:${o.id}` });
@@ -300,23 +371,23 @@ export function buildModel(project, opts = {}) {
       if (!res) return;
       const ext = fin.externalWalls;
       const mats = {
-        roof: lib.get(fin.roof.material || 'corrugated', hex(fin.roof.colour), { side: 'double' }),
+        roof: lib.get(fin.roof.material || 'corrugated', liftDark(hex(fin.roof.colour), 0.27), { side: 'double' }),
         fascia: lib.plain(hex(fin.fascia.colour), { rough: 0.5, metal: 0.3 }),
         gable: lib.get(ext.material || 'paint', hex(ext.colour)),
       };
       const mesh = makeMesh(res, mats, {
         kind: 'roof', id: `${level.id}:roof`, levelId: level.id,
       }, { name: `roof:${level.name}`, cast: !walk, faceOf: FACE_OF_SLOT });
-      if (mesh) root.add(mesh);
+      if (mesh) root.add(unframe(mesh));
     });
   }
 
   // ground last so it can size itself to the model
   const bounds = modelBounds(root);
-  // With a lot that has an elevation grid the ground is the real terrain (aerial draped when a texture is given); the flat disc then
-  // only continues it beyond the grid. Without a lot nothing changes.
-  const terrain = project.site?.lot?.terrain ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null }) : null;
-  const groundR = addGround(ctx, root, bounds, terrain ? terrain.edgeY - 0.02 : null);
+  // Whenever a lot is loaded the site is built: terrain with the aerial (when present), boundary, neighbours, labels and envelope.
+  // The elevation grid is optional (flat ground at slab level without it). Without a lot the old flat disc stays.
+  const terrain = siteReady(project) ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null, edgeColour: opts.siteEdgeColour || null, showContours: !!opts.showContours }) : null;
+  const groundR = terrain ? terrain.outerR : addGround(ctx, root, bounds, null);
   root.userData = { groundY, groundR, levelIds: levels.map((l) => l.id), cutIdx };
   return root;
 }

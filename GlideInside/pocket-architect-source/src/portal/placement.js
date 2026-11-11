@@ -1,20 +1,35 @@
-// Interactive placement of a library house on the lot: drag to move, rotate with the buttons or keys, then Place.
-// The preview is drawn by the 2D editor from a copy (editor.previewProject); nothing changes in the design until Place,
-// which commits placeHouse as ONE undo step. After that the house is ordinary walls, rooms and openings: fully editable.
+// Interactive placement of a library house on the lot: drag to move, turn with the ring handle, mirror, face the garage to the
+// street, then Place. The lot, setbacks, kerb, road centreline and driveway are drawn by the 2D editor from the previewed
+// project (editor.previewProject) and the clearance to each boundary is read out live (pose-session.js).
+// Nothing changes in the design until Place, which commits placeHouse as ONE undo step. After that the house is ordinary walls,
+// rooms and openings: fully editable.
 
-import { h } from '../ui/dom.js';
 import { placeHouse, defaultPose, fitsLot, houseBounds } from './place-house.js';
+import { runPoseSession } from './pose-session.js';
+import { autoPose } from './auto-place.js';
+import { lotOf } from '../model/placement.js';
 
 /**
- * startPlacement({ store, editor, house, lot, onDone, onCancel }) returns { setPose, getPose, commit, cancel }.
- * `lot` is optional { widthMm, depthMm } for the "does not fit" warning (the lot feature supplies it later).
+ * startPlacement({ store, editor, house, lot, onDone, onCancel, initialPose, fit }) returns { setPose, getPose, commit, cancel }.
+ * `lot` is optional { widthMm, depthMm } for the "does not fit" warning. With a lot on the design (Find my block) and no
+ * initialPose, the house starts turned so its garage faces the street, centred on the frontage behind the front setback
+ * (auto-place.js). `fit` is the ranking entry from fit.js ({ badge, reason }) shown in the panel: rank first, then fine tune.
  */
-export function startPlacement({ store, editor, house, lot = null, host = document.getElementById('ps-stage'), onDone, onCancel, initialPose = null } = {}) {
-  store.setUI({ view: '2d' });
+export function startPlacement({ store, editor, house, lot = null, host = document.getElementById('ps-stage'), onDone, onCancel, initialPose = null, fit = null } = {}) {
   const base = structuredClone(store.project);
-  // Start in the middle of what the person is looking at, or beside the existing plan.
-  let pose = initialPose || defaultPose(base, house);
-  if (!initialPose) {
+  let pose = initialPose || null;
+  let note = '';
+  if (!pose && lotOf(base)) {
+    const auto = autoPose(base, house);
+    if (auto.pose) {
+      pose = auto.pose;
+      if (auto.fits === false) note = ' It does not fit inside the setbacks at this size.';
+      else if (!auto.facing) note = ' This design has no garage door to face the street.';
+    }
+  }
+  pose = pose || defaultPose(base, house);
+  if (!initialPose && !lotOf(base)) {
+    // Start in the middle of what the person is looking at, or beside the existing plan.
     const v = editor.getView?.();
     const el = document.getElementById('ps-plan-host');
     if (v && el && v.scale) {
@@ -23,90 +38,10 @@ export function startPlacement({ store, editor, house, lot = null, host = docume
     }
   }
   const b = houseBounds(house);
-  const live = h('div', { class: 'pas-sr', role: 'status', 'aria-live': 'polite' });
-  const warn = h('span', { class: 'pas-warn', hidden: true }, 'This house is larger than the lot.');
-  const rotInput = h('input', { type: 'number', min: '-180', max: '180', step: '1', value: String(pose.rotation || 0), 'aria-label': 'Rotation in degrees clockwise', onchange: () => setPose({ rotation: normDeg(Number(rotInput.value) || 0) }) });
-  const catcher = h('div', { class: 'pas-catch', 'aria-hidden': 'true' });
-  const btn = (label, fn, cls = '') => h('button', { class: `pas-btn ${cls}`.trim(), type: 'button', onclick: fn }, label);
-  const panel = h('div', { class: 'pas-place', role: 'group', 'aria-label': `Place ${house.name || 'house'}` },
-    h('h3', null, `Place ${house.name || 'house'}`),
-    h('p', { style: { margin: 0, color: 'var(--ps-muted,#5a5e66)' } }, `${(b.width / 1000).toFixed(1)} x ${(b.depth / 1000).toFixed(1)} m. Drag on the plan to move it. Arrow keys nudge (Shift for 1 m). , and . turn it.`),
-    h('div', { class: 'pas-row' },
-      btn('↶ 15°', () => setPose({ rotation: normDeg((pose.rotation || 0) - 15) })), btn('15° ↷', () => setPose({ rotation: normDeg((pose.rotation || 0) + 15) })),
-      btn('Turn 90°', () => setPose({ rotation: normDeg((pose.rotation || 0) + 90) })),
-      btn('Mirror', () => setPose({ mirrored: !pose.mirrored })),
-      h('label', { style: { display: 'flex', alignItems: 'center', gap: '6px' } }, 'Rotation', rotInput, '°'), warn),
-    h('div', { class: 'pas-row pas-end' }, btn('Cancel', () => cancel()), btn('Place house', () => commit(), 'pas-btn--primary')),
-    live);
-  host.append(catcher, panel);
-
-  const normDeg = (d) => ((((d % 360) + 540) % 360) - 180 || 180);
-  function draw() {
-    editor.previewProject?.((p) => placeHouse(p, house, pose));
-    rotInput.value = String(Math.round(pose.rotation || 0));
-    warn.hidden = fitsLot(house, pose, lot);
-  }
-  function setPose(patch) {
-    pose = { ...pose, ...patch };
-    draw();
-    live.textContent = `Position ${(pose.x / 1000).toFixed(1)} m, ${(pose.y / 1000).toFixed(1)} m, rotation ${Math.round(pose.rotation || 0)} degrees`;
-  }
-
-  // Drag anywhere on the plan to move the house by the pointer movement.
-  let drag = null;
-  catcher.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0 && e.pointerType === 'mouse') return;
-    drag = { x: e.clientX, y: e.clientY };
-    catcher.setPointerCapture?.(e.pointerId);
-    e.preventDefault();
+  const tooBig = lot ? !fitsLot(house, pose, lot) : false;
+  const describe = `${(b.width / 1000).toFixed(1)} x ${(b.depth / 1000).toFixed(1)} m. Drag the house to move it, drag the gold handle to turn it (Shift for 15 degree steps). Arrow keys nudge 0.5 m (Shift 0.1 m).${tooBig ? ' This house is larger than the lot.' : ''}${note}`;
+  return runPoseSession({
+    store, editor, host, title: `Place ${house.name || 'house'}`, describe, fit, initialPose: pose,
+    apply: (p, ps) => placeHouse(p, house, ps), commitLabel: 'Place house', commitText: 'Place house', onDone, onCancel,
   });
-  catcher.addEventListener('pointermove', (e) => {
-    if (!drag) return;
-    const v = editor.getView?.() || { scale: 0.05 };
-    const dx = (e.clientX - drag.x) / v.scale;
-    const dy = (e.clientY - drag.y) / v.scale;
-    drag = { x: e.clientX, y: e.clientY };
-    setPose({ x: Math.round(pose.x + dx), y: Math.round(pose.y + dy) });
-  });
-  const endDrag = () => { drag = null; };
-  catcher.addEventListener('pointerup', endDrag);
-  catcher.addEventListener('pointercancel', endDrag);
-
-  const onKey = (e) => {
-    const t = e.target;
-    const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT');
-    const step = e.shiftKey ? 1000 : 100;
-    const move = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
-    if (e.key === 'Escape' && !document.querySelector('.pas-modal')) cancel();
-    else if (!typing && move) setPose({ x: pose.x + move[0], y: pose.y + move[1] });
-    else if (!typing && (e.key === ',' || e.key === '.')) setPose({ rotation: normDeg((pose.rotation || 0) + (e.key === '.' ? 1 : -1) * (e.shiftKey ? 1 : 15)) });
-    else if (!typing && (e.key === 'r' || e.key === 'R')) setPose({ rotation: normDeg((pose.rotation || 0) + 90) });
-    else if (!typing && e.key === 'Enter' && !(t && t.tagName === 'BUTTON')) commit();
-    else return;
-    e.preventDefault();
-    e.stopPropagation();
-  };
-  document.addEventListener('keydown', onKey, true);
-
-  function teardown() {
-    document.removeEventListener('keydown', onKey, true);
-    editor.clearPreview?.();
-    catcher.remove();
-    panel.remove();
-  }
-  function commit() {
-    teardown();
-    let record = null;
-    store.apply('Place house', (p) => {
-      record = placeHouse(p, house, pose);
-    });
-    onDone?.({ record, pose });
-  }
-  function cancel() {
-    teardown();
-    onCancel?.();
-  }
-  draw();
-  panel.querySelector('.pas-btn--primary')?.focus({ preventScroll: true });
-  return { setPose, getPose: () => ({ ...pose }), commit, cancel };
 }

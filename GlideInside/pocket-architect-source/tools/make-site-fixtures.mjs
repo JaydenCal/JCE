@@ -8,26 +8,31 @@ import { contourLines, fillGaps, gridRange } from '../src/site/contours.js';
 const OUT = new URL('../src/site/fixtures/', import.meta.url);
 
 function make(spec) {
-  const { id, state, anchor, zone, headingDeg, street, lga, zoning, zoneNote, planPrefix, plan, firstLot, terrain, cell, srcRes, imagery, dem } = spec;
+  const { id, state, anchor, zone, headingDeg, street, lga, zoning, zoneNote, planPrefix, plan, firstLot, lotW = 20, lotD = 40, terrain, cell, srcRes, imagery, dem } = spec;
   const a = lonLatToMga(anchor.lon, anchor.lat, zone);
   const th = (headingDeg * Math.PI) / 180;
   const rot = ([x, y]) => [a.e + x * Math.cos(th) - y * Math.sin(th), a.n + x * Math.sin(th) + y * Math.cos(th)];
-  // Local frame: x along the street, y towards the north side. Street reserve y in [-10, 10].
-  const W = 20;
-  const D = 40;
+  // Local frame: x along the street, y towards the north side. Street reserve y in [-9, 9].
+  const HR = 9; // half the road reserve, metres: kerb to kerb 9 m, 4 m verge and footpath each side
+  const W = lotW;
+  const D = lotD;
   const lots = [];
   let n = firstLot;
   for (let side = 0; side < 2; side++) {
-    for (let k = -3; k < 3; k++) {
+    for (let k = -2; k < 2; k++) {
       const x0 = k * W;
-      const y0 = side === 0 ? 10 : -10 - D;
-      lots.push({ lot: n++, ring: [[x0, y0 + D], [x0 + W, y0 + D], [x0 + W, y0], [x0, y0]].map(rot), subject: side === 0 && k === 0 });
+      const y0 = side === 0 ? HR : -HR - D;
+      lots.push({ lot: n++, ring: [[x0, y0 + D], [x0 + W, y0 + D], [x0 + W, y0], [x0, y0]].map(rot), subject: side === 1 && k === 0 });
     }
   }
-  // A row behind the north side, wider lots so the boundaries do not all line up.
-  for (let k = -2; k < 2; k++) {
-    const x0 = k * 26 + 6;
-    lots.push({ lot: n++, ring: [[x0, 10 + D + 30], [x0 + 26, 10 + D + 30], [x0 + 26, 10 + D], [x0, 10 + D]].map(rot) });
+  // A row behind each side of the street, wider lots so the boundaries do not all line up.
+  for (const sg of [1, -1]) {
+    for (let k = -2; k < 2; k++) {
+      const x0 = k * (W * 1.3) + W * 0.3;
+      const yA = sg * (HR + D);
+      const yB = sg * (HR + D + D * 0.75);
+      lots.push({ lot: n++, ring: [[x0, yB], [x0 + W * 1.3, yB], [x0 + W * 1.3, yA], [x0, yA]].map(rot) });
+    }
   }
   const subject = lots.find((l) => l.subject);
   const c = ringCentroid(subject.ring);
@@ -58,7 +63,7 @@ function make(spec) {
     retrieved: '2026-11-11T00:00:00.000Z',
   };
   // Elevation grid over the lot bbox plus a 30 m buffer, rows from the north edge.
-  const buf = 30;
+  const buf = 40;
   const minE = bb.minX - buf - origin.e;
   const maxE = bb.maxX + buf - origin.e;
   const minN = bb.minY - buf - origin.n;
@@ -82,7 +87,7 @@ function make(spec) {
     contours: contourLines(grid, { minor: 0.5, major: 2.5 }),
     provenance: dem,
   };
-  const abb = { minE: round(bb.minX - 30, 3), minN: round(bb.minY - 30, 3), maxE: round(bb.maxX + 30, 3), maxN: round(bb.maxY + 30, 3) };
+  const abb = { minE: round(bb.minX - 40, 3), minN: round(bb.minY - 40, 3), maxE: round(bb.maxX + 40, 3), maxN: round(bb.maxY + 40, 3) };
   const widthPx = Math.ceil((abb.maxE - abb.minE) / srcRes);
   const heightPx = Math.ceil((abb.maxN - abb.minN) / srcRes);
   const aerial = { sample: true, synthetic: true, srid: mgaSrid(zone), georef: 'mga', bbox: abb, widthPx, heightPx, mmPerPx: round(((abb.maxE - abb.minE) / widthPx) * 1000, 3), ...imagery };
@@ -95,8 +100,8 @@ function make(spec) {
 make({
   id: 'tamworth', state: 'NSW', zone: 56, anchor: { lon: 150.9300, lat: -31.0900 }, headingDeg: 12, lga: 'TAMWORTH REGIONAL',
   label: '14 Sample Street Calala NSW', otherLabels: ['16 Sample Street Calala NSW', '12 Sample Street Calala NSW'],
-  plan: 'DP 1234567', firstLot: 21,
-  zoning: { code: 'R1', name: 'General Residential', instrument: 'Tamworth Regional Local Environmental Plan 2010' }, zoneNote: null,
+  plan: 'DP 1234567', firstLot: 21, lotW: 40, lotD: 50,
+  zoning: { code: 'R5', name: 'Large Lot Residential', instrument: 'Tamworth Regional Local Environmental Plan 2010' }, zoneNote: null,
   lotAttribution: 'Spatial Services, NSW Department of Customer Service (cadastre); NSW Department of Planning and Environment (land zoning). Sample data.',
   terrain: (x, y) => 398.4 + 0.032 * y + 0.018 * x + 0.35 * Math.sin(x / 14) * Math.cos(y / 18),
   cell: 2, srcRes: 0.1,
@@ -107,7 +112,7 @@ make({
 make({
   id: 'townsville', state: 'QLD', zone: 55, anchor: { lon: 146.8200, lat: -19.2600 }, headingDeg: -8, lga: 'Townsville City',
   label: '22 Sample Court Kirwan QLD 4817', otherLabels: ['24 Sample Court Kirwan QLD 4817'],
-  plan: 'RP 123456', firstLot: 41,
+  plan: 'RP 123456', firstLot: 41, lotW: 28, lotD: 36,
   zoning: null, zoneNote: 'Queensland planning schemes are made by each council, so the zone is not looked up here. Check the zoning with the local council.',
   lotAttribution: 'State of Queensland (Department of Resources), cadastral parcels and local government areas. Sample data.',
   terrain: (x, y) => 11.2 + 0.015 * y - 0.008 * x + 0.2 * Math.sin(x / 11) * Math.sin(y / 9),
