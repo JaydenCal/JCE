@@ -65,7 +65,7 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "dcp": "QLD",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
    "sources": [],
    "id": "qld-qdc-001",
@@ -147,7 +147,7 @@
    "needsReview": "Flagged for review by the research agent",
    "note": "Quotes: A2(a)(ii) '2m'; A2(a)(iii) '2m plus 0.5m for every 3m or part exceeding 7.5m' (source text reads 'greater that', sic).",
    "dcp": "QLD",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
    "sources": [],
    "id": "qld-qdc-002",
@@ -335,7 +335,7 @@
    "confidence": "medium",
    "needsReview": "Table A2 applies to rectangular or near rectangular narrow lots; values rebuilt from the recorded table end points",
    "dcp": "QLD",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
    "sources": [],
    "id": "qld-qdc-003",
@@ -369,7 +369,7 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "dcp": "QLD",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
    "sources": [],
    "id": "qld-qdc-004",
@@ -398,5 +398,5 @@
   "Table A2 interpolation note in rule 3 is summary; use bands"
  ],
  "name": "QLD",
- "edition": "as retrieved 11/11/2026; currency against the in-force text not verified"
+ "edition": "as retrieved 11/11/2026; Indicative. Check with council."
 }

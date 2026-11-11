@@ -236,7 +236,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
   }
 
   // JSON results cached in the store (D1 table site_cache) so they survive Worker restarts and are shared by all Workers.
-  async function jsonCached(key, ttl, compute) {
+  async function jsonCached(key, ttl, compute, { ttlFor = null } = {}) {
     const nowMs = now();
     if (store?.getSiteCache) {
       try {
@@ -249,7 +249,8 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     const value = await compute();
     if (store?.putSiteCache) {
       try {
-        await store.putSiteCache(key, JSON.stringify(value), ttl, nowMs);
+        const t = ttlFor ? ttlFor(value, ttl) : ttl;
+        if (t > 0) await store.putSiteCache(key, JSON.stringify(value), t, nowMs);
       } catch {
         /* ignore */
       }
@@ -367,7 +368,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     if (lat > -9 || lat < -38) throw new HttpError('UNSUPPORTED_AREA', 'That location is outside NSW and Queensland. Site lookup only covers those two states.');
     const wanted = stateParam(url);
     const srid = mgaSrid(zone);
-    const { value } = await jsonCached(`lot:${wanted || 'auto'}:${round(lon, 5)}:${round(lat, 5)}`, TTL.lot, async () => {
+    const { value } = await jsonCached(`lot2:${wanted || 'auto'}:${round(lon, 5)}:${round(lat, 5)}`, TTL.lot, async () => {
       const order = wanted ? [wanted] : lat < -29 ? ['NSW', 'QLD'] : ['QLD', 'NSW'];
       let state = null;
       let parcel = null;
@@ -458,8 +459,9 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         attribution: state === 'QLD' ? QLD_CADASTRE_ATTR : NSW_CADASTRE_ATTR,
         retrieved: iso(),
       };
-    });
-    return json(value, 200, { 'cache-control': 'public, max-age=3600' });
+    }, { ttlFor: (v, ttl) => ((v.notes || []).some((n) => /Neighbouring lots could not be loaded/.test(n)) ? 0 : ttl) }); // a partial result (neighbours failed) is never stored, so the next lookup retries
+    const partial = (value.notes || []).some((n) => /Neighbouring lots could not be loaded/.test(n));
+    return json(value, 200, { 'cache-control': partial ? 'no-store' : 'public, max-age=3600' });
   }
 
   // Aerial -------------------------------------------------------------------------------------------------------------------------

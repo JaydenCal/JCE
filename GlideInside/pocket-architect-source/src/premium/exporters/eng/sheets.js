@@ -277,7 +277,7 @@ export function drawAnalysis(doc, ctx) {
   heading(doc, 'Setbacks: required and provided', rx, y);
   y += 4.5;
   const cols = [{ w: 28, head: 'BOUNDARY' }, { w: 20, head: 'REQUIRED', align: 'right' }, { w: 20, head: 'PROVIDED', align: 'right' }, { w: 50, head: 'RESULT' }, { w: rw - 118, head: 'SOURCE AND CHECK' }];
-  const tbc = (t) => String(t || '').replace(/\bcl\.?\s*[0-9][\w.()-]*(\s*(?:to|and|-)\s*\(?[\w.()-]+\)?)?/gi, '(clause to be confirmed)').replace(/\(\(clause to be confirmed\)/g, '(clause to be confirmed');
+  const tbc = (t) => String(t || '').replace(/,?\s*\(?\bcl\.?\s*[0-9][\w.()-]*(\s*(?:to|and|-)\s*\(?[\w.()-]+\)?)?\)?/gi, '').replace(/\s{2,}/g, ' ').replace(/[.,;]\s*$/, '').trim();
   const topMm = Math.max(0, ...project.levels.map((l) => (l.elevation || 0) + (l.height || 0)));
   const tall = topMm > 4500; // parts of the building more than 4.5 m above ground
   const AMBER = [176, 104, 0];
@@ -286,7 +286,7 @@ export function drawAnalysis(doc, ctx) {
     const check = side && tall && r.status !== 'unknown';
     let res = r.status === 'inside' ? 'Inside the indicative setback envelope' : r.status === 'outside' ? `Outside the indicative setback envelope by ${r.shortByM.toFixed(2)} m` : 'No setback rule loaded';
     if (check) res = r.status === 'outside' ? `CHECK. Outside the table minimum by ${r.shortByM.toFixed(2)} m. Parts over 4.5 m high need a larger side setback.` : 'CHECK. Table minimum met. Parts over 4.5 m high need a larger side setback that is not captured.';
-    const src = r.requiredM == null ? 'Council rule not loaded. Check with council.' : `${tbc(clean(r.source || 'Source not stated'))}${r.flagged || check ? '. Check with council.' : ''}`;
+    const src = r.requiredM == null ? 'Council rule not loaded. Check with council.' : `${tbc(clean(r.source || 'Source not stated'))}${r.flagged || check || /\bcl\.?\s*[0-9]/i.test(String(r.source || '')) ? '. Indicative. Check with council.' : ''}`;
     return { cells: [r.label.replace(/^./, (c) => c.toUpperCase()), r.requiredM != null ? `${r.requiredM.toFixed(2)} m` : '-', `${r.clearanceM.toFixed(2)} m`, res, src], colours: [PEN.ink, PEN.ink, PEN.ink, check ? AMBER : r.status === 'outside' ? PEN.envelope : r.status === 'inside' ? PEN.boundary : PEN.grey, PEN.ink] };
   });
   if (!rows.length) rows.push(['No building on the lot', '', '', '', '']);
@@ -500,12 +500,5 @@ export function drawLevelPanel(doc, ctx, level, planLeft, { sectionSheet = null 
     lines.forEach((l, j) => doc.text(l, x0 + (j ? 3 : 0), y + j * 3.4));
     y += lines.length * 3.4 + 1.8;
   });
-  y += 5;
-  heading(doc, 'Room areas', x0, y);
-  y += 4.5;
-  const rooms = (level.rooms || []).filter((r) => r.status !== 'demolish' && (!r.outdoor || r.roofed) && r.polygon?.length > 2);
-  const rows = rooms.map((r) => ({ cells: [cap(r.name || r.type), (G.polygonArea(r.polygon) / 1e6).toFixed(2)] }));
-  const total = rooms.reduce((a, r) => a + G.polygonArea(r.polygon) / 1e6, 0);
-  rows.push({ cells: ['Total', total.toFixed(2)], bold: true, fill: PEN.band });
-  table(doc, x0, y, [{ w: w - 28, head: 'ROOM' }, { w: 28, head: 'M²', align: 'right' }], rows, { size: 7.4, lineH: 3.2, pad: 1.3, maxY: 213 });
+  // The room areas are on the schedules sheet, so they are not repeated here.
 }

@@ -3,7 +3,7 @@
 // CONFIG.portalEnabled false, it does nothing at all and the public app is untouched.
 //
 // What it adds: a strip with the builder's branding, "Find my block", a "House designs" dropdown (the builder's designs and the
-// Glide Inside library, ranked by how well each fits the lot), PDF plans (no A$35 step), the AI credits chip, and a user menu.
+// Glide Inside library, ranked by how well each fits the lot), PDF plans (no A$30 step), the AI credits chip, and a user menu.
 // Hooks for other modules:
 //   window.openSiteSearch()                 if present, "Find my block" calls it (the site's lot search)
 //   window.__ps.portal.setLot(lot)          { name, polygonMm, frontEdgeIndices, picked, address, lot, dp, lga, zone }: the lot and its setbacks
@@ -164,7 +164,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
 
   // House designs -------------------------------------------------------------------------------------------------------------
   async function loadDesigns() {
-    const [mine, glide] = await Promise.all([api.listHouses(), api.listGlideLibrary().catch(() => [])]);
+    const [mine, glide] = await Promise.all([api.listHouses(), (isClient && me.org.showGlideToClients !== true ? Promise.resolve([]) : api.listGlideLibrary().catch(() => []))]);
     const full = async (list, getter, group) => Promise.all(list.map(async (x) => {
       const r = await getter(x.id);
       return { id: x.id, name: x.name, group, project: r.project, meta: x, source: group === 'glide' ? 'glide' : 'house' };
@@ -277,7 +277,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   try {
     if (params.get('project')) await openProject(params.get('project'));
     else if (params.get('house')) { const r = await api.getHouse(params.get('house')); app.replaceProject(r.project); }
-    else if (params.get('glide')) { const r = await api.getGlideModel(params.get('glide')); app.replaceProject(r.project); }
+    else if (params.get('glide') && !(isClient && me.org.showGlideToClients !== true)) { const r = await api.getGlideModel(params.get('glide')); app.replaceProject(r.project); }
   } catch (e) { toast(e.message || 'Could not open that design.', { kind: 'error' }); }
   return { strip, openPicker, refreshCredits };
 }

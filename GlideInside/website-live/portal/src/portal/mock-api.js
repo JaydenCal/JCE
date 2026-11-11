@@ -132,7 +132,7 @@ function seedDb(now) {
   ];
   return {
     version: 1,
-    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null }, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: true, allowClientCadExports: false, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
+    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null }, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
     users, houses, projects, issues, topUps, resets: {},
   };
 }
@@ -190,7 +190,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     id: u.id, name: u.name, email: u.email || '', username: u.username, role: u.role, status: u.status, mustChangePassword: !!u.mustChangePassword,
     createdAt: u.createdAt, lastSignInAt: u.lastSignInAt, tempPasswordExpiresAt: u.mustChangePassword ? u.tempPasswordExpiresAt || null : null, ...(org ? { ai: aiBalance(u, org) } : {}),
   });
-  const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients !== false, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
+  const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
   const houseMeta = (h) => { const { project, ...rest } = h; return { ...clone(rest), hasProject: !!project }; };
   const visibleHouse = (user, h) => !h.archived && (user.houseAccess === 'all' || (Array.isArray(user.houseAccess) && user.houseAccess.includes(h.id)));
 
@@ -258,7 +258,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       user.failedSignIns = 0;
       user.lockedUntil = null;
       user.lastSignInAt = iso();
-      // The charge for a client login happens here, on the first sign in, and never again for that login (A$35, A$25 from the 16th in a month).
+      // The charge for a client login happens here, on the first sign in, and never again for that login (A$30, A$25 from the 16th in a month).
       if (user.role === 'client' && !db.issues.some((i) => i.loginId === user.id)) db.issues.push({ id: rid('lc'), orgId: user.orgId, loginId: user.id, clientName: user.name, chargedAt: iso(), amountCents: priceForNthLoginThisMonth(db.issues.filter((i) => i.orgId === user.orgId && monthKey(i.chargedAt) === monthKey(now())).length + 1, db.orgs.find((o) => o.id === user.orgId)) });
       save(db);
       storage.set(SESSION_KEY, JSON.stringify({ userId: user.id, at: iso() }));
@@ -416,13 +416,13 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     async listGlideLibrary() {
       await wait();
       const { user, org } = ctx();
-      if (!isStaff(user) && org.showGlideToClients === false) return [];
+      if (!isStaff(user) && org.showGlideToClients !== true) return [];
       return GLIDE_LIBRARY.map(({ ...g }) => g);
     },
     async getGlideModel(id) {
       await wait();
       const { user, org } = ctx();
-      if (!isStaff(user) && org.showGlideToClients === false) throw err('NOT_FOUND', 'Unknown Glide Inside model.', 404);
+      if (!isStaff(user) && org.showGlideToClients !== true) throw err('NOT_FOUND', 'Unknown Glide Inside model.', 404);
       const g = GLIDE_LIBRARY.find((x) => x.id === id);
       if (!g) throw err('NOT_FOUND', 'Unknown Glide Inside model.', 404);
       return { ...g, project: await resolveGlideProject(id, g.name) };

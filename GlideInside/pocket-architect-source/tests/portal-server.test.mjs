@@ -441,7 +441,7 @@ for (const [label, d1] of stores) {
     assert.equal(issued.status, 201);
     assert.match(issued.data.credentials.username, /^sarah-[2-9]{4}$/);
     assert.match(issued.data.credentials.password, /^[a-z]+-[a-z]+-[2-9]{2}$/);
-    assert.deepEqual(issued.data.charge, { amountCents: 3500, trigger: 'first_sign_in', note: 'A$35 incl. GST is charged on your monthly invoice once your client first signs in.' });
+    assert.deepEqual(issued.data.charge, { amountCents: 3000, trigger: 'first_sign_in', note: 'A$30 incl. GST is charged on your monthly invoice once your client first signs in.' });
     assert.equal(issued.data.client.billed, false);
     assert.equal(issued.data.client.mustChangePassword, true);
     assert.ok(issued.data.client.tempPasswordExpiresAt);
@@ -536,7 +536,11 @@ for (const [label, d1] of stores) {
     assert.equal((await org.admin.get('/portal/houses')).data.some((h) => h.id === saved.data.id), false);
     assert.equal((await org.admin.get('/portal/houses?includeArchived=true')).data.some((h) => h.id === saved.data.id), true);
     assert.equal((await org.admin.post(`/portal/houses/${saved.data.id}/archive`, { archived: false })).data.archived, false);
-    // Hiding the Glide library from clients.
+    // The Glide Inside sample designs are hidden from client logins by default; the builder can turn them on.
+    assert.equal((await org.admin.get('/portal/org')).data.showGlideToClients ?? false, false, 'off by default');
+    assert.deepEqual((await cl.browser.get('/portal/glide-library')).data, []);
+    assert.equal((await cl.browser.get('/portal/glide-library/glide:house_single')).status, 404);
+    assert.equal((await org.admin.patch('/portal/org/settings', { showGlideToClients: true })).data.showGlideToClients, true);
     assert.equal((await cl.browser.get('/portal/glide-library')).data.length, GLIDE_LIBRARY.length);
     assert.equal((await org.admin.patch('/portal/org/settings', { showGlideLibrary: false })).data.showGlideToClients, false);
     assert.deepEqual((await cl.browser.get('/portal/glide-library')).data, []);
@@ -582,7 +586,7 @@ for (const [label, d1] of stores) {
     assert.equal(tooBig.data.error.code, 'PAYLOAD_TOO_LARGE');
   });
 
-  t('billing: A$35 once at the first sign in, staff are free, month boundary follows Sydney time, GST is one eleventh', async () => {
+  t('billing: A$30 once at the first sign in, staff are free, month boundary follows Sydney time, GST is one eleventh', async () => {
     const w = makeWorld({ d1 });
     w.clock.t = Date.UTC(2026, 9, 31, 12, 30); // 31/10/2026 23:30 Sydney (AEDT)
     const org = await w.makeOrg();
@@ -600,9 +604,9 @@ for (const [label, d1] of stores) {
     assert.equal(oct.totals.loginsCount, 1);
     assert.equal(nov.totals.loginsCount, 1);
     assert.equal(oct.logins[0].clientName, 'Late');
-    assert.equal(oct.logins[0].amountCents, 3500);
+    assert.equal(oct.logins[0].amountCents, 3000);
     assert.equal(nov.timezone, 'Australia/Sydney');
-    assert.deepEqual(oct.totals, { loginsCount: 1, loginsCents: 3500, topUpsCount: 0, topUpsCents: 0, totalCents: 3500, gstCents: 318 });
+    assert.deepEqual(oct.totals, { loginsCount: 1, loginsCents: 3000, topUpsCount: 0, topUpsCents: 0, totalCents: 3000, gstCents: 273 });
     // Signing in again (or after a password change) never creates a second charge, and later months stay empty.
     const again = w.browser();
     w.clock.t += 2 * DAY;
@@ -622,7 +626,7 @@ for (const [label, d1] of stores) {
     assert.equal((await other.admin.get('/portal/billing/usage?month=2026-10')).data.totals.totalCents, 0);
   });
 
-  t('volume pricing: logins 1 to 15 A$35, 16 to 50 A$25, over 50 flagged, a custom rate applies to the whole month and can be cleared', async () => {
+  t('volume pricing: logins 1 to 15 A$30, 16 to 50 A$25, over 50 flagged, a custom rate applies to the whole month and can be cleared', async () => {
     const w = makeWorld({ d1 });
     const org = await w.makeOrg();
     const month = monthKey(w.clock.t);
@@ -632,10 +636,10 @@ for (const [label, d1] of stores) {
       }
     };
     await seed(1, 14);
-    await w.makeClient(org, 'Fifteenth'); // 15th: A$35
+    await w.makeClient(org, 'Fifteenth'); // 15th: A$30
     const u1 = (await org.admin.get(`/portal/billing/usage?month=${month}`)).data;
     assert.equal(u1.totals.loginsCount, 15);
-    assert.equal(u1.logins.find((l) => l.clientName === 'Fifteenth').amountCents, 3500);
+    assert.equal(u1.logins.find((l) => l.clientName === 'Fifteenth').amountCents, 3000);
     assert.deepEqual([u1.loginPricing.count, u1.loginPricing.currentRateCents, u1.loginPricing.customRateCents, u1.loginPricing.over50NeedsCustomRate], [15, 2500, null, false], 'the next login is the 16th');
     const gen = await org.admin.post('/portal/clients', { firstName: 'Sixteenth' });
     assert.equal(gen.data.charge.amountCents, 2500, 'the Generate screen shows the rate the next login will be charged');
@@ -649,7 +653,7 @@ for (const [label, d1] of stores) {
     const u3 = (await org.admin.get(`/portal/billing/usage?month=${month}`)).data;
     assert.equal(u3.logins.find((l) => l.clientName === 'Fiftyfirst').amountCents, 2500);
     assert.equal(u3.loginPricing.over50NeedsCustomRate, true);
-    assert.equal(u3.totals.loginsCents, 15 * 3500 + 36 * 2500);
+    assert.equal(u3.totals.loginsCents, 15 * 3000 + 36 * 2500);
     const row = async () => (await w.admin('POST', `/portal/admin/orgs/${org.orgId}/login-rate`, { cents: undefined })).status;
     assert.equal(await row(), 400, 'cents is required');
     assert.equal((await w.admin('POST', `/portal/admin/orgs/${org.orgId}/login-rate`, { cents: 50 })).status, 400, 'below A$1');
@@ -670,10 +674,10 @@ for (const [label, d1] of stores) {
     assert.equal(clr.status, 200);
     assert.equal(clr.data.loginPricing.over50Flag, 'over 50 this month, set custom rate');
     const u5 = (await org.admin.get(`/portal/billing/usage?month=${month}`)).data;
-    assert.equal(u5.totals.loginsCents, 15 * 3500 + 36 * 2500);
+    assert.equal(u5.totals.loginsCents, 15 * 3000 + 36 * 2500);
     // The invoice has one line per distinct unit price.
     const snap = buildSnapshot({ org: { id: org.orgId, shortCode: 'X', legalName: 'X', abn: '' }, config: { topUpCredits: 300, topUpCents: 1000, sellerName: 's', sellerAbn: 'a' }, month, usage: u5, number: 'N', issuedAtMs: w.clock.t });
-    assert.deepEqual(snap.lines.map((l) => [l.quantity, l.unitCents, l.totalCents]), [[15, 3500, 52500], [36, 2500, 90000]]);
+    assert.deepEqual(snap.lines.map((l) => [l.quantity, l.unitCents, l.totalCents]), [[15, 3000, 45000], [36, 2500, 90000]]);
   });
 
   t('AI credits: 300 a month per login, hard numbers after a top-up, top-up setting, token for the AI endpoints', async () => {
@@ -840,7 +844,7 @@ for (const [label, d1] of stores) {
     assert.equal(run.data.month, '2026-10');
     const byOrg = Object.fromEntries(run.data.results.map((r) => [r.orgId, r]));
     assert.equal(byOrg[a.orgId].status, 'issued');
-    assert.equal(byOrg[a.orgId].totalCents, 8000, '2 logins x A$35 + 1 top-up x A$10');
+    assert.equal(byOrg[a.orgId].totalCents, 7000, '2 logins x A$30 + 1 top-up x A$10');
     assert.equal(byOrg[b.orgId].status, 'skipped');
     assert.equal(byOrg[b.orgId].reason, 'billing_contact_incomplete');
     const paths = w.stripe.calls.map((c) => `${c.method} ${c.path}`);
@@ -860,7 +864,7 @@ for (const [label, d1] of stores) {
     assert.equal(inv.form['custom_fields[0][value]'], '29 699 165 663');
     assert.equal(inv.form['custom_fields[1][value]'], '51 824 753 556');
     assert.equal(inv.form['metadata[month]'], '2026-10');
-    assert.deepEqual([item1.form.quantity, item1.form.unit_amount, item1.form['tax_rates[0]'], item1.form.invoice], ['2', '3500', 'txr_test_1', 'in_test_1']);
+    assert.deepEqual([item1.form.quantity, item1.form.unit_amount, item1.form['tax_rates[0]'], item1.form.invoice], ['2', '3000', 'txr_test_1', 'in_test_1']);
     assert.deepEqual([item2.form.quantity, item2.form.unit_amount], ['1', '1000']);
     assert.match(item1.form.description, /New client logins first signed in during 2026-10/);
     assert.match(item2.form.description, /AI credit top-ups of 300 credits/);
@@ -871,14 +875,14 @@ for (const [label, d1] of stores) {
     assert.equal(list.length, 1);
     assert.equal(list[0].number, `GI-${a.shortCode}-202610`);
     assert.equal(list[0].status, 'due');
-    assert.equal(list[0].totalCents, 8000);
+    assert.equal(list[0].totalCents, 7000);
     const full = (await a.admin.get(`/portal/billing/invoices/${list[0].id}`)).data;
     assert.equal(full.title, 'Tax invoice');
     assert.deepEqual(full.seller, { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' });
     assert.equal(full.buyer.legalName, 'Alpha Builders Pty Ltd');
     assert.equal(full.buyer.abn, '51 824 753 556');
-    assert.deepEqual([full.subtotalExGstCents, full.gstCents, full.totalInclGstCents], [7273, 727, 8000]);
-    assert.deepEqual(full.lines.map((l) => [l.quantity, l.unitCents, l.totalCents]), [[2, 3500, 7000], [1, 1000, 1000]]);
+    assert.deepEqual([full.subtotalExGstCents, full.gstCents, full.totalInclGstCents], [6364, 636, 7000]);
+    assert.deepEqual(full.lines.map((l) => [l.quantity, l.unitCents, l.totalCents]), [[2, 3000, 6000], [1, 1000, 1000]]);
     assert.equal(full.dueAt.slice(0, 10), '2026-11-25', 'due 14 days after issue');
     assert.equal(full.hostedInvoiceUrl, 'https://invoice.stripe.com/i/test');
     // Tenant isolation.

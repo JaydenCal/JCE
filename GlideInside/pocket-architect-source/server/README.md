@@ -62,7 +62,7 @@ grants nothing: a refunded, expired or exhausted Plan Pack is refused at once.
 ## Builder and client logins (org credit pools, top-ups, budgets)
 
 Builder and client logins have the AI included. They are off until `PORTAL_ENABLED=1` (public launch first); with the
-switch off an org token is refused with `NOT_ENTITLED`. The Plan Pack flow (A$35 pack, 500 credits, entitlement token)
+switch off an org token is refused with `NOT_ENTITLED`. The Plan Pack flow (A$30 pack, 500 credits, entitlement token)
 is untouched and its token is still the only one accepted for exports.
 
 **Token.** The login system signs the person in, then calls `issueOrgToken({ orgId, loginId, role, cap? }, config, nowMs)`
@@ -158,7 +158,7 @@ curl -sS -X POST https://YOUR-SITE/api/billing/run-month -H "authorization: Bear
 
 Per organisation: needs billing contact (legal name, valid ABN, email), otherwise `skipped: billing_contact_incomplete`; no charges gives `skipped: no_charges`.
 It creates the Stripe customer on first billing, then a `send_invoice` invoice (14 days, AUD, inclusive 10% GST tax rate on each item), adds one item for
-logins (A$35 each for the first 15 in a month, A$25 each for 16 to 50, or the org custom rate) and one for top-ups (A$10 each), finalises and sends it. **Stripe sends the invoice email; this server sends none.**
+logins (A$30 each for the first 15 in a month, A$25 each for 16 to 50, or the org custom rate) and one for top-ups (A$10 each), finalises and sends it. **Stripe sends the invoice email; this server sends none.**
 One row per organisation and month in `invoices` (unique), Stripe idempotency keys on every write, and the steps are recorded so a failed run resumes
 without a second Stripe invoice. `GET /api/portal/billing/invoices` shows only issued invoices.
 
@@ -366,5 +366,5 @@ This server also serves everything the live Worker `pocket-architect-api` (15/10
 - Save and share: `lib/projects.js` (`POST /api/projects`, `GET` and `PUT /api/projects/:id`), R2 binding `FILES` under `projects/<id>.json`, D1 table `projects`. The builder portal's saved projects are in `portal_projects`.
 - D1 shape: the live `entitlements` table is the one in use (payment intent in `payment_intent`, `pdf_used`, `pdf_allowed`, `pdf_file`) plus `credits_reserved`. Schema changes go in `migrations/` (applied with `wrangler d1 migrations apply pocket-architect --remote`); `schema.sql` is the same end shape for a fresh database and the tests.
 - Tokens use the live format (HMAC over the base64url payload text); the first release format is still accepted.
-- Kept from live: friends code (`TEST_CODES`), the one-PDF-set-per-job rule (`pdf/<entitlement>.pdf`, now off by default: `PDF_SET_LIMIT="0"` lets a paid job re-export, `"1"` restores it), per IP and per pack limits, dispute and out-of-order refund handling, `metadata.app`, A$35 minimum and AUD check.
+- Kept from live: friends code (`TEST_CODES`), the one-PDF-set-per-job rule (`pdf/<entitlement>.pdf`, now off by default: `PDF_SET_LIMIT="0"` lets a paid job re-export, `"1"` restores it), per IP and per pack limits, dispute and out-of-order refund handling, `metadata.app`, A$30 minimum and AUD check.
 - Tests: `tests/live-merge.test.mjs` (migrations on a live shaped SQLite database, live links and tokens, ported live share and payment suites).

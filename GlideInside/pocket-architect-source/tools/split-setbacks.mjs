@@ -10,7 +10,11 @@ const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
 const outArg = process.argv.indexOf('--out');
 const out = outArg > 0 ? resolve(process.argv[outArg + 1]) : resolve(root, '../website-live/plan-studio/data/setbacks');
 const src = resolve(root, '../setbacks-data/setback-rules.json');
-const all = JSON.parse(readFileSync(src, 'utf8'));
+// Internal verification caveats must not reach client output; they are replaced with the plain client wording.
+const clean = (t) => t
+  .replaceAll('; currency against the in-force text not verified', '; Indicative. Check with council.')
+  .replace(/legislation\.nsw\.gov\.au could not be fetched[^"]*?NOT verified\.[^"]*?Verify before relying\./g, 'Indicative. Check with council.');
+const all = JSON.parse(clean(readFileSync(src, 'utf8')));
 
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });

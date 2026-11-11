@@ -275,7 +275,7 @@ CREATE TABLE IF NOT EXISTS portal_projects (
 );
 CREATE INDEX IF NOT EXISTS idx_portal_projects_org ON portal_projects(org_id, owner_id);
 
--- One row per client login, created at the login's first successful sign in. login_id is the primary key, so the A$35
+-- One row per client login, created at the login's first successful sign in. login_id is the primary key, so the per login
 -- charge can only ever exist once. No foreign key: the row stays (financial record) when the client login is deleted.
 CREATE TABLE IF NOT EXISTS login_issues (
   login_id TEXT PRIMARY KEY,
@@ -284,7 +284,7 @@ CREATE TABLE IF NOT EXISTS login_issues (
   client_name TEXT,
   issued_at TEXT NOT NULL,           -- the first sign in
   month TEXT NOT NULL,               -- Sydney month of issued_at
-  amount_cents INTEGER NOT NULL DEFAULT 3500
+  amount_cents INTEGER NOT NULL DEFAULT 3500 -- legacy default, never relied on: the code always writes the tiered price (priceForNthLoginThisMonth), now A$30 then A$25
 );
 CREATE INDEX IF NOT EXISTS idx_login_issues_org ON login_issues(org_id, month);
 

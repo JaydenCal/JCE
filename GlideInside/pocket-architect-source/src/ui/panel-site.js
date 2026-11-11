@@ -56,7 +56,7 @@ export function buildSiteSection(ctx) {
       fact('Street frontage', (lot.frontEdges || []).length ? `${lot.frontEdges.map((i) => { const d = boundaryDims(lot)[i]; return d ? `${edgeWords(lot, i)}, ${d.length} m` : ''; }).filter(Boolean).join('; ')}${lot.cornerLot ? ' (corner lot)' : ''}${lot.frontageConfirmed ? '' : ', not confirmed'}` : 'Not set'));
     const sec = section('Site', h('table', { class: 'ps-table ps-site-facts' }, rows));
     if (!lot.zoning && lot.zoneNote) sec.append(h('p', { class: 'ps-hint' }, lot.zoneNote));
-    sec.append(h('p', { class: 'ps-hint' }, `Coordinates are MGA2020 zone ${lot.zone}, plan up is grid north.`));
+    if (lot.zone) sec.append(h('p', { class: 'ps-hint' }, `Coordinates are MGA2020 zone ${lot.zone}, plan up is grid north.`));
 
     sec.append(h('div', { class: 'ps-sec' }, button('Confirm street frontage', () => store.setUI({ view: '2d', frontageEdit: true }), { title: 'Click the edges of your lot that face the street' })));
     // The builder's lot planner controls: drag, turn, mirror, face the garage to the street, live clearances.
@@ -144,10 +144,12 @@ export function buildSiteSection(ctx) {
     }
     if (!sb) {
       const why = (lot.setbacksAttempts || []).map((a) => plainSetbackReason(a.reason)).filter(Boolean)[0];
-      box.append(h('p', { class: 'ps-hint', role: 'status', dataset: { ps: 'setbacks-none' } }, !buildingRings(store.project).length && (lot.setbacksAttempts || []).some((a) => /storey|height|house|design/i.test(a.reason || '')) ? 'Setbacks appear once a house is placed.' : 'Setbacks not available for this lot, check with council.'),
+      const kids = [
+        h('p', { class: 'ps-hint', role: 'status', dataset: { ps: 'setbacks-none' } }, !buildingRings(store.project).length && (lot.setbacksAttempts || []).some((a) => /storey|height|house|design/i.test(a.reason || '')) ? 'Setbacks appear once a house is placed.' : 'Setbacks not available for this lot, check with council.'),
         lot.state === 'QLD' && lot.areaM2 > 450 ? h('p', { class: 'ps-hint' }, 'The Queensland default setbacks cover lots up to 450 m². This lot is larger, so check the council planning scheme or the Queensland Housing Code.') : null,
         why && !/^Setbacks not available/.test(why) ? h('p', { class: 'ps-hint' }, why) : null,
-        why && /^Setbacks not available/.test(why) ? h('p', { class: 'ps-hint' }, 'There is no setback rule loaded for this zone, use or lot size.') : null);
+      ].filter(Boolean);
+      box.append(...kids);
       return box;
     }
     const rows = [];
@@ -161,8 +163,8 @@ export function buildSiteSection(ctx) {
     }
     box.append(h('table', { class: 'ps-table ps-site-facts', dataset: { ps: 'setbacks-table' } }, h('tbody', null, ...rows)));
     const src = sb.source?.kind === 'council' ? (sb.source.dcp || sb.council || 'Council DCP') : `${sb.source?.name || sb.basis}${sb.source?.edition ? `, ${sb.source.edition}` : ''}`;
-    box.append(h('p', { class: 'ps-hint', dataset: { ps: 'setbacks-basis' } }, `Basis: ${sb.basis}.`), h('p', { class: 'ps-hint', dataset: { ps: 'setbacks-source' } }, `Source: ${src}.`),
-      h('p', { class: 'ps-hint' }, 'Indicative only. These distances are not a planning or building approval and are not a compliance check. Confirm with the council or a certifier.'));
+    box.append(h('p', { class: 'ps-hint', dataset: { ps: 'setbacks-basis' } }, `Basis: ${sb.basis}.`), h('p', { class: 'ps-hint', dataset: { ps: 'setbacks-source' } }, `Source: ${String(src).replace(/[.\s]+$/, '')}.`),
+      h('p', { class: 'ps-hint' }, 'Indicative only, check with council. These distances are not a planning or building approval. Confirm with the council or a certifier.'));
     return box;
   }
 

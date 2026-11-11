@@ -1,13 +1,13 @@
 // Billing rules (docs/PORTAL_API.md 4). Pure functions, no storage, so the rules can be tested.
 //   Per NEW client login, charged once when the client FIRST SIGNS IN, in the calendar month (Australia/Sydney) of that first sign in.
-//   Volume pricing per builder org, counted by first sign ins in that month, GST included: logins 1 to 15 A$35 each, logins 16 to 50 A$25 each,
+//   Volume pricing per builder org, counted by first sign ins in that month, GST included: logins 1 to 15 A$30 each, logins 16 to 50 A$25 each,
 //   above 50 a custom rate set by the owner (org.customLoginCents; until it is set the A$25 rate keeps applying and the admin page flags the org). Generating a login is free, and an unused login can be deleted free. No monthly charge.
 //   A$10 incl. GST per AI top-up of 300 credits, added at once, on the same end of month invoice.
 // Resetting a password, disabling, enabling or editing a login never creates a charge.
 // A billing row is { loginId, chargedAt (the first sign in), amountCents }.
 
 export const TZ = 'Australia/Sydney';
-export const NEW_LOGIN_FEE_CENTS = 3500;
+export const NEW_LOGIN_FEE_CENTS = 3000;
 export const VOLUME_LOGIN_FEE_CENTS = 2500;
 export const LOGIN_TIER_1_MAX = 15; // logins 1 to 15 in a month are NEW_LOGIN_FEE_CENTS
 export const LOGIN_TIER_2_MAX = 50; // logins 16 to 50 are VOLUME_LOGIN_FEE_CENTS; above this the owner sets a custom rate
@@ -28,7 +28,7 @@ export const customLoginRate = (org) => (Number.isInteger(org?.customLoginCents)
 
 /**
  * Price in cents (incl. GST) of the nth client login (1 based) to first sign in during one Sydney calendar month for one org.
- * A custom org rate, when set, applies to every login that month. Otherwise 1 to 15: A$35, 16 and above: A$25 (above 50 the
+ * A custom org rate, when set, applies to every login that month. Otherwise 1 to 15: A$30, 16 and above: A$25 (above 50 the
  * owner is asked to set a custom rate, see loginRateInfo, but the A$25 rate keeps being charged until he does).
  */
 export function priceForNthLoginThisMonth(n, org = null) {

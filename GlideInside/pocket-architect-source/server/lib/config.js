@@ -62,7 +62,7 @@ export function readConfig(env = {}) {
     stripeSecretKey: str(env.STRIPE_SECRET_KEY),
     stripeWebhookSecret: str(env.STRIPE_WEBHOOK_SECRET),
     stripePriceId: str(env.STRIPE_PRICE_ID),
-    planPackPriceCents: Math.round(num(env.PLAN_PACK_PRICE_CENTS, num(env.PLAN_PRICE_CENTS, 3500))), // PLAN_PRICE_CENTS is the live Worker's name for it
+    planPackPriceCents: Math.round(num(env.PLAN_PACK_PRICE_CENTS, num(env.PLAN_PRICE_CENTS, 3000))), // PLAN_PRICE_CENTS is the live Worker's name for it
     entitlementSecret: str(env.ENTITLEMENT_SECRET),
     entitlementDays: num(env.ENTITLEMENT_DAYS, 365),
     exportMaxProjectBytes: Math.round(num(env.EXPORT_MAX_PROJECT_BYTES, 2000000)),

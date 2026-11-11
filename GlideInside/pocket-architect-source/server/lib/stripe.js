@@ -29,7 +29,7 @@ export async function createCheckoutSession({ config, fetchImpl, projectId, proj
   p.set('metadata[app]', STRIPE_APP_TAG);
   p.set('payment_intent_data[metadata][projectId]', projectId);
   p.set('payment_intent_data[description]', `Plan Pack for ${projectName || projectId}`.slice(0, 200));
-  // Carried over from the live Worker: a customer record and a Stripe invoice (the tax invoice for the A$35 including GST).
+  // Carried over from the live Worker: a customer record and a Stripe invoice (the tax invoice for the A$30 including GST).
   p.set('customer_creation', 'always');
   p.set('invoice_creation[enabled]', 'true');
   p.set('invoice_creation[invoice_data][description]', `Plan Pack: ${projectName || projectId}`.slice(0, 200));

@@ -258,7 +258,7 @@ export function createTour(ps, { layer, onFinish, onActive }) {
   }
 
   return {
-    start() {
+    start(from = 0) {
       if (active) end(false);
       active = true;
       onActive?.(true);
@@ -267,7 +267,7 @@ export function createTour(ps, { layer, onFinish, onActive }) {
       window.addEventListener('resize', place);
       window.addEventListener('keydown', onKey, true);
       poll = setInterval(place, 250);
-      go(0);
+      go(Math.max(0, Math.min(from, steps.length - 1)));
     },
     stop: () => end(false),
     isActive: () => active,

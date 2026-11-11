@@ -1,6 +1,6 @@
 /* Single place for prices, labels and links. Page copy reads these via data-cfg="key". */
 window.GI_CONFIG = {
-  planPackPrice: "A$35",          // PS-SCOPE-001 §4.2, per project. Confirm GST wording (decision 17.3).
+  planPackPrice: "A$30",          // PS-SCOPE-001 §4.2, per project. Confirm GST wording (decision 17.3).
   planPackCredits: "500",
   addonFlyThroughPrice: 10,       // A$, add-on to a plan
   addonRendersPrice: 10,          // A$, add-on to a plan

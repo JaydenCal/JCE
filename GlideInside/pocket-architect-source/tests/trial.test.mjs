@@ -596,14 +596,14 @@ for (const [label, d1] of stores) {
     assert.equal(items.length, 2);
     const [inv] = (await org.admin.get('/portal/billing/invoices')).data;
     assert.equal(inv.status, 'paid');
-    assert.equal(inv.totalCents, 4500);
+    assert.equal(inv.totalCents, 4000);
     const full = (await org.admin.get(`/portal/billing/invoices/${inv.id}`)).data;
     assert.equal(full.seller.name, 'JCE Infrastructure Pty Ltd trading as Glide Inside');
     assert.equal(full.seller.abn, '29 699 165 663');
     assert.equal(full.buyer.legalName, 'Coastal Homes Pty Ltd');
     assert.equal(full.buyer.abn, '51 824 753 556');
     assert.deepEqual(full.payment, { method: 'card', brand: 'visa', last4: '4242' });
-    assert.equal(full.gstCents, 409);
+    assert.equal(full.gstCents, 364);
     // Running the month again changes nothing.
     w.stripe.calls.length = 0;
     assert.equal((await w.app.scheduled()).results[0].status, 'exists');

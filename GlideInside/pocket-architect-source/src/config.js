@@ -16,7 +16,7 @@ export const CONFIG = {
   apiBase: '/api',
   aiMock: false, // true serves canned assistant replies in the browser (review builds only)
   premiumEnabled: false, // Phase 1: premium shows as "coming soon" until the back end is live
-  planPack: { priceAud: 35, gstInclusive: true, credits: 500, reexportMonths: 12 },
+  planPack: { priceAud: 30, gstInclusive: true, credits: 500, reexportMonths: 12 },
   links: {
     engineering: '', // engineering enquiry URL (configurable)
     flythrough: '',
@@ -40,7 +40,7 @@ export const CONFIG = {
   portal: {
     appUrl: './', // Pocket Architect, relative to the portal page; the site sets GI_CONFIG.portalAppUrl
     signInUrl: '../../portal/', // the portal sign in page, relative to Pocket Architect; the site sets GI_CONFIG.portalSignInUrl
-    clientLoginFeeAud: 35, // per NEW client login in a calendar month, incl. GST
+    clientLoginFeeAud: 30, // per NEW client login in a calendar month, incl. GST
     aiTopUp: { credits: 300, priceAud: 10 }, // incl. GST, charged on the end of month invoice
     aiMonthlyCredits: 300, // per login per month, hard stop at zero
   },

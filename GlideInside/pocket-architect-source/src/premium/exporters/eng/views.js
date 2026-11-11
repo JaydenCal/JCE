@@ -217,7 +217,7 @@ export function paintView(doc, r, T, { cutPlane = null } = {}) {
 }
 
 // Standard drawing scales for building views (printed 1:n on A3).
-const SCALES = [20, 50, 100, 200, 250, 500];
+const SCALES = [20, 50, 100, 150, 200, 250, 500];
 const fitScale = (w, h, cellW, cellH, k) => SCALES.find((n) => w / (n * k) <= cellW && h / (n * k) <= cellH) || 500;
 
 const cap = (t) => { const s = String(t ?? ''); return s ? s[0].toUpperCase() + s.slice(1) : s; };
@@ -486,7 +486,10 @@ export function drawSection(doc, ctx, tris, area) {
   const n = sectionScale(project, tris, area, k);
   const ds = n * k;
   const midX = (r.bounds.x0 + r.bounds.x1) / 2;
-  const baseY = area.y1 - 26 - Math.max(0, r.bounds.y1) / ds; // sheet y of the ground floor level
+  // Centred vertically on the sheet: ridge labels above, the overall dimension string below the ground line (about 16 mm, clear of the sheet title and note, and 20 mm).
+  const topMm = r.bounds.y0 / ds; // negative: above the ground floor level
+  const botMm = Math.max(0, r.bounds.y1) / ds;
+  const baseY = area.y0 + Math.max(0, (ah - (botMm - topMm) - 36) / 2) + 16 - topMm; // sheet y of the ground floor level
   const T = (sx, sy) => ({ x: area.x0 + aw / 2 + (sx - midX) / ds, y: baseY + sy / ds });
   const P = (sx, z) => T(sx, -z);
   const levels = [...project.levels].sort((q, p) => q.elevation - p.elevation);

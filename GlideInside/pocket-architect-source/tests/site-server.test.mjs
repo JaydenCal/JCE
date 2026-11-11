@@ -40,14 +40,15 @@ function tiffF32(width, height, fn, nodata = -9999) {
   return new Uint8Array(buf);
 }
 
-function upstream({ failDirectAerial = false, fail = null, calls = [] } = {}) {
+function upstream({ failDirectAerial = false, fail = null, calls = [], failNeighbours = null } = {}) {
   const j = (b) => new Response(JSON.stringify(b), { status: 200, headers: { 'content-type': 'application/json' } });
-  const impl = async (input) => {
+  const impl = async (input, init) => {
     const url = new URL(String(input));
     const p = url.pathname;
     const q = url.searchParams;
     calls.push(`${url.host}${p}`);
     if (fail && fail.test(`${url.host}${p}`)) return new Response('nope', { status: 503 });
+    if (failNeighbours?.on && (q.get('geometryType') === 'esriGeometryEnvelope' || String(init?.body || '').includes('esriGeometryEnvelope')) && p.endsWith('/query')) return new Response('nope', { status: 503 });
     if (q.get('f') === 'json' && !p.endsWith('/query') && !p.endsWith('/identify')) return j({ name: 'svc', currentVersion: 11.1 });
     if (p.endsWith('NSW_Cadastre/MapServer/9/query')) {
       // The live NSW cadastre layer answers resultRecordCount with "Failed to execute query" (seen 11/11/2026): the server must not send it.
@@ -162,6 +163,22 @@ test('lot: results are cached in the store (second call makes no upstream reques
   const n = fetchImpl.calls.length;
   await get(`/lot?lon=${LON}&lat=${LAT}&state=NSW`);
   assert.equal(fetchImpl.calls.length, n);
+});
+
+test('lot: a response whose neighbour fetch failed is not cached, so the next lookup retries', async () => {
+  const failNeighbours = { on: true };
+  const { get, fetchImpl } = mk({ failNeighbours });
+  const url = `/lot?lon=${LON}&lat=${LAT}&state=NSW`;
+  const r1 = await get(url);
+  const b1 = await r1.json();
+  assert.ok(b1.notes.some((n) => /Neighbouring lots could not be loaded/.test(n)));
+  assert.equal(r1.headers.get('cache-control'), 'no-store');
+  failNeighbours.on = false;
+  const b2 = await (await get(url)).json();
+  assert.equal(b2.neighbours.length, 2, 'the failed result was not served from the cache');
+  const n = fetchImpl.calls.length;
+  await get(url);
+  assert.equal(fetchImpl.calls.length, n, 'the complete result is cached');
 });
 
 test('lot: upstream failure is a 502 SITE_UPSTREAM', async () => {

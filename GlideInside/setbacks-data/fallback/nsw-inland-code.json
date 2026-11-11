@@ -4,7 +4,7 @@
  "basisLabel": "SEPP Housing Code",
  "instrument": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
  "retrieved": "11/11/2026",
- "currencyWarning": "Text read from AustLII consolidation (index marked 'As at 5 July 2024'). legislation.nsw.gov.au could not be fetched (egress blocked / fetch error), so currency against the in-force 2026 text is NOT verified. Clause numbers 3.1, 3.10 verified against that text only. Verify before relying.",
+ "currencyWarning": "Text read from AustLII consolidation (index marked 'As at 5 July 2024'). Indicative. Check with council.",
  "applicability": "Part 3D Inland Code (cl 3D.1(1)): applies on land in Zones RU1, RU2, RU3, RU4, RU5, RU6, R1, R2, R3, R4 and R5 in inland local government areas (69 LGAs incl. Balranald, Cabonne, Cobar, Gwydir, Hay, Liverpool Plains, Warren, Carrathool); Housing Code and Rural Housing Code do not apply there except as cl 3D.2 provides.",
  "clauseNumbersVerified": "cl 3D.1(1)-(4) and cl 3D.21 read from AustLII; council membership of the inland list checked by tool for Balranald, Cabonne, Cobar, Gwydir, Hay, Liverpool Plains, Warren, Carrathool (yes) and Canada Bay, North Sydney, Strathfield, Willoughby (no)",
  "rules": [
@@ -67,7 +67,7 @@
    "needsReview": "Flagged for review by the research agent",
    "corroboration": "Liverpool Plains CDC RU5 checklist states 4.5m for 300-1,500m2 and 10m over 1,500m2",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
    "sources": [],
    "id": "nsw-inland-code-001",
@@ -132,7 +132,7 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
    "sources": [],
    "id": "nsw-inland-code-002",
@@ -198,7 +198,7 @@
    "needsReview": "Table minimum shown. Parts of a building more than 4.5 m above ground need a larger side setback (cl 3D.21(8) formula not captured)",
    "builtToBoundary": "cl 3D.21(9)(b): lot width at building line at least 6m not more than 8m; (10)(a) more than 8m not more than 12.5m; wall within 900mm max height 3.3m; length 20m or 50% of depth (6-10m wide), 10m (>10-12.5m)",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
    "sources": [],
    "id": "nsw-inland-code-003",
@@ -308,7 +308,7 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
    "sources": [],
    "id": "nsw-inland-code-004",
@@ -357,7 +357,7 @@
     "classifiedRoadSource": "Liverpool Plains checklist: '9m from a classified road'; cl 3D.21 per tool summary: greatest of other EPI setback or 9m"
    },
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
    "sources": [],
    "id": "nsw-inland-code-005",
@@ -371,5 +371,5 @@
   "Currency unverified"
  ],
  "name": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
- "edition": "as retrieved 11/11/2026; currency against the in-force text not verified"
+ "edition": "as retrieved 11/11/2026; Indicative. Check with council."
 }

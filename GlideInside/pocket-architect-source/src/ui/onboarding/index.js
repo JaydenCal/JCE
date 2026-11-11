@@ -81,7 +81,8 @@ export function initOnboarding(ps = window.__ps) {
     startTour() {
       clearTimeout(autoTimer);
       hints.close();
-      tour.start();
+      // The first step asks for an address; skip it when a lot is already on the plan.
+      tour.start(ps.store.project?.site?.lot ? 1 : 0);
     },
     showHint(id) {
       return hints.show(id, { force: true });
@@ -107,7 +108,9 @@ export function initOnboarding(ps = window.__ps) {
   // One welcome card at a time: the tour waits until the welcome card has been used or dismissed.
   const startWhenQuiet = () => {
     if (disposed || !enabled || ls.get(KEYS.tourDone) === '1') return;
-    if (document.querySelector('.ps-welcome')) { autoTimer = setTimeout(startWhenQuiet, 1500); return; }
+    if (window.innerWidth < 600) return; // narrow screens: no automatic tour (it can still be started from Demo tips)
+    // One prompt at a time: wait while the welcome card or the street frontage bar is on screen.
+    if (document.querySelector('.ps-welcome') || document.querySelector('.ps-frontage:not([hidden])')) { autoTimer = setTimeout(startWhenQuiet, 1500); return; }
     api.startTour();
   };
   if (enabled && ls.get(KEYS.tourDone) !== '1') autoTimer = setTimeout(startWhenQuiet, 900);
