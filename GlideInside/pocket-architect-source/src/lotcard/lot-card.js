@@ -272,13 +272,28 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     }));
   }
 
+  // Real aerial under the lot when the lot has one stored in the browser (same image the 3D ground uses); otherwise a light schematic.
+  let miniAerial = { key: null, img: null, loading: null };
+  function ensureMiniAerial(p, lot) {
+    const key = lot?.aerial?.extent && lot.aerial.key && lot.layers?.aerial !== false ? lot.aerial.key : null;
+    if (!key) { miniAerial = { key: null, img: null, loading: null }; return null; }
+    if (miniAerial.key === key) return miniAerial.img;
+    miniAerial = { key, img: null, loading: key };
+    import('../editor2d/underlay.js')
+      .then((m) => m.loadImageBlob(key))
+      .then((blob) => (blob && typeof createImageBitmap === 'function' ? createImageBitmap(blob) : null))
+      .then((bmp) => { if (disposed || miniAerial.key !== key) return; miniAerial.img = bmp || null; miniAerial.loading = null; if (bmp) drawMini(p, lot); })
+      .catch(() => { if (miniAerial.key === key) miniAerial.loading = null; });
+    return null;
+  }
+
   function drawMini(p, lot) {
     const ctx = cv.getContext('2d');
     if (!ctx) return;
     const W = cv.width;
     const H = cv.height;
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#12161a';
+    ctx.fillStyle = '#e8ece7';
     ctx.fillRect(0, 0, W, H);
     const pts = lot.boundary || [];
     if (pts.length < 3) return;
@@ -291,37 +306,40 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     const ox = (W - (maxX - minX) * k) / 2 - minX * k;
     const oy = (H - (maxY - minY) * k) / 2 - minY * k;
     const path = (ring) => { ctx.beginPath(); ring.forEach((q, i) => (i ? ctx.lineTo(q.x * k + ox, q.y * k + oy) : ctx.moveTo(q.x * k + ox, q.y * k + oy))); ctx.closePath(); };
+    const img = ensureMiniAerial(p, lot);
+    const ex = lot.aerial?.extent;
+    const hasImg = !!(img && ex);
+    if (hasImg) {
+      try { ctx.drawImage(img, ex.x0 * k + ox, ex.y0 * k + oy, (ex.x1 - ex.x0) * k, (ex.y1 - ex.y0) * k); } catch { /* fall through to the schematic look */ }
+    }
     for (const n of lot.neighbours || []) {
       if (!Array.isArray(n.ring) || n.ring.length < 3) continue;
       path(n.ring);
-      ctx.fillStyle = n.isRoad ? '#2a2f35' : '#1d2329';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,.14)';
-      ctx.lineWidth = 1;
+      if (!hasImg) { ctx.fillStyle = n.isRoad ? '#cfd4d8' : '#f6f7f4'; ctx.fill(); }
+      ctx.strokeStyle = hasImg ? 'rgba(255,255,255,.55)' : 'rgba(60,70,80,.28)';
+      ctx.lineWidth = 0.8;
       ctx.stroke();
     }
-    path(pts);
-    ctx.fillStyle = 'rgba(255,255,255,.10)';
-    ctx.fill();
+    if (!hasImg) { path(pts); ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fill(); }
     if (Array.isArray(lot.envelope) && lot.envelope.length >= 3) {
       path(lot.envelope);
       ctx.setLineDash([5, 4]);
-      ctx.strokeStyle = 'rgba(111,211,154,.8)';
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = hasImg ? 'rgba(255,255,255,.95)' : 'rgba(40,50,60,.7)';
+      ctx.lineWidth = 1;
       ctx.stroke();
       ctx.setLineDash([]);
     }
     path(pts);
-    ctx.strokeStyle = '#ffc83d';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#e53935';
+    ctx.lineWidth = 1.5;
     ctx.stroke();
     const col = schemeColours(p);
     for (const ring of buildingRings(p)) {
       if (ring.length < 3) continue;
       path(ring);
-      ctx.fillStyle = col?.roof || '#42474c';
+      ctx.fillStyle = col?.roof || '#6b7178';
       ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,.55)';
+      ctx.strokeStyle = 'rgba(255,255,255,.85)';
       ctx.lineWidth = 1;
       ctx.stroke();
     }

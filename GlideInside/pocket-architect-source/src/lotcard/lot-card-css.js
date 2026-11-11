@@ -41,7 +41,7 @@ export const LOT_CARD_CSS = `
 .lc-pager[hidden]{display:none}
 .lc-pager button{width:40px;height:40px;border-radius:50%;font-size:20px;line-height:38px}.lc-pager button:hover{background:rgba(255,255,255,.1)}
 .lc-pgt{font:500 10.5px var(--lc-sans);letter-spacing:.16em;min-width:150px;max-width:300px;text-align:center;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lc-mini{position:absolute;right:12px;bottom:44px;width:min(21%,210px);min-width:110px;aspect-ratio:3/4;border-radius:12px!important;border:1px solid rgba(255,255,255,.35)!important;box-shadow:0 6px 24px rgba(0,0,0,.45);overflow:hidden;display:block;background:#12161a}
+.lc-mini{position:absolute;right:12px;bottom:44px;width:min(21%,210px);min-width:110px;aspect-ratio:3/4;border-radius:12px!important;border:1px solid rgba(255,255,255,.35)!important;box-shadow:0 6px 24px rgba(0,0,0,.45);overflow:hidden;display:block;background:#e8ece7}
 .lc-mini canvas{width:100%;height:100%;display:block}
 .lc-mini-t{position:absolute;left:8px;top:6px;font:500 9px var(--lc-sans);letter-spacing:.14em;color:#fff;background:rgba(10,10,12,.7);padding:3px 7px;border-radius:9px}
 .lc-north{position:absolute;right:6px;top:6px;width:30px;height:30px}
