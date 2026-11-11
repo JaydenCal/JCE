@@ -15,10 +15,12 @@
 <meta name="twitter:title" content="Subdivision Consultant and Development Feasibility | Glide Inside">
 <meta name="twitter:description" content="Subdivision concepts, staging and 3D site models for regional land developers, with input from a qualified civil engineer. Feasibility only. By quote.">
 <meta name="twitter:image" content="https://glideinside.com.au/assets/og-cover.jpg">
+<meta name="theme-color" content="#12231c">
 <link rel="icon" href="../assets/Glideinside_Favicon_v4.svg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="../framework.css?v=20261015">
-<script src="../site.config.js?v=20261016"></script><script src="../framework.js" defer></script><script src="../analytics.js" defer></script>
+<link rel="preload" href="../assets/fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../framework.css?v=20261111">
+<script src="../site.config.js?v=20261111"></script><script src="../framework.js" defer></script><script src="../analytics.js" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","name":"Subdivision modelling","serviceType":"Preliminary subdivision feasibility and 3D concept presentation","description":"Subdivision concepts, staging plans and 3D site models for regional land developers, prepared with input from a qualified civil engineer. Preliminary feasibility only, not survey, engineering design or approval. Priced by quote.","url":"https://glideinside.com.au/subdivision/","areaServed":{"@type":"AdministrativeArea","name":"Regional New South Wales, Australia"},"audience":{"@type":"BusinessAudience","audienceType":"Land developers, builders, project owners and councils"},"provider":{"@type":"LocalBusiness","name":"Glide Inside","url":"https://glideinside.com.au/","email":"hello@glideinside.com.au","telephone":"0477 207 027","taxID":"11 549 431 925"},"termsOfService":"https://glideinside.com.au/terms.html"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Who provides the feasibility support?","acceptedAnswer":{"@type":"Answer","text":"Glide Inside's director is a qualified civil engineer and can assist with preliminary subdivision feasibility. The work and the outputs are confirmed around your site and brief."}},{"@type":"Question","name":"Do you act as a subdivision consultant or land development consultant?","acceptedAnswer":{"@type":"Answer","text":"Glide Inside prepares subdivision concepts, staging plans and 3D site models, with input from a qualified civil engineer. We do not provide survey, development application preparation, engineering design, planning approval or legal advice."}},{"@type":"Question","name":"What does development feasibility mean at this stage?","acceptedAnswer":{"@type":"Answer","text":"At concept stage it means testing how many lots, what access and which stages might work on a site before you spend on detailed design. Glide Inside provides preliminary feasibility support only. Financial feasibility, approvals and detailed design need other specialists."}},{"@type":"Question","name":"How do I subdivide land?","acceptedAnswer":{"@type":"Answer","text":"The steps differ by state and council. In general you check the planning controls for your site with your council, test a concept layout, then engage a registered surveyor and a town planner to prepare the application. A concept layout from Glide Inside can help you explain the idea early. It is not an application document."}},{"@type":"Question","name":"What should I send first?","acceptedAnswer":{"@type":"Answer","text":"The property location, your proposed use or lot concept, and any survey, site plans or existing models you have. Add the questions you want to explore and your project timing."}},{"@type":"Question","name":"What stage is this work for?","acceptedAnswer":{"@type":"Answer","text":"Preliminary feasibility, concept development and project communication. We discuss how you intend to use the work and what further information or specialist input the project needs as it develops."}},{"@type":"Question","name":"Can I lodge this with council?","acceptedAnswer":{"@type":"Answer","text":"No. The concept is not a survey plan, a development application or engineering design. It helps you organise the early questions and explain the idea. A registered surveyor and your council remain the source for boundaries, levels and planning requirements."}}]}</script>
 <style>
@@ -44,17 +46,24 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header"><div class="shell">
   <a class="logo" href="../index.html" aria-label="Glide Inside home"><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
-  <nav class="site-nav" aria-label="Main">
-    <a href="../plan-studio/index.html">Pocket Architect</a>
-    <a href="../plans/index.html">Plan library</a>
-    <a href="../subdivision/index.html" aria-current="page">Subdivision</a>
-    <a href="../index.html#how">How it works</a>
-    <a href="../plan-studio/index.html#addons">Add-ons</a>
-    <a href="../index.html#faq">FAQ</a>
-    <a data-cfg-href="orderUrl" href="/cdn-cgi/l/email-protection#553d3039393a1532393c31303c3b263c31307b363a387b3420">Contact</a>
+  <nav class="site-nav" id="site-nav" aria-label="Main">
+    <a href="../index.html">Pocket Architect</a>
+    <a href="../for-builders/">For builders</a>
+    <a href="../subdivision/" aria-current="page">Subdivisions</a>
+    <a href="../plans/">Plans</a>
+    <a href="../pricing/">Pricing</a>
+    <div class="nav-logins">
+      <a href="/portal/" data-portal hidden>Builder login</a>
+      <a href="/portal/?client=1" data-portal hidden>Client login</a>
+      <a class="btn" data-cfg-href="toolUrl" href="../plan-studio/launch/">Start designing</a>
+    </div>
   </nav>
-  <a class="btn btn-sm" data-cfg-href="subdivisionOrderUrl" href="/cdn-cgi/l/email-protection#b8d0ddd4d4d7f8dfd4d1dcddd1d6cbd1dcdd96dbd7d596d9cd">Request a quote</a>
-  <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="head-end">
+    <a class="login" href="/portal/" data-portal hidden>Builder login</a>
+    <a class="login" href="/portal/?client=1" data-portal hidden>Client login</a>
+    <a class="btn btn-sm" data-cfg-href="toolUrl" href="../plan-studio/launch/">Start designing</a>
+  </div>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 </div></header>
 <main id="main">
 <div class="shell">
@@ -62,7 +71,7 @@
 
 <section class="product-hero">
   <div>
-    <p class="eyebrow">SUBDIVISION MODELLING · REGIONAL NSW</p>
+    <p class="eyebrow">Subdivision modelling, regional NSW</p>
     <h1>Subdivision concepts and development feasibility, <em>modelled in 3D</em></h1>
     <p class="lead">How many lots will this site take? Concept lot layouts, staging and a 3D site model for land developers in regional NSW, prepared with input from a qualified civil engineer, so you can test the idea early and explain it to partners, buyers and funders.</p>
     <div class="hero-cta">
@@ -347,9 +356,12 @@
 </section>
 </main>
 <footer class="site-footer"><div class="shell">
-  <div><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside" style="height:30px;width:auto;margin-bottom:12px"><p>Glide Inside · ABN 11 549 431 925<br><a href="/cdn-cgi/l/email-protection#127a777e7e7d52757e7b76777b7c617b76773c717d7f3c7367"><span class="__cf_email__" data-cfemail="2d45484141426d4a4144494844435e444948034e4240034c58">[email&#160;protected]</span></a> · 0477 207 027</p></div>
-  <nav aria-label="Products"><a href="../plans/index.html">Plan library</a><a href="../plan-studio/index.html">Pocket Architect</a><a href="../subdivision/index.html">Subdivision modelling</a><a href="../plan-studio/index.html#addons">Plan add-ons</a></nav>
-  <nav aria-label="Legal"><a href="../terms.html">Order terms</a><a href="../privacy.html">Privacy</a></nav>
+  <div class="brand"><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"><p>Site planning and house design in 3D for regional New South Wales and Queensland.</p></div>
+  <nav aria-label="Product"><h4>Product</h4><a href="../index.html">Pocket Architect</a><a href="../plan-studio/index.html">How it works</a><a href="../pricing/">Pricing</a><a href="../plan-studio/index.html#addons">Add-ons</a><a href="../subdivision/">Subdivisions</a></nav>
+  <nav aria-label="Builders and plans"><h4>Builders and plans</h4><a href="../for-builders/">For builders</a><a href="/portal/" data-portal hidden>Builder login</a><a href="/portal/?client=1" data-portal hidden>Client login</a><a href="../plans/">Plan library</a><a href="../granny-flat-designs/">Granny flat designs</a><a href="../shed-with-living-quarters/">Shed with living quarters</a><a href="../3d-floor-plan-maker/">3D floor plan maker</a></nav>
+  <nav aria-label="Company"><h4>Glide Inside</h4><span>Sole trader, ABN <span data-cfg="abn">11 549 431 925</span></span><a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au"><span data-cfg="email">hello@glideinside.com.au</span></a><span data-cfg="phone">0477 207 027</span><a href="../terms.html">Order terms</a><a href="../privacy.html">Privacy</a></nav>
+  <p class="legal-line">Glide Inside provides concept planning tools only. Setbacks and other planning controls shown are indicative, are not a planning or building approval, and must be checked with the relevant council and a suitably qualified person before you rely on them. Prices include GST.</p>
+  <p class="legal-line attrib">Cadastre and imagery &copy; NSW Spatial Services (CC BY 3.0 AU); Queensland Government data.</p>
 </div></footer>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (function(){

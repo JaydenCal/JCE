@@ -15,25 +15,35 @@
 <meta name="twitter:title" content="Order terms | Glide Inside">
 <meta name="twitter:description" content="Order terms for Pocket Architect and add-ons from Glide Inside: price, what a job includes, concept design only, refunds under Australian Consumer Law.">
 <meta name="twitter:image" content="https://glideinside.com.au/assets/og-cover.jpg">
+<meta name="theme-color" content="#12231c">
 <link rel="icon" href="assets/Glideinside_Favicon_v4.svg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="framework.css?v=20261015">
-<script src="site.config.js?v=20261016"></script><script src="framework.js" defer></script><script src="analytics.js" defer></script>
+<link rel="preload" href="assets/fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="framework.css?v=20261111">
+<script src="site.config.js?v=20261111"></script><script src="framework.js" defer></script><script src="analytics.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header"><div class="shell">
   <a class="logo" href="index.html" aria-label="Glide Inside home"><img src="assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
-  <nav class="site-nav" aria-label="Main">
-    <a href="plan-studio/index.html">Pocket Architect</a>
-    <a href="plans/index.html">Plan library</a>
-    <a href="subdivision/index.html">Subdivision</a>
-    <a href="index.html#how">How it works</a>
-    <a href="index.html#faq">FAQ</a>
-    <a href="/cdn-cgi/l/email-protection#4129242d2d2e01262d282524282f322825246f222e2c6f2034">Contact</a>
+  <nav class="site-nav" id="site-nav" aria-label="Main">
+    <a href="index.html">Pocket Architect</a>
+    <a href="for-builders/">For builders</a>
+    <a href="subdivision/">Subdivisions</a>
+    <a href="plans/">Plans</a>
+    <a href="pricing/">Pricing</a>
+    <div class="nav-logins">
+      <a href="/portal/" data-portal hidden>Builder login</a>
+      <a href="/portal/?client=1" data-portal hidden>Client login</a>
+      <a class="btn" data-cfg-href="toolUrl" href="plan-studio/launch/">Start designing</a>
+    </div>
   </nav>
-  <a class="btn btn-sm" data-cfg-href="toolUrl" href="plan-studio/launch/">Start designing</a>
-  <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
+  <div class="head-end">
+    <a class="login" href="/portal/" data-portal hidden>Builder login</a>
+    <a class="login" href="/portal/?client=1" data-portal hidden>Client login</a>
+    <a class="btn btn-sm" data-cfg-href="toolUrl" href="plan-studio/launch/">Start designing</a>
+  </div>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 </div></header>
 <main id="main">
 <section class="shell hero-centre" style="padding-bottom:12px">
@@ -75,8 +85,11 @@
 </section>
 </main>
 <footer class="site-footer"><div class="shell">
-  <div><img src="assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside" style="height:30px;width:auto;margin-bottom:12px"><p>Glide Inside · ABN 11 549 431 925<br><a href="/cdn-cgi/l/email-protection#dab2bfb6b6b59abdb6b3bebfb3b4a9b3bebff4b9b5b7f4bbaf"><span class="__cf_email__" data-cfemail="741c1118181b3413181d10111d1a071d10115a171b195a1501">[email&#160;protected]</span></a> · 0477 207 027</p></div>
-  <nav aria-label="Products"><a href="plan-studio/index.html">Pocket Architect</a><a href="plans/index.html">Plan library</a><a href="subdivision/index.html">Subdivision modelling</a><a href="plan-studio/index.html#addons">Plan add-ons</a></nav>
-  <nav aria-label="Legal"><a href="terms.html">Order terms</a><a href="privacy.html">Privacy</a></nav>
+  <div class="brand"><img src="assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"><p>Site planning and house design in 3D for regional New South Wales and Queensland.</p></div>
+  <nav aria-label="Product"><h4>Product</h4><a href="index.html">Pocket Architect</a><a href="plan-studio/index.html">How it works</a><a href="pricing/">Pricing</a><a href="plan-studio/index.html#addons">Add-ons</a><a href="subdivision/">Subdivisions</a></nav>
+  <nav aria-label="Builders and plans"><h4>Builders and plans</h4><a href="for-builders/">For builders</a><a href="/portal/" data-portal hidden>Builder login</a><a href="/portal/?client=1" data-portal hidden>Client login</a><a href="plans/">Plan library</a><a href="granny-flat-designs/">Granny flat designs</a><a href="shed-with-living-quarters/">Shed with living quarters</a><a href="3d-floor-plan-maker/">3D floor plan maker</a></nav>
+  <nav aria-label="Company"><h4>Glide Inside</h4><span>Sole trader, ABN <span data-cfg="abn">11 549 431 925</span></span><a data-cfg-href="orderUrl" href="mailto:hello@glideinside.com.au"><span data-cfg="email">hello@glideinside.com.au</span></a><span data-cfg="phone">0477 207 027</span><a href="terms.html">Order terms</a><a href="privacy.html">Privacy</a></nav>
+  <p class="legal-line">Glide Inside provides concept planning tools only. Setbacks and other planning controls shown are indicative, are not a planning or building approval, and must be checked with the relevant council and a suitably qualified person before you rely on them. Prices include GST.</p>
+  <p class="legal-line attrib">Cadastre and imagery &copy; NSW Spatial Services (CC BY 3.0 AU); Queensland Government data.</p>
 </div></footer>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body></html>
