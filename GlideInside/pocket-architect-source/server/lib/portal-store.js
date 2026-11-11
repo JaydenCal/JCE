@@ -35,7 +35,7 @@ const SPECS = {
     table: 'portal_projects',
     cols: {
       id: 'id', orgId: 'org_id', ownerId: 'owner_id', name: 'name', lotAddress: 'lot_address', houseNames: 'house_names:j', project: 'project_json:j',
-      createdAt: 'created_at', updatedAt: 'updated_at',
+      createdAt: 'created_at', updatedAt: 'updated_at', editedById: 'edited_by_id', editedByName: 'edited_by_name', editedByStaffAt: 'edited_by_staff_at',
     },
   },
   invoices: {

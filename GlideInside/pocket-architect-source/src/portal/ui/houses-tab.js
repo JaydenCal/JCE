@@ -4,7 +4,7 @@
 import { h, openDialog, field, busy, toast, chip, icon, errorMessage } from './kit.js';
 import { svgDataUri } from '../thumbnail.js';
 import { sizeLabel } from '../house-stats.js';
-import { appLink } from '../links.js';
+import { appLink, designLink } from '../links.js';
 import { parseDesign } from '../../ui/design-file.js';
 import { houseStats } from '../house-stats.js';
 
@@ -23,7 +23,7 @@ export function houseCard(hs, actions) {
     h('div', { class: 'pp-actions' }, ...actions));
 }
 
-export function renderHouses(host, { api, me, appLinkFor = appLink }) {
+export function renderHouses(host, { api, me, appLinkFor = appLink, designHref = designLink }) {
   const canWrite = me.permissions.includes('houses.write');
   const state = { q: '', beds: '', archived: false, items: [] };
   const grid = h('div', { class: 'pp-grid', role: 'list' });
@@ -98,7 +98,8 @@ export function renderHouses(host, { api, me, appLinkFor = appLink }) {
   }
 
   host.append(
-    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'House designs'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Your default layouts. Clients you give access to can place these on their lot. The Glide Inside library is hidden from clients unless you tick Show Glide Inside sample designs to clients.'))),
+    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'House designs'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Your default layouts. Clients you give access to can place these on their lot. The Glide Inside library is hidden from clients unless you tick Show Glide Inside sample designs to clients.')),
+      h('a', { class: 'pp-btn pp-btn--primary pp-btn--lg', id: 'design-on-lot-houses', href: designHref(), target: '_blank', rel: 'noopener' }, icon('open', 18), 'Design on a lot')),
     canWrite ? h('div', { class: 'pp-add' },
       h('span', { class: 'pp-add-label' }, 'Add a house design'),
       h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: saveCurrent }, icon('plus', 16), 'Save the open design'),

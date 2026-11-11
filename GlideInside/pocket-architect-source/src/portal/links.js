@@ -18,6 +18,9 @@ export function appLink(params = {}) {
   return url.href;
 }
 
+/** Pocket Architect in client mode for builder staff: "Design on a lot" (new lot) or a client's saved project opened as that client sees it. */
+export const designLink = ({ project = null } = {}) => appLink(project ? { design: 1, project } : { design: 'new' });
+
 export const portalUrl = (query = '') => (typeof location !== 'undefined' ? new URL(`portal/${query}`, new URL('../', location.href)).href : `/portal/${query}`);
 
 /** The portal sign in page, as seen from Pocket Architect. `?portal=` works on localhost only. */

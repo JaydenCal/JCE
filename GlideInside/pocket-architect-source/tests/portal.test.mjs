@@ -569,3 +569,67 @@ test('preview never changes the project; tanks move with the house; the lot size
   assert.throws(() => placeHouse(lot, { levels: [] }, {}), /no levels/);
   assert.equal(migrate(preview).levels.length, 1);
 });
+
+// Builder "Design on a lot" ----------------------------------------------------------------------------------------------
+import { designMode, clientLike, wantsGlide, fullEditorHref, designNewHref } from '../src/portal/design-mode.js';
+import { designLink } from '../src/portal/links.js';
+import fs from 'node:fs';
+
+test('design mode: builder and staff logins get the client experience only with ?design, clients always, and no Glide library for staff in it', () => {
+  const p = (q) => new URLSearchParams(q);
+  assert.equal(designMode('admin', p('design=new')), true);
+  assert.equal(designMode('designer', p('design=1&project=pr_1')), true);
+  assert.equal(designMode('admin', p('')), false, 'the full editor is unchanged without the parameter');
+  assert.equal(designMode('client', p('design=1')), false, 'clients are in client mode already');
+  assert.equal(clientLike('client', p('')), true);
+  assert.equal(clientLike('admin', p('design=new')), true);
+  assert.equal(clientLike('admin', p('')), false);
+  const me = (role, show) => ({ user: { role }, org: { showGlideToClients: show } });
+  assert.equal(wantsGlide(me('admin', false), p('design=new')), false, 'a builder only ever sees their own designs in Design on a lot');
+  assert.equal(wantsGlide(me('admin', true), p('design=1')), false);
+  assert.equal(wantsGlide(me('admin', false), p('')), true, 'the full editor still lists the library');
+  assert.equal(wantsGlide(me('client', false), p('')), false);
+  assert.equal(wantsGlide(me('client', true), p('')), true);
+});
+
+test('design mode links: Design on a lot, Open as client view, and the switch to the full editor', () => {
+  const u = new URL(designLink());
+  assert.equal(u.searchParams.get('design'), 'new');
+  assert.equal(u.searchParams.get('project'), null);
+  const v = new URL(designLink({ project: 'pr_1' }));
+  assert.equal(v.searchParams.get('design'), '1');
+  assert.equal(v.searchParams.get('project'), 'pr_1');
+  assert.equal(new URL(fullEditorHref('https://x.test/plan-studio/app/?design=1&project=pr_1')).search, '');
+  const n = new URL(designNewHref('https://x.test/plan-studio/app/?house=h_1'));
+  assert.equal(n.searchParams.get('design'), 'new');
+  assert.equal(n.searchParams.get('house'), null);
+});
+
+test('mock api: staff open a client project, save it back as staff, the client keeps ownership, nothing is billed', async () => {
+  const { api } = fresh();
+  await admin(api);
+  const usage = await api.monthUsage({ month: monthKey(Date.now()) });
+  const opened = await api.openProject('pr_1');
+  assert.equal(opened.editedByStaff, false);
+  const saved = await api.saveProject({ id: 'pr_1', name: opened.name, project: opened.project, lotAddress: opened.lotAddress });
+  assert.equal(saved.ownerId, 'u_sarah');
+  assert.equal(saved.editedByStaff, true);
+  assert.equal((await api.listProjects({ clientId: 'u_sarah' })).length, 1);
+  assert.equal((await api.listProjects({ clientId: 'u_sarah' }))[0].editedByStaff, true);
+  assert.deepEqual(await api.monthUsage({ month: monthKey(Date.now()) }), usage);
+  const mineNew = await api.saveProject({ name: 'Show home', project: opened.project });
+  assert.equal(mineNew.editedByStaff, false);
+  assert.notEqual(mineNew.ownerId, 'u_sarah');
+  await api.signOut();
+  await api.signIn(DEMO_LOGINS.client);
+  assert.equal((await api.openProject('pr_1')).editedByStaff, true);
+});
+
+test('portal screens: Design on a lot is a primary button in the dashboard header and on the Houses tab, Open as client view is in the Clients tab', () => {
+  const read = (f) => fs.readFileSync(new URL(`../src/portal/ui/${f}`, import.meta.url), 'utf8');
+  assert.match(read('portal-app.js'), /id: 'design-on-lot'[^]*pp-btn--primary|pp-btn--primary[^]*id: 'design-on-lot'/);
+  assert.match(read('portal-app.js'), /'Design on a lot'/);
+  assert.match(read('houses-tab.js'), /id: 'design-on-lot-houses'[^]*'Design on a lot'/);
+  assert.match(read('clients-tab.js'), /'Open as client view'/);
+  for (const f of ['portal-app.js', 'houses-tab.js', 'clients-tab.js', '../client-mode.js', '../design-mode.js']) assert.doesNotMatch(read(f).match(/'[^'\n]*(Design on a lot|client view)[^'\n]*'/g)?.join(' ') || '', /[\u2013\u2014]|compliant/i, f);
+});

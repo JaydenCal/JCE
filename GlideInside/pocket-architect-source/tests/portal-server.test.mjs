@@ -586,6 +586,75 @@ for (const [label, d1] of stores) {
     assert.equal(tooBig.data.error.code, 'PAYLOAD_TOO_LARGE');
   });
 
+  t('builder design mode: staff use the client design endpoints in their own org, a staff save is recorded as edited by staff, and nothing is billed', async () => {
+    const w = makeWorld({ d1 });
+    const org = await w.makeOrg();
+    const designer = await w.makeDesigner(org, 'Tom');
+    const s1 = await w.makeClient(org, 'Sarah');
+    const mine = await org.admin.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id, name: 'Banksia' });
+    assert.equal(mine.status, 200);
+    const proj = await s1.browser.post('/portal/projects', { name: 'Thornton', project: createFromTemplate('house_single'), lotAddress: 'Lot 14' });
+    assert.equal(proj.status, 200);
+    const id = proj.data.id;
+    assert.equal(proj.data.editedByStaff, false);
+    const before = (await org.admin.get('/portal/billing/usage')).data.totals;
+    const ai0 = (await org.admin.get('/portal/ai')).data;
+    for (const staff of [org.admin, designer.browser]) {
+      // The design endpoints a client uses all work for a staff login, scoped to the org.
+      assert.equal((await staff.get('/portal/houses')).data.length, 1);
+      assert.equal((await staff.get(`/portal/houses/${mine.data.id}`)).status, 200);
+      assert.equal((await staff.get('/portal/glide-library')).status, 200);
+      assert.equal((await staff.get(`/portal/projects?clientId=${s1.client.id}`)).data.length, 1);
+      const open = await staff.get(`/portal/projects/${id}`);
+      assert.equal(open.status, 200);
+      assert.equal(open.data.ownerId, s1.client.id);
+      const me = (await staff.get('/portal/me')).data;
+      assert.equal(me.enquiry, true);
+      assert.ok(me.exports.includes('pdf') && me.exports.includes('dxf'), 'staff export types follow the org rules');
+    }
+    // Saving back from the client view: still the client's project, recorded as edited by staff.
+    const saved = await designer.browser.post('/portal/projects', { id, name: 'Thornton (adjusted)', project: createFromTemplate('house_double'), lotAddress: 'Lot 14' });
+    assert.equal(saved.status, 200, JSON.stringify(saved.data));
+    assert.equal(saved.data.ownerId, s1.client.id);
+    assert.equal(saved.data.editedByStaff, true);
+    assert.equal(saved.data.editedByName, 'Tom');
+    assert.equal((await s1.browser.get(`/portal/projects/${id}`)).data.editedByStaff, true, 'the client sees it was last saved by staff');
+    assert.equal((await org.admin.get(`/portal/projects?clientId=${s1.client.id}`)).data.length, 1, 'no copy was made');
+    // The client saving again clears the staff mark.
+    assert.equal((await s1.browser.post('/portal/projects', { id, name: 'Thornton', project: createFromTemplate('house_single') })).data.editedByStaff, false);
+    // A staff login's own new design belongs to staff.
+    const own = await designer.browser.post('/portal/projects', { name: 'Show home', project: createFromTemplate('house_single') });
+    assert.equal(own.data.ownerId, designer.user.id);
+    assert.equal(own.data.editedByStaff, false);
+    // No billing side effects: no login issue, no usage change, no AI charge.
+    assert.deepEqual((await org.admin.get('/portal/billing/usage')).data.totals, before);
+    assert.equal(await w.pstore.getLoginIssue(designer.user.id), null);
+    assert.equal(await w.pstore.getLoginIssue(org.adminUser.id), null);
+    assert.deepEqual((await org.admin.get('/portal/ai')).data, ai0);
+  });
+
+  t('builder design mode: staff cannot read or write another org\'s projects, houses or clients', async () => {
+    const w = makeWorld({ d1 });
+    const org = await w.makeOrg();
+    const other = await w.makeOrg('Other Builders', 'Olga');
+    const otherDesigner = await w.makeDesigner(other, 'Ollie');
+    const s1 = await w.makeClient(org, 'Sarah');
+    const id = (await s1.browser.post('/portal/projects', { name: 'Thornton', project: createFromTemplate('house_single') })).data.id;
+    const house = (await org.admin.post('/portal/houses', { fromGlideId: GLIDE_LIBRARY[0].id, name: 'Banksia' })).data;
+    for (const staff of [other.admin, otherDesigner.browser]) {
+      assert.equal((await staff.get(`/portal/projects/${id}`)).status, 404, 'cannot open it');
+      assert.equal((await staff.get(`/portal/projects?clientId=${s1.client.id}`)).data.length, 0, 'cannot list it by client id');
+      assert.equal((await staff.get('/portal/projects')).data.length, 0);
+      const hijack = await staff.post('/portal/projects', { id, name: 'hijack', project: createFromTemplate('house_double') });
+      assert.equal(hijack.status, 404, 'cannot save over it');
+      assert.equal((await staff.get(`/portal/houses/${house.id}`)).status, 404);
+      assert.deepEqual((await staff.get('/portal/houses')).data, []);
+    }
+    const intact = (await s1.browser.get(`/portal/projects/${id}`)).data;
+    assert.equal(intact.name, 'Thornton');
+    assert.equal(intact.editedByStaff, false);
+  });
+
   t('billing: A$30 once at the first sign in, staff are free, month boundary follows Sydney time, GST is one eleventh', async () => {
     const w = makeWorld({ d1 });
     w.clock.t = Date.UTC(2026, 9, 31, 12, 30); // 31/10/2026 23:30 Sydney (AEDT)
