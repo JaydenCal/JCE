@@ -2,7 +2,7 @@
 //
 //   GET /api/site/search?q=                          { results: [{ label, state, lon, lat }] }       up to 8, NSW and QLD
 //   GET /api/site/lot?lon=&lat=&state=               the parcel at the point, neighbours within about 60 m, LGA, zone, road lines
-//   GET /api/site/aerial?state=&srid=&bbox=          image bytes (JPEG) with georeference in the x-site-meta header (URL encoded JSON)
+//   GET /api/site/aerial?state=&srid=&bbox=[&res=][&maxpx=]  image bytes (JPEG) with georeference in the x-site-meta header (URL encoded JSON)
 //   GET /api/site/contours?state=&srid=&bbox=&origin= elevation grid and contour lines (JSON)
 //   GET /api/site/health                             probes every upstream service
 //
@@ -573,20 +573,23 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     const { srid, zone } = srsFor(url);
     const box = parseBbox(url.searchParams.get('bbox'));
     const res = Math.min(2, Math.max(0.05, Number(url.searchParams.get('res')) || 0.1));
-    const key = `aerial:${state}:${srid}:${[box.minE, box.minN, box.maxE, box.maxN].map((v) => round(v, 1)).join(',')}:${res}`;
+    // Optional cap on the longest side in pixels (the wide outer tile asks for 2048). Absent: the old limits (4096 NSW, 2048 QLD).
+    const mp = Number(url.searchParams.get('maxpx'));
+    const maxPx = Number.isFinite(mp) && mp > 0 ? Math.min(4096, Math.max(256, Math.round(mp))) : null;
+    const key = `aerial:${state}:${srid}:${[box.minE, box.minN, box.maxE, box.maxN].map((v) => round(v, 1)).join(',')}:${res}${maxPx ? `:${maxPx}` : ''}`;
     let hit = await bytesCache.get(key);
     if (!hit) {
-      hit = await buildAerial(state, srid, zone, box, res);
+      hit = await buildAerial(state, srid, zone, box, res, maxPx);
       await bytesCache.put(key, hit, TTL.aerial);
     }
     return new Response(hit.body, { status: 200, headers: { ...hit.headers, 'cache-control': 'public, max-age=86400', 'x-content-type-options': 'nosniff' } });
   }
 
-  async function buildAerial(state, srid, zone, box, res) {
+  async function buildAerial(state, srid, zone, box, res, maxPx = null) {
     const centre = mgaToLonLat((box.minE + box.maxE) / 2, (box.minN + box.maxN) / 2, zone);
     const nsw = state === 'NSW';
-    const maxW = 4096;
-    const maxH = nsw ? 4096 : 2048;
+    const maxW = maxPx ? Math.min(4096, maxPx) : 4096;
+    const maxH = maxPx ? Math.min(nsw ? 4096 : 2048, maxPx) : (nsw ? 4096 : 2048);
     const { w, h } = pixelSize(box, res, maxW, maxH);
     let capture = null;
     let source;

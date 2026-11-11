@@ -58,6 +58,25 @@ export async function searchAddresses(q, opts = {}) {
 // Metres of margin around the lot for the aerial and the elevation grid.
 export const margin = () => Number(CONFIG.siteAerialMarginM) || 30;
 
+// The wide outer aerial: at least 300 m beyond the lot on every side, more for big lots (0.75 of the lot's longest side, to 700 m), the
+// box rounded out to 50 m so neighbouring lots share a cached image. One 2048 px picture, so the ground past the sharp inner tile is real
+// imagery in the default 3/4 view and the Top view, at a lower resolution.
+export const WIDE_MIN_M = 300;
+export const WIDE_MAX_M = 700;
+export const WIDE_PX = 2048;
+export function wideBbox(b, minM = WIDE_MIN_M) {
+  const span = Math.max(b.maxE - b.minE, b.maxN - b.minN);
+  const m = Math.min(WIDE_MAX_M, Math.max(minM, span * 0.75));
+  const lo = (v) => Math.floor(v / 50) * 50;
+  const hi = (v) => Math.ceil(v / 50) * 50;
+  return { minE: lo(b.minE - m), minN: lo(b.minN - m), maxE: hi(b.maxE + m), maxN: hi(b.maxN + m) };
+}
+export function wideAerialParams(b) {
+  const w = wideBbox(b);
+  const res = Math.min(2, Math.max(0.1, Math.max(w.maxE - w.minE, w.maxN - w.minN) / WIDE_PX));
+  return { bbox: `${w.minE},${w.minN},${w.maxE},${w.maxN}`, res: res.toFixed(3), maxpx: String(WIDE_PX) };
+}
+
 /**
  * fetchSite(selection, { fetchImpl, signal, onStep }) -> { lot, aerial: { blob, meta } | null, contours | null, warnings: [] }
  * selection: { label, state, lon, lat }. The lot is required. A failed aerial or elevation request only adds a warning.
@@ -84,7 +103,20 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep } = {}) {
       const px = mockAerialSize(meta);
       Object.assign(meta, { widthPx: px.w, heightPx: px.h, mmPerPx: ((meta.bbox.maxE - meta.bbox.minE) / px.w) * 1000 });
     }
-    return { lot: structuredClone(fx.lot), aerial: blob ? { blob, meta } : null, contours: structuredClone(fx.contours), warnings };
+    let aerialWide = null;
+    if (blob) {
+      try {
+        const wb = wideBbox(meta.bbox);
+        const wm = structuredClone(fx.aerial);
+        wm.bbox = wb;
+        const wpx = WIDE_PX;
+        Object.assign(wm, { widthPx: wpx, heightPx: Math.round((wpx * (wb.maxN - wb.minN)) / (wb.maxE - wb.minE)) });
+        const wblob = await mockAerialBlob(wm, fx.lot, { sampleUrl: CONFIG.siteMockAerialUrl || null });
+        Object.assign(wm, { mmPerPx: ((wb.maxE - wb.minE) / mockAerialSize(wm).w) * 1000 });
+        aerialWide = { blob: wblob, meta: wm };
+      } catch { /* the wide ring is optional */ }
+    }
+    return { lot: structuredClone(fx.lot), aerial: blob ? { blob, meta } : null, aerialWide, contours: structuredClone(fx.contours), warnings };
   }
 
   const opts = { signal, fetchImpl };
@@ -103,6 +135,15 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep } = {}) {
     if (e?.name === 'AbortError') throw e;
     warnings.push(`No aerial image: ${e.message}`);
   }
+  // The wide outer tile is optional: if it fails the view still works with the inner tile and the fade ring as before.
+  let aerialWide = null;
+  if (aerial) {
+    try {
+      aerialWide = await fetchAerial({ ...common, ...wideAerialParams(b) }, opts);
+    } catch (e) {
+      if (e?.name === 'AbortError') throw e;
+    }
+  }
   step('contours');
   let contours = null;
   try {
@@ -111,7 +152,7 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep } = {}) {
     if (e?.name === 'AbortError') throw e;
     warnings.push(`No contours: ${e.message}`);
   }
-  return { lot, aerial, contours, warnings };
+  return { lot, aerial, aerialWide, contours, warnings };
 }
 
 async function fetchAerial(params, { signal, fetchImpl = globalThis.fetch }) {

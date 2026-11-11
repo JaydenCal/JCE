@@ -354,3 +354,87 @@ test('3D uses plan coordinates one to one, so the house follows the 2D placement
     assert.ok(box.max.x * 1000 >= Math.max(...xs) - pad * 1000 && box.min.x * 1000 <= Math.min(...xs) + pad * 1000);
   }
 });
+
+// Wide outer aerial ------------------------------------------------------------------------------------------------------------------
+import { wideBbox, wideAerialParams, WIDE_MIN_M } from '../src/site/client.js';
+
+function designOnWideLot() {
+  const f = FIXTURES[0];
+  const b = f.aerial.bbox;
+  const wm = { ...f.aerial, bbox: wideBbox(b), mmPerPx: 340 };
+  const p = designOnLot();
+  p.site.lot = buildSiteLot({ lot: f.lot, aerialMeta: f.aerial, aerialKey: 'k1', aerialWideMeta: wm, aerialWideKey: 'k1.wide', contours: f.contours, address: f.search[0].label, source: 'sample' });
+  return p;
+}
+
+test('wide aerial box reaches at least 300 m beyond the lot on every side and grows for big lots', () => {
+  const small = { minE: 1000, minN: 2000, maxE: 1060, maxN: 2080 };
+  const w = wideBbox(small);
+  assert.ok(small.minE - w.minE >= WIDE_MIN_M && w.maxE - small.maxE >= WIDE_MIN_M);
+  assert.ok(small.minN - w.minN >= WIDE_MIN_M && w.maxN - small.maxN >= WIDE_MIN_M);
+  assert.equal(w.minE % 50, 0);
+  const big = { minE: 0, minN: 0, maxE: 800, maxN: 500 };
+  const wb = wideBbox(big);
+  assert.ok(big.minE - wb.minE >= 600 && wb.maxN - big.maxN >= 600);
+  const prm = wideAerialParams(small);
+  assert.equal(prm.maxpx, '2048');
+  assert.ok(Number(prm.res) <= 2 && Number(prm.res) >= 0.1);
+  const [a, , c] = prm.bbox.split(',').map(Number);
+  assert.ok((c - a) / Number(prm.res) <= 2048 + 1);
+});
+
+test('buildSiteLot keeps the wide tile only with the inner one, and it surrounds the inner extent', () => {
+  const p = designOnWideLot();
+  const l = p.site.lot;
+  assert.equal(l.aerialWide.key, 'k1.wide');
+  assert.ok(l.aerialWide.extent.x0 <= l.aerial.extent.x0 - 299000 && l.aerialWide.extent.y1 >= l.aerial.extent.y1 + 299000);
+  const f = FIXTURES[0];
+  assert.equal(buildSiteLot({ lot: f.lot, aerialMeta: null, aerialKey: null, aerialWideMeta: { bbox: f.aerial.bbox }, aerialWideKey: 'x', contours: f.contours }).aerialWide, null);
+  assert.equal(lot().aerialWide, null);
+});
+
+test('terrain: the wide tile is a frame around the sharp inner mesh, inner extent unchanged, fade only beyond the wide edge', () => {
+  const p = designOnWideLot();
+  const root = new THREE.Group();
+  const r = addSiteTerrain(ctx, root, p, { texture: new THREE.Texture(), wideTexture: new THREE.Texture(), wideEdgeColour: '#6f7a4a' });
+  const inner = root.getObjectByName('site-terrain');
+  const wide = root.getObjectByName('site-terrain-wide');
+  assert.ok(inner && wide);
+  assert.deepEqual(r.extent, p.site.lot.aerial.extent); // sharp inner tile keeps its resolution and extent
+  assert.deepEqual(r.wideExtent, p.site.lot.aerialWide.extent);
+  const pos = wide.geometry.attributes.position;
+  const uv = wide.geometry.attributes.uv;
+  const ex = p.site.lot.aerialWide.extent;
+  let minX = Infinity; let maxX = -Infinity;
+  for (let i = 0; i < pos.count; i++) { assert.ok(Number.isFinite(pos.getY(i))); minX = Math.min(minX, pos.getX(i)); maxX = Math.max(maxX, pos.getX(i)); }
+  near(minX, ex.x0 / 1000, 1e-3); near(maxX, ex.x1 / 1000, 1e-3);
+  for (let i = 0; i < uv.array.length; i++) assert.ok(uv.array[i] >= 0 && uv.array[i] <= 1);
+  // no triangle sits wholly inside the inner extent (it would be hidden anyway)
+  const idx = wide.geometry.index.array;
+  const ie = r.extent;
+  for (let i = 0; i < idx.length; i += 3) {
+    const inside = [0, 1, 2].every((q) => { const x = pos.getX(idx[i + q]) * 1000; const z = pos.getZ(idx[i + q]) * 1000; return x >= ie.x0 - 1 && x <= ie.x1 + 1 && z >= ie.y0 - 1 && z <= ie.y1 + 1; });
+    assert.ok(!inside);
+    const [a, b, c] = [idx[i], idx[i + 1], idx[i + 2]];
+    assert.ok((pos.getX(b) - pos.getX(a)) * (pos.getZ(c) - pos.getZ(a)) - (pos.getZ(b) - pos.getZ(a)) * (pos.getX(c) - pos.getX(a)) < 0, 'winding');
+  }
+  // the horizon fade starts at the wide edge: ring vertices at k=0 lie on the wide extent, and the ring colour starts as the wide edge colour
+  const ring = root.getObjectByName('site-horizon');
+  const rp = ring.geometry.attributes.position;
+  const rc = ring.geometry.attributes.color;
+  near(rp.getX(0), ex.x0 / 1000, 1e-3);
+  near(rc.getX(0), new THREE.Color('#6f7a4a').r, 1e-3);
+  assert.ok(r.outerR > (ex.x1 - ex.x0) / 2000);
+});
+
+test('terrain: without a wide texture (or an old project) the build is as before', () => {
+  const p = designOnWideLot();
+  const a = new THREE.Group();
+  const ra = addSiteTerrain(ctx, a, p, { texture: new THREE.Texture() });
+  assert.equal(a.getObjectByName('site-terrain-wide'), undefined);
+  assert.equal(ra.wideExtent, null);
+  const q = designOnLot();
+  const b = new THREE.Group();
+  addSiteTerrain(ctx, b, q, { texture: new THREE.Texture(), wideTexture: new THREE.Texture() });
+  assert.equal(b.getObjectByName('site-terrain-wide'), undefined);
+});
