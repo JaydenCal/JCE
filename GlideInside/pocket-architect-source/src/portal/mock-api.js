@@ -10,7 +10,7 @@ import { GLIDE_LIBRARY } from './glide-library.generated.js';
 import { houseStats } from './house-stats.js';
 import { projectToSvg } from './thumbnail.js';
 import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js';
-import { gstOfTotal } from './billing.js';
+import { gstOfTotal, monthLabel } from './billing.js';
 import { NEW_LOGIN_FEE_CENTS, TOPUP_FEE_CENTS, TOPUP_CREDITS, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js';
 
 const DB_KEY = 'gi.portal.mock.v1';
@@ -595,7 +595,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const usage = await api.monthUsage({ month: inv.month });
       const c = org.billingContact || {};
       const lines = [
-        { description: `New client logins first signed in during ${inv.month} (A$20 each, incl. GST)`, quantity: usage.totals.loginsCount, unitCents: NEW_LOGIN_FEE_CENTS, totalCents: usage.totals.loginsCents },
+        { description: `New client logins first signed in during ${monthLabel(inv.month)} (A$20 each, incl. GST)`, quantity: usage.totals.loginsCount, unitCents: NEW_LOGIN_FEE_CENTS, totalCents: usage.totals.loginsCents },
         { description: `AI credit top-ups of ${TOPUP_CREDITS} credits (A$10 each, incl. GST)`, quantity: usage.totals.topUpsCount, unitCents: TOPUP_FEE_CENTS, totalCents: usage.totals.topUpsCents },
       ].filter((l) => l.quantity > 0);
       const total = usage.totals.totalCents;

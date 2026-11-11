@@ -112,7 +112,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
   "issuedAt": "2026-11-01T...", "dueAt": "2026-11-15T...", "month": "2026-10",
   "seller": { "name": "JCE Infrastructure Pty Ltd trading as Glide Inside", "abn": "29 699 165 663" },
   "buyer": { "name": "<billing legalName>", "abn": "<billing ABN>", "email": "..." },
-  "lines": [ { "description": "New client logins first signed in during 2026-10 (A$20 each, incl. GST)", "quantity": 3, "unitCents": 2000, "totalCents": 6000 },
+  "lines": [ { "description": "New client logins first signed in during October 2026 (A$20 each, incl. GST)", "quantity": 3, "unitCents": 2000, "totalCents": 6000 },
              { "description": "AI credit top-ups of 300 credits (A$10 each, incl. GST)", "quantity": 1, "unitCents": 1000, "totalCents": 1000 } ],
   "subtotalExGstCents": 6364, "gstCents": 636, "totalInclGstCents": 7000,
   "status": "due"

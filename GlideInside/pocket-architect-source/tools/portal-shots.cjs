@@ -53,7 +53,7 @@ const server = http.createServer((req, res) => {
   await page.click('#generate-account'); await page.waitForTimeout(300);
   await page.fill('.pp-form input[type=text]', 'Priscilla');
   await shot(page, '07a-generate-account');
-  await page.keyboard.press('Enter'); await page.waitForTimeout(700);
+  await page.click('.pp-dialog-foot .pp-btn--primary'); await page.waitForTimeout(700);
   await shot(page, '07b-credentials-shown-once');
   const creds = await page.evaluate(() => document.body.innerText);
   const user = (creds.match(/[a-z]+-[2-9]{4}/) || [])[0];
