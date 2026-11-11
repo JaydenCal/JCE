@@ -158,3 +158,10 @@
     }
   }, true);
 })();
+
+/* Book a demo click tracking (11/11/2026, kept from the live copy) */
+document.addEventListener('click', function (e) {
+  var el = e.target.closest && e.target.closest('.js-book-demo');
+  if (!el || typeof gtag !== 'function') return;
+  gtag('event', 'book_demo_click', { page_path: location.pathname });
+});
