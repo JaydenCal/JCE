@@ -6,7 +6,7 @@ import * as G from '../../model/geometry.js';
 import { ascii, levelsSorted, wallShapes, outlineBox, dimensionsFor, furnitureSize, furnitureCorners, stairGeometry } from './shared.js';
 
 /** Standard scales (1:n). 'auto' walks this list from the smallest scale upwards. */
-export const SCALE_LIST = [20, 50, 100, 200, 500, 1000, 2000];
+export const SCALE_LIST = [20, 50, 100, 150, 200, 500, 1000, 2000];
 
 /** Papers. Drawings are laid out on an A3 "design sheet" (420 by 297) and multiplied by k for A1 (k = 2). */
 export const PAPERS = {

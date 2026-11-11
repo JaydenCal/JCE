@@ -129,15 +129,16 @@ export function elevationSpecs(project) {
 }
 
 const shade = (base, k) => base.map((c) => Math.max(0, Math.min(255, Math.round(c * k))));
-function fillFor(t, light) {
+const hexRgb = (h) => { const m = /^#?([0-9a-f]{6})$/i.exec(String(h || '')); return m ? [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16)) : null; };
+function fillFor(t, light, colours = null) {
   const k = 0.9 + 0.1 * Math.max(0, -(t.n.x * light.x + t.n.y * light.y + t.n.z * light.z));
   switch (t.kind) {
     case 'opening': return [198, 218, 232];
     case 'leaf': return [236, 238, 240];
-    case 'roof': return shade([178, 182, 190], 0.78 + 0.28 * Math.max(0, -(t.n.x * light.x + t.n.y * light.y + t.n.z * light.z)));
+    case 'roof': return shade((colours?.roof && hexRgb(colours.roof)) || [178, 182, 190], 0.78 + 0.28 * Math.max(0, -(t.n.x * light.x + t.n.y * light.y + t.n.z * light.z)));
     case 'slab': return [226, 224, 220];
     case 'tank': return [208, 226, 212];
-    default: return shade([252, 250, 246], k);
+    default: return shade((colours?.wall && hexRgb(colours.wall)) || [252, 250, 246], k);
   }
 }
 
@@ -196,11 +197,11 @@ export function renderView(doc, tris, { f, top = false, clip = null, sheet, cull
 }
 
 /** Paint the sorted items through `T` (view mm to sheet). */
-export function paintView(doc, r, T, { cutPlane = null } = {}) {
+export function paintView(doc, r, T, { cutPlane = null, colours = null } = {}) {
   for (const it of r.items) {
     const pts = it.q.map((p) => T(p.sx, p.sy));
-    doc.setFillColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }));
-    doc.setDrawColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }));
+    doc.setFillColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }, colours));
+    doc.setDrawColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }, colours));
     doc.setLineWidth(0.05);
     polygon(doc, pts, 'FD');
     for (let i = 0; i < it.t.p.length; i++) {
@@ -312,7 +313,7 @@ export function drawElevations(doc, ctx, tris, area) {
     const cx = (x) => Math.min(gx1, Math.max(gx0, x));
     if (pts.length > 1) for (let a = 0; a + 1 < pts.length; a++) { const x1 = cx(pts[a].x); const x2 = cx(pts[a + 1].x); if (x2 > x1) doc.line(x1, pts[a].y, x2, pts[a + 1].y); }
     doc.setLineDashPattern([], 0);
-    paintView(doc, v.r, T);
+    paintView(doc, v.r, T, { colours: ctx.colours });
     // Ground floor line
     const xl = T(v.r.bounds.x0, 0).x;
     const xr = T(v.r.bounds.x1, 0).x;
@@ -500,7 +501,7 @@ export function drawSection(doc, ctx, tris, area) {
   const prof = pl.axes ? groundProfile(project, { out: pl.a }, pl.axes, r, ctx.unalign) : [];
   const gpts = prof.filter((p) => p.z != null).map((p) => T(p.sx, -p.z));
   // The beyond: the far half of the house in light tone
-  paintView(doc, r, T);
+  paintView(doc, r, T, { colours: ctx.colours });
   doc.setDrawColor(...PEN.contourMajor);
   doc.setLineWidth(0.45);
   doc.setLineDashPattern([2.6, 1.4], 0);
@@ -792,8 +793,8 @@ export function drawRoofPlan(doc, ctx, tris, area) {
     const items = g.idx.map((i) => r.items[order.get(roofTris[i])]).filter(Boolean).sort((p, q) => order.get(p.t.src) - order.get(q.t.src));
     for (const it of items) {
       const pts = it.q.map((p) => T(p.sx, p.sy));
-      doc.setFillColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }));
-      doc.setDrawColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }));
+      doc.setFillColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }, ctx.colours));
+      doc.setDrawColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }, ctx.colours));
       doc.setLineWidth(0.08);
       polygon(doc, pts, 'FD');
       doc.setDrawColor(...PEN.ink);
