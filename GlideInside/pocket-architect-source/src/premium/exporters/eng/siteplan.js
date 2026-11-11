@@ -173,6 +173,8 @@ export function drawSitePlan(doc, ctx) {
   const pal = paletteFor(aerial);
   const field = new LabelField(rect);
   doc.setLineDashPattern([], 0);
+  // The view title sits in a white tab at the top left. It is drawn last (so nothing covers it) and reserved now.
+  field.addBox({ x0: vp.x0, y0: vp.y0, x1: vp.x0 + 80, y1: vp.y0 + 13 });
 
   const stroke = (pts, closed = true) => clippedPolyline(doc, pts.map(T), rect, closed);
   const HALO = 1.0;
@@ -296,7 +298,7 @@ export function drawSitePlan(doc, ctx) {
     doc.setLineDashPattern([4, 2], 0);
     stroke(lot.envelope);
     doc.setLineDashPattern([], 0);
-    field.addRing(lot.envelope.map(T));
+    field.addRing(lot.envelope.map(T), true, true);
   }
 
   // 7. Setback dimensions to the house
@@ -458,7 +460,7 @@ export function drawSitePlan(doc, ctx) {
     const b = { x0: p.x - w / 2, y0: p.y - h / 2, x1: p.x + w / 2, y1: p.y + h / 2 };
     const corners = [{ x: b.x0, y: b.y0 }, { x: b.x1, y: b.y0 }, { x: b.x1, y: b.y1 }, { x: b.x0, y: b.y1 }];
     if (!corners.every((q) => G.pointInPolygon(q, lotPoly))) continue;
-    if (!field.free(b)) continue;
+    if (!field.free(b, { soft: false })) continue;
     lotLabelBox = b;
     break;
   }
@@ -478,9 +480,13 @@ export function drawSitePlan(doc, ctx) {
     items.push({ id: 'cross', lines: ['PROPOSED CROSSOVER', 'Council approval required'], at: T(G.lerp(drive.crossover.from, drive.crossover.to, 0.5)), colour: PEN.proposed });
   }
   if (facts.reserve[0]) {
+    // Road call outs point at the part of the road that is on the sheet (the reserve lines run on past the viewport edge).
     const L = facts.reserve[0].lines;
-    items.push({ id: 'phantom', lines: ['ROAD CENTRELINE', 'Indicative'], at: T(G.lerp(L.centreline[0], L.centreline[1], 0.86)), colour: PEN.phantom });
-    items.push({ id: 'kerb', lines: ['KERB AND GUTTER', 'Existing, assumed'], at: T(G.lerp(L.kerb[0], L.kerb[1], 0.14)), colour: aerial ? [40, 42, 48] : PEN.road });
+    const visible = (line, f) => { const c = clipSegment(T(line[0]), T(line[1]), { x0: rect.x0 + 12, y0: rect.y0 + 12, x1: rect.x1 - 12, y1: rect.y1 - 12 }); return c ? G.lerp(c[0], c[1], f) : null; };
+    const ph = visible(L.centreline, 0.8);
+    const kb = visible(L.kerb, 0.2);
+    if (ph) items.push({ id: 'phantom', lines: ['ROAD CENTRELINE', 'Indicative'], at: ph, colour: PEN.phantom });
+    if (kb) items.push({ id: 'kerb', lines: ['KERB AND GUTTER', 'Existing, assumed'], at: kb, colour: aerial ? [40, 42, 48] : PEN.road });
   }
   if (lot.envelope?.length > 2) {
     const e = lot.envelope;
@@ -496,13 +502,13 @@ export function drawSitePlan(doc, ctx) {
   const addRing = (pts) => pts.forEach((q, i) => avoid.push([T(q), T(pts[(i + 1) % pts.length])]));
   addRing(lot.boundary);
   if (drive?.ok) { addRing(drive.polygon); addRing(drive.crossover.polygon); }
-  const placed = placeCallouts(doc, items, { obstacles: [...field.boxes], avoid, area: rect, size: TXT.body });
+  const placed = placeCallouts(doc, items.filter((it) => it.at.x > rect.x0 + 4 && it.at.x < rect.x1 - 4 && it.at.y > rect.y0 + 4 && it.at.y < rect.y1 - 4), { obstacles: [...field.boxes], avoid, area: rect, size: TXT.body });
   drawCallouts(doc, placed.map((p) => ({ ...p, size: TXT.body })));
 
   // View title in a white tab at the top left
   doc.setFillColor(255, 255, 255);
-  doc.rect(vp.x0, vp.y0, 78, 12, 'F');
-  viewTitle(doc, vp.x0 + 3, vp.y0 + 8.4, 'Site plan', label, { size: TXT.title });
+  doc.rect(vp.x0, vp.y0, 80, 13, 'F');
+  viewTitle(doc, vp.x0 + 3, vp.y0 + 9, 'Site plan', label, { size: TXT.title });
   ink(doc, PEN.ink);
   doc.setLineDashPattern([], 0);
   doc.setLineWidth(0.5);
@@ -760,24 +766,26 @@ export function drawLocality(doc, box, ctx, { key = false } = {}) {
     const reachY = Math.abs(d.y) > 1e-6 ? (h / 2 - 12) / Math.abs(d.y) : 1e9;
     const r0 = Math.min(reachX, reachY);
     const tip = { x: c.x + d.x * r0, y: c.y + d.y * r0 };
-    const tail = { x: tip.x - d.x * 16, y: tip.y - d.y * 16 };
+    const tail = { x: tip.x - d.x * 18, y: tip.y - d.y * 18 };
     doc.setDrawColor(...PEN.ink);
-    doc.setLineWidth(0.7);
+    doc.setLineWidth(0.8);
     doc.line(tail.x, tail.y, tip.x, tip.y);
     const px = -d.y;
     const py = d.x;
     doc.setFillColor(...PEN.ink);
-    polygon(doc, [{ x: tip.x + d.x * 3.5, y: tip.y + d.y * 3.5 }, { x: tip.x + px * 2, y: tip.y + py * 2 }, { x: tip.x - px * 2, y: tip.y - py * 2 }], 'F');
+    polygon(doc, [{ x: tip.x + d.x * 4, y: tip.y + d.y * 4 }, { x: tip.x + px * 2.2, y: tip.y + py * 2.2 }, { x: tip.x - px * 2.2, y: tip.y - py * 2.2 }], 'F');
     const txt = `${clean(town.name).toUpperCase()} TOWN CENTRE, ${town.km.toFixed(1)} km ${town.compass}`;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(TXT.body);
-    const tw = doc.getTextWidth(txt) + 3;
-    const bx = G.clamp(tail.x - d.x * 3 - (d.x > 0 ? tw : 0) + (d.x > 0 ? 0 : 0), rect.x0 + 1, rect.x1 - tw - 1);
-    const by = G.clamp(tail.y - d.y * 6, rect.y0 + 5, rect.y1 - 4);
+    const tw = doc.getTextWidth(txt) + 4;
+    const bx = G.clamp(tail.x - tw / 2, rect.x0 + 1, rect.x1 - tw - 1);
+    const by = G.clamp(tail.y - d.y * 6, rect.y0 + 8, rect.y1 - 9);
     doc.setFillColor(255, 255, 255);
-    doc.rect(bx, by - 4.3, tw, 6.4, 'F');
+    doc.setDrawColor(...PEN.ink);
+    doc.setLineWidth(0.25);
+    doc.rect(bx, by - 4.6, tw, 6.8, 'FD');
     doc.setTextColor(...PEN.ink);
-    doc.text(txt, bx + 1.5, by);
+    doc.text(txt, bx + 2, by);
   }
 
   // Captions

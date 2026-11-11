@@ -9,7 +9,7 @@ export const SW = 420;
 export const SH = 297;
 export const M = 10; // inner border
 export const OUT = 4; // outer border
-export const TB_TOP = 241;
+export const TB_TOP = 238;
 export const TB_FOOT = 279; // the footer band is below this line
 export const TB_BOTTOM = SH - M;
 /** Usable drawing area inside the border and above the title block. */
@@ -23,14 +23,14 @@ function cell(doc, x, y, w, h, label, value, { size = 9, bold = true, align = 'l
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(5.6);
   ink(doc, PEN.grey);
-  if (label) doc.text(clean(label), x + 1.4, y + 2.9);
+  if (label) doc.text(clean(label), x + 2, y + 2.9);
   if (value) {
     doc.setFont('helvetica', bold ? 'bold' : 'normal');
     doc.setFontSize(size);
     ink(doc, PEN.ink);
     const t = fit(doc, clean(value), w - 2.8);
     if (align === 'center') doc.text(t, x + w / 2, y + h - 2, { align: 'center' });
-    else doc.text(t, x + 1.4, y + h - 2);
+    else doc.text(t, x + 2, y + h - 2);
   }
 }
 
@@ -124,13 +124,13 @@ export function drawFrame(doc, ctx, sheet) {
   doc.setFontSize(13);
   ink(doc, PEN.ink);
   const pname = clean(tb.projectName || project.name || 'Untitled design').toUpperCase();
-  doc.text(fit(doc, pname, w2 - 3), x2 + 1.4, y0 + 9.4);
+  doc.text(fit(doc, pname, w2 - 5), x2 + 2.6, y0 + 9.2);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
   const addr = clean(tb.address || project.site?.lot?.address || '');
   const lotdp = clean(tb.lotDp || [project.site?.lot?.lotLabel].filter(Boolean).join(' '));
-  if (addr) doc.text(fit(doc, addr.toUpperCase(), w2 - 3), x2 + 1.4, y0 + 14.8);
-  if (lotdp) doc.text(fit(doc, lotdp.toUpperCase(), w2 - 3), x2 + 1.4, y0 + 19.2);
+  if (addr) doc.text(fit(doc, addr.toUpperCase(), w2 - 5), x2 + 2.6, y0 + 14.6);
+  if (lotdp) doc.text(fit(doc, lotdp.toUpperCase(), w2 - 5), x2 + 2.6, y0 + 19.2);
   const rest = (h - rh * 1.6) / 2;
   cell(doc, x2, y0 + rh * 1.6, w2, rest, 'CLIENT', tb.client, { size: 9.5 });
   cell(doc, x2, y0 + rh * 1.6 + rest, w2, rest, 'DRAWING TITLE', sheet.title, { size: 11 });
@@ -161,10 +161,13 @@ export function drawFrame(doc, ctx, sheet) {
   }
 
   if (!checked) {
+    // The last row of the revision table carries the note across its cells.
+    doc.setFillColor(255, 255, 255);
+    doc.rect(x3 + 0.2, y0 + rowH * 5 + 0.2, w3 - 0.4, rowH - 0.4, 'F');
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6.6);
+    doc.setFontSize(7);
     ink(doc, PEN.grey);
-    doc.text('NOT CHECKED. NOT APPROVED.', x3 + 2, y0 + rowH * 6 - 1.9);
+    doc.text('NOT CHECKED. NOT APPROVED.', x3 + 2.4, y0 + rowH * 6 - 2);
   }
 
   // Panel 4: drawing number, revision, status and sheet details.

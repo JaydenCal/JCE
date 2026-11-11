@@ -8,13 +8,15 @@ import { buildingHull, orientedBox } from '../../../site/lotplan.js';
 import { paperOf, levelContent, chooseScale } from '../drawing.js';
 import { levelsSorted, ascii } from '../shared.js';
 import { scaledDoc, drawLevel } from '../pdf.js';
-import { clean, viewTitle } from './kit.js';
+import { clean, viewTitle, cleanedDoc, withSuperscripts } from './kit.js';
 import { brandOf, drawingNo } from './brand.js';
 import { drawFrame, BODY } from './frame.js';
 import { drawSitePlan, drawSitePanel, siteFacts, siteView, SITE_VP, keyBox, localityView } from './siteplan.js';
+import { AREA } from '../pdf.js';
 import { resolveAerial, renderUnderlay } from './aerial.js';
 import { drawCover, drawAnalysis, drawSchedules, scheduleCount, COVER_BOX } from './sheets.js';
-import { collectTriangles, drawElevations, drawSection, drawRoofPlan, roofAreaM2 } from './views.js';
+import { collectTriangles, drawElevations, drawSection, drawRoofPlan, roofAreaM2, roofScale, elevationScale, sectionScale, drawSectionMarker } from './views.js';
+import { drawLevelPanel } from './sheets.js';
 
 /**
  * The house turned square to the page for the floor plans, roof plan and elevations (a house turned on its lot would otherwise be
@@ -63,7 +65,7 @@ export async function toEngineeringPDF(project, options = {}) {
     author: brand.mode === 'builder' ? brand.name || 'Glide Inside' : ascii(tb.company) || 'Glide Inside',
     creator: 'Glide Inside Pocket Architect',
   });
-  const doc = scaledDoc(raw, p.k);
+  const doc = withSuperscripts(scaledDoc(raw, p.k));
   const total = plan.list.length;
   const ctx = { project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
   // The aerial is composited once per view (the site plan, the key plan and the cover locality), turned and cropped as each is drawn.
@@ -91,6 +93,17 @@ export async function toEngineeringPDF(project, options = {}) {
   }
   const roofM2 = tris.length ? roofAreaM2(tris) : null;
   const area = { x0: BODY.x0, y0: BODY.y0, x1: BODY.x1, y1: BODY.y1 };
+  // Scales are known before any sheet is drawn, so the drawing list on the cover is exact.
+  const apr = { ...ctx, project: aligned.project };
+  const paperTag = `@ ${p.name}`;
+  const siteFacts0 = siteFacts(project);
+  for (const s of plan.list) {
+    if (s.kind === 'site') s.scale = siteFacts0 ? `1:${siteView(project, siteFacts0, p.k).n} ${paperTag}` : 'NTS';
+    else if (s.kind === 'roof' && tris.length) { const n = roofScale(tris, area, p.k); if (n) s.scale = `1:${n} ${paperTag}`; }
+    else if (s.kind === 'elevations' && tris.length) s.scale = `1:${elevationScale(doc, aligned.project, tris, area, p.k)} ${paperTag}`;
+    else if (s.kind === 'section' && tris.length) s.scale = `1:${sectionScale(aligned.project, tris, area, p.k)} ${paperTag}`;
+  }
+  const sectionSheet = plan.list.find((s) => s.kind === 'section')?.n || null;
   let site = null;
   plan.list.forEach((s, i) => {
     if (i > 0) raw.addPage(p.format, 'landscape');
@@ -102,12 +115,20 @@ export async function toEngineeringPDF(project, options = {}) {
       drawSitePanel(doc, ctx, site);
       s.scale = site?.label || 'NTS';
     } else if (s.kind === 'level') {
-      drawLevel(doc, { project: aligned.project, catalogue, dscale: plan.scale.scale * p.k, scale: plan.scale.scale, paper: p.name, note: plan.scale.note, viewTitle }, s.content);
-    } else if (s.kind === 'roof') drawRoofPlan(doc, { ...ctx, project: aligned.project }, tris, area);
+      const cd = cleanedDoc(doc);
+      drawLevel(cd, { project: aligned.project, catalogue, dscale: plan.scale.scale * p.k, scale: plan.scale.scale, paper: p.name, note: plan.scale.note, viewTitle }, s.content);
+      // The section line and the notes beside the plan, placed with the same transform drawLevel used
+      const ds = plan.scale.scale * p.k;
+      const ox = AREA.x + (AREA.w - s.content.box.w / ds) / 2;
+      const oy = AREA.y + (AREA.h - s.content.box.h / ds) / 2;
+      const T = (q) => ({ x: ox + (q.x - s.content.box.minX) / ds, y: oy + (q.y - s.content.box.minY) / ds });
+      if (tris.length) drawSectionMarker(doc, aligned.project, T, sectionSheet);
+      drawLevelPanel(doc, apr, s.level, ox, { sectionSheet });
+    } else if (s.kind === 'roof') drawRoofPlan(doc, apr, tris, area);
     else if (s.kind === 'elevations') {
-      if (tris.length) drawElevations(doc, { ...ctx, project: aligned.project }, tris, area); else emptySheet(doc, area, 'Elevations need a building with walls.');
+      if (tris.length) drawElevations(doc, apr, tris, area); else emptySheet(doc, area, 'Elevations need a building with walls.');
     } else if (s.kind === 'section') {
-      if (tris.length) drawSection(doc, { ...ctx, project: aligned.project }, tris, area); else emptySheet(doc, area, 'The section needs a building with walls.');
+      if (tris.length) drawSection(doc, apr, tris, area); else emptySheet(doc, area, 'The section needs a building with walls.');
     } else if (s.kind === 'analysis') drawAnalysis(doc, ctx);
     else drawSchedules(doc, ctx, s, { roofM2 });
   });

@@ -5,7 +5,7 @@
 import * as G from '../../../model/geometry.js';
 import { terrainAt } from '../../../site/model.js';
 import { buildingHull, orientedBox } from '../../../site/lotplan.js';
-import { PEN, clean, ink, viewTitle, labelOn, wrap, polygon } from './kit.js';
+import { PEN, TXT, clean, ink, viewTitle, wrap, polygon, hatch, LabelField, haloText, alongLabel, vtext } from './kit.js';
 import { scaleBar } from '../pdf.js';
 
 const KINDS = [['wall', 'wall'], ['opening', 'opening'], ['leaf', 'leaf'], ['roof', 'roof'], ['slab', 'slab'], ['floor', 'floor'], ['stair', 'stair'], ['tank', 'tank']];
@@ -180,7 +180,7 @@ export function renderView(doc, tris, { f, top = false, clip = null, sheet, cull
       pts = clipHalf(pts, clip.a, clip.c);
       if (pts.length < 3) continue;
     }
-    polys.push({ ...t, p: pts });
+    polys.push({ ...t, p: pts, src: t });
   }
   const fe = featureEdges(polys);
   const proj = (p) => (top ? { sx: p.x, sy: p.y, d: -p.z } : { sx: p.x * right.x + p.y * right.y, sy: -p.z, d: p.x * f.x + p.y * f.y });
@@ -216,10 +216,13 @@ export function paintView(doc, r, T, { cutPlane = null } = {}) {
   }
 }
 
-const SCALES = [20, 50, 100, 150, 200, 250, 500];
-function fitScale(w, h, cellW, cellH, k) {
-  return SCALES.find((n) => w / (n * k) <= cellW && h / (n * k) <= cellH) || 500;
-}
+// Standard drawing scales for building views (printed 1:n on A3).
+const SCALES = [20, 50, 100, 200, 250, 500];
+const fitScale = (w, h, cellW, cellH, k) => SCALES.find((n) => w / (n * k) <= cellW && h / (n * k) <= cellH) || 500;
+
+const cap = (t) => { const s = String(t ?? ''); return s ? s[0].toUpperCase() + s.slice(1) : s; };
+/** Compass words such as "sw" are written in capitals ("SW"). */
+export const compassWord = (t) => (/^[nsew]{1,3}$/i.test(String(t || '').trim()) ? String(t).trim().toUpperCase() : cap(t));
 
 /** Ground profile (view mm to the right, mm up from the ground floor) under the building: natural surface from the terrain grid. */
 function groundProfile(project, spec, axes, view, unalign = null) {
@@ -240,251 +243,659 @@ function groundProfile(project, spec, axes, view, unalign = null) {
   return out;
 }
 
-/**
- * Draw four elevations in a 2x2 grid inside `area`. Returns { scale }.
- */
-export function drawElevations(doc, ctx, tris, area) {
-  const { project, k = 1 } = ctx;
+const rlText = (floor, z) => (floor != null ? ` RL ${(floor + z / 1000).toFixed(2)}` : '');
+
+// Elevations -------------------------------------------------------------------------------------------------------------------
+const ELEV_MARGIN = { l: 17, r: 21, top: 10, bottom: 21 };
+
+function elevationLayout(doc, project, tris, area, k) {
   const specs = elevationSpecs(project);
-  const axes = buildingAxes(project);
   const cw = (area.x1 - area.x0) / 2;
   const ch = (area.y1 - area.y0) / 2;
   const views = specs.map((s) => ({ s, r: renderView(doc, tris, { f: s.f }) }));
   let w = 0;
   let h = 0;
   for (const v of views) { w = Math.max(w, v.r.bounds.x1 - v.r.bounds.x0); h = Math.max(h, v.r.bounds.y1 - v.r.bounds.y0); }
-  const n = fitScale(w + 6000, h + 3500, cw - 8, ch - 20, k);
-  const ds = n * k;
+  const n = fitScale(w, h + 900, cw - ELEV_MARGIN.l - ELEV_MARGIN.r - 2, ch - ELEV_MARGIN.top - ELEV_MARGIN.bottom, k);
+  return { specs, views, cw, ch, n, ds: n * k };
+}
+
+export function elevationScale(doc, project, tris, area, k = 1) { return elevationLayout(doc, project, tris, area, k).n; }
+
+/** Four elevations in a 2x2 grid filling `area`, at the smallest standard scale that fits. Returns { n }. */
+export function drawElevations(doc, ctx, tris, area) {
+  const { project, k = 1 } = ctx;
+  const axes = buildingAxes(project);
+  const { views, cw, ch, n, ds } = elevationLayout(doc, project, tris, area, k);
   const lot = project.site?.lot;
   const floor = lot?.floorRL;
+  const levels = [...project.levels].sort((a, b) => a.elevation - b.elevation);
   views.forEach((v, i) => {
     const cx0 = area.x0 + (i % 2) * cw;
     const cy0 = area.y0 + Math.floor(i / 2) * ch;
     const midX = (v.r.bounds.x0 + v.r.bounds.x1) / 2;
-    const baseY = cy0 + ch - 15; // sheet y of the ground floor level
+    const baseY = cy0 + ch - ELEV_MARGIN.bottom; // sheet y of the ground floor level
     const T = (sx, sy) => ({ x: cx0 + cw / 2 + (sx - midX) / ds, y: baseY + sy / ds });
-    // Cell frame
+    const gx0 = cx0 + 3;
+    const gx1 = cx0 + cw - 3;
     doc.setDrawColor(...PEN.light);
-    doc.setLineWidth(0.15);
+    doc.setLineWidth(0.2);
     doc.rect(cx0 + 1, cy0 + 1, cw - 2, ch - 2);
-    // Ground: natural surface (dashed) and the finished ground line at the slab edge
+    // Natural surface (dashed), clamped to the cell
     const prof = groundProfile(project, v.s, axes, v.r, ctx.unalign);
-    const gx0 = cx0 + 4;
-    const gx1 = cx0 + cw - 4;
     doc.setDrawColor(...PEN.contourMajor);
-    doc.setLineWidth(0.3);
-    doc.setLineDashPattern([2.4, 1.2], 0);
+    doc.setLineWidth(0.4);
+    doc.setLineDashPattern([2.6, 1.4], 0);
     const pts = prof.filter((p) => p.z != null).map((p) => T(p.sx, -p.z));
-    const clampX = (p) => ({ x: Math.min(gx1, Math.max(gx0, p.x)), y: p.y });
-    if (pts.length > 1) for (let a = 0; a + 1 < pts.length; a++) doc.line(clampX(pts[a]).x, pts[a].y, clampX(pts[a + 1]).x, pts[a + 1].y);
-    else doc.line(gx0, T(0, 150).y, gx1, T(0, 150).y);
+    const cx = (x) => Math.min(gx1, Math.max(gx0, x));
+    if (pts.length > 1) for (let a = 0; a + 1 < pts.length; a++) { const x1 = cx(pts[a].x); const x2 = cx(pts[a + 1].x); if (x2 > x1) doc.line(x1, pts[a].y, x2, pts[a + 1].y); }
     doc.setLineDashPattern([], 0);
-    // Building
     paintView(doc, v.r, T);
-    // Ground floor level mark and ridge height
-    ink(doc, PEN.ink);
-    const gy = T(0, 0).y;
-    doc.setLineWidth(0.5);
+    // Ground floor line
+    const xl = T(v.r.bounds.x0, 0).x;
+    const xr = T(v.r.bounds.x1, 0).x;
+    doc.setLineWidth(0.7);
     doc.setDrawColor(...PEN.ink);
-    doc.line(T(v.r.bounds.x0 - 1500, 0).x, T(0, 150).y, T(v.r.bounds.x1 + 1500, 0).x, T(0, 150).y);
-    const topZ = -v.r.bounds.y0;
-    const xr = T(v.r.bounds.x1 + 1200, 0).x;
-    doc.setLineWidth(0.13);
-    doc.setDrawColor(...PEN.dim);
-    doc.line(xr, T(0, 0).y, xr, T(0, -topZ).y);
-    doc.line(xr - 1, T(0, 0).y, xr + 1, T(0, 0).y);
-    doc.line(xr - 1, T(0, -topZ).y, xr + 1, T(0, -topZ).y);
+    doc.line(Math.max(gx0, xl - 6), T(0, 150).y, Math.min(gx1, xr + 6), T(0, 150).y);
+    // Levels at the left: a short dash-dot line from the building and "FFL 398.55" on it
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(5.6);
-    doc.setTextColor(...PEN.dim);
-    doc.text(`${(topZ / 1000).toFixed(2)} m`, xr + 1.6, (T(0, 0).y + T(0, -topZ).y) / 2, { angle: 90 });
-    // Levels
-    const labelX = T(v.r.bounds.x0 - 1500, 0).x - 1;
-    const levelsSorted = [...project.levels].sort((a, b) => a.elevation - b.elevation);
-    doc.setFontSize(5.2);
-    levelsSorted.forEach((lv, li) => {
+    doc.setFontSize(TXT.small);
+    levels.forEach((lv, li) => {
       const yy = T(0, -lv.elevation).y;
       doc.setDrawColor(...PEN.dim);
-      doc.setLineWidth(0.1);
+      doc.setLineWidth(0.15);
       doc.setLineDashPattern([4, 1, 0.8, 1], 0);
-      doc.line(labelX - 2, yy, T(v.r.bounds.x1 + 1200, 0).x, yy);
+      doc.line(Math.max(gx0, xl - ELEV_MARGIN.l + 1), yy, xl + 2, yy);
       doc.setLineDashPattern([], 0);
-      const rl = floor != null ? ` RL ${(floor + lv.elevation / 1000).toFixed(2)}` : '';
       doc.setTextColor(...PEN.dim);
-      doc.text(clean(`${li === 0 ? 'FFL' : `FFL ${lv.name}`}${rl}`), labelX - 2.5, yy - 0.8, { align: 'right' });
+      doc.text(clean(`FFL${rlText(floor, lv.elevation)}`.replace('RL ', '')), xl - 1.2, yy - 1, { align: 'right' });
     });
+    // Overall height at the right
+    const topZ = -v.r.bounds.y0;
+    const dx = Math.min(gx1 - 12, xr + 4);
+    doc.setDrawColor(...PEN.dim);
+    doc.setLineWidth(0.15);
+    doc.line(dx, T(0, 0).y, dx, T(0, -topZ).y);
+    doc.setLineWidth(0.3);
+    for (const z of [0, topZ]) doc.line(dx - 1.2, T(0, -z).y + 1.2 * (z ? 1 : -1) * 0, dx + 1.2, T(0, -z).y);
+    doc.setLineWidth(0.15);
+    doc.setFontSize(TXT.small);
+    doc.setTextColor(...PEN.dim);
+    vtext(doc, `${(topZ / 1000).toFixed(2)} m`, dx - 1.2, (T(0, 0).y + T(0, -topZ).y) / 2);
     if (floor != null) {
-      doc.setTextColor(...PEN.dim);
-      doc.text(clean(`HIGH POINT RL ${(floor + topZ / 1000).toFixed(2)}`), xr + 1.6, T(0, -topZ).y - 0.6, { align: 'left' });
+      doc.setLineDashPattern([4, 1, 0.8, 1], 0);
+      doc.line(xr - 6, T(0, -topZ).y, dx + 3, T(0, -topZ).y);
+      doc.setLineDashPattern([], 0);
+      doc.text(clean(`RIDGE ${(floor + topZ / 1000).toFixed(2)}`), dx + 1.5, T(0, -topZ).y - 1.2);
     }
-    // Title
-    const side = v.s.name;
-    const turn = axes ? Math.abs(((axes.long.y !== undefined ? (Math.atan2(axes.long.y, axes.long.x) * 180) / Math.PI : 0) % 90)) : 0;
-    void turn;
-    viewTitle(doc, cx0 + 5, cy0 + ch - 4.5, `${side} elevation`, `1:${n} @ ${ctx.paper || 'A3'}`, { size: 8.5 });
+    viewTitle(doc, cx0 + 5, cy0 + ch - 5, `${cap(v.s.name.toLowerCase())} elevation`, `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.head });
   });
   return { n };
 }
 
-/** Section through the centre of the building across its short axis, looking along its long axis. */
+// Section ----------------------------------------------------------------------------------------------------------------------
+const SLAB_MM = { ground: 150, upper: 300 };
+
+/** The section plane through the centre of the building across its short axis: { a (plane normal), c, right, axes }. */
+export function sectionPlane(project) {
+  const axes = buildingAxes(project);
+  const a = axes ? axes.long : { x: 1, y: 0 };
+  const c = axes ? G.dot(axes.centre, a) : 0;
+  const right = { x: -a.y, y: a.x };
+  return { a, c, right, axes };
+}
+
+// Intersection of a polygon with the line dot(p, a) = c: the sorted values of dot(p, right) where its boundary crosses.
+function crossings(poly, pl) {
+  const out = [];
+  for (let i = 0; i < poly.length; i++) {
+    const p = poly[i];
+    const q = poly[(i + 1) % poly.length];
+    const dp = G.dot(p, pl.a) - pl.c;
+    const dq = G.dot(q, pl.a) - pl.c;
+    if ((dp < 0) === (dq < 0)) continue;
+    const t = dp / (dp - dq);
+    out.push(G.dot(G.lerp(p, q, t), pl.right));
+  }
+  return out.sort((x, y) => x - y);
+}
+
+const mergeIntervals = (list) => {
+  const s = [...list].sort((p, q) => p[0] - q[0]);
+  const out = [];
+  for (const iv of s) { if (out.length && iv[0] <= out[out.length - 1][1] + 1) out[out.length - 1][1] = Math.max(out[out.length - 1][1], iv[1]); else out.push([...iv]); }
+  return out;
+};
+
+/** What the section plane cuts: wall pieces, slab and ceiling intervals and the roof profile, in (sx, z) millimetres. */
+export function sectionCut(project, tris, pl) {
+  const levels = [...project.levels].sort((p, q) => p.elevation - q.elevation);
+  const walls = [];
+  const slabs = [];
+  const ceilings = [];
+  levels.forEach((lv, li) => {
+    const upper = levels[li + 1] || null;
+    const upperRooms = (upper?.rooms || []).filter((r) => r.status !== 'demolish' && (!r.outdoor || r.roofed) && r.polygon?.length > 2);
+    const inUpper = (p) => upperRooms.some((r) => G.pointInPolygon(p, r.polygon));
+    const indoor = (lv.rooms || []).filter((r) => r.status !== 'demolish' && (!r.outdoor || r.roofed) && r.polygon?.length > 2);
+    for (const wl of lv.walls || []) {
+      if (wl.status === 'demolish') continue;
+      const quad = G.wallPolygon(wl);
+      const xs = crossings(quad, pl);
+      if (xs.length < 2) continue;
+      const dir = G.wallDir(wl);
+      const dn = G.dot(dir, pl.a);
+      if (Math.abs(dn) < 0.05) continue;
+      const along = (pl.c - G.dot(wl.a, pl.a)) / dn;
+      let H = wl.height ?? lv.height;
+      if (wl.height == null && upper) {
+        const target = upper.elevation - lv.elevation - SLAB_MM.upper;
+        if (target > H + 1) {
+          const m = G.wallMid(wl);
+          const nn = G.wallNormal(wl);
+          const off = (wl.thickness || 100) / 2 + 150;
+          if ([0, off, -off].some((o) => inUpper({ x: m.x + nn.x * o, y: m.y + nn.y * o }))) H = target;
+        }
+      }
+      const z0 = lv.elevation;
+      const z1 = lv.elevation + H;
+      const s0 = xs[0];
+      const s1 = xs[xs.length - 1];
+      let pieces = [[z0, z1]];
+      for (const o of (lv.openings || []).filter((q) => q.wallId === wl.id && q.status !== 'demolish')) {
+        if (Math.abs(along - o.offset) > o.width / 2) continue;
+        const sill = o.kind === 'window' ? (o.sill ?? 900) : 0;
+        const head = sill + (o.height || 2040);
+        pieces = pieces.flatMap(([p, q]) => {
+          const out = [];
+          if (z0 + sill > p) out.push([p, Math.min(q, z0 + sill)]);
+          if (z0 + head < q) out.push([Math.max(p, z0 + head), q]);
+          return out;
+        });
+      }
+      for (const [p, q] of pieces) if (q - p > 5) walls.push({ s0, s1, z0: p, z1: q, exterior: wl.kind === 'exterior' });
+    }
+    const spans = [];
+    for (const r of indoor) {
+      const xs = crossings(r.polygon, pl);
+      for (let i = 0; i + 1 < xs.length; i += 2) spans.push([xs[i], xs[i + 1]]);
+    }
+    for (const [a, b] of mergeIntervals(spans)) {
+      slabs.push({ s0: a, s1: b, z1: lv.elevation, z0: lv.elevation - (li === 0 ? SLAB_MM.ground : SLAB_MM.upper), level: li });
+      ceilings.push({ s0: a, s1: b, z: lv.elevation + lv.height, level: li });
+    }
+  });
+  // Roof profile: the upward faces of the roof mesh sliced by the plane.
+  const segs = [];
+  for (const t of tris) {
+    if (t.kind !== 'roof' || t.n.z < 0.05) continue;
+    const pts = [];
+    for (let i = 0; i < 3; i++) {
+      const p = t.p[i];
+      const q = t.p[(i + 1) % 3];
+      const dp = G.dot(p, pl.a) - pl.c;
+      const dq = G.dot(q, pl.a) - pl.c;
+      if ((dp < 0) === (dq < 0)) continue;
+      const u = dp / (dp - dq);
+      pts.push({ sx: G.dot({ x: p.x + (q.x - p.x) * u, y: p.y + (q.y - p.y) * u }, pl.right), z: p.z + (q.z - p.z) * u });
+    }
+    if (pts.length === 2 && Math.abs(pts[0].sx - pts[1].sx) > 1) segs.push(pts);
+  }
+  return { walls, slabs, ceilings, roof: segs };
+}
+
+export function sectionScale(project, tris, area, k = 1) {
+  const pl = sectionPlane(project);
+  const r = renderView(null, tris, { f: pl.a, clip: { a: pl.a, c: pl.c }, cull: false, skipInner: false });
+  return fitScale(r.bounds.x1 - r.bounds.x0, r.bounds.y1 - r.bounds.y0 + 600, area.x1 - area.x0 - 78, area.y1 - area.y0 - 44, k);
+}
+
+/** Section A-A through the house: cut walls hatched, slabs solid, floor and ceiling levels, roof pitch and the heights dimensioned. */
 export function drawSection(doc, ctx, tris, area) {
   const { project, k = 1 } = ctx;
-  const axes = buildingAxes(project);
   const lot = project.site?.lot;
   const floor = lot?.floorRL;
-  const a = axes ? axes.long : { x: 1, y: 0 }; // plane normal: cut perpendicular to the long axis
-  const c = axes ? G.dot(axes.centre, a) : 0;
-  const f = a; // look along +long axis: we keep the far half (dot >= c)
-  const cut = { a, c };
-  const r = renderView(doc, tris, { f, clip: cut, cull: false, skipInner: false });
+  const pl = sectionPlane(project);
+  const cut = sectionCut(project, tris, pl);
+  const r = renderView(doc, tris, { f: pl.a, clip: { a: pl.a, c: pl.c }, cull: false, skipInner: false });
   const w = r.bounds.x1 - r.bounds.x0;
   const h = r.bounds.y1 - r.bounds.y0;
   const aw = area.x1 - area.x0;
   const ah = area.y1 - area.y0;
-  const n = fitScale(w + 7000, h + 3500, aw - 30, ah - 24, k);
+  const n = sectionScale(project, tris, area, k);
   const ds = n * k;
   const midX = (r.bounds.x0 + r.bounds.x1) / 2;
-  const baseY = area.y0 + 16 + (ah - 16 - 18) / 2 - ((r.bounds.y0 + r.bounds.y1) / 2) / ds;
+  const baseY = area.y1 - 26 - Math.max(0, r.bounds.y1) / ds; // sheet y of the ground floor level
   const T = (sx, sy) => ({ x: area.x0 + aw / 2 + (sx - midX) / ds, y: baseY + sy / ds });
+  const P = (sx, z) => T(sx, -z);
+  const levels = [...project.levels].sort((q, p) => q.elevation - p.elevation);
+  const xl = P(r.bounds.x0, 0).x;
+  const xr = P(r.bounds.x1, 0).x;
+
   // Natural surface through the cut
-  const spec = { out: { x: -a.x, y: -a.y } };
-  const prof = axes ? groundProfile(project, { out: a }, axes, r, ctx.unalign) : [];
-  const pts = prof.filter((p) => p.z != null).map((p) => T(p.sx, -p.z));
+  const prof = pl.axes ? groundProfile(project, { out: pl.a }, pl.axes, r, ctx.unalign) : [];
+  const gpts = prof.filter((p) => p.z != null).map((p) => T(p.sx, -p.z));
+  // The beyond: the far half of the house in light tone
+  paintView(doc, r, T);
   doc.setDrawColor(...PEN.contourMajor);
-  doc.setLineWidth(0.3);
-  doc.setLineDashPattern([2.4, 1.2], 0);
-  if (pts.length > 1) for (let i = 0; i + 1 < pts.length; i++) doc.line(pts[i].x, pts[i].y, pts[i + 1].x, pts[i + 1].y);
+  doc.setLineWidth(0.45);
+  doc.setLineDashPattern([2.6, 1.4], 0);
+  const gx0 = area.x0 + 2;
+  const gx1 = area.x1 - 2;
+  if (gpts.length > 1) {
+    for (let i = 0; i + 1 < gpts.length; i++) {
+      let a = gpts[i];
+      let b = gpts[i + 1];
+      if (b.x === a.x || (a.x < gx0 && b.x < gx0) || (a.x > gx1 && b.x > gx1)) continue;
+      const at = (x) => ({ x, y: a.y + ((x - a.x) / (b.x - a.x)) * (b.y - a.y) });
+      if (a.x < gx0) a = at(gx0);
+      if (b.x > gx1) b = at(gx1);
+      doc.line(a.x, a.y, b.x, b.y);
+    }
+  }
   doc.setLineDashPattern([], 0);
-  void spec;
-  paintView(doc, r, T, { cutPlane: cut });
-  // Ground line, levels and heights
+
+  // Cut slabs: solid
+  doc.setLineWidth(0.5);
   ink(doc, PEN.ink);
-  doc.setLineWidth(0.6);
-  doc.line(T(r.bounds.x0 - 2500, 0).x, T(0, 150).y, T(r.bounds.x1 + 2500, 0).x, T(0, 150).y);
-  const levelsSorted = [...project.levels].sort((q, p) => q.elevation - p.elevation);
-  const xl = T(r.bounds.x0 - 2500, 0).x;
-  const xr = T(r.bounds.x1 + 2500, 0).x;
-  doc.setFontSize(5.8);
-  levelsSorted.forEach((lv, li) => {
-    const yy = T(0, -lv.elevation).y;
+  for (const s of cut.slabs) {
+    const a = P(s.s0, s.z1);
+    const b = P(s.s1, s.z0);
+    doc.setFillColor(...PEN.ink);
+    doc.rect(a.x, a.y, b.x - a.x, b.y - a.y, 'FD');
+  }
+  // Cut walls: poche (hatched) with a heavy outline
+  for (const wl of cut.walls) {
+    const a = P(wl.s0, wl.z1);
+    const b = P(wl.s1, wl.z0);
+    const poly = [{ x: a.x, y: a.y }, { x: b.x, y: a.y }, { x: b.x, y: b.y }, { x: a.x, y: b.y }];
+    doc.setFillColor(255, 255, 255);
+    polygon(doc, poly, 'F');
+    hatch(doc, poly, 'poche');
+    doc.setDrawColor(...PEN.ink);
+    doc.setLineWidth(0.55);
+    polygon(doc, poly, 'S');
+  }
+  // Ceilings: a fine line under the roof or upper slab
+  doc.setDrawColor(...PEN.dim);
+  doc.setLineWidth(0.3);
+  for (const c of cut.ceilings) { const a = P(c.s0, c.z); const b = P(c.s1, c.z); doc.line(a.x, a.y, b.x, b.y); }
+  // Roof profile: the sliced upward faces as a heavy line with the rafter depth below it
+  const rd = 140;
+  doc.setDrawColor(...PEN.ink);
+  for (const sg of cut.roof) {
+    const a = P(sg[0].sx, sg[0].z);
+    const b = P(sg[1].sx, sg[1].z);
+    const a2 = P(sg[0].sx, sg[0].z - rd);
+    const b2 = P(sg[1].sx, sg[1].z - rd);
+    doc.setFillColor(60, 62, 68);
+    polygon(doc, [a, b, b2, a2], 'F');
+    doc.setLineWidth(0.5);
+    doc.line(a.x, a.y, b.x, b.y);
+  }
+  // Heavy ground line
+  doc.setLineWidth(0.9);
+  doc.line(Math.max(area.x0 + 4, xl - 14), P(0, 0).y + 0.1, Math.min(area.x1 - 4, xr + 14), P(0, 0).y + 0.1);
+
+  // Levels at the left: floor and ceiling of each storey, the ridge, with RLs
+  const topZ = -r.bounds.y0;
+  const marks = [];
+  levels.forEach((lv, li) => {
+    marks.push({ z: lv.elevation, text: `${li === 0 ? 'FFL GROUND' : 'FFL FIRST'}${rlText(floor, lv.elevation)}` });
+    marks.push({ z: lv.elevation + lv.height, text: `CEILING${rlText(floor, lv.elevation + lv.height)}`, ceil: true });
+  });
+  marks.push({ z: topZ, text: `RIDGE${rlText(floor, topZ)}` });
+  const lx = Math.max(area.x0 + 42, xl - 6);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(TXT.body);
+  let lastY = Infinity;
+  marks.sort((q, p) => q.z - p.z).forEach((m) => {
+    const y = P(0, m.z).y;
     doc.setDrawColor(...PEN.dim);
-    doc.setLineWidth(0.12);
+    doc.setLineWidth(0.15);
     doc.setLineDashPattern([4, 1, 0.8, 1], 0);
-    doc.line(xl, yy, xr, yy);
+    doc.line(lx - 40, y, lx, y);
     doc.setLineDashPattern([], 0);
     doc.setTextColor(...PEN.dim);
-    doc.setFont('helvetica', 'normal');
-    const rl = floor != null ? ` RL ${(floor + lv.elevation / 1000).toFixed(2)}` : '';
-    doc.text(clean(`${li === 0 ? 'FFL GROUND' : `FFL ${lv.name}`}${rl}`), xl - 1, yy - 0.8, { align: 'right' });
-    if (levelsSorted[li + 1]) {
-      const up = T(0, -levelsSorted[li + 1].elevation).y;
-      doc.setLineWidth(0.12);
-      const dx = xr + 6 + li * 0;
-      doc.line(dx, yy, dx, up);
-      doc.line(dx - 1, yy, dx + 1, yy);
-      doc.line(dx - 1, up, dx + 1, up);
-      doc.text(`${((levelsSorted[li + 1].elevation - lv.elevation) / 1000).toFixed(2)} m`, dx + 1.8, (yy + up) / 2, { angle: 90 });
-    }
+    const ty = lastY - y < 3.6 ? y + 3.6 : y - 1.2; // a label that would touch the one above goes under its line
+    doc.text(clean(m.text), lx - 1, ty, { align: 'right' });
+    lastY = Math.min(lastY, y);
   });
-  const topZ = -r.bounds.y0;
-  const hx = xr + 14;
-  doc.setDrawColor(...PEN.dim);
-  doc.line(hx, T(0, 0).y, hx, T(0, -topZ).y);
-  doc.line(hx - 1, T(0, 0).y, hx + 1, T(0, 0).y);
-  doc.line(hx - 1, T(0, -topZ).y, hx + 1, T(0, -topZ).y);
-  doc.setTextColor(...PEN.dim);
-  doc.text(`${(topZ / 1000).toFixed(2)} m overall`, hx + 1.8, (T(0, 0).y + T(0, -topZ).y) / 2, { angle: 90 });
-  viewTitle(doc, area.x0 + 3, area.y0 + 6, 'Section A-A', `1:${n} @ ${ctx.paper || 'A3'}`);
+
+  // Vertical dimension chains at the right: storey heights, then the overall height
+  const zs = [0, ...levels.slice(1).map((l) => l.elevation), ...(levels.length ? [levels.at(-1).elevation + levels.at(-1).height] : []), topZ];
+  const uniq = [...new Set(zs.map((z) => Math.round(z)))].sort((q, p) => q - p);
+  const dx1 = Math.min(area.x1 - 26, xr + 8);
+  const dx2 = dx1 + 13;
+  const vdim = (x, za, zb, text) => {
+    const ya = P(0, za).y;
+    const yb = P(0, zb).y;
+    doc.setDrawColor(...PEN.dim);
+    doc.setLineWidth(0.15);
+    doc.line(x, ya, x, yb);
+    doc.setLineWidth(0.3);
+    doc.line(x - 1.4, ya + 1.4, x + 1.4, ya - 1.4);
+    doc.line(x - 1.4, yb + 1.4, x + 1.4, yb - 1.4);
+    doc.setLineWidth(0.15);
+    doc.line(x - 3, ya, x + 1.4, ya);
+    doc.line(x - 3, yb, x + 1.4, yb);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(TXT.body);
+    doc.setTextColor(...PEN.dim);
+    if (Math.abs(ya - yb) > 14) vtext(doc, text, x - 1.6, (ya + yb) / 2);
+    else doc.text(text, x + 2.4, (ya + yb) / 2 + 1);
+  };
+  for (let i = 0; i + 1 < uniq.length; i++) vdim(dx1, uniq[i], uniq[i + 1], `${((uniq[i + 1] - uniq[i]) / 1000).toFixed(2)}`);
+  vdim(dx2, 0, topZ, `${(topZ / 1000).toFixed(2)} m OVERALL`);
+
+  // Roof pitch: the slope triangle on the steepest cut roof segment, labelled in degrees
+  const best = cut.roof.filter((sg) => Math.abs(sg[1].sx - sg[0].sx) > 800).sort((q, p) => Math.max(p[0].z, p[1].z) - Math.max(q[0].z, q[1].z))[0];
+  const pitchDeg = project.levels.map((l) => l.roof?.pitch).filter((v) => v != null).at(-1);
+  if (best) {
+    const v = { x: P(best[1].sx, best[1].z).x - P(best[0].sx, best[0].z).x, y: P(best[1].sx, best[1].z).y - P(best[0].sx, best[0].z).y };
+    const ang = (Math.atan2(Math.abs(best[1].z - best[0].z), Math.abs(best[1].sx - best[0].sx)) * 180) / Math.PI;
+    const lo = best[0].z <= best[1].z ? best[0] : best[1];
+    const M = { x: P(lo.sx, lo.z).x + v.x * (best[0].z <= best[1].z ? 0.38 : -0.38), y: P(lo.sx, lo.z).y + v.y * (best[0].z <= best[1].z ? 0.38 : -0.38) };
+    const lab = alongLabel(doc, `ROOF PITCH ${(pitchDeg ?? ang).toFixed(1)}°`, M, v, 3.4, { size: TXT.label, bold: true, colour: PEN.dim, halo: 0.9 });
+    lab.draw();
+  }
+
+  // Overall width below the ground line, and the natural surface label
+  const wallsS = cut.walls.filter((q) => q.exterior);
+  if (wallsS.length) {
+    const s0 = Math.min(...wallsS.map((q) => q.s0));
+    const s1 = Math.max(...wallsS.map((q) => q.s1));
+    const y = P(0, 0).y + 12;
+    doc.setDrawColor(...PEN.dim);
+    doc.setLineWidth(0.15);
+    doc.line(P(s0, 0).x, y, P(s1, 0).x, y);
+    doc.line(P(s0, 0).x, P(0, 0).y + 3, P(s0, 0).x, y + 2);
+    doc.line(P(s1, 0).x, P(0, 0).y + 3, P(s1, 0).x, y + 2);
+    doc.setLineWidth(0.3);
+    for (const s of [s0, s1]) doc.line(P(s, 0).x - 1.4, y + 1.4, P(s, 0).x + 1.4, y - 1.4);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(TXT.body);
+    doc.setTextColor(...PEN.dim);
+    doc.text(`${Math.round(s1 - s0)}`, (P(s0, 0).x + P(s1, 0).x) / 2, y - 1.4, { align: 'center' });
+  }
+  if (gpts.length > 1) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(TXT.small);
+    doc.setTextColor(...PEN.contourMajor);
+    const g = gpts[gpts.length - 2];
+    doc.text('NATURAL SURFACE', Math.min(area.x1 - 4, g.x), g.y + 4.4, { align: 'right' });
+  }
+
+  viewTitle(doc, area.x0 + 3, area.y0 + 8.4, 'Section A-A', `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.title });
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.2);
+  doc.setFontSize(TXT.body);
   doc.setTextColor(...PEN.grey);
-  const from = compassOf({ x: -a.x, y: -a.y }, project.site?.northDeg || 0);
-  doc.text(clean(`Cut across the centre of the house, looking ${from === 'NORTH' ? 'south' : from === 'SOUTH' ? 'north' : from === 'EAST' ? 'west' : 'east'}. Heavy lines are cut elements.`), area.x0 + 3, area.y0 + 11);
-  scaleBar(doc, area.x0 + 6, area.y1 - 8, n, ds);
+  const from = compassOf({ x: -pl.a.x, y: -pl.a.y }, project.site?.northDeg || 0);
+  doc.text(clean(`Cut across the centre of the house, looking ${from === 'NORTH' ? 'south' : from === 'SOUTH' ? 'north' : from === 'EAST' ? 'west' : 'east'}. Cut walls are hatched, slabs solid. The section line is marked on the floor plans.`), area.x0 + 3, area.y0 + 15);
+  scaleBar(doc, area.x0 + 6, area.y1 - 9, n, ds);
   return { n };
 }
 
-/** Roof plan from the roof mesh, in plan orientation, with falls and pitch notes. */
+/**
+ * The section line on a floor plan: chain line across the house at the section plane with an arrow at each end looking the way the
+ * section looks, and a circle tag "A" at each end. `T` maps plan mm to sheet mm for that sheet.
+ */
+export function drawSectionMarker(doc, project, T, sheetNo = null) {
+  const pl = sectionPlane(project);
+  if (!pl.axes) return;
+  const ext = pl.axes.widthMm / 2 + 900;
+  const mid = pl.axes.centre;
+  const p0 = { x: mid.x - pl.right.x * ext, y: mid.y - pl.right.y * ext };
+  const p1 = { x: mid.x + pl.right.x * ext, y: mid.y + pl.right.y * ext };
+  // Put the line on the plane (centre is on it already). Heads point along +a, the looking direction.
+  const A = T(p0);
+  const B = T(p1);
+  const look = G.norm(G.sub(T({ x: mid.x + pl.a.x, y: mid.y + pl.a.y }), T(mid)));
+  doc.setDrawColor(...PEN.tag);
+  doc.setLineWidth(0.5);
+  doc.setLineDashPattern([9, 1.8, 1.8, 1.8], 0);
+  doc.line(A.x, A.y, B.x, B.y);
+  doc.setLineDashPattern([], 0);
+  doc.setFillColor(...PEN.tag);
+  doc.setFont('helvetica', 'bold');
+  for (const E of [A, B]) {
+    const tip = { x: E.x + look.x * 7, y: E.y + look.y * 7 };
+    doc.setLineWidth(0.7);
+    doc.line(E.x, E.y, tip.x, tip.y);
+    const px = -look.y;
+    const py = look.x;
+    polygon(doc, [{ x: tip.x + look.x * 2.4, y: tip.y + look.y * 2.4 }, { x: tip.x + px * 1.6, y: tip.y + py * 1.6 }, { x: tip.x - px * 1.6, y: tip.y - py * 1.6 }], 'F');
+    const out = G.norm(G.sub(E, T(mid)));
+    const c = { x: E.x + out.x * 5.4, y: E.y + out.y * 5.4 };
+    doc.setFillColor(255, 255, 255);
+    doc.setLineWidth(0.4);
+    doc.circle(c.x, c.y, 3.6, 'FD');
+    doc.setFontSize(TXT.strong);
+    doc.setTextColor(...PEN.tag);
+    doc.text('A', c.x, c.y + 1.4, { align: 'center' });
+    doc.setFillColor(...PEN.tag);
+  }
+  if (sheetNo) {
+    const E = A.x >= B.x ? A : B;
+    const out = G.norm(G.sub(E, T(mid)));
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(TXT.small);
+    doc.setTextColor(...PEN.tag);
+    doc.text('SECTION A-A', E.x + out.x * 11, E.y + out.y * 11 - 1, { align: out.x >= 0 ? 'left' : 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.text(`SEE SHEET ${sheetNo}`, E.x + out.x * 11, E.y + out.y * 11 + 2.6, { align: out.x >= 0 ? 'left' : 'right' });
+  }
+}
+
+// Roof plan ----------------------------------------------------------------------------------------------------------------------
+const ROOF_PANEL_W = 104;
+
+// Connected groups of roof triangles (by shared edges), each with its highest point, so a roof is painted whole before the next.
+function roofGroups(tris) {
+  const parent = tris.map((_, i) => i);
+  const find = (i) => { while (parent[i] !== i) { parent[i] = parent[parent[i]]; i = parent[i]; } return i; };
+  const edge = new Map();
+  tris.forEach((t, i) => {
+    for (let e = 0; e < 3; e++) {
+      const a = key(t.p[e]);
+      const b = key(t.p[(e + 1) % 3]);
+      const kk = a < b ? `${a}|${b}` : `${b}|${a}`;
+      const j = edge.get(kk);
+      if (j == null) edge.set(kk, i); else parent[find(i)] = find(j);
+    }
+  });
+  const groups = new Map();
+  tris.forEach((t, i) => {
+    const g = groups.get(find(i)) || { idx: [], top: -Infinity };
+    g.idx.push(i);
+    g.top = Math.max(g.top, ...t.p.map((p) => p.z));
+    groups.set(find(i), g);
+  });
+  return [...groups.values()].sort((a, b) => a.top - b.top);
+}
+
+export function roofScale(tris, area, k = 1) {
+  const roofTris = tris.filter((t) => t.kind === 'roof');
+  if (!roofTris.length) return null;
+  const r = renderView(null, roofTris, { top: true, cull: true, skipInner: false });
+  const w = r.bounds.x1 - r.bounds.x0;
+  const h = r.bounds.y1 - r.bounds.y0;
+  return fitScale(w + 1800, h + 1800, area.x1 - area.x0 - ROOF_PANEL_W - 22, area.y1 - area.y0 - 22, k);
+}
+
+/** Roof plan from the roof mesh: each roof painted whole, higher roofs over lower, falls and pitch, dimensions, and a notes panel. */
 export function drawRoofPlan(doc, ctx, tris, area) {
   const { project, k = 1 } = ctx;
   const roofTris = tris.filter((t) => t.kind === 'roof');
   const aw = area.x1 - area.x0;
   const ah = area.y1 - area.y0;
   if (!roofTris.length) {
-    viewTitle(doc, area.x0 + 3, area.y0 + 6, 'Roof plan', 'NTS');
+    viewTitle(doc, area.x0 + 3, area.y0 + 8.4, 'Roof plan', 'NTS', { size: TXT.title });
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
+    doc.setFontSize(TXT.label);
     ink(doc, PEN.grey);
     doc.text('No roof is modelled on this design.', area.x0 + aw / 2, area.y0 + ah / 2, { align: 'center' });
     return { n: null };
   }
   const r = renderView(doc, roofTris, { top: true, cull: true, skipInner: false });
-  const w = r.bounds.x1 - r.bounds.x0;
-  const h = r.bounds.y1 - r.bounds.y0;
-  const n = fitScale(w + 4000, h + 4000, aw - 20, ah - 26, k);
+  const n = roofScale(tris, area, k);
   const ds = n * k;
-  const T = (sx, sy) => ({ x: area.x0 + aw / 2 + (sx - (r.bounds.x0 + r.bounds.x1) / 2) / ds, y: area.y0 + 4 + (ah - 6) / 2 + (sy - (r.bounds.y0 + r.bounds.y1) / 2) / ds });
+  const dw = aw - ROOF_PANEL_W - 6;
+  const T = (sx, sy) => ({ x: area.x0 + dw / 2 + (sx - (r.bounds.x0 + r.bounds.x1) / 2) / ds, y: area.y0 + 10 + (ah - 10) / 2 + (sy - (r.bounds.y0 + r.bounds.y1) / 2) / ds });
+  // Roofs, lowest first; every triangle is filled and its own feature edges stroked at once, so a higher roof hides the outline of a
+  // lower one and no outline shows through another roof
+  const groups = roofGroups(roofTris);
+  const order = new Map(r.items.map((it, i) => [it.t.src, i]));
+  for (const g of groups) {
+    const items = g.idx.map((i) => r.items[order.get(roofTris[i])]).filter(Boolean).sort((p, q) => order.get(p.t.src) - order.get(q.t.src));
+    for (const it of items) {
+      const pts = it.q.map((p) => T(p.sx, p.sy));
+      doc.setFillColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }));
+      doc.setDrawColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }));
+      doc.setLineWidth(0.08);
+      polygon(doc, pts, 'FD');
+      doc.setDrawColor(...PEN.ink);
+      doc.setLineWidth(0.3);
+      for (let i = 0; i < it.t.p.length; i++) {
+        if (!r.fe.flagged.has(r.fe.keyOf(it.t.p[i], it.t.p[(i + 1) % it.t.p.length]))) continue;
+        doc.line(pts[i].x, pts[i].y, pts[(i + 1) % pts.length].x, pts[(i + 1) % pts.length].y);
+      }
+    }
+  }
   // Walls under the roof, dashed
-  const ground = [...project.levels].sort((a, b) => a.elevation - b.elevation);
   doc.setDrawColor(...PEN.grey);
-  doc.setLineWidth(0.15);
-  doc.setLineDashPattern([1.6, 1], 0);
-  for (const lv of ground) for (const wl of lv.walls || []) {
+  doc.setLineWidth(0.18);
+  doc.setLineDashPattern([1.8, 1.2], 0);
+  for (const lv of project.levels) for (const wl of lv.walls || []) {
     if (wl.kind !== 'exterior' || wl.status === 'demolish') continue;
     const pts = G.wallPolygon(wl).map((p) => T(p.x, p.y));
     for (let i = 0; i < pts.length; i++) doc.line(pts[i].x, pts[i].y, pts[(i + 1) % pts.length].x, pts[(i + 1) % pts.length].y);
   }
   doc.setLineDashPattern([], 0);
-  // Roof surface (painted without the walls under it)
-  const rr = r;
-  for (const it of rr.items) {
-    const pts = it.q.map((p) => T(p.sx, p.sy));
-    doc.setFillColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }));
-    doc.setDrawColor(...fillFor(it.t, { x: -0.4, y: -0.5, z: -0.75 }));
-    doc.setLineWidth(0.05);
-    polygon(doc, pts, 'FD');
-  }
-  for (const it of rr.items) {
-    const pts = it.q.map((p) => T(p.sx, p.sy));
-    for (let i = 0; i < it.t.p.length; i++) {
-      const a = it.t.p[i];
-      const b = it.t.p[(i + 1) % it.t.p.length];
-      if (!rr.fe.flagged.has(rr.fe.keyOf(a, b))) continue;
-      doc.setLineWidth(0.22);
-      doc.setDrawColor(...PEN.ink);
-      doc.line(pts[i].x, pts[i].y, pts[(i + 1) % pts.length].x, pts[(i + 1) % pts.length].y);
-    }
-  }
-  // Fall arrows, one per planar roof face of useful size
-  const groups = roofFaces(roofTris);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(5.8);
+
+  // Fall arrows (one per planar face of useful size) with the pitch written beside each, clear of the other labels
+  const faces = roofFaces(roofTris);
   const pitch = project.levels.map((l) => l.roof?.pitch).filter((p) => p != null).at(-1);
-  for (const g of groups) {
-    if (g.areaM2 < 6) continue;
+  const field = new LabelField({ x0: area.x0, y0: area.y0, x1: area.x0 + dw, y1: area.y1 });
+  const arrows = [];
+  for (const g of faces.filter((f) => f.areaM2 >= 6)) {
     const dir = G.norm({ x: g.n.x, y: g.n.y });
     if (G.len(dir) < 0.2) continue;
-    const c = T(g.c.x, g.c.y);
-    const a = { x: c.x - dir.x * 4, y: c.y - dir.y * 4 };
-    const b = { x: c.x + dir.x * 4, y: c.y + dir.y * 4 };
-    doc.setDrawColor(...PEN.dim);
-    doc.setLineWidth(0.2);
-    doc.line(a.x, a.y, b.x, b.y);
-    const px = -dir.y;
-    const py = dir.x;
-    polygon(doc, [b, { x: b.x - dir.x * 1.8 + px * 0.9, y: b.y - dir.y * 1.8 + py * 0.9 }, { x: b.x - dir.x * 1.8 - px * 0.9, y: b.y - dir.y * 1.8 - py * 0.9 }], 'F');
-    const slope = (Math.acos(Math.min(1, Math.abs(g.n.z))) * 180) / Math.PI;
-    labelOn(doc, `${slope.toFixed(1)} deg`, c.x, c.y + 6, { size: 5.2, colour: PEN.dim });
+    arrows.push({ g, dir, c: T(g.c.x, g.c.y) });
   }
+  arrows.sort((a, b) => b.g.areaM2 - a.g.areaM2);
+  for (const A of arrows) {
+    const len = Math.min(9, Math.max(5, Math.sqrt(A.g.areaM2) * 1.4 / (ds / 100)));
+    const a = { x: A.c.x - A.dir.x * len, y: A.c.y - A.dir.y * len };
+    const b = { x: A.c.x + A.dir.x * len, y: A.c.y + A.dir.y * len };
+    doc.setDrawColor(...PEN.dim);
+    doc.setLineWidth(0.3);
+    doc.line(a.x, a.y, b.x, b.y);
+    const px = -A.dir.y;
+    const py = A.dir.x;
+    doc.setFillColor(...PEN.dim);
+    polygon(doc, [{ x: b.x + A.dir.x * 2.6, y: b.y + A.dir.y * 2.6 }, { x: b.x + px * 1.5, y: b.y + py * 1.5 }, { x: b.x - px * 1.5, y: b.y - py * 1.5 }], 'F');
+    field.addSeg(a, b);
+    const slope = (Math.acos(Math.min(1, Math.abs(A.g.n.z))) * 180) / Math.PI;
+    const txt = `${slope.toFixed(1)}°`;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(TXT.body);
+    const tw = doc.getTextWidth(txt) + 2;
+    // beside the arrow shaft, then either end
+    let done = false;
+    for (const [ox, oy] of [[px * (tw / 2 + 2), py * 4.5], [-px * (tw / 2 + 2), -py * 4.5], [px * (tw / 2 + 2), py * 9], [-px * (tw / 2 + 2), -py * 9]]) {
+      const c0 = { x: A.c.x + ox, y: A.c.y + oy };
+      const box = { x0: c0.x - tw / 2, y0: c0.y - 3.4, x1: c0.x + tw / 2, y1: c0.y + 1.6 };
+      if (!field.free(box, { lines: true })) continue;
+      field.addBox(box);
+      haloText(doc, txt, c0.x, c0.y, { size: TXT.body, bold: true, colour: PEN.dim, align: 'center', halo: 0.9 });
+      done = true;
+      break;
+    }
+    void done;
+  }
+
+  // Overall dimensions of the eaves outline
+  const bx0 = T(r.bounds.x0, 0).x;
+  const bx1 = T(r.bounds.x1, 0).x;
+  const by0 = T(0, r.bounds.y0).y;
+  const by1 = T(0, r.bounds.y1).y;
+  doc.setDrawColor(...PEN.dim);
+  doc.setLineWidth(0.15);
+  const ty = by1 + 7;
+  doc.line(bx0, ty, bx1, ty);
+  doc.line(bx0, by1 + 1, bx0, ty + 2);
+  doc.line(bx1, by1 + 1, bx1, ty + 2);
+  doc.setLineWidth(0.3);
+  for (const x of [bx0, bx1]) doc.line(x - 1.4, ty + 1.4, x + 1.4, ty - 1.4);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(TXT.body);
+  doc.setTextColor(...PEN.dim);
+  doc.text(`${Math.round(r.bounds.x1 - r.bounds.x0)}`, (bx0 + bx1) / 2, ty - 1.4, { align: 'center' });
+  const tx = bx1 + 7;
+  doc.setLineWidth(0.15);
+  doc.line(tx, by0, tx, by1);
+  doc.line(bx1 + 1, by0, tx + 2, by0);
+  doc.line(bx1 + 1, by1, tx + 2, by1);
+  doc.setLineWidth(0.3);
+  for (const y of [by0, by1]) doc.line(tx - 1.4, y + 1.4, tx + 1.4, y - 1.4);
+  vtext(doc, `${Math.round(r.bounds.y1 - r.bounds.y0)}`, tx - 1.6, (by0 + by1) / 2);
+
+  viewTitle(doc, area.x0 + 3, area.y0 + 8.4, 'Roof plan', `1:${n} @ ${ctx.paper || 'A3'}`, { size: TXT.title });
+  scaleBar(doc, area.x0 + 6, area.y1 - 9, n, ds);
+
+  // Notes panel
+  const px0 = area.x1 - ROOF_PANEL_W;
   const type = project.levels.map((l) => l.roof?.type).filter(Boolean).at(-1);
   const over = project.levels.map((l) => l.roof?.overhang).filter((v) => v != null).at(-1);
-  viewTitle(doc, area.x0 + 3, area.y0 + 6, 'Roof plan', `1:${n} @ ${ctx.paper || 'A3'}`);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.2);
-  doc.setTextColor(...PEN.grey);
   const roofM2 = roofTris.reduce((s, t) => s + triArea(t.p), 0) / 1e6;
-  doc.text(clean(`${type ? `${type} roof` : 'Roof'}${pitch ? `, ${pitch} degree pitch` : ''}${over != null ? `, ${over} mm eaves overhang` : ''}. Roof area from the model ${roofM2.toFixed(0)} m2. Arrows show the fall.`), area.x0 + 3, area.y0 + 11);
-  scaleBar(doc, area.x0 + 6, area.y1 - 8, n, ds);
+  const mat = project.levels.map((l) => l.roof?.material).filter(Boolean).at(-1);
+  const topZ = -r.bounds.y0;
+  const floor = project.site?.lot?.floorRL;
+  doc.setLineWidth(0.5);
+  ink(doc, PEN.ink);
+  doc.rect(px0, area.y0, ROOF_PANEL_W, ah);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(TXT.label);
+  doc.text('ROOF DATA', px0 + 3, area.y0 + 7);
+  const rows = [
+    ['Roof form', type ? `${cap(type)} roof` : 'Not stated'],
+    ['Pitch', pitch != null ? `${Number(pitch).toFixed(1)}°` : 'Not stated'],
+    ['Eaves overhang', over != null ? `${over} mm` : 'Not stated'],
+    ['Roof area (sloped)', `${roofM2.toFixed(0)} m²`],
+    ['Roof sheeting', mat ? cap(String(mat)) : 'Not stated'],
+    ['Highest point', `${(topZ / 1000).toFixed(2)} m above FFL${floor != null ? `, RL ${(floor + topZ / 1000).toFixed(2)}` : ''}`],
+  ];
+  let y = area.y0 + 13;
+  doc.setFontSize(TXT.body);
+  for (const [a, b] of rows) {
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...PEN.grey);
+    doc.text(a, px0 + 3, y);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...PEN.ink);
+    const lines = wrap(doc, b, ROOF_PANEL_W - 46);
+    lines.forEach((l, i) => doc.text(l, px0 + 42, y + i * 3.6));
+    y += Math.max(1, lines.length) * 3.6 + 2.6;
+  }
+  y += 3;
+  doc.setDrawColor(...PEN.light);
+  doc.setLineWidth(0.2);
+  doc.line(px0 + 3, y - 4, px0 + ROOF_PANEL_W - 3, y - 4);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(TXT.label);
+  doc.setTextColor(...PEN.ink);
+  doc.text('LEGEND', px0 + 3, y + 2);
+  y += 8;
+  const sample = (label, fn) => { fn(px0 + 4, y); doc.setFont('helvetica', 'normal'); doc.setFontSize(TXT.body); doc.setTextColor(...PEN.ink); doc.text(label, px0 + 22, y + 1); y += 6.4; };
+  sample('Ridge, hip and valley', (x, yy) => { doc.setDrawColor(...PEN.ink); doc.setLineWidth(0.3); doc.line(x, yy, x + 14, yy); });
+  sample('Direction of fall, with pitch', (x, yy) => { doc.setDrawColor(...PEN.dim); doc.setLineWidth(0.3); doc.line(x, yy, x + 11, yy); doc.setFillColor(...PEN.dim); polygon(doc, [{ x: x + 14, y: yy }, { x: x + 11, y: yy - 1.5 }, { x: x + 11, y: yy + 1.5 }], 'F'); });
+  sample('Exterior walls below', (x, yy) => { doc.setDrawColor(...PEN.grey); doc.setLineWidth(0.18); doc.setLineDashPattern([1.8, 1.2], 0); doc.line(x, yy, x + 14, yy); doc.setLineDashPattern([], 0); });
+  y += 2;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(TXT.min);
+  doc.setTextColor(...PEN.grey);
+  wrap(doc, 'Roof geometry is taken from the same model as the 3D view. Sheeting, gutters, downpipes, battens and roof framing are not designed here and are to be confirmed by the builder and a structural engineer. Dimensions are in millimetres.', ROOF_PANEL_W - 8).forEach((l, i) => doc.text(l, px0 + 4, y + i * 2.9));
   return { n, roofM2 };
 }
 

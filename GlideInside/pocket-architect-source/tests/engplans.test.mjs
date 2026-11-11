@@ -75,7 +75,7 @@ test('title block, drawing list and footer carry the required fields', async () 
   const { Rec, texts } = recorder();
   await toEngineeringPDF(p, { jsPDF: Rec, catalogue, date: new Date(2026, 10, 11) });
   const all = texts.join('\n');
-  for (const want of ['SAMPLE RESIDENCE', 'A Sample Client', 'GI-TAM24-A-002', '11.11.26', 'AB', 'CD', 'TAM24', 'Prepared by Sample Designs Pty Ltd', 'SITE PLAN', 'GROUND FLOOR PLAN', 'FIRST FLOOR PLAN', 'ROOF PLAN', 'NORTH elevation'.toUpperCase().replace('ELEVATION', 'ELEVATION'), 'SECTION A-A', 'SITE ANALYSIS AND SETBACKS']) {
+  for (const want of ['SAMPLE RESIDENCE', 'A Sample Client', 'GI-TAM24-A-002', '11/11/2026', 'AB', 'CD', 'TAM24', 'Prepared by Sample Designs Pty Ltd', 'SITE PLAN', 'GROUND FLOOR PLAN', 'FIRST FLOOR PLAN', 'ROOF PLAN', 'NORTH elevation'.toUpperCase().replace('ELEVATION', 'ELEVATION'), 'SECTION A-A', 'SITE ANALYSIS AND SETBACKS']) {
     assert.ok(all.includes(want), `missing text: ${want}`);
   }
   assert.ok(/CONCEPT ONLY\. TO BE VERIFIED BY A SUITABLY QUALIFIED PERSON/.test(all));
@@ -126,7 +126,7 @@ test('drawing numbers, dates and attribution', () => {
   const p = createProject({ name: 'Sample Residence' });
   assert.equal(projectCode(p), 'SAMPLERE');
   assert.equal(drawingNo(p, 7), 'GI-SAMPLERE-A-007');
-  assert.equal(ddmmyy(new Date(2026, 0, 5)), '05.01.26');
+  assert.equal(ddmmyy(new Date(2026, 0, 5)), '05/01/2026');
   assert.match(attribution({ state: 'NSW' }), /NSW Spatial Services \(CC BY\)/);
   assert.match(attribution({ state: 'QLD' }), /Queensland Government \(CC BY 4\.0\).*CC BY-SA/);
 });
@@ -197,4 +197,16 @@ test('segment clipping keeps what is inside the viewport', () => {
   const r = { x0: 0, y0: 0, x1: 10, y1: 10 };
   assert.deepEqual(clipSegment({ x: -5, y: 5 }, { x: 15, y: 5 }, r), [{ x: 0, y: 5 }, { x: 10, y: 5 }]);
   assert.equal(clipSegment({ x: -5, y: -5 }, { x: -1, y: -1 }, r), null);
+});
+
+import { nearestTown } from '../src/premium/exporters/eng/towns.js';
+import { normDate } from '../src/premium/exporters/eng/brand.js';
+import { LabelField } from '../src/premium/exporters/eng/kit.js';
+
+test('towns, date normalising and the label field', () => {
+  const t = nearestTown(150.93, -31.09);
+  assert.ok(t && /Tamworth/i.test(t.name));
+  assert.equal(normDate('2026-11-11'), '11/11/2026');
+  const f = new LabelField();
+  assert.ok(f);
 });

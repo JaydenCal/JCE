@@ -72,6 +72,15 @@ export function cleanedDoc(doc) {
   });
 }
 
+/** Text reading upwards, centred on (x, yMid). jsPDF centres rotated text along the wrong axis, so the start point is worked out here. */
+export function vtext(doc, text, x, yMid, { size = null, colour = null, bold = false } = {}) {
+  const t = clean(text);
+  doc.setFont('helvetica', bold ? 'bold' : 'normal');
+  if (size) doc.setFontSize(size);
+  if (colour) doc.setTextColor(...colour);
+  doc.text(t, x, yMid + doc.getTextWidth(t) / 2, { angle: 90 });
+}
+
 /** Text with a white halo (a thick white stroke under the glyphs), so it reads over an aerial. */
 export function haloText(doc, text, x, y, { size = 8, bold = false, colour = PEN.ink, align = 'left', angle = 0, halo = 0.9 } = {}) {
   const t = clean(text);
@@ -231,19 +240,32 @@ export function dimLine(doc, a, b, text, { colour = PEN.dim, size = 6, offset = 
   doc.setFontSize(size);
   const w = doc.getTextWidth(text);
   const mid = G.lerp(A, B, 0.5);
+  if (Math.hypot(B.x - A.x, B.y - A.y) < w + 3) {
+    // Too short to carry its text: the text sits horizontally beside the line, with a halo.
+    const side = textSide >= 0 ? 1 : -1;
+    const right = n.x * side >= 0;
+    const px = mid.x + n.x * side * 1.8 + (right ? 0 : 0);
+    const py = mid.y + n.y * side * 1.8 + 1;
+    haloText(doc, text, px, py, { size, colour, align: n.x * side >= 0 ? 'left' : 'right', halo: 0.9 });
+    const x0 = n.x * side >= 0 ? px : px - w;
+    return { x0: x0 - 0.5, y0: py - size * 0.3528 - 0.5, x1: x0 + w + 0.5, y1: py + 0.8 };
+  }
   let ang = (Math.atan2(d.y, d.x) * 180) / Math.PI;
   if (ang > 90) ang -= 180;
   if (ang < -90) ang += 180;
   const rad = (ang * Math.PI) / 180;
-  const off = textSide * 1.2;
+  const off = textSide * 2.4;
   const tx = mid.x + Math.sin(rad) * off;
   const ty = mid.y - Math.cos(rad) * off;
-  doc.setTextColor(...colour);
-  const hw = Math.abs(Math.cos(rad)) * w / 2 + Math.abs(Math.sin(rad)) * 1.2;
-  const hh = Math.abs(Math.sin(rad)) * w / 2 + Math.abs(Math.cos(rad)) * 1.2;
+  const hw = Math.abs(Math.cos(rad)) * w / 2 + Math.abs(Math.sin(rad)) * 1.5;
+  const hh = Math.abs(Math.sin(rad)) * w / 2 + Math.abs(Math.cos(rad)) * 1.5;
   if (whiteBehind) { doc.setFillColor(255, 255, 255); doc.rect(tx - hw, ty - hh, 2 * hw, 2 * hh, 'F'); }
+  // Written from its start point: jsPDF centres rotated text along the wrong axis.
+  const dv = { x: Math.cos(rad), y: Math.sin(rad) };
+  const upv = { x: Math.sin(rad), y: -Math.cos(rad) };
+  const capH = size * 0.3528 * 0.72;
   doc.setTextColor(...colour);
-  doc.text(text, tx, ty + 0.4, { align: 'center', angle: -ang });
+  doc.text(text, tx - dv.x * w / 2 - upv.x * capH / 2, ty - dv.y * w / 2 - upv.y * capH / 2, { angle: -ang });
   return { x0: tx - hw, y0: ty - hh, x1: tx + hw, y1: ty + hh };
 }
 
@@ -454,13 +476,13 @@ export function alongLabel(doc, text, mid, dir, offset, { size = 8, colour = PEN
 export class LabelField {
   constructor(rect) { this.rect = rect; this.boxes = []; this.segs = []; }
   addBox(b) { if (b) this.boxes.push(b); return b; }
-  addSeg(a, b) { this.segs.push([a, b]); }
-  addRing(pts, closed = true) { const n = closed ? pts.length : pts.length - 1; for (let i = 0; i < n; i++) this.addSeg(pts[i], pts[(i + 1) % pts.length]); }
+  addSeg(a, b, soft = false) { const s = [a, b]; if (soft) s.soft = true; this.segs.push(s); }
+  addRing(pts, closed = true, soft = false) { const n = closed ? pts.length : pts.length - 1; for (let i = 0; i < n; i++) this.addSeg(pts[i], pts[(i + 1) % pts.length], soft); }
   inside(b) { const r = this.rect; return b.x0 >= r.x0 + 0.8 && b.y0 >= r.y0 + 0.8 && b.x1 <= r.x1 - 0.8 && b.y1 <= r.y1 - 0.8; }
-  free(b, { lines = true, ignoreSegs = [] } = {}) {
+  free(b, { lines = true, soft = true, ignoreSegs = [] } = {}) {
     if (!this.inside(b)) return false;
     for (const o of this.boxes) if (overlap(inflate(b, 0.3), o) > 0) return false;
-    if (lines) for (const sg of this.segs) if (!ignoreSegs.includes(sg) && segHitsBox(sg[0], sg[1], b)) return false;
+    if (lines) for (const sg of this.segs) if (!ignoreSegs.includes(sg) && (soft || !sg.soft) && segHitsBox(sg[0], sg[1], b)) return false;
     return true;
   }
   /** Try `cands` (functions or label specs returning { box, draw }) in order. Returns the placed one or null. */
@@ -471,4 +493,55 @@ export class LabelField {
     }
     return null;
   }
+}
+
+/**
+ * Superscript digits. Some PDF viewers lack the superscript glyphs of the standard fonts, so "m²" would show as "m". Strings with ²
+ * or ³ are written as the text, then the digit at 62 percent size, raised. Widths (alignment, wrapping, fitting) count the same way.
+ */
+export function withSuperscripts(doc) {
+  let size = 10;
+  const SUP = { '²': '2', '³': '3' };
+  const widthOf = (t, s) => {
+    const parts = String(s).split(/([²³])/);
+    let w = 0;
+    for (const p of parts) {
+      if (SUP[p]) { doc.setFontSize(size * 0.62); w += doc.getTextWidth(SUP[p]); doc.setFontSize(size); } else if (p) w += doc.getTextWidth(p);
+    }
+    return w;
+  };
+  return new Proxy(doc, {
+    get(t, prop) {
+      if (prop === 'setFontSize') return (n) => { size = n; return t.setFontSize(n); };
+      if (prop === 'getTextWidth') return (s) => (/[²³]/.test(String(s)) ? widthOf(t, s) : t.getTextWidth(s));
+      if (prop === 'text') {
+        return (s, x, y, o = {}) => {
+          if (typeof s !== 'string' || !/[²³]/.test(s)) return t.text(s, x, y, o);
+          const a = ((o.angle || 0) * Math.PI) / 180;
+          const d = { x: Math.cos(a), y: -Math.sin(a) };
+          const up = { x: -Math.sin(a), y: -Math.cos(a) };
+          const W = widthOf(t, s);
+          let off = o.align === 'center' ? -W / 2 : o.align === 'right' ? -W : 0;
+          const { align, ...rest } = o;
+          void align;
+          for (const p of s.split(/([²³])/)) {
+            if (!p) continue;
+            if (SUP[p]) {
+              const raise = size * 0.3528 * 0.38;
+              t.setFontSize(size * 0.62);
+              t.text(SUP[p], x + d.x * off + up.x * raise, y + d.y * off + up.y * raise, rest);
+              off += t.getTextWidth(SUP[p]);
+              t.setFontSize(size);
+            } else {
+              t.text(p, x + d.x * off, y + d.y * off, rest);
+              off += t.getTextWidth(p);
+            }
+          }
+          return undefined;
+        };
+      }
+      const v = t[prop];
+      return typeof v === 'function' ? v.bind(t) : v;
+    },
+  });
 }
