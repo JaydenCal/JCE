@@ -2266,17 +2266,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-018)); side (conflicting rules of equal specificity (parkes-shire-council-021, parkes-shire-council-023)); rear (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-013, parkes-shire-council-018, parkes-shire-council-019))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-018)); side (conflicting rules of equal specificity (parkes-shire-council-021, parkes-shire-council-023)); rear (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-013, parkes-shire-council-018, parkes-shire-council-019))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-018)); side (conflicting rules of equal specificity (parkes-shire-council-021, parkes-shire-council-023)); rear (conflicting rules of equal specificity (parkes-shire-council-012, parkes-shire-council-013, parkes-shire-council-018, parkes-shire-council-019))"
   },
   "R5": {
@@ -2286,7 +2286,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parkes-shire-council-021, parkes-shire-council-023)); rear (conflicting rules of equal specificity (parkes-shire-council-018, parkes-shire-council-019))"
   }
  }

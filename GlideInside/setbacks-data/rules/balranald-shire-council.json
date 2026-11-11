@@ -44,16 +44,8 @@
      }
     ]
    },
-   "side": {
-    "minM": null,
-    "note": "Not addressed in policy.",
-    "basis": "text"
-   },
-   "rear": {
-    "minM": null,
-    "note": "Not addressed in policy.",
-    "basis": "text"
-   },
+   "side": null,
+   "rear": null,
    "garage": {
     "minM": null,
     "note": "Not addressed."
@@ -69,6 +61,10 @@
    "cuLDeSac": {
     "straightM": 4.0,
     "turningM": 3.0
+   },
+   "slotNotes": {
+    "side": "Not addressed in policy.",
+    "rear": "Not addressed in policy."
    },
    "dcp": "No DCP located. Council policy: Building Setback Policy (not a DCP) (2018 (reviewed 08/2025, no amendments))",
    "edition": "2018 (reviewed 08/2025, no amendments)",
@@ -101,30 +97,31 @@
    "rules": 1
   }
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   }
  }

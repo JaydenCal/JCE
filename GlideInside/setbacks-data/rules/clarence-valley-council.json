@@ -1029,7 +1029,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
   }
  }

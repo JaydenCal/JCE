@@ -129,9 +129,32 @@ test('fallback with bands and no match returns null', () => {
   assert.equal(pickRules(none, base), null, 'no fallback loaded');
 });
 
+test('inland councils use the Inland Code, others the Housing Code; formula bands are evaluated', () => {
+  const inl = { name: 'NSW Inland Code', rules: [rule('ic-1', ['R1', 'R2', 'RU1'], { front: slot(4.5), rear: slot(3), side: { minM: null, bands: [
+    { lotWidthMinM: 10.01, lotWidthMaxM: 18, buildingHeightMaxM: 4.5, minM: 0.9, basis: 'fixed' },
+    { lotWidthMinM: 10.01, lotWidthMaxM: 18, buildingHeightMinM: 4.51, buildingHeightMaxM: 8.5, minM: null, formulaParams: { offsetM: 4.5, divisor: 4, plusM: 0.9 }, formula: '(building height - 4.5) / 4 + 0.9' }] } })] };
+  const west = { lga_slug: 'cobar', status: 'none', fallbackSet: 'NSW_INLAND', rules: [] };
+  const fbs = { NSW: nswFb, NSW_INLAND: inl };
+  const p = pickRules(west, { ...base, buildingHeightM: 6.5 }, { fallbacks: fbs });
+  assert.equal(p.basis, BASIS_LABELS.NSW_INLAND);
+  assert.match(p.basis, /^Codes SEPP Inland Code/);
+  assert.equal(p.side.minM, 1.4);
+  assert.equal(pickRules(west, { ...base, buildingHeightM: 3 }, { fallbacks: fbs }).side.minM, 0.9);
+  assert.equal(pickRules(west, { ...base, buildingHeightM: undefined }, { fallbacks: fbs }), null);
+  const east = pickRules(none, base, { fallbacks: fbs });
+  assert.match(east.basis, /^Codes SEPP Housing Code/);
+  assert.equal(pickRules(none, { ...base, zone: 'R5', lotAreaM2: 2000 }, { fallbacks: fbs }), null, 'R5 is Part 3A: no values, no envelope');
+});
+
+test('QLD lots over 450 m2 return null (MP1.2 not verified)', () => {
+  const q = { name: 'QDC MP1.1', rules: [rule('q-s', ['*'], { conditions: { lotAreaMaxM2: 450 }, front: slot(3), side: slot(1.5), rear: slot(1.5) })] };
+  assert.equal(pickRules(council, { ...base, state: 'QLD', lotAreaM2: 400 }, { fallbacks: { QLD: q } }).front.minM, 3);
+  assert.equal(pickRules(council, { ...base, state: 'QLD', lotAreaM2: 600 }, { fallbacks: { QLD: q } }), null);
+});
+
 test('QLD always uses the QDC default, labelled as such', () => {
   const p = pickRules(council, { ...base, state: 'QLD' }, { fallbacks: { NSW: nswFb, QLD: qldFb } });
-  assert.equal(p.basis, 'QDC (default, council planning scheme may vary)');
+  assert.equal(p.basis, 'QDC MP1.1 (default; council planning scheme or the Queensland Housing Code may vary)');
   assert.equal(p.front.minM, 6);
   assert.equal(pickRules(council, { ...base, state: 'QLD' }, { fallbacks: { NSW: nswFb } }), null);
 });

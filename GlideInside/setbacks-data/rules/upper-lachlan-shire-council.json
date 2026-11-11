@@ -1050,7 +1050,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (upper-lachlan-shire-council-008, upper-lachlan-shire-council-012)); rear (conflicting rules of equal specificity (upper-lachlan-shire-council-004, upper-lachlan-shire-council-006, upper-lachlan-shire-council-012))"
   }
  }

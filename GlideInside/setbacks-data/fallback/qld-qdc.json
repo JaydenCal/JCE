@@ -12,29 +12,47 @@
     "n/a (QDC applies to class 1a single detached housing, not zone based)"
    ],
    "appliesTo": [
-    "detached_house"
+    "dwelling"
    ],
    "conditions": {
     "lotAreaMaxM2": 450
    },
    "front": {
-    "minM": 3.0,
+    "minM": null,
     "basis": "fixed",
-    "note": "Access place or access street 3.0m; collector street 4.0m. If existing dwellings on both adjoining lots with one setback 3m-6m (A1(a)(ii)): difference not more than 2m = distance between the two buildings; more than 2m = average of the adjacent road setbacks."
+    "note": "Access place or access street 3.0m; collector street 4.0m. If existing dwellings on both adjoining lots with one setback 3m-6m (A1(a)(ii)): difference not more than 2m = distance between the two buildings; more than 2m = average of the adjacent road setbacks.",
+    "bands": [
+     {
+      "streetType": "access place or access street",
+      "minM": 3.0,
+      "basis": "fixed"
+     },
+     {
+      "streetType": "collector street",
+      "minM": 4.0,
+      "basis": "fixed"
+     }
+    ]
    },
    "secondaryFront": {
-    "minM": 1.0,
+    "minM": null,
     "note": "Table A1 side to corner street: 1.0m (access place/street), 2.0m (collector street). A1(c)(ii) corner lots with average depth 24m or less.",
+    "bands": [
+     {
+      "streetType": "access place or access street",
+      "minM": 1.0,
+      "basis": "fixed"
+     },
+     {
+      "streetType": "collector street",
+      "minM": 2.0,
+      "basis": "fixed"
+     }
+    ],
     "basis": "fixed"
    },
-   "side": {
-    "minM": null,
-    "basis": "text"
-   },
-   "rear": {
-    "minM": null,
-    "basis": "text"
-   },
+   "side": null,
+   "rear": null,
    "garage": {
     "minM": null,
     "note": "A1(b): garage/carport follows A1(a); openings facing street lesser of 6m and 50% of frontage. Corner truncation: no structure over 2m high within a 9m x 9m truncation."
@@ -46,29 +64,7 @@
    "quote": "as in Table A1",
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
-   "bands": {
-    "front": [
-     {
-      "streetType": "access place or access street",
-      "minM": 3.0
-     },
-     {
-      "streetType": "collector street",
-      "minM": 4.0
-     }
-    ],
-    "secondaryFront": [
-     {
-      "streetType": "access place or access street",
-      "minM": 1.0
-     },
-     {
-      "streetType": "collector street",
-      "minM": 2.0
-     }
-    ]
-   },
-   "dcp": "QDC",
+   "dcp": "QLD",
    "edition": null,
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
    "sources": []
@@ -79,18 +75,15 @@
     "n/a (QDC applies to class 1a single detached housing, not zone based)"
    ],
    "appliesTo": [
-    "detached_house"
+    "dwelling"
    ],
    "conditions": {
     "lotAreaMaxM2": 450
    },
-   "front": {
-    "minM": null,
-    "basis": "text"
-   },
+   "front": null,
    "secondaryFront": null,
    "side": {
-    "minM": 1.5,
+    "minM": null,
     "perHeight": [
      {
       "heightMaxM": 4.5,
@@ -106,7 +99,20 @@
       "formula": "2m plus 0.5m for every 3m or part exceeding 7.5m"
      }
     ],
-    "basis": "fixed"
+    "bands": [
+     {
+      "buildingHeightMaxM": 4.5,
+      "minM": 1.5,
+      "basis": "fixed"
+     },
+     {
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 2.0,
+      "basis": "fixed"
+     }
+    ],
+    "basis": "text"
    },
    "rear": {
     "minM": 1.5,
@@ -124,7 +130,7 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "note": "Quotes: A2(a)(ii) '2m'; A2(a)(iii) '2m plus 0.5m for every 3m or part exceeding 7.5m' (source text reads 'greater that', sic).",
-   "dcp": "QDC",
+   "dcp": "QLD",
    "edition": null,
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
    "sources": []
@@ -135,26 +141,20 @@
     "n/a (QDC applies to class 1a single detached housing, not zone based)"
    ],
    "appliesTo": [
-    "detached_house"
+    "dwelling"
    ],
    "conditions": {
     "lotAreaMaxM2": 450,
     "lotWidthMaxM": 15
    },
-   "front": {
-    "minM": null,
-    "basis": "text"
-   },
+   "front": null,
    "secondaryFront": null,
    "side": {
     "minM": 0.75,
     "note": "Lot width 10.5m or less: 0.750m (height 4.5m or less), 1.000m (4.5m-7.5m); increases by 0.075m per 0.5m of width (4.5m or less) and 0.1m (4.5-7.5m) up to 14.501-15.000m: 1.425m / 1.900m. Above 7.5m: 2m plus 0.5m per 3m.",
     "basis": "fixed"
    },
-   "rear": {
-    "minM": null,
-    "basis": "text"
-   },
+   "rear": null,
    "garage": {
     "minM": null
    },
@@ -165,70 +165,7 @@
    "quote": "in accordance with Table A2",
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
-   "bands": {
-    "side": [
-     {
-      "lotWidthMinM": 14.501,
-      "lotWidthMaxM": 15.0,
-      "h0_4_5": 1.425,
-      "h4_5_7_5": 1.9
-     },
-     {
-      "lotWidthMinM": 14.001,
-      "lotWidthMaxM": 14.5,
-      "h0_4_5": 1.35,
-      "h4_5_7_5": 1.8
-     },
-     {
-      "lotWidthMinM": 13.501,
-      "lotWidthMaxM": 14.0,
-      "h0_4_5": 1.275,
-      "h4_5_7_5": 1.7
-     },
-     {
-      "lotWidthMinM": 13.001,
-      "lotWidthMaxM": 13.5,
-      "h0_4_5": 1.2,
-      "h4_5_7_5": 1.6
-     },
-     {
-      "lotWidthMinM": 12.501,
-      "lotWidthMaxM": 13.0,
-      "h0_4_5": 1.125,
-      "h4_5_7_5": 1.5
-     },
-     {
-      "lotWidthMinM": 12.001,
-      "lotWidthMaxM": 12.5,
-      "h0_4_5": 1.05,
-      "h4_5_7_5": 1.4
-     },
-     {
-      "lotWidthMinM": 11.501,
-      "lotWidthMaxM": 12.0,
-      "h0_4_5": 0.975,
-      "h4_5_7_5": 1.3
-     },
-     {
-      "lotWidthMinM": 11.001,
-      "lotWidthMaxM": 11.5,
-      "h0_4_5": 0.9,
-      "h4_5_7_5": 1.2
-     },
-     {
-      "lotWidthMinM": 10.501,
-      "lotWidthMaxM": 11.0,
-      "h0_4_5": 0.825,
-      "h4_5_7_5": 1.1
-     },
-     {
-      "lotWidthMaxM": 10.5,
-      "h0_4_5": 0.75,
-      "h4_5_7_5": 1.0
-     }
-    ]
-   },
-   "dcp": "QDC",
+   "dcp": "QLD",
    "edition": null,
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
    "sources": []
@@ -239,24 +176,15 @@
     "n/a (QDC applies to class 1a single detached housing, not zone based)"
    ],
    "appliesTo": [
-    "detached_house"
+    "dwelling"
    ],
    "conditions": {
     "lotAreaMaxM2": 450
    },
-   "front": {
-    "minM": null,
-    "basis": "text"
-   },
+   "front": null,
    "secondaryFront": null,
-   "side": {
-    "minM": null,
-    "basis": "text"
-   },
-   "rear": {
-    "minM": null,
-    "basis": "text"
-   },
+   "side": null,
+   "rear": null,
    "garage": {
     "minM": 0.0,
     "note": "Class 10a building may sit within the A2(a)/(b) clearances if part height not more than 4.5m with mean height not more than 3.5m; total length not more than 9m along any one boundary; no closer than 1.5m to a required window in a habitable room of an adjoining dwelling."
@@ -268,7 +196,7 @@
    "quote": "not more than 4.5m",
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
-   "dcp": "QDC",
+   "dcp": "QLD",
    "edition": null,
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
    "sources": []
@@ -294,5 +222,5 @@
   "MP 1.2 and QHC primary text unread",
   "Table A2 interpolation note in rule 3 is summary; use bands"
  ],
- "name": "QDC"
+ "name": "QLD"
 }

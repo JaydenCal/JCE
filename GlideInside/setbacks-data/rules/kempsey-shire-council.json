@@ -2200,7 +2200,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (kempsey-shire-council-011, kempsey-shire-council-027, kempsey-shire-council-035)); rear (conflicting rules of equal specificity (kempsey-shire-council-011, kempsey-shire-council-035))"
   }
  }

@@ -983,17 +983,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-008)); side (no rule for this zone/use/lot); rear (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-007, tweed-shire-council-008, tweed-shire-council-009))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-008)); side (no rule for this zone/use/lot); rear (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-007, tweed-shire-council-008, tweed-shire-council-009))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-008)); side (no rule for this zone/use/lot); rear (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-007, tweed-shire-council-008, tweed-shire-council-009))"
   },
   "R5": {
@@ -1003,7 +1003,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (conflicting rules of equal specificity (tweed-shire-council-008, tweed-shire-council-009))"
   }
  }

@@ -1810,17 +1810,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (maitland-city-council-013, maitland-city-council-017)); rear (conflicting rules of equal specificity (maitland-city-council-007, maitland-city-council-023))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (maitland-city-council-013, maitland-city-council-017)); rear (conflicting rules of equal specificity (maitland-city-council-007, maitland-city-council-023))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (maitland-city-council-013, maitland-city-council-017)); rear (conflicting rules of equal specificity (maitland-city-council-007, maitland-city-council-023))"
   },
   "R5": {
@@ -1830,7 +1830,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (maitland-city-council-013, maitland-city-council-017)); rear (conflicting rules of equal specificity (maitland-city-council-007, maitland-city-council-023))"
   }
  }

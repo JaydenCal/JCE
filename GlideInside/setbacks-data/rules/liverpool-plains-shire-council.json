@@ -24,16 +24,8 @@
     "note": "Dwelling street setback 4.5m (R1)."
    },
    "secondaryFront": null,
-   "side": {
-    "minM": null,
-    "note": "Table gives side/rear as 'BCA Requirements' for lots <800m2, 800-2000m2, >2000m2; no metre value stated in the DCP.",
-    "basis": "text"
-   },
-   "rear": {
-    "minM": null,
-    "note": "'BCA Requirements', no metre value stated.",
-    "basis": "text"
-   },
+   "side": null,
+   "rear": null,
    "garage": {
     "minM": 5.5,
     "behindBuildingLineM": 1.0,
@@ -48,6 +40,10 @@
    "needsReview": "Numbers read via document-extraction tool from the cl 3.1.1 table (pp 11-12); quote is the nearest verbatim fragment returned and does not cover every number. Verify against the PDF.",
    "reviewReason": "Numbers read via document-extraction tool from the cl 3.1.1 table (pp 11-12); quote is the nearest verbatim fragment returned and does not cover every number. Verify against the PDF.",
    "cornerNote": "Note 2 (p 12): a 4.5m setback is permissible between the garage side wall and the primary street frontage where the garage faces a secondary frontage. No general secondary-street setback value for dwellings found.",
+   "slotNotes": {
+    "side": "Table gives side/rear as 'BCA Requirements' for lots <800m2, 800-2000m2, >2000m2; no metre value stated in the DCP.",
+    "rear": "'BCA Requirements', no metre value stated."
+   },
    "dcp": "Development Control Plan (Amendment No. 4) (26/02/2020)",
    "edition": "26/02/2020",
    "source_file": "https://shared-drupal-s3fs.s3-ap-southeast-2.amazonaws.com/master-test/fapub_pdf/DCP-CP/LIVERPOOL+PLAINS/Development+Control+Plan+-+Amdt+No.+4+-+Adopted+26+February+2020_S-1407.pdf",
@@ -71,16 +67,8 @@
     "note": "Village zone street setback 6m."
    },
    "secondaryFront": null,
-   "side": {
-    "minM": null,
-    "note": "'BCA Requirements'",
-    "basis": "text"
-   },
-   "rear": {
-    "minM": null,
-    "note": "'BCA Requirements'",
-    "basis": "text"
-   },
+   "side": null,
+   "rear": null,
    "garage": {
     "minM": null,
     "note": "No separate garage figure extracted for RU5."
@@ -93,6 +81,10 @@
    "confidence": "low",
    "needsReview": "Numbers read via document-extraction tool from the cl 3.1.1 table (pp 11-12); quote is the nearest verbatim fragment returned and does not cover every number. Verify against the PDF. For this rule the quote is a paraphrase by the extraction tool, not verified verbatim.",
    "reviewReason": "Numbers read via document-extraction tool from the cl 3.1.1 table (pp 11-12); quote is the nearest verbatim fragment returned and does not cover every number. Verify against the PDF. For this rule the quote is a paraphrase by the extraction tool, not verified verbatim.",
+   "slotNotes": {
+    "side": "'BCA Requirements'",
+    "rear": "'BCA Requirements'"
+   },
    "dcp": "Development Control Plan (Amendment No. 4) (26/02/2020)",
    "edition": "26/02/2020",
    "source_file": "https://shared-drupal-s3fs.s3-ap-southeast-2.amazonaws.com/master-test/fapub_pdf/DCP-CP/LIVERPOOL+PLAINS/Development+Control+Plan+-+Amdt+No.+4+-+Adopted+26+February+2020_S-1407.pdf",
@@ -333,20 +325,21 @@
    "rules": 1
   }
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
-   "reasonIfNot": "not determinable: side; rear"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R5": {
@@ -356,8 +349,8 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
-   "reasonIfNot": "not determinable: side; rear"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   }
  }
 }

@@ -1,15 +1,17 @@
 // Setback rule picking and buildable-envelope construction. Pure ES module, no dependencies.
 //
 // Data shape: see setbacks-data/setback-rules.schema.json. One council file = { lga_slug, status, rules: [...] }.
-// Fallback chain (owner decision 11/11/2026): council DCP rule for the zone -> NSW Housing Code (NSW) or
-// QDC (QLD) -> null. Every result carries `basis` ("Council DCP" | "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)" | "QDC (default, council planning scheme may vary)") and a source.
+// Fallback chain (owner decision 11/11/2026): council DCP rule for the zone -> Codes SEPP Inland Code (NSW councils
+// with fallbackSet "NSW_INLAND") or Housing Code (other NSW) or QDC MP1.1 (QLD, lots up to 450 m2) -> null.
+// TODO: only 8 of the 69 Part 3D Inland Code LGAs are listed in the research; add the rest to INLAND in merge_research.py. Every result carries `basis` ("Council DCP" | "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)" | "QDC MP1.1 (default; council planning scheme or the Queensland Housing Code may vary)") and a source.
 //
 // Rule slot values (front, secondaryFront, side, rear, garage) are { minM, basis, note, rangeM, formula,
 // percent, bands?: [...] }. A band is { lotWidthMinM?, lotWidthMaxM?, lotAreaMinM2?, lotAreaMaxM2?,
 // buildingHeightMinM?, buildingHeightMaxM?, wallHeightMinM?, wallHeightMaxM?, storeys?, minM, note? }.
 // Band and condition bounds are inclusive.
 
-export const BASIS_LABELS = Object.freeze({ council: 'Council DCP', NSW: 'Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)', QLD: 'QDC (default, council planning scheme may vary)' });
+export const BASIS_LABELS = Object.freeze({ council: 'Council DCP', NSW: 'Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)', QLD: 'QDC MP1.1 (default; council planning scheme or the Queensland Housing Code may vary)',
+  NSW_INLAND: 'Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)' });
 const SLOTS = ['front', 'secondaryFront', 'side', 'rear', 'garage'];
 const NON_RESIDENTIAL_ZONE = /^(B\d|IN\d|MU1|E1|E2|E5|SP\d|RE\d|W\d)$/;
 
@@ -124,7 +126,15 @@ function resolveSlot(rules, slot, input, zone, use) {
         und.push(...bc.undecided);
       }
       if (!ok) continue;
-      entries.push({ ...e, keys: new Set(keys), undecided: und, level: (rule.conditions || {}).level || null });
+      const ent = { ...e, keys: new Set(keys), undecided: und, level: (rule.conditions || {}).level || null };
+      // band formula, e.g. (building height - 4.5) / 4 + 0.9, evaluated at input.buildingHeightM
+      const fp = ent.value.formulaParams;
+      if (fp && !isNum(ent.value.minM)) {
+        if (isNum(input.buildingHeightM)) {
+          ent.value = { ...ent.value, minM: Math.round(((input.buildingHeightM - fp.offsetM) / fp.divisor + fp.plusM) * 1000) / 1000, derived: ent.value.formula || 'band formula' };
+        } else ent.undecided = [...ent.undecided, 'buildingHeightM'];
+      }
+      entries.push(ent);
     }
   }
   const decided = entries.filter((e) => e.undecided.length === 0);
@@ -254,9 +264,12 @@ export function pickRulesDetailed(rulesForCouncil, input, options = {}) {
     // owner decision 11/11/2026: QLD uses the QDC default for every council at launch (no planning scheme lookups yet)
   } else if (council && council.status !== 'none') chain.push({ label: BASIS_LABELS.council, data: council, kind: 'council' });
   else attempts.push({ basis: BASIS_LABELS.council, reason: council ? 'council status is none (no DCP setback rules)' : 'no council rule file' });
-  const fb = options.fallbacks && options.fallbacks[state];
-  if (fb && Array.isArray(fb.rules)) chain.push({ label: BASIS_LABELS[state] || fb.basis || 'Fallback', data: fb, kind: 'fallback' });
-  else if (state && !chain.length) attempts.push({ basis: BASIS_LABELS[state] || 'Fallback', reason: 'fallback rule set not loaded' });
+  const fbs = options.fallbacks || {};
+  // councils in the Inland Code LGA list carry fallbackSet: "NSW_INLAND"
+  const fbKey = state === 'NSW' && council && council.fallbackSet && fbs[council.fallbackSet] ? council.fallbackSet : state;
+  const fb = fbs[fbKey];
+  if (fb && Array.isArray(fb.rules)) chain.push({ label: BASIS_LABELS[fbKey] || 'Fallback', data: fb, kind: 'fallback' });
+  else if (state && !chain.length) attempts.push({ basis: BASIS_LABELS[fbKey] || 'Fallback', reason: 'fallback rule set not loaded' });
   for (const step of chain) {
     const r = pickFrom(step.data.rules, inp, step.label, step.kind === 'council' ? council.dcp : (step.data.name || step.label));
     if (!r.missing.length) {

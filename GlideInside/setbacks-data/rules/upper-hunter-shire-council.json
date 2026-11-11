@@ -1532,17 +1532,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (upper-hunter-shire-council-004, upper-hunter-shire-council-005)); side (conflicting rules of equal specificity (upper-hunter-shire-council-013, upper-hunter-shire-council-018, upper-hunter-shire-council-021))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (conflicting rules of equal specificity (upper-hunter-shire-council-013, upper-hunter-shire-council-018, upper-hunter-shire-council-021))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (conflicting rules of equal specificity (upper-hunter-shire-council-013, upper-hunter-shire-council-018, upper-hunter-shire-council-021))"
   },
   "R5": {
@@ -1552,7 +1552,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (upper-hunter-shire-council-013, upper-hunter-shire-council-018, upper-hunter-shire-council-021))"
   }
  }

@@ -1031,17 +1031,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-013)); side (conflicting rules of equal specificity (randwick-city-council-004, randwick-city-council-005)); rear (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-014))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-013)); side (conflicting rules of equal specificity (randwick-city-council-004, randwick-city-council-005)); rear (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-014))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-013)); side (conflicting rules of equal specificity (randwick-city-council-004, randwick-city-council-005)); rear (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-014))"
   },
   "R5": {
@@ -1051,7 +1051,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-013)); side (conflicting rules of equal specificity (randwick-city-council-004, randwick-city-council-005)); rear (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-014))"
   }
  }

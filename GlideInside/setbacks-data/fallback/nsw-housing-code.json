@@ -29,18 +29,37 @@
    },
    "front": {
     "minM": null,
-    "basis": "average_neighbours",
-    "note": "Not less than the average primary road setback of the 2 nearest dwelling houses on the same side of the road (excl. battle-axe lots, other-lot attached/detached development, articulation-zone elements). If fewer than 2 dwellings within 40m, use bands."
+    "basis": "fixed",
+    "note": "Not less than the average primary road setback of the 2 nearest dwelling houses on the same side of the road (excl. battle-axe lots, other-lot attached/detached development, articulation-zone elements). If fewer than 2 dwellings within 40m, use bands. [Figure used when neighbour setbacks are not supplied: lot area band.]",
+    "bands": [
+     {
+      "lotAreaMinM2": 200,
+      "lotAreaMaxM2": 300,
+      "minM": 3.0,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 300.01,
+      "lotAreaMaxM2": 900,
+      "minM": 4.5,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 900.01,
+      "lotAreaMaxM2": 1500,
+      "minM": 6.5,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 1500.01,
+      "minM": 10.0,
+      "basis": "fixed"
+     }
+    ]
    },
    "secondaryFront": null,
-   "side": {
-    "minM": null,
-    "basis": "text"
-   },
-   "rear": {
-    "minM": null,
-    "basis": "text"
-   },
+   "side": null,
+   "rear": null,
    "garage": {
     "minM": null,
     "note": "Garage/carport attached to dwelling is covered by the dwelling front/secondary rules; side and rear apply expressly to a carport or garage (cl 3.10(4)(b), (10)(b)). No separate garage-behind-line rule in cl 3.10."
@@ -52,35 +71,12 @@
    "quote": "If there are not 2 dwelling houses within 40m of the lot on the same side of the primary road",
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
-   "bands": {
-    "front": [
-     {
-      "lotAreaMinM2": 200,
-      "lotAreaMaxM2": 300,
-      "minM": 3.0
-     },
-     {
-      "lotAreaMinM2": 300.01,
-      "lotAreaMaxM2": 900,
-      "minM": 4.5
-     },
-     {
-      "lotAreaMinM2": 900.01,
-      "lotAreaMaxM2": 1500,
-      "minM": 6.5
-     },
-     {
-      "lotAreaMinM2": 1500.01,
-      "minM": 10.0
-     }
-    ]
-   },
    "zonesSource": "cl 3.1(3)(a): 'the lot must be in Zone R1, R2, R3, R4 or RU5' (extraction-tool text; verify)",
    "extraQuotes": {
     "averageRule": "must not be less than the average setback from the primary road of the 2 nearest dwelling houses",
     "frontBands": "200m2-300m2 3m / >300m2-900m2 4.5m / >900m2-1,500m2 6.5m / >1,500m2 10m"
    },
-   "dcp": "NSW Codes SEPP Housing Code",
+   "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
    "edition": null,
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
    "sources": []
@@ -100,24 +96,33 @@
    "conditions": {
     "cornerLot": true
    },
-   "front": {
-    "minM": null,
-    "basis": "fixed",
-    "note": "See primary rule."
-   },
+   "front": null,
    "secondaryFront": {
     "minM": null,
-    "basis": "by_lot_area",
-    "note": "cl 3.10(11) secondary road setbacks for corner lots; applies despite any other standard."
+    "basis": "fixed",
+    "note": "cl 3.10(11) secondary road setbacks for corner lots; applies despite any other standard. [Figure used when neighbour setbacks are not supplied: lot area band.]",
+    "bands": [
+     {
+      "lotAreaMinM2": 200,
+      "lotAreaMaxM2": 600,
+      "minM": 2.0,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 600.01,
+      "lotAreaMaxM2": 1500,
+      "minM": 3.0,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 1500.01,
+      "minM": 5.0,
+      "basis": "fixed"
+     }
+    ]
    },
-   "side": {
-    "minM": null,
-    "basis": "text"
-   },
-   "rear": {
-    "minM": null,
-    "basis": "text"
-   },
+   "side": null,
+   "rear": null,
    "garage": {
     "minM": null
    },
@@ -128,25 +133,10 @@
    "quote": "must have a minimum setback from a boundary with a secondary road as shown in the following table",
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
-   "bands": {
-    "secondaryFront": [
-     {
-      "lotAreaMinM2": 200,
-      "lotAreaMaxM2": 600,
-      "minM": 2.0
-     },
-     {
-      "lotAreaMinM2": 600.01,
-      "lotAreaMaxM2": 1500,
-      "minM": 3.0
-     },
-     {
-      "lotAreaMinM2": 1500.01,
-      "minM": 5.0
-     }
-    ]
+   "slotNotes": {
+    "front": "See primary rule."
    },
-   "dcp": "NSW Codes SEPP Housing Code",
+   "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
    "edition": null,
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
    "sources": []
@@ -164,20 +154,89 @@
     "dwelling"
    ],
    "conditions": {},
-   "front": {
-    "minM": null,
-    "basis": "text"
-   },
+   "front": null,
    "secondaryFront": null,
    "side": {
-    "minM": 0.9,
+    "minM": null,
     "formula": "see bands.side; lot width measured at building line; height at any point",
+    "bands": [
+     {
+      "lotWidthMinM": 6,
+      "lotWidthMaxM": 10,
+      "buildingHeightMinM": 0,
+      "buildingHeightMaxM": 5.5,
+      "minM": 0.9,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMinM": 6,
+      "lotWidthMaxM": 10,
+      "buildingHeightMinM": 5.51,
+      "buildingHeightMaxM": 8.5,
+      "formula": "(building height - 5.5) / 4 + 0.9",
+      "formulaParams": {
+       "offsetM": 5.5,
+       "divisor": 4.0,
+       "plusM": 0.9
+      },
+      "minM": null,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMinM": 10.01,
+      "lotWidthMaxM": 18,
+      "buildingHeightMinM": 0,
+      "buildingHeightMaxM": 4.5,
+      "minM": 0.9,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMinM": 10.01,
+      "lotWidthMaxM": 18,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 8.5,
+      "formula": "(building height - 4.5) / 4 + 0.9",
+      "formulaParams": {
+       "offsetM": 4.5,
+       "divisor": 4.0,
+       "plusM": 0.9
+      },
+      "minM": null,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMinM": 18.01,
+      "lotWidthMaxM": 24,
+      "buildingHeightMinM": 0,
+      "buildingHeightMaxM": 4.5,
+      "minM": 1.5,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMinM": 18.01,
+      "lotWidthMaxM": 24,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 8.5,
+      "formula": "(building height - 4.5) / 4 + 1.5",
+      "formulaParams": {
+       "offsetM": 4.5,
+       "divisor": 4.0,
+       "plusM": 1.5
+      },
+      "minM": null,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMinM": 24.01,
+      "buildingHeightMinM": 0,
+      "buildingHeightMaxM": 8.5,
+      "minM": 2.5,
+      "basis": "fixed"
+     }
+    ],
     "basis": "fixed"
    },
-   "rear": {
-    "minM": null,
-    "basis": "text"
-   },
+   "rear": null,
    "garage": {
     "minM": null
    },
@@ -188,60 +247,8 @@
    "quote": "Lot width at the building line | Building height at any point | Minimum required setback from each side boundary",
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
-   "bands": {
-    "side": [
-     {
-      "lotWidthMinM": 6,
-      "lotWidthMaxM": 10,
-      "heightMinM": 0,
-      "heightMaxM": 5.5,
-      "minM": 0.9
-     },
-     {
-      "lotWidthMinM": 6,
-      "lotWidthMaxM": 10,
-      "heightMinM": 5.5,
-      "heightMaxM": 8.5,
-      "formula": "(building height - 5.5) / 4 + 0.9"
-     },
-     {
-      "lotWidthMinM": 10,
-      "lotWidthMaxM": 18,
-      "heightMinM": 0,
-      "heightMaxM": 4.5,
-      "minM": 0.9
-     },
-     {
-      "lotWidthMinM": 10,
-      "lotWidthMaxM": 18,
-      "heightMinM": 4.5,
-      "heightMaxM": 8.5,
-      "formula": "(building height - 4.5) / 4 + 0.9"
-     },
-     {
-      "lotWidthMinM": 18,
-      "lotWidthMaxM": 24,
-      "heightMinM": 0,
-      "heightMaxM": 4.5,
-      "minM": 1.5
-     },
-     {
-      "lotWidthMinM": 18,
-      "lotWidthMaxM": 24,
-      "heightMinM": 4.5,
-      "heightMaxM": 8.5,
-      "formula": "(building height - 4.5) / 4 + 1.5"
-     },
-     {
-      "lotWidthMinM": 24,
-      "heightMinM": 0,
-      "heightMaxM": 8.5,
-      "minM": 2.5
-     }
-    ]
-   },
    "builtToBoundary": "cl 3.10(5): lots 6m-8m wide (not corner) may build to 1 or both side boundaries; cl 3.10(6): lots >8m-12.5m wide may build to 1 side boundary, subject to masonry/no-openings conditions; cl 3.10(7) wall within 900mm max height 3.3m (or adjoining wall up to 8.5m); cl 3.10(8) max length 20m or 50% lot depth (6-10m wide), 10m (>10-12.5m wide).",
-   "dcp": "NSW Codes SEPP Housing Code",
+   "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
    "edition": null,
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
    "sources": []
@@ -259,18 +266,77 @@
     "dwelling"
    ],
    "conditions": {},
-   "front": {
-    "minM": null,
-    "basis": "text"
-   },
+   "front": null,
    "secondaryFront": null,
-   "side": {
-    "minM": null,
-    "basis": "text"
-   },
+   "side": null,
    "rear": {
-    "minM": 3.0,
+    "minM": null,
     "note": "Bands by lot area and height; excludes lots with only 3 boundaries. Lane exceptions in cl 3.11(5), not read.",
+    "bands": [
+     {
+      "lotAreaMinM2": 200,
+      "lotAreaMaxM2": 300,
+      "buildingHeightMinM": 0,
+      "buildingHeightMaxM": 4.5,
+      "minM": 3.0,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 200,
+      "lotAreaMaxM2": 300,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 8.5,
+      "minM": 10.0,
+      "alternative": "or the average rear setback of the 2 adjoining dwelling houses measured at 4.5m above ground level (existing), whichever is the lesser",
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 300.01,
+      "lotAreaMaxM2": 900,
+      "buildingHeightMinM": 0,
+      "buildingHeightMaxM": 4.5,
+      "minM": 3.0,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 300.01,
+      "lotAreaMaxM2": 900,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 8.5,
+      "minM": 8.0,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 900.01,
+      "lotAreaMaxM2": 1500,
+      "buildingHeightMinM": 0,
+      "buildingHeightMaxM": 4.5,
+      "minM": 5.0,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 900.01,
+      "lotAreaMaxM2": 1500,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 8.5,
+      "minM": 12.0,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 1500.01,
+      "buildingHeightMinM": 0,
+      "buildingHeightMaxM": 4.5,
+      "minM": 10.0,
+      "basis": "fixed"
+     },
+     {
+      "lotAreaMinM2": 1500.01,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 8.5,
+      "minM": 15.0,
+      "basis": "fixed"
+     }
+    ],
     "basis": "fixed"
    },
    "garage": {
@@ -283,66 +349,7 @@
    "quote": "Lot area | Building height | Minimum setback from rear boundary",
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
-   "bands": {
-    "rear": [
-     {
-      "lotAreaMinM2": 200,
-      "lotAreaMaxM2": 300,
-      "heightMinM": 0,
-      "heightMaxM": 4.5,
-      "minM": 3.0
-     },
-     {
-      "lotAreaMinM2": 200,
-      "lotAreaMaxM2": 300,
-      "heightMinM": 4.5,
-      "heightMaxM": 8.5,
-      "minM": 10.0,
-      "alternative": "or the average rear setback of the 2 adjoining dwelling houses measured at 4.5m above ground level (existing), whichever is the lesser"
-     },
-     {
-      "lotAreaMinM2": 300.01,
-      "lotAreaMaxM2": 900,
-      "heightMinM": 0,
-      "heightMaxM": 4.5,
-      "minM": 3.0
-     },
-     {
-      "lotAreaMinM2": 300.01,
-      "lotAreaMaxM2": 900,
-      "heightMinM": 4.5,
-      "heightMaxM": 8.5,
-      "minM": 8.0
-     },
-     {
-      "lotAreaMinM2": 900.01,
-      "lotAreaMaxM2": 1500,
-      "heightMinM": 0,
-      "heightMaxM": 4.5,
-      "minM": 5.0
-     },
-     {
-      "lotAreaMinM2": 900.01,
-      "lotAreaMaxM2": 1500,
-      "heightMinM": 4.5,
-      "heightMaxM": 8.5,
-      "minM": 12.0
-     },
-     {
-      "lotAreaMinM2": 1500.01,
-      "heightMinM": 0,
-      "heightMaxM": 4.5,
-      "minM": 10.0
-     },
-     {
-      "lotAreaMinM2": 1500.01,
-      "heightMinM": 4.5,
-      "heightMaxM": 8.5,
-      "minM": 15.0
-     }
-    ]
-   },
-   "dcp": "NSW Codes SEPP Housing Code",
+   "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
    "edition": null,
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
    "sources": []
@@ -360,19 +367,10 @@
     "dwelling"
    ],
    "conditions": {},
-   "front": {
-    "minM": null,
-    "basis": "text"
-   },
+   "front": null,
    "secondaryFront": null,
-   "side": {
-    "minM": null,
-    "basis": "text"
-   },
-   "rear": {
-    "minM": null,
-    "basis": "text"
-   },
+   "side": null,
+   "rear": null,
    "garage": {
     "minM": null
    },
@@ -390,7 +388,7 @@
     "publicReserveM": 3.0,
     "battleAxeRearOfLotInFrontM": 3.0
    },
-   "dcp": "NSW Codes SEPP Housing Code",
+   "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
    "edition": null,
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
    "sources": []
@@ -408,5 +406,5 @@
   "cl 3.11 exceptions not read",
   "Side-setback quote values come via an extraction tool, not copied verbatim from the page by hand"
  ],
- "name": "NSW Codes SEPP Housing Code"
+ "name": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code"
 }

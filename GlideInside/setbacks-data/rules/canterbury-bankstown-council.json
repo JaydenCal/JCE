@@ -1558,17 +1558,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (canterbury-bankstown-council-006, canterbury-bankstown-council-009, canterbury-bankstown-council-012)); side (conflicting rules of equal specificity (canterbury-bankstown-council-012, canterbury-bankstown-council-014, canterbury-bankstown-council-022)); rear (no rule for this zone/use/lot)"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (canterbury-bankstown-council-006, canterbury-bankstown-council-009, canterbury-bankstown-council-012)); side (conflicting rules of equal specificity (canterbury-bankstown-council-012, canterbury-bankstown-council-014, canterbury-bankstown-council-022)); rear (no rule for this zone/use/lot)"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (canterbury-bankstown-council-002, canterbury-bankstown-council-006, canterbury-bankstown-council-009, canterbury-bankstown-council-012)); side (conflicting rules of equal specificity (canterbury-bankstown-council-012, canterbury-bankstown-council-014, canterbury-bankstown-council-022))"
   },
   "R5": {
@@ -1578,7 +1578,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (canterbury-bankstown-council-006, canterbury-bankstown-council-009, canterbury-bankstown-council-012)); side (conflicting rules of equal specificity (canterbury-bankstown-council-012, canterbury-bankstown-council-014, canterbury-bankstown-council-022)); rear (no rule for this zone/use/lot)"
   }
  }

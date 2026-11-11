@@ -1996,17 +1996,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-024, the-hills-shire-council-025))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-024, the-hills-shire-council-025))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-024, the-hills-shire-council-025))"
   },
   "R5": {
@@ -2016,7 +2016,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-024, the-hills-shire-council-025, the-hills-shire-council-035)); side (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-035)); rear (conflicting rules of equal specificity (the-hills-shire-council-021, the-hills-shire-council-035))"
   }
  }

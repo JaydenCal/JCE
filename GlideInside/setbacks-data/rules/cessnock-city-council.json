@@ -1047,17 +1047,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-008, cessnock-city-council-009)); side (conflicting rules of equal specificity (cessnock-city-council-004, cessnock-city-council-005, cessnock-city-council-006)); rear (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-010))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-008, cessnock-city-council-009)); side (conflicting rules of equal specificity (cessnock-city-council-004, cessnock-city-council-005, cessnock-city-council-006)); rear (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-010))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-008, cessnock-city-council-009)); side (conflicting rules of equal specificity (cessnock-city-council-004, cessnock-city-council-005, cessnock-city-council-006)); rear (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-010))"
   },
   "R5": {
@@ -1067,7 +1067,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (cessnock-city-council-004, cessnock-city-council-005, cessnock-city-council-006, cessnock-city-council-017)); rear (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-010))"
   }
  }

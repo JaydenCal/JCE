@@ -732,17 +732,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (ryde-council-of-the-city-of-010, ryde-council-of-the-city-of-011))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (ryde-council-of-the-city-of-010, ryde-council-of-the-city-of-011))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (ryde-council-of-the-city-of-010, ryde-council-of-the-city-of-011))"
   },
   "R5": {
@@ -752,7 +752,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (ryde-council-of-the-city-of-010, ryde-council-of-the-city-of-011))"
   }
  }

@@ -2262,17 +2262,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
   },
   "R5": {
@@ -2282,7 +2282,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-008, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
   }
  }

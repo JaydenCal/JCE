@@ -1194,11 +1194,7 @@
     ],
     "basis": "fixed"
    },
-   "rear": {
-    "minM": null,
-    "note": "Rear setbacks to match adjoining properties; if not characteristic use Part F Planning Area character statement.",
-    "basis": "text"
-   },
+   "rear": null,
    "garage": {
     "minM": null,
     "note": "No street-setback value; garages/carports not between street frontage and primary facade (2013 DCP s1.5.4 P10); laneway 1.2m."
@@ -1214,6 +1210,9 @@
    "extraQuotes": {
     "side": "2nd storey (up to 7m) 1.5m",
     "rear": "Provide rear building setbacks that match those on adjoining properties"
+   },
+   "slotNotes": {
+    "rear": "Rear setbacks to match adjoining properties; if not characteristic use Part F Planning Area character statement."
    },
    "dcp": "North Sydney DCP 2025 (Part E Section 1)",
    "edition": "UNVERIFIED",
@@ -1349,17 +1348,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front; rear"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front; rear"
   },
   "R5": {
@@ -1369,7 +1368,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear"
   }
  }

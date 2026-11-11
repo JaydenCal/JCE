@@ -1176,7 +1176,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (kiama-the-council-of-the-municipality-of-017, kiama-the-council-of-the-municipality-of-018))"
   }
  }

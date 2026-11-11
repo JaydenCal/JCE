@@ -1258,17 +1258,17 @@
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
   },
   "R5": {
@@ -1278,7 +1278,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); side (conflicting rules of equal specificity (ku-ring-gai-council-001, ku-ring-gai-council-003, ku-ring-gai-council-007)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
   }
  }
