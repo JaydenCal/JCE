@@ -3,6 +3,7 @@
 
 import { clean, PEN, fit, ink, wrap } from './kit.js';
 import { placeImage } from '../pdf.js';
+import { titleLotDp } from '../../../site/lotplan.js';
 import { DISCLAIMER, ddmmyyyy, normDate, drawingNo, attribution } from './brand.js';
 
 export const SW = 420;
@@ -128,7 +129,7 @@ export function drawFrame(doc, ctx, sheet) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
   const addr = clean(tb.address || project.site?.lot?.address || '');
-  const lotdp = clean(tb.lotDp || [project.site?.lot?.lotLabel].filter(Boolean).join(' '));
+  const lotdp = clean(titleLotDp(project));
   if (addr) doc.text(fit(doc, addr.toUpperCase(), w2 - 5), x2 + 2.6, y0 + 14.6);
   if (lotdp) doc.text(fit(doc, lotdp.toUpperCase(), w2 - 5), x2 + 2.6, y0 + 19.2);
   const rest = (h - rh * 1.6) / 2;

@@ -3,7 +3,7 @@
 import * as G from '../../../model/geometry.js';
 import { fallAcross, lotDimensions } from '../../../model/placement.js';
 import { scheduleData, levelsSorted } from '../shared.js';
-import { buildingRings, roadReserve, deriveDriveway, clearances, lotLabelLines } from '../../../site/lotplan.js';
+import { buildingRings, roadReserve, deriveDriveway, clearances, lotLabelLines, titleLotDp } from '../../../site/lotplan.js';
 import { northArrow, placeImage, imageInfo } from '../pdf.js';
 import { PEN, TXT, clean, wrap, fit, ink, polygon, viewTitle, clippedPolyline, clipPolygon, labelOn, hatch, haloText } from './kit.js';
 import { BODY } from './frame.js';
@@ -104,7 +104,7 @@ export function drawCover(doc, ctx, list) {
   const addr = clean(tb.address || lot?.address || '');
   if (addr) { doc.text(addr, x0, y); y += 7.4; }
   const ll = lot ? lotLabelLines(lot) : null;
-  const lotdp = clean(tb.lotDp || (ll ? `${ll.first} ${ll.second}`.trim() : ''));
+  const lotdp = clean(titleLotDp(project) || (ll ? `${ll.first} ${ll.second}`.trim() : ''));
   if (lotdp) { doc.text(lotdp, x0, y); y += 7.4; }
   doc.setFontSize(TXT.strong);
   ink(doc, PEN.grey);

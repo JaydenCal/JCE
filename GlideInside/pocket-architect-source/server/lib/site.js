@@ -46,7 +46,7 @@
 import { HttpError, json, clientIp } from './http.js';
 import {
   mgaZoneForLon, mgaSrid, zoneForSrid, lonLatToMga, mgaToLonLat, lonLatToWeb, mgaBoxToWebBox,
-  ringsToPolygons, polygonArea, ringCentroid, interiorPoint, bboxOf, formatPlan, round, mgaToWeb,
+  ringsToPolygons, polygonArea, ringCentroid, interiorPoint, bboxOf, formatPlan, formatLotLabel, round, mgaToWeb,
 } from '../../src/site/geo.js';
 import { readTiff } from '../../src/site/tiff.js';
 import { contourLines, fillGaps, gridRange } from '../../src/site/contours.js';
@@ -74,6 +74,13 @@ const TTL = { search: 3600, lot: 7 * 86400, aerial: 7 * 86400, contours: 7 * 864
 const LIMITS = { search: [60, 60], lot: [20, 60], aerial: [20, 60], contours: [12, 60], health: [10, 60] }; // [hits, window seconds] per IP
 const DAY_LIMIT = 800;
 const NEIGHBOUR_M = 60;
+const NEIGHBOUR_MAX_M = 400;
+
+/** Neighbour search distance in metres: the request's neighbourM (0 to 400) or, when absent, max(60, 15 percent of the lot's bounding box diagonal) capped at 400. */
+export function neighbourDistance(requested, diagonalM) {
+  if (requested !== null && requested !== undefined && requested !== '' && Number.isFinite(Number(requested))) return Math.min(NEIGHBOUR_MAX_M, Math.max(0, Number(requested)));
+  return Math.min(NEIGHBOUR_MAX_M, Math.max(NEIGHBOUR_M, Math.round(0.15 * (Number.isFinite(diagonalM) ? diagonalM : 0))));
+}
 const MAX_SPAN_M = 2000;
 const NODATA = -9999;
 const UA = 'PlanStudio-SiteLookup/1.0';
@@ -329,6 +336,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     const a = f.attributes || {};
     const polys = ringsToPolygons(f.geometry?.rings || []);
     if (!polys.length) return null;
+    polys.sort((x, y) => polygonArea(y) - polygonArea(x)); // every part of a multipart lot kept, the largest first
     if (state === 'NSW') {
       const lotNumber = String(a.lotnumber ?? '').trim();
       const section = String(a.sectionnumber ?? '').trim();
@@ -368,7 +376,10 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     if (lat > -9 || lat < -38) throw new HttpError('UNSUPPORTED_AREA', 'That location is outside NSW and Queensland. Site lookup only covers those two states.');
     const wanted = stateParam(url);
     const srid = mgaSrid(zone);
-    const { value } = await jsonCached(`lot2:${wanted || 'auto'}:${round(lon, 5)}:${round(lat, 5)}`, TTL.lot, async () => {
+    const neighbourParam = url.searchParams.get('neighbourM');
+    if (neighbourParam !== null && neighbourParam !== '' && !Number.isFinite(Number(neighbourParam))) throw new HttpError('BAD_REQUEST', 'neighbourM must be a number of metres.');
+    const nbKey = neighbourParam === null || neighbourParam === '' ? 'auto' : String(Math.min(NEIGHBOUR_MAX_M, Math.max(0, Math.round(Number(neighbourParam)))));
+    const { value } = await jsonCached(`lot3:${wanted || 'auto'}:${round(lon, 5)}:${round(lat, 5)}:${nbKey}`, TTL.lot, async () => {
       const order = wanted ? [wanted] : lat < -29 ? ['NSW', 'QLD'] : ['QLD', 'NSW'];
       let state = null;
       let parcel = null;
@@ -380,13 +391,17 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         }
       }
       if (!parcel) throw new HttpError('NOT_FOUND', 'No lot was found at that address.');
-      const biggest = parcel.polys.reduce((a, b) => (polygonArea(b) > polygonArea(a) ? b : a));
+      // One parcel supplies the area, label, outline and origin. A multipart lot keeps every part (largest first); the area is their sum.
+      const parts = parcel.polys.filter((q) => polygonArea(q) > 0.5);
+      const biggest = parts[0] || parcel.polys[0];
+      const allBoxes = (parts.length ? parts : [biggest]).map((q) => bboxOf(q.outer));
+      const lotBboxAll = { minX: Math.min(...allBoxes.map((q) => q.minX)), minY: Math.min(...allBoxes.map((q) => q.minY)), maxX: Math.max(...allBoxes.map((q) => q.maxX)), maxY: Math.max(...allBoxes.map((q) => q.maxY)) };
       const c = ringCentroid(biggest.outer);
       // A concave lot can have its centroid outside: keep the centroid as the origin anyway (it is only a reference) but report it.
       const origin = { e: round(c[0], 3), n: round(c[1], 3) };
-      const bb = bboxOf(biggest.outer);
-      const lotBox = { minE: bb.minX, minN: bb.minY, maxE: bb.maxX, maxN: bb.maxY };
-      const around = { minE: lotBox.minE - NEIGHBOUR_M, minN: lotBox.minN - NEIGHBOUR_M, maxE: lotBox.maxE + NEIGHBOUR_M, maxN: lotBox.maxN + NEIGHBOUR_M };
+      const lotBox = { minE: lotBboxAll.minX, minN: lotBboxAll.minY, maxE: lotBboxAll.maxX, maxN: lotBboxAll.maxY };
+      const nbM = neighbourDistance(neighbourParam, Math.hypot(lotBox.maxE - lotBox.minE, lotBox.maxN - lotBox.minN));
+      const around = { minE: lotBox.minE - nbM, minN: lotBox.minN - nbM, maxE: lotBox.maxE + nbM, maxN: lotBox.maxN + nbM };
       const layer = state === 'NSW' ? SERVICES.nswLot : SERVICES.qldLot;
       const fields = state === 'NSW' ? 'lotnumber,sectionnumber,planlabel,planlotarea,lotidstring,stratumlevel,hasstratum' : 'lot,plan,lotplan,lot_area,tenure,parcel_typ,locality,shire_name';
       const lgaCall = state === 'NSW'
@@ -399,12 +414,12 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         })
         : Promise.resolve(null);
       const roadsCall = state === 'NSW'
-        ? upstream(`${SERVICES.nswRoads}/query`, { f: 'json', ...envelope({ minE: lotBox.minE - 40, minN: lotBox.minN - 40, maxE: lotBox.maxE + 40, maxN: lotBox.maxN + 40 }, srid), outFields: 'roadnamebase,roadnametype,roadnamesuffix', returnGeometry: 'true', outSR: String(srid), resultRecordCount: '40' }, { retries: 0, timeoutMs: 10000 })
+        ? upstream(`${SERVICES.nswRoads}/query`, { f: 'json', ...envelope({ minE: lotBox.minE - Math.min(nbM, 40), minN: lotBox.minN - Math.min(nbM, 40), maxE: lotBox.maxE + Math.min(nbM, 40), maxN: lotBox.maxN + Math.min(nbM, 40) }, srid), outFields: 'roadnamebase,roadnametype,roadnamesuffix', returnGeometry: 'true', outSR: String(srid), resultRecordCount: '40' }, { retries: 0, timeoutMs: 10000 })
         : Promise.resolve({ features: [] });
       // The NSW cadastre layer rejects resultRecordCount ("Failed to execute query"), so no count is sent; it returns up to its own limit. Big lots
       // (rural) get simplified geometry so the response stays small; a failed GET is retried once as a form POST.
-      const bigLot = Math.max(lotBox.maxE - lotBox.minE, lotBox.maxN - lotBox.minN) > 600;
-      const nbParams = { f: 'json', ...envelope(around, srid), outFields: fields, returnGeometry: 'true', outSR: String(srid), ...(bigLot ? { maxAllowableOffset: '1', geometryPrecision: '1' } : {}), ...(state === 'QLD' ? { resultRecordCount: '300' } : {}) };
+      const bigLot = Math.max(lotBox.maxE - lotBox.minE + 2 * nbM, lotBox.maxN - lotBox.minN + 2 * nbM) > 600;
+      const nbParams = { f: 'json', ...envelope(around, srid), outFields: fields, returnGeometry: 'true', outSR: String(srid), ...(bigLot ? { maxAllowableOffset: nbM > 150 ? '2' : '1', geometryPrecision: '1' } : {}), ...(state === 'QLD' ? { resultRecordCount: '300' } : {}) };
       const nbCall = upstream(`${layer}/query`, nbParams, { retries: 0 }).catch(() => upstream(`${layer}/query`, nbParams, { post: true, retries: 0 }));
       const notes = [];
       const [lga, zoning, roadsBody, nbBody] = await Promise.all([
@@ -422,15 +437,15 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         const polys = p.polys.filter((q) => polygonArea(q) > 1);
         if (!polys.length) continue;
         const big = polys.reduce((a, b) => (polygonArea(b) > polygonArea(a) ? b : a));
-        neighbours.push({ lotNumber: p.lotNumber, planLabel: p.planLabel, lotLabel: `Lot ${p.lotNumber} ${p.planLabel}`.trim(), areaM2: round(polygonArea(big), 1), isRoad: p.isRoad, polygons: polysRel([big], origin) });
+        neighbours.push({ lotNumber: p.lotNumber, planLabel: p.planLabel, lotLabel: formatLotLabel(p), areaM2: round(polygonArea(big), 1), isRoad: p.isRoad, polygons: polysRel([big], origin) });
       }
       const roads = [];
       for (const f of roadsBody.features || []) {
         const name = [f.attributes?.roadnamebase, f.attributes?.roadnametype, f.attributes?.roadnamesuffix].filter(Boolean).join(' ');
         for (const path of f.geometry?.paths || []) roads.push({ name, points: path.map(([e, n]) => [round(e - origin.e, 2), round(n - origin.n, 2)]) });
       }
-      const area = round(polygonArea(biggest), 1);
-      const sec = parcel.section ? ` Sec ${parcel.section}` : '';
+      const usedParts = parts.length ? parts : [biggest];
+      const area = round(usedParts.reduce((t, q) => t + polygonArea(q), 0), 1);
       return {
         state,
         srid,
@@ -441,11 +456,11 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
           lotNumber: parcel.lotNumber,
           section: parcel.section,
           planLabel: parcel.planLabel,
-          lotLabel: `Lot ${parcel.lotNumber}${sec} ${parcel.planLabel}`.trim(),
+          lotLabel: formatLotLabel(parcel),
           lotPlan: parcel.lotPlan,
           areaM2: area,
           registeredAreaM2: parcel.registered,
-          polygons: polysRel([biggest], origin),
+          polygons: polysRel(usedParts, origin),
           bboxMga: { minE: round(lotBox.minE, 3), minN: round(lotBox.minN, 3), maxE: round(lotBox.maxE, 3), maxN: round(lotBox.maxN, 3) },
         },
         neighbours,

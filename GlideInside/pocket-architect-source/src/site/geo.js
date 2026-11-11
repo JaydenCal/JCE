@@ -270,7 +270,16 @@ export const bearingDeg = (a, b) => (((Math.atan2(b[0] - a[0], b[1] - a[1]) * 18
 export function formatPlan(label) {
   const s = String(label ?? '').trim().toUpperCase().replace(/\s+/g, ' ');
   const m = /^([A-Z]+)\s?(\d+[A-Z]?)$/.exec(s);
-  return m ? `${m[1]} ${m[2]}` : s;
+  if (!m) return s;
+  const digits = m[2].replace(/^0+(?=\d)/, ''); // "DP0254" is plan 254
+  return `${m[1]} ${digits}`;
+}
+
+/** "Lot 3 DP 263990" or "Lot 18 Sec 13 DP 758951" from { lotNumber, section, planLabel }. */
+export function formatLotLabel({ lotNumber = '', section = '', planLabel = '' } = {}) {
+  const n = String(lotNumber ?? '').trim();
+  const sec = String(section ?? '').trim();
+  return [n ? `Lot ${n}` : '', sec ? `Sec ${sec}` : '', formatPlan(planLabel)].filter(Boolean).join(' ');
 }
 
 export const round = (v, dp = 3) => {
