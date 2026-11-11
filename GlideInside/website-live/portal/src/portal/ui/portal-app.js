@@ -13,6 +13,7 @@ import { renderBranding } from './branding-tab.js';
 import { ddmmyyyy } from '../billing.js';
 import { trialBanner, handleBillingReturn } from './trial-ui.js';
 import { CONFIG } from '../../config.js';
+import { applyBrandTheme, clearBrandTheme } from '../theme-css.js';
 
 const TABS = [
   { id: 'houses', label: 'House designs', render: renderHouses },
@@ -35,7 +36,7 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
   }
 
   const setView = (node) => { clear(root); root.append(node); document.title = `${node.dataset?.title || 'Portal'} | Glide Inside`; };
-  const toSignIn = () => { history.replaceState(null, '', location.pathname + (params.get('client') ? '?client=1' : '')); setView(signInView({ api, client: !!params.get('client'), onSignedIn: start, goForgot: () => setView(forgotView({ api, goBack: toSignIn, goReset: (t) => setView(resetView({ api, token: t, goBack: toSignIn })) })) })); };
+  const toSignIn = () => { clearBrandTheme(); history.replaceState(null, '', location.pathname + (params.get('client') ? '?client=1' : '')); setView(signInView({ api, client: !!params.get('client'), onSignedIn: start, goForgot: () => setView(forgotView({ api, goBack: toSignIn, goReset: (t) => setView(resetView({ api, token: t, goBack: toSignIn })) })) })); };
 
   async function signOut() {
     await api.signOut();
@@ -46,14 +47,16 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
   async function start(next) {
     me = next === undefined ? await api.me() : next;
     if (!me) return toSignIn();
+    applyBrandTheme(me.org.branding.colours); // builder colour scheme for staff and clients; the sign in page keeps the Glide Inside look
     if (me.user.mustChangePassword) return setView(changePasswordView({ api, me, onDone: start, onSignOut: signOut }));
     if (me.user.role === 'client') return setView(clientHome());
     setView(dashboard());
   }
 
+  const hasBrandTheme = () => !!me.org.branding.colours?.primary;
   const brandBar = (right) => h('div', { class: 'pp-brandbar' },
     h('div', { class: 'pp-brand' }, me.org.branding.logoDataUrl ? h('img', { src: me.org.branding.logoDataUrl, alt: '', class: 'pp-brand-logo' }) : null, h('div', null, h('strong', null, me.org.branding.displayName), h('small', null, me.user.role === 'client' ? 'Client area' : 'Builder dashboard'))),
-    h('div', { class: 'pp-who' }, h('span', null, icon('user', 16), `${me.user.name} (${me.user.role})`), right, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: signOut }, icon('logout', 15), 'Sign out')));
+    h('div', { class: 'pp-who' }, hasBrandTheme() ? h('span', { class: 'gi-powered' }, 'Powered by Glide Inside') : null, h('span', null, icon('user', 16), `${me.user.name} (${me.user.role})`), right, h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: signOut }, icon('logout', 15), 'Sign out')));
 
   // Client home: normally a client goes straight into the app; this page lists their projects and links in.
   function clientHome() {
@@ -82,6 +85,7 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
     }
     async function refreshMe() {
       me = await api.me();
+      applyBrandTheme(me.org.branding.colours);
       paintBanner();
     }
     async function show(id, { focus = false } = {}) {
