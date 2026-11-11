@@ -188,14 +188,14 @@ export function drawFrame(doc, ctx, sheet) {
 
   // Footer band: concept statement, then attribution.
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(6.6);
-  ink(doc, PEN.tag);
-  doc.text(fit(doc, DISCLAIMER, SW - 2 * M - 4), x0 + 2, TB_FOOT + 3);
+  doc.setFontSize(6.8);
+  ink(doc, PEN.ink2 || [58, 62, 70]);
+  doc.text(fit(doc, DISCLAIMER, SW - 2 * M - 4), x0 + 2, TB_FOOT + 2.8);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.2);
-  ink(doc, PEN.grey);
+  doc.setFontSize(6.5);
+  ink(doc, [70, 74, 82]);
   const credit = `${attribution(ctx.lot, { aerial: !!ctx.hasAerial })} ${ctx.extraCredit || ''}`.trim();
   const lines = wrap(doc, credit, SW - 2 * M - 4).slice(0, 2);
-  lines.forEach((l, i) => doc.text(l, x0 + 2, TB_FOOT + 5.5 + i * 2.4));
+  lines.forEach((l, i) => doc.text(l, x0 + 2, TB_FOOT + 5.2 + i * 2.35));
   return no;
 }

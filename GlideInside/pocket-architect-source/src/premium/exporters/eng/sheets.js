@@ -11,6 +11,7 @@ import { drawLocality, siteFacts, lotBounds, chooseSiteScale, makeT, paletteFor 
 
 const cap = (t) => { const x = String(t ?? ''); return x ? x[0].toUpperCase() + x.slice(1) : x; };
 import { ddmmyyyy, normDate, projectTitle } from './brand.js';
+import { siteAreaOf, fmtArea, siteAreaText, lotIdLines } from './area.js';
 import { schemeById, effectiveSchemeId, schemeLine } from '../../../model/colour-schemes.js';
 import { compassWord } from './views.js';
 
@@ -103,8 +104,8 @@ export function drawCover(doc, ctx, list) {
   doc.setFontSize(14);
   const addr = clean(tb.address || lot?.address || '');
   if (addr) { doc.text(addr, x0, y); y += 7.4; }
-  const ll = lot ? lotLabelLines(lot) : null;
-  const lotdp = clean(tb.lotDp || (ll ? `${ll.first} ${ll.second}`.trim() : ''));
+  const ll = lot ? lotIdLines(project, lot) : null;
+  const lotdp = ll ? clean(`${ll.first} ${ll.second}`.trim().replace(/^LOT/, 'Lot')) : clean(tb.lotDp || '');
   if (lotdp) { doc.text(lotdp, x0, y); y += 7.4; }
   doc.setFontSize(TXT.strong);
   ink(doc, PEN.grey);
@@ -112,7 +113,7 @@ export function drawCover(doc, ctx, list) {
   if (tb.client) facts.push(`Client: ${tb.client}`);
   if (tb.council || lot?.lga) facts.push(`Council: ${cap(String(tb.council || lot.lga).toLowerCase().replace(/\b([a-z])/g, (m) => m.toUpperCase()))}`);
   if (lot?.zoning?.code) facts.push(`Zone: ${lot.zoning.code} ${lot.zoning.name || ''}`.trim());
-  if (lot?.areaM2) facts.push(`Site area: ${Math.round(lot.areaM2)} m²`);
+  { const a = siteAreaOf(lot); if (a.m2) facts.push(`Site area: ${fmtArea(a.m2)}`); }
   facts.push(`Issue: ${clean(tb.issuePurpose || 'Concept')}, revision ${clean(tb.revision || 'A')}, ${tb.date ? normDate(tb.date) : ddmmyyyy(ctx.date)}`);
   y += 2;
   facts.forEach((f) => { doc.text(clean(f), x0, y); y += 5.6; });
@@ -249,7 +250,7 @@ export function drawAnalysis(doc, ctx) {
     const out = { x: r.outward.x, y: r.outward.y };
     labelOn(doc, `STREET FRONTAGE ${dim.frontageM ? dim.frontageM.toFixed(1) : ''} m`, mid.x + out.x * 11, mid.y + out.y * 11, { size: TXT.body, bold: true, colour: PEN.road });
   }
-  const ll = lotLabelLines(lot);
+  const ll = lotIdLines(project, lot);
   labelOn(doc, `${ll.first} ${ll.second}`.trim(), centre.x, T({ x: G.bbox(lot.boundary).minX, y: G.bbox(lot.boundary).minY }).y + 7, { size: TXT.strong, bold: true, colour: pal.boundary });
   northArrow(doc, left.x1 - 14, left.y0 + 24, project.site?.northDeg || 0);
   labelOn(doc, 'Diagram only, not a survey', left.x0 + 4, left.y1 - 4, { size: TXT.body, align: 'left', colour: PEN.grey });
@@ -264,7 +265,7 @@ export function drawAnalysis(doc, ctx) {
     ['Lot and DP', `${ll.first} ${ll.second}`.trim()],
     ['Council', cap(String(lot.lga || project.titleBlock?.council || 'Not stated').toLowerCase().replace(/\b([a-z])/g, (m) => m.toUpperCase()))],
     ['Zone', z ? `${z.code || ''} ${z.name || ''}`.trim() : 'Not stated'],
-    ['Site area', lot.areaM2 ? `${Math.round(lot.areaM2)} m²${lot.registeredAreaM2 ? (Math.round(lot.registeredAreaM2) === Math.round(lot.areaM2) ? '' : ` (registered ${Math.round(lot.registeredAreaM2)} m²)`) : ' (from the cadastre)'}` : 'Not stated'],
+    ['Site area', siteAreaText(lot)],
     ['Frontage and depth', `${dim.frontageM ? dim.frontageM.toFixed(1) : '-'} m by ${dim.depthM ? dim.depthM.toFixed(1) : '-'} m`],
     ['Corner lot', lot.cornerLot ? 'Yes' : 'No'],
     ['Ground fall', fall ? `${fall.fallM} m across the lot, ${fall.slopePct}%${fall.direction ? ` towards the ${compassWord(fall.direction)}` : ''}` : 'Not available'],
@@ -331,7 +332,7 @@ export function areaFigures(project, roofM2 = null) {
   const total = data.totals.reduce((a, t) => a + t.indoor, 0);
   const outdoor = data.totals.reduce((a, t) => a + t.outdoor, 0);
   const garage = data.rooms.filter((r) => r.type === 'Garage').reduce((a, r) => a + r.area, 0);
-  const site = lot?.areaM2 || null;
+  const site = siteAreaOf(lot).m2 || null;
   return { footprint, driveM2, crossM2, total, outdoor, garage, site, coverage: site ? (footprint / site) * 100 : null, roofM2, perLevel: data.totals, data };
 }
 
@@ -382,12 +383,12 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
     if (f.outdoor > 0) rows.push(['Outdoor areas', `${f.outdoor.toFixed(1)} m²`]);
     if (f.garage > 0) rows.push(['Garage (included above)', `${f.garage.toFixed(1)} m²`]);
     rows.push(['Building footprint (ground level)', `${f.footprint.toFixed(1)} m²`]);
-    if (f.site) rows.push(['Site area', `${Math.round(f.site)} m²`]);
+    if (f.site) rows.push(['Site area', fmtArea(f.site)]);
     if (f.coverage != null) rows.push({ cells: ['Site coverage (footprint over site area)', `${f.coverage.toFixed(1)} %`], bold: true, fill: PEN.band });
     if (f.roofM2 != null) rows.push(['Roof area (from the model, sloped)', `${f.roofM2.toFixed(1)} m²`]);
     if (f.driveM2 > 0) rows.push(['Driveway within the lot (indicative)', `${f.driveM2.toFixed(1)} m²`]);
     if (f.crossM2 > 0) rows.push(['Crossover in the road reserve (indicative)', `${f.crossM2.toFixed(1)} m²`]);
-    if (f.site && f.driveM2 > 0) rows.push(['Remaining site area (soft and other hard)', `${Math.max(0, f.site - f.footprint - f.driveM2).toFixed(0)} m²`]);
+    if (f.site && f.driveM2 > 0) rows.push(['Remaining site area (soft and other hard)', fmtArea(Math.max(0, f.site - f.footprint - f.driveM2))]);
     const t = table(doc, colA, top, [{ w: wA - 32, head: 'ITEM' }, { w: 32, head: 'AREA', align: 'right' }], rows, opt);
     let y = t.y + 5;
     doc.setFont('helvetica', 'normal');
@@ -423,7 +424,7 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
         doc.setDrawColor(...PEN.ink);
         doc.rect(colA, y - 3, 5, 3.6, 'FD');
         doc.setTextColor(...PEN.ink);
-        doc.text(`${name}: ${v.toFixed(0)} m² (${((v / f.site) * 100).toFixed(0)} %)`, colA + 8, y);
+        doc.text(`${name}: ${fmtArea(v)} (${((v / f.site) * 100).toFixed(0)} %)`, colA + 8, y);
         y += 5.6;
       }
     }

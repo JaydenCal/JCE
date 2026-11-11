@@ -11,6 +11,7 @@ import { levelsSorted, ascii, outlineBox } from '../shared.js';
 import { scaledDoc, drawLevel } from '../pdf.js';
 import { clean, viewTitle, cleanedDoc, withSuperscripts } from './kit.js';
 import { brandOf, drawingNo, projectTitle } from './brand.js';
+import { fetchWideAerial, covers } from './locality.js';
 import { drawFrame, BODY } from './frame.js';
 import { drawSitePlan, drawSitePanel, siteFacts, siteView, SITE_VP, keyBox, localityView } from './siteplan.js';
 import { AREA } from '../pdf.js';
@@ -131,15 +132,27 @@ export async function toEngineeringPDF(project, options = {}) {
   const lotA = project.site?.lot;
   if (bytes0 && lotA?.aerial?.extent) {
     const facts = siteFacts(project);
-    const jobs = [];
-    if (facts) { const v = siteView(project, facts, p.k); jobs.push(['site', v.T, SITE_VP, 4.4, 0.5]); }
     const kb = keyBox();
-    const kv = localityView(project, kb, { minSpanM: 400, k: p.k });
-    if (kv) jobs.push(['key', kv.T, kb, 6, 0.5]);
-    const cv = localityView(project, COVER_BOX(ctx), { minSpanM: 280, k: p.k });
-    if (cv) jobs.push(['cover', cv.T, COVER_BOX(ctx), 3.6, 0.5]);
-    for (const [name, T, rect, pxPerMm, quality] of jobs) {
-      const url = await renderUnderlay({ bytes: bytes0, extent: lotA.aerial.extent, planToSheet: T, rect, pxPerMm, quality, wash: 0.18 });
+    // The locality map and key plan want more ground than the stored aerial covers: ask for the aerial over the extent they need
+    let loc = { bytes: bytes0, extent: lotA.aerial.extent };
+    const want = [localityView(project, COVER_BOX(ctx), { minSpanM: 280, k: p.k, ideal: true }), localityView(project, kb, { minSpanM: 400, k: p.k, ideal: true })].filter(Boolean).map((v) => v.window);
+    if (want.length) {
+      const need = { x0: Math.min(...want.map((q) => q.x0)), y0: Math.min(...want.map((q) => q.y0)), x1: Math.max(...want.map((q) => q.x1)), y1: Math.max(...want.map((q) => q.y1)) };
+      if (!covers(lotA.aerial.extent, need)) {
+        const padM = (need.x1 - need.x0) * 0.04;
+        const wide = await fetchWideAerial(project, { x0: need.x0 - padM, y0: need.y0 - padM, x1: need.x1 + padM, y1: need.y1 + padM }, options);
+        if (wide) loc = wide;
+      }
+    }
+    ctx.locExtent = loc.extent;
+    const jobs = [];
+    if (facts) { const v = siteView(project, facts, p.k); jobs.push(['site', v.T, SITE_VP, 4.4, 0.5, bytes0, lotA.aerial.extent]); }
+    const kv = localityView(project, kb, { minSpanM: 400, k: p.k, extent: loc.extent });
+    if (kv) jobs.push(['key', kv.T, kb, 6, 0.5, loc.bytes, loc.extent]);
+    const cv = localityView(project, COVER_BOX(ctx), { minSpanM: 280, k: p.k, extent: loc.extent });
+    if (cv) jobs.push(['cover', cv.T, COVER_BOX(ctx), 3.6, 0.5, loc.bytes, loc.extent]);
+    for (const [name, T, rect, pxPerMm, quality, src, ext] of jobs) {
+      const url = await renderUnderlay({ bytes: src, extent: ext, planToSheet: T, rect, pxPerMm, quality, wash: 0.18 });
       if (url) ctx.underlays[name] = { url, rect };
     }
     ctx.hasAerial = Object.keys(ctx.underlays).length > 0;
