@@ -71,7 +71,7 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep } = {}) {
     const fx = fixtureByState(selection.state);
     await sleep(120);
     step('aerial');
-    const { mockAerialBlob } = await import('./mock-aerial.js');
+    const { mockAerialBlob, mockAerialSize } = await import('./mock-aerial.js');
     let blob = null;
     try {
       blob = await mockAerialBlob(fx.aerial, fx.lot);
@@ -79,7 +79,12 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep } = {}) {
       warnings.push('The sample aerial could not be drawn in this browser.');
     }
     step('contours');
-    return { lot: structuredClone(fx.lot), aerial: blob ? { blob, meta: structuredClone(fx.aerial) } : null, contours: structuredClone(fx.contours), warnings };
+    const meta = structuredClone(fx.aerial);
+    if (blob) {
+      const px = mockAerialSize(meta);
+      Object.assign(meta, { widthPx: px.w, heightPx: px.h, mmPerPx: ((meta.bbox.maxE - meta.bbox.minE) / px.w) * 1000 });
+    }
+    return { lot: structuredClone(fx.lot), aerial: blob ? { blob, meta } : null, contours: structuredClone(fx.contours), warnings };
   }
 
   const opts = { signal, fetchImpl };

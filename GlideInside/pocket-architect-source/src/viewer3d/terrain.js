@@ -14,6 +14,7 @@
 import * as THREE from 'three';
 import { terrainAt, floorRLOf } from '../site/model.js';
 import * as S from './site-geom.js';
+import { addSiteExtras } from './site-extras.js';
 
 export { PAD_MARGIN_M } from './site-geom.js';
 
@@ -253,7 +254,13 @@ export function addSiteTerrain(ctx, root, project, { texture = null, edgeColour 
   root.add(rmesh);
 
   addSiteOverlays(root, lot, surf, { showContours });
-  return { edgeY, extent: ext, grid, outerR: S.RING_OFFSETS_M[S.RING_OFFSETS_M.length - 1] + Math.max(aw, ah) / 2000 };
+  let extras = null;
+  try {
+    extras = addSiteExtras(ctx, root, project, surf, { extent: ext, tm });
+  } catch (e) {
+    console.warn('[viewer3d] site extras skipped', e);
+  }
+  return { extras, edgeY, extent: ext, grid, outerR: S.RING_OFFSETS_M[S.RING_OFFSETS_M.length - 1] + Math.max(aw, ah) / 2000 };
 }
 
 // Lines and labels on the surface ---------------------------------------------------------------------------------------------
