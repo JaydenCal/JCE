@@ -380,7 +380,7 @@ h3,h4{font-family:var(--font);font-weight:700;letter-spacing:-.012em}
 .hero-facts{color:var(--on-night-2)}
 .hero-facts li::before{width:6px;height:6px;border:0;border-radius:50%;background:var(--accent)}
 .hero-visual .float-3d{display:none}
-.page-head::before,.cta-final::before{display:none}
+.page-head::before,.cta-final::before,.hero-centre::before{display:none}
 /* product shots: crisp, no fake browser chrome, soft shadow */
 .appframe{border-radius:18px;border:1px solid rgba(15,23,38,.08);box-shadow:var(--shadow-soft);background:#fff}
 .appframe .bar{display:none}
