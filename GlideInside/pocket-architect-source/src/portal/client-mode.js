@@ -44,6 +44,8 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     }
     me = null;
   }
+  // A login that still has a temporary password must finish the password change first; otherwise every design call fails.
+  if (me?.user?.mustChangePassword) { loc.href = signInUrl('?change=1'); return null; }
   const params = new URLSearchParams(loc.search);
   if (!me) {
     if (params.has('signin') || params.has('house') || params.has('project') || params.has('glide')) loc.href = signInUrl(`?return=${encodeURIComponent(loc.href)}`);
