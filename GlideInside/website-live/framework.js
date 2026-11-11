@@ -27,6 +27,26 @@
       try { if (window.gtag) window.gtag("event", "live_editor_loaded", {}); } catch (e) {}
     });
   });
+  // home live tool: lazy-loads the framed app near the viewport (desktop) or on tap (phone); never steals focus or scroll
+  document.querySelectorAll(".live-hero").forEach(function (box) {
+    var f = box.querySelector("iframe"), note = box.querySelector(".lh-poster p"), btn = box.querySelector("[data-live-open]");
+    if (!f) return;
+    var phone = matchMedia("(max-width: 760px)"), started = false;
+    function go() {
+      if (started) return; started = true;
+      var y = window.scrollY, x = window.scrollX;
+      f.addEventListener("load", function () {
+        box.classList.add("is-live");
+        try { if (document.activeElement === f) f.blur(); } catch (e) {}
+        window.scrollTo(x, y); setTimeout(function () { window.scrollTo(x, y); }, 400);
+        try { if (window.gtag) window.gtag("event", "live_editor_loaded", {}); } catch (e) {}
+      });
+      f.src = new URL(f.dataset.src, root || location.href).href;
+    }
+    if (phone.matches) { if (note) note.textContent = "Concept plans, not construction drawings."; if (btn) btn.addEventListener("click", go); }
+    else if ("IntersectionObserver" in window) { new IntersectionObserver(function (es, o) { if (es[0].isIntersecting) { o.disconnect(); go(); } }, { rootMargin: "300px 0px" }).observe(box); }
+    else go();
+  });
   // tabs: [data-tabs] > [role=tab][data-tab=id]; panels [data-panel=id] anywhere inside the same [data-demo] or [data-tabs] root
   document.querySelectorAll("[data-tabs]").forEach(function (root) {
     var scope = root.closest("[data-demo]") || root;
