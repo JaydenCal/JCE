@@ -11,8 +11,9 @@ import { scaledDoc, drawLevel } from '../pdf.js';
 import { clean, viewTitle } from './kit.js';
 import { brandOf, drawingNo } from './brand.js';
 import { drawFrame, BODY } from './frame.js';
-import { drawSitePlan, drawSitePanel } from './siteplan.js';
-import { drawCover, drawAnalysis, drawSchedules, scheduleCount } from './sheets.js';
+import { drawSitePlan, drawSitePanel, siteFacts, siteView, SITE_VP, keyBox, localityView } from './siteplan.js';
+import { resolveAerial, renderUnderlay } from './aerial.js';
+import { drawCover, drawAnalysis, drawSchedules, scheduleCount, COVER_BOX } from './sheets.js';
 import { collectTriangles, drawElevations, drawSection, drawRoofPlan, roofAreaM2 } from './views.js';
 
 /**
@@ -64,7 +65,25 @@ export async function toEngineeringPDF(project, options = {}) {
   });
   const doc = scaledDoc(raw, p.k);
   const total = plan.list.length;
-  const ctx = { project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, aerial, catalogue, config };
+  const ctx = { project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
+  // The aerial is composited once per view (the site plan, the key plan and the cover locality), turned and cropped as each is drawn.
+  const bytes0 = await resolveAerial(project, { aerial });
+  const lotA = project.site?.lot;
+  if (bytes0 && lotA?.aerial?.extent) {
+    const facts = siteFacts(project);
+    const jobs = [];
+    if (facts) { const v = siteView(project, facts, p.k); jobs.push(['site', v.T, SITE_VP, 4.4, 0.5]); }
+    const kb = keyBox();
+    const kv = localityView(project, kb, { minSpanM: 400, k: p.k });
+    if (kv) jobs.push(['key', kv.T, kb, 6, 0.5]);
+    const cv = localityView(project, COVER_BOX(ctx), { minSpanM: 280, k: p.k });
+    if (cv) jobs.push(['cover', cv.T, COVER_BOX(ctx), 3.6, 0.5]);
+    for (const [name, T, rect, pxPerMm, quality] of jobs) {
+      const url = await renderUnderlay({ bytes: bytes0, extent: lotA.aerial.extent, planToSheet: T, rect, pxPerMm, quality, wash: 0.18 });
+      if (url) ctx.underlays[name] = { url, rect };
+    }
+    ctx.hasAerial = Object.keys(ctx.underlays).length > 0;
+  }
   const hasBuilding = levelsSorted(project).some((l) => l.walls.length);
   let tris = [];
   if (hasBuilding) {
