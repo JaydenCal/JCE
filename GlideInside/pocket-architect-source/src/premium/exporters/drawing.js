@@ -3,6 +3,7 @@
 // comes from project.titleBlock and an empty field stays empty.
 
 import * as G from '../../model/geometry.js';
+import { titleLotDp } from '../../site/lotplan.js';
 import { ascii, levelsSorted, wallShapes, outlineBox, dimensionsFor, furnitureSize, furnitureCorners, stairGeometry } from './shared.js';
 
 /** Standard scales (1:n). 'auto' walks this list from the smallest scale upwards. */
@@ -95,7 +96,7 @@ export function titleBlockValues(project, { date = new Date(), sheetNo = 1, tota
     project: t('projectName') || ascii(project?.name) || '',
     client: t('client'),
     address: t('address'),
-    lotDp: t('lotDp'),
+    lotDp: ascii(titleLotDp(project)),
     council: t('council'),
     company: t('company'),
     drawn: t('drawnBy'),

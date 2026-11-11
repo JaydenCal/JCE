@@ -154,6 +154,10 @@ export function drawLot(ctx, st) {
   ctx.beginPath();
   tracePoly(ctx, view, lot.boundary);
   for (const h of lot.holes || []) tracePoly(ctx, view, h);
+  for (const part of lot.parts || []) {
+    tracePoly(ctx, view, part.ring);
+    for (const h of part.holes || []) tracePoly(ctx, view, h);
+  }
   ctx.fillStyle = 'rgba(214,40,40,0.07)';
   ctx.fill('evenodd');
   ctx.strokeStyle = BOUNDARY;

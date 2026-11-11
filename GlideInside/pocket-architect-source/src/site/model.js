@@ -82,6 +82,8 @@ export function buildSiteLot({ lot, aerialMeta = null, aerialKey = null, contour
     zoneNote: lot.zoneNote || null,
     boundary: ringToPlan(poly.outer),
     holes: (poly.holes || []).map(ringToPlan),
+    // Further parts of a multipart lot (the largest part is `boundary`); areaM2 is the sum of all parts.
+    parts: (lot.lot.polygons || []).slice(1).map((q) => ({ ring: ringToPlan(q.outer), holes: (q.holes || []).map(ringToPlan) })),
     neighbours: (lot.neighbours || []).map((n, i) => {
       const np = polyOf(n);
       return { id: `n_${i}`, lotNumber: n.lotNumber, planLabel: n.planLabel, areaM2: n.areaM2, isRoad: !!n.isRoad, ring: ringToPlan(np.outer), holes: (np.holes || []).map(ringToPlan) };

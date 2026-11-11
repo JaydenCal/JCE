@@ -3,7 +3,7 @@
 import { fetchSite } from './client.js';
 import { planView } from '../ui/view-mode.js';
 import { buildSiteLot, underlayFor } from './model.js';
-import { faceGarageAngle, buildingHull, orientedBox, roadReserve } from './lotplan.js';
+import { faceGarageAngle, buildingHull, orientedBox, roadReserve, AUTO_LOT_DP } from './lotplan.js';
 import { rotateHouse, translateHouse } from '../model/placement.js';
 import * as G from '../model/geometry.js';
 import { saveImage, loadBitmap, removeImage, underlayKey } from '../editor2d/underlay.js';
@@ -96,9 +96,11 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
     const u = underlayFor(lot);
     if (u) p.site.underlay = u;
     const tb = p.titleBlock || (p.titleBlock = {});
-    if (!tb.address) tb.address = lot.address;
-    if (!tb.lotDp) tb.lotDp = lot.lotLabel;
-    if (!tb.council && lot.lga) tb.council = titleCase(lot.lga);
+    // Fields filled in by an earlier lookup are replaced; anything the person typed is kept.
+    if (!tb.address || tb.address === tb.addressAuto) { tb.address = lot.address; tb.addressAuto = lot.address; }
+    if (!tb.lotDp || tb.lotDp === tb.lotDpAuto || AUTO_LOT_DP.test(String(tb.lotDp).trim())) { tb.lotDp = lot.lotLabel; tb.lotDpAuto = lot.lotLabel; }
+    const council = lot.lga ? titleCase(lot.lga) : '';
+    if (council && (!tb.council || tb.council === tb.councilAuto)) { tb.council = council; tb.councilAuto = council; }
   });
   if (oldKey && oldKey !== aerialKey && store.project.site.underlay?.key === aerialKey) removeImage(oldKey);
   // Next the person confirms which edges are the street frontage (setbacks depend on it).

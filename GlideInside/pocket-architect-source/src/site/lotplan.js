@@ -356,7 +356,9 @@ export function clearanceToEdge(rings, lot, i) {
       const pr = G.projectToSegment(p, a, c);
       const across = G.dot(G.sub(p, a), n); // signed distance from the line, positive inside the lot
       if (pr.tRaw >= 0 && pr.tRaw <= 1) consider(across, p, pr.point);
-      else consider(across >= 0 ? pr.d : -pr.d, p, pr.point);
+      // Foot off the end of the segment: a corner over the extended line of a neighbouring bent edge is not outside this edge. Other edges catch
+      // genuine breaches, so the distance to the nearest end is reported as positive room here.
+      else consider(pr.d, p, pr.point);
       const q = ring[(k + 1) % ring.length];
       const sd = segSegDist(p, q, a, c);
       if (sd > 0 && sd < best.d && Math.abs(sd) < Math.abs(best.d)) {
@@ -448,4 +450,21 @@ export function lotLabelLines(lot) {
   const num = lot?.lotNumber ? String(lot.lotNumber) : '';
   if (lot?.proposed) return { first: `PROPOSED LOT${num ? ` ${num}` : ''}`, second: lot.planLabel || '', proposed: true };
   return { first: num ? `LOT ${num}` : '', second: lot?.planLabel || '', proposed: false };
+}
+
+// Title block ---------------------------------------------------------------------------------------------------------------
+export const AUTO_LOT_DP = /^Lot\s+\S+(\s+Sec\s+\S+)?\s+[A-Za-z]{2,3}\s?\d+[A-Za-z]?$/i;
+
+/**
+ * The "Lot and DP" text for covers and title blocks. The found lot (site.lot) is authoritative: a title block value that was filled in
+ * from an earlier lookup (or looks like one) never overrides it, so the label, the area and the outline always describe the same parcel.
+ * A value the person typed themselves still wins.
+ */
+export function titleLotDp(project) {
+  const tb = project?.titleBlock || {};
+  const lot = project?.site?.lot;
+  const typed = String(tb.lotDp || '').trim();
+  if (!lot || lot.proposed || !lot.lotLabel) return typed;
+  const stale = !typed || typed === tb.lotDpAuto || AUTO_LOT_DP.test(typed);
+  return stale ? lot.lotLabel : typed;
 }
