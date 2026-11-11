@@ -160,6 +160,20 @@ export function createUpstashStore({ url, token, fetchImpl } = {}) {
       const start = Math.floor(nowMs / (windowSec * 1000)) * windowSec * 1000;
       return Number(await evalLua(LUA.rate, [`ps:rate:${key}:${start}`], [windowSec + 5]));
     },
+    async saveEnquiry(e) {
+      await cmd('SET', `ps:enq:${e.reference}`, JSON.stringify(e));
+      await cmd('RPUSH', 'ps:enqs', e.reference);
+      return e.reference;
+    },
+    async markEnquiry(reference, patch) {
+      const raw = await cmd('GET', `ps:enq:${reference}`);
+      if (raw) await cmd('SET', `ps:enq:${reference}`, JSON.stringify({ ...JSON.parse(raw), ...patch }));
+    },
+    async listEnquiries() {
+      const refs = (await cmd('LRANGE', 'ps:enqs', 0, -1)) || [];
+      const rows = await Promise.all(refs.map((r) => cmd('GET', `ps:enq:${r}`)));
+      return rows.filter(Boolean).map((r) => JSON.parse(r));
+    },
     async logEvent({ id, type, detail, createdAt }) {
       const first = (await cmd('SET', `ps:evt:${id}`, '1', 'NX', 'EX', 90 * DAY)) === 'OK';
       if (!first) return false;

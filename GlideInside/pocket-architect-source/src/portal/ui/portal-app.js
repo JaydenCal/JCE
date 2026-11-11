@@ -11,6 +11,7 @@ import { renderBilling } from './billing-tab.js';
 import { renderTeam } from './team-tab.js';
 import { renderBranding } from './branding-tab.js';
 import { ddmmyyyy } from '../billing.js';
+import { CONFIG } from '../../config.js';
 
 const TABS = [
   { id: 'houses', label: 'House designs', render: renderHouses },
@@ -24,6 +25,13 @@ const TABS = [
 export function mountPortal(root, { api = getPortalApi() } = {}) {
   const params = new URLSearchParams(location.search);
   let me = null;
+
+  // Launch gating: builder features stay closed until CONFIG.portalEnabled (or GI_CONFIG.portalEnabled) is true.
+  if (!CONFIG.portalEnabled) {
+    clear(root);
+    root.append(h('section', { class: 'pp-card', style: { maxWidth: '520px', margin: '48px auto' } }, h('h2', null, 'Builder and client logins are not open yet'), h('p', null, 'Glide Inside accounts for builders and their clients are coming soon. Pocket Architect is still free to use without a login.')));
+    return;
+  }
 
   const setView = (node) => { clear(root); root.append(node); document.title = `${node.dataset?.title || 'Portal'} | Glide Inside`; };
   const toSignIn = () => { history.replaceState(null, '', location.pathname + (params.get('client') ? '?client=1' : '')); setView(signInView({ api, client: !!params.get('client'), onSignedIn: start, goForgot: () => setView(forgotView({ api, goBack: toSignIn, goReset: (t) => setView(resetView({ api, token: t, goBack: toSignIn })) })) })); };

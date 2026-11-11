@@ -99,7 +99,7 @@ function seedDb(now) {
     user('u_mei', 'client', 'Mei', 'mei.l@example.com', 'mei-6294', 'tulip-bear-29', { createdAt: iso(at(key, 2)), mustChangePassword: true, tempPasswordExpiresAt: iso(now + 5 * DAY), lotAddress: '', houseAccess: ['h_coastal'] }),
     user('u_jack', 'client', 'Jack', '', 'jack-7382', 'swan-pine-63', { createdAt: iso(at(key, 3, 14)), lotAddress: '15 Wattle Court, Raymond Terrace NSW 2324', lastSignInAt: iso(now - 5 * 3600000), ai: { used: { [key]: 150 }, topUpBalance: 0 } }),
     user('u_olivia', 'client', 'Olivia', 'olivia.r@example.com', 'olivia-8473', 'jade-fox-75', { createdAt: iso(at(m2, 8)), status: 'disabled', lastSignInAt: iso(at(m2, 30)) }),
-    user('u_ahmed', 'client', 'Ahmed', 'ahmed.k@example.com', 'ahmed-2956', 'coral-oak-36', { createdAt: iso(at(key, 3, 16)), lotAddress: 'Lot 9 Flinders Drive, Medowie NSW 2318' }),
+    user('u_ahmed', 'client', 'Ahmed', 'ahmed.k@example.com', 'ahmed-2956', 'coral-oak-36', { createdAt: iso(at(key, 3, 16)), lastSignInAt: iso(at(key, 3, 16)), lotAddress: 'Lot 9 Flinders Drive, Medowie NSW 2318' }),
   ];
   const glide = (id) => GLIDE_LIBRARY.find((g) => g.id === id);
   const house = (id, name, glideId, extra = {}) => {
@@ -115,12 +115,11 @@ function seedDb(now) {
     house('h_cottage', 'Cottage 2 (older range)', 'glide:granny_flat', { archived: true }),
   ];
   const issues = [
-    { id: 'li_1', orgId, loginId: 'u_sarah', clientName: 'Sarah', issuedAt: iso(at(m1, 12)), amountCents: NEW_LOGIN_FEE_CENTS },
-    { id: 'li_2', orgId, loginId: 'u_daniel', clientName: 'Daniel', issuedAt: iso(at(m1, 20)), amountCents: NEW_LOGIN_FEE_CENTS },
-    { id: 'li_3', orgId, loginId: 'u_olivia', clientName: 'Olivia', issuedAt: iso(at(m2, 8)), amountCents: NEW_LOGIN_FEE_CENTS },
-    { id: 'li_4', orgId, loginId: 'u_mei', clientName: 'Mei', issuedAt: iso(at(key, 2)), amountCents: NEW_LOGIN_FEE_CENTS },
-    { id: 'li_5', orgId, loginId: 'u_jack', clientName: 'Jack', issuedAt: iso(at(key, 3, 14)), amountCents: NEW_LOGIN_FEE_CENTS },
-    { id: 'li_6', orgId, loginId: 'u_ahmed', clientName: 'Ahmed', issuedAt: iso(at(key, 3, 16)), amountCents: NEW_LOGIN_FEE_CENTS },
+    { id: 'li_1', orgId, loginId: 'u_sarah', clientName: 'Sarah', chargedAt: iso(at(m1, 12)), amountCents: NEW_LOGIN_FEE_CENTS },
+    { id: 'li_2', orgId, loginId: 'u_daniel', clientName: 'Daniel', chargedAt: iso(at(m1, 20)), amountCents: NEW_LOGIN_FEE_CENTS },
+    { id: 'li_3', orgId, loginId: 'u_olivia', clientName: 'Olivia', chargedAt: iso(at(m2, 8)), amountCents: NEW_LOGIN_FEE_CENTS },
+    { id: 'li_5', orgId, loginId: 'u_jack', clientName: 'Jack', chargedAt: iso(at(key, 3, 14)), amountCents: NEW_LOGIN_FEE_CENTS },
+    { id: 'li_6', orgId, loginId: 'u_ahmed', clientName: 'Ahmed', chargedAt: iso(at(key, 3, 16)), amountCents: NEW_LOGIN_FEE_CENTS },
   ];
   const topUps = [
     { id: 'tu_1', orgId, loginId: 'u_daniel', credits: TOPUP_CREDITS, amountCents: TOPUP_FEE_CENTS, createdAt: iso(at(m1, 25)) },
@@ -133,7 +132,7 @@ function seedDb(now) {
   ];
   return {
     version: 1,
-    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null }, allowClientTopUps: true, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
+    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null }, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: true, allowClientCadExports: false, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
     users, houses, projects, issues, topUps, resets: {},
   };
 }
@@ -191,7 +190,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     id: u.id, name: u.name, email: u.email || '', username: u.username, role: u.role, status: u.status, mustChangePassword: !!u.mustChangePassword,
     createdAt: u.createdAt, lastSignInAt: u.lastSignInAt, tempPasswordExpiresAt: u.mustChangePassword ? u.tempPasswordExpiresAt || null : null, ...(org ? { ai: aiBalance(u, org) } : {}),
   });
-  const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
+  const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients !== false, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
   const houseMeta = (h) => { const { project, ...rest } = h; return { ...clone(rest), hasProject: !!project }; };
   const visibleHouse = (user, h) => !h.archived && (user.houseAccess === 'all' || (Array.isArray(user.houseAccess) && user.houseAccess.includes(h.id)));
 
@@ -229,7 +228,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
   };
 
   function clientView(db, org, u) {
-    return { ...publicUser(u, org), lotAddress: u.lotAddress || '', houseAccess: u.houseAccess, projectCount: db.projects.filter((p) => p.ownerId === u.id).length };
+    return { ...publicUser(u, org), lotAddress: u.lotAddress || '', houseAccess: u.houseAccess, projectCount: db.projects.filter((p) => p.ownerId === u.id).length, billed: db.issues.some((i) => i.loginId === u.id) };
   }
 
   const api = {
@@ -259,6 +258,8 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       user.failedSignIns = 0;
       user.lockedUntil = null;
       user.lastSignInAt = iso();
+      // The A$20 charge for a client login happens here, on the first sign in, and never again for that login.
+      if (user.role === 'client' && !db.issues.some((i) => i.loginId === user.id)) db.issues.push({ id: rid('lc'), orgId: user.orgId, loginId: user.id, clientName: user.name, chargedAt: iso(), amountCents: NEW_LOGIN_FEE_CENTS });
       save(db);
       storage.set(SESSION_KEY, JSON.stringify({ userId: user.id, at: iso() }));
       return api.me();
@@ -275,7 +276,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const user = db.users.find((u) => u.id === sessionUserId());
       if (!user || user.status !== 'active') return null;
       const org = db.orgs.find((o) => o.id === user.orgId);
-      return { user: publicUser(user, org), org: publicOrg(org), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai: aiBalance(user, org), canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true };
+      return { user: publicUser(user, org), org: publicOrg(org), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai: aiBalance(user, org), canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true, enquiry: isStaff(user) || org.allowClientEnquiries !== false, exports: isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj'] : ['pdf'] };
     },
     async changePassword({ currentPassword, newPassword } = {}) {
       await wait();
@@ -414,12 +415,14 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     /** The Glide Inside models, available to every builder and client. No project JSON in the list. */
     async listGlideLibrary() {
       await wait();
-      ctx();
+      const { user, org } = ctx();
+      if (!isStaff(user) && org.showGlideToClients === false) return [];
       return GLIDE_LIBRARY.map(({ ...g }) => g);
     },
     async getGlideModel(id) {
       await wait();
-      ctx();
+      const { user, org } = ctx();
+      if (!isStaff(user) && org.showGlideToClients === false) throw err('NOT_FOUND', 'Unknown Glide Inside model.', 404);
       const g = GLIDE_LIBRARY.find((x) => x.id === id);
       if (!g) throw err('NOT_FOUND', 'Unknown Glide Inside model.', 404);
       return { ...g, project: await resolveGlideProject(id, g.name) };
@@ -437,10 +440,8 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const { db, org } = ctx('clients.write');
       const access = cleanAccess(db, org, houseAccess);
       const { user, credentials } = createAccount(db, org, { firstName, email, role: 'client', lotAddress, houseAccess: access });
-      const issue = { id: rid('li'), orgId: org.id, loginId: user.id, clientName: user.name, issuedAt: iso(), amountCents: NEW_LOGIN_FEE_CENTS };
-      db.issues.push(issue);
       save(db);
-      return { client: clientView(db, org, user), credentials, charge: { amountCents: NEW_LOGIN_FEE_CENTS, month: monthKey(now()), note: 'Charged on your end of month invoice.' } };
+      return { client: clientView(db, org, user), credentials, charge: { amountCents: NEW_LOGIN_FEE_CENTS, trigger: 'first_sign_in', note: 'A$20 incl. GST is charged on your monthly invoice once your client first signs in.' } };
     },
     async updateClient(id, { firstName, email, lotAddress, houseAccess } = {}) {
       await wait();
@@ -472,7 +473,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       save(db);
       return { credentials: { username: u.username, password: u.password } };
     },
-    /** Removes the login and all of that client's projects. Their past charges stay on the invoices. */
+    /** Removes the login and all of that client's projects. An unused login (never signed in) is deleted free; a charge already made stays on the invoice. */
     async deleteClient(id) {
       await wait();
       const { db, org } = ctx('clients.write');
@@ -481,9 +482,9 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const removed = db.projects.filter((p) => p.ownerId === id).length;
       db.projects = db.projects.filter((p) => p.ownerId !== id);
       db.users = db.users.filter((x) => x.id !== id);
-      for (const i of db.issues) if (i.loginId === id) i.clientName = i.clientName || u.name;
+      const charged = db.issues.some((i) => i.loginId === id);
       save(db);
-      return { ok: true, removedProjects: removed };
+      return { ok: true, removedProjects: removed, charged };
     },
     /** All of a client's projects as design files, for the builder to keep or hand over. */
     async exportClientProjects(id) {
@@ -564,7 +565,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       return {
         month: key, timezone: 'Australia/Sydney',
         rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS },
-        logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName, issuedAt: i.issuedAt, amountCents: i.amountCents })),
+        logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName, firstSignInAt: i.chargedAt ?? i.issuedAt, amountCents: i.amountCents })),
         topUps: s.topUps.map((t) => ({ id: t.id, loginId: t.loginId, clientName: names.get(t.loginId) || '', credits: t.credits, amountCents: t.amountCents, createdAt: t.createdAt })),
         totals: s.totals,
       };
@@ -576,7 +577,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const issues = db.issues.filter((i) => i.orgId === org.id);
       const topUps = db.topUps.filter((t) => t.orgId === org.id);
       const current = monthKey(now());
-      const months = new Set([...issues.map((i) => monthKey(i.issuedAt)), ...topUps.map((t) => monthKey(t.createdAt))]);
+      const months = new Set([...issues.map((i) => monthKey(i.chargedAt ?? i.issuedAt)), ...topUps.map((t) => monthKey(t.createdAt))]);
       months.delete(current);
       return [...months].filter((m) => m < current).sort().reverse().map((m) => {
         const t = summariseMonth({ issues, topUps }, m).totals;
@@ -594,7 +595,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const usage = await api.monthUsage({ month: inv.month });
       const c = org.billingContact || {};
       const lines = [
-        { description: `New client logins issued in ${inv.month} (A$20 each, incl. GST)`, quantity: usage.totals.loginsCount, unitCents: NEW_LOGIN_FEE_CENTS, totalCents: usage.totals.loginsCents },
+        { description: `New client logins first signed in during ${inv.month} (A$20 each, incl. GST)`, quantity: usage.totals.loginsCount, unitCents: NEW_LOGIN_FEE_CENTS, totalCents: usage.totals.loginsCents },
         { description: `AI credit top-ups of ${TOPUP_CREDITS} credits (A$10 each, incl. GST)`, quantity: usage.totals.topUpsCount, unitCents: TOPUP_FEE_CENTS, totalCents: usage.totals.topUpsCents },
       ].filter((l) => l.quantity > 0);
       const total = usage.totals.totalCents;
@@ -719,12 +720,30 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       return clone(b);
     },
     /** Organisation settings. allowClientTopUps (default on) lets client logins buy AI credit top-ups. */
-    async setOrgSettings({ allowClientTopUps } = {}) {
+    async setOrgSettings({ allowClientTopUps, allowClientEnquiries, showGlideToClients, allowClientCadExports } = {}) {
       await wait();
       const { db, org } = ctx('billing.write');
       if (allowClientTopUps !== undefined) org.allowClientTopUps = !!allowClientTopUps;
+      if (allowClientEnquiries !== undefined) org.allowClientEnquiries = !!allowClientEnquiries;
+      if (showGlideToClients !== undefined) org.showGlideToClients = !!showGlideToClients;
+      if (allowClientCadExports !== undefined) org.allowClientCadExports = !!allowClientCadExports;
       save(db);
       return publicOrg(org);
+    },
+
+    /** "Send to JCE": the mock sends nothing and returns a fake reference. Same consent and field checks as the server. */
+    async enquiryJce(body = {}) {
+      await wait();
+      const { db, org, user } = ctx();
+      if (!isStaff(user) && org.allowClientEnquiries === false) throw err('FORBIDDEN', 'Your builder has turned off sending to JCE.', 403);
+      if (body.consent !== true) throw err('BAD_REQUEST', 'Please tick the box to agree to your plans and details being sent to JCE Infrastructure Pty Ltd.', 400);
+      for (const k of ['name', 'phone', 'email']) if (!String(body[k] || '').trim()) throw err('BAD_REQUEST', `${k} is required.`, 400);
+      if (!['engineering', 'da', 'both'].includes(body.need)) throw err('BAD_REQUEST', 'need must be engineering, da or both.', 400);
+      const A = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+      const reference = `GI-${Array.from({ length: 5 }, () => A[Math.floor(Math.random() * A.length)]).join('')}`;
+      (db.enquiries ||= []).push({ reference, createdAt: iso(), email: body.email, need: body.need });
+      save(db);
+      return { ok: true, reference, mock: true };
     },
 
     /** Test and demo helper: wipe the mock back to its sample data. Not part of the real API. */

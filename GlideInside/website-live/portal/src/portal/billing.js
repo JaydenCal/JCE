@@ -1,7 +1,9 @@
 // Billing rules (docs/PORTAL_API.md 4). Pure functions, no storage, so the rules can be tested.
-//   A$20 incl. GST once per NEW client login issued in a calendar month (Australia/Sydney). No monthly charge.
+//   A$20 incl. GST once per NEW client login, charged when the client FIRST SIGNS IN, in the calendar month (Australia/Sydney)
+//   of that first sign in. Generating a login is free, and an unused login can be deleted free. No monthly charge.
 //   A$10 incl. GST per AI top-up of 300 credits, added at once, on the same end of month invoice.
 // Resetting a password, disabling, enabling or editing a login never creates a charge.
+// A billing row is { loginId, chargedAt (the first sign in), amountCents }.
 
 export const TZ = 'Australia/Sydney';
 export const NEW_LOGIN_FEE_CENTS = 2000;
@@ -53,16 +55,17 @@ export function formatAud(cents) {
 }
 
 /**
- * New client logins charged in a month. `issues` are login_issues rows { loginId, issuedAt, amountCents }.
- * A login is charged once, in the month it was issued: duplicate rows for one loginId are ignored.
+ * New client logins charged in a month. `issues` are login_charges rows { loginId, chargedAt, amountCents }.
+ * A login is charged once, in the month of its first sign in: duplicate rows for one loginId are ignored.
  */
+const at = (i) => i.chargedAt ?? i.issuedAt;
 export function loginsInMonth(issues, key) {
   const seen = new Set();
   const out = [];
-  for (const i of [...issues].sort((a, b) => toMs(a.issuedAt) - toMs(b.issuedAt))) {
+  for (const i of [...issues].sort((a, b) => toMs(at(a)) - toMs(at(b)))) {
     if (seen.has(i.loginId)) continue;
     seen.add(i.loginId);
-    if (monthKey(i.issuedAt) === key) out.push(i);
+    if (monthKey(at(i)) === key) out.push(i);
   }
   return out;
 }

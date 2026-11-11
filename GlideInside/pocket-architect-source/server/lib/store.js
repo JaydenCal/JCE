@@ -129,6 +129,21 @@ export function createD1Store(db) {
       );
       return Number(row?.count ?? 1);
     },
+    async saveEnquiry(e) {
+      await run(
+        `INSERT INTO jce_enquiries (id, reference, created_at, name, phone, email, need, notes, lot_json, source, org_name, project_name, project_json, pdf_bytes, consent, email_status)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, 1, ?15)`,
+        e.id, e.reference, e.createdAt, e.name, e.phone, e.email, e.need, e.notes || null, JSON.stringify(e.lot || {}), e.source || 'public', e.orgName || null,
+        e.projectName || null, e.projectJson ?? null, e.pdfBytes || 0, e.emailStatus || 'pending',
+      );
+      return e.reference;
+    },
+    async markEnquiry(reference, patch) {
+      await run('UPDATE jce_enquiries SET email_status = ?2, email_id = ?3, emailed_at = ?4, email_error = ?5 WHERE reference = ?1', reference, patch.emailStatus, patch.emailId ?? null, patch.emailedAt ?? null, patch.emailError ?? null);
+    },
+    async listEnquiries() {
+      return (await all('SELECT * FROM jce_enquiries ORDER BY created_at, id')).map((r) => ({ reference: r.reference, createdAt: r.created_at, name: r.name, email: r.email, need: r.need, emailStatus: r.email_status, emailError: r.email_error ?? null, hasProject: !!r.project_json }));
+    },
     async logEvent({ id, type, detail, createdAt }) {
       return changed(await run('INSERT OR IGNORE INTO events (id, type, detail, created_at) VALUES (?1, ?2, ?3, ?4)', id, type, detail ? JSON.stringify(detail) : null, createdAt));
     },
@@ -142,6 +157,7 @@ export function createD1Store(db) {
 // In memory (tests) -------------------------------------------------------------------------------
 export function createMemoryStore() {
   const ents = new Map();
+  const enquiries = new Map();
   const requests = [];
   const spend = new Map();
   const hooks = new Map();
@@ -255,6 +271,17 @@ export function createMemoryStore() {
       const count = row && row.start === start ? row.count + 1 : 1;
       rates.set(key, { start, count });
       return count;
+    },
+    async saveEnquiry(e) {
+      enquiries.set(e.reference, { ...structuredClone(e) });
+      return e.reference;
+    },
+    async markEnquiry(reference, patch) {
+      const row = enquiries.get(reference);
+      if (row) Object.assign(row, structuredClone(patch));
+    },
+    async listEnquiries() {
+      return [...enquiries.values()].map((r) => structuredClone(r));
     },
     async logEvent({ id, type, detail, createdAt }) {
       if (events.has(id)) return false;

@@ -14,7 +14,7 @@ export const CALLS = [
   'monthUsage', 'listInvoices', 'getInvoice', 'getBillingContact', 'setBillingContact',
   'aiBalance', 'aiTopUp',
   'listTeam', 'inviteStaff', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff',
-  'setBranding', 'setOrgSettings',
+  'setBranding', 'setOrgSettings', 'enquiryJce',
 ];
 
 // method, path (":id" filled from the first argument), body from the arguments.
@@ -58,6 +58,7 @@ const ROUTES = {
   enableStaff: ['POST', '/portal/team/:id/enable'],
   setBranding: ['PUT', '/portal/org/branding'],
   setOrgSettings: ['PATCH', '/portal/org/settings'],
+  enquiryJce: ['POST', '/enquiry/jce'],
 };
 const ID_CALLS = new Set(['getHouse', 'duplicateHouse', 'getGlideModel', 'updateClient', 'resetClientPassword', 'disableClient', 'enableClient', 'deleteClient', 'exportClientProjects', 'getInvoice', 'openProject', 'updateStaff', 'resetStaffPassword', 'disableStaff', 'enableStaff']);
 

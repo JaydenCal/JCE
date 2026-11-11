@@ -34,6 +34,8 @@ PLAN_PACK_PRICE_CENTS = "3000"                             # used when STRIPE_PR
 ENTITLEMENT_DAYS = "365"
 EXPORT_MAX_PROJECT_BYTES = "2000000"
 # Printed on the PDF title block (default to src/config.js when empty).
+ENQUIRY_TO = "enquiries@jceinfrastructure.com.au"            # where "Send to JCE" enquiries go
+ENQUIRY_FROM = "Glide Inside <plans@glideinside.com.au>"   # must be on a domain verified in Resend
 STRIPE_PRICE_ID = ""                                       # optional: a Stripe price for the Plan Pack
 
 # D1 (SQLite). Create it with `wrangler d1 create plan-studio`, paste the id below,

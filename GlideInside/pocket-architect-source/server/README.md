@@ -14,6 +14,7 @@ The reference deployment is a Cloudflare Worker with D1 (SQLite). Other hosts ar
 | `worker.js` | Cloudflare Worker entry. Builds the app with the D1 store and the catalogue |
 | `lib/app.js` | `createApp({ store, env, fetchImpl, now, catalogue })` returns `{ fetch }`. All endpoints |
 | `lib/store.js` | `createD1Store(db)` and `createMemoryStore()` (the same async interface) |
+| `lib/enquiry.js` | The JCE enquiry endpoint: validation, rate limit, D1 copy, email through Resend |
 | `lib/stripe.js` | Checkout Session over REST, webhook signature check, entitlement creation, refunds |
 | `lib/entitlement.js` | Signed tokens and the per-request database check |
 | `lib/credits.js` | Credit arithmetic, warning levels, spend caps, rate limits |
@@ -38,6 +39,7 @@ limits), `src/premium/exporters/*` and `src/viewer3d/build.js`. Deploy the whole
 | `GET /api/credits?project=` | Bearer | `{ total, used, remaining, warnLevel, reserved }` |
 | `POST /api/ai/estimate` | Bearer | No model call. `{ estimatedCredits, remaining, requiresConfirm }` |
 | `POST /api/ai/edit` | Bearer | `{ reply, ops, rejected, credits, warning }` |
+| `POST /api/enquiry/jce` | none, rate limited | "Send to JCE for engineering and DA plans". Body `{ name, phone, email, need, notes, consent: true, lot, project, pdfBase64, source }`. Emails JCE through Resend with the PDF attached, keeps a copy in `jce_enquiries`, returns `{ ok, reference }`. `503 ENQUIRY_NOT_CONFIGURED` until `RESEND_API_KEY` is set |
 | `POST /api/export/:type` | Bearer | `pdf`, `dxf`, `glb`, `obj`. Body `{ project, image? }`. Returns the file |
 
 Errors are JSON, `{ error: { code, message, ... }, code, message }`, with the codes in docs/SCOPE.md 11.2 plus
@@ -71,6 +73,28 @@ You need a Cloudflare account, Node 20 or later, a Stripe account (test mode fir
 10. In the app, set `CONFIG.apiBase` to `/api` (same site) or the Worker address, and `CONFIG.premiumEnabled = true`.
 
 Live mode needs the live Stripe key, the live webhook secret and written approval from the owner.
+
+### Send to JCE enquiries (Resend email)
+
+The "Send to JCE for engineering and DA plans" button posts to `POST /api/enquiry/jce`. The Worker emails
+`ENQUIRY_TO` (default enquiries@jceinfrastructure.com.au) with the PDF plan set and the design file attached, using the
+Resend REST API. Nothing is sent until the person clicks Send and ticks the consent box. A copy of each enquiry is kept in
+the `jce_enquiries` table, so nothing is lost if the email fails (the PDF itself is not stored; it can be rebuilt from the
+saved design). Until the key is set, the endpoint answers `503` and the app says the service is not set up yet.
+
+1. Create a Resend account at resend.com (the free tier is enough to start).
+2. In Resend, Domains, add `glideinside.com.au`. Add the DNS records Resend shows (SPF and DKIM TXT or CNAME records, and the
+   optional DMARC record) at the domain's DNS host, then press Verify. Sending works only from a verified domain.
+3. In Resend, API Keys, create a key with "Sending access" limited to that domain.
+4. Store it as a secret, never in the repository: `wrangler secret put RESEND_API_KEY`.
+5. Check the plain variables in `wrangler.toml` `[vars]`: `ENQUIRY_TO` (recipient) and `ENQUIRY_FROM`
+   (for example `Glide Inside <plans@glideinside.com.au>`; the address must be on the verified domain).
+6. Apply the schema again to add the table: `wrangler d1 execute plan-studio --remote --file server/schema.sql`, then `wrangler deploy`.
+7. Test with a real address you control, then read the saved copies: `wrangler d1 execute plan-studio --remote --command "SELECT reference, email_status, email_error FROM jce_enquiries ORDER BY created_at DESC LIMIT 10"`.
+
+Limits: 5 sends per IP per hour and 3 per email address per day (`429 RATE_LIMITED`). The PDF can be up to `ENQUIRY_MAX_PDF_BYTES`
+(default 6,000,000). If Resend refuses the message the enquiry is still saved and the reply is `502 EMAIL_FAILED` with the
+`reference`, so JCE can follow up from the table.
 
 ### Settings
 

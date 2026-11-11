@@ -168,12 +168,25 @@ test('Generate account: only the first name is needed, credentials shown once, A
   assert.match(r.credentials.username, /^priscilla-[2-9]{4}$/);
   assert.match(r.credentials.password, /^[a-z]+-[a-z]+-[2-9]{2}$/);
   assert.equal(r.charge.amountCents, 2000);
+  assert.equal(r.charge.trigger, 'first_sign_in');
   assert.equal(r.client.status, 'active');
   assert.equal(r.client.houseAccess, 'all');
   assert.equal(JSON.stringify(await api.listClients()).includes(r.credentials.password), false, 'password is not readable again');
+  // Generating costs nothing: the charge starts at the client's first sign in.
+  assert.deepEqual((await api.monthUsage()).totals, before);
+  await api.signOut();
+  await api.signIn({ identifier: r.credentials.username, password: r.credentials.password });
+  await api.signOut();
+  await admin(api);
   const after = (await api.monthUsage()).totals;
   assert.equal(after.loginsCount, before.loginsCount + 1);
   assert.equal(after.totalCents, before.totalCents + 2000);
+  // A second sign in does not charge again.
+  await api.signOut();
+  await api.signIn({ identifier: r.credentials.username, password: r.credentials.password }).catch(() => {});
+  await api.signOut();
+  await admin(api);
+  assert.equal((await api.monthUsage()).totals.loginsCount, after.loginsCount);
   // Reset, disable, enable, edit: no charge.
   await api.resetClientPassword(r.client.id);
   await api.disableClient(r.client.id);
@@ -184,16 +197,31 @@ test('Generate account: only the first name is needed, credentials shown once, A
   await rejects(api.issueClientLogin({ firstName: 'X', email: 'not-an-email' }), 'BAD_REQUEST');
 });
 
-test('a login issued on the last evening of the month is billed in that month (Sydney time)', async () => {
+test('a login is billed in the Sydney month of its first sign in, not when it was generated', async () => {
   const { api, clock } = fresh({ now: iso('2026-10-31T12:30:00Z') }); // 23:30 on 31/10 Sydney
   await admin(api);
   const a = await api.issueClientLogin({ firstName: 'Late' });
-  assert.equal(a.charge.month, '2026-10');
-  clock.set(iso('2026-10-31T13:30:00Z')); // 00:30 on 01/11 Sydney
   const b = await api.issueClientLogin({ firstName: 'Early' });
-  assert.equal(b.charge.month, '2026-11');
-  assert.equal((await api.monthUsage({ month: '2026-11' })).logins.filter((l) => l.clientName === 'Early').length, 1);
+  await api.signOut();
+  await api.signIn({ identifier: a.credentials.username, password: a.credentials.password }); // 23:30 31/10
+  await api.signOut();
+  clock.set(iso('2026-10-31T13:30:00Z')); // 00:30 on 01/11 Sydney
+  await api.signIn({ identifier: b.credentials.username, password: b.credentials.password });
+  await api.signOut();
+  await admin(api);
   assert.equal((await api.monthUsage({ month: '2026-10' })).logins.filter((l) => l.clientName === 'Late').length, 1);
+  assert.equal((await api.monthUsage({ month: '2026-10' })).logins.filter((l) => l.clientName === 'Early').length, 0);
+  assert.equal((await api.monthUsage({ month: '2026-11' })).logins.filter((l) => l.clientName === 'Early').length, 1);
+});
+
+test('an unused login can be deleted free and is never billed', async () => {
+  const { api } = fresh();
+  await admin(api);
+  const before = (await api.monthUsage()).totals;
+  const r = await api.issueClientLogin({ firstName: 'Unused' });
+  const del = await api.deleteClient(r.client.id);
+  assert.equal(del.charged, false);
+  assert.deepEqual((await api.monthUsage()).totals, before);
 });
 
 test('temporary passwords expire after 7 days and a change is forced at first sign in', async () => {
@@ -346,7 +374,13 @@ test('the month total on the Billing tab and invoice is A$20 per new login plus 
   await admin(api);
   const before = (await api.monthUsage()).totals;
   assert.equal(before.totalCents, before.loginsCount * 2000 + before.topUpsCount * 1000);
-  await api.issueClientLogin({ firstName: 'Ivy' });
+  const ivy = await api.issueClientLogin({ firstName: 'Ivy' });
+  assert.deepEqual((await api.monthUsage()).totals, before, 'no charge until first sign in');
+  await api.signOut();
+  await api.signIn({ identifier: ivy.credentials.username, password: ivy.credentials.password });
+  await api.aiTopUp().catch(() => {});
+  await api.signOut();
+  await admin(api);
   await api.aiTopUp();
   const after = (await api.monthUsage()).totals;
   assert.equal(after.totalCents, before.totalCents + 2000 + 1000);

@@ -35,7 +35,9 @@ export function createTopbarUI({ root, config, getState, actions }) {
     clear(menu);
     itemButtons.clear();
     menu.append(el('div', { class: 'psp-menu-head' }, locked ? 'Part of the Plan Pack' : 'Download for this design'));
+    const allowed = st.portal?.exports || null; // client logins: the builder's choice, PDF only by default
     for (const item of EXPORT_ITEMS) {
+      if (allowed && !allowed.includes(item.type)) continue;
       const busy = busyType === item.type;
       const btn = el('button', {
         class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: item.type },
@@ -52,6 +54,10 @@ export function createTopbarUI({ root, config, getState, actions }) {
       el('small', null, item.type === 'pdf' && locked ? `${item.hint}. Free preview.` : locked ? `${item.hint}. Locked.` : item.hint));
       itemButtons.set(item.type, btn);
       menu.append(btn);
+    }
+    if (st.enquiry && actions.enquiry) {
+      menu.append(el('button', { class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: 'enquiry' }, onclick: () => { closeMenu(false); actions.enquiry(); } },
+        el('span', null, 'Send to JCE for engineering and DA plans'), icon('check', 16), el('small', null, 'Get a quote from JCE Infrastructure')));
     }
     const info = tokenInfo(st.token);
     menu.append(el('div', { class: 'psp-menu-foot' },

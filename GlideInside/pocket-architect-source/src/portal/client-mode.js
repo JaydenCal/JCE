@@ -1,0 +1,252 @@
+// Pocket Architect when someone is signed in through the builder portal (builder staff or a client login).
+// app.js calls initPortalMode(window.__ps) after the Plan Pack layer has mounted. With no portal session, or with
+// CONFIG.portalEnabled false, it does nothing at all and the public app is untouched.
+//
+// What it adds: a strip with the builder's branding, "Find my block", a "House designs" dropdown (the builder's designs and the
+// Glide Inside library, ranked by how well each fits the lot), PDF plans (no A$35 step), the AI credits chip, and a user menu.
+// Hooks for other modules:
+//   window.openSiteSearch()                 if present, "Find my block" calls it (the site's lot search)
+//   window.__ps.portal.setLot(lot)          { name, polygonMm, frontEdgeIndices, picked, address, lot, dp, lga, zone }: the lot and its setbacks
+//   window.__ps.portal.getLot()             the lot details for the JCE enquiry form
+
+import { CONFIG } from '../config.js';
+import { h, clear } from '../ui/dom.js';
+import { toast } from '../ui/toast.js';
+import { getPortalApi } from './api.js';
+import { injectStripStyles } from './app-strip-styles.js';
+import { signInUrl, portalUrl } from './links.js';
+import { SAMPLE_LOT, lotEnvelope } from './envelope.js';
+import { rankDesigns } from './fit.js';
+import { startPlacement } from './placement.js';
+import { defaultPose } from './place-house.js';
+import { projectToSvg, svgDataUri } from './thumbnail.js';
+import { createProject } from '../model/schema.js';
+
+const LOGO_KEY = 'ps.logo';
+const AUTOSAVE = () => CONFIG.autosaveKey;
+const OWNER_KEY = 'ps.portal.owner';
+
+export async function initPortalMode(app, { api = getPortalApi(), location: loc = globalThis.location } = {}) {
+  if (!CONFIG.portalEnabled) return null;
+  let me;
+  try {
+    me = await api.me();
+  } catch (e) {
+    if (e?.code === 'PASSWORD_CHANGE_REQUIRED') {
+      loc.href = signInUrl('?change=1');
+      return null;
+    }
+    me = null;
+  }
+  const params = new URLSearchParams(loc.search);
+  if (!me) {
+    if (params.has('signin') || params.has('house') || params.has('project') || params.has('glide')) loc.href = signInUrl(`?return=${encodeURIComponent(loc.href)}`);
+    return null;
+  }
+
+  injectStripStyles();
+  const { store, editor } = app;
+  const premium = app.premium;
+  const isClient = me.user.role === 'client';
+  const brand = me.org.branding || {};
+  let lot = { ...SAMPLE_LOT, address: me.lotAddress || '' }; // review builds start with the sample lot so ranking can be shown
+  let lotIsSample = true;
+  let envelope = null;
+  let currentProjectId = null;
+  let credits = me.ai;
+
+  // Branding: the builder's logo in the title block and the PDF.
+  if (brand.logoDataUrl) {
+    try { localStorage.setItem(LOGO_KEY, brand.logoDataUrl); } catch { /* storage blocked */ }
+    app.getLogo = () => brand.logoDataUrl;
+  }
+  document.querySelector('.ps-welcome')?.remove();
+  const entitlement = () => ({
+    entitled: true, token: null, clientExports: true, role: me.user.role, orgName: brand.displayName || me.org.name, credits: toCredits(credits),
+    exports: me.exports, enquiry: me.enquiry, sendEnquiry: (body) => api.enquiryJce(body),
+  });
+  premium?.setPortalEntitlement?.(entitlement());
+  function toCredits(b) { return b ? { total: b.total, used: b.total - b.remaining, remaining: b.remaining } : null; }
+
+  async function refreshEnvelope() {
+    envelope = lot?.polygonMm ? await lotEnvelope(lot.polygonMm, lot.frontEdgeIndices, lot.picked) : null;
+  }
+  await refreshEnvelope();
+
+  // Clients start on an empty lot; staff keep whatever they have open.
+  if (isClient && !params.has('project') && !params.has('house') && !params.has('glide')) {
+    // A different person last used this browser: start on a blank lot rather than showing their design.
+    let last = null;
+    try { last = localStorage.getItem(OWNER_KEY); localStorage.setItem(OWNER_KEY, me.user.id); } catch { /* storage blocked */ }
+    if (last !== me.user.id) app.replaceProject?.(createProject({ name: 'My home' }));
+  }
+
+  // Strip -----------------------------------------------------------------------------------------------------------------------
+  const strip = h('div', { class: 'pas-strip', role: 'region', 'aria-label': 'Builder tools' });
+  const shell = document.querySelector('.ps-shell');
+  if (shell) {
+    shell.insertBefore(strip, shell.querySelector('.ps-main'));
+    shell.style.gridTemplateRows = 'auto auto minmax(0, 1fr) auto'; // the strip is one more row under the top bar
+  }
+  // Signed in users are professionals or have been walked through by their builder: no demo tour.
+  try { localStorage.setItem('ps.tour.done', '1'); } catch { /* storage blocked */ }
+  const statusLine = h('span', { class: 'pas-status', role: 'status', 'aria-live': 'polite' });
+  const aiChip = h('button', { class: 'pas-chip', type: 'button', onclick: aiDialog });
+  const housesBtn = h('button', { class: 'pas-btn pas-btn--primary', type: 'button', 'aria-haspopup': 'dialog', onclick: () => openPicker() }, 'House designs');
+  const findBtn = h('button', { class: 'pas-btn', type: 'button', onclick: findMyBlock }, 'Find my block');
+  const plansBtn = h('button', { class: 'pas-btn', type: 'button', onclick: () => premium?.previewPdf?.() }, 'Plans (PDF)');
+  const userMenu = menu(me.user.name || me.user.username, [
+    ['Save project', () => saveProject()],
+    ['My projects', () => projectsDialog()],
+    ...(!isClient ? [['Save to house library', () => saveToLibrary()]] : []),
+    ...(me.enquiry ? [['Send to JCE for engineering and DA plans', () => premium?.openEnquiry?.()]] : []),
+    ...(!isClient ? [['Builder dashboard', () => { loc.href = portalUrl(); }]] : []),
+    ['Sign out', signOut],
+  ]);
+  const renderStrip = () => {
+    clear(strip);
+    strip.append(
+      h('div', { class: 'pas-brand' }, brand.logoDataUrl ? h('img', { src: brand.logoDataUrl, alt: '' }) : null, h('div', null, h('strong', null, brand.displayName || me.org.name), h('small', null, isClient ? 'Client login' : 'Builder staff'))),
+      findBtn, housesBtn, plansBtn, statusLine, h('span', { class: 'pas-spacer' }), aiChip, userMenu);
+    paintAi();
+  };
+  function paintAi() {
+    const r = credits?.remaining ?? 0;
+    aiChip.textContent = `AI credits: ${r}`;
+    aiChip.dataset.level = r <= 0 ? 'out' : r < 20 ? 'low' : '';
+    aiChip.title = `${credits?.monthlyRemaining ?? 0} of ${credits?.monthlyCap ?? 0} monthly credits left, plus ${credits?.topUpBalance ?? 0} top-up credits`;
+  }
+  renderStrip();
+  async function refreshCredits() {
+    try { credits = await api.aiBalance(); premium?.setPortalEntitlement?.(entitlement()); paintAi(); } catch { /* signed out */ }
+  }
+  const timer = setInterval(refreshCredits, 20000);
+
+  function menu(label, items) {
+    const list = h('div', { class: 'pas-menu-list', hidden: true, role: 'menu' }, ...items.map(([t, fn]) => h('button', { type: 'button', role: 'menuitem', onclick: () => { list.hidden = true; fn(); } }, t)));
+    const btn = h('button', { class: 'pas-btn', type: 'button', 'aria-haspopup': 'menu', 'aria-expanded': 'false', onclick: () => { list.hidden = !list.hidden; btn.setAttribute('aria-expanded', String(!list.hidden)); } }, label, ' ▾');
+    document.addEventListener('click', (e) => { if (!list.hidden && !e.target.closest?.('.pas-menu')) list.hidden = true; });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') list.hidden = true; });
+    return h('div', { class: 'pas-menu' }, btn, list);
+  }
+
+  // Modal and popover helpers ------------------------------------------------------------------------------------------------
+  function modal(title, body, actions = []) {
+    const close = () => scrim.remove();
+    const scrim = h('div', { class: 'pas-modal-scrim', onclick: (e) => { if (e.target === scrim) close(); } },
+      h('div', { class: 'pas-modal', role: 'dialog', 'aria-modal': 'true', 'aria-label': title }, h('h2', null, title), body,
+        h('div', { class: 'pas-row' }, ...actions.map((a) => h('button', { class: `pas-btn${a.primary ? ' pas-btn--primary' : ''}`, type: 'button', onclick: () => { a.fn?.(close); if (!a.keep) close(); } }, a.label)), h('button', { class: 'pas-btn', type: 'button', onclick: close }, 'Close'))));
+    document.body.append(scrim);
+    scrim.querySelector('input,button')?.focus();
+    return { close };
+  }
+
+  // Find my block -------------------------------------------------------------------------------------------------------------
+  function findMyBlock() {
+    if (typeof globalThis.openSiteSearch === 'function') return globalThis.openSiteSearch();
+    modal('Find my block', h('div', null,
+      h('p', null, 'Searching for your block by address will be available here soon. Until then you can try the tool on a sample lot.'),
+      h('p', null, h('small', null, `${SAMPLE_LOT.name}`))),
+    [{ label: 'Use a sample lot', primary: true, fn: async () => { lot = { ...SAMPLE_LOT, address: me.lotAddress || '' }; lotIsSample = true; await refreshEnvelope(); statusLine.textContent = `Lot: ${SAMPLE_LOT.name}`; toast('Sample lot ready. Choose a house design to see which ones fit.', { kind: 'ok' }); } }]);
+  }
+  app.portal = {
+    async setLot(next) { lot = { ...next }; lotIsSample = false; await refreshEnvelope(); statusLine.textContent = lot.address ? `Lot: ${lot.address}` : ''; },
+    getLot: () => ({ address: lot.address || '', lot: lot.lot || '', dp: lot.dp || '', lga: lot.lga || '', zone: lot.zone || '' }),
+    me, refreshCredits,
+  };
+  if (lot.address) statusLine.textContent = `Lot: ${lot.address}`; else statusLine.textContent = lotIsSample ? SAMPLE_LOT.name : '';
+
+  // House designs -------------------------------------------------------------------------------------------------------------
+  async function loadDesigns() {
+    const [mine, glide] = await Promise.all([api.listHouses(), api.listGlideLibrary().catch(() => [])]);
+    const full = async (list, getter, group) => Promise.all(list.map(async (x) => {
+      const r = await getter(x.id);
+      return { id: x.id, name: x.name, group, project: r.project, meta: x, source: group === 'glide' ? 'glide' : 'house' };
+    }));
+    return [...(await full(mine, (id) => api.getHouse(id), 'builder')), ...(await full(glide, (id) => api.getGlideModel(id), 'glide'))];
+  }
+  async function openPicker() {
+    const list = h('div', { class: 'pas-list' }, h('p', { class: 'pas-empty' }, 'Loading designs...'));
+    const m = modal('House designs', h('div', null, h('p', null, envelope ? `Ranked for ${lotIsSample ? SAMPLE_LOT.name : lot.address || 'your lot'}. Designs that do not fit can still be placed.` : 'Find your block to see which designs fit.'), list), []);
+    let designs;
+    try { designs = await loadDesigns(); } catch (e) { list.replaceChildren(h('p', { class: 'pas-empty' }, e.message || 'Could not load designs.')); return; }
+    // The builder's own designs first, then the Glide Inside library; within each, best fit first.
+    const byGroup = (g) => (envelope ? rankDesigns(designs.filter((d) => d.group === g), envelope) : designs.filter((d) => d.group === g).map((d) => ({ ...d, fit: null })));
+    const ranked = [...byGroup('builder'), ...byGroup('glide')];
+    clear(list);
+    let lastGroup = null;
+    for (const d of ranked) {
+      if (d.group !== lastGroup) { list.append(h('div', { class: 'pas-group' }, d.group === 'glide' ? 'Glide Inside library' : `${brand.displayName || me.org.name} designs`)); lastGroup = d.group; }
+      const svg = (() => { try { return svgDataUri(projectToSvg(d.project)); } catch { return ''; } })();
+      list.append(h('button', { class: 'pas-item', type: 'button', onclick: () => { m.close(); choose(d); } },
+        svg ? h('img', { src: svg, alt: '' }) : null,
+        h('span', null, h('strong', null, d.name),
+          h('small', null, d.fit?.badge ? h('span', { class: 'pas-badge', 'data-fit': d.fit.status }, d.fit.badge) : null, d.fit?.reason || '', d.fit?.reason ? '' : ''))));
+    }
+  }
+  function choose(d) {
+    const house = structuredClone(d.project);
+    house.name = d.name;
+    const fit = d.fit;
+    const base = defaultPose(store.project, house);
+    const pose = fit?.pose && fit.status !== 'too-big' ? { x: fit.pose.x, y: fit.pose.y, rotation: fit.rotationDeg || 0, mirrored: !!fit.mirrored } : null;
+    const lotBox = envelope ? { widthMm: Math.max(...envelope.map((p) => p.x)) - Math.min(...envelope.map((p) => p.x)), depthMm: Math.max(...envelope.map((p) => p.y)) - Math.min(...envelope.map((p) => p.y)) } : null;
+    startPlacement({
+      store, editor, house, lot: lotBox, initialPose: pose ? { ...base, ...pose } : null,
+      onDone: () => toast(`${d.name} placed. Every wall, room and opening is editable.`, { kind: 'ok' }),
+    });
+  }
+
+  // Projects ----------------------------------------------------------------------------------------------------------------------
+  async function saveProject() {
+    try {
+      const saved = await api.saveProject({ id: currentProjectId || undefined, name: store.project.name, project: store.project, lotAddress: lot.address || '' });
+      currentProjectId = saved.id;
+      toast('Project saved to your account.', { kind: 'ok' });
+    } catch (e) { toast(e.message || 'Could not save.', { kind: 'error' }); }
+  }
+  async function saveToLibrary() {
+    try {
+      await api.saveHouse({ name: store.project.name || 'Untitled house', project: store.project });
+      toast('Saved to the house library.', { kind: 'ok' });
+    } catch (e) { toast(e.message || 'Could not save.', { kind: 'error' }); }
+  }
+  async function projectsDialog() {
+    const body = h('div', { class: 'pas-list' }, h('p', { class: 'pas-empty' }, 'Loading...'));
+    const m = modal('My projects', body);
+    const list = await api.listProjects().catch(() => []);
+    clear(body);
+    if (!list.length) body.append(h('p', { class: 'pas-empty' }, 'No saved projects yet. Use Save project in the menu.'));
+    for (const p of list) body.append(h('button', { class: 'pas-item', type: 'button', onclick: () => { m.close(); openProject(p.id); } }, h('span', null, h('strong', null, p.name), h('small', null, p.ownerName && !isClient ? `Client: ${p.ownerName}` : ''))));
+  }
+  async function openProject(id) {
+    try {
+      const p = await api.openProject(id);
+      app.replaceProject(p.project);
+      currentProjectId = p.id;
+      if (p.lotAddress) { lot = { ...lot, address: p.lotAddress }; statusLine.textContent = `Lot: ${p.lotAddress}`; }
+    } catch (e) { toast(e.message || 'Could not open that project.', { kind: 'error' }); }
+  }
+
+  // AI credits ----------------------------------------------------------------------------------------------------------------------
+  function aiDialog() {
+    const note = h('p', null, `${credits.monthlyRemaining} of ${credits.monthlyCap} monthly credits left, plus ${credits.topUpBalance} top-up credits. Monthly credits reset on the 1st; the AI helper stops at zero.`);
+    const actions = me.canTopUp ? [{ label: 'Top up 300 credits, A$10 incl. GST', primary: true, keep: true, fn: async (close) => { try { await api.aiTopUp(); await refreshCredits(); toast(`Added 300 credits. ${isClient ? 'Charged to your builder.' : 'Charged on your end of month invoice.'}`, { kind: 'ok' }); close(); } catch (e) { toast(e.message, { kind: 'error' }); } } }] : [];
+    modal('AI credits', h('div', null, note, me.canTopUp ? h('p', null, 'Top-ups are added at once and billed on the builder end of month invoice.') : h('p', null, 'Your builder has turned off top-ups.')), actions);
+  }
+
+  async function signOut() {
+    clearInterval(timer);
+    try { await api.signOut(); } catch { /* already signed out */ }
+    try { localStorage.removeItem(AUTOSAVE()); localStorage.removeItem(LOGO_KEY); localStorage.removeItem(OWNER_KEY); } catch { /* ignore */ }
+    loc.href = signInUrl();
+  }
+
+  // Deep links ----------------------------------------------------------------------------------------------------------------------
+  try {
+    if (params.get('project')) await openProject(params.get('project'));
+    else if (params.get('house')) { const r = await api.getHouse(params.get('house')); app.replaceProject(r.project); }
+    else if (params.get('glide')) { const r = await api.getGlideModel(params.get('glide')); app.replaceProject(r.project); }
+  } catch (e) { toast(e.message || 'Could not open that design.', { kind: 'error' }); }
+  return { strip, openPicker, refreshCredits };
+}

@@ -51,6 +51,11 @@ export function readConfig(env = {}) {
     entitlementDays: num(env.ENTITLEMENT_DAYS, 365),
     exportMaxProjectBytes: Math.round(num(env.EXPORT_MAX_PROJECT_BYTES, 2000000)),
     aiTimeoutMs: Math.round(num(env.AI_TIMEOUT_MS, 30000)),
+    // "Send to JCE" enquiries (lib/enquiry.js). RESEND_API_KEY is a secret; the others are plain variables.
+    resendApiKey: str(env.RESEND_API_KEY),
+    enquiryTo: str(env.ENQUIRY_TO, 'enquiries@jceinfrastructure.com.au'),
+    enquiryFrom: str(env.ENQUIRY_FROM, 'Glide Inside <plans@glideinside.com.au>'),
+    enquiryMaxPdfBytes: Math.round(num(env.ENQUIRY_MAX_PDF_BYTES, 6000000)),
     // Printed on the PDF title block. Defaults come from src/config.js (decision 17.1).
     disclaimer: str(env.DISCLAIMER),
   };

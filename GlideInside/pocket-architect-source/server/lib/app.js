@@ -14,6 +14,7 @@ import { authenticate, issueToken } from './entitlement.js';
 import * as stripe from './stripe.js';
 import * as credits from './credits.js';
 import * as anthropic from './anthropic.js';
+import { handleEnquiry } from './enquiry.js';
 
 const EXPORT_TYPES = ['pdf', 'dxf', 'glb', 'obj'];
 const WEBHOOK_MAX_BYTES = 1_000_000;
@@ -305,6 +306,11 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     });
   }
 
+  async function enquiryJce(request) {
+    const body = await readJson(request, 10_000_000);
+    return json(await handleEnquiry({ body, request, store, config, fetchImpl: doFetch, now, clientIp }));
+  }
+
   // Router ----------------------------------------------------------------------------------------
   async function route(request, url) {
     const m = /\/api(\/.*)?$/.exec(url.pathname.replace(/\/+$/, '') || '/');
@@ -321,6 +327,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (path === '/credits') return allow('GET'), creditsGet(request, url);
     if (path === '/ai/estimate') return allow('POST'), aiEstimate(request);
     if (path === '/ai/edit') return allow('POST'), aiEdit(request);
+    if (path === '/enquiry/jce') return allow('POST'), enquiryJce(request);
     const exp = /^\/export\/([a-z0-9]+)$/.exec(path);
     if (exp) return allow('POST'), exportFile(request, exp[1]);
     throw new HttpError('NOT_FOUND', 'No such endpoint.');

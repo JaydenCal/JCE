@@ -7,7 +7,7 @@ import { appLink, portalUrl } from '../links.js';
 import { slug } from '../../ui/dom.js';
 import { TEMP_PASSWORD_DAYS } from '../mock-api.js';
 
-export const CHARGE_NOTICE = 'Each new client login is charged A$20 incl. GST on your end of month invoice.';
+export const CHARGE_NOTICE = 'A$20 incl. GST is charged on your monthly invoice once your client first signs in.';
 
 const houseAccessText = (a) => (a === 'all' ? 'All designs' : `${a.length} selected`);
 const day = (iso) => (iso ? ddmmyyyy(iso) : null);
@@ -37,6 +37,28 @@ export async function renderClients(host, { api, me, refreshBilling }) {
     h('thead', null, h('tr', null, ...['Client', 'Lot address', 'Houses', 'Status', 'Last sign in', 'Projects', 'AI credits', 'Actions'].map((t) => h('th', { scope: 'col' }, t)))), tbody);
   const empty = h('p', { class: 'pp-empty', hidden: true }, 'No client logins yet. Use Generate account to create the first one.');
 
+  function settingsCard() {
+    const canSet = me.permissions.includes('billing.write');
+    const row = (key, title, help) => {
+      const box = h('input', { type: 'checkbox', checked: !!me.org[key], disabled: !canSet, onchange: async (e) => {
+        try {
+          me.org = await api.setOrgSettings({ [key]: e.target.checked });
+          toast('Saved.', { kind: 'ok' });
+        } catch (ex) {
+          e.target.checked = !e.target.checked;
+          toast(errorMessage(ex), { kind: 'error' });
+        }
+      } });
+      return h('label', { class: 'pp-check' }, box, h('span', null, h('strong', null, title), h('span', { class: 'pp-sub' }, help)));
+    };
+    return h('section', { class: 'pp-card pp-client-settings' },
+      h('h3', null, 'Client settings'),
+      h('p', { class: 'pp-lead pp-lead--sm' }, 'What your clients can see and do. Your own staff logins are not affected.'),
+      row('showGlideToClients', 'Show the Glide Inside house library to clients', 'Off means clients see only your own house designs.'),
+      row('allowClientEnquiries', 'Let clients send their plans to JCE for engineering and DA quotes', 'On by default. Nothing is sent until the client ticks consent and presses Send.'),
+      row('allowClientCadExports', 'Let clients export DXF and 3D models as well as the PDF', 'Off by default: clients get your branded PDF plans only. The design files stay your property (see the terms: clients are licensed to use the plans for their own build only).'));
+  }
+
   async function load() {
     const clients = await api.listClients();
     empty.hidden = clients.length > 0;
@@ -52,7 +74,7 @@ export async function renderClients(host, { api, me, refreshBilling }) {
       canWrite ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => toggle(e.currentTarget, c) }, c.status === 'active' ? 'Disable' : 'Enable') : null,
       h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => exportProjects(e.currentTarget, c) }, icon('download', 14), 'Export projects'),
       canWrite ? h('button', { class: 'pp-btn pp-btn--sm pp-btn--danger-quiet', type: 'button', onclick: () => deleteDialog(c) }, icon('trash', 14), 'Delete') : null);
-    const sign = c.lastSignInAt ? day(c.lastSignInAt) : 'Never';
+    const sign = c.lastSignInAt ? day(c.lastSignInAt) : 'Not signed in yet';
     return h('tr', { dataset: { id: c.id } },
       td('Client', h('strong', null, c.name), h('div', { class: 'pp-sub' }, c.username), c.email ? h('div', { class: 'pp-sub' }, c.email) : null),
       td('Lot address', c.lotAddress || h('span', { class: 'pp-sub' }, 'Not added')),
@@ -98,7 +120,7 @@ export async function renderClients(host, { api, me, refreshBilling }) {
       d.setTitle(`Account for ${r.client.name}`);
       d.setBody(h('div', null,
         credentialsCard({ username: r.credentials.username, password: r.credentials.password, who: r.client.name, signInUrl: portalUrl('?client=1'), expiryDays: TEMP_PASSWORD_DAYS }),
-        h('p', { class: 'pp-notice pp-notice--quiet' }, icon('info', 18), `A$20 incl. GST for this new login is added to your ${r.charge.month} invoice. Resetting the password later is free.`)));
+        h('p', { class: 'pp-notice pp-notice--quiet' }, icon('info', 18), 'A$20 incl. GST is charged on your monthly invoice once your client first signs in. Nothing is charged if they never do, and you can delete an unused login free.')));
       d.setFooter((x) => [h('button', { class: 'pp-btn', type: 'button', onclick: () => { x.close(); generateDialog(); } }, 'Generate another'), h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: () => x.close() }, 'Done')]);
     }
   }
@@ -145,7 +167,7 @@ export async function renderClients(host, { api, me, refreshBilling }) {
   }
   function deleteDialog(c) {
     confirmDialog({ title: `Delete ${c.name}?`, danger: true, confirmLabel: 'Delete login and projects',
-      message: `This removes the login ${c.username} and all ${c.projectCount} of their projects. It cannot be undone. Export their projects first if you want to keep a copy. Charges already made stay on your invoices.` }).then(async (ok) => {
+      message: `This removes the login ${c.username} and all ${c.projectCount} of their projects. It cannot be undone. Export their projects first if you want to keep a copy. ${c.billed ? 'The A$20 charge for this login stays on your invoice.' : 'This login has not been used, so there is no charge.'}` }).then(async (ok) => {
       if (!ok) return;
       try {
         const r = await api.deleteClient(c.id);
@@ -162,6 +184,7 @@ export async function renderClients(host, { api, me, refreshBilling }) {
       h('div', null, h('h2', null, 'Clients'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Give each client a login to Pocket Architect with your branding and your house designs. The system sends no email, so you pass the username and password on yourself.')),
       canWrite ? h('button', { class: 'pp-btn pp-btn--primary pp-btn--lg', type: 'button', id: 'generate-account', onclick: generateDialog }, icon('plus', 18), 'Generate account') : null),
     h('p', { class: 'pp-notice' }, icon('info', 18), CHARGE_NOTICE),
-    h('div', { class: 'pp-table-wrap' }, table), empty);
+    h('div', { class: 'pp-table-wrap' }, table), empty,
+    settingsCard());
   return load();
 }

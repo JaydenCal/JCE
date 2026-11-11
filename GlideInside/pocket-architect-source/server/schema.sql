@@ -62,3 +62,29 @@ CREATE TABLE IF NOT EXISTS events (
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_events_type ON events(type, created_at);
+
+-- "Send to JCE for engineering and DA plans" (lib/enquiry.js). A copy of every enquiry, kept even when the email fails.
+-- The PDF is not stored (D1 rows are limited to 2 MB); it can be rebuilt from project_json.
+CREATE TABLE IF NOT EXISTS jce_enquiries (
+  id TEXT PRIMARY KEY,
+  reference TEXT NOT NULL UNIQUE,   -- GI-XXXXX, shown to the person
+  created_at TEXT NOT NULL,
+  name TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  email TEXT NOT NULL,
+  need TEXT NOT NULL,               -- engineering | da | both
+  notes TEXT,
+  lot_json TEXT,                    -- { address, lot, dp, lga, zone }
+  source TEXT,                      -- public | builder | client
+  org_name TEXT,
+  project_name TEXT,
+  project_json TEXT,                -- the design (underlay removed), null when over 1.8 MB
+  pdf_bytes INTEGER,
+  consent INTEGER NOT NULL DEFAULT 1,
+  email_status TEXT NOT NULL,       -- pending | sent | failed
+  email_id TEXT,                    -- Resend message id
+  emailed_at TEXT,
+  email_error TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_jce_enquiries_created ON jce_enquiries(created_at);
+CREATE INDEX IF NOT EXISTS idx_jce_enquiries_email ON jce_enquiries(email);

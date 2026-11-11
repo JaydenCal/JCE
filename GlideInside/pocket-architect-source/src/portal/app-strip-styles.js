@@ -1,12 +1,16 @@
 // Styles for the signed in strip in Pocket Architect (builder staff and client logins). Prefix pas-, colours from --ps-* tokens.
 
 const CSS = `
+.pas-badge{display:inline-block;font:700 11px var(--ps-font-ui,system-ui,sans-serif);border-radius:99px;padding:1px 8px;margin-right:6px;border:1px solid var(--ps-border,#dcdde0);background:var(--ps-panel,#fff)}
+.pas-badge[data-fit=fits]{background:#dff3e4;border-color:#2f7d46;color:#17492a}.pas-badge[data-fit=rotated],.pas-badge[data-fit=mirrored],.pas-badge[data-fit=rotated-mirrored]{background:#f7e9cc;border-color:#935800;color:#5c3800}.pas-badge[data-fit=too-big]{background:#f7dada;border-color:#b52828;color:#7a1a1a}
+.pas-menu{position:relative}.pas-menu-list{position:absolute;right:0;top:100%;margin-top:4px;z-index:60;background:var(--ps-panel,#fff);border:1px solid var(--ps-border-strong,#b6b8bd);border-radius:var(--ps-radius-lg,6px);box-shadow:var(--ps-shadow);min-width:220px;padding:4px;display:grid}
+.pas-menu-list button,.pas-menu-list a{display:block;text-align:left;background:none;border:0;font:500 13px var(--ps-font-ui,system-ui,sans-serif);padding:8px 10px;border-radius:4px;color:inherit;cursor:pointer;text-decoration:none}.pas-menu-list button:hover,.pas-menu-list a:hover{background:var(--ps-hover,#eeeff1)}
 .pas-strip{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;padding:6px 10px;background:var(--ps-panel-2,#f5f5f6);border-bottom:1px solid var(--ps-border,#dcdde0);font:500 13px var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-text,#1a1c20)}
 .pas-brand{display:flex;align-items:center;gap:8px;min-width:0;margin-right:6px}
 .pas-brand img{height:26px;width:auto;max-width:120px;object-fit:contain;background:#fff;border-radius:3px;padding:2px}
 .pas-brand strong{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
 .pas-brand small{color:var(--ps-muted,#5a5e66);font-size:11px;white-space:nowrap}
-.pas-spacer{flex:1 1 0;min-width:0}
+.pas-brand>div{display:grid;line-height:1.15}.pas-spacer{flex:1 1 0;min-width:0}
 .pas-btn{display:inline-flex;align-items:center;gap:6px;font:600 13px var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-text,#1a1c20);background:var(--ps-panel,#fff);border:1px solid var(--ps-border-strong,#b6b8bd);border-radius:var(--ps-radius,5px);padding:0 11px;min-height:32px;cursor:pointer;text-decoration:none;white-space:nowrap}
 .pas-btn:hover{background:var(--ps-hover,#eeeff1)}
 .pas-btn:focus-visible,.pas-item:focus-visible,.pas-chip:focus-visible{outline:2px solid var(--ps-focus,#1b4fd1);outline-offset:2px}

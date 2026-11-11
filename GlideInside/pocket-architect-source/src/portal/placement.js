@@ -34,6 +34,7 @@ export function startPlacement({ store, editor, house, lot = null, host = docume
     h('div', { class: 'pas-row' },
       btn('↶ 15°', () => setPose({ rotation: normDeg((pose.rotation || 0) - 15) })), btn('15° ↷', () => setPose({ rotation: normDeg((pose.rotation || 0) + 15) })),
       btn('Turn 90°', () => setPose({ rotation: normDeg((pose.rotation || 0) + 90) })),
+      btn('Mirror', () => setPose({ mirrored: !pose.mirrored })),
       h('label', { style: { display: 'flex', alignItems: 'center', gap: '6px' } }, 'Rotation', rotInput, '°'), warn),
     h('div', { class: 'pas-row pas-end' }, btn('Cancel', () => cancel()), btn('Place house', () => commit(), 'pas-btn--primary')),
     live);

@@ -14,7 +14,7 @@ export async function renderBilling(host, { api, me, refreshMe }) {
     ? h('div', { class: 'pp-table-wrap' }, h('table', { class: 'pp-table' }, h('thead', null, h('tr', null, ...cols.map((c) => h('th', { scope: 'col', class: c.num ? 'pp-num' : '' }, c.label)))), h('tbody', null, ...rows)))
     : h('p', { class: 'pp-empty' }, emptyText);
 
-  const loginRows = usage.logins.map((i) => h('tr', null, h('td', null, i.clientName), h('td', null, ddmmyyyyTime(i.issuedAt)), h('td', { class: 'pp-num' }, formatAud(i.amountCents))));
+  const loginRows = usage.logins.map((i) => h('tr', null, h('td', null, i.clientName), h('td', null, ddmmyyyyTime(i.firstSignInAt)), h('td', { class: 'pp-num' }, formatAud(i.amountCents))));
   const topRows = usage.topUps.map((x) => h('tr', null, h('td', null, x.clientName), h('td', null, ddmmyyyyTime(x.createdAt)), h('td', null, `${x.credits} credits`), h('td', { class: 'pp-num' }, formatAud(x.amountCents))));
 
   function invoiceDialog(id) {
@@ -76,8 +76,8 @@ export async function renderBilling(host, { api, me, refreshMe }) {
     h('section', { class: 'pp-card' },
       h('div', { class: 'pp-card-head' }, h('h3', null, `${monthLabel(usage.month)} so far`), h('p', { class: 'pp-total' }, formatAud(t.totalCents), h('small', null, ' incl. GST'))),
       h('p', { class: 'pp-notice pp-notice--quiet' }, icon('info', 18), `${CHARGE_NOTICE} Each AI credit top-up of 300 credits is A$10 incl. GST. Resetting passwords, disabling logins and staff logins are free.`),
-      h('h4', null, `New client logins issued: ${t.loginsCount} at A$20 = ${formatAud(t.loginsCents)}`),
-      table([{ label: 'Client' }, { label: 'Issued (DD/MM/YYYY)' }, { label: 'Charge', num: true }], loginRows, 'No new client logins this month.'),
+      h('h4', null, `New client logins (first sign in this month): ${t.loginsCount} at A$20 = ${formatAud(t.loginsCents)}`),
+      table([{ label: 'Client' }, { label: 'First sign in (DD/MM/YYYY)' }, { label: 'Charge', num: true }], loginRows, 'No clients have signed in for the first time this month.'),
       h('h4', null, `AI credit top-ups: ${t.topUpsCount} at A$10 = ${formatAud(t.topUpsCents)}`),
       table([{ label: 'Login' }, { label: 'Added (DD/MM/YYYY)' }, { label: 'Credits' }, { label: 'Charge', num: true }], topRows, 'No AI top-ups this month.'),
       h('dl', { class: 'pp-totals' }, h('dt', null, `New logins (${t.loginsCount} x A$20)`), h('dd', null, formatAud(t.loginsCents)), h('dt', null, `AI top-ups (${t.topUpsCount} x A$10)`), h('dd', null, formatAud(t.topUpsCents)), h('dt', null, 'Month total incl. GST'), h('dd', null, h('strong', null, formatAud(t.totalCents))))),

@@ -132,7 +132,7 @@ function seedDb(now) {
   ];
   return {
     version: 1,
-    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null }, allowClientTopUps: true, showGlideToClients: true, allowClientCadExports: false, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
+    orgs: [{ id: orgId, name: 'Sample Homes Pty Ltd', shortCode: 'SHM', branding: { displayName: 'Sample Homes', logoDataUrl: null }, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: true, allowClientCadExports: false, aiMonthlyCap: DEFAULT_AI_MONTHLY_CAP, billingContact: { name: 'Accounts, Sample Homes', email: 'accounts@samplehomes.example', phone: '02 5550 0100', legalName: 'Sample Homes Pty Ltd', abn: '51 824 753 556' }, createdAt: iso(at(m3, 1)) }],
     users, houses, projects, issues, topUps, resets: {},
   };
 }
@@ -190,7 +190,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     id: u.id, name: u.name, email: u.email || '', username: u.username, role: u.role, status: u.status, mustChangePassword: !!u.mustChangePassword,
     createdAt: u.createdAt, lastSignInAt: u.lastSignInAt, tempPasswordExpiresAt: u.mustChangePassword ? u.tempPasswordExpiresAt || null : null, ...(org ? { ai: aiBalance(u, org) } : {}),
   });
-  const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, showGlideToClients: o.showGlideToClients !== false, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
+  const publicOrg = (o) => ({ id: o.id, name: o.name, shortCode: o.shortCode, branding: clone(o.branding), allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients !== false, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap, billingContact: clone(o.billingContact) });
   const houseMeta = (h) => { const { project, ...rest } = h; return { ...clone(rest), hasProject: !!project }; };
   const visibleHouse = (user, h) => !h.archived && (user.houseAccess === 'all' || (Array.isArray(user.houseAccess) && user.houseAccess.includes(h.id)));
 
@@ -276,7 +276,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const user = db.users.find((u) => u.id === sessionUserId());
       if (!user || user.status !== 'active') return null;
       const org = db.orgs.find((o) => o.id === user.orgId);
-      return { user: publicUser(user, org), org: publicOrg(org), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai: aiBalance(user, org), canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true, exports: isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj'] : ['pdf'] };
+      return { user: publicUser(user, org), org: publicOrg(org), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai: aiBalance(user, org), canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true, enquiry: isStaff(user) || org.allowClientEnquiries !== false, exports: isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj'] : ['pdf'] };
     },
     async changePassword({ currentPassword, newPassword } = {}) {
       await wait();
@@ -720,14 +720,30 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       return clone(b);
     },
     /** Organisation settings. allowClientTopUps (default on) lets client logins buy AI credit top-ups. */
-    async setOrgSettings({ allowClientTopUps, showGlideToClients, allowClientCadExports } = {}) {
+    async setOrgSettings({ allowClientTopUps, allowClientEnquiries, showGlideToClients, allowClientCadExports } = {}) {
       await wait();
       const { db, org } = ctx('billing.write');
       if (allowClientTopUps !== undefined) org.allowClientTopUps = !!allowClientTopUps;
+      if (allowClientEnquiries !== undefined) org.allowClientEnquiries = !!allowClientEnquiries;
       if (showGlideToClients !== undefined) org.showGlideToClients = !!showGlideToClients;
       if (allowClientCadExports !== undefined) org.allowClientCadExports = !!allowClientCadExports;
       save(db);
       return publicOrg(org);
+    },
+
+    /** "Send to JCE": the mock sends nothing and returns a fake reference. Same consent and field checks as the server. */
+    async enquiryJce(body = {}) {
+      await wait();
+      const { db, org, user } = ctx();
+      if (!isStaff(user) && org.allowClientEnquiries === false) throw err('FORBIDDEN', 'Your builder has turned off sending to JCE.', 403);
+      if (body.consent !== true) throw err('BAD_REQUEST', 'Please tick the box to agree to your plans and details being sent to JCE Infrastructure Pty Ltd.', 400);
+      for (const k of ['name', 'phone', 'email']) if (!String(body[k] || '').trim()) throw err('BAD_REQUEST', `${k} is required.`, 400);
+      if (!['engineering', 'da', 'both'].includes(body.need)) throw err('BAD_REQUEST', 'need must be engineering, da or both.', 400);
+      const A = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+      const reference = `GI-${Array.from({ length: 5 }, () => A[Math.floor(Math.random() * A.length)]).join('')}`;
+      (db.enquiries ||= []).push({ reference, createdAt: iso(), email: body.email, need: body.need });
+      save(db);
+      return { ok: true, reference, mock: true };
     },
 
     /** Test and demo helper: wipe the mock back to its sample data. Not part of the real API. */

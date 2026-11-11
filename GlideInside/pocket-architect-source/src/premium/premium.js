@@ -22,6 +22,7 @@ import { el, track } from './util.js';
 import { icon } from './icons.js';
 import { importPdf as runImportPdf } from './pdf-import.js';
 import { openPdfPreview } from './pdf-preview.js';
+import { openEnquiry } from './ui/enquiry.js';
 
 export function createPremium(store, options = {}) {
   const {
@@ -59,8 +60,12 @@ export function createPremium(store, options = {}) {
   // A builder or client login (src/portal) includes the plans and the AI helper: the builder pays, so there is no A$35 step.
   // state.portal = { entitled, token (null in the mock), clientExports (mock: build files in this browser), orgName, credits }.
   const portalOn = () => !!state.portal?.entitled;
+  // Which downloads this person may have. Public Plan Pack and builder staff: all. Client logins: the builder's choice (PDF only by default).
+  const allowedExports = () => (portalOn() && Array.isArray(state.portal.exports) ? state.portal.exports : EXPORT_ITEMS.map((i) => i.type));
+  // "Send to JCE": public Plan Pack users, builder staff, and clients when the builder allows it.
+  const canEnquire = () => (portalOn() ? state.portal.enquiry !== false : isEntitled());
   const isEntitled = () => dev() || !!state.token || portalOn();
-  const view = () => ({ entitled: isEntitled(), token: state.token || state.portal?.token || null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '' } : null });
+  const view = () => ({ entitled: isEntitled(), token: state.token || state.portal?.token || null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false } : null, enquiry: canEnquire() });
 
   // State ---------------------------------------------------------------------------------------------------------------
   function publish() {
@@ -146,6 +151,10 @@ export function createPremium(store, options = {}) {
 
   async function exportAs(type) {
     if (!EXPORT_ITEMS.some((i) => i.type === type)) return null;
+    if (!allowedExports().includes(type)) {
+      layer.notify('Your builder provides the PDF plans. Ask them if you need other file types.', 'info', 6000);
+      return null;
+    }
     if (!isEntitled()) {
       flows.openUpgrade({ source: `export-${type}` });
       return null;
@@ -171,6 +180,30 @@ export function createPremium(store, options = {}) {
       state.exporting = null;
       topbar?.setBusy(null, '');
     }
+  }
+
+  // Send to JCE ---------------------------------------------------------------------------------------------------------------
+  async function pdfBase64() {
+    let blob = null;
+    await runExport('pdf', store.project, { api, token: state.token || state.portal?.token || null, devUnlock: dev() || (portalOn() && !!state.portal.clientExports), config: cfg, catalogue, getViewer, save: (b) => { blob = b; } });
+    if (!blob) return null;
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  }
+  function openEnquiryForm(extra = {}) {
+    if (!canEnquire()) {
+      layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Sending to JCE comes with the Plan Pack.', 'info', 6000);
+      return null;
+    }
+    const send = state.portal?.sendEnquiry || ((body) => api.enquiryJce(body));
+    const lot = (typeof window !== 'undefined' && window.__ps?.portal?.getLot?.()) || store.project.site?.lot || {};
+    track('ps_enquiry_open');
+    return openEnquiry({
+      layer, send, buildPdf: pdfBase64, project: store.project, lot,
+      source: portalOn() ? (state.portal.role === 'client' ? 'client' : 'builder') : 'public', orgName: portalOn() ? state.portal.orgName || '' : '', ...extra,
+    });
   }
 
   // PDF plans: everyone sees the sheets first (watermarked and low resolution when free). Download is the paid path.
@@ -219,6 +252,7 @@ export function createPremium(store, options = {}) {
         restore: () => flows.openRestore(),
         exportAs,
         previewPdf: () => previewPdf(),
+        enquiry: () => openEnquiryForm(),
       },
     });
   }
@@ -351,6 +385,8 @@ export function createPremium(store, options = {}) {
     // Extras for the host page and tests.
     exportAs,
     previewPdf,
+    openEnquiry: openEnquiryForm,
+    canEnquire,
     importPdf: () => runImportPdf(psApp(), { isEntitled, openUpgrade: () => flows.openUpgrade({ source: 'pdf-import' }), layer, config: cfg }),
     openRestore: (prefill) => flows.openRestore({ prefill }),
     refreshCredits,

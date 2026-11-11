@@ -107,6 +107,8 @@ export function createApi({ base = '/api', fetchImpl = null, timeoutMs = 45000 }
     credits: (token, projectId) => json('GET', '/credits', { token, query: projectId ? { project: projectId } : undefined, timeout: 15000 }),
     estimate: (token, body) => json('POST', '/ai/estimate', { token, body, timeout: 15000 }),
     edit: (token, body) => json('POST', '/ai/edit', { token, body, timeout: 45000 }),
+    /** "Send to JCE for engineering and DA plans". Resolves { ok, reference }. 503 ENQUIRY_NOT_CONFIGURED until the Worker has RESEND_API_KEY. */
+    enquiryJce: (body) => json('POST', '/enquiry/jce', { body, timeout: 60000 }),
     /** Paid export. Resolves { blob, filename }. */
     async exportFile(token, type, body, fallbackName = `export.${type}`) {
       const res = await send('POST', `/export/${type}`, { token, body, timeout: 90000 });
