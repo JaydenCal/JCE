@@ -28,7 +28,7 @@ export function signInView({ api, client = false, onSignedIn, goForgot, builder 
   function renderMissing() {
     const name = builderName(builder) || 'That builder';
     host.replaceChildren(h('div', { class: 'pp-nobuilder' },
-      h('h2', null, `${name} isn't using Glide Inside yet.`),
+      h('h2', null, `${name} isn\u2019t\u00a0using Glide Inside yet.`),
       mode === 'client'
         ? h('p', { class: 'pp-lead pp-lead--sm' }, 'Ask your consultant about designing with Glide Inside.')
         : h('p', { class: 'pp-lead pp-lead--sm' }, 'Builder staff can try it free for 14 days.'),
@@ -79,7 +79,7 @@ export function signInView({ api, client = false, onSignedIn, goForgot, builder 
       h('div', { class: 'pp-tabs pp-tabs--auth', role: 'tablist', 'aria-label': 'Who is signing in' }, tab('builder', 'Builder login'), tab('client', 'Client login')),
       h('p', { class: 'pp-lead pp-lead--sm' }, mode === 'builder' ? 'For builder staff: manage your house designs, client logins and billing.' : 'Use the username and password your builder gave you.'),
       form,
-      h('div', { class: 'pp-center pp-trial-link', style: { marginTop: '16px', display: 'grid', gap: '8px' } }, h('span', { class: 'pp-hint' }, 'New builder?'), h('a', { class: 'pp-btn pp-btn--block', href: '/for-builders/#trial', dataset: { pp: 'start-trial' } }, 'Start a free 14 day trial')),
+      ...(builder && mode === 'client' ? [] : [h('div', { class: 'pp-center pp-trial-link', style: { marginTop: '16px', display: 'grid', gap: '8px' } }, h('span', { class: 'pp-hint' }, 'New builder?'), h('a', { class: 'pp-btn pp-btn--block', href: '/for-builders/#trial', dataset: { pp: 'start-trial' } }, 'Start a free 14 day trial'))]),
       ...(demo ? [demo] : []));
     form.elements.username.focus();
   }

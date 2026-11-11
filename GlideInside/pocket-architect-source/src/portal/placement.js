@@ -39,9 +39,9 @@ export function startPlacement({ store, editor, house, lot = null, host = docume
   }
   const b = houseBounds(house);
   const tooBig = lot ? !fitsLot(house, pose, lot) : false;
-  const describe = `${(b.width / 1000).toFixed(1)} x ${(b.depth / 1000).toFixed(1)} m. Drag the house to move it, drag the gold handle to turn it (Shift for 15 degree steps). Arrow keys nudge 0.5 m (Shift 0.1 m).${tooBig ? ' This house is larger than the lot.' : ''}${note}`;
+  const describe = `${(b.width / 1000).toFixed(1)} x ${(b.depth / 1000).toFixed(1)} m. Drag the house to move it. Drag the gold handle to turn it, Shift for 15 degree steps. Arrow keys nudge 0.5 m (Shift 0.1 m). Q and E turn 15 degrees (Shift 1 degree).${tooBig ? ' This house is larger than the lot.' : ''}${note}`;
   return runPoseSession({
-    store, editor, host, title: `Place ${house.name || 'house'}`, describe, fit, initialPose: pose,
+    store, editor, host, reposeOnLot: (p) => (lotOf(p) ? autoPose(structuredClone(p), house).pose || null : null), title: `Place ${house.name || 'house'}`, describe, fit, initialPose: pose,
     apply: (p, ps) => { placeHouse(p, house, ps); if (design) p.placedHouse = { id: design.id ?? null, name: design.name || house.name || '' }; }, commitLabel: 'Place house', commitText: 'Place house', onDone, onCancel,
   });
 }

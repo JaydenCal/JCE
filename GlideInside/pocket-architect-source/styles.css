@@ -255,6 +255,18 @@ svg { display: block; }
 @media (max-width: 1699.98px) { .ps-product { font-size: 14px; letter-spacing: 0.03em; } .ps-name { width: 110px; } .ps-topbar { gap: 8px; } .ps-shell .ps-topbar .ps-back .ps-btn-text { display: none !important; } .ps-shell .ps-topbar .ps-back.ps-btn--wide:has(.ps-btn-text) { width: 32px !important; padding: 0 !important; } }
 /* Below 1560px the topbar must stay on one row in 3D (the Roof chip adds a control): the logo mark stands in for the product name and the gaps tighten. */
 @media (max-width: 1559.98px) { .ps-product { display: none; } .ps-name { width: 100px; } .ps-topbar { gap: 6px; } }
+/* Two level designs add Ground / First / All and the Roof chip: from 1440 down, Find my block shows its icon only, the level tabs and chips are compact and the gaps tighten so the bar stays on one row. */
+@media (min-width: 901px) and (max-width: 1559.98px) {
+  .ps-topbar { gap: 4px 6px; padding: 8px 10px; }
+  .ps-shell .ps-topbar [data-action="find-block"] .ps-btn-text { display: none !important; }
+  .ps-shell .ps-topbar [data-action="find-block"].ps-btn--wide:has(.ps-btn-text) { width: 32px !important; padding: 0 !important; }
+  .ps-topbar .ps-levels { gap: 3px; flex-wrap: nowrap; }
+  .ps-topbar .ps-level-tab { height: 28px; padding: 0 8px; max-width: 84px; }
+  .ps-topbar .ps-level-tab:not(.ps-level-add) { min-width: 0; }
+  .ps-topbar .ps-seg-btn { padding: 0 9px; }
+  .ps-premium-slot { gap: 6px; }
+  .ps-premium-slot .ps-btn { padding: 0 9px; }
+}
 
 /* Buttons and segmented controls ------------------------------------------ */
 .ps-btn {
@@ -379,8 +391,8 @@ svg { display: block; }
 .ps-chip-note .ps-mono { font-size: 12px; }
 
 .ps-welcome {
-  position: absolute; left: 50%; bottom: 18px; z-index: 4;
-  transform: translateX(-50%);
+  position: absolute; left: 50%; top: 50%; z-index: 40;
+  transform: translate(-50%, -50%);
   width: min(460px, calc(100% - 24px));
   display: flex; align-items: flex-start; gap: 12px;
   padding: 12px 14px;

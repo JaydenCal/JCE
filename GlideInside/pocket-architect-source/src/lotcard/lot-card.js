@@ -230,6 +230,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
 
     tabs = listRoomTabs(p, null, { groupBedrooms: true });
     if (!tabs.some((t) => t.id === selTab)) selTab = 'aerial';
+    root.dataset.room = selTab === 'aerial' ? '0' : '1';
     const mkTab = (t) => h('button', { class: 'lc-tab', type: 'button', role: 'tab', title: t.caption || '', 'aria-selected': String(t.id === selTab), dataset: { tab: t.id }, onclick: () => pickTab(t.id) }, t.label);
     tabsEl.replaceChildren(...tabs.map(mkTab));
     tabsCompact.replaceChildren(...tabs.map(mkTab));

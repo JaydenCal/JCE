@@ -8,7 +8,7 @@
 //   c.breachWallIds    Set of exterior wall ids over the boundary or inside the setback
 
 import { clearances, clearanceToEdge, inwardNormalOf } from './lotplan.js';
-import { classifyEdges, lotOf } from '../model/placement.js';
+import { classifyEdges, lotOf, checkSetbacks } from '../model/placement.js';
 import * as G from '../model/geometry.js';
 
 const TOL_M = 0.005;
@@ -90,7 +90,7 @@ const KIND_WORD = { front: 'front', secondaryFront: 'secondary front', side: 'si
 /**
  * The one line on the lot card: where the house sits against the setback envelope. Pure.
  *   { state: 'none' | 'inside' | 'outside' | 'check', text }
- * 'outside' is red: "Outside the setbacks: front, side". 'inside' is green: "Inside the setbacks". 'check' is amber and used when no
+ * 'outside' is red: "Outside the setbacks: front, side". 'inside' is green: "Fits the setbacks". 'check' is amber and used when no
  * setback rule is loaded or the rule is flagged for council confirmation ("check with council"); it never reads as a pass or a fail.
  * The envelope is indicative, council decides, so the wording never claims approval.
  */
@@ -106,7 +106,18 @@ export function setbackStatusLine(project) {
     return { state: 'outside', text: `Outside the setbacks: ${words.join(', ')}` };
   }
   const flagged = c.rows.some((r) => r.flagged) || !!lot.setbacks?.flag;
-  if (c.status === 'unknown' || !lot.setbacks) return { state: 'check', text: 'Setbacks not confirmed, check with council' };
-  if (flagged) return { state: 'check', text: 'Inside the setbacks, check with council' };
-  return { state: 'inside', text: 'Inside the setbacks' };
+  if (c.status === 'unknown' || !lot.setbacks) {
+    // No per edge rules, but an indicative envelope is loaded: the placement panel checks against it, so the card agrees with it.
+    if (Array.isArray(lot.envelope) && lot.envelope.length >= 3) {
+      const chk = checkSetbacks(project);
+      if (chk.status === 'ok') return { state: 'inside', text: 'Fits the setbacks' };
+      if (chk.status === 'breach' && chk.breaches.length) {
+        const words = [...new Set(chk.breaches.map((b) => KIND_WORD[b.kind] || 'boundary'))];
+        return { state: 'outside', text: `Outside the setbacks: ${words.join(', ')}` };
+      }
+    }
+    return { state: 'check', text: 'Setbacks not confirmed, check with council' };
+  }
+  if (flagged) return { state: 'check', text: 'Fits the setbacks, check with council' };
+  return { state: 'inside', text: 'Fits the setbacks' };
 }
