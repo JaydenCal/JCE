@@ -291,7 +291,8 @@ export function drawScaleBar(ctx, st) {
   const { size, theme, view } = st;
   if (size.w < 260) return;
   const { px, segs, stops } = scaleBarLayout(view.scale);
-  const x = 18;
+  // With the lot card docked bottom left, the scale bar moves to the bottom right (clear of the Map data chip).
+  const x = st.scaleRight ? Math.max(18, size.w - px - 100) : 18;
   const y = size.h - 24;
   const barH = 6;
   ctx.save();

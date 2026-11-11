@@ -1,0 +1,330 @@
+// The lot card: what a builder sees live is what the sales pitch showed. Sits over the 3D view of a lot with a house on it:
+//   header (top left)      lot label and a muted "Builder name · Concept only" line
+//   design card (bottom left)  design name, lot line, scheme, stats, colour swatches, actions, setback status
+//   design carousel (bottom centre)  "< NAME · 1 / n >" re-places the next design on the lot
+//   top view minimap (bottom right)  lot, house and neighbours with a north arrow; click toggles the 2D plan
+// Everything is derived from the project (src/lotcard/stats.js, src/model/colour-schemes.js, src/site/lot-checks.js). The card never
+// edits the design except through store.apply (colour scheme, change of design), so every change is one undo step and saves with
+// the project. The camera is inset so the card does not sit over the lot (viewer.setInset).
+
+import { h } from '../ui/dom.js';
+import { toast } from '../ui/toast.js';
+import { lotOf } from '../model/placement.js';
+import { buildingRings } from '../site/lotplan.js';
+import { setbackStatusLine } from '../site/lot-checks.js';
+import { SCHEMES, effectiveSchemeId, schemeById, schemeLine, schemeColours } from '../model/colour-schemes.js';
+import { cardStats, lotHeading, lotLine, hasBuilding } from './stats.js';
+import { publicDesigns, currentIndex, pagerText, stepIndex } from './designs.js';
+import { swapHouse } from './swap.js';
+import { LOT_CARD_CSS } from './lot-card-css.js';
+import { listRoomTabs, snapToRoom } from '../viewer3d/rooms.js';
+import { roomsPlanModel } from './rooms-plan.js';
+
+const STYLE_ID = 'lc-style';
+const COMPACT_W = 980;
+const PHONE_W = 600;
+const DOT = { inside: '#6fd39a', outside: '#ff8a7a', check: '#f2b94b' };
+
+/** The muted header line: "Builder name · Concept only" in the portal, "Concept only" in the public app. */
+export const mutedLine = (builderName) => (builderName ? `${builderName} · Concept only` : 'Concept only');
+
+export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null }) {
+  if (!document.getElementById(STYLE_ID)) {
+    const st = document.createElement('style');
+    st.id = STYLE_ID;
+    st.textContent = LOT_CARD_CSS;
+    document.head.append(st);
+  }
+  const E = (cls, tag = 'div', attrs = {}, ...kids) => h(tag, { class: cls, ...attrs }, ...kids);
+
+  const headT = E('lc-head-t', 'b');
+  const headS = E('lc-head-s', 'span');
+  const head = E('lc-head', 'div', { dataset: { ps: 'lot-head' } }, headT, headS);
+
+  const title = E('lc-title', 'h2');
+  const sub = E('lc-sub');
+  const stats = E('lc-stats');
+  const chips = E('lc-strip', 'div', { role: 'group', 'aria-label': 'Colour schemes' });
+  const bWalk = h('button', { class: 'lc-btn lc-pri', type: 'button', dataset: { ps: 'lc-walk' }, onclick: () => store.setUI({ view: 'walk' }) }, 'Walk inside');
+  const bEdit = h('button', { class: 'lc-btn', type: 'button', dataset: { ps: 'lc-edit' }, onclick: () => store.setUI({ view: '2d' }) }, 'Edit floor plan');
+  const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => sitePlanPdf() }, 'Site plan PDF');
+  const fit = E('lc-fit', 'div', { role: 'status', 'aria-live': 'polite', dataset: { ps: 'lc-fit' } });
+  const more = h('button', { class: 'lc-more', type: 'button', 'aria-expanded': 'false', onclick: () => { card.classList.toggle('is-open'); more.setAttribute('aria-expanded', String(card.classList.contains('is-open'))); sizeInset(); } }, 'Details');
+  const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-acts', 'div', null, bWalk, bEdit, bPdf), fit);
+  const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more), body);
+
+  const pgP = h('button', { type: 'button', 'aria-label': 'Previous design', onclick: () => step(-1) }, '‹');
+  const pgN = h('button', { type: 'button', 'aria-label': 'Next design', onclick: () => step(1) }, '›');
+  const pgT = E('lc-pgt', 'span', { dataset: { ps: 'lc-pager-text' }, 'aria-live': 'polite' });
+  const pager = E('lc-pager lc-glass', 'div', { dataset: { ps: 'lc-pager' } }, pgP, pgT, pgN);
+
+  // Rooms: tab pills, a one line caption and a small floor plan with the chosen room highlighted (rooms on it are clickable).
+  const tabsEl = E('lc-tabs', 'div', { role: 'tablist', 'aria-label': 'Rooms', dataset: { ps: 'lc-tabs' } });
+  const cap = E('lc-cap', 'p', { dataset: { ps: 'lc-caption' }, 'aria-live': 'polite' });
+  const plan = (() => { const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'lc-plan'); svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', 'Floor plan'); return svg; })();
+  const rooms = E('lc-rooms lc-glass', 'div', { dataset: { ps: 'lc-rooms' } }, tabsEl, E('lc-rooms-row', 'div', null, cap, plan));
+
+  const cv = h('canvas', { width: 300, height: 400, 'aria-hidden': 'true' });
+  const north = (() => {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '-20 -20 40 40');
+    svg.setAttribute('class', 'lc-north');
+    svg.innerHTML = '<circle r="17" fill="rgba(10,10,12,.72)" stroke="rgba(255,255,255,.5)"/><path d="M0-14 L4 2 L0 -1 L-4 2Z" fill="#ffc83d"/><path d="M0 14 L4 2 L0 5 L-4 2Z" fill="rgba(255,255,255,.5)"/><text x="0" y="-6" font-size="0" fill="#000">N</text>';
+    return svg;
+  })();
+  const northLabel = E('lc-nlabel', 'i', null, 'N');
+  const mini = h('button', { class: 'lc-mini', type: 'button', title: 'Show or hide the 2D plan', 'aria-label': 'Top view. Click to show or hide the 2D plan', dataset: { ps: 'lc-mini' }, onclick: () => toggle2d() }, cv, h('span', { class: 'lc-mini-t' }, 'TOP VIEW'), north, northLabel);
+
+  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, card, rooms, pager, mini);
+  host.append(root);
+
+  // State -------------------------------------------------------------------------------------------------------------------------
+  let designs = [];
+  let designsKey = null;
+  let loading = false;
+  let raf = 0;
+  let disposed = false;
+
+  const app = () => getApp() || {};
+  const builderName = () => app().builder?.name || '';
+  const uiPlaced = () => store.ui.placedDesign || null;
+
+  function lotKey() {
+    const lot = lotOf(store.project);
+    if (!lot) return null;
+    return `${lot.lotLabel}|${lot.areaM2}|${(lot.envelope || []).length}|${(lot.frontEdges || []).join(',')}|${lot.setbacksKey || ''}|${app().lotDesigns ? 'p' : 'c'}`;
+  }
+
+  async function loadDesigns() {
+    const key = lotKey();
+    if (!key || key === designsKey || loading) return;
+    loading = true;
+    try {
+      const provider = app().lotDesigns;
+      const list = provider ? await provider(store.project) : publicDesigns(catalogue, store.project);
+      if (disposed) return;
+      designs = Array.isArray(list) ? list : [];
+      designsKey = key;
+    } catch (e) {
+      console.warn('[lotcard] designs unavailable', e?.message);
+      designs = [];
+      designsKey = key;
+    } finally {
+      loading = false;
+    }
+    schedule();
+  }
+
+  function step(dir) {
+    if (designs.length < 2) return;
+    const i = stepIndex(designs.length, currentIndex(designs, store.project, uiPlaced()), dir);
+    const d = designs[i];
+    selTab = 'aerial';
+    try {
+      const { fits } = swapHouse(store, d.project, { id: d.id, name: d.name });
+      store.setUI({ placedDesign: { id: d.id, name: d.name } });
+      if (fits === false) toast(`${d.name} does not fit inside the setbacks on this lot.`, { kind: 'info' });
+    } catch (e) {
+      toast(e?.message || 'That design could not be placed.', { kind: 'error' });
+    }
+  }
+
+  function setScheme(id) {
+    if (effectiveSchemeId(store.project) === id) return;
+    store.apply('Colour scheme', (p) => { p.colourScheme = id; });
+  }
+
+  // Site plan PDF goes through the same PDF plan set, entitlement and paywall as the top bar: builder staff are entitled, a client
+  // only when the builder allows PDF exports, the public app needs the Plan Pack (the preview shows the sheets, Unlock opens the offer).
+  function sitePlanPdf() {
+    const prem = app().premium;
+    if (!prem?.previewPdf) { toast('Site plan PDF comes with the Plan Pack.', { kind: 'info' }); return; }
+    const portal = prem.state?.portal;
+    if (portal && Array.isArray(portal.exports) && !portal.exports.includes('pdf')) { toast('Your builder provides the PDF plans. Ask them if you need one.', { kind: 'info' }); return; }
+    prem.previewPdf();
+  }
+
+  let tabs = [];
+  let selTab = 'aerial';
+  function pickTab(id) {
+    selTab = id;
+    snapToRoom(getViewer(), store.project, id).catch(() => {});
+    schedule();
+  }
+
+  function toggle2d() { store.setUI({ view: store.ui.view === 'split' ? '3d' : 'split' }); }
+
+  // Rendering ---------------------------------------------------------------------------------------------------------------------
+  const schemeChip = (s) => {
+    const sw = h('span', { class: 'lc-sw' });
+    sw.style.setProperty('--r', s.roof);
+    sw.style.setProperty('--w', s.wall || '#cfc9bd');
+    return h('button', { class: 'lc-chip', type: 'button', title: s.id === 'standard' ? 'Standard colours' : `${s.roofName} roof, ${s.wallName} walls`, 'aria-label': s.name, 'aria-pressed': 'false', dataset: { scheme: s.id }, onclick: () => setScheme(s.id) }, sw);
+  };
+  for (const s of SCHEMES) chips.append(schemeChip(s));
+
+  function render() {
+    raf = 0;
+    if (disposed) return;
+    const p = store.project;
+    const lot = lotOf(p);
+    const view = store.ui.view;
+    // Not while the placement panel is open (it uses the bottom of the stage), nor in walk mode.
+    const show = !!lot && hasBuilding(p) && view !== 'walk' && !host.querySelector('.pas-pose');
+    root.hidden = !show;
+    root.dataset.view = view;
+    viewerHost.classList.toggle('lc-on', show && (view === '3d' || view === 'split'));
+    layoutClasses();
+    if (!show) { getViewer()?.setInset?.({}); return; }
+    loadDesigns();
+
+    const idx = currentIndex(designs, p, uiPlaced());
+    const placed = uiPlaced() || p.placedHouse || null;
+    const name = (designs.length && designs[idx]?.name) || placed?.name || p.name || 'House design';
+    const sid = effectiveSchemeId(p);
+    const scheme = schemeById(sid);
+    headT.textContent = lotHeading(lot);
+    headS.textContent = mutedLine(builderName());
+    title.textContent = name;
+    sub.replaceChildren(h('span', null, lotLine(lot)), h('span', { class: 'lc-sc' }, schemeLine(scheme)));
+    stats.replaceChildren(...cardStats(p).map((c) => h('div', { dataset: { stat: c.key } }, h('b', null, c.value), h('i', null, c.label))));
+    for (const b of chips.children) b.setAttribute('aria-pressed', String(b.dataset.scheme === sid));
+
+    const line = setbackStatusLine(p);
+    fit.hidden = line.state === 'none';
+    fit.dataset.state = line.state;
+    fit.replaceChildren(h('span', { class: 'lc-dot', style: { background: DOT[line.state] || 'transparent' } }), line.text);
+
+    tabs = listRoomTabs(p);
+    if (!tabs.some((t) => t.id === selTab)) selTab = 'aerial';
+    tabsEl.replaceChildren(...tabs.map((t) => h('button', { class: 'lc-tab', type: 'button', role: 'tab', 'aria-selected': String(t.id === selTab), dataset: { tab: t.id }, onclick: () => pickTab(t.id) }, t.label)));
+    const cur = tabs.find((t) => t.id === selTab);
+    cap.textContent = cur?.caption || '';
+    rooms.hidden = tabs.length < 2;
+    drawPlan(p, cur);
+
+    pager.hidden = designs.length < 2;
+    pgT.textContent = pagerText(designs, idx);
+    drawMini(p, lot);
+    sizeInset();
+  }
+  function layoutClasses() {
+    const w = host.clientWidth;
+    const compact = w < COMPACT_W;
+    root.classList.toggle('is-compact', compact);
+    root.classList.toggle('is-phone', w < PHONE_W);
+    viewerHost.classList.toggle('lc-compact', compact);
+  }
+  function schedule() { if (!raf) raf = requestAnimationFrame(render); }
+
+  function drawPlan(p, cur) {
+    const m = roomsPlanModel(p, 150, 100);
+    plan.setAttribute('viewBox', `0 0 ${m.w} ${m.h}`);
+    const ns = 'http://www.w3.org/2000/svg';
+    const on = new Set(cur?.roomIds || []);
+    plan.replaceChildren(...m.rooms.map((r) => {
+      const el = document.createElementNS(ns, 'polygon');
+      el.setAttribute('points', r.points);
+      el.setAttribute('class', `lc-room${on.has(r.id) ? ' is-on' : ''}`);
+      el.dataset.room = r.id;
+      const t = document.createElementNS(ns, 'title');
+      t.textContent = r.name;
+      el.append(t);
+      el.addEventListener('click', () => { const tab = tabs.find((x) => x.roomIds.includes(r.id)); if (tab) pickTab(tab.id); });
+      return el;
+    }));
+  }
+
+  function drawMini(p, lot) {
+    const ctx = cv.getContext('2d');
+    if (!ctx) return;
+    const W = cv.width;
+    const H = cv.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#12161a';
+    ctx.fillRect(0, 0, W, H);
+    const pts = lot.boundary || [];
+    if (pts.length < 3) return;
+    const xs = pts.map((q) => q.x);
+    const ys = pts.map((q) => q.y);
+    const pad = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) * 0.32;
+    const minX = Math.min(...xs) - pad; const maxX = Math.max(...xs) + pad;
+    const minY = Math.min(...ys) - pad; const maxY = Math.max(...ys) + pad;
+    const k = Math.min(W / (maxX - minX), H / (maxY - minY));
+    const ox = (W - (maxX - minX) * k) / 2 - minX * k;
+    const oy = (H - (maxY - minY) * k) / 2 - minY * k;
+    const path = (ring) => { ctx.beginPath(); ring.forEach((q, i) => (i ? ctx.lineTo(q.x * k + ox, q.y * k + oy) : ctx.moveTo(q.x * k + ox, q.y * k + oy))); ctx.closePath(); };
+    for (const n of lot.neighbours || []) {
+      if (!Array.isArray(n.ring) || n.ring.length < 3) continue;
+      path(n.ring);
+      ctx.fillStyle = n.isRoad ? '#2a2f35' : '#1d2329';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.14)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    path(pts);
+    ctx.fillStyle = 'rgba(255,255,255,.10)';
+    ctx.fill();
+    if (Array.isArray(lot.envelope) && lot.envelope.length >= 3) {
+      path(lot.envelope);
+      ctx.setLineDash([5, 4]);
+      ctx.strokeStyle = 'rgba(111,211,154,.8)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    path(pts);
+    ctx.strokeStyle = '#ffc83d';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    const col = schemeColours(p);
+    for (const ring of buildingRings(p)) {
+      if (ring.length < 3) continue;
+      path(ring);
+      ctx.fillStyle = col?.roof || '#42474c';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.55)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+
+  // The camera frames the lot in the clear area: card on the left and minimap on the right when there is room, else the card height
+  // at the bottom (phone width, where the card collapses to a title and the actions).
+  function sizeInset() {
+    const v = getViewer();
+    if (!v?.setInset || root.hidden) return;
+    const vr = viewerHost.getBoundingClientRect();
+    if (viewerHost.hidden || vr.width < 2 || root.dataset.view === '2d') { v.setInset({}); return; }
+    const inset = { left: 0, right: 0, bottom: 0, top: 0 };
+    for (const el of [card, rooms, pager, mini, head]) {
+      if (el.hidden || getComputedStyle(el).display === 'none') continue;
+      const r = el.getBoundingClientRect();
+      if (r.right <= vr.left || r.left >= vr.right || r.bottom <= vr.top || r.top >= vr.bottom) continue;
+      const cx = (r.left + r.right) / 2 - vr.left;
+      const nearTop = r.top - vr.top < vr.height / 3;
+      if (el === head) continue;
+      if (nearTop) inset.top = Math.max(inset.top, r.bottom - vr.top + 6);
+      else if (cx < vr.width * 0.3 && r.width < vr.width * 0.6) inset.left = Math.max(inset.left, r.right - vr.left + 16);
+      else if (cx > vr.width * 0.75 && r.width < vr.width * 0.4) inset.right = Math.max(inset.right, vr.right - r.left + 16);
+      else inset.bottom = Math.max(inset.bottom, vr.bottom - r.top + 8);
+    }
+    v.setInset(inset);
+  }
+
+  const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { layoutClasses(); sizeInset(); }) : null;
+  ro?.observe(host);
+  ro?.observe(viewerHost);
+  layoutClasses();
+  const mo = typeof MutationObserver === 'function' ? new MutationObserver(() => schedule()) : null;
+  mo?.observe(host, { childList: true });
+  const offs = [store.on('project', schedule), store.on('ui', (patch = {}) => { schedule(); if ('view' in patch) setTimeout(sizeInset, 700); })];
+  schedule();
+  return {
+    el: root, render, step, setScheme, sitePlanPdf,
+    get designs() { return designs; },
+    dispose() { disposed = true; offs.forEach((o) => o?.()); ro?.disconnect(); mo?.disconnect(); root.remove(); },
+  };
+}

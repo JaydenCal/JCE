@@ -4,6 +4,7 @@
 // Every pickable mesh carries userData { kind, id, levelId, face? }. kind is one of
 // wall, roof, opening, floor, tank, furniture, stair, deck.
 
+import { applySchemeToFinishes, effectiveSchemeId } from '../model/colour-schemes.js';
 import * as THREE from 'three';
 import * as G from '../model/geometry.js';
 import { DEFAULT_FINISHES } from '../model/schema.js';
@@ -131,6 +132,7 @@ export function buildModel(project, opts = {}) {
     frames: merge(DEFAULT_FINISHES.frames, project.finishes?.frames),
     floors: merge(DEFAULT_FINISHES.floors, project.finishes?.floors),
   };
+  Object.assign(fin, applySchemeToFinishes(fin, effectiveSchemeId(project)));
   const hex = (id) => (lib.hex ? lib.hex(id) : resolveHex(catalogue, id));
   const levels = [...project.levels].sort((a, b) => a.elevation - b.elevation);
   const filterIdx = levelFilter === 'all' ? levels.length : levels.findIndex((l) => l.id === levelFilter);

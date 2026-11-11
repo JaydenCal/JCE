@@ -35,6 +35,7 @@ import { designTypeOf, changeDesignType, applyDesignType } from './ui/design-typ
 import { backTarget, backLabel } from './ui/back-target.js';
 import { startView, readLastView } from './ui/view-mode.js';
 import { portalUrl } from './portal/links.js';
+import { createLotCard } from './lotcard/lot-card.js';
 
 const demoMode = () => CONFIG.embedMode === 'demo';
 
@@ -384,6 +385,8 @@ async function main() {
   if (first !== '2d') store.setUI({ view: first });
   track('ps_open', { embedMode: CONFIG.embedMode });
 
+  const lotCard = createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer });
+  api.lotCard = lotCard;
   createMapCredit(refs.stage, store);
   if (!state.fromAutosave && !demoMode() && !narrow && first === '2d' && !shareId) createWelcome(refs.stage, store, { onChoose: openNew });
 

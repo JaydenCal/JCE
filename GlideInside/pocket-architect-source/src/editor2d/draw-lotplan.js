@@ -8,6 +8,7 @@ import { layerOn } from './draw-site.js';
 import { roadReserve, deriveDriveway, clearances, buildingHull, orientedBox, garageDoor, inwardNormalOf } from '../site/lotplan.js';
 import { lotOf } from '../model/placement.js';
 import { lotChecks } from '../site/lot-checks.js';
+import { schemeColours } from '../model/colour-schemes.js';
 import * as G from '../model/geometry.js';
 
 export const OK = '#2f7d4f';
@@ -318,5 +319,33 @@ export function drawArrangeOverlay(ctx, st) {
       ctx.stroke();
     }
   }
+  ctx.restore();
+}
+
+// Colour scheme tint ------------------------------------------------------------------------------------------------------------
+/** The roof colour of the chosen scheme over the house outline, with a wall colour line inside it, so the plan shows the same scheme as the 3D view. */
+export function drawSchemeTint(ctx, st) {
+  if (!lotOf(st.project)) return;
+  const col = schemeColours(st.project);
+  if (!col) return;
+  const hull = buildingHull(st.project);
+  if (hull.length < 3) return;
+  const pts = hull.map((p) => S(st, p));
+  const trace = () => { ctx.beginPath(); pts.forEach((q, i) => (i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y))); ctx.closePath(); };
+  ctx.save();
+  trace();
+  ctx.globalAlpha = 0.2;
+  ctx.fillStyle = col.roof;
+  ctx.fill();
+  ctx.globalAlpha = 0.9;
+  ctx.lineJoin = 'round';
+  trace();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = col.roof;
+  ctx.stroke();
+  trace();
+  ctx.lineWidth = 1.6;
+  ctx.strokeStyle = col.wall;
+  ctx.stroke();
   ctx.restore();
 }

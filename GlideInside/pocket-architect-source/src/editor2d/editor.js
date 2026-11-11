@@ -8,7 +8,7 @@ import { readTheme } from './theme.js';
 import { buildScene, drawGrid, drawUnderlay, drawGhostLevel, drawRooms, drawRoomLabels, drawWalls } from './draw-plan.js';
 import { drawOpenings, drawStairs, drawFurniture, drawTanks } from './draw-items.js';
 import { drawSite, drawCredits } from './draw-site.js';
-import { drawArrangeOverlay, drawBreachWalls } from './draw-lotplan.js';
+import { drawArrangeOverlay, drawBreachWalls, drawSchemeTint } from './draw-lotplan.js';
 import { nearestEdge, toggleEdge, isCorner } from '../site/frontage.js';
 import { drawOverallDims, drawSelection, drawHover, drawNorthArrow, drawScaleBar } from './draw-annot.js';
 import { loadBitmap, removeImage, registerUnderlayEditor, setUnderlayFromBlob, setUnderlayFromCanvas } from './underlay.js';
@@ -269,6 +269,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       frontageEdit: !!store.ui.frontageEdit,
       overlay: state.overlay,
       furnSize: ed.furnSize,
+      scaleRight: !!document.querySelector('.lc-root:not([hidden])'),
     };
     const clashes = currentClashes(project);
     const ctx = g2;
@@ -281,6 +282,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     drawGhostLevel(ctx, st, M.levelBelow(project, level));
     drawRooms(ctx, st, scene);
     drawWalls(ctx, st, scene);
+    drawSchemeTint(ctx, st);
     drawOpenings(ctx, st, scene);
     drawStairs(ctx, st, level);
     drawFurniture(ctx, st, level, catalogue, clashes);

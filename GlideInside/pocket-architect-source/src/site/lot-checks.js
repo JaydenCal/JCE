@@ -84,3 +84,29 @@ export function plainSetbackReason(text) {
   t = t.replace(/\bnull\b|\bundefined\b/g, '').replace(/\s{2,}/g, ' ').trim();
   return t;
 }
+
+const KIND_WORD = { front: 'front', secondaryFront: 'secondary front', side: 'side', rear: 'rear', unknown: 'boundary' };
+
+/**
+ * The one line on the lot card: where the house sits against the setback envelope. Pure.
+ *   { state: 'none' | 'inside' | 'outside' | 'check', text }
+ * 'outside' is red: "Outside the setbacks: front, side". 'inside' is green: "Inside the setbacks". 'check' is amber and used when no
+ * setback rule is loaded or the rule is flagged for council confirmation ("check with council"); it never reads as a pass or a fail.
+ * The envelope is indicative, council decides, so the wording never claims approval.
+ */
+export function setbackStatusLine(project) {
+  const lot = lotOf(project);
+  if (!lot) return { state: 'none', text: '' };
+  const c = clearances(project);
+  if (c.status === 'no_building' || c.status === 'no_lot') return { state: 'none', text: '' };
+  const crosses = c.rows.some((r) => r.clearanceM < -TOL_M);
+  const outside = c.rows.filter((r) => r.status === 'outside');
+  if (crosses || outside.length) {
+    const words = [...new Set(c.rows.filter((r) => r.status === 'outside' || r.clearanceM < -TOL_M).map((r) => KIND_WORD[r.kind] || 'boundary'))];
+    return { state: 'outside', text: `Outside the setbacks: ${words.join(', ')}` };
+  }
+  const flagged = c.rows.some((r) => r.flagged) || !!lot.setbacks?.flag;
+  if (c.status === 'unknown' || !lot.setbacks) return { state: 'check', text: 'Setbacks not confirmed, check with council' };
+  if (flagged) return { state: 'check', text: 'Inside the setbacks, check with council' };
+  return { state: 'inside', text: 'Inside the setbacks' };
+}

@@ -24,6 +24,7 @@ import { lotOf } from '../model/placement.js';
 import { orientedBox } from '../site/lotplan.js';
 import { projectToSvg, svgDataUri } from './thumbnail.js';
 import { createProject } from '../model/schema.js';
+import { builderDesigns } from '../lotcard/designs.js';
 
 const LOGO_KEY = 'ps.logo';
 const AUTOSAVE = () => CONFIG.autosaveKey;
@@ -170,6 +171,11 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     }));
     return [...(await full(mine, (id) => api.getHouse(id), 'builder')), ...(await full(glide, (id) => api.getGlideModel(id), 'glide'))];
   }
+  // The lot card carousel: the builder's own library ranked by fit on the client's lot (never other builders' designs).
+  app.lotDesigns = async (project) => {
+    const all = await loadDesigns();
+    return builderDesigns(project || store.project, all, { allowGlide: !isClient });
+  };
   async function openPicker() {
     const list = h('div', { class: 'pas-list' }, h('p', { class: 'pas-empty' }, 'Loading designs...'));
     const m = modal('House designs', h('div', null, h('p', null, envelopeNow() ? `Ranked for ${lotOf(store.project)?.address || (lotIsSample ? SAMPLE_LOT.name : lot.address) || 'your lot'}. Designs that do not fit can still be placed.` : lotOf(store.project) ? 'Setbacks are not available for this lot, so designs are not ranked. Check with council.' : 'Find your block to see which designs fit.'), list), []);
@@ -218,7 +224,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     const lotBox = hull ? { widthMm: hull.w, depthMm: hull.d } : env ? { widthMm: Math.max(...env.map((p) => p.x)) - Math.min(...env.map((p) => p.x)), depthMm: Math.max(...env.map((p) => p.y)) - Math.min(...env.map((p) => p.y)) } : null;
     startPlacement({
       store, editor, house, lot: lotBox, initialPose, fit,
-      onDone: () => toast(`${d.name} placed. Every wall, room and opening is editable.`, { kind: 'ok' }),
+      onDone: () => { store.setUI({ placedDesign: { id: d.id, name: d.name } }); toast(`${d.name} placed. Every wall, room and opening is editable.`, { kind: 'ok' }); },
     });
   }
 

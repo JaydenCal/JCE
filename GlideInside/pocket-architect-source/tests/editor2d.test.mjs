@@ -255,7 +255,7 @@ test('area schedule totals indoor, garage and outdoor areas per level', () => {
   near(s[0].indoor, 20);
   near(s[0].garage, 36);
   near(s[0].outdoor, 9);
-  near(indoorTotalM2(p), 20);
+  near(indoorTotalM2(p), 56); // the same figure the PDF and HTML exports print: indoor plus garage
   applyOp(p, 'set_status', { ids: p.levels[0].rooms.filter((r) => r.type === 'garage').map((r) => r.id), status: 'demolish' });
   const t = extensionTotals(p);
   near(t.demolish, 36);

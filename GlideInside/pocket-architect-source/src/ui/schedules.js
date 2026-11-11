@@ -4,6 +4,7 @@ import * as G from '../model/geometry.js';
 import { ROOM_LABELS } from '../model/schema.js';
 import { wallsOfRoom } from '../editor2d/edit.js';
 import { clashList } from '../editor2d/clash.js';
+import { scheduleData } from '../premium/exporters/shared.js';
 
 const DOOR_KINDS = ['door', 'sliding_door', 'garage_door', 'roller_door', 'opening'];
 export const OPENING_LABELS = {
@@ -31,8 +32,9 @@ export function areaSchedule(project) {
   });
 }
 
+/** Indoor floor area, all levels: the same figure the PDF and HTML exports print (scheduleData: every room that is not outdoor, the garage included). */
 export function indoorTotalM2(project) {
-  return areaSchedule(project).reduce((s, l) => s + l.indoor, 0);
+  return scheduleData(project).totals.reduce((s, t) => s + t.indoor, 0);
 }
 
 // Enclosed floor area (indoor plus garage) by extension status.

@@ -196,9 +196,44 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     if (w < 2 || h < 2) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
+    applyInset();
     camera.updateProjectionMatrix();
     invalidate();
   }
+
+  // Inset: screen margins that overlay cards cover (lot card, minimap). The lot is framed in the clear area: the projection is shifted
+  // by half the difference and the camera pulled back so the whole lot fits inside what is left.
+  let inset = { l: 0, r: 0, t: 0, b: 0 };
+  let userMoved = false;
+  let lastKind = null;
+  function insetScale() {
+    const w = rootEl.clientWidth;
+    const h = rootEl.clientHeight;
+    if (mode === 'walk' || w < 2 || h < 2) return 1;
+    const fx = w / Math.max(w * 0.4, w - inset.l - inset.r);
+    const fy = h / Math.max(h * 0.4, h - inset.t - inset.b);
+    return Math.min(2.2, Math.max(1, fx, fy));
+  }
+  function applyInset() {
+    const w = rootEl.clientWidth;
+    const h = rootEl.clientHeight;
+    const none = !inset.l && !inset.r && !inset.t && !inset.b;
+    if (none || mode === 'walk' || w < 2 || h < 2) {
+      if (camera.view) camera.clearViewOffset();
+      return;
+    }
+    camera.setViewOffset(w, h, -(inset.l - inset.r) / 2, (inset.b - inset.t) / 2, w, h);
+  }
+  function setInset(next = {}) {
+    const n = { l: Math.max(0, next.left || 0), r: Math.max(0, next.right || 0), t: Math.max(0, next.top || 0), b: Math.max(0, next.bottom || 0) };
+    if (n.l === inset.l && n.r === inset.r && n.t === inset.t && n.b === inset.b) return;
+    inset = n;
+    applyInset();
+    camera.updateProjectionMatrix();
+    if (!userMoved && framed && bounds) frameCamera(false, lastKind);
+    invalidate();
+  }
+  controls.addEventListener('start', () => { userMoved = true; });
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
   ro?.observe(rootEl);
   window.addEventListener('resize', resize);
@@ -531,7 +566,11 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
 
   function frameCamera(animate, kind = null) {
     const hasLot = !!store.project.site?.lot?.boundary?.length;
+    lastKind = kind;
+    userMoved = false;
     const pose = poseFor(kind || (hasLot ? 'hero' : 'fit'));
+    const k = insetScale();
+    if (k > 1.001) pose.pos.sub(pose.target).multiplyScalar(k).add(pose.target);
     if (animate && !reduceMotion && active) {
       anim = { t0: performance.now(), dur: 650, fromPos: camera.position.clone(), toPos: pose.pos, fromTarget: controls.target.clone(), toTarget: pose.target };
     } else {
@@ -688,6 +727,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     scene.environmentIntensity = w ? 0.3 : 0.45;
     headlight.intensity = w ? 7 : 0;
     camera.fov = w ? 70 : 38;
+    applyInset();
     camera.updateProjectionMatrix();
     controls.enabled = !w;
     hints.hidden = w;
@@ -847,6 +887,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     const cam = new THREE.PerspectiveCamera(38, width / height, 0.1, 2000);
     if (current) {
       cam.copy(camera);
+      cam.clearViewOffset();
       cam.aspect = width / height;
       cam.near = camera.near;
       cam.far = camera.far;
@@ -918,6 +959,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   return {
     setActive,
     setMode,
+    setInset,
     resetCamera: () => frameCamera(true),
     getModel: () => model,
     snapshot,
