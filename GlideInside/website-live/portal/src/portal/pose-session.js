@@ -72,7 +72,7 @@ export function fitSummary(c) {
  * apply(project, pose) mutates a copy to show the pose; pose is { x, y, rotation, mirrored }.
  * Returns { setPose, getPose, commit, cancel, preview }.
  */
-export function runPoseSession({ store, editor, host = document.getElementById('ps-stage'), title, apply, initialPose, describe = '', fit = null, commitLabel = 'Place house', commitText = 'Place house', onDone, onCancel }) {
+export function runPoseSession({ store, editor, host = document.getElementById('ps-stage'), title, apply, initialPose, describe = '', fit = null, commitLabel = 'Place house', commitText = 'Place house', reposeOnLot = null, onDone, onCancel }) {
   injectPoseStyles();
   store.setUI({ view: planView(store.ui.view) });
   let pose = { rotation: 0, mirrored: false, ...initialPose };
@@ -81,6 +81,7 @@ export function runPoseSession({ store, editor, host = document.getElementById('
   const history = []; // earlier poses, for Ctrl+Z while placing
   const redo = [];
   const hasLot = () => !!lotOf(store.project);
+  let hadLot = hasLot();
 
   const live = h('div', { class: 'pas-sr', role: 'status', 'aria-live': 'polite' });
   const catcher = h('div', { class: 'pas-catch', 'aria-hidden': 'true' });
@@ -102,7 +103,7 @@ export function runPoseSession({ store, editor, host = document.getElementById('
   const panel = h('div', { class: 'pas-pose', role: 'group', 'aria-label': title },
     h('div', { class: 'pas-col' },
       h('h3', null, title),
-      h('p', null, describe || 'Drag the house to move it. Drag the gold handle to turn it (Shift for 15 degree steps). Arrow keys nudge 0.5 m (Shift 0.1 m). Q and E turn 15 degrees. Ctrl+Z undoes a move.'),
+      h('p', null, describe || 'Drag the house to move it. Drag the gold handle to turn it, Shift for 15 degree steps. Arrow keys nudge 0.5 m (Shift 0.1 m). Q and E turn 15 degrees (Shift 1 degree). Ctrl+Z undoes a move.'),
       fitBadge),
     h('div', { class: 'pas-col' },
       h('div', { class: 'pas-row' }, btn('↶ 15°', () => turn(-15)), btn('15° ↷', () => turn(15)), btn('↶ 1°', () => turn(-1)), btn('1° ↷', () => turn(1))),
@@ -244,7 +245,21 @@ export function runPoseSession({ store, editor, host = document.getElementById('
   };
   document.addEventListener('keydown', onKey, true);
 
+  // The editor drops its preview on every 'project' event (editor2d/editor.js), and a client's lot can arrive after this
+  // session's first draw. Set the preview again so the house is never missing; place it on the lot if the lot is new and the
+  // person has not moved the house yet. Unsubscribed in teardown (commit and cancel both call it).
+  const offProject = store.on?.('project', () => {
+    const lotNow = hasLot();
+    if (lotNow && !hadLot && !history.length && reposeOnLot) {
+      const next = reposeOnLot(store.project);
+      if (next) pose = { ...pose, ...next };
+    }
+    hadLot = lotNow;
+    draw();
+  });
+
   function teardown() {
+    offProject?.();
     document.removeEventListener('keydown', onKey, true);
     editor.clearPreview?.();
     editor.setOverlay?.(null);
