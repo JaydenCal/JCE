@@ -224,7 +224,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     if (check.needsRehash) patch.passwordHash = await hashPassword(password);
     await pstore.updateUser(user.id, patch);
     // The charge for a client login is created here, once: login_issues.login_id is its primary key. Its price depends on how many logins
-    // of this org have already first signed in this Sydney month (1 to 15 A$35, 16 to 50 A$25, or the org's custom rate).
+    // of this org have already first signed in this Sydney month (1 to 15 A$30, 16 to 50 A$25, or the org's custom rate).
     if (user.role === 'client' && !user.firstSignInAt) {
       const orgRow = await pstore.getOrg(user.orgId);
       const month = monthKey(nowMs);

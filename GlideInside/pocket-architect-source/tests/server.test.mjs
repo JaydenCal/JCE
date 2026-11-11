@@ -123,9 +123,9 @@ function makeWorld(envOverrides = {}, { store = createMemoryStore(), catalogue =
 const completedEvent = (sessionId, projectId, { email = 'buyer@example.com', pi = 'pi_paid1', paid = 'paid', id = `evt_${sessionId}` } = {}) => ({
   id,
   type: 'checkout.session.completed',
-  data: { object: { id: sessionId, object: 'checkout.session', payment_status: paid, client_reference_id: projectId, metadata: { projectId }, amount_total: 3500, currency: 'aud', customer_details: { email }, payment_intent: pi } },
+  data: { object: { id: sessionId, object: 'checkout.session', payment_status: paid, client_reference_id: projectId, metadata: { projectId }, amount_total: 3000, currency: 'aud', customer_details: { email }, payment_intent: pi } },
 });
-const refundEvent = (pi, id = 'evt_refund_1') => ({ id, type: 'charge.refunded', data: { object: { id: 'ch_1', object: 'charge', payment_intent: pi, refunded: true, amount: 3500, amount_refunded: 3000 } } });
+const refundEvent = (pi, id = 'evt_refund_1') => ({ id, type: 'charge.refunded', data: { object: { id: 'ch_1', object: 'charge', payment_intent: pi, refunded: true, amount: 3000, amount_refunded: 3000 } } });
 
 function sampleProject(id) {
   const p = createProject({ id, name: 'Smith residence' });
@@ -151,7 +151,7 @@ test('config reads every SCOPE 11.6 variable with its default', () => {
   assert.equal(c.dailyCapUsd, 5);
   assert.equal(c.monthlyCapUsd, 50);
   assert.equal(c.fxAudPerUsd, 1.67);
-  assert.equal(c.planPackPriceCents, 3500);
+  assert.equal(c.planPackPriceCents, 3000);
   assert.equal(c.entitlementDays, 365);
   assert.equal(c.exportMaxProjectBytes, 2000000);
   assert.equal(readConfig({ SITE_URL: 'https://a.test/' }).appUrl, 'https://a.test/floor-plan-designer/app/');
@@ -210,7 +210,7 @@ test('7. an expired token is refused even with a live entitlement', async () => 
 });
 
 // Test 8: Stripe flow -------------------------------------------------------------------------------
-test('8. checkout creates a Stripe session with the A$35 Plan Pack for the project', async () => {
+test('8. checkout creates a Stripe session with the A$30 Plan Pack for the project', async () => {
   const w = makeWorld({ APP_URL: 'https://site.test/floor-plan-designer/app/' });
   const r = await w.call('POST', '/api/checkout', { body: { projectId: 'p_abc123', projectName: 'Smith residence' } });
   assert.equal(r.status, 200);
@@ -225,7 +225,7 @@ test('8. checkout creates a Stripe session with the A$35 Plan Pack for the proje
   assert.equal(f.get('client_reference_id'), 'p_abc123');
   assert.equal(f.get('metadata[projectId]'), 'p_abc123');
   assert.equal(f.get('line_items[0][price_data][currency]'), 'aud');
-  assert.equal(f.get('line_items[0][price_data][unit_amount]'), '3500');
+  assert.equal(f.get('line_items[0][price_data][unit_amount]'), '3000');
   assert.equal(f.get('line_items[0][quantity]'), '1');
   assert.equal(f.get('success_url'), 'https://site.test/floor-plan-designer/app/?checkout=success&session_id={CHECKOUT_SESSION_ID}&project=p_abc123');
   assert.equal(f.get('cancel_url'), 'https://site.test/floor-plan-designer/app/?checkout=cancel');
@@ -249,7 +249,7 @@ test('8. a paid webhook creates one entitlement, a repeat does not, a refund end
   assert.equal(ents.length, 1);
   assert.equal(ents[0].stripePaymentIntent, 'pi_paid1');
   assert.equal(ents[0].email, 'buyer@example.com');
-  assert.equal(ents[0].amountCents, 3500);
+  assert.equal(ents[0].amountCents, 3000);
 
   const repeat = await w.webhook(completedEvent('cs_test_paid1', projectId));
   assert.equal(repeat.status, 200);
@@ -305,7 +305,7 @@ test('8. GET /api/entitlement waits for the webhook, then returns a token (and c
   assert.equal(pending.status, 404);
   assert.equal(pending.json.pending, true);
   // Webhook slower than the return: Stripe says the session is paid, so the entitlement is created once.
-  w.stripeSessions.set('cs_late', { id: 'cs_late', payment_status: 'paid', client_reference_id: 'p_1', metadata: { projectId: 'p_1' }, amount_total: 3500, currency: 'aud', customer_details: { email: 'late@example.com' }, payment_intent: 'pi_late' });
+  w.stripeSessions.set('cs_late', { id: 'cs_late', payment_status: 'paid', client_reference_id: 'p_1', metadata: { projectId: 'p_1' }, amount_total: 3000, currency: 'aud', customer_details: { email: 'late@example.com' }, payment_intent: 'pi_late' });
   const got = await w.call('GET', '/api/entitlement?session_id=cs_late&project=p_1');
   assert.equal(got.status, 200);
   assert.ok(got.json.token);

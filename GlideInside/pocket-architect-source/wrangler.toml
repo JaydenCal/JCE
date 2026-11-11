@@ -34,7 +34,7 @@ AI_RATE_PER_DAY = "150"
 AI_DAILY_CAP_USD = "5"
 AI_MONTHLY_CAP_USD = "50"
 FX_AUD_PER_USD = "1.67"
-PLAN_PACK_PRICE_CENTS = "3500"                             # A$35 incl. GST; also the least a Checkout session may be worth to unlock a pack
+PLAN_PACK_PRICE_CENTS = "3000"                             # A$30 incl. GST; also the least a Checkout session may be worth to unlock a pack
 ENTITLEMENT_DAYS = "365"
 EXPORT_MAX_PROJECT_BYTES = "2000000"
 # Kept from the live Worker (same names, same defaults): Save and share, export limits.

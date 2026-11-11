@@ -34,12 +34,12 @@ Note: `/api/site/health` is the government services check (NSW and QLD address, 
 - Any NSW address, for example a real house in Tamworth or Gunnedah, and a QLD address such as one in Townsville. Use Find my block, check the lot boundary, frontage, the aerial and contours.
 - The setbacks panel for that council (the rules load per council from `/plan-studio/data/setbacks/`).
 - Draw a house, the 3D view and the walk through, Split.
-- PDF plan set and the other exports. On staging the A$35 Plan Pack paywall is bypassed by a staging-only dev unlock: the app asks the staging server for a free test Plan Pack (the server only offers it when `STAGING=1` and it has no Stripe key, so it cannot exist on the live Worker). PDF, DXF, GLB, OBJ and interactive HTML are built by the real server export code.
+- PDF plan set and the other exports. On staging the A$30 Plan Pack paywall is bypassed by a staging-only dev unlock: the app asks the staging server for a free test Plan Pack (the server only offers it when `STAGING=1` and it has no Stripe key, so it cannot exist on the live Worker). PDF, DXF, GLB, OBJ and interactive HTML are built by the real server export code.
 - Save and share: make a share link, open it in a private window. Links point back at the staging address and are stored in the staging R2 bucket.
 - Builder portal at `/portal/` with the sample login printed by the script (the first sign in forces a new password). Try houses, Generate account for a client, the Billing tab (this month's client login count and rate) and the client sign in.
 - The AI assistant shows "not available on the staging site" (there is no Anthropic key on staging). Checkout cannot work (no Stripe). Email is never sent (no Resend key).
 
-Client login pricing on the portal Billing view: A$35 each for the first 15 new client logins in a Sydney month, A$25 each for logins 16 to 50, a custom rate above that (set by the owner admin route `POST /api/portal/admin/orgs/<id>/login-rate`).
+Client login pricing on the portal Billing view: A$30 each for the first 15 new client logins in a Sydney month, A$25 each for logins 16 to 50, a custom rate above that (set by the owner admin route `POST /api/portal/admin/orgs/<id>/login-rate`).
 
 ## Remove staging afterwards
 

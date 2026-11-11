@@ -1,5 +1,5 @@
 // Portal billing (docs/PORTAL_API.md 4 and 5): month usage, tax invoice snapshots and Stripe invoices for the previous month.
-//   Per client login, once, at the login's first sign in (login_issues, created by lib/portal.js). A$35 incl. GST each for the first 15 in a
+//   Per client login, once, at the login's first sign in (login_issues, created by lib/portal.js). A$30 incl. GST each for the first 15 in a
 //   month, A$25 for logins 16 to 50, a custom rate above that (priceForNthLoginThisMonth in src/portal/billing.js).
 //   A$10 incl. GST per AI top-up of 300 credits (the AI branch's `ai_topup` events in the main store).
 // Stripe is used only through its REST API with fetch. An org with no card on file gets a send_invoice invoice (Stripe emails it; this

@@ -3,7 +3,7 @@
 // CONFIG.portalEnabled false, it does nothing at all and the public app is untouched.
 //
 // What it adds: a strip with the builder's branding, "Find my block", a "House designs" dropdown (the builder's designs and the
-// Glide Inside library, ranked by how well each fits the lot), PDF plans (no A$35 step), the AI credits chip, and a user menu.
+// Glide Inside library, ranked by how well each fits the lot), PDF plans (no A$30 step), the AI credits chip, and a user menu.
 // Hooks for other modules:
 //   window.openSiteSearch()                 if present, "Find my block" calls it (the site's lot search)
 //   window.__ps.portal.setLot(lot)          { name, polygonMm, frontEdgeIndices, picked, address, lot, dp, lga, zone }: the lot and its setbacks

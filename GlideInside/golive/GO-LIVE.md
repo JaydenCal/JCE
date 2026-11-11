@@ -2,7 +2,7 @@
 
 Prepared 11/11/2026. Nothing in this pack has been deployed or uploaded. No live key was used and no email was sent.
 
-What goes live: Find my block (live NSW and QLD services), setbacks, the AI helper (A$35 Plan Pack), the redesigned website, and Send to JCE (email through Resend to enquiries@jceinfrastructure.com.au). The builder portal opens with a free 14 day trial (see "Builder portal and free trial" below).
+What goes live: Find my block (live NSW and QLD services), setbacks, the AI helper (A$30 Plan Pack), the redesigned website, and Send to JCE (email through Resend to enquiries@jceinfrastructure.com.au). The builder portal opens with a free 14 day trial (see "Builder portal and free trial" below).
 
 Plain rules for this pack:
 - Do the steps in order. Do not skip Step 0.
@@ -32,7 +32,7 @@ curl.exe -s https://glideinside.com.au/api/projects/<THE SHARE ID>
 Differences from the live Worker to decide on before you deploy (none breaks a link or a purchase):
 1. **Save and share is back in the release app** (a Share button next to Save). It uses the live link format `<app page>?share=<id>` and the live browser storage name `ps.share.<project id>`, so old links open (read only, with "Make my own copy") and owners keep the right to update them from the browser that saved.
 2. **The interactive HTML export is back** as part of the Plan Pack (`POST /api/export/html`, Exports menu "Interactive HTML"). The plans pages and FAQs describe it.
-3. A Checkout session unlocks a pack only if it is a one-off AUD payment of at least A$35 for this app (same rule as live). A price set to A$30 unlocks nothing.
+3. A Checkout session unlocks a pack only if it is a one-off AUD payment of at least the configured Plan Pack price (`PLAN_PACK_PRICE_CENTS`, now A$30) for this app (same rule as live). A Stripe price set below the configured Plan Pack price unlocks nothing, so keep the live Stripe price and `PLAN_PACK_PRICE_CENTS` in step.
 4. The assistant (`/api/ai/*`) uses the release tools and context. An old cached copy of the old app asking the new assistant for an edit may get changes it cannot apply. Upload the website straight after the Worker deploy (Steps 6 to 8), in a quiet period.
 5. Assistant spend limits are now the release ones (US$5 a day, US$50 a month, 6 requests a minute) in place of the live `AI_DAILY_TOKEN_CAP`. Change `AI_DAILY_CAP_USD` and `AI_MONTHLY_CAP_USD` in `wrangler.toml` if you want others.
 6. PDF re-exports are allowed (owner decision 11/11/2026): `PDF_SET_LIMIT = "0"` is the default in `wrangler.toml`, so a paid job can export its current design again as often as the hourly export limit allows. `"1"` brings back the old one set per job rule.
@@ -100,14 +100,14 @@ $b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create
 
 **Stripe live keys (only when you take real payments, you said you will switch at this launch).** Do this in the Stripe dashboard in LIVE mode, then set the three secrets, then deploy (Step 6):
 
-1. Create the Plan Pack product in live mode: A$35.00, one-off, **Include tax in price** ticked. Copy its `price_...` id.
+1. Create the Plan Pack product in live mode: A$30.00, one-off, **Include tax in price** ticked. Copy its `price_...` id.
 2. Developers > Webhooks > Add endpoint: `https://glideinside.com.au/api/stripe/webhook`, events `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, `charge.dispute.created`, `charge.dispute.closed`. Copy the signing secret (`whsec_...`) of this live endpoint.
 3. Set the three secrets (live values):
 
 ```powershell
 npx wrangler secret put STRIPE_SECRET_KEY       # sk_live_... (a restricted key with Checkout Sessions write is enough)
 npx wrangler secret put STRIPE_WEBHOOK_SECRET   # whsec_... from the LIVE endpoint
-npx wrangler secret put STRIPE_PRICE_ID         # price_... of the live A$35 price
+npx wrangler secret put STRIPE_PRICE_ID         # price_... of the live A$30 price
 ```
 
 The live and test webhooks are different endpoints with different secrets. Keep the test endpoint until the live test purchase works, then delete it.
@@ -124,7 +124,7 @@ Variables already in `wrangler.toml` under `[vars]` (the deploy sets them):
 | `ENQUIRY_FROM` | `Glide Inside <plans@glideinside.com.au>` |
 | `SELLER_NAME` | `JCE Infrastructure Pty Ltd trading as Glide Inside` |
 | `SELLER_ABN` | `29 699 165 663` |
-| `PLAN_PACK_PRICE_CENTS` | `3500` (also the least a payment may be worth to unlock a pack) |
+| `PLAN_PACK_PRICE_CENTS` | `3000` (also the least a payment may be worth to unlock a pack) |
 | `PORTAL_ENABLED` | `1` (builder portal open, free trial) |
 | `TRIAL_NOTIFY` / `TRIAL_NOTIFY_TO` | `1` / `hello@glideinside.com.au` (owner email about trial requests) |
 | `PROJECT_MAX_BYTES`, `PROJECT_TTL_DAYS`, `PROJECT_SAVE_RATE_MAX`, `EXPORT_RATE_PER_HOUR`, `PDF_SET_LIMIT` | the live defaults |
@@ -217,7 +217,7 @@ node tools/reskin-subdivision.mjs C:\Users\<YOU>\Downloads\sub\index.html C:\Use
 
 ## 10. Ten minute live test
 
-Use a laptop and a private window. If you have NOT switched Stripe to live keys (Step 3) the Plan Pack is in test mode and you pay with the test card. If you have, use a real card for A$35 and refund it afterwards in Stripe.
+Use a laptop and a private window. If you have NOT switched Stripe to live keys (Step 3) the Plan Pack is in test mode and you pay with the test card. If you have, use a real card for A$30 and refund it afterwards in Stripe.
 
 1. Open https://glideinside.com.au/plan-studio/launch/ and click **Launch the tool**. Look for **Find my block** in the top bar.
 2. **NSW test.** Click **Find my block** and type a real residential street address in Tamworth (an address you know well). Pick it from the list.
@@ -229,7 +229,7 @@ Use a laptop and a private window. If you have NOT switched Stripe to live keys 
    - Check: lot, neighbours, aerial (it may be withheld with a message if no open licence aerial exists, that is correct behaviour), contours, and the credits mention State of Queensland and CC BY-SA.
    - Confirm frontage. Setbacks for QLD use the QDC default and only work for lots up to 450 m2 and when you choose a **Street type**. For a larger lot the panel says it could not work them out and tells you to check the council. That is expected, tell Claude if you want this changed.
 6. Place a house: pick a template (for example Single storey house), drag it onto the lot. Use **Assistant** to ask "check my setbacks" once you have paid (next step).
-7. Click **Unlock plans, A$35**. Stripe opens in test mode. Pay with card `4242 4242 4242 4242`, any future expiry, any CVC, any postcode. You return to the tool unlocked. If it does not unlock in about 30 seconds, click **Restore purchase** and use the email you paid with.
+7. Click **Unlock plans, A$30**. Stripe opens in test mode. Pay with card `4242 4242 4242 4242`, any future expiry, any CVC, any postcode. You return to the tool unlocked. If it does not unlock in about 30 seconds, click **Restore purchase** and use the email you paid with.
 8. **AI helper.** Open **Assistant** and type "Move the house to the middle of the lot and check the setbacks". It should reply, show a credit counter (500 credits), and the house moves. It must say "inside the indicative setback envelope", never "compliant".
 9. **PDF export.** Click **Exports > PDF**. Open the PDF. Check the title block, the Pocket Architect drawing set, and the footer on every sheet naming the data sources and "indicative only". For a QLD lot the footer names the State of Queensland (CC BY-SA).
 10. **Send to JCE test (to your own address first).** Before this step, point the enquiry at yourself for the test only:
@@ -267,7 +267,7 @@ Worker:
 
 ## Real payments
 
-Covered in Step 3 (Stripe live keys). After setting the live secrets and deploying, do one real A$35 purchase on a private window, check it unlocks and the Stripe invoice arrives, then refund it in Stripe and confirm access stops (the `charge.refunded` event reaches the live webhook).
+Covered in Step 3 (Stripe live keys). After setting the live secrets and deploying, do one real A$30 purchase on a private window, check it unlocks and the Stripe invoice arrives, then refund it in Stripe and confirm access stops (the `charge.refunded` event reaches the live webhook).
 
 ## Builder portal and free trial (switched on 11/11/2026)
 
@@ -296,4 +296,4 @@ Do these in order, after Steps 0 to 7 above:
 
 ## Client login pricing (volume tiers, 11/11/2026)
 
-Per builder org, counted by client logins that first sign in during the Sydney calendar month, GST included: logins 1 to 15 are A$35 each, logins 16 to 50 are A$25 each, above 50 is a custom rate. The price is fixed at the first sign in. Above 50 with no custom rate set, A$25 keeps being charged and the owner admin page flags the builder as "over 50 this month, set custom rate". Set or clear the custom rate (cents incl. GST, or null) on the owner admin page, or with `POST /api/portal/admin/orgs/<id>/login-rate` and body `{ "cents": 2000 }`. A custom rate applies to every login that month, including ones already charged. Migration 0008 (`d1 migrations apply`) adds the column.
+Per builder org, counted by client logins that first sign in during the Sydney calendar month, GST included: logins 1 to 15 are A$30 each, logins 16 to 50 are A$25 each, above 50 is a custom rate. The price is fixed at the first sign in. Above 50 with no custom rate set, A$25 keeps being charged and the owner admin page flags the builder as "over 50 this month, set custom rate". Set or clear the custom rate (cents incl. GST, or null) on the owner admin page, or with `POST /api/portal/admin/orgs/<id>/login-rate` and body `{ "cents": 2000 }`. A custom rate applies to every login that month, including ones already charged. Migration 0008 (`d1 migrations apply`) adds the column.

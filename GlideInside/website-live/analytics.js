@@ -68,7 +68,7 @@
   window.giTrack = send;
 
   function priceNumber(v, d) { var n = parseFloat(String(v == null ? "" : v).replace(/[^0-9.]/g, "")); return isFinite(n) && n > 0 ? n : d; }
-  var PLAN_PRICE = priceNumber(cfg.planPackPrice, 35);
+  var PLAN_PRICE = priceNumber(cfg.planPackPrice, 30);
 
   /* ---- design_started: first meaningful edit, once per session ---- */
   function templateId() { try { return new URLSearchParams(location.search).get("template") || ""; } catch (e) { return ""; } }

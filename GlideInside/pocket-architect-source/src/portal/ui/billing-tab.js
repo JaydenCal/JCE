@@ -107,7 +107,7 @@ export async function renderBilling(host, { api, me, refreshMe, goBilling }) {
       h('p', { class: 'pp-notice pp-notice--quiet' }, icon('info', 18), `${CHARGE_NOTICE} Each AI credit top-up of 300 credits is A$10 incl. GST. Resetting passwords, disabling logins and staff logins are free.`),
       lp ? h('p', { class: 'pp-notice pp-notice--quiet', id: 'login-rate' }, icon('info', 18), lp.customRateCents
         ? `${lp.count} new client ${lp.count === 1 ? 'login' : 'logins'} this month. Your agreed rate is ${formatAud(lp.customRateCents)} incl. GST per new client login.`
-        : `${lp.count} new client ${lp.count === 1 ? 'login' : 'logins'} this month. The next one is ${formatAud(lp.currentRateCents)} incl. GST. Logins 1 to 15 in a month are A$35 each, logins 16 to 50 are A$25 each, above 50 is a custom rate.`) : null,
+        : `${lp.count} new client ${lp.count === 1 ? 'login' : 'logins'} this month. The next one is ${formatAud(lp.currentRateCents)} incl. GST. Logins 1 to 15 in a month are A$30 each, logins 16 to 50 are A$25 each, above 50 is a custom rate.`) : null,
       h('h4', null, `New client logins (first sign in this month): ${t.loginsCount} = ${formatAud(t.loginsCents)}`),
       table([{ label: 'Client' }, { label: 'First sign in (DD/MM/YYYY)' }, { label: 'Charge', num: true }], loginRows, 'No clients have signed in for the first time this month.'),
       h('h4', null, `AI credit top-ups: ${t.topUpsCount} at A$10 = ${formatAud(t.topUpsCents)}`),

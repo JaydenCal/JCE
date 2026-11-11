@@ -69,7 +69,7 @@ export function createPremium(store, options = {}) {
   let topbar = null;
   let assistant = null;
 
-  // A builder or client login (src/portal) includes the plans and the AI helper: the builder pays, so there is no A$35 step.
+  // A builder or client login (src/portal) includes the plans and the AI helper: the builder pays, so there is no A$30 step.
   // state.portal = { entitled, token (null in the mock), clientExports (mock: build files in this browser), orgName, credits }.
   const portalOn = () => !!state.portal?.entitled;
   // Which downloads this person may have. Public Plan Pack and builder staff: all. Client logins: the builder's choice (PDF only by default).
@@ -382,7 +382,7 @@ export function createPremium(store, options = {}) {
   const psApp = () => ({ ...(typeof window !== 'undefined' ? window.__ps : null), store, premium: self });
 
   /**
-   * Called by the portal (src/portal/client-mode.js) for a signed in builder or client: plans without the A$35 step, and the AI
+   * Called by the portal (src/portal/client-mode.js) for a signed in builder or client: plans without the A$30 step, and the AI
    * helper entitlement with the login's credits. credits: { total, used, remaining } for the month plus any top-up.
    * Pass null to remove it (sign out). The AI panel is wired by its own module; it reads this through premium.state.
    */

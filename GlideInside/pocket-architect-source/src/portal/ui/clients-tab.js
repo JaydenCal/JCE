@@ -8,7 +8,7 @@ import { slug } from '../../ui/dom.js';
 import { TEMP_PASSWORD_DAYS } from '../mock-api.js';
 import { accountOf, isReadOnly, addBillingButton } from './trial-ui.js';
 
-export const CHARGE_NOTICE = 'A$35 incl. GST is charged on your monthly invoice once your client first signs in (A$25 each from the 16th new client login in a month).';
+export const CHARGE_NOTICE = 'A$30 incl. GST is charged on your monthly invoice once your client first signs in (A$25 each from the 16th new client login in a month).';
 
 const houseAccessText = (a) => (a === 'all' ? 'All designs' : `${a.length} selected`);
 const day = (iso) => (iso ? ddmmyyyy(iso) : null);
@@ -126,7 +126,7 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
       d.setTitle(`Account for ${r.client.name}`);
       d.setBody(h('div', null,
         credentialsCard({ username: r.credentials.username, password: r.credentials.password, who: r.client.name, signInUrl: portalUrl('?client=1'), expiryDays: TEMP_PASSWORD_DAYS }),
-        h('p', { class: 'pp-notice pp-notice--quiet' }, icon('info', 18), 'A$35 incl. GST is charged on your monthly invoice once your client first signs in (A$25 each from the 16th new client login in a month). Nothing is charged if they never do, and you can delete an unused login free.')));
+        h('p', { class: 'pp-notice pp-notice--quiet' }, icon('info', 18), 'A$30 incl. GST is charged on your monthly invoice once your client first signs in (A$25 each from the 16th new client login in a month). Nothing is charged if they never do, and you can delete an unused login free.')));
       d.setFooter((x) => [h('button', { class: 'pp-btn', type: 'button', onclick: () => { x.close(); generateDialog(); } }, 'Generate another'), h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: () => x.close() }, 'Done')]);
     }
   }
@@ -186,7 +186,7 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
   }
 
   const lockedNotice = acct.status === 'trial'
-    ? h('div', { class: 'pp-notice pp-notice--lock', id: 'clients-locked' }, icon('lock', 18), h('div', null, h('strong', null, 'Client logins unlock when you add billing details.'), h('p', null, 'During your free trial your staff can use the whole portal, including the house library, branding, Pocket Architect and exports. Client logins are charged at A$35 incl. GST each (A$25 each after 15 in a month), once, when the client first signs in. Nothing is charged for a login that is never used.')), addBillingButton(api, { goBilling }))
+    ? h('div', { class: 'pp-notice pp-notice--lock', id: 'clients-locked' }, icon('lock', 18), h('div', null, h('strong', null, 'Client logins unlock when you add billing details.'), h('p', null, 'During your free trial your staff can use the whole portal, including the house library, branding, Pocket Architect and exports. Client logins are charged at A$30 incl. GST each (A$25 each after 15 in a month), once, when the client first signs in. Nothing is charged for a login that is never used.')), addBillingButton(api, { goBilling }))
     : h('div', { class: 'pp-notice pp-notice--lock', id: 'clients-locked' }, icon('lock', 18), h('div', null, h('strong', null, 'This account is read only.'), h('p', null, 'Add billing details to issue and manage client logins again.')), addBillingButton(api, { goBilling }));
   host.append(
     h('div', { class: 'pp-head' },

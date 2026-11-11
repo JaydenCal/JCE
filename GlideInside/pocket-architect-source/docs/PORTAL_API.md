@@ -50,7 +50,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 ### Clients (staff; issuing needs admin)
 
 - `listClients()` `GET /portal/clients`: `[{ id, name, username, email, status, lotAddress, houseAccess, projectCount, lastSignInAt, mustChangePassword, tempPasswordExpiresAt, billed, ai: { month, monthlyCap, used, monthlyRemaining, topUpBalance, remaining, total } }]`.
-- `issueClientLogin({ firstName, email?, lotAddress?, houseAccess? })` `POST /portal/clients`: only `firstName` is required. Returns `{ client, credentials: { username, password }, charge: { amountCents: 3500, trigger: 'first_sign_in', note } }`. The password is returned this once and never again. Nothing is billed here.
+- `issueClientLogin({ firstName, email?, lotAddress?, houseAccess? })` `POST /portal/clients`: only `firstName` is required. Returns `{ client, credentials: { username, password }, charge: { amountCents: 3000, trigger: 'first_sign_in', note } }`. The password is returned this once and never again. Nothing is billed here.
 - `updateClient(id, patch)`, `disableClient(id)`, `enableClient(id)`, `resetClientPassword(id)` (new temporary password, shown once, free).
 - `deleteClient(id)` `DELETE /portal/clients/:id`: removes the login and all their projects. Returns `{ ok, removedProjects, charged }` (`charged` is true if the login had already been billed; that charge stays). An unused login (never signed in) is deleted free and never appears on an invoice.
 - `exportClientProjects(id)` `GET /portal/clients/:id/export`: `{ client, exportedAt, projects: [{ id, name, updatedAt, project }] }`.
@@ -94,9 +94,9 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 
 ## 4. Billing rules
 
-- Client logins, **no monthly fee**. Volume pricing per builder org, counted by logins that first sign in during the Sydney calendar month, GST included: logins 1 to 15 are **A$35** each, logins 16 to 50 are **A$25** each, above 50 is a **custom rate**. `priceForNthLoginThisMonth(n, org)` in `src/portal/billing.js` (re-exported by `server/lib/portal-billing.js`) is the one pure function; the price is computed at the first sign in and stored in `amount_cents`.
+- Client logins, **no monthly fee**. Volume pricing per builder org, counted by logins that first sign in during the Sydney calendar month, GST included: logins 1 to 15 are **A$30** each, logins 16 to 50 are **A$25** each, above 50 is a **custom rate**. `priceForNthLoginThisMonth(n, org)` in `src/portal/billing.js` (re-exported by `server/lib/portal-billing.js`) is the one pure function; the price is computed at the first sign in and stored in `amount_cents`.
 - Custom rate: `orgs.custom_login_cents` (nullable, migration 0008). When set it applies to every login that month, and the owner admin route reprices this month's rows. With no custom rate, logins above 50 are still charged A$25 and the admin page flags the org "over 50 this month, set custom rate". Admin route `POST /portal/admin/orgs/{id}/login-rate` with `{ "cents": 2000 }` (100 to 100000) or `{ "cents": null }` to clear; returns the admin org row. `GET /portal/billing/usage` adds `loginPricing { count, currentRateCents, customRateCents, over50NeedsCustomRate, tiers }`.
-- Charged at the client's **first successful sign in**, not when the login is generated. The row `{ orgId, loginId, chargedAt, amountCents: 3500 }` is created once (unique on `login_id`) in the Sydney month of that first sign in. Generate screen text: "A$35 incl. GST is charged on your monthly invoice once your client first signs in."
+- Charged at the client's **first successful sign in**, not when the login is generated. The row `{ orgId, loginId, chargedAt, amountCents: 3000 }` is created once (unique on `login_id`) in the Sydney month of that first sign in. Generate screen text: "A$30 incl. GST is charged on your monthly invoice once your client first signs in."
 - Resetting passwords, disabling logins, staff logins and deleting an unused login are free.
 - AI top-up: A$10 incl. GST per 300 credits, charged on the end of month invoice.
 - Month total = sum of the per login prices of the logins that first signed in that month + A$10 x top-ups. The invoice has one line per distinct unit price.
@@ -113,9 +113,9 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
   "issuedAt": "2026-11-01T...", "dueAt": "2026-11-15T...", "month": "2026-10",
   "seller": { "name": "JCE Infrastructure Pty Ltd trading as Glide Inside", "abn": "29 699 165 663" },
   "buyer": { "name": "<billing legalName>", "abn": "<billing ABN>", "email": "..." },
-  "lines": [ { "description": "New client logins first signed in during October 2026 (A$35 each, incl. GST)", "quantity": 3, "unitCents": 3500, "totalCents": 10500 },
+  "lines": [ { "description": "New client logins first signed in during October 2026 (A$30 each, incl. GST)", "quantity": 3, "unitCents": 3000, "totalCents": 9000 },
              { "description": "AI credit top-ups of 300 credits (A$10 each, incl. GST)", "quantity": 1, "unitCents": 1000, "totalCents": 1000 } ],
-  "subtotalExGstCents": 6364, "gstCents": 636, "totalInclGstCents": 7000,
+  "subtotalExGstCents": 9091, "gstCents": 909, "totalInclGstCents": 10000,
   "status": "due"
 }
 ```
@@ -173,7 +173,7 @@ Behaviour: 503 `ENQUIRY_NOT_CONFIGURED` when `RESEND_API_KEY` is unset (the UI s
 
 The tables are in `server/schema.sql` (all `CREATE ... IF NOT EXISTS`, purely additive, re-run it after deploying: `wrangler d1 execute plan-studio --remote --file server/schema.sql`). They follow the first proposal with these changes:
 
-- `login_charges` is `login_issues` (`login_id` PRIMARY KEY, so the A$35 charge can exist once; no foreign key, so it survives deleting the client). It also keeps `client_name` and `month`.
+- `login_charges` is `login_issues` (`login_id` PRIMARY KEY, so the A$30 charge can exist once; no foreign key, so it survives deleting the client). It also keeps `client_name` and `month`.
 - `ai_topups` and `ai_usage` are not tables. AI credits live in the `entitlements` rows of the AI branch (monthly pool and top-up pool per login) and each top-up is an `ai_topup` row in `events`. `users.ai_top_up_balance` is gone for the same reason.
 - `users` has no `failed_attempts` or `locked_until`; lockout counters are in `auth_failures` (keys `u:<identifier>` and `ip:<address>`), so unknown usernames lock the same way as real ones.
 - `reset_tokens` is not built (no email, see section 2). `portal_settings` holds one value, the Stripe GST tax rate id.
@@ -186,7 +186,7 @@ The tables are in `server/schema.sql` (all `CREATE ... IF NOT EXISTS`, purely ad
 
 - `window.openSiteSearch()`: if the site defines it, "Find my block" calls it. Otherwise a placeholder dialog offers "Use a sample lot" (14 m x 36 m).
 - `window.__ps.portal.setLot({ name, polygonMm, frontEdgeIndices, picked, address, lot, dp, lga, zone })`: the lot search calls this to give the house picker its lot. `picked` is `{ front, secondaryFront, side, rear }` each `{ minM }`, the same shape `pickRules` returns in `claude/glide-setbacks`. `getLot()` supplies the address, lot, DP, LGA and zone to the JCE form.
-- `premium.setPortalEntitlement({ entitled, role, orgName, credits, exports, enquiry, sendEnquiry })`: portal sessions include plans without the A$35 step.
+- `premium.setPortalEntitlement({ entitled, role, orgName, credits, exports, enquiry, sendEnquiry })`: portal sessions include plans without the A$30 step.
 - Fit ranking (`rankDesigns`): "Fits", "Fits rotated", "Fits mirrored", "Does not fit" with a reason such as "2.1 m too wide". Guidance only; a design that does not fit can still be placed and edited. The footprint is the convex outline of the ground floor.
 - Deep links into Pocket Architect: `?house=`, `?project=`, `?glide=`, `?signin=1`.
 

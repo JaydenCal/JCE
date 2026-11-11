@@ -506,9 +506,9 @@ test('share: a share created on the live Worker and read by the release server s
 // ---- 3b. payments: the live payments.test.mjs and hardening.test.mjs rules, ported ---------------------------------------------
 const done = (id = 'evt_1', o = {}) => ({
   id, type: 'checkout.session.completed',
-  data: { object: { id: 'cs_1', mode: 'payment', payment_status: 'paid', client_reference_id: 'p_job1', metadata: { projectId: 'p_job1', app: 'pocket-architect' }, payment_intent: 'pi_1', amount_total: 3500, currency: 'aud', customer_details: { email: 'Buyer@Example.com' }, ...o } },
+  data: { object: { id: 'cs_1', mode: 'payment', payment_status: 'paid', client_reference_id: 'p_job1', metadata: { projectId: 'p_job1', app: 'pocket-architect' }, payment_intent: 'pi_1', amount_total: 3000, currency: 'aud', customer_details: { email: 'Buyer@Example.com' }, ...o } },
 });
-const refund = (id, o = {}) => ({ id, type: 'charge.refunded', data: { object: { payment_intent: 'pi_1', amount: 3500, amount_refunded: 3500, refunded: true, ...o } } });
+const refund = (id, o = {}) => ({ id, type: 'charge.refunded', data: { object: { payment_intent: 'pi_1', amount: 3000, amount_refunded: 3000, refunded: true, ...o } } });
 const dispute = (id, type, o = {}) => ({ id, type, data: { object: { payment_intent: 'pi_1', ...o } } });
 
 test('payments: which Checkout sessions grant a Plan Pack', opts, async () => {
@@ -525,7 +525,7 @@ test('payments: which Checkout sessions grant a Plan Pack', opts, async () => {
   assert.equal(await go({}, 'checkout.session.async_payment_succeeded'), 1, 'async payment succeeded grants');
   assert.equal(await go({ currency: 'usd' }), 1, 'wrong currency');
   assert.equal(await go({ amount_total: 500 }), 1, 'A$5 add-on payment is not a plan');
-  assert.equal(await go({ amount_total: 3499 }), 1);
+  assert.equal(await go({ amount_total: 2999 }), 1);
   assert.equal(await go({ client_reference_id: undefined, metadata: {} }), 1, 'other product, no project');
   assert.equal(await go({ client_reference_id: 'bad id!' }), 1, 'invalid project id');
   assert.equal(await go({ client_reference_id: 'p_job9', metadata: { projectId: 'p_other', app: 'pocket-architect' } }), 1, 'project mismatch');
@@ -569,7 +569,7 @@ test('payments: refunds, in either order', opts, async () => {
   await m.hook(done());
   await m.hook(refund('evt_p', { refunded: false, amount_refunded: 1000 }));
   assert.equal(m.rows()[0].status, 'active', 'partial refund keeps access');
-  await m.hook(refund('evt_f1', { refunded: false, amount_refunded: 3500 }));
+  await m.hook(refund('evt_f1', { refunded: false, amount_refunded: 3000 }));
   assert.equal(m.rows()[0].status, 'refunded', 'amount_refunded >= amount');
   const m3 = mk();
   await m3.hook(refund('evt_early'));
@@ -661,7 +661,7 @@ test('payments: checkout sends the live Stripe parameters and is limited per IP'
     assert.equal((await j(r)).url, 'https://checkout.stripe.com/c/pay/cs_x');
     const f = seen[0].form;
     assert.equal(seen[0].u, 'https://api.stripe.com/v1/checkout/sessions');
-    assert.deepEqual([f.mode, f['line_items[0][price_data][unit_amount]'], f['line_items[0][price_data][currency]'], f['line_items[0][price_data][tax_behavior]']], ['payment', '3500', 'aud', 'inclusive']);
+    assert.deepEqual([f.mode, f['line_items[0][price_data][unit_amount]'], f['line_items[0][price_data][currency]'], f['line_items[0][price_data][tax_behavior]']], ['payment', '3000', 'aud', 'inclusive']);
     assert.deepEqual([f.client_reference_id, f['metadata[projectId]'], f['metadata[app]'], f['invoice_creation[enabled]'], f.customer_creation], ['p_job1', 'p_job1', 'pocket-architect', 'true', 'always']);
     assert.equal(f.success_url, 'https://x.test/plan-studio/app/?checkout=success&session_id={CHECKOUT_SESSION_ID}&project=p_job1');
     assert.equal(f.cancel_url, 'https://x.test/plan-studio/app/?checkout=cancel');

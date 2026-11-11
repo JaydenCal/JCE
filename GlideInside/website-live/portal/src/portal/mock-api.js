@@ -258,7 +258,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       user.failedSignIns = 0;
       user.lockedUntil = null;
       user.lastSignInAt = iso();
-      // The charge for a client login happens here, on the first sign in, and never again for that login (A$35, A$25 from the 16th in a month).
+      // The charge for a client login happens here, on the first sign in, and never again for that login (A$30, A$25 from the 16th in a month).
       if (user.role === 'client' && !db.issues.some((i) => i.loginId === user.id)) db.issues.push({ id: rid('lc'), orgId: user.orgId, loginId: user.id, clientName: user.name, chargedAt: iso(), amountCents: priceForNthLoginThisMonth(db.issues.filter((i) => i.orgId === user.orgId && monthKey(i.chargedAt) === monthKey(now())).length + 1, db.orgs.find((o) => o.id === user.orgId)) });
       save(db);
       storage.set(SESSION_KEY, JSON.stringify({ userId: user.id, at: iso() }));

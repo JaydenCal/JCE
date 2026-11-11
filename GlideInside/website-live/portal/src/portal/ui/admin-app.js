@@ -140,7 +140,7 @@ export function mountAdmin(root, { createApi = createAdminApi } = {}) {
     openDialog({
       title: `Client login price for ${o.name}`,
       body: h('div', { class: 'pp-form' },
-        h('p', null, 'Standard pricing: logins 1 to 15 in a month are A$35 each incl. GST, logins 16 to 50 are A$25 each, above 50 is set here. A custom price applies to every login that first signs in this month, including ones already charged.'),
+        h('p', null, 'Standard pricing: logins 1 to 15 in a month are A$30 each incl. GST, logins 16 to 50 are A$25 each, above 50 is set here. A custom price applies to every login that first signs in this month, including ones already charged.'),
         field('Price per client login (A$ incl. GST)', () => input, { hint: 'Leave empty and press Clear to go back to the standard pricing.' })),
       footer: (d) => [
         h('button', { class: 'pp-btn', type: 'button', onclick: () => d.close() }, 'Cancel'),
