@@ -435,8 +435,7 @@
    ],
    "appliesTo": [
     "dual_occupancy",
-    "multi_dwelling",
-    "dwelling"
+    "multi_dwelling"
    ],
    "conditions": {},
    "conditionText": [
@@ -877,31 +876,32 @@
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 4
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R2": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R3": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R5": {
-   "dcpDeterminable": false,
-   "basisWithFallbacks": null,
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (coolamon-shire-council-001, coolamon-shire-council-007)); side (conflicting rules of equal specificity (coolamon-shire-council-001, coolamon-shire-council-007)); rear (conflicting rules of equal specificity (coolamon-shire-council-001, coolamon-shire-council-007))"
-  },
-  "RU5": {
    "dcpDeterminable": true,
    "basisWithFallbacks": "Council DCP",
    "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
   }
  }
 }

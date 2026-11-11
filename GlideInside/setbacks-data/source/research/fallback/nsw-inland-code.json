@@ -1,0 +1,340 @@
+{
+  "id": "nsw-inland-code",
+  "jurisdiction": "NSW",
+  "basisLabel": "SEPP Housing Code",
+  "instrument": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
+  "retrieved": "11/11/2026",
+  "currencyWarning": "Text read from AustLII consolidation (index marked 'As at 5 July 2024'). legislation.nsw.gov.au could not be fetched (egress blocked / fetch error), so currency against the in-force 2026 text is NOT verified. Clause numbers 3.1, 3.10 verified against that text only. Verify before relying.",
+  "applicability": "Part 3D Inland Code (cl 3D.1(1)): applies on land in Zones RU1, RU2, RU3, RU4, RU5, RU6, R1, R2, R3, R4 and R5 in inland local government areas (69 LGAs incl. Balranald, Cabonne, Cobar, Gwydir, Hay, Liverpool Plains, Warren, Carrathool); Housing Code and Rural Housing Code do not apply there except as cl 3D.2 provides.",
+  "clauseNumbersVerified": "cl 3D.1(1)-(4) and cl 3D.21 read from AustLII; council membership of the inland list checked by tool for Balranald, Cabonne, Cobar, Gwydir, Hay, Liverpool Plains, Warren, Carrathool (yes) and Canada Bay, North Sydney, Strathfield, Willoughby (no)",
+  "rules": [
+    {
+      "basisLabel": "SEPP Housing Code",
+      "codePart": "Part 3D Inland Code",
+      "zones": [
+        "RU1",
+        "RU2",
+        "RU3",
+        "RU4",
+        "RU5",
+        "RU6",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": null,
+        "basis": "average_neighbours",
+        "note": "Fallback if fewer than 2 dwellings within 40m, by lot size"
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": null
+      },
+      "rear": {
+        "minM": null
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
+      "document": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
+      "clause": "cl 3D.21(1)-(3) primary road",
+      "page": null,
+      "quote": "must not be less than the average primary road setback of the 2 nearest dwelling houses",
+      "confidence": "medium",
+      "needsReview": true,
+      "bands": {
+        "front": [
+          {
+            "lotAreaMinM2": 200,
+            "lotAreaMaxM2": 300,
+            "minM": 3.0
+          },
+          {
+            "lotAreaMinM2": 300.01,
+            "lotAreaMaxM2": 1500,
+            "minM": 4.5
+          },
+          {
+            "lotAreaMinM2": 1500.01,
+            "minM": 10.0
+          }
+        ]
+      },
+      "corroboration": "Liverpool Plains CDC RU5 checklist states 4.5m for 300-1,500m2 and 10m over 1,500m2"
+    },
+    {
+      "basisLabel": "SEPP Housing Code",
+      "codePart": "Part 3D Inland Code",
+      "zones": [
+        "RU1",
+        "RU2",
+        "RU3",
+        "RU4",
+        "RU5",
+        "RU6",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": null
+      },
+      "secondaryFront": {
+        "minM": null,
+        "basis": "by_lot_area"
+      },
+      "side": {
+        "minM": null
+      },
+      "rear": {
+        "minM": null
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
+      "document": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
+      "clause": "cl 3D.21(4) secondary road",
+      "page": null,
+      "quote": "Minimum setback from secondary road boundary",
+      "confidence": "medium",
+      "needsReview": true,
+      "bands": {
+        "secondaryFront": [
+          {
+            "lotAreaMinM2": 200,
+            "lotAreaMaxM2": 600,
+            "minM": 2.0
+          },
+          {
+            "lotAreaMinM2": 600.01,
+            "lotAreaMaxM2": 1500,
+            "minM": 3.0
+          },
+          {
+            "lotAreaMinM2": 1500.01,
+            "minM": 5.0
+          }
+        ]
+      }
+    },
+    {
+      "basisLabel": "SEPP Housing Code",
+      "codePart": "Part 3D Inland Code",
+      "zones": [
+        "RU1",
+        "RU2",
+        "RU3",
+        "RU4",
+        "RU5",
+        "RU6",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": null
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": 0.9,
+        "formula": "parts of building more than 4.5m above ground: formula in cl 3D.21(8)(a) (image, not extracted) or table minimum if greater"
+      },
+      "rear": {
+        "minM": null
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
+      "document": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
+      "clause": "cl 3D.21(7)-(8) side",
+      "page": null,
+      "quote": "Lot width at the building line | Minimum required setback from each side boundary",
+      "confidence": "medium",
+      "needsReview": true,
+      "bands": {
+        "side": [
+          {
+            "lotWidthMinM": 6,
+            "lotWidthMaxM": 18,
+            "minM": 0.9
+          },
+          {
+            "lotWidthMinM": 18.01,
+            "lotWidthMaxM": 24,
+            "minM": 1.5
+          },
+          {
+            "lotWidthMinM": 24.01,
+            "minM": 2.5
+          }
+        ]
+      },
+      "builtToBoundary": "cl 3D.21(9)(b): lot width at building line at least 6m not more than 8m; (10)(a) more than 8m not more than 12.5m; wall within 900mm max height 3.3m; length 20m or 50% of depth (6-10m wide), 10m (>10-12.5m)"
+    },
+    {
+      "basisLabel": "SEPP Housing Code",
+      "codePart": "Part 3D Inland Code",
+      "zones": [
+        "RU1",
+        "RU2",
+        "RU3",
+        "RU4",
+        "RU5",
+        "RU6",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": null
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": null
+      },
+      "rear": {
+        "minM": 3.0
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
+      "document": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
+      "clause": "cl 3D.21(14) rear",
+      "page": null,
+      "quote": "Lot area | Building height | Minimum setback from rear boundary",
+      "confidence": "medium",
+      "needsReview": true,
+      "bands": {
+        "rear": [
+          {
+            "lotAreaMinM2": 200,
+            "lotAreaMaxM2": 300,
+            "heightMinM": 0,
+            "heightMaxM": 4.5,
+            "minM": 3.0
+          },
+          {
+            "lotAreaMinM2": 200,
+            "lotAreaMaxM2": 300,
+            "heightMinM": 4.5,
+            "heightMaxM": 8.5,
+            "minM": 10.0,
+            "alternative": "or the average rear setback of the 2 adjoining dwelling houses measured at 4.5m above ground level (existing), whichever is the lesser"
+          },
+          {
+            "lotAreaMinM2": 300.01,
+            "lotAreaMaxM2": 900,
+            "heightMinM": 0,
+            "heightMaxM": 4.5,
+            "minM": 3.0
+          },
+          {
+            "lotAreaMinM2": 300.01,
+            "lotAreaMaxM2": 900,
+            "heightMinM": 4.5,
+            "heightMaxM": 8.5,
+            "minM": 8.0
+          },
+          {
+            "lotAreaMinM2": 900.01,
+            "lotAreaMaxM2": 1500,
+            "heightMinM": 0,
+            "heightMaxM": 4.5,
+            "minM": 5.0
+          },
+          {
+            "lotAreaMinM2": 900.01,
+            "lotAreaMaxM2": 1500,
+            "heightMinM": 4.5,
+            "heightMaxM": 8.5,
+            "minM": 12.0
+          },
+          {
+            "lotAreaMinM2": 1500.01,
+            "heightMinM": 0,
+            "heightMaxM": 4.5,
+            "minM": 10.0
+          },
+          {
+            "lotAreaMinM2": 1500.01,
+            "heightMinM": 4.5,
+            "heightMaxM": 8.5,
+            "minM": 15.0
+          }
+        ]
+      }
+    },
+    {
+      "basisLabel": "SEPP Housing Code",
+      "codePart": "Part 3D Inland Code",
+      "zones": [
+        "RU1",
+        "RU2",
+        "RU3",
+        "RU4",
+        "RU5",
+        "RU6",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": null
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": null
+      },
+      "rear": {
+        "minM": null
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
+      "document": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
+      "clause": "cl 3D.21 other setbacks",
+      "page": null,
+      "quote": "at least 3m",
+      "confidence": "medium",
+      "needsReview": true,
+      "otherSetbacks": {
+        "parallelRoadM": 3.0,
+        "publicReserveM": 3.0,
+        "battleAxeM": 3.0,
+        "classifiedRoadM": 9.0,
+        "classifiedRoadSource": "Liverpool Plains checklist: '9m from a classified road'; cl 3D.21 per tool summary: greatest of other EPI setback or 9m"
+      }
+    }
+  ],
+  "gaps": [
+    "Side-setback height formula is an image in the source and was not extracted",
+    "cl 3D.22 exceptions not read",
+    "Currency unverified"
+  ]
+}

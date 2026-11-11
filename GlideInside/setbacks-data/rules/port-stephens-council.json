@@ -462,8 +462,7 @@
     "R3"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {},
    "conditionText": "C4 Residential general (R2, R3): secondary dwelling minimum from rear boundary",

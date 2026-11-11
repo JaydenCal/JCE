@@ -489,7 +489,52 @@
    ],
    "appliesTo": [
     "multi_dwelling",
-    "dwelling"
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "multi-dwelling, RU5 garage",
+   "garage": {
+    "minM": 5.5,
+    "sources": [
+     5636
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    5636
+   ],
+   "evidence": [
+    {
+     "id": 5636,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "4.5 m, 5.5 m to",
+     "clause": "4.5.1 Building Setbacks",
+     "page": 15,
+     "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+     "condition": "multi-dwelling, RU5 garage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "4.5 m, 5.5 m to",
+   "clause": "4.5.1 Building Setbacks",
+   "page": 15,
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "brewarrina-shire-council-008",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
    ],
    "conditions": {
     "storeys": 1
@@ -553,13 +598,12 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "brewarrina-shire-council-008",
+   "id": "brewarrina-shire-council-009",
    "zones": [
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
-    "dwelling"
+    "multi_dwelling"
    ],
    "conditions": {
     "storeys": 2
@@ -595,52 +639,6 @@
    "confidence": "high",
    "needsReview": null,
    "quote": "2 m (1,125 mm#)",
-   "clause": "4.5.1 Building Setbacks",
-   "page": 15,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
-   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
-   "edition": "UNVERIFIED"
-  },
-  {
-   "id": "brewarrina-shire-council-009",
-   "zones": [
-    "RU5"
-   ],
-   "appliesTo": [
-    "multi_dwelling",
-    "garage"
-   ],
-   "conditions": {},
-   "conditionText": "multi-dwelling, RU5 garage",
-   "garage": {
-    "minM": 5.5,
-    "sources": [
-     5636
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    5636
-   ],
-   "evidence": [
-    {
-     "id": 5636,
-     "parameter": "garage_setback",
-     "slot": "garage",
-     "quote": "4.5 m, 5.5 m to",
-     "clause": "4.5.1 Building Setbacks",
-     "page": 15,
-     "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
-     "condition": "multi-dwelling, RU5 garage",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "high",
-   "needsReview": null,
-   "quote": "4.5 m, 5.5 m to",
    "clause": "4.5.1 Building Setbacks",
    "page": 15,
    "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
@@ -978,20 +976,21 @@
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 0
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R5": {
@@ -1001,8 +1000,8 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side; rear (no rule for this zone/use/lot)"
   }
  }
 }

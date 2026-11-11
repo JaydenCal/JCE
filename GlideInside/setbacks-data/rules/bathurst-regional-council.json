@@ -167,8 +167,7 @@
    ],
    "appliesTo": [
     "boarding_house",
-    "seniors_housing",
-    "dwelling"
+    "seniors_housing"
    ],
    "conditions": {
     "storeys": 2,
@@ -651,30 +650,31 @@
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 8
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear"
   },
   "R5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear"
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear"
   }
  }

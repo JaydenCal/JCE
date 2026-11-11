@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { pickRules, pickRulesDetailed, buildEnvelope, classifyEdges, envelopeArea, BASIS_LABELS } from '../src/site/setbacks.js';
+import { pickRules, pickRulesDetailed, buildEnvelope, classifyEdges, frontageRuns, envelopeArea, BASIS_LABELS } from '../src/site/setbacks.js';
 
 const slot = (minM, extra = {}) => ({ minM, basis: 'fixed', ...extra });
 const rule = (id, zones, over = {}) => ({
@@ -248,4 +248,111 @@ test('generated Tamworth rules: R2 LSM-U', { skip: !existsSync(dataDir + 'tamwor
   assert.equal(p.front.minM, 5.5);
   assert.equal(p.side.minM, 1);
   assert.equal(p.rear.minM, 1);
+});
+
+// ---------------------------------------------------------------- final review additions (11/11/2026)
+const allFile = fileURLToPath(new URL('../../setbacks-data/setback-rules.json', import.meta.url));
+const ALL = existsSync(allFile) ? JSON.parse(readFileSync(allFile, 'utf8')) : null;
+const lotIn = { zone: 'R2', storeys: 1, lotWidthM: 15, lotAreaM2: 600, cornerLot: false, use: 'dwelling', buildingHeightM: 4.2 };
+
+test('shipped data: all 69 inland LGAs use the Inland Code, not the Housing Code', { skip: !ALL }, () => {
+  const inland = ALL.councils.filter((c) => c.fallbackSet === 'NSW_INLAND').map((c) => c.lga_slug);
+  assert.equal(inland.length, 69);
+  for (const s of ['tamworth-regional-council', 'dubbo-regional-council', 'gunnedah-shire-council', 'albury-city-council', 'narrabri-shire-council']) assert.ok(inland.includes(s), s);
+  for (const s of ['newcastle-city-council', 'kempsey-shire-council', 'cessnock-city-council']) assert.ok(!inland.includes(s), s);
+  const dubbo = ALL.councils.find((c) => c.lga_slug === 'dubbo-regional-council');
+  const p = pickRules({ ...dubbo, rules: [] }, lotIn, { fallbacks: ALL.fallbacks });
+  assert.match(p.basis, /Inland Code/);
+});
+
+test('shipped data: fallback values carry an id, clause, name, edition and the check_with_council flag', { skip: !ALL }, () => {
+  for (const key of ['NSW', 'NSW_INLAND', 'QLD']) {
+    for (const r of ALL.fallbacks[key].rules) {
+      assert.ok(r.id && r.clause && r.dcp && r.edition, key + ' rule metadata');
+      assert.equal(r.flag, 'check_with_council');
+    }
+  }
+  const p = pickRules(null, lotIn, { fallbacks: ALL.fallbacks });
+  assert.match(p.basis, /Housing Code/);
+  assert.equal(p.flag, 'check_with_council');
+  assert.ok(p.front.clause && p.front.edition && p.front.dcp);
+  assert.ok(p.ruleIds.every(Boolean));
+});
+
+test('shipped data: QLD QDC MP1.1 works for lots up to 450 m2 once the street type is known', { skip: !ALL }, () => {
+  const q = (o) => pickRulesDetailed(null, { state: 'QLD', zone: 'Low density residential', storeys: 1, cornerLot: false, lotAreaM2: 400, lotWidthM: 12, buildingHeightM: 4, streetType: 'access', ...o }, { fallbacks: ALL.fallbacks });
+  const a = q({}).picked;
+  assert.equal(a.basis, 'QDC MP1.1 (default; council planning scheme or the Queensland Housing Code may vary)');
+  assert.deepEqual([a.front.minM, a.side.minM, a.rear.minM], [3, 0.975, 1.5]);
+  assert.equal(a.flag, 'check_with_council');
+  const b = q({ streetType: 'collector', cornerLot: true, buildingHeightM: 6, lotWidthM: 15, lotAreaM2: 450 }).picked;
+  assert.deepEqual([b.front.minM, b.secondaryFront.minM, b.side.minM, b.rear.minM], [4, 2, 1.9, 2]);
+  assert.equal(q({ lotWidthM: 18 }).picked.side.minM, 1.5, 'A2(a) above 15 m frontage');
+  assert.equal(q({ lotWidthM: 10 }).picked.side.minM, 0.75);
+  assert.equal(q({ lotAreaM2: 451 }).picked, null, 'MP1.2 not verified');
+  const noStreet = q({ streetType: undefined });
+  assert.equal(noStreet.picked, null);
+  assert.match(noStreet.attempts.at(-1).reason, /streetType/);
+});
+
+test('shipped data: a rule recorded only for multi dwelling housing is not applied to a single dwelling', { skip: !ALL }, () => {
+  const cd = ALL.councils.find((c) => c.lga_slug === 'central-darling-shire-council');
+  const multi = cd.rules.filter((r) => r.appliesTo.includes('multi_dwelling'));
+  assert.ok(multi.length > 0);
+  assert.ok(multi.every((r) => !r.appliesTo.includes('dwelling')));
+});
+
+const m = (a) => a.map(([x, y]) => ({ x: x * 1000, y: y * 1000 }));
+const near = (env, exp) => env.length === exp.length && exp.every(([x, y]) => env.some((p) => Math.hypot(p.x - x * 1000, p.y - y * 1000) < 1e-3));
+
+test('a survey vertex on a straight frontage is one frontage, not a corner lot', () => {
+  const lot = m([[0, 0], [7, 0], [15, 0], [15, 40], [0, 40]]);
+  assert.deepEqual(classifyEdges(lot, [0, 1]), ['front', 'front', 'side', 'rear', 'side']);
+  assert.ok(near(buildEnvelope(lot, [0, 1], picked(4.5, 0.9, 6)), [[0.9, 4.5], [14.1, 4.5], [14.1, 34], [0.9, 34]]));
+});
+
+test('curved cul-de-sac head: the road edges are one frontage', () => {
+  const lot = m([[0, 0], [4, -1], [8, -1], [12, 0], [18, 35], [-6, 35]]);
+  assert.deepEqual(classifyEdges(lot, [0, 1, 2]), ['front', 'front', 'front', 'side', 'rear', 'side']);
+  assert.equal(frontageRuns(lot, [0, 1, 2]).length, 1);
+  assert.ok(buildEnvelope(lot, [0, 1, 2], picked(4.5, 0.9, 6)));
+});
+
+test('corner lot with a splay: the splay is not the primary frontage and takes the primary setback', () => {
+  // primary road on y = 0 (17 m), secondary road on x = 0 (32 m), 3 m by 3 m splay between them
+  const lot = m([[3, 0], [20, 0], [20, 35], [0, 35], [0, 3]]);
+  assert.deepEqual(classifyEdges(lot, [0, 3, 4]), ['front', 'side', 'rear', 'secondaryFront', 'front']);
+  const runs = frontageRuns(lot, [0, 3, 4]);
+  assert.equal(runs.filter((r) => r.splay).length, 1);
+  const env = buildEnvelope(lot, [0, 3, 4], picked(4.5, 0.9, 6, 2));
+  assert.ok(env);
+  for (const p of env) assert.ok(p.y >= 4500 - 1e-3 && p.x >= 2000 - 1e-3 && p.x <= 19100 + 1e-3 && p.y <= 29000 + 1e-3);
+  assert.equal(buildEnvelope(lot, [0, 3, 4], picked(4.5, 0.9, 6)), null, 'secondary setback required');
+});
+
+test('short boundary edges that vanish under the setbacks still give an envelope on a convex lot', () => {
+  const lot = m([[0, 0], [15, 0], [15, 38], [13, 40], [0, 40]]);
+  const env = buildEnvelope(lot, [0], picked(4.5, 0.9, 6));
+  assert.ok(env && env.every((p) => p.y <= 34000 + 1e-3 && p.x <= 14100 + 1e-3));
+  const dup = m([[0, 0], [15, 0], [15, 0], [15, 40], [0, 40]]);
+  assert.ok(near(buildEnvelope(dup, [0], picked(4.5, 0.9, 6)), [[0.9, 4.5], [14.1, 4.5], [14.1, 34], [0.9, 34]]));
+});
+
+test('skewed rear boundary is still the rear; a three sided lot has none', () => {
+  assert.deepEqual(classifyEdges(m([[0, 0], [15, 0], [15, 50], [0, 30]]), [0]), ['front', 'side', 'rear', 'side']);
+  assert.deepEqual(classifyEdges(m([[0, 0], [30, 0], [15, 40]]), [0]), ['front', 'side', 'side']);
+});
+
+test('no road edge or a bad edge index gives null, never a throw', () => {
+  assert.equal(buildEnvelope(rect, [], picked(6, 0.9, 3)), null);
+  assert.equal(buildEnvelope(rect, [9], picked(6, 0.9, 3)), null);
+  assert.equal(buildEnvelope(rect, undefined, picked(6, 0.9, 3)), null);
+  assert.deepEqual(classifyEdges(rect, []), [null, null, null, null]);
+});
+
+test('concave (L shaped and battle-axe) lots give a validated envelope inside the lot or null', () => {
+  const L = m([[0, 0], [20, 0], [20, 20], [40, 20], [40, 40], [0, 40]]);
+  const env = buildEnvelope(L, [0], picked(4.5, 0.9, 6));
+  assert.ok(env && envelopeArea(env) < envelopeArea(L));
+  assert.equal(buildEnvelope(L, [0], picked(4.5, 11, 6)), null, 'consumed');
 });

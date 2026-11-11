@@ -67,9 +67,12 @@
    "needsReview": "Flagged for review by the research agent",
    "corroboration": "Liverpool Plains CDC RU5 checklist states 4.5m for 300-1,500m2 and 10m over 1,500m2",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
-   "sources": []
+   "sources": [],
+   "id": "nsw-inland-code-001",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   },
   {
    "basisLabel": "SEPP Housing Code",
@@ -129,9 +132,12 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
-   "sources": []
+   "sources": [],
+   "id": "nsw-inland-code-002",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   },
   {
    "basisLabel": "SEPP Housing Code",
@@ -189,12 +195,15 @@
    "page": null,
    "quote": "Lot width at the building line | Minimum required setback from each side boundary",
    "confidence": "medium",
-   "needsReview": "Flagged for review by the research agent",
+   "needsReview": "Table minimum shown. Parts of a building more than 4.5 m above ground need a larger side setback (cl 3D.21(8) formula not captured)",
    "builtToBoundary": "cl 3D.21(9)(b): lot width at building line at least 6m not more than 8m; (10)(a) more than 8m not more than 12.5m; wall within 900mm max height 3.3m; length 20m or 50% of depth (6-10m wide), 10m (>10-12.5m)",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
-   "sources": []
+   "sources": [],
+   "id": "nsw-inland-code-003",
+   "flag": "check_with_council",
+   "flagReason": "Table minimum shown. Parts of a building more than 4.5 m above ground need a larger side setback (cl 3D.21(8) formula not captured)"
   },
   {
    "basisLabel": "SEPP Housing Code",
@@ -299,9 +308,12 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
-   "sources": []
+   "sources": [],
+   "id": "nsw-inland-code-004",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   },
   {
    "basisLabel": "SEPP Housing Code",
@@ -345,9 +357,12 @@
     "classifiedRoadSource": "Liverpool Plains checklist: '9m from a classified road'; cl 3D.21 per tool summary: greatest of other EPI setback or 9m"
    },
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://www5.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3d.21.html",
-   "sources": []
+   "sources": [],
+   "id": "nsw-inland-code-005",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   }
  ],
  "gaps": [
@@ -355,5 +370,6 @@
   "cl 3D.22 exceptions not read",
   "Currency unverified"
  ],
- "name": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code"
+ "name": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3D Inland Code",
+ "edition": "as retrieved 11/11/2026; currency against the in-force text not verified"
 }

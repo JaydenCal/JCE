@@ -3,12 +3,13 @@
 // Data shape: see setbacks-data/setback-rules.schema.json. One council file = { lga_slug, status, rules: [...] }.
 // Fallback chain (owner decision 11/11/2026): council DCP rule for the zone -> Codes SEPP Inland Code (NSW councils
 // with fallbackSet "NSW_INLAND") or Housing Code (other NSW) or QDC MP1.1 (QLD, lots up to 450 m2) -> null.
-// TODO: only 8 of the 69 Part 3D Inland Code LGAs are listed in the research; add the rest to INLAND in merge_research.py. Every result carries `basis` ("Council DCP" | "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)" | "QDC MP1.1 (default; council planning scheme or the Queensland Housing Code may vary)") and a source.
+// All 69 inland LGAs of Codes SEPP cl 3D.1(4) carry fallbackSet "NSW_INLAND" (merge_research.py INLAND_LGAS). Every result carries `basis` ("Council DCP" | "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)" | "QDC MP1.1 (default; council planning scheme or the Queensland Housing Code may vary)") and a source.
 //
 // Rule slot values (front, secondaryFront, side, rear, garage) are { minM, basis, note, rangeM, formula,
 // percent, bands?: [...] }. A band is { lotWidthMinM?, lotWidthMaxM?, lotAreaMinM2?, lotAreaMaxM2?,
 // buildingHeightMinM?, buildingHeightMaxM?, wallHeightMinM?, wallHeightMaxM?, storeys?, minM, note? }.
-// Band and condition bounds are inclusive.
+// Band and condition bounds are inclusive. A band or condition may also carry streetType ("access" | "collector",
+// QDC MP1.1 Table A1); it is matched against input.streetType and is undecided (no value) when that is not supplied.
 
 export const BASIS_LABELS = Object.freeze({ council: 'Council DCP', NSW: 'Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)', QLD: 'QDC MP1.1 (default; council planning scheme or the Queensland Housing Code may vary)',
   NSW_INLAND: 'Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)' });
@@ -71,6 +72,7 @@ function evalConds(c, input, keys) {
   if (c.cornerLot != null) {
     test(typeof input.cornerLot === 'boolean' ? c.cornerLot === input.cornerLot : undefined, 'cornerLot', 'corner');
   }
+  if (c.streetType) test(input.streetType ? norm(c.streetType) === norm(input.streetType) : undefined, 'streetType', 'street');
   if (c.landSizeMap) test(input.landSizeMap ? norm(c.landSizeMap) === norm(input.landSizeMap) : undefined, 'landSizeMap', 'lsm');
   if (c.precinct) {
     const p = norm(input.precinct);
@@ -243,7 +245,8 @@ function pickFrom(rules, input, basisLabel, dcpName) {
 
 /**
  * pickRules(rulesForCouncil, { zone, storeys, lotWidthM, lotAreaM2, cornerLot, use, ...optional }, options?)
- * Optional input: wallHeightM, buildingHeightM, precinct, landSizeMap, qualifiers[], neighbourSetbacksM[], state.
+ * Optional input: wallHeightM, buildingHeightM, precinct, landSizeMap, qualifiers[], neighbourSetbacksM[], state,
+ * streetType ("access" | "collector"; needed for the QLD QDC front setback).
  * options.fallbacks = { NSW: <rule file>, QLD: <rule file> } enables the fallback chain; the state comes from
  * input.state (default "NSW").
  * Returns { basis, state, front, secondaryFront, side, rear, garage, ruleIds, attempts, warnings } or null.
@@ -299,7 +302,8 @@ export function pickRulesDetailed(rulesForCouncil, input, options = {}) {
 }
 
 // ---------------------------------------------------------------- geometry
-const fmtPoint = (arrFmt, x, y) => (arrFmt ? [x, y] : { x, y });
+const r3 = (v) => Math.round(v * 1e6) / 1e6; // removes floating point noise from envelope coordinates
+const fmtPoint = (arrFmt, x, y) => (arrFmt ? [r3(x), r3(y)] : { x: r3(x), y: r3(y) });
 const px = (p) => (Array.isArray(p) ? p[0] : p.x);
 const py = (p) => (Array.isArray(p) ? p[1] : p.y);
 
@@ -330,26 +334,82 @@ function selfIntersects(pts) {
   return false;
 }
 
+const SAME_FRONTAGE_DEG = 30; // road edges that turn less than this between them are one frontage (bends, curves)
+const SPLAY_MAX_MM = 10000;   // a corner cut-off between two frontages is shorter than this
+
+/**
+ * Groups the road edges into frontages. Returns [{ edges: [i...], length, splay }].
+ * Consecutive road edges that turn less than 30 degrees are one frontage (an extra survey vertex on a straight
+ * frontage, or a curved cul-de-sac head). A short run with a longer frontage on both sides is a corner splay.
+ */
+export function frontageRuns(lotPolygonMm, roadEdgeIndices) {
+  const pts = lotPolygonMm.map((p) => ({ x: px(p), y: py(p) }));
+  const n = pts.length;
+  const road = [...new Set(roadEdgeIndices || [])].filter((i) => Number.isInteger(i) && i >= 0 && i < n).sort((a, b) => a - b);
+  if (!road.length) return [];
+  const vec = (i) => ({ x: pts[(i + 1) % n].x - pts[i].x, y: pts[(i + 1) % n].y - pts[i].y });
+  const len = (i) => Math.hypot(vec(i).x, vec(i).y);
+  const turnDeg = (i, j) => {
+    const a = vec(i); const b = vec(j);
+    const la = Math.hypot(a.x, a.y); const lb = Math.hypot(b.x, b.y);
+    if (la < 1e-9 || lb < 1e-9) return 0;
+    return (Math.acos(Math.max(-1, Math.min(1, (a.x * b.x + a.y * b.y) / (la * lb)))) * 180) / Math.PI;
+  };
+  const isRoad = new Set(road);
+  // start at a road edge whose previous edge is not a road edge, or turns away, so runs are not split at index 0
+  let start = road.find((i) => !isRoad.has((i - 1 + n) % n) || turnDeg((i - 1 + n) % n, i) >= SAME_FRONTAGE_DEG);
+  if (start == null) start = road[0];
+  const runs = [];
+  let cur = null;
+  for (let k = 0; k < n; k++) {
+    const i = (start + k) % n;
+    if (!isRoad.has(i)) { cur = null; continue; }
+    const prev = (i - 1 + n) % n;
+    if (cur && k > 0 && isRoad.has(prev) && turnDeg(prev, i) < SAME_FRONTAGE_DEG) cur.edges.push(i);
+    else { cur = { edges: [i], length: 0, splay: false, joinsPrev: k > 0 && isRoad.has(prev) }; runs.push(cur); }
+    cur.length += len(i);
+  }
+  // a splay: joined to a road run on both ends, shorter than both and under 10 m
+  for (let r = 0; r < runs.length; r++) {
+    const R = runs[r];
+    const before = runs[(r - 1 + runs.length) % runs.length];
+    const after = runs[(r + 1) % runs.length];
+    const first = R.edges[0]; const last = R.edges[R.edges.length - 1];
+    const joinedBefore = runs.length > 2 && before !== R && before.edges[before.edges.length - 1] === (first - 1 + n) % n;
+    const joinedAfter = runs.length > 2 && after !== R && after.edges[0] === (last + 1) % n;
+    if (joinedBefore && joinedAfter && R.length < SPLAY_MAX_MM && R.length < before.length && R.length < after.length) R.splay = true;
+  }
+  return runs.map(({ edges, length, splay }) => ({ edges, length, splay }));
+}
+
 /**
  * Classifies each edge i (from vertex i to i+1) as 'front' | 'secondaryFront' | 'side' | 'rear'.
- * frontEdgeIndices: edges touching the road. With more than one, the shortest is the primary frontage and the
- * others are secondary frontages (corner lot) unless secondaryEdgeIndices is given.
+ * frontEdgeIndices: edges touching a road. They are grouped into frontages (see frontageRuns). With more than one
+ * frontage the shortest is the primary frontage and the others are secondary frontages (corner lot), unless
+ * secondaryEdgeIndices is given. A corner splay takes the primary (larger) road setback and is never the primary
+ * frontage itself. With no usable road edge every entry is null.
  */
 export function classifyEdges(lotPolygonMm, frontEdgeIndices, secondaryEdgeIndices = null) {
   const pts = lotPolygonMm.map((p) => ({ x: px(p), y: py(p) }));
   const n = pts.length;
   const len = (i) => Math.hypot(pts[(i + 1) % n].x - pts[i].x, pts[(i + 1) % n].y - pts[i].y);
-  let fronts = [...new Set(frontEdgeIndices)];
+  const valid = (arr) => [...new Set(arr || [])].filter((i) => Number.isInteger(i) && i >= 0 && i < n);
+  let fronts = valid(frontEdgeIndices);
   let secondaries = [];
-  if (secondaryEdgeIndices) {
-    secondaries = [...new Set(secondaryEdgeIndices)];
-    fronts = fronts.filter((i) => !secondaries.includes(i));
-  } else if (fronts.length > 1) {
-    const sorted = [...fronts].sort((a, b) => len(a) - len(b));
-    fronts = [sorted[0]];
-    secondaries = sorted.slice(1);
-  }
   const kinds = new Array(n).fill(null);
+  if (secondaryEdgeIndices) {
+    secondaries = valid(secondaryEdgeIndices);
+    fronts = fronts.filter((i) => !secondaries.includes(i));
+  } else {
+    const runs = frontageRuns(lotPolygonMm, fronts);
+    const main = runs.filter((r) => !r.splay);
+    if (main.length > 1) {
+      const primary = main.reduce((a, b) => (b.length < a.length ? b : a));
+      fronts = [...primary.edges, ...runs.filter((r) => r.splay).flatMap((r) => r.edges)];
+      secondaries = main.filter((r) => r !== primary).flatMap((r) => r.edges);
+    }
+  }
+  if (!fronts.length && !secondaries.length) return kinds;
   fronts.forEach((i) => { kinds[i] = 'front'; });
   secondaries.forEach((i) => { kinds[i] = 'secondaryFront'; });
   const road = new Set([...fronts, ...secondaries]);
@@ -359,6 +419,7 @@ export function classifyEdges(lotPolygonMm, frontEdgeIndices, secondaryEdgeIndic
   for (const i of ref) if (len(i) > len(best)) best = i;
   const fx = (pts[(best + 1) % n].x - pts[best].x) / (len(best) || 1);
   const fy = (pts[(best + 1) % n].y - pts[best].y) / (len(best) || 1);
+  const open = [];
   for (let i = 0; i < n; i++) {
     if (kinds[i]) continue;
     const prev = (i - 1 + n) % n;
@@ -367,34 +428,87 @@ export function classifyEdges(lotPolygonMm, frontEdgeIndices, secondaryEdgeIndic
     const L = len(i) || 1;
     const dx = (pts[(i + 1) % n].x - pts[i].x) / L;
     const dy = (pts[(i + 1) % n].y - pts[i].y) / L;
-    const parallel = Math.abs(dx * fx + dy * fy) >= Math.SQRT1_2;
+    const parallel = Math.abs(dx * fx + dy * fy) >= Math.SQRT1_2 - 1e-9;
     kinds[i] = adjacent ? 'side' : (parallel ? 'rear' : 'side');
+    if (!adjacent) open.push(i);
+  }
+  // A skewed rear boundary is not parallel to the frontage. When nothing was classed as rear, the boundary not
+  // touching the frontage whose midpoint is farthest from it is the rear (a three-sided lot has none).
+  if (!kinds.includes('rear') && open.length) {
+    const o = pts[best];
+    const dist = (i) => Math.abs(((pts[i].x + pts[(i + 1) % n].x) / 2 - o.x) * -fy + ((pts[i].y + pts[(i + 1) % n].y) / 2 - o.y) * fx);
+    kinds[open.reduce((a, b) => (dist(b) > dist(a) ? b : a))] = 'rear';
   }
   return kinds;
 }
 
+// Clips a polygon to the half plane { p : (p - o) . nrm >= 0 } (Sutherland-Hodgman, one plane).
+function clipHalfPlane(poly, o, nrm) {
+  const out = [];
+  const side = (p) => (p.x - o.x) * nrm.x + (p.y - o.y) * nrm.y;
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i]; const b = poly[(i + 1) % poly.length];
+    const sa = side(a); const sb = side(b);
+    if (sa >= 0) out.push(a);
+    if ((sa > 0 && sb < 0) || (sa < 0 && sb > 0)) {
+      const t = sa / (sa - sb);
+      out.push({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+    }
+  }
+  return out;
+}
+
+function isConvex(pts, sgn) {
+  const n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const a = pts[i]; const b = pts[(i + 1) % n]; const c = pts[(i + 2) % n];
+    const cr = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x);
+    const scale = Math.hypot(b.x - a.x, b.y - a.y) * Math.hypot(c.x - b.x, c.y - b.y) || 1;
+    if ((cr * sgn) / scale < -1e-6) return false;
+  }
+  return true;
+}
+
 /**
  * buildEnvelope(lotPolygonMm, frontEdgeIndices, picked, options?)
- * Offsets each edge inward by its own setback (metres in `picked`, polygon in millimetres) and joins the
- * offset lines. Returns the envelope polygon (same point format as the input) or null when the setbacks
- * consume the lot, the offset self-intersects, or a required setback is missing.
- * Reliable for convex lots and mildly concave ones; the result is validated and null is returned when invalid.
+ * Offsets each edge inward by its own setback (metres in `picked`, polygon in millimetres).
+ * Convex lots (the usual case, including extra vertices on straight boundaries and corner splays): the envelope is
+ * the lot clipped by every edge's setback line, which is exact and copes with short edges that vanish.
+ * Concave lots: adjacent offset lines are joined and the result is validated.
+ * Returns the envelope polygon (same point format as the input) or null when there is no road edge, the setbacks
+ * consume the lot, the offset is invalid, or a required setback is missing. Never throws on bad edge indices.
  */
 export function buildEnvelope(lotPolygonMm, frontEdgeIndices, picked, options = {}) {
   if (!picked || !Array.isArray(lotPolygonMm) || lotPolygonMm.length < 3) return null;
   const arrFmt = Array.isArray(lotPolygonMm[0]);
   const pts = lotPolygonMm.map((p) => ({ x: px(p), y: py(p) }));
   const n = pts.length;
-  const kinds = classifyEdges(lotPolygonMm, frontEdgeIndices, options.secondaryEdgeIndices || null);
+  if (pts.some((p) => !isNum(p.x) || !isNum(p.y))) return null;
+  const kinds = classifyEdges(lotPolygonMm, frontEdgeIndices || [], options.secondaryEdgeIndices || null);
+  if (!kinds.includes('front') && !kinds.includes('secondaryFront')) return null;
   const need = { front: picked.front, secondaryFront: picked.secondaryFront, side: picked.side, rear: picked.rear };
   const d = kinds.map((k) => {
     const s = need[k];
-    return s && isNum(s.minM) ? s.minM * 1000 : null;
+    return s && isNum(s.minM) && s.minM >= 0 ? s.minM * 1000 : null;
   });
   if (d.some((v) => v == null)) return null;
   const area = signedArea(pts);
   if (Math.abs(area) < 1e-6) return null;
   const sgn = area > 0 ? 1 : -1; // CCW positive: inward normal is the left of the direction
+  if (isConvex(pts, sgn)) {
+    let poly = pts;
+    for (let i = 0; i < n && poly.length >= 3; i++) {
+      const a = pts[i]; const b = pts[(i + 1) % n];
+      const L = Math.hypot(b.x - a.x, b.y - a.y);
+      if (L < 1e-9) continue; // repeated vertex: no boundary, no constraint
+      const nrm = { x: (-(b.y - a.y) / L) * sgn, y: ((b.x - a.x) / L) * sgn };
+      poly = clipHalfPlane(poly, { x: a.x + nrm.x * d[i], y: a.y + nrm.y * d[i] }, nrm);
+    }
+    // drop repeated points left by the clipping
+    poly = poly.filter((p, i) => { const q = poly[(i + 1) % poly.length]; return Math.hypot(q.x - p.x, q.y - p.y) > 1e-6; });
+    if (poly.length < 3 || Math.abs(signedArea(poly)) < 1) return null; // under 1 mm2: consumed
+    return poly.map((p) => fmtPoint(arrFmt, p.x, p.y));
+  }
   const lines = [];
   for (let i = 0; i < n; i++) {
     const a = pts[i]; const b = pts[(i + 1) % n];
@@ -430,6 +544,11 @@ export function buildEnvelope(lotPolygonMm, frontEdgeIndices, picked, options = 
     return c;
   };
   if (!out.every((p) => inside(p) || Math.min(...pts.map((q) => Math.hypot(q.x - p.x, q.y - p.y))) < 1e-6)) return null;
+  // each inset edge must still run the same way as its boundary (an edge that flipped has been consumed)
+  for (let i = 0; i < n; i++) {
+    const p = out[i]; const q = out[(i + 1) % out.length];
+    if (out.length === n && (q.x - p.x) * lines[i].d.x + (q.y - p.y) * lines[i].d.y < -1e-6) return null;
+  }
   return out.map((p) => fmtPoint(arrFmt, p.x, p.y));
 }
 

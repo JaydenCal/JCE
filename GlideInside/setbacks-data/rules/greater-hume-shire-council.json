@@ -489,20 +489,21 @@
   "recordsNotModelled": 5,
   "otherSetbackKeysNotModelled": 3
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (greater-hume-shire-council-002, greater-hume-shire-council-003))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (greater-hume-shire-council-002, greater-hume-shire-council-003))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (greater-hume-shire-council-002, greater-hume-shire-council-003))"
   },
   "R5": {
@@ -512,7 +513,7 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (greater-hume-shire-council-002, greater-hume-shire-council-003))"
   }
  }

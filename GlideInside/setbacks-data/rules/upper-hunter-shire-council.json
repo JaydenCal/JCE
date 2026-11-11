@@ -156,8 +156,7 @@
    ],
    "appliesTo": [
     "residential_flat_building",
-    "multi_dwelling",
-    "dwelling"
+    "multi_dwelling"
    ],
    "conditions": {},
    "conditionText": "Table 1, R1 only, multi-dwelling housing, residential flat buildings and attached dwellings, primary frontage",
@@ -953,8 +952,7 @@
    ],
    "appliesTo": [
     "residential_flat_building",
-    "multi_dwelling",
-    "dwelling"
+    "multi_dwelling"
    ],
    "conditions": {
     "storeys": 1
@@ -1003,8 +1001,7 @@
    ],
    "appliesTo": [
     "residential_flat_building",
-    "multi_dwelling",
-    "dwelling"
+    "multi_dwelling"
    ],
    "conditions": {
     "storeys": 2
@@ -1099,8 +1096,7 @@
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {
     "storeys": 1
@@ -1148,8 +1144,7 @@
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {
     "storeys": 2
@@ -1197,8 +1192,7 @@
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {},
    "conditionText": "Table 2, single and secondary dwellings",
@@ -1529,31 +1523,32 @@
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 2
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
-   "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (upper-hunter-shire-council-004, upper-hunter-shire-council-005)); side (conflicting rules of equal specificity (upper-hunter-shire-council-013, upper-hunter-shire-council-018, upper-hunter-shire-council-021))"
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (conflicting rules of equal specificity (upper-hunter-shire-council-013, upper-hunter-shire-council-018, upper-hunter-shire-council-021))"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (conflicting rules of equal specificity (upper-hunter-shire-council-013, upper-hunter-shire-council-018, upper-hunter-shire-council-021))"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
   },
   "R5": {
-   "dcpDeterminable": false,
-   "basisWithFallbacks": null,
-   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (upper-hunter-shire-council-013, upper-hunter-shire-council-018, upper-hunter-shire-council-021))"
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
   },
   "RU5": {
-   "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (upper-hunter-shire-council-013, upper-hunter-shire-council-018, upper-hunter-shire-council-021))"
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
   }
  }
 }

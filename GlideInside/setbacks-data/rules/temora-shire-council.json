@@ -293,6 +293,53 @@
     "*"
    ],
    "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Multi unit housing: rear of dwelling",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     33605
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    33605
+   ],
+   "evidence": [
+    {
+     "id": 33605,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "rear of dwelling setback is three (3) metres",
+     "clause": "3. Setbacks to boundaries",
+     "page": 8,
+     "source_file": "DCP/multi-unit-housing.pdf",
+     "condition": "Multi unit housing: rear of dwelling",
+     "edition": "Temora Shire DCP 2012"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "rear of dwelling setback is three (3) metres",
+   "clause": "3. Setbacks to boundaries",
+   "page": 8,
+   "source_file": "DCP/multi-unit-housing.pdf",
+   "dcp": "Temora Shire Development Control Plan 2012, Section C Development Controls (chapters saved individually; edition otherwise UNVERIFIED); draft Residential and Industrial DCP chapters exhibited 24/04/2025 to 04/06/2025 per council minutes, industrial chapter text saved",
+   "edition": "Temora Shire DCP 2012"
+  },
+  {
+   "id": "temora-shire-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
     "multi_dwelling"
    ],
    "conditions": {
@@ -336,7 +383,7 @@
    "edition": "Temora Shire DCP 2012"
   },
   {
-   "id": "temora-shire-council-007",
+   "id": "temora-shire-council-008",
    "zones": [
     "*"
    ],
@@ -384,7 +431,7 @@
    "edition": "Temora Shire DCP 2012"
   },
   {
-   "id": "temora-shire-council-008",
+   "id": "temora-shire-council-009",
    "zones": [
     "*"
    ],
@@ -392,17 +439,7 @@
     "multi_dwelling"
    ],
    "conditions": {},
-   "conditionText": [
-    "Multi unit housing",
-    "Multi unit housing: rear of dwelling"
-   ],
-   "rear": {
-    "minM": 3.0,
-    "basis": "fixed",
-    "sources": [
-     33605
-    ]
-   },
+   "conditionText": "Multi unit housing",
    "side": {
     "minM": 0.9,
     "printed": "900 mm",
@@ -413,23 +450,12 @@
    },
    "front": null,
    "secondaryFront": null,
+   "rear": null,
    "garage": null,
    "sources": [
-    33605,
     33606
    ],
    "evidence": [
-    {
-     "id": 33605,
-     "parameter": "rear_setback",
-     "slot": "rear",
-     "quote": "rear of dwelling setback is three (3) metres",
-     "clause": "3. Setbacks to boundaries",
-     "page": 8,
-     "source_file": "DCP/multi-unit-housing.pdf",
-     "condition": "Multi unit housing: rear of dwelling",
-     "edition": "Temora Shire DCP 2012"
-    },
     {
      "id": 33606,
      "parameter": "side_setback",
@@ -444,7 +470,7 @@
    ],
    "confidence": "medium",
    "needsReview": null,
-   "quote": "rear of dwelling setback is three (3) metres",
+   "quote": "side setbacks are 900mm",
    "clause": "3. Setbacks to boundaries",
    "page": 8,
    "source_file": "DCP/multi-unit-housing.pdf",
@@ -452,7 +478,7 @@
    "edition": "Temora Shire DCP 2012"
   },
   {
-   "id": "temora-shire-council-009",
+   "id": "temora-shire-council-010",
    "zones": [
     "IN*"
    ],
@@ -568,7 +594,7 @@
    "rear": true,
    "secondaryFront": false,
    "garage": false,
-   "rules": 4
+   "rules": 5
   },
   "IN*": {
    "front": false,
@@ -585,25 +611,26 @@
  "needsPrecinct": false,
  "counts": {
   "records": 12,
-  "rules": 9,
+  "rules": 10,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 9
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot)"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot)"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot)"
   },
   "R5": {
    "dcpDeterminable": true,
@@ -612,8 +639,8 @@
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot)"
   }
  }
 }

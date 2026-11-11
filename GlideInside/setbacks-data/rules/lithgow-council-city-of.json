@@ -2211,30 +2211,31 @@
   "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 4
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (lithgow-council-city-of-001, lithgow-council-city-of-002, lithgow-council-city-of-026)); rear (conflicting rules of equal specificity (lithgow-council-city-of-003, lithgow-council-city-of-026))"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (lithgow-council-city-of-005, lithgow-council-city-of-010)); side (conflicting rules of equal specificity (lithgow-council-city-of-001, lithgow-council-city-of-002, lithgow-council-city-of-026)); rear (conflicting rules of equal specificity (lithgow-council-city-of-003, lithgow-council-city-of-026))"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
   },
   "R5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (lithgow-council-city-of-017, lithgow-council-city-of-026)); rear (conflicting rules of equal specificity (lithgow-council-city-of-017, lithgow-council-city-of-026))"
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (lithgow-council-city-of-018, lithgow-council-city-of-026))"
   }
  }

@@ -444,6 +444,53 @@
     "*"
    ],
    "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "townhouses where rear dwellings have primary pedestrian access along the side boundary",
+   "side": {
+    "minM": 3.5,
+    "basis": "fixed",
+    "sources": [
+     25759
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25759
+   ],
+   "evidence": [
+    {
+     "id": 25759,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a minimum 3.5 metre side setback must be provided",
+     "clause": "3.4.1.2 C.12",
+     "page": 36,
+     "source_file": "DCP/dcp-part-3-residential-development.txt",
+     "condition": "townhouses where rear dwellings have primary pedestrian access along the side boundary",
+     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "a minimum 3.5 metre side setback must be provided",
+   "clause": "3.4.1.2 C.12",
+   "page": 36,
+   "source_file": "DCP/dcp-part-3-residential-development.txt",
+   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
+   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
+  },
+  {
+   "id": "parramatta-council-of-the-city-of-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
     "multi_dwelling"
    ],
    "conditions": {
@@ -489,7 +536,7 @@
    "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
   },
   {
-   "id": "parramatta-council-of-the-city-of-009",
+   "id": "parramatta-council-of-the-city-of-010",
    "zones": [
     "*"
    ],
@@ -541,7 +588,7 @@
    "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
   },
   {
-   "id": "parramatta-council-of-the-city-of-010",
+   "id": "parramatta-council-of-the-city-of-011",
    "zones": [
     "*"
    ],
@@ -674,7 +721,7 @@
    "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
   },
   {
-   "id": "parramatta-council-of-the-city-of-011",
+   "id": "parramatta-council-of-the-city-of-012",
    "zones": [
     "*"
    ],
@@ -722,7 +769,7 @@
    "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "parramatta-council-of-the-city-of-012",
+   "id": "parramatta-council-of-the-city-of-013",
    "zones": [
     "*"
    ],
@@ -769,54 +816,6 @@
    "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)",
    "flag": "check_with_council",
    "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
-  },
-  {
-   "id": "parramatta-council-of-the-city-of-013",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {},
-   "conditionText": "townhouses where rear dwellings have primary pedestrian access along the side boundary",
-   "side": {
-    "minM": 3.5,
-    "basis": "fixed",
-    "sources": [
-     25759
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    25759
-   ],
-   "evidence": [
-    {
-     "id": 25759,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "a minimum 3.5 metre side setback must be provided",
-     "clause": "3.4.1.2 C.12",
-     "page": 36,
-     "source_file": "DCP/dcp-part-3-residential-development.txt",
-     "condition": "townhouses where rear dwellings have primary pedestrian access along the side boundary",
-     "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
-   "quote": "a minimum 3.5 metre side setback must be provided",
-   "clause": "3.4.1.2 C.12",
-   "page": 36,
-   "source_file": "DCP/dcp-part-3-residential-development.txt",
-   "dcp": "Parramatta Development Control Plan 2023 (Parts 1 to 12; Amendments 1 to 12, latest in force 17/06/2026); original adoption date UNVERIFIED",
-   "edition": "Parramatta DCP 2023 (amendments to No. 12, in force 17/06/2026)",
-   "flag": "check_with_council",
-   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "parramatta-council-of-the-city-of-014",
@@ -889,8 +888,7 @@
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {
     "storeys": 1
@@ -957,8 +955,7 @@
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {},
    "conditionText": "corner lots, secondary dwellings",
@@ -1081,29 +1078,29 @@
  },
  "zoneProbe": {
   "R1": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parramatta-council-of-the-city-of-006, parramatta-council-of-the-city-of-008)); rear"
   },
   "R2": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parramatta-council-of-the-city-of-006, parramatta-council-of-the-city-of-008)); rear"
   },
   "R3": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parramatta-council-of-the-city-of-006, parramatta-council-of-the-city-of-008)); rear"
   },
   "R5": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parramatta-council-of-the-city-of-006, parramatta-council-of-the-city-of-008)); rear"
   },
   "RU5": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (parramatta-council-of-the-city-of-006, parramatta-council-of-the-city-of-008)); rear"
   }
  }
 }

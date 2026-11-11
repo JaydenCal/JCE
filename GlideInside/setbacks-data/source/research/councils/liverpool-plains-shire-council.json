@@ -1,0 +1,221 @@
+{
+  "lga_slug": "liverpool-plains-shire-council",
+  "council": "Liverpool Plains Shire Council",
+  "dcp": {
+    "name": "Development Control Plan (Amendment No. 4)",
+    "url": "https://shared-drupal-s3fs.s3-ap-southeast-2.amazonaws.com/master-test/fapub_pdf/DCP-CP/LIVERPOOL+PLAINS/Development+Control+Plan+-+Amdt+No.+4+-+Adopted+26+February+2020_S-1407.pdf",
+    "adopted": "26/02/2020"
+  },
+  "status": "partial",
+  "rules": [
+    {
+      "zones": [
+        "R1"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": 4.5,
+        "basis": "fixed",
+        "note": "Dwelling street setback 4.5m (R1)."
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": null,
+        "note": "Table gives side/rear as 'BCA Requirements' for lots <800m2, 800-2000m2, >2000m2; no metre value stated in the DCP."
+      },
+      "rear": {
+        "minM": null,
+        "note": "'BCA Requirements', no metre value stated."
+      },
+      "garage": {
+        "minM": 5.5,
+        "behindBuildingLineM": 1.0,
+        "note": "Garage at least 1m behind dwelling building line where dwelling is 4.5m or more from street; if dwelling is under 4.5m from primary road garage must be at least 5.5m from that boundary."
+      },
+      "sourceUrl": "https://shared-drupal-s3fs.s3-ap-southeast-2.amazonaws.com/master-test/fapub_pdf/DCP-CP/LIVERPOOL+PLAINS/Development+Control+Plan+-+Amdt+No.+4+-+Adopted+26+February+2020_S-1407.pdf",
+      "document": "Liverpool Plains Shire Council Development Control Plan (Amendment No. 4, adopted 26 February 2020)",
+      "clause": "cl 3.1.1 Building setbacks (General Housing), Note 2",
+      "page": "pp 11-12",
+      "quote": "be at least 1m behind the building line of the dwelling house",
+      "confidence": "medium",
+      "needsReview": true,
+      "reviewReason": "Numbers read via document-extraction tool from the cl 3.1.1 table (pp 11-12); quote is the nearest verbatim fragment returned and does not cover every number. Verify against the PDF.",
+      "cornerNote": "Note 2 (p 12): a 4.5m setback is permissible between the garage side wall and the primary street frontage where the garage faces a secondary frontage. No general secondary-street setback value for dwellings found."
+    },
+    {
+      "zones": [
+        "RU5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": 6.0,
+        "basis": "fixed",
+        "note": "Village zone street setback 6m."
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": null,
+        "note": "'BCA Requirements'"
+      },
+      "rear": {
+        "minM": null,
+        "note": "'BCA Requirements'"
+      },
+      "garage": {
+        "minM": null,
+        "note": "No separate garage figure extracted for RU5."
+      },
+      "sourceUrl": "https://shared-drupal-s3fs.s3-ap-southeast-2.amazonaws.com/master-test/fapub_pdf/DCP-CP/LIVERPOOL+PLAINS/Development+Control+Plan+-+Amdt+No.+4+-+Adopted+26+February+2020_S-1407.pdf",
+      "document": "Liverpool Plains Shire Council Development Control Plan (Amendment No. 4, adopted 26 February 2020)",
+      "clause": "cl 3.1.1 Building setbacks (General Housing)",
+      "page": "pp 11-12",
+      "quote": "RU5 (Village) street setback 6m; side/rear per BCA",
+      "confidence": "low",
+      "needsReview": true,
+      "reviewReason": "Numbers read via document-extraction tool from the cl 3.1.1 table (pp 11-12); quote is the nearest verbatim fragment returned and does not cover every number. Verify against the PDF. For this rule the quote is a paraphrase by the extraction tool, not verified verbatim."
+    },
+    {
+      "zones": [
+        "RU1"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": 20.0,
+        "basis": "fixed",
+        "note": "Primary Production street setback 20m."
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": 10.0,
+        "note": "Side/rear 10m."
+      },
+      "rear": {
+        "minM": 10.0,
+        "note": "Side/rear 10m."
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://shared-drupal-s3fs.s3-ap-southeast-2.amazonaws.com/master-test/fapub_pdf/DCP-CP/LIVERPOOL+PLAINS/Development+Control+Plan+-+Amdt+No.+4+-+Adopted+26+February+2020_S-1407.pdf",
+      "document": "Liverpool Plains Shire Council Development Control Plan (Amendment No. 4, adopted 26 February 2020)",
+      "clause": "cl 3.1.1 Building setbacks (General Housing)",
+      "page": "pp 11-12",
+      "quote": "RU1 (Primary Production) street setback 20m; side/rear 10m",
+      "confidence": "low",
+      "needsReview": true,
+      "reviewReason": "Numbers read via document-extraction tool from the cl 3.1.1 table (pp 11-12); quote is the nearest verbatim fragment returned and does not cover every number. Verify against the PDF. Quote is a paraphrase by the extraction tool."
+    },
+    {
+      "zones": [
+        "R5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": 20.0,
+        "basis": "fixed",
+        "note": "Large Lot Residential street setback 20m."
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": 10.0,
+        "note": "Side/rear 10m."
+      },
+      "rear": {
+        "minM": 10.0,
+        "note": "Side/rear 10m."
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://shared-drupal-s3fs.s3-ap-southeast-2.amazonaws.com/master-test/fapub_pdf/DCP-CP/LIVERPOOL+PLAINS/Development+Control+Plan+-+Amdt+No.+4+-+Adopted+26+February+2020_S-1407.pdf",
+      "document": "Liverpool Plains Shire Council Development Control Plan (Amendment No. 4, adopted 26 February 2020)",
+      "clause": "cl 3.1.1 Building setbacks (General Housing)",
+      "page": "pp 11-12",
+      "quote": "R5 (Large Lot Residential) street setback 20m; side/rear 10m",
+      "confidence": "low",
+      "needsReview": true,
+      "reviewReason": "Numbers read via document-extraction tool from the cl 3.1.1 table (pp 11-12); quote is the nearest verbatim fragment returned and does not cover every number. Verify against the PDF. Quote is a paraphrase; the tool also reported a garbled lot-size annotation ('over 2ha and over 40ha') that was not interpreted."
+    },
+    {
+      "zones": [
+        "R1"
+      ],
+      "appliesTo": "dual_occupancy",
+      "conditions": {
+        "storeys": 1
+      },
+      "front": {
+        "minM": 4.5,
+        "basis": "fixed",
+        "note": "Street 4.5m; garage 5.5m."
+      },
+      "secondaryFront": {
+        "minM": 2.0,
+        "note": "Secondary frontage may be 2m for up to 20% of building length subject to conditions (p 17)."
+      },
+      "side": {
+        "minM": 1.0,
+        "note": "1m single storey (675mm eave allowance); 2m two storey (1,125mm eave allowance)."
+      },
+      "rear": {
+        "minM": 1.0,
+        "note": "As side."
+      },
+      "garage": {
+        "minM": 5.5
+      },
+      "sourceUrl": "https://shared-drupal-s3fs.s3-ap-southeast-2.amazonaws.com/master-test/fapub_pdf/DCP-CP/LIVERPOOL+PLAINS/Development+Control+Plan+-+Amdt+No.+4+-+Adopted+26+February+2020_S-1407.pdf",
+      "document": "Liverpool Plains Shire Council Development Control Plan (Amendment No. 4, adopted 26 February 2020)",
+      "clause": "cl 3.2.1 Residential dual occupancy",
+      "page": "pp 16-17",
+      "quote": "the setback to the secondary frontage is permitted at 2 metres",
+      "confidence": "medium",
+      "needsReview": true,
+      "reviewReason": "Numbers read via document-extraction tool from the cl 3.1.1 table (pp 11-12); quote is the nearest verbatim fragment returned and does not cover every number. Verify against the PDF.",
+      "twoStoreySideRearM": 2.0
+    },
+    {
+      "zones": [
+        "RU5"
+      ],
+      "appliesTo": "dual_occupancy",
+      "conditions": {},
+      "front": {
+        "minM": 6.0,
+        "basis": "fixed",
+        "note": "Street 6m."
+      },
+      "secondaryFront": null,
+      "side": {
+        "minM": 3.0,
+        "note": "3m single storey; 5m two storey."
+      },
+      "rear": {
+        "minM": 3.0,
+        "note": "3m single storey; 5m two storey."
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://shared-drupal-s3fs.s3-ap-southeast-2.amazonaws.com/master-test/fapub_pdf/DCP-CP/LIVERPOOL+PLAINS/Development+Control+Plan+-+Amdt+No.+4+-+Adopted+26+February+2020_S-1407.pdf",
+      "document": "Liverpool Plains Shire Council Development Control Plan (Amendment No. 4, adopted 26 February 2020)",
+      "clause": "cl 3.2.1 Residential dual occupancy",
+      "page": "pp 16-17",
+      "quote": "RU5 (Village) street 6m; side/rear 3m (single storey) or 5m (two storey)",
+      "confidence": "low",
+      "needsReview": true,
+      "reviewReason": "Numbers read via document-extraction tool from the cl 3.1.1 table (pp 11-12); quote is the nearest verbatim fragment returned and does not cover every number. Verify against the PDF. Quote is a paraphrase.",
+      "twoStoreySideRearM": 5.0
+    }
+  ],
+  "gaps": [
+    "Side and rear setbacks for dwellings are expressed as 'BCA Requirements' with no metre value; fall back to BCA/NCC separation or the Inland Code (Part 3D) for CDC.",
+    "Text read only to character 100,000 of 116,364 (to about cl 4.3.9); remaining pages not read.",
+    "No secondary (corner) street setback value for single dwellings."
+  ],
+  "notes": "Earlier collection noted the DCP text was unreadable; it was readable through WebFetch from the NSW Planning Portal bucket. The Liverpool Plains CDC RU5 checklist (https://www.liverpoolplains.nsw.gov.au/files/assets/public/v/1/cdc_ru5_new_dwellingsadditions_checklist.pdf) uses SEPP Part 3D Inland Code figures, not the DCP. Part 3D Inland Code of the Codes SEPP applies to this LGA (named in cl 3D.1(4)); see fallback/nsw-inland-code.json. Not a DCP control."
+}

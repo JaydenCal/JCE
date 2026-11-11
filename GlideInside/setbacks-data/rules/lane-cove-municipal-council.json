@@ -123,7 +123,8 @@
     "*"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "multi_dwelling",
+    "dwelling"
    ],
    "conditions": {
     "storeys": 1
@@ -171,7 +172,8 @@
     "*"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "multi_dwelling",
+    "dwelling"
    ],
    "conditions": {
     "storeys": 2
@@ -632,27 +634,27 @@
   "R1": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R2": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R3": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R5": {
    "dcpDeterminable": false,
    "basisWithFallbacks": null,
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "RU5": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   }
  }
 }

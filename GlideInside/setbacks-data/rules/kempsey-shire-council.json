@@ -1484,7 +1484,52 @@
    ],
    "appliesTo": [
     "secondary_dwelling",
-    "dwelling"
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "D2.4 Secondary Dwellings: attached garages from property boundary",
+   "garage": {
+    "minM": 6.0,
+    "sources": [
+     17536
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    17536
+   ],
+   "evidence": [
+    {
+     "id": 17536,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "are setback a minimum 6 metres from the property",
+     "clause": "Table D2.10, 1.2f",
+     "page": 78,
+     "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+     "condition": "D2.4 Secondary Dwellings: attached garages from property boundary",
+     "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "are setback a minimum 6 metres from the property",
+   "clause": "Table D2.10, 1.2f",
+   "page": 78,
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
+  },
+  {
+   "id": "kempsey-shire-council-027",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "secondary_dwelling"
    ],
    "conditions": {
     "level": "upper"
@@ -1527,13 +1572,12 @@
    "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
-   "id": "kempsey-shire-council-027",
+   "id": "kempsey-shire-council-028",
    "zones": [
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {
     "storeys": 1
@@ -1577,13 +1621,12 @@
    "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
-   "id": "kempsey-shire-council-028",
+   "id": "kempsey-shire-council-029",
    "zones": [
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {},
    "conditionText": "D2.4 Secondary Dwellings: rear boundaries",
@@ -1618,52 +1661,6 @@
    "needsReview": null,
    "quote": "A minimum setback of 3 metres for rear",
    "clause": "Table D2.10, 1.2e",
-   "page": 78,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
-   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
-   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
-  },
-  {
-   "id": "kempsey-shire-council-029",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "secondary_dwelling",
-    "garage"
-   ],
-   "conditions": {},
-   "conditionText": "D2.4 Secondary Dwellings: attached garages from property boundary",
-   "garage": {
-    "minM": 6.0,
-    "sources": [
-     17536
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    17536
-   ],
-   "evidence": [
-    {
-     "id": 17536,
-     "parameter": "garage_setback",
-     "slot": "garage",
-     "quote": "are setback a minimum 6 metres from the property",
-     "clause": "Table D2.10, 1.2f",
-     "page": 78,
-     "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
-     "condition": "D2.4 Secondary Dwellings: attached garages from property boundary",
-     "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "are setback a minimum 6 metres from the property",
-   "clause": "Table D2.10, 1.2f",
    "page": 78,
    "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
    "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
@@ -2196,12 +2193,12 @@
   "R5": {
    "dcpDeterminable": false,
    "basisWithFallbacks": null,
-   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (kempsey-shire-council-005, kempsey-shire-council-011, kempsey-shire-council-027))"
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (kempsey-shire-council-005, kempsey-shire-council-011))"
   },
   "RU5": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (kempsey-shire-council-011, kempsey-shire-council-027, kempsey-shire-council-035)); rear (conflicting rules of equal specificity (kempsey-shire-council-011, kempsey-shire-council-035))"
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (kempsey-shire-council-011, kempsey-shire-council-035)); rear (conflicting rules of equal specificity (kempsey-shire-council-011, kempsey-shire-council-035))"
   }
  }
 }

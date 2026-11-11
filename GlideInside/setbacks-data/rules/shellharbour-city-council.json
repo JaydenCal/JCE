@@ -875,7 +875,8 @@
     "*"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "multi_dwelling",
+    "dwelling"
    ],
    "conditions": {
     "storeys": 2

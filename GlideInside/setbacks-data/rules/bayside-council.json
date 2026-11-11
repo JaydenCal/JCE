@@ -355,7 +355,54 @@
    ],
    "appliesTo": [
     "multi_dwelling",
-    "dwelling"
+    "garage"
+   ],
+   "conditions": {},
+   "conditionText": "Medium density residential (attached dwellings, multi-dwelling housing): garages fronting the street: minimum from front boundary",
+   "garage": {
+    "minM": 6.0,
+    "sources": [
+     2765
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "sources": [
+    2765
+   ],
+   "evidence": [
+    {
+     "id": 2765,
+     "parameter": "garage_setback",
+     "slot": "garage",
+     "quote": "6m from the front boundary if the garage",
+     "clause": "5.2.3 Setbacks C9",
+     "page": 211,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Medium density residential (attached dwellings, multi-dwelling housing): garages fronting the street: minimum from front boundary",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
+   "quote": "6m from the front boundary if the garage",
+   "clause": "5.2.3 Setbacks C9",
+   "page": 211,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
+  },
+  {
+   "id": "bayside-council-008",
+   "zones": [
+    "R3"
+   ],
+   "appliesTo": [
+    "multi_dwelling"
    ],
    "conditions": {
     "level": "ground"
@@ -421,13 +468,12 @@
    "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
-   "id": "bayside-council-008",
+   "id": "bayside-council-009",
    "zones": [
     "R3"
    ],
    "appliesTo": [
-    "multi_dwelling",
-    "dwelling"
+    "multi_dwelling"
    ],
    "conditions": {
     "level": "ground"
@@ -472,13 +518,12 @@
    "flagReason": "Zone code inferred from the zone name printed in the record; CONFLICT: another rule with the same applicability gives a different rear value; both retained, ..."
   },
   {
-   "id": "bayside-council-009",
+   "id": "bayside-council-010",
    "zones": [
     "R3"
    ],
    "appliesTo": [
-    "multi_dwelling",
-    "dwelling"
+    "multi_dwelling"
    ],
    "conditions": {
     "level": "upper"
@@ -523,13 +568,12 @@
    "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
-   "id": "bayside-council-010",
+   "id": "bayside-council-011",
    "zones": [
     "R3"
    ],
    "appliesTo": [
-    "multi_dwelling",
-    "dwelling"
+    "multi_dwelling"
    ],
    "conditions": {},
    "conditionText": [
@@ -610,54 +654,6 @@
    "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
    "flag": "check_with_council",
    "flagReason": "Zone code inferred from the zone name printed in the record"
-  },
-  {
-   "id": "bayside-council-011",
-   "zones": [
-    "R3"
-   ],
-   "appliesTo": [
-    "multi_dwelling",
-    "garage"
-   ],
-   "conditions": {},
-   "conditionText": "Medium density residential (attached dwellings, multi-dwelling housing): garages fronting the street: minimum from front boundary",
-   "garage": {
-    "minM": 6.0,
-    "sources": [
-     2765
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    2765
-   ],
-   "evidence": [
-    {
-     "id": 2765,
-     "parameter": "garage_setback",
-     "slot": "garage",
-     "quote": "6m from the front boundary if the garage",
-     "clause": "5.2.3 Setbacks C9",
-     "page": 211,
-     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
-     "condition": "Medium density residential (attached dwellings, multi-dwelling housing): garages fronting the street: minimum from front boundary",
-     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "Zone code inferred from the zone name printed in the record",
-   "quote": "6m from the front boundary if the garage",
-   "clause": "5.2.3 Setbacks C9",
-   "page": 211,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
-   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
-   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
-   "flag": "check_with_council",
-   "flagReason": "Zone code inferred from the zone name printed in the record"
   }
  ],
  "gaps": [
@@ -704,7 +700,7 @@
   "R3": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (bayside-council-007, bayside-council-008))"
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R5": {
    "dcpDeterminable": false,

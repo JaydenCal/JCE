@@ -1,0 +1,52 @@
+{
+  "lga_slug": "warren-shire-council",
+  "council": "Warren Shire Council",
+  "dcp": {
+    "name": "Development Control Plan",
+    "url": "https://www.warren.nsw.gov.au/__media_downloads/Warren%20Shire%20Council%20DCP.pdf?downloadable=1",
+    "adopted": "24/01/2013"
+  },
+  "status": "partial",
+  "rules": [
+    {
+      "zones": [
+        "R5"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": 20.0,
+        "basis": "fixed",
+        "note": "Dwellings at least 20m from all allotment boundaries."
+      },
+      "secondaryFront": {
+        "minM": 20.0
+      },
+      "side": {
+        "minM": 20.0
+      },
+      "rear": {
+        "minM": 20.0
+      },
+      "garage": {
+        "minM": null
+      },
+      "sourceUrl": "https://www.warren.nsw.gov.au/__media_downloads/Warren%20Shire%20Council%20DCP.pdf?downloadable=1",
+      "document": "Warren Shire Council Development Control Plan (adopted 24 January 2013, Minute 29.01.13)",
+      "clause": "cl 18 (R5 setback from all boundaries)",
+      "page": "p 5",
+      "quote": "set back at least 20 metres from all allotment boundaries",
+      "confidence": "medium",
+      "needsReview": true,
+      "reviewReason": "Read via extraction tool; verify. Also cl 19 (p 5): R5 dwelling adjoining RU1 'setback at least 150 metres from land within Zone RU1 Primary Production'; cl 27 (p 6): restriction 'within 40 metres of the top of the bank of any river, creek or watercourse'.",
+      "extraSetbacks": {
+        "fromRU1LandM": 150.0,
+        "fromWatercourseTopOfBankM": 40.0
+      }
+    }
+  ],
+  "gaps": [
+    "DCP contains no front, side, rear, corner or garage setback controls for dwellings in R1, R2, RU5 or other zones."
+  ],
+  "notes": "DCP covers subdivision, dwelling eligibility, effluent, flooding, stormwater (per extraction). Page: https://warren.nsw.gov.au/development/development-control-plan. Other zones fall back to Inland Code. Part 3D Inland Code of the Codes SEPP applies to this LGA (named in cl 3D.1(4)); see fallback/nsw-inland-code.json. Not a DCP control."
+}

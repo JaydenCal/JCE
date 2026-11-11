@@ -458,8 +458,7 @@
     "R5"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {
     "precinct": "Queanbeyan DCP area"
@@ -7782,6 +7781,108 @@
    ],
    "appliesTo": [
     "residential_flat_building",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 1,
+    "precinct": "Queanbeyan DCP area"
+   },
+   "conditionText": "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): between existing retained front dwelling and nearest new building: single storey",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     27779
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    27779
+   ],
+   "evidence": [
+    {
+     "id": 27779,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "A minimum 3m setback (for single storey) and 4m setback (for 2 storeys)",
+     "clause": "3C.5.3 d)ii",
+     "page": 15,
+     "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+     "condition": "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): between existing retained front dwelling and nearest new building: single storey",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A minimum 3m setback (for single storey) and 4m setback (for 2 storeys)",
+   "clause": "3C.5.3 d)ii",
+   "page": 15,
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "queanbeyan-palerang-regional-council-130",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "storeys": 2,
+    "precinct": "Queanbeyan DCP area"
+   },
+   "conditionText": "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): between existing retained front dwelling and nearest new building: two storeys",
+   "side": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     27780
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    27780
+   ],
+   "evidence": [
+    {
+     "id": 27780,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "A minimum 3m setback (for single storey) and 4m setback (for 2 storeys)",
+     "clause": "3C.5.3 d)ii",
+     "page": 15,
+     "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+     "condition": "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): between existing retained front dwelling and nearest new building: two storeys",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A minimum 3m setback (for single storey) and 4m setback (for 2 storeys)",
+   "clause": "3C.5.3 d)ii",
+   "page": 15,
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "queanbeyan-palerang-regional-council-131",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "residential_flat_building",
     "multi_dwelling"
    ],
    "conditions": {
@@ -7827,7 +7928,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-130",
+   "id": "queanbeyan-palerang-regional-council-132",
    "zones": [
     "*"
    ],
@@ -7878,7 +7979,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-131",
+   "id": "queanbeyan-palerang-regional-council-133",
    "zones": [
     "*"
    ],
@@ -7929,7 +8030,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-132",
+   "id": "queanbeyan-palerang-regional-council-134",
    "zones": [
     "*"
    ],
@@ -7980,7 +8081,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-133",
+   "id": "queanbeyan-palerang-regional-council-135",
    "zones": [
     "*"
    ],
@@ -8033,7 +8134,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-134",
+   "id": "queanbeyan-palerang-regional-council-136",
    "zones": [
     "*"
    ],
@@ -8086,7 +8187,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-135",
+   "id": "queanbeyan-palerang-regional-council-137",
    "zones": [
     "*"
    ],
@@ -8098,10 +8199,7 @@
     "storeys": 1,
     "precinct": "Queanbeyan DCP area"
    },
-   "conditionText": [
-    "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): 1 storey (6 m) building, minimum rear boundary setback",
-    "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): between existing retained front dwelling and nearest new building: single storey"
-   ],
+   "conditionText": "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): 1 storey (6 m) building, minimum rear boundary setback",
    "rear": {
     "minM": 3.0,
     "basis": "fixed",
@@ -8109,19 +8207,12 @@
      27771
     ]
    },
-   "side": {
-    "minM": 3.0,
-    "basis": "fixed",
-    "sources": [
-     27779
-    ]
-   },
    "front": null,
    "secondaryFront": null,
+   "side": null,
    "garage": null,
    "sources": [
-    27771,
-    27779
+    27771
    ],
    "evidence": [
     {
@@ -8133,17 +8224,6 @@
      "page": 14,
      "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
      "condition": "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): 1 storey (6 m) building, minimum rear boundary setback",
-     "edition": "UNVERIFIED"
-    },
-    {
-     "id": 27779,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "A minimum 3m setback (for single storey) and 4m setback (for 2 storeys)",
-     "clause": "3C.5.3 d)ii",
-     "page": 15,
-     "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
-     "condition": "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): between existing retained front dwelling and nearest new building: single storey",
      "edition": "UNVERIFIED"
     }
    ],
@@ -8157,7 +8237,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-136",
+   "id": "queanbeyan-palerang-regional-council-138",
    "zones": [
     "*"
    ],
@@ -8208,7 +8288,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-137",
+   "id": "queanbeyan-palerang-regional-council-139",
    "zones": [
     "*"
    ],
@@ -8220,10 +8300,7 @@
     "storeys": 2,
     "precinct": "Queanbeyan DCP area"
    },
-   "conditionText": [
-    "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): 2 storey (8.5 m) building, minimum rear boundary setback",
-    "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): between existing retained front dwelling and nearest new building: two storeys"
-   ],
+   "conditionText": "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): 2 storey (8.5 m) building, minimum rear boundary setback",
    "rear": {
     "minM": 3.5,
     "basis": "fixed",
@@ -8231,19 +8308,12 @@
      27773
     ]
    },
-   "side": {
-    "minM": 4.0,
-    "basis": "fixed",
-    "sources": [
-     27780
-    ]
-   },
    "front": null,
    "secondaryFront": null,
+   "side": null,
    "garage": null,
    "sources": [
-    27773,
-    27780
+    27773
    ],
    "evidence": [
     {
@@ -8255,17 +8325,6 @@
      "page": 14,
      "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
      "condition": "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): 2 storey (8.5 m) building, minimum rear boundary setback",
-     "edition": "UNVERIFIED"
-    },
-    {
-     "id": 27780,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "A minimum 3m setback (for single storey) and 4m setback (for 2 storeys)",
-     "clause": "3C.5.3 d)ii",
-     "page": 15,
-     "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
-     "condition": "Queanbeyan DCP area (QDCP Part 3C multi dwelling housing and residential flat buildings): between existing retained front dwelling and nearest new building: two storeys",
      "edition": "UNVERIFIED"
     }
    ],
@@ -8279,7 +8338,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-138",
+   "id": "queanbeyan-palerang-regional-council-140",
    "zones": [
     "*"
    ],
@@ -8329,7 +8388,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-139",
+   "id": "queanbeyan-palerang-regional-council-141",
    "zones": [
     "*"
    ],
@@ -8379,7 +8438,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-140",
+   "id": "queanbeyan-palerang-regional-council-142",
    "zones": [
     "*"
    ],
@@ -8429,7 +8488,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-141",
+   "id": "queanbeyan-palerang-regional-council-143",
    "zones": [
     "*"
    ],
@@ -8478,7 +8537,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-142",
+   "id": "queanbeyan-palerang-regional-council-144",
    "zones": [
     "*"
    ],
@@ -8527,7 +8586,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-143",
+   "id": "queanbeyan-palerang-regional-council-145",
    "zones": [
     "*"
    ],
@@ -8578,7 +8637,7 @@
    "flagReason": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-144",
+   "id": "queanbeyan-palerang-regional-council-146",
    "zones": [
     "*"
    ],
@@ -8628,7 +8687,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-145",
+   "id": "queanbeyan-palerang-regional-council-147",
    "zones": [
     "*"
    ],
@@ -8698,7 +8757,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-146",
+   "id": "queanbeyan-palerang-regional-council-148",
    "zones": [
     "*"
    ],
@@ -8787,7 +8846,7 @@
    "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-147",
+   "id": "queanbeyan-palerang-regional-council-149",
    "zones": [
     "*"
    ],
@@ -8836,7 +8895,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-148",
+   "id": "queanbeyan-palerang-regional-council-150",
    "zones": [
     "*"
    ],
@@ -8924,13 +8983,12 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-149",
+   "id": "queanbeyan-palerang-regional-council-151",
    "zones": [
     "*"
    ],
    "appliesTo": [
-    "shop_top_housing",
-    "dwelling"
+    "shop_top_housing"
    ],
    "conditions": {
     "level": "upper",
@@ -8974,7 +9032,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-150",
+   "id": "queanbeyan-palerang-regional-council-152",
    "zones": [
     "*"
    ],
@@ -9064,7 +9122,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-151",
+   "id": "queanbeyan-palerang-regional-council-153",
    "zones": [
     "*"
    ],
@@ -9153,7 +9211,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-152",
+   "id": "queanbeyan-palerang-regional-council-154",
    "zones": [
     "IN*"
    ],
@@ -9224,7 +9282,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-153",
+   "id": "queanbeyan-palerang-regional-council-155",
    "zones": [
     "IN*"
    ],
@@ -9298,7 +9356,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-154",
+   "id": "queanbeyan-palerang-regional-council-156",
    "zones": [
     "IN*"
    ],
@@ -9351,7 +9409,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-155",
+   "id": "queanbeyan-palerang-regional-council-157",
    "zones": [
     "IN*"
    ],
@@ -9420,7 +9478,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-156",
+   "id": "queanbeyan-palerang-regional-council-158",
    "zones": [
     "IN*"
    ],
@@ -9473,7 +9531,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-157",
+   "id": "queanbeyan-palerang-regional-council-159",
    "zones": [
     "IN*"
    ],
@@ -9523,7 +9581,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-158",
+   "id": "queanbeyan-palerang-regional-council-160",
    "zones": [
     "IN*"
    ],
@@ -9573,7 +9631,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-159",
+   "id": "queanbeyan-palerang-regional-council-161",
    "zones": [
     "IN*"
    ],
@@ -9729,7 +9787,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 114
+   "rules": 116
   },
   "IN*": {
    "front": false,
@@ -9750,34 +9808,35 @@
  "needsPrecinct": true,
  "counts": {
   "records": 229,
-  "rules": 159,
+  "rules": 161,
   "recordsNotModelled": 9,
   "otherSetbackKeysNotModelled": 9
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R2": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   }
  }

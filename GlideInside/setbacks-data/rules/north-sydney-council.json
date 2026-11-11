@@ -1015,8 +1015,7 @@
    ],
    "appliesTo": [
     "shop_top_housing",
-    "boarding_house",
-    "dwelling"
+    "boarding_house"
    ],
    "conditions": {
     "storeys": 4
@@ -1065,8 +1064,7 @@
    ],
    "appliesTo": [
     "shop_top_housing",
-    "boarding_house",
-    "dwelling"
+    "boarding_house"
    ],
    "conditions": {},
    "conditionText": "E1 Local Centre: boarding houses and shop top housing with side openings: 1st to 3rd storey (up to 7m)",
@@ -1113,8 +1111,7 @@
    ],
    "appliesTo": [
     "shop_top_housing",
-    "boarding_house",
-    "dwelling"
+    "boarding_house"
    ],
    "conditions": {},
    "conditionText": "E1 Local Centre: boarding houses and shop top housing with side openings: above 3rd storey",
@@ -1330,7 +1327,7 @@
   },
   "E1": {
    "front": false,
-   "side": true,
+   "side": false,
    "rear": false,
    "secondaryFront": false,
    "garage": false,

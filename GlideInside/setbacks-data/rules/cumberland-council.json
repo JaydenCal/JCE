@@ -443,8 +443,7 @@
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {
     "storeys": 1
@@ -510,8 +509,7 @@
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {
     "storeys": 2
@@ -577,8 +575,7 @@
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {},
    "conditionText": "Secondary dwelling, corner sites",

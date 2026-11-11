@@ -706,6 +706,7 @@
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 3
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": true,
@@ -719,7 +720,7 @@
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R5": {

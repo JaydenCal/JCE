@@ -114,60 +114,6 @@
     "dual_occupancy",
     "dwelling"
    ],
-   "conditions": {
-    "level": "upper",
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Chapter 6B dual occupancy: first floor walls where lot adjoins residential properties",
-   "rear": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     12772
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "garage": null,
-   "sources": [
-    12772
-   ],
-   "evidence": [
-    {
-     "id": 12772,
-     "parameter": "rear_setback",
-     "slot": "rear",
-     "quote": "First floor walls must be set back a minimum of 6 metres from the rear boundary",
-     "clause": "6B.2.3.3",
-     "page": 266,
-     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
-     "condition": "Chapter 6B dual occupancy: first floor walls where lot adjoins residential properties",
-     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "First floor walls must be set back a minimum of 6 metres from the rear boundary",
-   "clause": "6B.2.3.3",
-   "page": 266,
-   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
-   "dcp": "Fairfield City Wide DCP 2024 Amendment 2 (adoption date UNVERIFIED); also site-specific town centre DCPs not extracted",
-   "edition": "Fairfield City Wide DCP 2024 Amendment 2",
-   "flag": "check_with_council",
-   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
-  },
-  {
-   "id": "fairfield-city-council-004",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "dual_occupancy",
-    "dwelling"
-   ],
    "conditions": {},
    "conditionText": "Chapter 6B dual occupancy: corner lot minimum secondary setback (average of adjoining dwellings otherwise)",
    "secondaryFront": {
@@ -207,7 +153,7 @@
    "edition": "Fairfield City Wide DCP 2024 Amendment 2"
   },
   {
-   "id": "fairfield-city-council-005",
+   "id": "fairfield-city-council-004",
    "zones": [
     "*"
    ],
@@ -259,7 +205,7 @@
    "edition": "Fairfield City Wide DCP 2024 Amendment 2"
   },
   {
-   "id": "fairfield-city-council-006",
+   "id": "fairfield-city-council-005",
    "zones": [
     "*"
    ],
@@ -305,6 +251,59 @@
    "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
    "dcp": "Fairfield City Wide DCP 2024 Amendment 2 (adoption date UNVERIFIED); also site-specific town centre DCPs not extracted",
    "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+  },
+  {
+   "id": "fairfield-city-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dual_occupancy"
+   ],
+   "conditions": {
+    "level": "upper",
+    "qualifiers": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Chapter 6B dual occupancy: first floor walls where lot adjoins residential properties",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     12772
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    12772
+   ],
+   "evidence": [
+    {
+     "id": 12772,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "First floor walls must be set back a minimum of 6 metres from the rear boundary",
+     "clause": "6B.2.3.3",
+     "page": 266,
+     "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+     "condition": "Chapter 6B dual occupancy: first floor walls where lot adjoins residential properties",
+     "edition": "Fairfield City Wide DCP 2024 Amendment 2"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "First floor walls must be set back a minimum of 6 metres from the rear boundary",
+   "clause": "6B.2.3.3",
+   "page": 266,
+   "source_file": "DCP/Fairfield_City_Wide_DCP_2024_Amendment_2.pdf",
+   "dcp": "Fairfield City Wide DCP 2024 Amendment 2 (adoption date UNVERIFIED); also site-specific town centre DCPs not extracted",
+   "edition": "Fairfield City Wide DCP 2024 Amendment 2",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "fairfield-city-council-007",

@@ -1,0 +1,28 @@
+{
+  "lga_slug": "gwydir-shire-council",
+  "council": "Gwydir Shire Council",
+  "dcp": {
+    "name": null,
+    "url": null,
+    "adopted": null
+  },
+  "status": "none",
+  "rules": [],
+  "gaps": [
+    "No DCP residential setback controls located; dwellings rely on the LEP and the Codes SEPP."
+  ],
+  "notes": "No residential DCP setback controls found. Part 3D Inland Code of the Codes SEPP applies to this LGA (named in cl 3D.1(4)); see fallback/nsw-inland-code.json. Not a DCP control. 'Public Policies' page not read.",
+  "evidence": [
+    {
+      "url": "https://www.gwydir.nsw.gov.au/Council/Building-and-Development/Planning-Framework-for-Gwydir-Shire",
+      "document": "Council Planning Framework page",
+      "finding": "Lists Gwydir LEP, Community Participation Plan, Local Housing Strategy; no DCP (extraction tool statement)."
+    },
+    {
+      "url": "https://www.gwydir.nsw.gov.au/Council/Building-and-Development",
+      "document": "Council Building and Development page",
+      "finding": "No DCP or setback policy mentioned."
+    }
+  ],
+  "fallback": "NSW Codes SEPP Part 3D Inland Code"
+}

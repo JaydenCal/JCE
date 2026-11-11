@@ -2002,6 +2002,102 @@
    ],
    "appliesTo": [
     "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Multi dwelling housing, part of dwelling up to 4.5 m high",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     30417
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    30417
+   ],
+   "evidence": [
+    {
+     "id": 30417,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Multi dwelling housing, attached Ground level – 3m 1.5m 3m to the part of a dwelling 7.5m to dwellings",
+     "clause": "Table 4",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Multi dwelling housing, part of dwelling up to 4.5 m high",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Multi dwelling housing, attached Ground level – 3m 1.5m 3m to the part of a dwelling 7.5m to dwellings",
+   "clause": "Table 4",
+   "page": 15,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+  },
+  {
+   "id": "shoalhaven-city-council-034",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Multi dwelling housing, part of dwelling greater than 4.5 m high",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     30418
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    30418
+   ],
+   "evidence": [
+    {
+     "id": 30418,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "dwellings. awnings and patios. non-habitable 6m to the part of the outbuildings.",
+     "clause": "Table 4",
+     "page": 15,
+     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+     "condition": "Multi dwelling housing, part of dwelling greater than 4.5 m high",
+     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "quote": "dwellings. awnings and patios. non-habitable 6m to the part of the outbuildings.",
+   "clause": "Table 4",
+   "page": 15,
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
+  },
+  {
+   "id": "shoalhaven-city-council-035",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "multi_dwelling",
     "verandah_deck",
     "dwelling"
    ],
@@ -2044,100 +2140,6 @@
    "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
    "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
    "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
-  },
-  {
-   "id": "shoalhaven-city-council-034",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {},
-   "conditionText": "Multi dwelling housing, part of dwelling up to 4.5 m high",
-   "rear": {
-    "minM": 3.0,
-    "basis": "fixed",
-    "sources": [
-     30417
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "garage": null,
-   "sources": [
-    30417
-   ],
-   "evidence": [
-    {
-     "id": 30417,
-     "parameter": "rear_setback",
-     "slot": "rear",
-     "quote": "Multi dwelling housing, attached Ground level – 3m 1.5m 3m to the part of a dwelling 7.5m to dwellings",
-     "clause": "Table 4",
-     "page": 15,
-     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
-     "condition": "Multi dwelling housing, part of dwelling up to 4.5 m high",
-     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "Multi dwelling housing, attached Ground level – 3m 1.5m 3m to the part of a dwelling 7.5m to dwellings",
-   "clause": "Table 4",
-   "page": 15,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
-   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
-   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
-  },
-  {
-   "id": "shoalhaven-city-council-035",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {},
-   "conditionText": "Multi dwelling housing, part of dwelling greater than 4.5 m high",
-   "rear": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     30418
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "garage": null,
-   "sources": [
-    30418
-   ],
-   "evidence": [
-    {
-     "id": 30418,
-     "parameter": "rear_setback",
-     "slot": "rear",
-     "quote": "dwellings. awnings and patios. non-habitable 6m to the part of the outbuildings.",
-     "clause": "Table 4",
-     "page": 15,
-     "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
-     "condition": "Multi dwelling housing, part of dwelling greater than 4.5 m high",
-     "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
-   "quote": "dwellings. awnings and patios. non-habitable 6m to the part of the outbuildings.",
-   "clause": "Table 4",
-   "page": 15,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
-   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
-   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)",
-   "flag": "check_with_council",
-   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   }
  ],
  "gaps": [
@@ -2263,27 +2265,27 @@
   "R1": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-035)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032)); rear (conflicting rules of equal specificity (shoalhaven-city-council-004, shoalhaven-city-council-033, shoalhaven-city-council-034))"
   },
   "R2": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-035)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032)); rear (conflicting rules of equal specificity (shoalhaven-city-council-004, shoalhaven-city-council-033, shoalhaven-city-council-034))"
   },
   "R3": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-035)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032)); rear (conflicting rules of equal specificity (shoalhaven-city-council-004, shoalhaven-city-council-033, shoalhaven-city-council-034))"
   },
   "R5": {
    "dcpDeterminable": false,
    "basisWithFallbacks": null,
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-025, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-025, shoalhaven-city-council-032)); rear (no rule for this zone/use/lot)"
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-025, shoalhaven-city-council-031, shoalhaven-city-council-035)); side (conflicting rules of equal specificity (shoalhaven-city-council-025, shoalhaven-city-council-032)); rear (conflicting rules of equal specificity (shoalhaven-city-council-033, shoalhaven-city-council-034))"
   },
   "RU5": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-008, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-008, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-035)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032)); rear (conflicting rules of equal specificity (shoalhaven-city-council-004, shoalhaven-city-council-033, shoalhaven-city-council-034))"
   }
  }
 }

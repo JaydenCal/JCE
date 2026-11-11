@@ -1,0 +1,17 @@
+{
+  "lga_slug": "willoughby-city-council",
+  "council": "Willoughby City Council",
+  "dcp": {
+    "name": "Willoughby DCP 2023 (Part B Residential development)",
+    "url": "https://willoughby.nsw.gov.au/Development/Plan/Planning-Rules/WDCP",
+    "adopted": "25/09/2023 (effective 04/10/2023)"
+  },
+  "status": "none",
+  "rules": [],
+  "gaps": [
+    "Part B Residential development PDF (13MB) exists but its URL was not exposed by the page and could not be found by search; setbacks not read.",
+    "Part C (C4 Environmental Living zone) exists as https://www.willoughby.nsw.gov.au/files/assets/public/v/6/documents/publications-reports-master-plans-strategies-action-plans/ecm_7229488_v1_part-c-development-in-c4-zone-version-june-2025-pdf-wdcp.pdf but was not read."
+  ],
+  "notes": "No rules extracted. status 'none' here means no extracted values, NOT that Willoughby has no controls: the DCP exists and was adopted 25/09/2023 replacing the 2006 DCP. Unverified lead (do not use): a third-party DCP compliance table (https://apps.planningportal.nsw.gov.au/prweb/PRRestService/DocMgmt/v1/PublicDocuments/DATA-WORKATTACH-FILE PEC-DPE-EP-WORK PPSSNH-455!20250515T054207.631 GMT) quoted 'No front setback specified for R2 residential zoning' and 'side and rear setbacks 3m plus 1.2m per storey above the ground floor level' for a specific proposal; context unclear. Part 3 Housing Code applies as CDC fallback.",
+  "dcpExistsButUnextracted": true
+}

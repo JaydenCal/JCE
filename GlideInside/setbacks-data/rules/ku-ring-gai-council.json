@@ -1189,8 +1189,7 @@
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {},
    "conditionText": "Part 4.1A.3 secondary dwellings, minimum rear setback",
@@ -1259,27 +1258,27 @@
   "R1": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019))"
   },
   "R2": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019))"
   },
   "R3": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019))"
   },
   "R5": {
    "dcpDeterminable": false,
    "basisWithFallbacks": null,
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); side (conflicting rules of equal specificity (ku-ring-gai-council-007, ku-ring-gai-council-009)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); side (conflicting rules of equal specificity (ku-ring-gai-council-007, ku-ring-gai-council-009))"
   },
   "RU5": {
    "dcpDeterminable": false,
    "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); side (conflicting rules of equal specificity (ku-ring-gai-council-001, ku-ring-gai-council-003, ku-ring-gai-council-007)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); side (conflicting rules of equal specificity (ku-ring-gai-council-001, ku-ring-gai-council-003, ku-ring-gai-council-007))"
   }
  }
 }

@@ -178,12 +178,12 @@
    ],
    "appliesTo": [
     "residential_flat_building",
-    "multi_dwelling"
+    "multi_dwelling",
+    "dwelling"
    ],
    "conditions": {},
    "conditionText": [
     "Chapter 4.2 Multi-unit housing, residential flat buildings, attached dwellings (R1, MU1, RU5; attached dwellings in R5): R1 zone front facade setback of dwelling",
-    "Chapter 4.2 Multi-unit housing, residential flat buildings, attached dwellings (R1, MU1, RU5; attached dwellings in R5): secondary street frontage",
     "Chapter 4.2 Multi-unit housing, residential flat buildings, attached dwellings (R1, MU1, RU5; attached dwellings in R5): side or rear wall of dwelling and attached structures"
    ],
    "front": {
@@ -193,13 +193,6 @@
      533
     ]
    },
-   "secondaryFront": {
-    "minM": 4.0,
-    "basis": "fixed",
-    "sources": [
-     534
-    ]
-   },
    "side": {
     "minM": 0.9,
     "basis": "fixed",
@@ -207,11 +200,11 @@
      535
     ]
    },
+   "secondaryFront": null,
    "rear": null,
    "garage": null,
    "sources": [
     533,
-    534,
     535
    ],
    "evidence": [
@@ -224,17 +217,6 @@
      "page": 271,
      "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
      "condition": "Chapter 4.2 Multi-unit housing, residential flat buildings, attached dwellings (R1, MU1, RU5; attached dwellings in R5): R1 zone front facade setback of dwelling",
-     "edition": "ARC DCP 2024, effective 13/06/2024"
-    },
-    {
-     "id": 534,
-     "parameter": "front_secondary",
-     "slot": "secondaryFront",
-     "quote": "the setback is to be at least 4m from the side boundary;",
-     "clause": "5.2.2 S.7",
-     "page": 272,
-     "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
-     "condition": "Chapter 4.2 Multi-unit housing, residential flat buildings, attached dwellings (R1, MU1, RU5; attached dwellings in R5): secondary street frontage",
      "edition": "ARC DCP 2024, effective 13/06/2024"
     },
     {
@@ -271,7 +253,17 @@
     "multi_dwelling"
    ],
    "conditions": {},
-   "conditionText": "Chapter 4.2 Multi-unit housing, residential flat buildings, attached dwellings (R1, MU1, RU5; attached dwellings in R5): R5 attached dwellings: front facade setback from public road",
+   "conditionText": [
+    "Chapter 4.2 Multi-unit housing, residential flat buildings, attached dwellings (R1, MU1, RU5; attached dwellings in R5): R5 attached dwellings: front facade setback from public road",
+    "Chapter 4.2 Multi-unit housing, residential flat buildings, attached dwellings (R1, MU1, RU5; attached dwellings in R5): secondary street frontage"
+   ],
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     534
+    ]
+   },
    "front": {
     "minM": 20.0,
     "basis": "fixed",
@@ -279,14 +271,25 @@
      536
     ]
    },
-   "secondaryFront": null,
    "side": null,
    "rear": null,
    "garage": null,
    "sources": [
+    534,
     536
    ],
    "evidence": [
+    {
+     "id": 534,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "the setback is to be at least 4m from the side boundary;",
+     "clause": "5.2.2 S.7",
+     "page": 272,
+     "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+     "condition": "Chapter 4.2 Multi-unit housing, residential flat buildings, attached dwellings (R1, MU1, RU5; attached dwellings in R5): secondary street frontage",
+     "edition": "ARC DCP 2024, effective 13/06/2024"
+    },
     {
      "id": 536,
      "parameter": "setback_rural",
@@ -299,16 +302,14 @@
      "edition": "ARC DCP 2024, effective 13/06/2024"
     }
    ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
-   "quote": "the front façade setback of any new building is to be a minimum of 20 metres",
-   "clause": "5.3.1 S.14",
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "the setback is to be at least 4m from the side boundary;",
+   "clause": "5.2.2 S.7",
    "page": 272,
    "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
    "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
-   "edition": "ARC DCP 2024, effective 13/06/2024",
-   "flag": "check_with_council",
-   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-005",
@@ -1088,6 +1089,7 @@
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 4
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": true,
@@ -1101,18 +1103,18 @@
   },
   "R3": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
   },
   "R5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
-   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (armidale-regional-council-009, armidale-regional-council-010, armidale-regional-council-012))"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (armidale-regional-council-003, armidale-regional-council-009)); rear (conflicting rules of equal specificity (armidale-regional-council-009, armidale-regional-council-010, armidale-regional-council-012))"
   },
   "RU5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
-   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
   }
  }
 }

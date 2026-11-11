@@ -9,7 +9,7 @@
   {
    "basisLabel": "QDC",
    "zones": [
-    "n/a (QDC applies to class 1a single detached housing, not zone based)"
+    "*"
    ],
    "appliesTo": [
     "dwelling"
@@ -23,12 +23,12 @@
     "note": "Access place or access street 3.0m; collector street 4.0m. If existing dwellings on both adjoining lots with one setback 3m-6m (A1(a)(ii)): difference not more than 2m = distance between the two buildings; more than 2m = average of the adjacent road setbacks.",
     "bands": [
      {
-      "streetType": "access place or access street",
+      "streetType": "access",
       "minM": 3.0,
       "basis": "fixed"
      },
      {
-      "streetType": "collector street",
+      "streetType": "collector",
       "minM": 4.0,
       "basis": "fixed"
      }
@@ -39,12 +39,12 @@
     "note": "Table A1 side to corner street: 1.0m (access place/street), 2.0m (collector street). A1(c)(ii) corner lots with average depth 24m or less.",
     "bands": [
      {
-      "streetType": "access place or access street",
+      "streetType": "access",
       "minM": 1.0,
       "basis": "fixed"
      },
      {
-      "streetType": "collector street",
+      "streetType": "collector",
       "minM": 2.0,
       "basis": "fixed"
      }
@@ -65,14 +65,17 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "dcp": "QLD",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
-   "sources": []
+   "sources": [],
+   "id": "qld-qdc-001",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   },
   {
    "basisLabel": "QDC",
    "zones": [
-    "n/a (QDC applies to class 1a single detached housing, not zone based)"
+    "*"
    ],
    "appliesTo": [
     "dwelling"
@@ -115,9 +118,22 @@
     "basis": "text"
    },
    "rear": {
-    "minM": 1.5,
-    "note": "A2 applies to side and rear boundary clearances.",
-    "basis": "fixed"
+    "minM": null,
+    "basis": "fixed",
+    "bands": [
+     {
+      "buildingHeightMaxM": 4.5,
+      "minM": 1.5,
+      "basis": "fixed"
+     },
+     {
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 2.0,
+      "basis": "fixed"
+     }
+    ],
+    "note": "A2(a) applies to side and rear boundary clearances. Above 7.5 m: 2 m plus 0.5 m for every 3 m or part."
    },
    "garage": {
     "minM": null
@@ -131,14 +147,17 @@
    "needsReview": "Flagged for review by the research agent",
    "note": "Quotes: A2(a)(ii) '2m'; A2(a)(iii) '2m plus 0.5m for every 3m or part exceeding 7.5m' (source text reads 'greater that', sic).",
    "dcp": "QLD",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
-   "sources": []
+   "sources": [],
+   "id": "qld-qdc-002",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   },
   {
    "basisLabel": "QDC",
    "zones": [
-    "n/a (QDC applies to class 1a single detached housing, not zone based)"
+    "*"
    ],
    "appliesTo": [
     "dwelling"
@@ -150,9 +169,159 @@
    "front": null,
    "secondaryFront": null,
    "side": {
-    "minM": 0.75,
-    "note": "Lot width 10.5m or less: 0.750m (height 4.5m or less), 1.000m (4.5m-7.5m); increases by 0.075m per 0.5m of width (4.5m or less) and 0.1m (4.5-7.5m) up to 14.501-15.000m: 1.425m / 1.900m. Above 7.5m: 2m plus 0.5m per 3m.",
-    "basis": "fixed"
+    "minM": null,
+    "basis": "fixed",
+    "bands": [
+     {
+      "lotWidthMaxM": 10.5,
+      "buildingHeightMaxM": 4.5,
+      "minM": 0.75,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 10.5,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 1.0,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 11.0,
+      "lotWidthMinM": 10.501,
+      "buildingHeightMaxM": 4.5,
+      "minM": 0.825,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 11.0,
+      "lotWidthMinM": 10.501,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 1.1,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 11.5,
+      "lotWidthMinM": 11.001,
+      "buildingHeightMaxM": 4.5,
+      "minM": 0.9,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 11.5,
+      "lotWidthMinM": 11.001,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 1.2,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 12.0,
+      "lotWidthMinM": 11.501,
+      "buildingHeightMaxM": 4.5,
+      "minM": 0.975,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 12.0,
+      "lotWidthMinM": 11.501,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 1.3,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 12.5,
+      "lotWidthMinM": 12.001,
+      "buildingHeightMaxM": 4.5,
+      "minM": 1.05,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 12.5,
+      "lotWidthMinM": 12.001,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 1.4,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 13.0,
+      "lotWidthMinM": 12.501,
+      "buildingHeightMaxM": 4.5,
+      "minM": 1.125,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 13.0,
+      "lotWidthMinM": 12.501,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 1.5,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 13.5,
+      "lotWidthMinM": 13.001,
+      "buildingHeightMaxM": 4.5,
+      "minM": 1.2,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 13.5,
+      "lotWidthMinM": 13.001,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 1.6,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 14.0,
+      "lotWidthMinM": 13.501,
+      "buildingHeightMaxM": 4.5,
+      "minM": 1.275,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 14.0,
+      "lotWidthMinM": 13.501,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 1.7,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 14.5,
+      "lotWidthMinM": 14.001,
+      "buildingHeightMaxM": 4.5,
+      "minM": 1.35,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 14.5,
+      "lotWidthMinM": 14.001,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 1.8,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 15.0,
+      "lotWidthMinM": 14.501,
+      "buildingHeightMaxM": 4.5,
+      "minM": 1.425,
+      "basis": "fixed"
+     },
+     {
+      "lotWidthMaxM": 15.0,
+      "lotWidthMinM": 14.501,
+      "buildingHeightMinM": 4.51,
+      "buildingHeightMaxM": 7.5,
+      "minM": 1.9,
+      "basis": "fixed"
+     }
+    ],
+    "note": "Lot width 10.5m or less: 0.750m (height 4.5m or less), 1.000m (4.5m-7.5m); increases by 0.075m per 0.5m of width (4.5m or less) and 0.1m (4.5-7.5m) up to 14.501-15.000m: 1.425m / 1.900m. Above 7.5m: 2m plus 0.5m per 3m."
    },
    "rear": null,
    "garage": {
@@ -164,16 +333,19 @@
    "page": null,
    "quote": "in accordance with Table A2",
    "confidence": "medium",
-   "needsReview": "Flagged for review by the research agent",
+   "needsReview": "Table A2 applies to rectangular or near rectangular narrow lots; values rebuilt from the recorded table end points",
    "dcp": "QLD",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
-   "sources": []
+   "sources": [],
+   "id": "qld-qdc-003",
+   "flag": "check_with_council",
+   "flagReason": "Table A2 applies to rectangular or near rectangular narrow lots; values rebuilt from the recorded table end points"
   },
   {
    "basisLabel": "QDC",
    "zones": [
-    "n/a (QDC applies to class 1a single detached housing, not zone based)"
+    "*"
    ],
    "appliesTo": [
     "dwelling"
@@ -197,9 +369,12 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "dcp": "QLD",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
-   "sources": []
+   "sources": [],
+   "id": "qld-qdc-004",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   }
  ],
  "mp12NotVerified": {
@@ -222,5 +397,6 @@
   "MP 1.2 and QHC primary text unread",
   "Table A2 interpolation note in rule 3 is summary; use bands"
  ],
- "name": "QLD"
+ "name": "QLD",
+ "edition": "as retrieved 11/11/2026; currency against the in-force text not verified"
 }

@@ -597,7 +597,8 @@
    ],
    "appliesTo": [
     "multi_dwelling",
-    "garage"
+    "garage",
+    "dwelling"
    ],
    "conditions": {},
    "conditionText": "multi dwelling housing, dwellings and garage entrances",
@@ -1073,8 +1074,7 @@
     "*"
    ],
    "appliesTo": [
-    "secondary_dwelling",
-    "dwelling"
+    "secondary_dwelling"
    ],
    "conditions": {},
    "conditionText": [

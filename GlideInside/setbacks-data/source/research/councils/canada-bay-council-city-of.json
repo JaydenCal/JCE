@@ -1,0 +1,71 @@
+{
+  "lga_slug": "canada-bay-council-city-of",
+  "council": "City of Canada Bay Council",
+  "dcp": {
+    "name": "City of Canada Bay DCP (Amendment 14), Part E",
+    "url": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW+Planning+Portal+Exhibitions/City+of+Canada+Bay+Development+Control+Plan+-+as+amended+26+August+2022_S-5314.pdf",
+    "adopted": "15/03/2022 (effective 26/08/2022)"
+  },
+  "status": "ready",
+  "rules": [
+    {
+      "zones": [
+        "R1",
+        "R2"
+      ],
+      "appliesTo": "dwelling_house",
+      "conditions": {},
+      "front": {
+        "minM": 4.5,
+        "basis": "greater_of",
+        "note": "C1 (p E-18): minimum 4.5m or no less than the Prevailing Street Setback (average of five adjoining residential properties on both sides), whichever is greater. DCP notes many setbacks are 7.5m or more."
+      },
+      "secondaryFront": {
+        "minM": 2.0,
+        "note": "C7 (p E-19): secondary street setback minimum 2m for the first 25m from the corner; prevailing secondary street setback applies from 25m to rear boundary (C9)."
+      },
+      "side": {
+        "minM": 0.9,
+        "perStorey": [
+          {
+            "storey": 1,
+            "minM": 0.9
+          },
+          {
+            "storey": 2,
+            "minM": 1.5
+          }
+        ],
+        "note": "C10 (p E-19): single storey 900mm; second storey of all dwellings 1500mm."
+      },
+      "rear": {
+        "minM": 6.0,
+        "note": "C11 (p E-22): minimum rear setback 6.0m; C12: living room on upper floor minimum rear setback 9.0m."
+      },
+      "garage": {
+        "minM": null,
+        "note": "No garage setback in E4.2. E2.1 C3 (p E-3): attached garage must not be located within the primary facade. Part B3.2 C4 (p B-14): 'distance between the front property boundary and building is to be a minimum of 5.5m' for hardstands."
+      },
+      "sourceUrl": "https://shared-drupal-s3fs.s3.ap-southeast-2.amazonaws.com/master-test/fapub_pdf/NSW+Planning+Portal+Exhibitions/City+of+Canada+Bay+Development+Control+Plan+-+as+amended+26+August+2022_S-5314.pdf",
+      "document": "City of Canada Bay Development Control Plan, Amendment 14 (adopted 15 Mar 2022, effective 26 Aug 2022), Part E Section E4.2 Building setbacks",
+      "clause": "E4.2 C1, C7, C9, C10, C11, C12",
+      "page": "pp E-18 to E-22",
+      "quote": "is to have a minimum rear setback of 6.0 metres",
+      "confidence": "medium",
+      "needsReview": true,
+      "reviewReason": "Extracted via tool. Verbatim fragments: 'is to be a minimum of 4.5 metres or no less than the Prevailing Street Setback'; 'must have a secondary street (side setback) of a minimum of 2m for the first 25m'; 'The second storey of all dwellings are to be set back a minimum of 1500mm from side boundaries'. Amendment 14 effective 26/08/2022; check for later amendments or a replacement DCP.",
+      "prevailingSetbackDefinition": "average of five adjoining residential properties on both sides",
+      "extraQuotes": {
+        "front": "is to be a minimum of 4.5 metres or no less than the Prevailing Street Setback",
+        "secondary": "must have a secondary street (side setback) of a minimum of 2m for the first 25m",
+        "side": "The second storey of all dwellings are to be set back a minimum of 1500mm from side boundaries"
+      }
+    }
+  ],
+  "gaps": [
+    "Side setbacks given by storey only, not lot width or wall height.",
+    "Corner-lot rear-dwelling setbacks (C13: rear 1.5m, side 4m) and outbuilding 900mm not mapped to rules.",
+    "R3 zone not covered by Part E per E1 (Part E generally applies to R1 and R2); R3 controls not located."
+  ],
+  "notes": "Earlier note: 'prevailing setback' - resolved as greater of 4.5m and prevailing (average of five adjoining on both sides). Document text length 500,000 chars; E4.2 found in range 400,000-500,000."
+}

@@ -66,14 +66,25 @@ USE_PATTERNS = [
 USE_RX = [(n, re.compile(p, re.I)) for n, p in USE_PATTERNS]
 
 
+# Housing types other than a detached dwelling house. A rule whose condition names only these must not be
+# applied to a single dwelling (e.g. "Multi dwelling, single storey" or "attached dwellings, multi-dwelling housing").
+OTHER_HOUSING = ('secondary_dwelling', 'dual_occupancy', 'residential_flat_building', 'shop_top_housing', 'boarding_house',
+                 'seniors_housing', 'multi_dwelling')
+OTHER_HOUSING_RX = re.compile('|'.join(p for n, p in USE_PATTERNS if n in OTHER_HOUSING)
+                              + r'|(?:attached|semi[- ]?detached|secondary|ancillary|multi(?:ple)?[- ]?)\s*dwellings?(?: housing)?|dwellings? per (?:lot|site|allotment|hectare|ha)\b', re.I)
+PLAIN_DWELLING_RX = re.compile(r'dwelling house|dwelling-house|single dwelling|detached dwelling|\bdwellings?\b|\bhouses?\b|general housing|single house|detached housing', re.I)
+
+
 def parse_uses(cond):
     cond = re.sub(r'\b(?:low|medium|high) density residential\b|\blarge lot residential\b|\bgeneral residential\b|\bvillage zone\b', ' ', cond, flags=re.I)
     out = []
     for n, rx in USE_RX:
         if rx.search(cond):
-            if n == 'dwelling' and any(u in out for u in ('residential_flat_building', 'multi_dwelling')) and not re.search(r'dwelling house|single dwelling|detached dwelling|general housing|dwellings?, ', cond, re.I):
-                # "multi dwelling housing" mentions "dwelling" and "housing"; do not also tag as plain dwelling
-                continue
+            if n == 'dwelling' and any(u in out for u in OTHER_HOUSING):
+                # another housing type is named: only also tag a plain dwelling when one is named apart from
+                # that type ("Dwellings and dual occupancies" yes; "attached dwellings, multi-dwelling housing" no)
+                if not PLAIN_DWELLING_RX.search(OTHER_HOUSING_RX.sub(' ', cond)):
+                    continue
             if n == 'verandah_deck' and 'garage' in out and not re.search(r'verandah|pergola|deck|porch|awning|patio|balcon', cond, re.I):
                 continue
             out.append(n)

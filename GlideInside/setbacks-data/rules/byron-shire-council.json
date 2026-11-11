@@ -958,8 +958,7 @@
    ],
    "appliesTo": [
     "secondary_dwelling",
-    "dual_occupancy",
-    "dwelling"
+    "dual_occupancy"
    ],
    "conditions": {
     "storeys": 1
@@ -1230,8 +1229,7 @@
    ],
    "appliesTo": [
     "secondary_dwelling",
-    "dual_occupancy",
-    "dwelling"
+    "dual_occupancy"
    ],
    "conditions": {},
    "conditionText": "Rural zones (D2 DCP): Dual occupancies and secondary dwellings, side and rear boundaries",

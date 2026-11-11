@@ -77,9 +77,12 @@
     "frontBands": "200m2-300m2 3m / >300m2-900m2 4.5m / >900m2-1,500m2 6.5m / >1,500m2 10m"
    },
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
-   "sources": []
+   "sources": [],
+   "id": "nsw-housing-code-001",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   },
   {
    "basisLabel": "SEPP Housing Code",
@@ -137,9 +140,12 @@
     "front": "See primary rule."
    },
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
-   "sources": []
+   "sources": [],
+   "id": "nsw-housing-code-002",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   },
   {
    "basisLabel": "SEPP Housing Code",
@@ -249,9 +255,12 @@
    "needsReview": "Flagged for review by the research agent",
    "builtToBoundary": "cl 3.10(5): lots 6m-8m wide (not corner) may build to 1 or both side boundaries; cl 3.10(6): lots >8m-12.5m wide may build to 1 side boundary, subject to masonry/no-openings conditions; cl 3.10(7) wall within 900mm max height 3.3m (or adjoining wall up to 8.5m); cl 3.10(8) max length 20m or 50% lot depth (6-10m wide), 10m (>10-12.5m wide).",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
-   "sources": []
+   "sources": [],
+   "id": "nsw-housing-code-003",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   },
   {
    "basisLabel": "SEPP Housing Code",
@@ -350,9 +359,12 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
-   "sources": []
+   "sources": [],
+   "id": "nsw-housing-code-004",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   },
   {
    "basisLabel": "SEPP Housing Code",
@@ -389,9 +401,12 @@
     "battleAxeRearOfLotInFrontM": 3.0
    },
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
-   "edition": null,
+   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
-   "sources": []
+   "sources": [],
+   "id": "nsw-housing-code-005",
+   "flag": "check_with_council",
+   "flagReason": "Flagged for review by the research agent"
   }
  ],
  "ruralHousingCodePart3A": {
@@ -406,5 +421,6 @@
   "cl 3.11 exceptions not read",
   "Side-setback quote values come via an extraction tool, not copied verbatim from the page by hand"
  ],
- "name": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code"
+ "name": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
+ "edition": "as retrieved 11/11/2026; currency against the in-force text not verified"
 }

@@ -699,6 +699,53 @@
     "*"
    ],
    "appliesTo": [
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "E.2 Medium density: no two existing dwellings within 40 m",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     11413
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    11413
+   ],
+   "evidence": [
+    {
+     "id": 11413,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "minimum front setback is 6m.",
+     "clause": "E.2.11.1 Scenario 1",
+     "page": 36,
+     "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+     "condition": "E.2 Medium density: no two existing dwellings within 40 m",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "minimum front setback is 6m.",
+   "clause": "E.2.11.1 Scenario 1",
+   "page": 36,
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "cowra-shire-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
     "multi_dwelling"
    ],
    "conditions": {
@@ -760,7 +807,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "cowra-shire-council-013",
+   "id": "cowra-shire-council-014",
    "zones": [
     "*"
    ],
@@ -826,7 +873,7 @@
    "edition": "UNVERIFIED"
   },
   {
-   "id": "cowra-shire-council-014",
+   "id": "cowra-shire-council-015",
    "zones": [
     "*"
    ],
@@ -834,17 +881,7 @@
     "multi_dwelling"
    ],
    "conditions": {},
-   "conditionText": [
-    "E.2 Medium density: corner lot secondary frontage",
-    "E.2 Medium density: no two existing dwellings within 40 m"
-   ],
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     11413
-    ]
-   },
+   "conditionText": "E.2 Medium density: corner lot secondary frontage",
    "secondaryFront": {
     "minM": 4.5,
     "basis": "fixed",
@@ -852,25 +889,14 @@
      11414
     ]
    },
+   "front": null,
    "side": null,
    "rear": null,
    "garage": null,
    "sources": [
-    11413,
     11414
    ],
    "evidence": [
-    {
-     "id": 11413,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "minimum front setback is 6m.",
-     "clause": "E.2.11.1 Scenario 1",
-     "page": 36,
-     "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
-     "condition": "E.2 Medium density: no two existing dwellings within 40 m",
-     "edition": "UNVERIFIED"
-    },
     {
      "id": 11414,
      "parameter": "front_secondary",
@@ -885,15 +911,15 @@
    ],
    "confidence": "medium",
    "needsReview": null,
-   "quote": "minimum front setback is 6m.",
-   "clause": "E.2.11.1 Scenario 1",
-   "page": 36,
+   "quote": "Min. Setback 4.5m",
+   "clause": "E.2.11.3",
+   "page": 38,
    "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
    "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
    "edition": "UNVERIFIED"
   },
   {
-   "id": "cowra-shire-council-015",
+   "id": "cowra-shire-council-016",
    "zones": [
     "IN*"
    ],
@@ -964,7 +990,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
-   "id": "cowra-shire-council-016",
+   "id": "cowra-shire-council-017",
    "zones": [
     "IN*"
    ],
@@ -1017,7 +1043,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
-   "id": "cowra-shire-council-017",
+   "id": "cowra-shire-council-018",
    "zones": [
     "IN*"
    ],
@@ -1070,7 +1096,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
-   "id": "cowra-shire-council-018",
+   "id": "cowra-shire-council-019",
    "zones": [
     "IN*"
    ],
@@ -1118,7 +1144,7 @@
    "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "cowra-shire-council-019",
+   "id": "cowra-shire-council-020",
    "zones": [
     "IN*"
    ],
@@ -1187,7 +1213,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 10
+   "rules": 11
   },
   "IN*": {
    "front": false,
@@ -1202,10 +1228,11 @@
  "needsPrecinct": false,
  "counts": {
   "records": 31,
-  "rules": 19,
+  "rules": 20,
   "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 3
  },
+ "fallbackSet": "NSW_INLAND",
  "zoneProbe": {
   "R1": {
    "dcpDeterminable": true,
@@ -1224,7 +1251,7 @@
   },
   "R5": {
    "dcpDeterminable": false,
-   "basisWithFallbacks": null,
+   "basisWithFallbacks": "Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
    "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (cowra-shire-council-004, cowra-shire-council-007)); side (conflicting rules of equal specificity (cowra-shire-council-001, cowra-shire-council-003, cowra-shire-council-009)); rear (conflicting rules of equal specificity (cowra-shire-council-001, cowra-shire-council-002, cowra-shire-council-007))"
   },
   "RU5": {

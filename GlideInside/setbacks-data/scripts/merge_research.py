@@ -12,12 +12,45 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import build_rules as B
 ROOT = os.path.dirname(HERE)
-RES = os.environ.get('RESEARCH_DIR', '/home/claude/research-setbacks')
+# Research inputs are kept in the repo (source/research) so the pipeline can be re-run from a clean checkout.
+RES = os.environ.get('RESEARCH_DIR', os.path.join(ROOT, 'source', 'research'))
 
 
-# Councils in the Inland Code LGA list (research REPORT.md 11/11/2026): the Part 3D Inland Code applies instead of the Housing Code
-INLAND = {'balranald-shire-council', 'cabonne-council', 'cobar-shire-council', 'gwydir-shire-council', 'hay-shire-council',
-          'liverpool-plains-shire-council', 'warren-shire-council', 'carrathool-shire-council'}
+# Inland local government areas: Codes SEPP cl 3D.1(4) as made by SEPP (Exempt and Complying Development Codes)
+# Amendment (Inland Code) 2018 (epi-2018-569), 69 LGAs, read 11/11/2026. The Part 3D Inland Code applies there
+# instead of the Housing Code. Later amendments to the list have not been checked.
+INLAND_LGAS = [
+    'Albury City', 'Armidale Regional', 'Balranald', 'Bathurst Regional', 'Berrigan', 'Bland', 'Blayney', 'Bogan', 'Bourke',
+    'Brewarrina', 'Broken Hill', 'Cabonne', 'Carrathool', 'Central Darling', 'Cobar', 'Coolamon', 'Coonamble',
+    'Cootamundra-Gundagai Regional', 'Cowra', 'Dubbo Regional', 'Dungog', 'Edward River', 'Federation', 'Forbes', 'Gilgandra',
+    'Glen Innes Severn Shire', 'Goulburn Mulwaree', 'Greater Hume Shire', 'Griffith', 'Gunnedah', 'Gwydir', 'Hay', 'Hilltops',
+    'Inverell', 'Junee', 'Lachlan', 'Leeton', 'Lithgow', 'Liverpool Plains', 'Lockhart', 'Mid-Western Regional', 'Moree Plains',
+    'Murray River', 'Murrumbidgee', 'Muswellbrook', 'Narrabri', 'Narrandera', 'Narromine', 'Oberon', 'Orange', 'Parkes',
+    'Queanbeyan-Palerang Regional', 'Singleton', 'Snowy Monaro Regional', 'Snowy Valleys', 'Tamworth Regional', 'Temora',
+    'Tenterfield', 'Upper Hunter Shire', 'Upper Lachlan Shire', 'Uralla', 'Wagga Wagga', 'Walcha', 'Walgett', 'Warren',
+    'Warrumbungle Shire', 'Weddin', 'Wentworth', 'Yass Valley']
+
+
+def _lga_key(name):
+    n = re.sub(r"\b(the|council|of|city|shire|regional|municipal|municipality)\b", ' ', name.lower().replace('-', ' '))
+    return ' '.join(n.split())
+
+
+def inland_slugs():
+    """Match the LGA names to the rule file slugs; fails loudly if a name matches no file or more than one."""
+    slugs = [os.path.basename(f)[:-5] for f in glob.glob(os.path.join(ROOT, 'rules', '*.json'))]
+    by = {}
+    for sl in slugs:
+        by.setdefault(_lga_key(sl), []).append(sl)
+    out = set()
+    for name in INLAND_LGAS:
+        hit = by.get(_lga_key(name), [])
+        if len(hit) != 1:
+            raise SystemExit('Inland LGA %r matched %r' % (name, hit))
+        out.add(hit[0])
+    return out
+
+
 USE_MAP = {'detached_house': 'dwelling', 'dwelling_house': 'dwelling', 'dwelling house': 'dwelling', 'house': 'dwelling', 'dual_occupancy': 'dual_occupancy',
            'secondary_dwelling': 'secondary_dwelling', 'multi_dwelling_housing': 'multi_dwelling', 'multi_dwelling': 'multi_dwelling'}
 
@@ -137,9 +170,53 @@ def norm_rule(r, dcp_str, edition, url):
     r.setdefault('sources', [])
     return r
 
+# ---------------------------------------------------------------- QLD QDC MP 1.1
+def _table_a2():
+    """QDC MP 1.1 Table A2 (side clearance, road frontage 15 m or less), built from the figures recorded by the research:
+    10.5 m or less 0.750 m (height 4.5 m or less) and 1.000 m (4.5 m to 7.5 m), rising 0.075 m and 0.100 m per 0.5 m of
+    frontage to 1.425 m and 1.900 m at 14.501 m to 15.000 m."""
+    bands = []
+    for i in range(10):
+        wmax = 10.5 + 0.5 * i
+        w = {'lotWidthMaxM': wmax}
+        if i:
+            w['lotWidthMinM'] = round(wmax - 0.5 + 0.001, 3)
+        bands.append(dict(w, buildingHeightMaxM=4.5, minM=round(0.75 + 0.075 * i, 3), basis='fixed'))
+        bands.append(dict(w, buildingHeightMinM=4.51, buildingHeightMaxM=7.5, minM=round(1.0 + 0.1 * i, 3), basis='fixed'))
+    return bands
+
+
+def qld_rule(r):
+    """Make the QDC rules usable by pickRules: not zone based, street type bands, Table A2 by frontage, A2(a) for the rear."""
+    r = dict(r)
+    r['zones'] = ['*']
+    for slot in ('front', 'secondaryFront'):
+        sl = r.get(slot)
+        if isinstance(sl, dict) and sl.get('bands'):
+            sl = dict(sl); nb = []
+            for b in sl['bands']:
+                b = dict(b); st = (b.get('streetType') or '').lower()
+                if st:
+                    b['streetType'] = 'collector' if 'collector' in st else 'access'
+                nb.append(b)
+            sl['bands'] = nb; r[slot] = sl
+    cond = r.get('conditions') or {}
+    notes = r.get('slotNotes') or {}
+    if 'A2(a)' in (r.get('clause') or '') and isinstance(r.get('side'), dict) and r['side'].get('bands'):
+        # A2(a) covers side and rear clearances: the rear takes the same height bands (not a flat 1.5 m)
+        r['rear'] = {'minM': None, 'basis': 'fixed', 'bands': [dict(b) for b in r['side']['bands']],
+                     'note': 'A2(a) applies to side and rear boundary clearances. Above 7.5 m: 2 m plus 0.5 m for every 3 m or part.'}
+    if cond.get('lotWidthMaxM') == 15 and 'Table A2' in (r.get('clause') or ''):
+        note = (r.get('side') or {}).get('note') or notes.get('side') or 'QDC MP 1.1 Table A2'
+        r['side'] = {'minM': None, 'basis': 'fixed', 'bands': _table_a2(), 'note': note}
+        r['needsReview'] = 'Table A2 applies to rectangular or near rectangular narrow lots; values rebuilt from the recorded table end points'
+    r['needsReview'] = r.get('needsReview') or 'QDC default; the council planning scheme or the Queensland Housing Code may vary it'
+    return r
+
 
 def main():
     merged_c = []
+    inland = inland_slugs()
     if os.path.isdir(os.path.join(RES, 'councils')):
         for f in sorted(glob.glob(os.path.join(RES, 'councils', '*.json'))):
             slug = os.path.basename(f)[:-5]
@@ -171,11 +248,11 @@ def main():
                 cur['dcp'] = dstr
             cur['notes'] = ((cur.get('notes') or '').split(' | Research merged')[0]) + ' | Research merged from research-setbacks/councils/%s.json' % slug
             cur['counts']['rules'] = len(cur['rules'])
-            if slug in INLAND:
+            if slug in inland:
                 cur['fallbackSet'] = 'NSW_INLAND'
             json.dump(cur, open(tgt, 'w'), indent=1, ensure_ascii=False)
             merged_c.append(slug)
-    for slug in INLAND:
+    for slug in sorted(inland):
         t = os.path.join(ROOT, 'rules', slug + '.json')
         if os.path.exists(t):
             cur = json.load(open(t)); cur['fallbackSet'] = 'NSW_INLAND'
@@ -188,7 +265,19 @@ def main():
             f = json.load(open(src))
             dstr, ded, durl = dcp_name(f.get('dcp') or f.get('name'))
             f.setdefault('name', f.get('instrument') or dstr or key)
-            f['rules'] = [norm_rule(r, f['name'], f.get('edition') or ded, durl) for r in f.get('rules', [])]
+            edition = f.get('edition') or ded or ('as retrieved %s; currency against the in-force text not verified' % f.get('retrieved', 'date not recorded'))
+            f['edition'] = edition
+            f['rules'] = [norm_rule(r, f['name'], edition, durl) for r in f.get('rules', [])]
+            if key == 'QLD':
+                f['rules'] = [qld_rule(r) for r in f['rules']]
+            for i, r in enumerate(f['rules'], 1):
+                r['id'] = r.get('id') or '%s-%03d' % (f.get('id') or key.lower(), i)
+                if not r.get('edition'):
+                    r['edition'] = edition
+                r.setdefault('confidence', 'medium')
+                if key == 'NSW_INLAND' and isinstance(r.get('side'), dict) and 'not extracted' in (r['side'].get('formula') or ''):
+                    r['needsReview'] = 'Table minimum shown. Parts of a building more than 4.5 m above ground need a larger side setback (cl 3D.21(8) formula not captured)'
+                B.flag_rule(r)  # owner ruling: needsReview rules are shown and marked check_with_council
             json.dump(f, open(os.path.join(ROOT, 'fallback', name), 'w'), indent=1, ensure_ascii=False)
             fb[key] = f
     allc = [json.load(open(f)) for f in sorted(glob.glob(os.path.join(ROOT, 'rules', '*.json')))]

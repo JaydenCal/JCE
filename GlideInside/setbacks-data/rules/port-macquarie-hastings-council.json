@@ -374,8 +374,7 @@
    ],
    "appliesTo": [
     "dual_occupancy",
-    "multi_dwelling",
-    "dwelling"
+    "multi_dwelling"
    ],
    "conditions": {
     "qualifiers": [
@@ -426,8 +425,7 @@
    ],
    "appliesTo": [
     "dual_occupancy",
-    "multi_dwelling",
-    "dwelling"
+    "multi_dwelling"
    ],
    "conditions": {},
    "conditionText": [
@@ -894,29 +892,29 @@
  },
  "zoneProbe": {
   "R1": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
   },
   "R2": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
   },
   "R3": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
   },
   "R5": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
   },
   "RU5": {
-   "dcpDeterminable": true,
-   "basisWithFallbacks": "Council DCP",
-   "reasonIfNot": null
+   "dcpDeterminable": false,
+   "basisWithFallbacks": "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)",
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
   }
  }
 }
