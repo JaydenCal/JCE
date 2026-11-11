@@ -8,6 +8,7 @@ import { readTheme } from './theme.js';
 import { buildScene, drawGrid, drawUnderlay, drawGhostLevel, drawRooms, drawRoomLabels, drawWalls } from './draw-plan.js';
 import { drawOpenings, drawStairs, drawFurniture, drawTanks } from './draw-items.js';
 import { drawSite, drawCredits } from './draw-site.js';
+import { drawArrangeOverlay } from './draw-lotplan.js';
 import { nearestEdge, toggleEdge, isCorner } from '../site/frontage.js';
 import { drawOverallDims, drawSelection, drawHover, drawNorthArrow, drawScaleBar } from './draw-annot.js';
 import { loadBitmap, removeImage, registerUnderlayEditor, setUnderlayFromBlob, setUnderlayFromCanvas } from './underlay.js';
@@ -48,6 +49,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     pan: null,
     gesture: null,
     toolId: null,
+    overlay: null,
     popover: null,
     underlayKey: null,
     underlayBitmap: null,
@@ -265,6 +267,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       tool: store.ui.tool,
       underlayBitmap: state.underlayBitmap,
       frontageEdit: !!store.ui.frontageEdit,
+      overlay: state.overlay,
       furnSize: ed.furnSize,
     };
     const clashes = currentClashes(project);
@@ -289,6 +292,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     if (state.hover && (!sel || state.hover.id !== sel.id) && !state.pan) drawHover(ctx, st, scene, state.hover);
     drawSelection(ctx, st, scene, sel);
     current?.draw?.(ctx, st, ed);
+    drawArrangeOverlay(ctx, st);
     drawNorthArrow(ctx, st);
     drawScaleBar(ctx, st);
     drawCredits(ctx, st);
@@ -734,6 +738,11 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     removeUnderlay,
     previewProject: (fn) => ed.previewFn(fn),
     clearPreview: () => ed.clearPreview(),
+    // Ephemeral drawing state for the house arranging mode: { arrange: true, rotation }. null clears it.
+    setOverlay(o) {
+      state.overlay = o || null;
+      requestDraw();
+    },
     startCalibration() {
       if (!store.project.site.underlay) {
         toast('Add an underlay image first', { kind: 'warn' });

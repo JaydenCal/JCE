@@ -6,6 +6,8 @@ import { worldToScreen } from './math.js';
 import { boundaryEdges } from '../site/model.js';
 import { ringCentroid, signedArea } from '../site/geo.js';
 import { siteCredits } from '../site/credits.js';
+import { boundaryDims, lotLabelLines, buildingHull } from '../site/lotplan.js';
+import { drawLotPlan } from './draw-lotplan.js';
 
 const BOUNDARY = '#d62828'; // red, so the lot reads clearly over an aerial and is never mistaken for proposed work
 const CONTOUR_MINOR = 'rgba(150,102,48,0.6)';
@@ -190,7 +192,8 @@ export function drawLot(ctx, st) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = BOUNDARY;
-    for (const e of boundaryEdges(lot)) {
+    const bearings = boundaryDims(lot);
+    for (const [ei, e] of boundaryEdges(lot).entries()) {
       const a = toScreen(view, e.a);
       const b = toScreen(view, e.b);
       const len = Math.hypot(b.x - a.x, b.y - a.y);
@@ -208,21 +211,40 @@ export function drawLot(ctx, st) {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(ang);
-      halo(ctx, `${e.label} m`, 0, 0, theme);
+      // Survey style: bearing then distance. The bearing is dropped when the edge is too short on screen for both.
+      const bd = bearings[ei];
+      halo(ctx, bd && len > 150 ? `${bd.bearing}  ${e.label} m` : `${e.label} m`, 0, 0, theme);
       ctx.restore();
     }
   }
 
   if (layerOn(lot, 'labels')) {
     const c = ringCentroid(lot.boundary.map((p) => [p.x, p.y]));
-    const s = toScreen(view, { x: c[0], y: c[1] });
+    let s = toScreen(view, { x: c[0], y: c[1] });
+    // Keep the label block clear of the house (walls and room text): take the first spot over the lot, nearest the centre, that
+    // misses the house outline; if none, put the block just below the lot.
+    const hull = buildingHull(st.project).map((p) => toScreen(view, p));
+    if (hull.length > 2) {
+      const sb = lot.boundary.map((p) => toScreen(view, p));
+      const xs = sb.map((p) => p.x); const ys = sb.map((p) => p.y);
+      const hx = hull.map((p) => p.x); const hy = hull.map((p) => p.y);
+      const hb = { x0: Math.min(...hx) - 8, x1: Math.max(...hx) + 8, y0: Math.min(...hy) - 8, y1: Math.max(...hy) + 8 };
+      const inside = (q) => { let o = false; for (let i = 0, j = sb.length - 1; i < sb.length; j = i++) { if ((sb[i].y > q.y) !== (sb[j].y > q.y) && q.x < ((sb[j].x - sb[i].x) * (q.y - sb[i].y)) / (sb[j].y - sb[i].y) + sb[i].x) o = !o; } return o; };
+      const W = 44; const H = 34;
+      const cands = [];
+      for (let fx = 0.08; fx <= 0.92; fx += 0.12) for (let fy = 0.06; fy <= 0.94; fy += 0.08) cands.push({ x: Math.min(...xs) + (Math.max(...xs) - Math.min(...xs)) * fx, y: Math.min(...ys) + (Math.max(...ys) - Math.min(...ys)) * fy });
+      cands.sort((p, q) => Math.hypot(p.x - s.x, p.y - s.y) - Math.hypot(q.x - s.x, q.y - s.y));
+      const ok = cands.find((q) => [[-W, -H], [W, -H], [W, H], [-W, H]].every(([dx, dy]) => inside({ x: q.x + dx, y: q.y + dy })) && (q.x + W < hb.x0 || q.x - W > hb.x1 || q.y + H < hb.y0 || q.y - H > hb.y1));
+      s = ok || { x: s.x, y: Math.max(...ys) + 26 };
+    }
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = BOUNDARY;
     ctx.font = `500 12px ${theme.f.ui}`;
-    halo(ctx, lot.lotNumber ? `Lot ${lot.lotNumber}` : '', s.x, s.y - 9, theme);
+    const names = lotLabelLines(lot);
+    halo(ctx, names.proposed ? names.first : lot.lotNumber ? `Lot ${lot.lotNumber}` : '', s.x, s.y - 9, theme);
     ctx.font = `600 13px ${theme.f.ui}`;
-    halo(ctx, lot.planLabel || '', s.x, s.y + 6, theme);
+    halo(ctx, names.second, s.x, s.y + 6, theme);
     ctx.font = `500 11px ${theme.f.ui}`;
     halo(ctx, `${Math.round(lot.areaM2).toLocaleString('en-AU')} m²`, s.x, s.y + 21, theme);
   }
@@ -272,4 +294,5 @@ export function drawSite(ctx, st) {
   drawContours(ctx, st);
   drawNeighbours(ctx, st);
   drawLot(ctx, st);
+  drawLotPlan(ctx, st);
 }

@@ -115,22 +115,22 @@ function buildRoomRows(data) {
 }
 
 // Drawing helpers ------------------------------------------------------------------
-const ink = (doc, c = INK) => {
+export const ink = (doc, c = INK) => {
   doc.setDrawColor(c[0], c[1], c[2]);
   doc.setTextColor(c[0], c[1], c[2]);
 };
 
-function polygon(doc, pts, style) {
+export function polygon(doc, pts, style) {
   const [p0, ...rest] = pts;
   const segs = rest.map((p, i) => [p.x - (i ? rest[i - 1].x : p0.x), p.y - (i ? rest[i - 1].y : p0.y)]);
   doc.lines(segs, p0.x, p0.y, [1, 1], style, true);
 }
 
-function polyline(doc, pts) {
+export function polyline(doc, pts) {
   for (let i = 0; i < pts.length - 1; i++) doc.line(pts[i].x, pts[i].y, pts[i + 1].x, pts[i + 1].y);
 }
 
-function fit(doc, text, width) {
+export function fit(doc, text, width) {
   let s = ascii(text);
   if (doc.getTextWidth(s) <= width) return s;
   while (s.length > 1 && doc.getTextWidth(`${s}...`) > width) s = s.slice(0, -1);
@@ -321,7 +321,7 @@ function frame(doc, ctx, { title, scaleLabel, sheet }) {
   } else doc.text(fit(doc, note, SHEET_W - 2 * M - 4), x0 + 2, TB_DISC + 3.9);
 }
 
-function northArrow(doc, cx, cy, deg) {
+export function northArrow(doc, cx, cy, deg) {
   const r = 5;
   const a = (deg * Math.PI) / 180;
   const dir = { x: Math.sin(a), y: -Math.cos(a) };
@@ -342,7 +342,7 @@ function northArrow(doc, cx, cy, deg) {
  * Graduated scale bar at the printed scale 1:scale, alternating black and white segments with labels in metres.
  * `dscale` is the real millimetres per design unit (scale times the paper factor), so the bar is the right length on paper.
  */
-function scaleBar(doc, x, y, scale, dscale) {
+export function scaleBar(doc, x, y, scale, dscale) {
   const spec = scaleBarSpec(scale);
   const seg = (spec.segMetres * 1000) / dscale;
   const h = 2;
@@ -361,7 +361,7 @@ function scaleBar(doc, x, y, scale, dscale) {
 }
 
 /** Rooms' outdoor areas, furniture, stairs, walls and doors and windows. `detail` false gives the small cover thumbnail. */
-function planGeometry(doc, content, T, detail, catalogue) {
+export function planGeometry(doc, content, T, detail, catalogue) {
   const { level, shapes } = content;
   // Outdoor areas and furniture sit under the walls.
   for (const r of level.rooms) {
@@ -460,14 +460,14 @@ function drawFurniture(doc, ops, T, scale) {
 
 /** Sheet boxes of the dimension strings (lines, extension lines and the text), for label collision checks. */
 /** Sheet box of the walls and rooms of a level (not the dimensions), or null. */
-function levelOutlineBox(content, T) {
+export function levelOutlineBox(content, T) {
   const pts = [];
   for (const sh of content.shapes) for (const p of sh.pieces) pts.push(...p.poly);
   for (const r of content.level.rooms) pts.push(...r.polygon);
   return pts.length ? boxOf(pts.map(T), 0.5) : null;
 }
 
-function dimensionBoxes(doc, dims, T) {
+export function dimensionBoxes(doc, dims, T) {
   const out = [];
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
@@ -481,7 +481,7 @@ function dimensionBoxes(doc, dims, T) {
   return out;
 }
 
-function drawLevel(doc, ctx, content) {
+export function drawLevel(doc, ctx, content) {
   const { project, catalogue } = ctx;
   const scale = ctx.dscale;
   const { level, shapes, dims, box } = content;
@@ -590,7 +590,8 @@ function drawLevel(doc, ctx, content) {
   ink(doc);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
-  doc.text(`${levelTitle(level).toUpperCase()}  1:${ctx.scale} at ${ctx.paper}`, AREA.x + 2, sy + 3);
+  if (ctx.viewTitle) ctx.viewTitle(doc, AREA.x + 2, sy + 3, levelTitle(level), `1:${ctx.scale} @ ${ctx.paper}`);
+  else doc.text(`${levelTitle(level).toUpperCase()}  1:${ctx.scale} at ${ctx.paper}`, AREA.x + 2, sy + 3);
   if (ctx.note) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
@@ -651,7 +652,7 @@ function drawSchedule(doc, ctx, page, plan) {
 
 const spaced = (t) => ascii(t).toUpperCase().split(' ').map((w) => w.split('').join(' ')).join('   ');
 
-function placeImage(doc, img, box) {
+export function placeImage(doc, img, box) {
   const k = Math.min(box.w / img.w, box.h / img.h);
   const w = img.w * k;
   const h = img.h * k;
@@ -796,7 +797,7 @@ function drawView(doc, ctx, image) {
 
 // jsPDF works in the units of the page. The drawing is laid out on an A3 design sheet, so for A1 every length, line
 // width, font size and dash is multiplied by k before it reaches jsPDF. Real millimetres on paper stay exact.
-function scaledDoc(doc, k) {
+export function scaledDoc(doc, k) {
   if (k === 1) return doc;
   const sc = (a) => a.map((n) => (typeof n === 'number' ? n * k : n));
   return {

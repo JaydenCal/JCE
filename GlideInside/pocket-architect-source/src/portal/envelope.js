@@ -86,3 +86,33 @@ export const SAMPLE_LOT = Object.freeze({
   frontEdgeIndices: [2],
   picked: { front: { minM: 4.5 }, secondaryFront: { minM: 3 }, side: { minM: 0.9 }, rear: { minM: 3 } },
 });
+
+/**
+ * A project site.lot (src/site/model.js shape, docs/SITE_LOOKUP.md) for a lot that comes from the builder portal rather than the
+ * government lookup: the builder's own estate lot. It is a PROPOSED lot (not registered yet), so the plan labels it
+ * "PROPOSED LOT n". `portalLot` is { name, polygonMm, frontEdgeIndices, picked, address, lot, dp, lga, zone }; `envelope` the polygon
+ * from lotEnvelope. Plan millimetres, y down, plan up is grid north. Nothing is invented: only the setbacks the builder entered.
+ */
+export function portalLotToSiteLot(portalLot, envelope = null) {
+  const boundary = (portalLot.polygonMm || []).map((p) => ({ x: Array.isArray(p) ? p[0] : p.x, y: Array.isArray(p) ? p[1] : p.y }));
+  const n = boundary.length;
+  const area = Math.abs(boundary.reduce((sum, p, i) => sum + (p.x * boundary[(i + 1) % n].y - boundary[(i + 1) % n].x * p.y), 0)) / 2;
+  const fronts = [...(portalLot.frontEdgeIndices || [])];
+  const picked = portalLot.picked || null;
+  const slot = (v) => (v && Number.isFinite(v.minM) ? { minM: v.minM, calc: 'fixed', note: 'Entered by the builder for this lot.', clause: null, page: null, dcp: portalLot.dcp || 'Builder lot data', edition: null, flag: null, flagReason: null } : null);
+  const setbacks = picked ? {
+    basis: 'Builder lot data', state: portalLot.state || 'NSW', council: portalLot.lga || '', source: { kind: 'builder', name: portalLot.name || 'Builder lot data' },
+    front: slot(picked.front), side: slot(picked.side), rear: slot(picked.rear), secondaryFront: slot(picked.secondaryFront), garage: null,
+    inputs: {}, flag: null, flagReason: null, ruleIds: [], warnings: [], attempts: [],
+  } : null;
+  return {
+    source: 'builder', address: portalLot.address || '', state: portalLot.state || 'NSW', srid: null, zone: null, origin: { e: 0, n: 0 }, northRef: 'MGA grid north',
+    lotLabel: portalLot.name || 'Proposed lot', lotNumber: String(portalLot.lot || '1'), planLabel: portalLot.dp || '', areaM2: Math.round(area / 1e4) / 100, registeredAreaM2: null,
+    lga: portalLot.lga || '', zoning: portalLot.zone ? { code: portalLot.zone, name: '', instrument: '' } : null, zoneNote: null,
+    boundary, holes: [], neighbours: [], roads: [], frontEdges: fronts, cornerLot: fronts.length > 1, frontageConfirmed: true, frontageMethod: 'builder',
+    contours: [], contourInterval: null, terrain: null, aerial: null, floorRL: null, floorRLAuto: true,
+    layers: { boundary: true, neighbours: true, aerial: true, contours: true, labels: true, dimensions: true },
+    setbacks, envelope: envelope && envelope.length >= 3 ? envelope.map((p) => ({ x: p.x, y: p.y })) : null,
+    provenance: { lot: { attribution: '', retrieved: null }, aerial: null, elevation: null }, warnings: [], sample: true, proposed: true,
+  };
+}
