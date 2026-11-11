@@ -59,6 +59,7 @@ export function createTopbarUI({ root, config, getState, actions }) {
       menu.append(el('button', { class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: 'enquiry' }, onclick: () => { closeMenu(false); actions.enquiry(); } },
         el('span', null, 'Send to JCE for engineering and DA plans'), icon('check', 16), el('small', null, 'Get a quote from JCE Infrastructure')));
     }
+    if (st.portal?.watermark) menu.append(trialNote());
     const info = tokenInfo(st.token);
     menu.append(el('div', { class: 'psp-menu-foot' },
       locked
@@ -66,9 +67,17 @@ export function createTopbarUI({ root, config, getState, actions }) {
         : el('span', null, st.devUnlock && !st.token ? 'Developer unlock: files are built in this browser.' : info?.exp ? `Re-export as often as you like until ${ddmmyyyy(info.exp * 1000)}.` : 'Re-export as often as you like.')));
   }
 
+  const billingHref = () => { try { return new URL('portal/#/billing', new URL('../', window.location.href)).href; } catch { return '#'; } };
+  function trialNote() {
+    return el('div', { class: 'psp-trial', role: 'note' },
+      el('span', { class: 'psp-trial-badge' }, 'Trial'),
+      el('span', null, ' Exports are watermarked during your free trial. ', el('a', { href: billingHref() }, 'Add a card in Billing')));
+  }
+
   function renderSlot() {
     const st = getState();
     clear(slot);
+    if (st.portal?.watermark) slot.append(el('span', { class: 'psp-trial-badge', title: 'Exports are watermarked during your free trial' }, 'Trial'));
     if (st.entitled) {
       const left = st.credits && Number.isFinite(st.credits.remaining) ? ` ${st.credits.remaining} of ${st.credits.total} AI credits left.` : '';
       slot.append(el('button', { class: 'psp-chip', type: 'button', title: `Plan Pack active.${left}`, onclick: () => actions.details() },

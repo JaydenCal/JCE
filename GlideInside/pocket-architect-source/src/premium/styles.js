@@ -108,6 +108,9 @@ export const CSS = `
 .psp-menu-item small { grid-column: 1; color: var(--psp-muted); font-weight: 400; font-size: 12px; }
 .psp-menu-item .psp-icon { grid-column: 2; grid-row: 1 / span 2; color: var(--psp-muted); }
 .psp-menu-item:disabled { opacity: 0.6; cursor: progress; }
+.psp-trial-badge { display: inline-block; background: #be3232; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; }
+.psp-trial { margin-top: 4px; padding: 8px; font-size: 12px; color: var(--psp-muted); border-top: 1px solid var(--psp-border); }
+.psp-trial a { color: var(--psp-accent); }
 .psp-menu-foot { margin-top: 4px; padding: 8px 8px 6px; border-top: 1px solid var(--psp-border); font-size: 12px; color: var(--psp-muted); }
 .psp-chip {
   display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 10px;

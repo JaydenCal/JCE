@@ -2,6 +2,7 @@
 // Units millimetres. DXF Y = minus plan y so the plan reads the same way up. Levels sit side by side.
 
 import { furnitureStrokes } from './symbols.js';
+import { dxfTrialEntities, TRIAL_DXF_LAYER } from './watermark.js';
 import * as G from '../../model/geometry.js';
 import {
   ascii, levelsSorted, levelTitle, wallShapes, doorGeometry, openingLines, stairGeometry, furnitureSize,
@@ -269,7 +270,7 @@ function emitLevel(w, project, level, dx, { catalogue, withSite, sheet }) {
  * options: { layerMap, catalogue, notes: [string] }
  */
 export function toDXF(project, options = {}) {
-  const { layerMap = {}, catalogue = null, notes = [] } = options;
+  const { layerMap = {}, catalogue = null, notes = [], trial = false } = options;
   const levels = levelsSorted(project);
   const body = new Writer(layerMap);
   const plan = planSheets(project, { catalogue });
@@ -293,6 +294,7 @@ export function toDXF(project, options = {}) {
   });
   const noteLines = ['Units: millimetres', 'Concept design only. Not for construction.', ...notes.map(ascii)].filter(Boolean);
   noteLines.forEach((line, i) => body.text('PS-ANNO', { x: noteX, y: noteY + i * 300 }, 200, line));
+  if (trial) dxfTrialEntities(body, { ...body.ext }, { x: noteX, y: noteY + noteLines.length * 300 + 400 });
 
   const head = new Writer(layerMap);
   const e = Number.isFinite(body.ext.minX) ? body.ext : { minX: 0, minY: 0, maxX: 0, maxY: 0 };
@@ -342,7 +344,7 @@ export function toDXF(project, options = {}) {
   head.pair(0, 'ENDTAB');
   head.pair(0, 'TABLE');
   head.pair(2, 'LAYER');
-  head.pair(70, DXF_LAYERS.length + 1);
+  head.pair(70, DXF_LAYERS.length + 1 + (trial ? 1 : 0));
   const layerRow = (name, aci, ltype) => {
     head.pair(0, 'LAYER');
     head.pair(2, name);
@@ -352,6 +354,7 @@ export function toDXF(project, options = {}) {
   };
   layerRow('0', 7, 'CONTINUOUS');
   for (const l of DXF_LAYERS) layerRow(head.layer(l.key), l.aci, l.ltype);
+  if (trial) layerRow(TRIAL_DXF_LAYER, 1, 'CONTINUOUS');
   head.pair(0, 'ENDTAB');
   head.pair(0, 'TABLE');
   head.pair(2, 'STYLE');

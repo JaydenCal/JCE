@@ -3,6 +3,7 @@
 // only affects the 3D formats. Pure of DOM access, Node compatible.
 
 import { slugify } from './shared.js';
+import { trialJsPDF } from './watermark.js';
 
 export const EXPORT_TYPES = {
   pdf: { mime: 'application/pdf', label: 'PDF plans' },
@@ -62,12 +63,15 @@ export async function buildPdfBytes(project, o) {
 export async function buildExport(type, project, options = {}) {
   if (!EXPORT_TYPES[type]) throw new Error(`Unknown export type ${type}`);
   const { catalogue = null, config = {} } = options;
+  // Free trial mark. Only the server sets this, from the org account state; Plan Pack exports never do.
+  const trial = options.watermark === true;
   let bytes;
   if (type === 'dxf') {
     const { toDXF } = await import('./dxf.js');
-    bytes = new TextEncoder().encode(toDXF(project, { layerMap: options.layerMap, catalogue, notes: config.disclaimer ? [config.disclaimer] : [] }));
+    bytes = new TextEncoder().encode(toDXF(project, { layerMap: options.layerMap, catalogue, notes: config.disclaimer ? [config.disclaimer] : [], trial }));
   } else if (type === 'pdf') {
-    const jsPDF = options.jsPDF || (await options.loadJsPDF?.());
+    const baseJsPDF = options.jsPDF || (await options.loadJsPDF?.());
+    const jsPDF = trial && typeof baseJsPDF === 'function' ? trialJsPDF(baseJsPDF) : baseJsPDF;
     bytes = await buildPdfBytes(project, { jsPDF, image: options.image || null, config, catalogue, scale: options.scale || null, style: options.style, builder: options.builder, aerial: options.aerial || null });
   } else if (type === 'html') {
     const { toHTML } = await import('./html.js');
@@ -77,16 +81,16 @@ export async function buildExport(type, project, options = {}) {
       // The 3D tab is part of the product: a failure here is an error, not a file that quietly lacks the model.
       const { toGLB } = await import('./model3d.js');
       ({ VIEWER_JS: viewerJs } = await import('./html-viewer.generated.js'));
-      model = await packGlb(new Uint8Array(await toGLB(project, { catalogue })));
+      model = await packGlb(new Uint8Array(await toGLB(project, { catalogue, trial })));
     }
-    bytes = new TextEncoder().encode(toHTML(project, { catalogue, config, viewerJs, logo: options.logo, date: options.date, ...model }));
+    bytes = new TextEncoder().encode(toHTML(project, { catalogue, config, viewerJs, logo: options.logo, date: options.date, trial, ...model }));
   } else if (type === 'glb') {
     const { toGLB } = await import('./model3d.js');
-    bytes = new Uint8Array(await toGLB(project, { catalogue }));
+    bytes = new Uint8Array(await toGLB(project, { catalogue, trial }));
   } else {
     const { toOBJBundle } = await import('./model3d.js');
     const { zipStore } = await import('./zip.js');
-    const { obj, mtl } = toOBJBundle(project, { catalogue });
+    const { obj, mtl } = toOBJBundle(project, { catalogue, trial });
     const slug = slugify(project?.name);
     bytes = zipStore([
       { name: `${slug}.obj`, data: obj.replace('mtllib model.mtl', `mtllib ${slug}.mtl`) },

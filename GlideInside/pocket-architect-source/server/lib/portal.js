@@ -254,6 +254,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
       user: publicUser(user, ai), org: publicOrg(org, user.role), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai,
       canTopUp: st.canTopUp && (isStaff(user) || !!org.allowClientTopUps), plansIncluded: true, enquiry: !st.readOnly && (isStaff(user) || org.allowClientEnquiries !== false), exports: exportsFor(user, org),
       account: accountView(org, now()),
+      exportWatermark: orgState(org, now()).isTrial, // server decided: exports carry the free trial mark until a card is added
     };
   }
 
@@ -1004,5 +1005,18 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     return runMonth({ pstore, store, config, fetchImpl, now });
   }
 
-  return { route, scheduled, gate, completeCardSetup, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
+  /**
+   * For POST /api/portal/export/:type. Signed in session only; the watermark flag comes from the org account state, never the request.
+   * Returns { user, org, allowed, watermark }.
+   */
+  async function exportContext(request, url, type) {
+    checkCsrf(request, url);
+    const { user, org, state } = await auth({ request, url, setCookie: null }, { allowReadOnly: true });
+    const allowed = exportsFor(user, org);
+    if (state.readOnly) throw readOnlyError(state);
+    if (!allowed.includes(type)) throw new HttpError('FORBIDDEN', 'Your builder has not turned that file type on for your login.', {}, 403);
+    return { user, org, allowed, watermark: state.isTrial };
+  }
+
+  return { route, scheduled, exportContext, gate, completeCardSetup, runMonth: (opts = {}) => runMonth({ pstore, store, config, fetchImpl, now, ...opts }), contactComplete };
 }

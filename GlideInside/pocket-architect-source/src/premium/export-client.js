@@ -67,12 +67,13 @@ export async function coverImage(getViewer, { width = 1280, height = 800, maxCha
 }
 
 /** Build a file in this browser (development unlock only). Returns { blob, filename }. */
-export async function buildLocal(type, project, { config, catalogue, image = null, jspdfUrl } = {}) {
+export async function buildLocal(type, project, { config, catalogue, image = null, jspdfUrl, watermark = false } = {}) {
   const { buildExport } = await import('./exporters/index.js');
   const file = await buildExport(type, project, {
     config,
     catalogue,
     image,
+    watermark: watermark === true,
     loadJsPDF: type === 'pdf' ? () => loadJsPDF(jspdfUrl) : undefined,
   });
   return { blob: new Blob([file.bytes], { type: file.mime }), filename: file.filename };
@@ -83,11 +84,17 @@ export async function buildLocal(type, project, { config, catalogue, image = nul
  * options: { api, token, devUnlock, config, catalogue, getViewer, save }
  * `save(blob, filename)` defaults to a browser download and can be replaced in tests.
  */
-export async function runExport(type, project, { api, token, devUnlock = false, config, catalogue, getViewer = null, save = downloadBlob } = {}) {
+export async function runExport(type, project, { api, token, devUnlock = false, config, catalogue, getViewer = null, save = downloadBlob, portalServer = false, watermark = false } = {}) {
   const image = type === 'pdf' ? await coverImage(getViewer) : null;
   let file;
   let source;
-  if (token) {
+  if (portalServer && api?.portalExportFile) {
+    // Free trial builder login: the server builds the file and decides the watermark from the account state.
+    const body = { project: exportPayload(project) };
+    if (image) body.image = image;
+    file = await api.portalExportFile(type, body, `${project.name || 'design'}.${type}`);
+    source = 'server';
+  } else if (token) {
     // A Plan Pack token (bought, restored or the local development grant) always uses the server.
     const body = { project: exportPayload(project) };
     if (image) body.image = image;
@@ -95,7 +102,7 @@ export async function runExport(type, project, { api, token, devUnlock = false, 
     source = 'server';
   } else if (devUnlock) {
     // Localhost with ?dev and no token: build in this browser so the exporters can be tried without a server.
-    file = await buildLocal(type, exportPayload(project), { config, catalogue, image });
+    file = await buildLocal(type, exportPayload(project), { config, catalogue, image, watermark });
     source = 'local';
   } else {
     throw new ApiError('NOT_ENTITLED', 'A Plan Pack is needed for exports.');
