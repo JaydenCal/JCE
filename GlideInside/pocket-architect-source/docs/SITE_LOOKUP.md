@@ -56,9 +56,70 @@ Feature flags in `src/config.js`: `siteLookupEnabled` (true), `siteMock` (true u
 | `aerial { key, source, attribution, captureDate, extent {x0,y0,x1,y1}, mmPerPx }` | The image is in IndexedDB under `key` and is also `site.underlay` (placed to scale, locked, `site: true`) |
 | `floorRL`, `floorRLAuto` | Finished floor level (m). Default is the lot centroid RL plus 0.15 m. Editable in the panel |
 | `layers { boundary, dimensions, neighbours, labels, aerial, contours }` | Layer visibility (all true by default) |
-| `setbacks`, `envelope` | `null`. Reserved for the setback stage. Nothing is invented here |
+| `setbacks`, `envelope` | `null` until the setback stage fills them. Shape agreed below. Nothing is invented here |
 | `provenance { lot, aerial, elevation }` | Where each layer came from. `elevation` holds source, resolution, datum, accuracy, copyright, note |
 | `warnings`, `sample` | Messages from the lookup (for example "No aerial image"), and true for sample data |
+
+## Setbacks and envelope on site.lot (agreed shape, 11/11/2026)
+
+Three branches meet on `site.lot`: this one writes the lot, `claude/glide-setbacks` (`src/site/setbacks.js`) fills `setbacks` and `envelope`, and
+`claude/glide-ai` (`src/model/placement.js`) and the builder fit ranking read them. The shape below is what each side has been made to accept.
+
+| Field | Written by | Shape |
+|---|---|---|
+| `frontEdges` | `src/site/frontage.js`, confirmed by the person | `number[]`. Every boundary edge that faces a street, primary and secondary together, in index order. Edge `i` runs from `boundary[i]` to `boundary[(i + 1) % n]`. Do not order it "primary first" |
+| `cornerLot` | `src/site/frontage.js` | Boolean hint for the panel only. The setback stage works it out again from `frontEdges` |
+| `setbacks` | `siteLotSetbacks()` in `src/site/setbacks.js` | `null`, or the `pickRules` result plus `edgeKinds` and `inputs` (below) |
+| `envelope` | `siteLotSetbacks()` (it calls `buildEnvelope`) | `null`, or `[{ x, y }]` in plan mm, same axes as `boundary` |
+
+`site.lot.setbacks` when not null:
+
+```
+{
+  basis,            // "Council DCP" | "Codes SEPP Housing Code (...)" | "Codes SEPP Inland Code (...)" | "QDC MP1.1 (default; council planning scheme or the Queensland Housing Code may vary)"
+  state, council,
+  source,           // { kind: 'council', dcp, lga_slug } | { kind: 'fallback', name, edition }
+  front, side, rear,            // slot objects (below); always present when setbacks is not null
+  secondaryFront,               // slot or null (null unless it is a corner lot)
+  garage,                       // slot or null; garage.minM may be null with behindBuildingLineM set
+  edgeKinds,        // one of 'front' | 'secondaryFront' | 'side' | 'rear' per boundary edge, same order as boundary
+  inputs,           // what was asked: { state, zone, lotAreaM2, lotWidthM, cornerLot, use, storeys, wallHeightM, buildingHeightM, streetType, ... }
+  flag, flagReason, // 'check_with_council' | null: true when any applied slot is flagged
+  ruleIds, warnings, attempts
+}
+slot = { minM, calc, note, clause, page, dcp, edition, quote, source_file, confidence, ruleIds, sources,
+         flag, flagReason,       // 'check_with_council' | null for this rule
+         perLevel?, percent?, formula?, rangeM?, derived? }
+```
+
+Rules for readers:
+
+- A setback value is `slot.minM` in metres. `placement.js` also still accepts a plain number or `{ value }`.
+- The flag is `flag === 'check_with_council'` on the slot. Show every value; mark flagged ones "check with council". Never print "compliant".
+- Every applied value carries `clause`, `page` (null for the Codes SEPP and the QDC, which have no page numbers), `dcp` (document name) and `edition`.
+- Classify edges from `setbacks.edgeKinds`. Without it, the shortest street frontage is the primary one (both modules now use that rule).
+- `envelope` is authoritative when present. When `setbacks` is null show nothing: no values, no envelope.
+
+Filling them (the setback stage, after the person confirms the frontage and whenever the design height or storeys change):
+
+```js
+import { siteLotSetbacks } from './site/setbacks.js';
+const { setbacks, envelope, attempts } = siteLotSetbacks(lot, ruleSet, { storeys, wallHeightM, buildingHeightM, streetType });
+lot.setbacks = setbacks;   // null when nothing can be determined; attempts says why
+lot.envelope = envelope;
+```
+
+`ruleSet` is `GlideInside/setbacks-data/setback-rules.json` (5 MB, 128 councils). Load one council on demand in production (`rules/<lga_slug>.json`
+plus the three `fallback/*.json` files) instead of shipping the whole file to the browser. `findCouncil(councils, lot.lga)` matches the cadastre's LGA
+name to the rule file.
+
+Open points for the merge:
+
+- Queensland lots have `zoning: null`; the QDC default does not need a zone but it does need `streetType` (`"access"` or `"collector"`), so the
+  panel has to ask that one question for a Queensland lot, and it only covers lots up to 450 m2.
+- `lotWidthM` is taken as the length of the primary street frontage. A battle-axe lot (frontage is the handle) therefore gets no code fallback and
+  usually no envelope; that is the intended safe result until battle-axe rules are modelled.
+- The builder fit ranking on `claude/glide-accounts` should call `buildEnvelope` (or read `lot.envelope`) instead of its own offset.
 
 "levels": the design's own `levels[]` are unchanged. A level's `elevation` is relative to the ground floor; the ground floor sits at `floorRL`.
 
