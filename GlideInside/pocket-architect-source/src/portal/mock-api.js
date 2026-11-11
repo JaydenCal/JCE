@@ -276,7 +276,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const user = db.users.find((u) => u.id === sessionUserId());
       if (!user || user.status !== 'active') return null;
       const org = db.orgs.find((o) => o.id === user.orgId);
-      return { user: publicUser(user, org), org: publicOrg(org), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai: aiBalance(user, org), canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true, enquiry: isStaff(user) || org.allowClientEnquiries !== false, exports: isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj'] : ['pdf'] };
+      return { user: publicUser(user, org), org: publicOrg(org), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai: aiBalance(user, org), canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true, enquiry: isStaff(user) || org.allowClientEnquiries !== false, exports: isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj', 'html'] : ['pdf'] };
     },
     async changePassword({ currentPassword, newPassword } = {}) {
       await wait();

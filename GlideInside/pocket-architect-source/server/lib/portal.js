@@ -118,7 +118,7 @@ export function createPortal({ store, pstore, config, fetchImpl, now = () => Dat
     id: u.id, name: u.name, email: u.email || '', username: u.username, role: u.role, status: u.status, mustChangePassword: !!u.mustChangePassword,
     createdAt: u.createdAt, lastSignInAt: u.lastSignInAt || null, tempPasswordExpiresAt: u.mustChangePassword ? u.tempPasswordExpiresAt || null : null, ...(ai ? { ai } : {}),
   });
-  const exportsFor = (user, org) => (isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj'] : ['pdf']);
+  const exportsFor = (user, org) => (isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj', 'html'] : ['pdf']);
   const houseView = (h) => ({
     id: h.id, orgId: h.orgId, name: h.name, description: h.description || '', source: h.sourceType === 'glide' ? { type: 'glide', ref: h.sourceRef } : { type: 'saved' },
     createdAt: h.createdAt, updatedAt: h.updatedAt, createdBy: h.createdBy, archived: !!h.archived, ...(h.stats || {}), stats: h.stats || null, thumbnail: h.thumbnail || null,

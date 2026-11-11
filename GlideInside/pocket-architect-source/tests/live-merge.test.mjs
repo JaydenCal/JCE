@@ -281,13 +281,20 @@ test('live links and purchases keep working on the release server', opts, async 
   const c2b = await j(c2);
   assert.equal(c2b.projectId, 'p_mine0001');
   assert.equal((await m2.call('/credits', { headers: { authorization: `Bearer ${c2b.token}` } })).status, 200);
-  // the live PDF set is handed back (not rebuilt, not a second set)
+  // PDF_SET_LIMIT is "0" by default (owner decision 11/11/2026): a migrated live purchase re-exports its current design as a new build.
   m.files.set('pdf/ent_live00000001.pdf', { v: new TextEncoder().encode('%PDF-live'), meta: { filename: 'plans.pdf' } });
   const pdf = await m.call('/export/pdf', { method: 'POST', headers: { ...A, 'content-type': 'application/json' }, body: JSON.stringify({ project: sampleProject('p_live0001') }) });
   assert.equal(pdf.status, 200);
   assert.equal(pdf.headers.get('content-type'), 'application/pdf');
-  assert.equal(Buffer.from(await pdf.arrayBuffer()).toString(), '%PDF-live');
-  assert.equal(db.prepare('SELECT pdf_used FROM entitlements WHERE id = ?').get('ent_live00000001').pdf_used, 1);
+  const rebuilt = Buffer.from(await pdf.arrayBuffer()).toString('latin1');
+  assert.ok(rebuilt.startsWith('%PDF-1') && !rebuilt.startsWith('%PDF-live'), 'a fresh PDF of the current design, not the stored set');
+  assert.equal(db.prepare('SELECT pdf_used FROM entitlements WHERE id = ?').get('ent_live00000001').pdf_used, 1, 'no set is claimed');
+  // with PDF_SET_LIMIT=1 the live rule comes back: the issued set is handed back (not rebuilt, not a second set)
+  const locked = mk({ PDF_SET_LIMIT: '1' }, { db, migrate: false });
+  locked.files.set('pdf/ent_live00000001.pdf', { v: new TextEncoder().encode('%PDF-live'), meta: { filename: 'plans.pdf' } });
+  const again = await locked.call('/export/pdf', { method: 'POST', headers: { ...A, 'content-type': 'application/json' }, body: JSON.stringify({ project: sampleProject('p_live0001') }) });
+  assert.equal(again.status, 200);
+  assert.equal(Buffer.from(await again.arrayBuffer()).toString(), '%PDF-live');
   // a refunded live purchase stays refunded
   const refunded = await m.call('/entitlement?session_id=cs_test_ref&project=p_refunded1');
   assert.equal(refunded.status, 403);
@@ -685,8 +692,8 @@ test('health: the live body (ok, sharing, aiPaused, paymentsConfigured)', opts, 
   assert.deepEqual(bare, { ok: true, sharing: true, aiPaused: true, paymentsConfigured: false });
 });
 
-// ---- 3c. exports: one PDF set per job, redelivered from R2 -----------------------------------------------------------------
-test('exports: ONE PDF plan set per job, the same file back on a repeat, given back on a failed build', opts, async () => {
+// ---- 3c. exports: PDF re-exports (the one-set-per-job rule is off by default, PDF_SET_LIMIT=1 restores it) ------------------
+test('exports: a paid job can re-export its PDF as often as the hourly limit allows (PDF_SET_LIMIT 0 by default)', opts, async () => {
   const db = new DatabaseSync(':memory:');
   applyRelease(db);
   const files = r2();
@@ -699,7 +706,45 @@ test('exports: ONE PDF plan set per job, the same file back on a repeat, given b
       return { bytes: new TextEncoder().encode(`%PDF-build-${builds}`), mime: 'application/pdf', filename: 'plans.pdf' };
     },
   });
-  const app = createApp({ store: createD1Store(d1Of(db)), env: { ENTITLEMENT_SECRET: SECRET, SITE_URL: 'https://x.test', EXPORT_PDF_WAIT_MS: '0', EXPORT_RATE_PER_HOUR: '50' }, files, loadExporters });
+  const app = createApp({ store: createD1Store(d1Of(db)), env: { ENTITLEMENT_SECRET: SECRET, SITE_URL: 'https://x.test', EXPORT_PDF_WAIT_MS: '0', EXPORT_RATE_PER_HOUR: '4' }, files, loadExporters });
+  const store = createD1Store(d1Of(db));
+  const { entitlement } = await store.createEntitlement({ id: 'ent_pdf000002', projectId: 'p_pdf0002', email: 'a@b.co', stripeSessionId: 'cs_pdf2', creditsTotal: 500, status: 'active', createdAt: new Date().toISOString(), expiresAt: '2099-01-01T00:00:00.000Z' });
+  const A = { authorization: `Bearer ${liveToken(entitlement.id, 'p_pdf0002')}`, 'content-type': 'application/json' };
+  const post = (type = 'pdf') => app.fetch(new Request(`https://x.test/api/export/${type}`, { method: 'POST', headers: A, body: JSON.stringify({ project: sampleProject('p_pdf0002') }) }));
+  const first = await post();
+  assert.equal(first.status, 200);
+  assert.equal(await first.text(), '%PDF-build-1');
+  const second = await post();
+  assert.equal(second.status, 200);
+  assert.equal(await second.text(), '%PDF-build-2', 'a re-export is a new build of the current design');
+  assert.equal(builds, 2);
+  assert.deepEqual({ ...db.prepare('SELECT pdf_used, pdf_file FROM entitlements').get() }, { pdf_used: 0, pdf_file: null }, 'no set is claimed or stored');
+  assert.equal(files.files.has('pdf/ent_pdf000002.pdf'), false);
+  fail = true;
+  assert.equal((await post()).status, 503, 'a failed build is an error and changes nothing');
+  fail = false;
+  const last = await post();
+  assert.equal(last.status, 200);
+  // the per Plan Pack hourly limit still applies (4 allowed above; the 5th request is refused)
+  const limited = await post();
+  assert.equal(limited.status, 429);
+  assert.equal((await j(limited)).error.code, 'RATE_LIMITED');
+});
+
+test('exports: PDF_SET_LIMIT=1 restores ONE PDF plan set per job, the same file back on a repeat, given back on a failed build', opts, async () => {
+  const db = new DatabaseSync(':memory:');
+  applyRelease(db);
+  const files = r2();
+  let builds = 0;
+  let fail = false;
+  const loadExporters = async () => ({
+    buildExport: async (type) => {
+      if (fail) throw new Error('boom');
+      builds += 1;
+      return { bytes: new TextEncoder().encode(`%PDF-build-${builds}`), mime: 'application/pdf', filename: 'plans.pdf' };
+    },
+  });
+  const app = createApp({ store: createD1Store(d1Of(db)), env: { ENTITLEMENT_SECRET: SECRET, SITE_URL: 'https://x.test', EXPORT_PDF_WAIT_MS: '0', EXPORT_RATE_PER_HOUR: '50', PDF_SET_LIMIT: '1' }, files, loadExporters });
   const store = createD1Store(d1Of(db));
   const { entitlement } = await store.createEntitlement({ id: 'ent_pdf000001', projectId: 'p_pdf0001', email: 'a@b.co', stripeSessionId: 'cs_pdf', creditsTotal: 500, status: 'active', createdAt: new Date().toISOString(), expiresAt: '2099-01-01T00:00:00.000Z' });
   const A = { authorization: `Bearer ${liveToken(entitlement.id, 'p_pdf0001')}`, 'content-type': 'application/json' };
@@ -724,9 +769,6 @@ test('exports: ONE PDF plan set per job, the same file back on a repeat, given b
   const gone = await post();
   assert.equal(gone.status, 403);
   assert.equal((await j(gone)).error.code, 'PDF_LIMIT_REACHED');
-  // off switch
-  const open = createApp({ store: createD1Store(d1Of(db)), env: { ENTITLEMENT_SECRET: SECRET, SITE_URL: 'https://x.test', PDF_SET_LIMIT: '0' }, files, loadExporters });
-  assert.equal((await open.fetch(new Request('https://x.test/api/export/pdf', { method: 'POST', headers: A, body: JSON.stringify({ project: sampleProject('p_pdf0001') }) }))).status, 200);
 });
 
 test('exports: rate limit per Plan Pack, as on the live Worker', opts, async () => {
@@ -756,7 +798,99 @@ test('the release Worker has the live bindings and route, and no secret in wrang
   for (const secret of ['STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'STRIPE_PRICE_ID', 'ENTITLEMENT_SECRET', 'ANTHROPIC_API_KEY', 'IP_HASH_SALT', 'TEST_CODES', 'RESEND_API_KEY', 'ADMIN_TOKEN']) {
     assert.doesNotMatch(vars, new RegExp(`^${secret}\\s*=`, 'm'), `${secret} must not be a [vars] entry`);
   }
+  assert.match(toml, /PDF_SET_LIMIT = "0"/, 'PDF re-exports are allowed (owner decision 11/11/2026)');
+  assert.match(rd('../server/wrangler.toml.example').replace(/^\s*#.*$/gm, ''), /PDF_SET_LIMIT = "0"/);
   assert.match(toml, /PORTAL_ENABLED = "0"/);
   assert.doesNotMatch(toml, /^crons\s*=/m, 'the billing cron is off while the portal is off');
   for (const name of ['SITE_URL', 'APP_URL', 'ENQUIRY_TO', 'ENQUIRY_FROM', 'SELLER_NAME', 'SELLER_ABN', 'PLAN_PACK_PRICE_CENTS', 'PLAN_PACK_CREDITS', 'ENTITLEMENT_DAYS']) assert.match(toml, new RegExp(`^${name} = `, 'm'), name);
+});
+
+// ---- 4. Save and share, client side: the real browser client against the real Worker -----------------------------------------
+import { createCloud, saveShared, readShare, writeShare, shareKey, CloudError, shareIdFromSearch } from '../src/ui/cloud.js';
+
+const memStorage = () => {
+  const m = new Map();
+  return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => void m.set(k, String(v)), removeItem: (k) => void m.delete(k), map: m };
+};
+
+test('share client against the Worker: create, update with the stored edit key, load, and a live link and key keep working', opts, async () => {
+  const db = liveDb();
+  seedLive(db);
+  const m = mk({}, { db });
+  const cloud = createCloud({ base: '/api', fetchImpl: (url, init) => worker.fetch(new Request(`https://x.test${url}`, init), m.env) });
+  const storage = memStorage();
+  const project = sampleProject('p_client01');
+  project.site.underlay = { key: 'big-image' };
+
+  // create: the link is <page>?share=<id>, the key is kept under ps.share.<project id> and never shown in the link
+  const first = await saveShared(cloud, project, { storage, email: 'a@b.co' });
+  assert.equal(first.created, true);
+  assert.match(first.url, /^https:\/\/x\.test\/plan-studio\/app\/\?share=[A-Za-z0-9_-]{16,40}$/);
+  assert.equal(shareIdFromSearch(new URL(first.url).search), first.id);
+  const kept = JSON.parse(storage.map.get('ps.share.p_client01'));
+  assert.deepEqual(Object.keys(kept).sort(), ['editKey', 'expiresAt', 'id', 'savedAt', 'url']);
+  assert.ok(!first.url.includes(kept.editKey));
+  assert.equal(db.prepare('SELECT email FROM projects WHERE id = ?').get(first.id).email, 'a@b.co');
+
+  // view link: loads read only data, without the tracing underlay
+  const loaded = await cloud.load(first.id);
+  assert.equal(loaded.project.name, 'Smith residence');
+  assert.equal(loaded.project.site.underlay, null);
+
+  // update: same link, edit key sent in x-edit-key
+  project.name = 'Smith residence v2';
+  const second = await saveShared(cloud, project, { storage });
+  assert.equal(second.created, false);
+  assert.equal(second.id, first.id);
+  assert.equal(second.url, first.url);
+  assert.equal((await cloud.load(first.id)).project.name, 'Smith residence v2');
+
+  // another browser (no key) cannot update it, and a wrong key is refused with BAD_EDIT_KEY
+  await assert.rejects(() => cloud.update(first.id, 'not-the-key', project), (e) => e instanceof CloudError && e.code === 'BAD_EDIT_KEY' && e.status === 403);
+  // a refused key makes a new link instead of failing
+  writeShare('p_client01', { ...kept, editKey: 'stale-key' }, storage);
+  const third = await saveShared(cloud, project, { storage });
+  assert.equal(third.created, true);
+  assert.notEqual(third.id, first.id);
+  assert.equal(readShare('p_client01', storage).id, third.id);
+
+  // a link and edit key handed out by the live app (15/10/2026) still work: key stored in the live format, live row in D1
+  writeShare('p_x1', { id: LIVE_SHARE, editKey: 'live-edit-key', url: `https://x.test/plan-studio/app/?share=${LIVE_SHARE}`, savedAt: '2026-10-16T03:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z' }, storage);
+  m.files.set(`projects/${LIVE_SHARE}.json`, { v: JSON.stringify({ schema: 1, id: 'p_x1', name: 'Live house', levels: [{ id: 'l1' }] }) });
+  assert.equal((await cloud.load(LIVE_SHARE)).project.name, 'Live house');
+  const liveProject = sampleProject('p_x1');
+  liveProject.name = 'Live house, edited';
+  const upd = await saveShared(cloud, liveProject, { storage });
+  assert.deepEqual([upd.created, upd.id], [false, LIVE_SHARE]);
+  assert.equal(db.prepare('SELECT name FROM projects WHERE id = ?').get(LIVE_SHARE).name, 'Live house, edited');
+  assert.equal(shareKey('p_x1'), 'ps.share.p_x1');
+});
+
+test('share client errors: not found, expired, rate limited, too large and offline give clear messages', async () => {
+  const { saveErrorMessage, loadErrorMessage } = await import('../src/ui/cloud.js');
+  const reply = (status, body, headers = {}) => async () => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', ...headers } });
+  const err = async (fetchImpl, f) => f(createCloud({ fetchImpl })).catch((e) => e);
+  const notFound = await err(reply(404, { error: { code: 'NOT_FOUND', message: 'That shared design was not found.' } }), (c) => c.load('nope'));
+  assert.equal(notFound.code, 'NOT_FOUND');
+  assert.match(loadErrorMessage(notFound), /not found.*copied in full/);
+  const gone = await err(reply(410, { error: { code: 'EXPIRED', message: 'x' } }), (c) => c.load('old'));
+  assert.equal(loadErrorMessage(gone), 'That shared link has expired.');
+  const limited = await err(reply(429, { error: { code: 'RATE_LIMITED', message: 'x', retryAfter: 600 } }, { 'retry-after': '600' }), (c) => c.create({ schema: 1, levels: [1] }));
+  assert.equal(limited.retryAfter, 600);
+  assert.match(saveErrorMessage(limited), /lot of saves.*about 10 minutes/);
+  const big = await err(reply(413, { error: { code: 'PROJECT_TOO_LARGE', message: 'x', maxBytes: 2e6 } }), (c) => c.create({ schema: 1, levels: [1] }));
+  assert.match(saveErrorMessage(big), /too large.*2 MB.*Use Save/);
+  const offline = await err(async () => { throw new TypeError('Failed to fetch'); }, (c) => c.load('x'));
+  assert.equal(offline.code, 'NETWORK');
+  assert.match(saveErrorMessage(offline), /offline|cannot be reached/);
+  const html502 = await err(async () => new Response('<html>bad gateway</html>', { status: 502, headers: { 'content-type': 'text/html' } }), (c) => c.load('x'));
+  assert.equal(html502.code, 'SERVER_UNAVAILABLE');
+  assert.match(saveErrorMessage(html502), /not available right now/);
+  // blocked storage never breaks a save: the link still comes back
+  const blocked = { getItem() { throw new Error('blocked'); }, setItem() { throw new Error('blocked'); }, removeItem() { throw new Error('blocked'); } };
+  const ok = createCloud({ fetchImpl: async () => new Response(JSON.stringify({ id: 'abcdefghijklmnop', editKey: 'k', url: 'https://x.test/?share=abcdefghijklmnop', expiresAt: '2099-01-01T00:00:00.000Z' }), { status: 201, headers: { 'content-type': 'application/json' } }) });
+  const out = await saveShared(ok, { id: 'p_blocked1', schema: 1, levels: [{}], site: {} }, { storage: blocked });
+  assert.equal(out.created, true);
+  assert.equal(out.keyKept, false);
+  assert.equal(readShare('p_blocked1', blocked), null);
 });

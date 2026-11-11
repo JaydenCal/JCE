@@ -656,6 +656,24 @@ test('requests are validated and size limited, and CORS is limited to SITE_URL',
 });
 
 // Exports on the server ------------------------------------------------------------------------------
+test('the interactive HTML export is a Plan Pack file from the server: one offline page with the plan and the 3D model', async () => {
+  const w = makeWorld();
+  const { token } = await w.buy({ projectId: 'p_html' });
+  const none = await w.call('POST', '/api/export/html', { body: { project: sampleProject('p_html') } });
+  assert.equal(none.status, 403, 'a Plan Pack is needed');
+  const html = await w.call('POST', '/api/export/html', { token, body: { project: sampleProject('p_html') } });
+  assert.equal(html.status, 200);
+  assert.equal(html.res.headers.get('content-type'), 'text/html; charset=utf-8');
+  assert.equal(html.res.headers.get('content-disposition'), 'attachment; filename="smith-residence.html"');
+  assert.equal(html.res.headers.get('content-security-policy'), 'sandbox');
+  const text = await html.res.text();
+  assert.ok(text.startsWith('<!doctype html>'));
+  assert.ok(text.includes('id="pa-glb"') && text.includes('window.PA3D'));
+  assert.deepEqual(text.match(/https?:\/\//g) || [], []);
+  assert.match(text, /ABN 29 699 165 663/);
+  assert.equal((await w.call('POST', '/api/export/html', { token, body: { project: sampleProject('p_other') } })).json.error.code, 'NOT_ENTITLED');
+});
+
 test('paid exports build real files for the entitled project only', async () => {
   const w = makeWorld();
   const { token } = await w.buy({ projectId: 'p_exp' });

@@ -10,6 +10,7 @@ export function createStore(project, opts = {}) {
   const redoStack = [];
   const limit = opts.historyLimit ?? 100;
   let saveTimer = null;
+  let autosaveOn = true;
 
   const store = {
     project: migrate(project),
@@ -41,8 +42,22 @@ export function createStore(project, opts = {}) {
       }
     },
 
+    // A shared design opened from a link is read only: every change is refused until the person makes their own copy.
+    readOnly: false,
+
+    // Autosave can be switched off (a read only shared design must not overwrite the design saved in this browser).
+    setAutosave(on) {
+      autosaveOn = !!on;
+      if (!autosaveOn) clearTimeout(saveTimer);
+    },
+
     // Mutate the project with fn(project). One undo step. Restores on error and rethrows.
     apply(label, fn) {
+      if (store.readOnly) {
+        const err = new Error('This is a shared design and it is read only. Choose "Make my own copy" to change it.');
+        err.name = 'ReadOnlyError';
+        throw err;
+      }
       const before = structuredClone(store.project);
       let result;
       try {
@@ -141,13 +156,13 @@ export function createStore(project, opts = {}) {
   }
 
   function scheduleSave() {
-    if (!opts.autosaveKey || typeof localStorage === 'undefined') return;
+    if (!autosaveOn || !opts.autosaveKey || typeof localStorage === 'undefined') return;
     clearTimeout(saveTimer);
     saveTimer = setTimeout(saveNow, 1000);
   }
 
   function saveNow() {
-    if (!opts.autosaveKey || typeof localStorage === 'undefined') return;
+    if (!autosaveOn || !opts.autosaveKey || typeof localStorage === 'undefined') return;
     try {
       localStorage.setItem(opts.autosaveKey, JSON.stringify(store.project));
       store.emit('saved', { at: Date.now() });

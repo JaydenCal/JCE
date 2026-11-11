@@ -10,6 +10,7 @@ export const EXPORT_ITEMS = [
   { type: 'dxf', label: 'DXF drawing', hint: 'Layered, for CAD software' },
   { type: 'glb', label: '3D model (GLB)', hint: 'Blender, Windows 3D Viewer, game engines' },
   { type: 'obj', label: '3D model (OBJ)', hint: 'With materials, in a zip' },
+  { type: 'html', label: 'Interactive HTML', hint: 'Plan and 3D model in one file that opens offline' },
 ];
 
 /** True on localhost only. The development unlock is never honoured anywhere else. */

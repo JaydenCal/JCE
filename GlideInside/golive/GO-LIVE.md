@@ -30,12 +30,12 @@ curl.exe -s https://glideinside.com.au/api/projects/<THE SHARE ID>
 ```
 
 Differences from the live Worker to decide on before you deploy (none breaks a link or a purchase):
-1. **The release app has no Save and share button.** The server serves old links, but the release `plan-studio/app/index.html` does not open `?share=` links and cannot create new ones. If you upload the release app, old share links will not open in the browser. Either keep the old app file until the button is added to the release app, or have it added first.
-2. **The "interactive HTML" export is gone** (`/api/export/html` answers 400). The release app has no button for it, but the plans pages and the FAQ still list it in the Plan Pack. Change the wording or have it added back.
+1. **Save and share is back in the release app** (a Share button next to Save). It uses the live link format `<app page>?share=<id>` and the live browser storage name `ps.share.<project id>`, so old links open (read only, with "Make my own copy") and owners keep the right to update them from the browser that saved.
+2. **The interactive HTML export is back** as part of the Plan Pack (`POST /api/export/html`, Exports menu "Interactive HTML"). The plans pages and FAQs describe it.
 3. A Checkout session unlocks a pack only if it is a one-off AUD payment of at least A$35 for this app (same rule as live). A price set to A$30 unlocks nothing.
 4. The assistant (`/api/ai/*`) uses the release tools and context. An old cached copy of the old app asking the new assistant for an edit may get changes it cannot apply. Upload the website straight after the Worker deploy (Steps 6 to 8), in a quiet period.
 5. Assistant spend limits are now the release ones (US$5 a day, US$50 a month, 6 requests a minute) in place of the live `AI_DAILY_TOKEN_CAP`. Change `AI_DAILY_CAP_USD` and `AI_MONTHLY_CAP_USD` in `wrangler.toml` if you want others.
-6. One PDF plan set per job is still enforced exactly as live (the set is kept in R2 under `pdf/` and a repeat request returns the same file). `PDF_SET_LIMIT = "0"` turns it off.
+6. PDF re-exports are allowed (owner decision 11/11/2026): `PDF_SET_LIMIT = "0"` is the default in `wrangler.toml`, so a paid job can export its current design again as often as the hourly export limit allows. `"1"` brings back the old one set per job rule.
 
 ## 1. Cloudflare account and Wrangler login (already set up, 2 minute check)
 

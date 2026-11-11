@@ -105,7 +105,7 @@ test('7. a free-tier design cannot produce files: no token and no dev unlock is 
   // The premium module reads the flag through isLocalHost, so a host page cannot switch it on elsewhere.
   const src = fs.readFileSync(path.join(ROOT, 'src/premium/premium.js'), 'utf8');
   assert.match(src, /cfg\.devUnlock && isLocalHost\(\)/);
-  assert.deepEqual(EXPORT_ITEMS.map((i) => i.type), ['pdf', 'dxf', 'glb', 'obj']);
+  assert.deepEqual(EXPORT_ITEMS.map((i) => i.type), ['pdf', 'dxf', 'glb', 'obj', 'html']);
 });
 
 test('exports: the token path posts the project (without the underlay image) and the dev path builds locally', async () => {
@@ -780,7 +780,7 @@ test('UI, locked by default: Unlock button, locked Exports menu, locked assistan
   `);
   assert.equal(r.topbar, 'Unlock plans, A$35');
   assert.equal(r.requestsAtStart, 0, 'the locked state makes no network calls');
-  assert.deepEqual(r.items, ['PDF plans', 'DXF drawing', '3D model (GLB)', '3D model (OBJ)']);
+  assert.deepEqual(r.items, ['PDF plans', 'DXF drawing', '3D model (GLB)', '3D model (OBJ)', 'Interactive HTML']);
   assert.equal(r.itemsLocked, true);
   assert.equal(r.menuOpen, true);
   assert.equal(r.prompts.length, 4);

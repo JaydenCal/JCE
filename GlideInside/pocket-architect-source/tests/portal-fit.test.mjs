@@ -89,7 +89,7 @@ const admin = (api) => api.signIn(DEMO_LOGINS.admin);
 test('exports: staff always get PDF, DXF and 3D; clients get PDF only unless the builder switches CAD on', async () => {
   const api = fresh();
   const staff = await admin(api);
-  assert.deepEqual((await api.me()).exports, ['pdf', 'dxf', 'glb', 'obj']);
+  assert.deepEqual((await api.me()).exports, ['pdf', 'dxf', 'glb', 'obj', 'html']);
   const c = await api.issueClientLogin({ firstName: 'Cad' });
   await api.signOut();
   await api.signIn({ identifier: c.credentials.username, password: c.credentials.password }).catch(() => {});
@@ -103,7 +103,7 @@ test('exports: staff always get PDF, DXF and 3D; clients get PDF only unless the
   assert.equal((await api.setOrgSettings({ allowClientCadExports: true })).allowClientCadExports, true);
   await api.signOut();
   await api.signIn(DEMO_LOGINS.client);
-  assert.deepEqual((await api.me()).exports, ['pdf', 'dxf', 'glb', 'obj']);
+  assert.deepEqual((await api.me()).exports, ['pdf', 'dxf', 'glb', 'obj', 'html']);
   assert.ok(staff);
 });
 
