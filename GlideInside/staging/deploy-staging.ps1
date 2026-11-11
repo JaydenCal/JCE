@@ -29,12 +29,15 @@ $SampleOrg = 'Sample Builder (staging)'
 
 function Step($m)  { Write-Host ""; Write-Host "== $m" -ForegroundColor Cyan }
 function Fail($m)  { Write-Host ""; Write-Host "STOPPED: $m" -ForegroundColor Red; exit 1 }
+try { Start-Transcript -Path (Join-Path $PSScriptRoot '..\..\..\staging-deploy-transcript.log') -Force | Out-Null } catch {}
+$env:CI='true'; $env:WRANGLER_SEND_METRICS='false'; $env:NO_UPDATE_NOTIFIER='1'; $env:npm_config_update_notifier='false'
 function Wrangler {
   # runs the locally installed wrangler from the staging folder; returns the output text and sets $script:WrExit
   Push-Location $Here
   try {
     $prev = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
-    $out = & npx --no-install wrangler @args 2>&1 | ForEach-Object { "$_" }
+    $wa = @($args); $wbin = Join-Path $Here 'node_modules\.bin\wrangler.cmd'
+    $out = & $wbin @wa 2>&1 | ForEach-Object { "$_" }
     $script:WrExit = $LASTEXITCODE
     $ErrorActionPreference = $prev
   } finally { Pop-Location }
