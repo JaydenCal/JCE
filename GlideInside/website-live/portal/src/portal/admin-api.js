@@ -32,6 +32,7 @@ export function createAdminApi({ token, base = CONFIG.apiBase, fetchImpl = null 
     extendTrial: (id) => call('POST', `/orgs/${encodeURIComponent(id)}/extend-trial`, {}),
     convert: (id, note) => call('POST', `/orgs/${encodeURIComponent(id)}/convert`, { note }),
     setLoginRate: (id, cents) => call('POST', `/orgs/${encodeURIComponent(id)}/login-rate`, { cents }),
+    setBrandColours: (id, colours) => call('POST', `/orgs/${encodeURIComponent(id)}/brand-colours`, { colours }),
     resetAdmin: (id) => call('POST', `/orgs/${encodeURIComponent(id)}/reset-admin`, {}),
   };
 }

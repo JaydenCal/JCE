@@ -746,6 +746,40 @@ for (const [label, d1] of stores) {
     assert.equal(ent.creditsTotal - ent.creditsUsed, 0);
   });
 
+  t('builder colour scheme: saved on the org, returned to staff and clients at sign in, validated, cleared, never writable by designers', async () => {
+    const w = makeWorld({ d1 });
+    const org = await w.makeOrg();
+    const b = org.admin;
+    assert.equal((await b.get('/portal/me')).data.org.branding.colours, null, 'Glide Inside look until chosen');
+    const put = await b.put('/portal/org/branding', { displayName: 'Sample', colours: { primary: '#1F4D3A', accent: '#d9822b', darkInk: '#e8f0ec', darkBg: '#0e1a14' } });
+    assert.equal(put.status, 200, JSON.stringify(put.data));
+    assert.deepEqual(put.data.colours, { primary: '#1f4d3a', accent: '#d9822b', darkInk: '#e8f0ec', darkBg: '#0e1a14' });
+    assert.deepEqual((await b.get('/portal/me')).data.org.branding.colours, put.data.colours);
+    const client = await w.makeClient(org);
+    assert.deepEqual((await client.browser.get('/portal/me')).data.org.branding.colours, put.data.colours, 'client sees the builder colours');
+    assert.equal((await b.put('/portal/org/branding', { displayName: 'Sample' })).data.colours.primary, '#1f4d3a', 'colours kept when not sent');
+    assert.equal((await b.put('/portal/org/branding', { displayName: 'Sample', colours: { primary: 'green' } })).status, 400);
+    assert.equal((await b.put('/portal/org/branding', { displayName: 'Sample', colours: { primary: '#fff;}</style>' } })).status, 400, 'no CSS injection through the colour fields');
+    assert.equal((await b.put('/portal/org/branding', { displayName: 'Sample', colours: { accent: '#d9822b' } })).status, 400, 'accent needs a primary');
+    const d = await w.makeDesigner(org);
+    assert.equal((await d.browser.put('/portal/org/branding', { displayName: 'X', colours: { primary: '#000000' } })).status, 403);
+    assert.equal((await b.put('/portal/org/branding', { displayName: 'Sample', colours: null })).data.colours, null);
+    assert.equal((await b.get('/portal/me')).data.org.branding.colours, null);
+  });
+
+  t('owner admin route sets and clears an org colour scheme with validation and the admin token', async () => {
+    const w = makeWorld({ d1 });
+    const org = await w.makeOrg();
+    const url = `/portal/admin/orgs/${org.orgId}/brand-colours`;
+    assert.equal((await w.admin('POST', url, { colours: { primary: '#14305a', accent: '#F07A1A' } })).status, 200);
+    assert.equal((await org.admin.get('/portal/me')).data.org.branding.colours.accent, '#f07a1a');
+    assert.equal((await w.admin('POST', url, { colours: { primary: 'navy' } })).status, 400);
+    assert.equal((await w.admin('POST', url, {})).status, 400);
+    assert.equal((await w.admin('POST', url, { colours: { primary: '#000000' } }, 'wrong-token')).status, 401);
+    assert.equal((await w.admin('POST', url, { colours: null })).status, 200);
+    assert.equal((await org.admin.get('/portal/me')).data.org.branding.colours, null);
+  });
+
   t('billing contact needs the legal name and a valid ABN; branding and settings validate input', async () => {
     const w = makeWorld({ d1 });
     const org = await w.makeOrg();

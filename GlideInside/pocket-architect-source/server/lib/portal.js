@@ -5,6 +5,7 @@
 import { migrate, validate } from '../../src/model/schema.js';
 import { GLIDE_LIBRARY } from '../../src/portal/glide-library.generated.js';
 import { houseStats } from '../../src/portal/house-stats.js';
+import { validateColours } from '../../src/portal/theme.js';
 import { projectToSvg } from '../../src/portal/thumbnail.js';
 import { generateUsername, generatePassword, passwordProblem } from '../../src/portal/credentials.js';
 import { monthKey, NEW_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, formatAud, LOGIN_TIER_2_MAX } from '../../src/portal/billing.js';
@@ -112,8 +113,9 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   }
 
   // Views -------------------------------------------------------------------------------------------------------------------
+  const coloursOf = (o) => (o.brandPrimary ? { primary: o.brandPrimary, accent: o.brandAccent || null, darkInk: o.brandDarkInk || null, darkBg: o.brandDarkBg || null } : null);
   const publicOrg = (o, role) => ({
-    id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null },
+    id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null, colours: coloursOf(o) },
     allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true,
     showGlideLibrary: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap,
     ...(role === 'admin' ? { billingContact: billingContact(o) } : {}),
@@ -627,8 +629,18 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
         patch.logoDataUrl = b.logoDataUrl;
       }
     }
+    // Colour scheme: undefined leaves it alone, null (or no primary) goes back to the Glide Inside look, an object replaces all four.
+    if (b.colours !== undefined) {
+      if (b.colours === null) Object.assign(patch, { brandPrimary: null, brandAccent: null, brandDarkInk: null, brandDarkBg: null });
+      else {
+        const v = validateColours(b.colours);
+        if (!v.ok) throw new HttpError('BAD_REQUEST', Object.values(v.errors)[0]);
+        Object.assign(patch, { brandPrimary: v.colours.primary, brandAccent: v.colours.accent, brandDarkInk: v.colours.darkInk, brandDarkBg: v.colours.darkBg });
+      }
+    }
     await pstore.updateOrg(org.id, patch);
-    return json({ displayName: patch.displayName, logoDataUrl: 'logoDataUrl' in patch ? patch.logoDataUrl : org.logoDataUrl || null });
+    const after = { ...org, ...patch };
+    return json({ displayName: patch.displayName, logoDataUrl: 'logoDataUrl' in patch ? patch.logoDataUrl : org.logoDataUrl || null, colours: coloursOf(after) });
   }
   async function setSettings(r) {
     const { org, user } = await auth(r, { need: 'billing.write' });
@@ -773,6 +785,21 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     return json(await adminOrgView({ ...org, ...patch }));
   }
   /** Set or clear the org's custom per-login price. It applies to every login that first signs in this month (rows already charged are repriced). */
+  // Owner sets or clears an org's colour scheme: { colours: { primary, accent, darkInk, darkBg } } or { colours: null }.
+  async function adminBrandColours(r, id) {
+    await adminAuth(r.request);
+    const org = await adminOrg(r, id);
+    const b = await readJson(r.request, 2048).catch(() => ({}));
+    if (b.colours === undefined) throw new HttpError('BAD_REQUEST', 'Send colours as { primary, accent, darkInk, darkBg } or null for the Glide Inside look.');
+    let patch = { brandPrimary: null, brandAccent: null, brandDarkInk: null, brandDarkBg: null };
+    if (b.colours !== null) {
+      const v = validateColours(b.colours);
+      if (!v.ok) throw new HttpError('BAD_REQUEST', Object.values(v.errors)[0]);
+      patch = { brandPrimary: v.colours.primary, brandAccent: v.colours.accent, brandDarkInk: v.colours.darkInk, brandDarkBg: v.colours.darkBg };
+    }
+    await pstore.updateOrg(org.id, patch);
+    return json({ id: org.id, colours: coloursOf({ ...org, ...patch }) });
+  }
   async function adminLoginRate(r, id) {
     await adminAuth(r.request);
     const org = await adminOrg(r, id);
@@ -914,7 +941,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     ['POST', '/billing/setup', billingSetup], ['POST', '/billing/setup/confirm', billingSetupConfirm],
     ['POST', '/trial-request', trialRequest, { noCsrf: true }],
     ['GET', '/admin/trial-requests', adminRequests, { token: true }], ['POST', `/admin/trial-requests/${ID}/approve`, adminApprove, { token: true }], ['POST', `/admin/trial-requests/${ID}/decline`, adminDecline, { token: true }],
-    ['GET', '/admin/orgs', adminOrgs, { token: true }], ['POST', `/admin/orgs/${ID}/extend-trial`, adminExtend, { token: true }], ['POST', `/admin/orgs/${ID}/convert`, adminConvert, { token: true }], ['POST', `/admin/orgs/${ID}/login-rate`, adminLoginRate, { token: true }], ['POST', `/admin/orgs/${ID}/reset-admin`, adminResetAdmin, { token: true }],
+    ['GET', '/admin/orgs', adminOrgs, { token: true }], ['POST', `/admin/orgs/${ID}/extend-trial`, adminExtend, { token: true }], ['POST', `/admin/orgs/${ID}/convert`, adminConvert, { token: true }], ['POST', `/admin/orgs/${ID}/login-rate`, adminLoginRate, { token: true }], ['POST', `/admin/orgs/${ID}/brand-colours`, adminBrandColours, { token: true }], ['POST', `/admin/orgs/${ID}/reset-admin`, adminResetAdmin, { token: true }],
   ].map(([method, p, handler, opts]) => ({ method, re: new RegExp(`^${p}$`), handler, opts: opts || {} }));
 
   /** Handles /portal/* (path is the part after /api). Returns null when the path is not a portal path. */

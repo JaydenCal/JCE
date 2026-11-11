@@ -12,6 +12,7 @@ const SPECS = {
       allowClientTopUps: 'allow_client_topups:b', allowClientEnquiries: 'allow_client_enquiries:b', showGlideToClients: 'show_glide_to_clients:b',
       allowClientCadExports: 'allow_client_cad_exports:b', aiMonthlyCap: 'ai_monthly_cap', legalName: 'legal_name', abn: 'abn',
       billingName: 'billing_name', billingEmail: 'billing_email', billingPhone: 'billing_phone', stripeCustomerId: 'stripe_customer_id', createdAt: 'created_at',
+      brandPrimary: 'brand_primary', brandAccent: 'brand_accent', brandDarkInk: 'brand_dark_ink', brandDarkBg: 'brand_dark_bg', // builder colours (migration 0010)
       customLoginCents: 'custom_login_cents', // nullable: the owner's per-login price for this org (migration 0008)
     },
   },
