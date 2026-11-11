@@ -16,6 +16,11 @@ export const CONFIG = {
     terms: '',
     privacy: '',
   },
+  // Site lookup ("Find my block"): address search, lot boundary, DCDB neighbours, aerial and LiDAR/DEM contours (docs/SITE_LOOKUP.md).
+  // siteMock serves recorded-shape SAMPLE data from src/site/fixtures/ without calling the API. Set it to false once /api/site/* is deployed.
+  siteLookupEnabled: true,
+  siteMock: true,
+  siteAerialMarginM: 30, // aerial and elevation grid extend this far beyond the lot boundary
   autosaveKey: 'ps.autosave.v1',
   embedMode: params.get('embed') === 'demo' ? 'demo' : 'full',
   // Unlocks client-side exports for local testing only. Never true in production.
