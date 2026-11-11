@@ -253,6 +253,8 @@ svg { display: block; }
 .ps-topbar-spacer { flex: 1 1 0; min-width: 0; }
 .ps-premium-slot { display: flex; align-items: center; gap: 8px; min-height: 32px; margin-left: auto; flex: 0 0 auto; white-space: nowrap; }
 @media (max-width: 1699.98px) { .ps-product { font-size: 14px; letter-spacing: 0.03em; } .ps-name { width: 110px; } .ps-topbar { gap: 8px; } .ps-shell .ps-topbar .ps-back .ps-btn-text { display: none !important; } .ps-shell .ps-topbar .ps-back.ps-btn--wide:has(.ps-btn-text) { width: 32px !important; padding: 0 !important; } }
+/* Below 1560px the topbar must stay on one row in 3D (the Roof chip adds a control): the logo mark stands in for the product name and the gaps tighten. */
+@media (max-width: 1559.98px) { .ps-product { display: none; } .ps-name { width: 100px; } .ps-topbar { gap: 6px; } }
 
 /* Buttons and segmented controls ------------------------------------------ */
 .ps-btn {
@@ -827,6 +829,7 @@ svg { display: block; }
 .ps-find--compact .ps-find-input { height: 30px; }
 .ps-welcome .ps-find { margin: 0 0 8px; }
 .ps-site-facts { width: 100%; }
+.ps-site-facts td { overflow-wrap: anywhere; white-space: normal; }
 .ps-frontage {
   position: absolute; left: 50%; top: 14px; z-index: 6; transform: translateX(-50%);
   width: min(520px, calc(100% - 24px)); display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px;

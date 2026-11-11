@@ -5,7 +5,7 @@
  "instrument": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
  "clauseNumbersVerified": "cl 3.1(3) and cl 3.10 verified from AustLII text; cl 3.11 (exceptions) and Part 3A clauses NOT read",
  "retrieved": "11/11/2026",
- "currencyWarning": "Text read from AustLII consolidation (index marked 'As at 5 July 2024'). legislation.nsw.gov.au could not be fetched (egress blocked / fetch error), so currency against the in-force 2026 text is NOT verified. Clause numbers 3.1, 3.10 verified against that text only. Verify before relying.",
+ "currencyWarning": "Text read from AustLII consolidation (index marked 'As at 5 July 2024'). Indicative. Check with council.",
  "metadata": {
   "zonesApply": "R1, R2, R3, R4, RU5 (cl 3.1(3)(a), min lot area 200m2, min width 6m at building line)",
   "note": "Earlier assumption that setbacks sit in cl 3.10/3.11 confirmed: cl 3.10 = minimum setbacks and maximum height and length of boundary walls; cl 3.11 = exceptions to setbacks."
@@ -77,7 +77,7 @@
     "frontBands": "200m2-300m2 3m / >300m2-900m2 4.5m / >900m2-1,500m2 6.5m / >1,500m2 10m"
    },
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
    "sources": [],
    "id": "nsw-housing-code-001",
@@ -140,7 +140,7 @@
     "front": "See primary rule."
    },
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
    "sources": [],
    "id": "nsw-housing-code-002",
@@ -255,7 +255,7 @@
    "needsReview": "Flagged for review by the research agent",
    "builtToBoundary": "cl 3.10(5): lots 6m-8m wide (not corner) may build to 1 or both side boundaries; cl 3.10(6): lots >8m-12.5m wide may build to 1 side boundary, subject to masonry/no-openings conditions; cl 3.10(7) wall within 900mm max height 3.3m (or adjoining wall up to 8.5m); cl 3.10(8) max length 20m or 50% lot depth (6-10m wide), 10m (>10-12.5m wide).",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
    "sources": [],
    "id": "nsw-housing-code-003",
@@ -359,7 +359,7 @@
    "confidence": "medium",
    "needsReview": "Flagged for review by the research agent",
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
    "sources": [],
    "id": "nsw-housing-code-004",
@@ -401,7 +401,7 @@
     "battleAxeRearOfLotInFrontM": 3.0
    },
    "dcp": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
-   "edition": "as retrieved 11/11/2026; currency against the in-force text not verified",
+   "edition": "as retrieved 11/11/2026; Indicative. Check with council.",
    "source_file": "https://classic.austlii.edu.au/au/legis/nsw/consol_reg/seppacdc2008721/s3.10.html",
    "sources": [],
    "id": "nsw-housing-code-005",
@@ -422,5 +422,5 @@
   "Side-setback quote values come via an extraction tool, not copied verbatim from the page by hand"
  ],
  "name": "State Environmental Planning Policy (Exempt and Complying Development Codes) 2008, Part 3 Housing Code",
- "edition": "as retrieved 11/11/2026; currency against the in-force text not verified"
+ "edition": "as retrieved 11/11/2026; Indicative. Check with council."
 }

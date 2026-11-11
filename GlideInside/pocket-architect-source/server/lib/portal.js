@@ -114,8 +114,8 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   // Views -------------------------------------------------------------------------------------------------------------------
   const publicOrg = (o, role) => ({
     id: o.id, name: o.name, shortCode: o.shortCode, branding: { displayName: o.displayName || o.name, logoDataUrl: o.logoDataUrl || null },
-    allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients !== false,
-    showGlideLibrary: o.showGlideToClients !== false, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap,
+    allowClientTopUps: !!o.allowClientTopUps, allowClientEnquiries: o.allowClientEnquiries !== false, showGlideToClients: o.showGlideToClients === true,
+    showGlideLibrary: o.showGlideToClients === true, allowClientCadExports: !!o.allowClientCadExports, aiMonthlyCap: o.aiMonthlyCap,
     ...(role === 'admin' ? { billingContact: billingContact(o) } : {}),
   });
   const billingContact = (o) => ({ name: o.billingName || '', email: o.billingEmail || '', phone: o.billingPhone || '', legalName: o.legalName || '', abn: o.abn || '' });
@@ -383,13 +383,13 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   }
   async function listGlide(r) {
     const { user, org } = await auth(r);
-    if (!isStaff(user) && org.showGlideToClients === false) return json([]);
+    if (!isStaff(user) && org.showGlideToClients !== true) return json([]);
     return json(GLIDE_LIBRARY.map((g) => ({ ...g })));
   }
   async function getGlide(r, id) {
     const { user, org } = await auth(r);
     const g = GLIDE_LIBRARY.find((x) => x.id === id);
-    if (!g || (!isStaff(user) && org.showGlideToClients === false)) throw new HttpError('NOT_FOUND', 'Unknown Glide Inside model.');
+    if (!g || (!isStaff(user) && org.showGlideToClients !== true)) throw new HttpError('NOT_FOUND', 'Unknown Glide Inside model.');
     return json({ ...g, project: await resolveGlideProject(id, g.name) });
   }
 
@@ -657,7 +657,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const base = (shortCode || name.replace(/[^A-Za-z]/g, '').slice(0, 3)).toUpperCase().replace(/[^A-Z0-9]/g, '') || 'ORG';
     let code = base;
     for (let n = 2; await pstore.getOrgByShortCode(code); n += 1) code = `${base}${n}`;
-    const org = { id: rid('org'), name, shortCode: code, displayName: name, logoDataUrl: null, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: true, allowClientCadExports: false, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
+    const org = { id: rid('org'), name, shortCode: code, displayName: name, logoDataUrl: null, allowClientTopUps: true, allowClientEnquiries: true, showGlideToClients: false, allowClientCadExports: false, aiMonthlyCap: config.orgMonthlyCredits, createdAt: iso(), ...extra };
     if (!(await pstore.createOrg(org))) throw new HttpError('CONFLICT', 'That organisation already exists.');
     return org;
   }

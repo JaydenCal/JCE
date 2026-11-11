@@ -272,7 +272,7 @@ test('client sees only the houses they were given; staff see the whole library; 
   await rejects(api.getHouse('h_coastal'), 'NOT_FOUND');
   const house = await api.getHouse('h_banksia');
   assert.equal(validate(house.project).length, 0);
-  assert.equal((await api.listGlideLibrary()).length, GLIDE_LIBRARY.length);
+  assert.equal((await api.listGlideLibrary()).length, 0, 'the Glide Inside sample designs are hidden from clients by default');
   await rejects(api.saveHouse({ name: 'x', fromGlideId: 'glide:house_single' }), 'FORBIDDEN');
   await rejects(api.listClients(), 'FORBIDDEN');
 });

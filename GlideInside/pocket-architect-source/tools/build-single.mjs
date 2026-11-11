@@ -19,7 +19,7 @@ const res = await build({
   write: false,
   logLevel: 'warning',
 });
-const esc = (s) => s.replace(/<\/script/gi, '<\\/script').replace(/\x1b/g, '\\u001b');
+const esc = (s) => s.replace(/<\/script/gi, '<\\/script').replace(/<!--/g, '\\x3C!--').replace(/\x1b/g, '\\u001b');
 const js = esc(res.outputFiles[0].text);
 const css = readFileSync(resolve(root, 'styles.css'), 'utf8');
 const jspdf = esc(readFileSync(resolve(root, 'node_modules/jspdf/dist/jspdf.umd.min.js'), 'utf8'));

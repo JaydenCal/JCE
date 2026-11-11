@@ -17,7 +17,7 @@ import { lotChecks } from '../site/lot-checks.js';
 import { injectStripStyles } from './app-strip-styles.js';
 
 const CSS = `
-.pas-pose{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--ps-panel,#fff);border-top:1px solid var(--ps-border-strong,#b6b8bd);box-shadow:0 -4px 16px rgba(0,0,0,.12);padding:8px 14px;display:grid;grid-template-columns:minmax(220px,1.1fr) minmax(200px,1fr) minmax(220px,1fr) auto;gap:6px 18px;align-items:start;max-height:34%;overflow:auto;font:500 13px var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-text,#1a1c20)}
+.pas-pose{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--ps-panel,#fff);border-top:1px solid var(--ps-border-strong,#b6b8bd);box-shadow:0 -4px 16px rgba(0,0,0,.12);padding:8px 14px;display:grid;grid-template-columns:minmax(180px,1.1fr) minmax(262px,auto) minmax(200px,1fr) auto;gap:6px 18px;align-items:start;max-height:34%;overflow:auto;font:500 13px var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-text,#1a1c20)}
 .pas-pose h3{margin:0;font:700 14px var(--ps-font-ui,system-ui,sans-serif)}
 .pas-pose p{margin:0;color:var(--ps-muted,#5a5e66);font-size:12px}
 .pas-pose .pas-row{justify-content:flex-start;align-items:center;gap:6px}
@@ -30,6 +30,7 @@ const CSS = `
 .pas-fit{font-weight:700;font-size:12.5px}
 .pas-pose .pas-col{display:grid;gap:6px;align-content:start}
 .pas-block{color:#b3261e;font-weight:700;font-size:12.5px}
+.pas-pose .pas-col:nth-child(2) .pas-row{flex-wrap:nowrap}
 .pas-pose .pas-btn[disabled]{opacity:.45;cursor:not-allowed}
 @media (max-width:900px){.pas-pose{grid-template-columns:1fr 1fr}}
 `;
@@ -156,7 +157,8 @@ export function runPoseSession({ store, editor, host = document.getElementById('
         h('span', null, h('b', { style: { color: col } }, `${r.clearanceM.toFixed(2)} m`), r.requiredM != null ? ` of ${r.requiredM.toFixed(1)} m${r.flagged ? ' (check)' : ''}` : '')));
     }
     const s = fitSummary(c);
-    fitLine.textContent = s.text;
+    // A breach is already spelled out in the message above (once): the summary line is only for the other states.
+    fitLine.textContent = s.state === 'outside' ? '' : s.text;
     fitLine.style.color = s.colour;
     const d = deriveDriveway(preview);
     driveLine.textContent = d?.ok ? `Driveway ${(d.widthMm / 1000).toFixed(1)} m wide, ${(d.lengthMm / 1000).toFixed(1)} m long to the kerb.` : d?.reason === 'door_faces_away' ? 'The garage door does not face the street.' : '';

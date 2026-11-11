@@ -536,7 +536,11 @@ for (const [label, d1] of stores) {
     assert.equal((await org.admin.get('/portal/houses')).data.some((h) => h.id === saved.data.id), false);
     assert.equal((await org.admin.get('/portal/houses?includeArchived=true')).data.some((h) => h.id === saved.data.id), true);
     assert.equal((await org.admin.post(`/portal/houses/${saved.data.id}/archive`, { archived: false })).data.archived, false);
-    // Hiding the Glide library from clients.
+    // The Glide Inside sample designs are hidden from client logins by default; the builder can turn them on.
+    assert.equal((await org.admin.get('/portal/org')).data.showGlideToClients ?? false, false, 'off by default');
+    assert.deepEqual((await cl.browser.get('/portal/glide-library')).data, []);
+    assert.equal((await cl.browser.get('/portal/glide-library/glide:house_single')).status, 404);
+    assert.equal((await org.admin.patch('/portal/org/settings', { showGlideToClients: true })).data.showGlideToClients, true);
     assert.equal((await cl.browser.get('/portal/glide-library')).data.length, GLIDE_LIBRARY.length);
     assert.equal((await org.admin.patch('/portal/org/settings', { showGlideLibrary: false })).data.showGlideToClients, false);
     assert.deepEqual((await cl.browser.get('/portal/glide-library')).data, []);

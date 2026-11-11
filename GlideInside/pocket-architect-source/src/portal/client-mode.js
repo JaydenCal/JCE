@@ -163,7 +163,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
 
   // House designs -------------------------------------------------------------------------------------------------------------
   async function loadDesigns() {
-    const [mine, glide] = await Promise.all([api.listHouses(), api.listGlideLibrary().catch(() => [])]);
+    const [mine, glide] = await Promise.all([api.listHouses(), (isClient && me.org.showGlideToClients !== true ? Promise.resolve([]) : api.listGlideLibrary().catch(() => []))]);
     const full = async (list, getter, group) => Promise.all(list.map(async (x) => {
       const r = await getter(x.id);
       return { id: x.id, name: x.name, group, project: r.project, meta: x, source: group === 'glide' ? 'glide' : 'house' };
@@ -271,7 +271,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   try {
     if (params.get('project')) await openProject(params.get('project'));
     else if (params.get('house')) { const r = await api.getHouse(params.get('house')); app.replaceProject(r.project); }
-    else if (params.get('glide')) { const r = await api.getGlideModel(params.get('glide')); app.replaceProject(r.project); }
+    else if (params.get('glide') && !(isClient && me.org.showGlideToClients !== true)) { const r = await api.getGlideModel(params.get('glide')); app.replaceProject(r.project); }
   } catch (e) { toast(e.message || 'Could not open that design.', { kind: 'error' }); }
   return { strip, openPicker, refreshCredits };
 }

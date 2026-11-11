@@ -58,7 +58,7 @@ export async function renderClients(host, { api, me, refreshBilling, goBilling }
     return h('section', { class: 'pp-card pp-client-settings' },
       h('h3', null, 'Client settings'),
       h('p', { class: 'pp-lead pp-lead--sm' }, 'What your clients can see and do. Your own staff logins are not affected.'),
-      row('showGlideToClients', 'Show the Glide Inside house library to clients', 'Off means clients see only your own house designs.'),
+      row('showGlideToClients', 'Show Glide Inside sample designs to clients', 'Off (the default) means clients see only your own house designs.'),
       row('allowClientEnquiries', 'Let clients send their plans to JCE for engineering and DA quotes', 'On by default. Nothing is sent until the client ticks consent and presses Send.'),
       row('allowClientCadExports', 'Let clients export DXF and 3D models as well as the PDF', 'Off by default: clients get your branded PDF plans only. The design files stay your property (see the terms: clients are licensed to use the plans for their own build only).'));
   }
