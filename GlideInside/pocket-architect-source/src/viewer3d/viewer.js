@@ -15,6 +15,7 @@ import { createAhead } from './ahead.js';
 import { VIEWER_CSS } from './viewer-css.js';
 import { loadBitmap } from '../editor2d/underlay.js';
 import { edgeColourOf } from './terrain.js';
+import { snapToRoom as snapRoom, flyTo as flyToPose, enableRoomCutaway, createRoomBar, roomTabs as roomTabsOf } from './rooms.js';
 
 const STYLE_ID = 'ps3d-style';
 const RAD = Math.PI / 180;
@@ -80,7 +81,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     note.textContent = '3D view needs WebGL, which is not available in this browser. The 2D plan still works.';
     rootEl.appendChild(note);
     const noop = () => {};
-    return { setActive: noop, setMode: noop, setEdit: noop, placeItemAhead: () => null, armItemAhead: () => false, armOpeningAhead: () => false, resetCamera: noop, getModel: () => null, snapshot: async () => null, dispose: () => rootEl.remove(), unavailable: true };
+    return { setActive: noop, setMode: noop, setEdit: noop, placeItemAhead: () => null, armItemAhead: () => false, armOpeningAhead: () => false, resetCamera: noop, getModel: () => null, snapshot: async () => null, snapToRoom: async () => null, roomTabs: () => [], dispose: () => rootEl.remove(), unavailable: true };
   }
   const canvas = renderer.domElement;
   canvas.className = 'ps3d-canvas';
@@ -612,6 +613,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
 
   let downInfo = null;
   let lastClick = null;
+  const dblHandlers = [];
   function onPointerDown(e) {
     downInfo = e.button === 0 ? { x: e.clientX, y: e.clientY, t: performance.now() } : null;
   }
@@ -626,6 +628,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     if (double) {
       lastClick = null;
       picker.close();
+      // room cutaway (rooms.js) and other handlers may take the double click before the zoom to point
+      if (dblHandlers.some((fn) => fn(e) === true)) return;
       focusAt(e.clientX, e.clientY);
       return;
     }
@@ -915,7 +919,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   applyModeLighting();
   resize();
 
-  return {
+  const api = {
     setActive,
     setMode,
     resetCamera: () => frameCamera(true),
@@ -952,5 +956,37 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     flush: () => {
       if (active && (dirtyModel || rebuildTimer)) rebuild();
     },
+    // Room snapping (rooms.js). snapToRoom('living' | 'kitchen' | 'master' | 'bed2' | 'alfresco' | 'garage' | 'aerial' | a room id) -> Promise.
+    snapToRoom: (tab, opts) => snapRoom(api, store.project, tab, opts),
+    roomTabs: (levelId, opts) => roomTabsOf(store.project, levelId, opts),
+    flyTo: (pose, opts) => flyToPose(api, pose, opts),
+    // plumbing for rooms.js
+    store,
+    rootEl,
+    canvas,
+    invalidate,
+    stopAnim: () => {
+      anim = null;
+    },
+    aerialPose: () => {
+      const pose = poseFor('aerial');
+      return { position: pose.pos.clone(), target: pose.target.clone() };
+    },
+    leaveWalk: () => store.setUI({ view: '3d' }),
+    addDoubleClickHandler: (fn) => {
+      dblHandlers.push(fn);
+      return () => {
+        const i = dblHandlers.indexOf(fn);
+        if (i >= 0) dblHandlers.splice(i, 1);
+      };
+    },
   };
+  const offCutaway = enableRoomCutaway(api, () => store.project);
+  const roomBar = createRoomBar(api, () => store.project);
+  api.dispose = () => {
+    offCutaway();
+    roomBar.dispose();
+    dispose();
+  };
+  return api;
 }
