@@ -14,12 +14,12 @@
 <meta name="twitter:title" content="For Builders: Site Plans with Your House Designs | Glide Inside">
 <meta name="twitter:description" content="Free 14 day trial for builder staff. Your own house library and branding, then client logins at A$30 incl. GST each (A$25 each after 15 in a month) so clients place your designs on their own block with council setbacks and produce plans.">
 <meta name="twitter:image" content="https://glideinside.com.au/assets/og-cover.jpg">
-<meta name="theme-color" content="#12231c">
+<meta name="theme-color" content="#0a111e">
 <link rel="icon" href="../assets/Glideinside_Favicon_v4.svg">
-<link rel="preload" href="../assets/fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/newsreader-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../framework.css?v=20261111">
-<script src="../site.config.js?v=20261111"></script><script src="../framework.js" defer></script><script src="../analytics.js" defer></script>
+<link rel="stylesheet" href="../framework.css?v=20261112">
+<script src="../site.config.js?v=20261111"></script><script src="../framework.js?v=20261112" defer></script><script src="../analytics.js" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://glideinside.com.au/"},{"@type":"ListItem","position":2,"name":"For builders","item":"https://glideinside.com.au/for-builders/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a client login?","acceptedAnswer":{"@type":"Answer","text":"A login you issue from your builder account with the Generate account button. Your client uses it to open the designer with your house library and place your designs on their own block. Client exports are a builder-branded PDF by default."}},{"@type":"Question","name":"Where do the setbacks come from?","acceptedAnswer":{"@type":"Answer","text":"Setbacks are drawn from your council's DCP where one is available, otherwise the NSW Codes SEPP Housing Code. In Queensland they follow the Queensland Development Code. They are indicative only. Confirm them with your council and a suitably qualified person."}},{"@type":"Question","name":"Are the plans approved for construction or lodgement?","acceptedAnswer":{"@type":"Answer","text":"No. Outputs are concept plans only. They are not construction drawings or development application documents, and they are not checked against planning controls or the National Construction Code."}},{"@type":"Question","name":"What does it cost?","acceptedAnswer":{"@type":"Answer","text":"Free 14 day trial for builder staff. Then client logins are A$30 incl. GST each, A$25 each after 15 in a month, talk to us above 50, charged when your client first signs in, billed monthly, with no monthly fee. Each login includes a monthly AI allowance that stops when it is used up. AI credit top-ups are A$10 per 300 credits, added to your monthly invoice. Volume pricing is available on request."}},{"@type":"Question","name":"How does the free trial work?","acceptedAnswer":{"@type":"Answer","text":"Ask for a free 14 day trial below. We approve each request, usually within one business day, and then give you a staff login. During the trial your staff can use everything except issuing client logins and buying AI credit top-ups. When the trial ends the account becomes read only until you add card details. Client logins unlock as soon as you add them. Read the trial terms for the detail."}},{"@type":"Question","name":"Which areas does it cover?","acceptedAnswer":{"@type":"Answer","text":"New South Wales and Queensland, with a focus on regional areas."}}]}</script>
 
@@ -49,68 +49,102 @@
 </div></header>
 <main id="main">
 
-<section class="hero-home" style="padding-bottom:clamp(40px,5vw,72px)">
-  <div class="shell hero-grid">
-    <div class="hero-copy">
-      <h1>Your house designs on every client&rsquo;s block.</h1>
-      <p class="lead">Give each client a login. They choose one of your designs, place it on their own block with council setbacks drawn, and produce plans. Your library, your branding.</p>
+<section class="cine dark" aria-labelledby="hero-title">
+  <div class="shell cine-top">
+    <h1 id="hero-title">Your house designs on every client&rsquo;s real lot.</h1>
+    <div class="cine-side">
+      <p class="lead">Give each client a login. They find their block, see the setbacks and place your designs on it, in your colours and under your name. When they are ready, send the job to JCE for engineering and DA plans.</p>
       <div class="hero-cta"><a class="btn" href="#trial" data-trial-cta>Start a free 14 day trial</a><a class="btn btn-ghost" data-cfg-href="builderDemoUrl" href="mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20book%20a%20demo">Book a demo</a></div>
-      <ul class="hero-facts"><li>NSW and Queensland</li><li>Free 14 day trial for builder staff</li><li>A$30 incl. GST per client login, A$25 after 15 a month</li></ul>
     </div>
-    <div class="hero-visual"><div class="appframe "><div class="bar"><i></i><i></i><i></i><span>glideinside.com.au/plan-studio</span></div><img src="../assets/app-plan.webp" srcset="../assets/app-plan-800.webp 800w, ../assets/app-plan.webp 1600w" sizes="(max-width:960px) 94vw, 58vw" width="1600" height="1000" alt="Pocket Architect plan editor showing a house design a builder could offer to clients" fetchpriority="high"></div></div>
+  </div>
+  <div class="shell stage-wrap">
+    <figure class="stage" data-stage>
+      <div class="stage-img"><picture><source media="(max-width:760px)" srcset="../assets/hero-lot-phone.webp" type="image/webp"><img src="../assets/hero-lot-1600.webp" srcset="../assets/hero-lot-1600.webp 1600w, ../assets/hero-lot-2400.webp 2400w" sizes="(max-width:760px) 100vw, 92vw" width="2400" height="1350" alt="A client&rsquo;s view in Pocket Architect: a four bedroom house design placed on their lot in 3D, with fences, driveway, street trees and the road" fetchpriority="high" decoding="async"></picture></div>
+      <div class="stage-shade" aria-hidden="true"></div>
+      <div class="st-lot" aria-hidden="true"><b>Proposed lot 1</b><span>Your client&rsquo;s block, concept only</span></div>
+      <div class="st-search st-glass" aria-hidden="true"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.6 3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="st-type" data-type="14 Sample Street, Calala NSW">14 Sample Street, Calala NSW</span></div>
+      <div class="st-card st-glass">
+        <p class="st-name">Glide 4 bedroom</p>
+        <p class="st-sub">Your design on Proposed Lot 1, 2,000 m²</p>
+        <p class="st-scheme" data-scheme-name>Standard colours</p>
+        <dl class="st-stats"><div><dt>Lot m²</dt><dd>2,000</dd></div><div><dt>Beds</dt><dd>4</dd></div><div><dt>Baths</dt><dd>2</dd></div><div><dt>Cars</dt><dd>2</dd></div><div><dt>Total m²</dt><dd>274</dd></div></dl>
+        <div class="st-row"><span>Colours</span><div class="st-sw" data-swatches>
+          <button type="button" aria-pressed="true" aria-label="Standard colours" data-name="Standard colours" style="--a:#3c4352;--b:#dcd6ca"></button>
+          <button type="button" aria-pressed="false" aria-label="Coastal white" data-name="Coastal white" style="--a:#c9c5bb;--b:#f1ede4"></button>
+          <button type="button" aria-pressed="false" aria-label="Charcoal and timber" data-name="Charcoal and timber" style="--a:#2b2e33;--b:#b88a5a"></button>
+          <button type="button" aria-pressed="false" aria-label="Terrace red" data-name="Terrace red" style="--a:#7b3a2c;--b:#e4dac9"></button>
+          <button type="button" aria-pressed="false" aria-label="Slate and sandstone" data-name="Slate and sandstone" style="--a:#545b66;--b:#d8c4a2"></button>
+        </div></div>
+        <div class="st-row"><span>Rooms</span><div class="st-pills" data-pills><span>Living</span><span>Kitchen</span><span>Master</span><span>Alfresco</span><span class="on">Aerial</span></div></div>
+        <div class="st-acts"><a href="#trial">Start a trial</a><a data-cfg-href="builderDemoUrl" href="mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20book%20a%20demo">Book a demo</a><a href="#builder-pricing">Pricing</a></div>
+        <p class="st-fit">Fits the setbacks</p>
+      </div>
+      <div class="st-mini st-glass" aria-hidden="true"><b>Top view</b>
+        <svg class="st-compass" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="rgba(0,0,0,.55)" stroke="rgba(255,255,255,.4)"/><path d="M13 4l4 9h-8z" fill="#e9b66f"/><path d="M13 22l4-9h-8z" fill="#fff" opacity=".85"/></svg>
+        <svg viewBox="0 0 150 200" preserveAspectRatio="xMidYMid slice"><rect width="150" height="200" fill="#2d4a2c"/><rect x="0" y="172" width="150" height="28" fill="#2a2d33"/><path d="M0 186h150" stroke="#e8e8e8" stroke-width="1" stroke-dasharray="8 7"/><rect x="0" y="166" width="150" height="6" fill="#9aa59b"/><rect x="22" y="22" width="106" height="140" fill="#4f7a43" stroke="#e33" stroke-width="1.6"/><rect x="34" y="34" width="82" height="112" fill="none" stroke="#5fd39a" stroke-width="1" stroke-dasharray="4 3"/><path d="M48 62h48v34h-14v26h-34z" fill="#38404f" stroke="#1b1f27" stroke-width="1"/><path d="M72 122h12v40h-12z" fill="#c9cbc6"/><g fill="#2f6b2f"><circle cx="14" cy="166" r="6"/><circle cx="56" cy="168" r="5"/><circle cx="106" cy="168" r="6"/><circle cx="140" cy="166" r="5"/><circle cx="12" cy="40" r="7"/><circle cx="140" cy="90" r="7"/></g></svg>
+      </div>
+    </figure>
+    <p class="stage-cap">How a client sees one of your designs on their block. Sample lot and generic design shown.</p>
   </div>
 </section>
 
-<section class="shell section" id="how">
-  <div class="section-head"><h2>How a builder account works</h2><p>You set up the library once. Each client gets their own login and works from your designs.</p></div>
-  <div class="flow">
-    <div><span class="role">You</span><h3>Build your library</h3><p>Set up a builder account with your own house library and branding.</p></div>
-    <div><span class="role">You</span><h3>Generate a client login</h3><p>Press Generate account to issue a login for a client.</p><span class="mock-btn" aria-hidden="true">Generate account</span></div>
-    <div><span class="role">Your client</span><h3>Place a design and get plans</h3><p>The client finds their block, places your design on it, adjusts it and produces plans.</p></div>
-  </div>
-  <p class="price-note">Free 14 day trial for builder staff. Client logins are A$30 incl. GST each, A$25 each after 15 in a month, talk to us above 50, charged when your client first signs in. No monthly fee. <a class="link" href="#trial">Start a free 14 day trial</a>.</p><p class="price-note" data-portal hidden>Clients sign in from the <a class="link" href="../portal/?client=1">client login</a>. You sign in from the <a class="link" href="../portal/">builder login</a>.</p>
-</section>
-
-<section class="shell section" id="features" style="padding-top:0">
-  <div class="section-head"><h2>What builders get</h2></div>
-  <div class="grid-3">
-    <article class="card"><h3>Your house library</h3><p>Your own designs sit in the library your clients choose from, and nothing you did not add. The Glide Inside sample designs stay hidden from your clients unless you choose to show them.</p></article>
-    <article class="card"><h3>Your branding</h3><p>Your account carries your branding, so clients work in your name.</p></article>
-    <article class="card"><h3>Client logins</h3><p>Issue a login per client with the Generate account button. A login is charged when your client first signs in, billed monthly.</p></article>
-    <article class="card"><h3>The client&rsquo;s actual block</h3><p>Lot boundary, surrounding lots, aerial and LiDAR contours load from an address.</p></article>
-    <article class="card"><h3>Setbacks drawn for you</h3><p>Council DCP where available, otherwise the NSW Codes SEPP Housing Code. In Queensland, the Queensland Development Code.</p></article>
-    <article class="card"><h3>Edit, walk through, export</h3><p>2D and 3D editing, walk through and an AI design helper. Client exports are a builder-branded PDF by default.</p></article>
-  </div>
-</section>
-
-<section class="band section" id="why">
+<section class="sec dark" id="how" style="padding-top:clamp(24px,3vw,48px)">
   <div class="shell">
-    <div class="feature" style="padding-block:0">
-      <div class="feature-copy"><h3>Settle the fit before the first site visit</h3><p>When a client can see your design on their own block, with the setbacks shown, the conversation starts from the site and not from a brochure.</p><ul class="checks"><li>Clients see your design on their block in 3D</li><li>Client exports are a builder-branded PDF by default</li><li>Concept stage only, so nothing here replaces your own design and approval process</li></ul></div>
-      <div><div class="appframe "><div class="bar"><i></i><i></i><i></i><span>glideinside.com.au/plan-studio</span></div><img src="../assets/app-3d.webp" srcset="../assets/app-3d-800.webp 800w, ../assets/app-3d.webp 1600w" sizes="(max-width:960px) 92vw, 56vw" width="1600" height="1000" alt="Pocket Architect 3D view of a house design" loading="lazy" decoding="async"></div></div>
+    <div class="sec-head"><h2>Set up once, then every client works from your range</h2><p>You load the designs. Your clients do the siting. You see the result before the first site visit.</p></div>
+    <ol class="seq">
+      <li><div class="vis"><img src="../assets/step-house.webp" width="1200" height="900" alt="A house design shown in 3D on a lot" loading="lazy" decoding="async"></div><div class="txt"><h3>Load your designs</h3><p>Your house range and your colours go into your builder account.</p></div></li>
+      <li><div class="vis"><div class="seq-search" aria-hidden="true"><div class="bar"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.6 3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Generate account</span></div><ul><li>New client login<small>Sent from your builder portal</small></li><li>Client: A Sample Client<small>Login ready</small></li></ul></div></div><div class="txt"><h3>Generate a client login</h3><p>Issue a login per client from the builder portal in a few clicks.</p></div></li>
+      <li><div class="vis"><img src="../assets/step-block.webp" width="1200" height="900" alt="Plan view of a house placed on a client&rsquo;s lot inside the setback envelope" loading="lazy" decoding="async"></div><div class="txt"><h3>Your client places a design</h3><p>They find their block, place your design, adjust it and produce a branded PDF.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec" id="features">
+  <div class="shell split">
+    <div class="copy">
+      <h2>What a builder account includes</h2>
+      <p>Everything a client needs to see your design on their land, and nothing from anyone else&rsquo;s range.</p>
+      <ul class="ticks">
+        <li><div><b>Your house library only</b><span>Clients choose from the designs you add. The Glide Inside sample designs stay hidden unless you show them.</span></div></li>
+        <li><div><b>Branded in your colours</b><span>Your name, logo and colours on the designer and on the client&rsquo;s PDF.</span></div></li>
+        <li><div><b>The client&rsquo;s real block</b><span>Lot boundary, neighbours, aerial and LiDAR contours from the address, with council setbacks drawn.</span></div></li>
+        <li><div><b>Send to JCE</b><span>Send a client&rsquo;s job to JCE Infrastructure for engineering and DA plans when they are ready to go further.</span></div></li>
+      </ul>
     </div>
+    <figure class="shot"><img src="../assets/block-plan.webp" width="1600" height="1100" alt="Plan view of a house design inside the setback envelope on a client&rsquo;s lot, with the street frontage and neighbouring lots" loading="lazy" decoding="async"></figure>
   </div>
 </section>
 
-<section class="shell section" id="builder-pricing">
-  <div class="section-head"><h2>Builder pricing</h2><p>Free 14 day trial for builder staff. Client logins are A$30 incl. GST each, A$25 each after 15 in a month, talk to us above 50, charged when your client first signs in. No monthly fee. All prices include GST.</p></div>
-  <div class="price-grid">
-    <article class="price-card feature-card"><h3>Client login</h3><div class="amount">A$30<small>per client login, incl. GST</small></div><ul class="checks" style="margin-bottom:18px"><li>A$30 per client login</li><li>A$25 each after 15 in a month</li><li>Talk to us above 50</li></ul><p>Charged when your client first signs in, billed monthly. No monthly fee. One login for one client to place your designs on their block and produce plans.</p><a class="btn" href="#trial" data-trial-cta>Start a free 14 day trial</a></article>
-    <article class="price-card"><h3>AI credits</h3><div class="amount">A$10<small>per 300 credits</small></div><ul class="checks" style="margin-bottom:18px"><li>A$10 for 300 credits</li><li>A monthly cap on each organisation keeps spend predictable</li><li>Replies that are refused or change nothing use no credits</li></ul><p>Top up the AI design helper credits when you need more.</p></article>
-    <article class="price-card"><h3>Volume pricing</h3><div class="amount" style="font-size:30px;line-height:1.15">On request</div><p>Running many clients at once? Ask about volume pricing.</p><a class="btn btn-ghost" data-cfg-href="builderDemoUrl" href="mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20book%20a%20demo">Book a demo</a></article>
+<section class="sec bld dark" id="builder-pricing">
+  <div class="shell bld-grid">
+    <div>
+      <div class="sec-head" style="margin-bottom:0"><h2>Pay per client login. No monthly fee.</h2><p>Start with a free 14 day trial for your staff. After that, you pay only for the clients who sign in. All prices include GST.</p></div>
+      <div class="bld-points">
+        <div><h3>Free 14 day trial</h3><p>Try it with your own staff and designs before a client ever logs in.</p></div>
+        <div><h3>Charged on first sign in</h3><p>A login is charged when your client first signs in, billed monthly.</p></div>
+        <div><h3>AI credits</h3><p>A$10 for 300 credits for the AI design helper, with a monthly cap per organisation.</p></div>
+        <div><h3>Volume</h3><p>Running more than 50 clients a month? We will set custom pricing.</p></div>
+      </div>
+    </div>
+    <aside class="rate" aria-label="Builder pricing">
+      <h3>Per client login</h3>
+      <p class="big">A$30</p>
+      <p class="per">per login, incl. GST. No monthly fee.</p>
+      <dl><div><dt>First 15 logins in a month</dt><dd>A$30 each</dd></div><div><dt>Each login after 15 in a month</dt><dd>A$25 each</dd></div><div><dt>Above 50 a month</dt><dd>Custom pricing</dd></div></dl>
+      <a class="btn" href="#trial" data-trial-cta>Start a free 14 day trial</a>
+      <small>Need a walkthrough first? <a class="link" data-cfg-href="builderDemoUrl" href="mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20book%20a%20demo">Book a demo</a></small>
+    </aside>
   </div>
 </section>
 
-<section class="shell section" id="faq" style="padding-top:0">
-  <div class="faq-wrap"><div><h2>Builder questions</h2></div><div class="faq"><details><summary>What is a client login?</summary><p>A login you issue from your builder account with the Generate account button. Your client uses it to open the designer with your house library and place your designs on their own block. Client exports are a builder-branded PDF by default.</p></details><details><summary>Where do the setbacks come from?</summary><p>Setbacks are drawn from your council&rsquo;s DCP where one is available, otherwise the NSW Codes SEPP Housing Code. In Queensland they follow the Queensland Development Code. They are indicative only. Confirm them with your council and a suitably qualified person.</p></details><details><summary>Are the plans approved for construction or lodgement?</summary><p>No. Outputs are concept plans only. They are not construction drawings or development application documents, and they are not checked against planning controls or the National Construction Code.</p></details><details><summary>What does it cost?</summary><p>Free 14 day trial for builder staff. Then client logins are A$30 incl. GST each, A$25 each after 15 in a month, talk to us above 50, charged when your client first signs in, billed monthly, with no monthly fee. Each login includes a monthly AI allowance that stops when it is used up. AI credit top-ups are A$10 per 300 credits, added to your monthly invoice. Volume pricing is available on request.</p></details><details><summary>How does the free trial work?</summary><p>Ask for a free 14 day trial below. We approve each request, usually within one business day, and then give you a staff login. During the trial your staff can use everything except issuing client logins and buying AI credit top-ups. When the trial ends the account becomes read only until you add card details. Client logins unlock as soon as you add them. Read the <a class="link" href="../trial-terms.html">trial terms</a> for the detail.</p></details><details><summary>Which areas does it cover?</summary><p>New South Wales and Queensland, with a focus on regional areas.</p></details></div></div>
-</section>
-
-<section class="shell section" id="trial">
-  <div class="section-head"><h2>Start a free 14 day trial</h2><p>Free for your staff for 14 days. We approve each request and set up your login, usually within one business day. No card needed to ask.</p></div>
-  <div class="trial-wrap">
-    <form id="trial-form" class="trial-form" novalidate autocomplete="on">
+<section class="sec" id="trial">
+  <div class="shell">
+    <div class="sec-head"><h2>Start a free 14 day trial</h2><p>Free for your staff for 14 days. We approve each request and set up your login, usually within one business day. No card needed to ask.</p></div>
+    <div class="trial-wrap">
+      <form id="trial-form" class="trial-form" novalidate autocomplete="on">
       <div class="trial-grid">
-        <label class="tf wide"><span class="tl">Company legal name <span class="req">*</span></span><input name="companyLegalName" type="text" maxlength="120" required autocomplete="organization"></label>
+        <label class="tf wide"><span class="tl">Builder <span class="req">*</span></span><select name="builder" id="tf-builder" required><option value="">Choose your builder</option><option>McDonald Jones Homes</option><option>Hunter Homes</option><option>Masterton Homes</option><option>Coral Homes</option><option>Hotondo Homes</option><option>MOJO Homes</option><option>Montgomery Homes</option><option>Allworth Homes</option><option>Tulliplan Homes</option><option>G.J. Gardner Homes</option><option value="other">Other (type your company)</option></select></label>
+        <label class="tf wide" id="tf-company" hidden><span class="tl">Company legal name <span class="req">*</span></span><input name="companyLegalName" type="text" maxlength="120" required autocomplete="organization"></label>
         <label class="tf"><span class="tl">ABN <span class="req">*</span></span><input name="abn" type="text" inputmode="numeric" maxlength="14" required placeholder="11 digits"></label>
         <label class="tf">Trading name <small>(if different)</small><input name="tradingName" type="text" maxlength="120"></label>
         <label class="tf"><span class="tl">First name <span class="req">*</span></span><input name="firstName" type="text" maxlength="60" required autocomplete="given-name"></label>
@@ -124,22 +158,27 @@
       <div class="trial-hp" aria-hidden="true"><label>Leave this empty<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
       <label class="tf-check"><input name="consent" type="checkbox" required><span>I have read and agree to the <a class="link" href="../trial-terms.html" target="_blank" rel="noopener">trial terms</a>. <span class="req">*</span></span></label>
       <p class="trial-error" id="trial-error" role="alert" hidden></p>
-      <div class="trial-actions"><button class="btn" type="submit" id="trial-submit">Start a free 14 day trial</button><span class="trial-note">After the trial, client logins are A$30 incl. GST each (A$25 each after 15 in a month, talk to us above 50), charged when your client first signs in. No monthly fee.</span></div>
+      <div class="trial-actions"><button class="btn" type="submit" id="trial-submit">Start a free 14 day trial</button><span class="trial-note">After the trial, client logins are A$30 incl. GST each (A$25 each after 15 in a month, custom pricing above 50), charged when your client first signs in. No monthly fee.</span></div>
     </form>
-    <div class="trial-done" id="trial-done" role="status" hidden><h3>Thanks, we will be in touch within one business day.</h3><p>We review each request ourselves. Nothing is sent to you automatically, so there is nothing to look for in your inbox until we reach out.</p></div>
+      <div class="trial-done" id="trial-done" role="status" hidden><h3>Thanks, we will be in touch within one business day.</h3><p>We review each request ourselves. Nothing is sent to you automatically, so there is nothing to look for in your inbox until we reach out.</p></div>
+    </div>
   </div>
 </section>
 
+<section class="sec" id="faq" style="padding-top:0">
+  <div class="shell faq-wrap"><div><h2>Builder questions</h2></div><div class="faq"><details><summary>What is a client login?</summary><p>A login you issue from your builder account with the Generate account button. Your client uses it to open the designer with your house library and place your designs on their own block. Client exports are a builder-branded PDF by default.</p></details><details><summary>Where do the setbacks come from?</summary><p>Setbacks are drawn from your council&rsquo;s DCP where one is available, otherwise the NSW Codes SEPP Housing Code. In Queensland they follow the Queensland Development Code. They are indicative only. Confirm them with your council and a suitably qualified person.</p></details><details><summary>Are the plans approved for construction or lodgement?</summary><p>No. Outputs are concept plans only. They are not construction drawings or development application documents, and they are not checked against planning controls or the National Construction Code.</p></details><details><summary>What does it cost?</summary><p>Free 14 day trial for builder staff. Then client logins are A$30 incl. GST each, A$25 each after 15 in a month, talk to us above 50, charged when your client first signs in, billed monthly, with no monthly fee. Each login includes a monthly AI allowance that stops when it is used up. AI credit top-ups are A$10 per 300 credits, added to your monthly invoice. Volume pricing is available on request.</p></details><details><summary>How does the free trial work?</summary><p>Ask for a free 14 day trial below. We approve each request, usually within one business day, and then give you a staff login. During the trial your staff can use everything except issuing client logins and buying AI credit top-ups. When the trial ends the account becomes read only until you add card details. Client logins unlock as soon as you add them. Read the <a class="link" href="../trial-terms.html">trial terms</a> for the detail.</p></details><details><summary>Which areas does it cover?</summary><p>New South Wales and Queensland, with a focus on regional areas.</p></details></div></div>
+</section>
+
 <style>
-.trial-wrap{max-width:820px;margin:0 auto}.trial-form{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg,16px);padding:clamp(18px,3.5vw,32px)}
-.trial-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px}.tf{display:grid;gap:6px;font-weight:700;font-size:14px}.tf.wide{grid-column:1/-1}.tf small{font-weight:400;color:var(--muted)}.req{color:var(--accent)}.tl{display:block}
-.tf input,.tf select{width:100%;margin:0;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper,#fff);font:500 16px var(--font);color:var(--ink)}
-.tf input:focus-visible,.tf select:focus-visible,.tf-check input:focus-visible{outline:3px solid var(--deep);outline-offset:2px}
-.tf-check{display:flex;gap:10px;align-items:flex-start;margin:20px 0 6px;font-size:15px}.tf-check input{flex:none;margin-top:3px}
+.trial-wrap{max-width:860px}.trial-form{background:#fff;border:1px solid var(--line);border-radius:24px;padding:clamp(20px,3.5vw,40px);box-shadow:var(--shadow-soft)}
+.trial-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 20px}.tf{display:grid;gap:7px;font-weight:700;font-size:14px}.tf.wide{grid-column:1/-1}.tf[hidden]{display:none}.tf small{font-weight:400;color:var(--muted)}.req{color:#a4651b}.tl{display:block}
+.tf input,.tf select{width:100%;margin:0;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#f8f9fb;font:500 16px var(--font);color:var(--ink)}
+.tf input:focus-visible,.tf select:focus-visible,.tf-check input:focus-visible{outline:3px solid var(--survey);outline-offset:2px;background:#fff}
+.tf-check{display:flex;gap:10px;align-items:flex-start;margin:22px 0 6px;font-size:15px}.tf-check input{flex:none;margin-top:3px;width:18px;height:18px;accent-color:var(--night)}
 .trial-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.trial-error{background:#fbeeea;border:1px solid #e4b3a3;color:#7a2a14;border-radius:10px;padding:10px 14px;margin:12px 0 0;font-size:14px}
-.trial-actions{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:18px}.trial-note{font-size:13px;color:var(--muted);max-width:46ch}
-.trial-done{background:#e4f0e8;border:1px solid #b6d3bf;border-radius:var(--r-lg,16px);padding:clamp(20px,4vw,36px);text-align:center}.trial-done h3{margin:0 0 8px}.trial-done p{margin:0;color:#27593a}
+.trial-error{background:#fbeeea;border:1px solid #e4b3a3;color:#7a2a14;border-radius:12px;padding:10px 14px;margin:12px 0 0;font-size:14px}
+.trial-actions{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:20px}.trial-note{font-size:13px;color:var(--muted);max-width:46ch}
+.trial-done{background:#e6f4ec;border:1px solid #b6d9c3;border-radius:24px;padding:clamp(20px,4vw,40px);text-align:center}.trial-done h3{margin:0 0 8px}.trial-done p{margin:0;color:#27593a}
 @media (max-width:640px){.trial-grid{grid-template-columns:1fr}}
 </style>
 <script>
@@ -147,6 +186,16 @@
   var form = document.getElementById("trial-form");
   if (!form) return;
   var err = document.getElementById("trial-error"), btn = document.getElementById("trial-submit"), done = document.getElementById("trial-done");
+  var bsel = document.getElementById("tf-builder"), cwrap = document.getElementById("tf-company"), cin = form.elements.companyLegalName, last = "";
+  bsel.addEventListener("change", function () {
+    var v = bsel.value; cwrap.hidden = !v;
+    if (v === "other") { if (cin.value === last) cin.value = ""; last = ""; cin.focus(); }
+    else if (v) { if (!cin.value || cin.value === last) cin.value = v; last = v; }
+  });
+  try {
+    var qb = new URLSearchParams(location.search).get("builder"), SL = { "mcdonald-jones": "McDonald Jones Homes", "hunter-homes": "Hunter Homes", "masterton": "Masterton Homes", "coral-homes": "Coral Homes", "hotondo": "Hotondo Homes", "mojo": "MOJO Homes", "montgomery": "Montgomery Homes", "allworth": "Allworth Homes", "tulliplan": "Tulliplan Homes", "gj-gardner": "G.J. Gardner Homes", "other": "other" };
+    if (qb && SL[qb]) { bsel.value = SL[qb]; bsel.dispatchEvent(new Event("change")); }
+  } catch (_) {}
   function abnOk(v) {
     var d = String(v || "").replace(/\s+/g, "");
     if (!/^\d{11}$/.test(d)) return false;
@@ -160,6 +209,7 @@
     e.preventDefault();
     var f = form.elements, g = function (n) { return (f[n].value || "").trim(); };
     show("");
+    if (!g("builder")) return show("Choose your builder, or Other to type your company.");
     if (!g("companyLegalName")) return show("Enter your company legal name.");
     if (!abnOk(g("abn"))) return show("Enter the 11 digit ABN for your business. That ABN does not look right.");
     if (!g("firstName") || !g("lastName")) return show("Enter your first and last name.");
@@ -181,10 +231,10 @@
 })();
 </script>
 
-<section class="band section cta-band cta-final">
+<section class="dark endcta">
   <div class="shell"><h2>Try it free for 14 days.</h2><p class="lead">Ask for a trial and we will set up your staff login, or book a demo and we will walk you through it.</p>
   <div class="hero-cta"><a class="btn" href="#trial" data-trial-cta>Start a free 14 day trial</a><a class="btn btn-ghost" data-cfg-href="builderDemoUrl" href="mailto:hello@glideinside.com.au?subject=Builder%20accounts%3A%20book%20a%20demo">Book a demo</a></div>
-  <p class="disclaimer" style="margin:36px auto 0;text-align:left">Glide Inside provides concept planning tools only. Setbacks and other planning controls shown are indicative, are not a planning or building approval, and must be checked with the relevant council and a suitably qualified person before you rely on them.</p></div>
+  <p class="disclaimer">Glide Inside provides concept planning tools only. Setbacks and other planning controls shown are indicative, are not a planning or building approval, and must be checked with the relevant council and a suitably qualified person before you rely on them.</p></div>
 </section>
 
 </main>

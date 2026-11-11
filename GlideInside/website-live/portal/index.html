@@ -6,25 +6,43 @@
 <meta name="description" content="Sign in to Pocket Architect as a builder or a builder-issued client. Manage house designs, client logins and billing.">
 <meta name="robots" content="noindex">
 <link rel="icon" href="../assets/Glideinside_Favicon_v4.svg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="../framework.css?v=20261015">
+<link rel="stylesheet" href="../framework.css?v=20261112">
 <link rel="stylesheet" href="portal.css?v=2">
 <script src="../site.config.js?v=20261016"></script>
 <script>window.GI_CONFIG = window.GI_CONFIG || {}; window.GI_CONFIG.portalAppUrl = window.GI_CONFIG.portalAppUrl || "../plan-studio/app/";</script>
-<script src="../framework.js" defer></script>
+<script src="../framework.js?v=20261112" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header"><div class="shell">
   <a class="logo" href="../index.html" aria-label="Glide Inside home"><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
-  <nav class="site-nav" aria-label="Main"><a href="../plan-studio/index.html">Pocket Architect</a><a href="../index.html">Home</a></nav>
-  <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
+  <nav class="site-nav" id="site-nav" aria-label="Main">
+    <a href="../index.html">Pocket Architect</a>
+    <a href="../for-builders/">For builders</a>
+    <a href="../subdivision/">Subdivisions</a>
+    <a href="../plans/">Plans</a>
+    <a href="../pricing/">Pricing</a>
+    <div class="nav-logins">
+      <a href="../portal/">Builder login</a>
+      <a href="../portal/?client=1">Client login</a>
+      <a class="btn" href="../plan-studio/launch/">Start designing</a>
+    </div>
+  </nav>
+  <div class="head-end">
+    <a class="login" href="../portal/">Builder login</a>
+    <a class="login" href="../portal/?client=1">Client login</a>
+    <a class="btn btn-sm" href="../plan-studio/launch/">Start designing</a>
+  </div>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 </div></header>
 <div id="main" class="pp-root" tabindex="-1"><p class="pp-sub" style="padding:24px var(--gut)">Loading</p></div>
 <noscript><p style="padding:24px var(--gut)">The builder portal needs JavaScript.</p></noscript>
 <footer class="site-footer"><div class="shell">
-  <div><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside" style="height:30px;width:auto;margin-bottom:12px"><p>JCE Infrastructure Pty Ltd trading as Glide Inside, ABN 29 699 165 663<br><a href="mailto:hello@glideinside.com.au">hello@glideinside.com.au</a> · 0477 207 027</p></div>
-  <nav aria-label="Legal"><a href="../terms.html">Order terms</a><a href="../privacy.html">Privacy</a></nav>
+  <div class="brand"><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"><p>Site planning and house design in 3D for regional New South Wales and Queensland.</p></div>
+  <nav aria-label="Product"><h4>Product</h4><a href="../index.html">Pocket Architect</a><a href="../pricing/">Pricing</a><a href="../subdivision/">Subdivisions</a></nav>
+  <nav aria-label="Builders"><h4>Builders</h4><a href="../for-builders/">For builders</a><a href="../for-builders/#trial">Free 14 day trial</a><a href="../portal/">Builder login</a><a href="../portal/?client=1">Client login</a></nav>
+  <nav aria-label="Company"><h4>Glide Inside</h4><span>JCE Infrastructure Pty Ltd trading as Glide Inside, ABN 29 699 165 663</span><a href="mailto:hello@glideinside.com.au">hello@glideinside.com.au</a><span>0477 207 027</span><a href="../terms.html">Order terms</a><a href="../privacy.html">Privacy</a></nav>
+  <p class="legal-line">Glide Inside provides concept planning tools only. Concept plans, not construction drawings. Prices include GST.</p>
 </div></footer>
 <script type="module">
   import { mountPortal } from './src/portal/ui/portal-app.js';
