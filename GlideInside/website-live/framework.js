@@ -42,7 +42,8 @@
       if (started) return false; started = true;
       var y = window.scrollY, x = window.scrollX;
       f.addEventListener("load", function () {
-        live.ready = false;
+        // gi:ready can arrive before load fires, so do not reset live.ready here; if a find is still pending, send it now.
+        if (live.pending) { var pa = live.pending; live.pending = null; setTimeout(function () { postFind(pa); }, 300); }
         box.classList.add("is-live");
         try { if (document.activeElement === f) f.blur(); } catch (e) {}
         if (!address && !live.last) { window.scrollTo(x, y); setTimeout(function () { window.scrollTo(x, y); }, 400); }
@@ -99,7 +100,7 @@
       if (!live.pending || live.ready) return;
       live.pending = null;
       var u = new URL(live.frame.src || appUrl(""), location.href); u.searchParams.set("address", address); live.frame.src = u.href;
-    }, 20000);
+    }, 5000);
   }
   function setBusy(on) {
     clearTimeout(live.busyT);
