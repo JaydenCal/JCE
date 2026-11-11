@@ -100,10 +100,8 @@
     function reveal() { st.classList.add("is-in"); setTimeout(start, 2200); }
     if (reduce || !typed) { if (img && !img.complete) img.addEventListener("load", reveal); else reveal(); return; }
     var full = typed.dataset.type || typed.textContent, n = 0; typed.textContent = ""; typed.classList.add("typing");
-    var ready = false, typedDone = false;
-    function maybe() { if (ready && typedDone) { typed.classList.remove("typing"); reveal(); } }
-    if (!img || img.complete) ready = true; else { img.addEventListener("load", function () { ready = true; maybe(); }); setTimeout(function () { ready = true; maybe(); }, 3500); }
-    (function step() { n++; typed.textContent = full.slice(0, n); if (n < full.length) setTimeout(step, 38 + Math.random() * 40); else { typedDone = true; setTimeout(maybe, 250); } })();
+    reveal(); // the hero is visible at once; the typing is only a cosmetic flourish on the address text
+    (function step() { n++; typed.textContent = full.slice(0, n); if (n < full.length) setTimeout(step, 38 + Math.random() * 40); else { setTimeout(function () { typed.classList.remove("typing"); }, 250); } })();
   });
   // rooms tabs: [data-rooms] buttons[data-room] switch img[data-room-img]
   document.querySelectorAll("[data-rooms]").forEach(function (tabs) {

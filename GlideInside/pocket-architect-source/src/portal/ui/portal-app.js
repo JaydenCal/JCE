@@ -25,6 +25,13 @@ const TABS = [
   { id: 'branding', label: 'Branding', render: renderBranding },
 ];
 
+/** Rejects after ms so a hung /portal/me call cannot leave the page on "Loading". */
+function withTimeout(promise, ms) {
+  let t;
+  const timeout = new Promise((_, rej) => { t = setTimeout(() => rej(Object.assign(new Error('The Glide Inside server took too long to respond.'), { code: 'TIMEOUT' })), ms); });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(t));
+}
+
 export function mountPortal(root, { api = getPortalApi() } = {}) {
   const params = new URLSearchParams(location.search);
   let me = null;
@@ -47,8 +54,21 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
     toSignIn();
   }
 
+  function loadErrorView(e) {
+    return h('section', { class: 'pp-card', dataset: { title: 'Portal' }, style: { maxWidth: '520px', margin: '48px auto' } },
+      h('h2', null, 'We could not load your portal'),
+      h('p', { class: 'pp-error', role: 'alert' }, e?.code === 'TIMEOUT' ? 'The Glide Inside server took too long to respond. Check your connection and try again.' : errorMessage(e)),
+      h('button', { class: 'pp-btn', type: 'button', onclick: () => { setView(h('p', { class: 'pp-sub', role: 'status', style: { padding: '24px' } }, 'Loading')); start(); } }, 'Retry'));
+  }
+
   async function start(next) {
-    me = next === undefined ? await api.me() : next;
+    if (next === undefined) {
+      try {
+        me = await withTimeout(api.me(), 8000);
+      } catch (e) {
+        return setView(loadErrorView(e));
+      }
+    } else me = next;
     if (!me) return toSignIn();
     applyBrandTheme(me.org.branding.colours); // builder colour scheme for staff and clients; the sign in page keeps the Glide Inside look
     if (me.user.mustChangePassword) return setView(changePasswordView({ api, me, onDone: start, onSignOut: signOut }));

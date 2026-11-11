@@ -30,7 +30,19 @@
   function render() {
     var q = input.value.trim().toLowerCase();
     if (chosen && input.value === chosen.name) q = "";
-    shown = OPTS.filter(function (o) { return !q || o.name.toLowerCase().indexOf(q) !== -1 || o.slug.indexOf(q.replace(/\s+/g, "-")) !== -1; });
+    // rank: name prefix, then word prefix, then substring, then slug match; original order within a rank
+    function rank(o) {
+      var n = o.name.toLowerCase();
+      if (n.indexOf(q) === 0) return 0;
+      if (n.split(/[^a-z0-9']+/).some(function (w) { return w.indexOf(q) === 0; })) return 1;
+      if (n.indexOf(q) !== -1) return 2;
+      if (o.slug.indexOf(q.replace(/\s+/g, "-")) !== -1) return 3;
+      return -1;
+    }
+    shown = !q ? OPTS.slice() : OPTS.map(function (o, i) { return { o: o, i: i, r: rank(o) }; })
+      .filter(function (x) { return x.r >= 0; })
+      .sort(function (a, b) { return a.r - b.r || a.i - b.i; })
+      .map(function (x) { return x.o; });
     list.innerHTML = "";
     if (!shown.length) { var e = document.createElement("li"); e.className = "bp-empty"; e.setAttribute("role", "presentation"); e.textContent = "No match. Choose Other builder below."; list.appendChild(e); shown = [OPTS[OPTS.length - 2]]; }
     shown.forEach(function (o, i) {

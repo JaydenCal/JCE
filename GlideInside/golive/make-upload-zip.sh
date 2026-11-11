@@ -29,6 +29,8 @@ exclude() { grep -Ev '^(subdivision/|_review/|_review-shots/)|(^|/)\.htaccess$|(
       *) echo "$l" ;;
     esac
   done
+  # always include the whole portal, the plan studio app and the shared assets (fonts, logo, favicon): the server may not have them
+  ( cd "$SITE" && find portal plan-studio/app assets builder-picker.js builder-picker.css framework.js framework.css site.config.js analytics.js -type f 2>/dev/null )
   # changed or added in git since BASE_REF, and anything not yet committed
   git -C "$REPO" diff --name-only "$BASE_REF" -- "$REL_SITE" | sed "s#^$REL_SITE/##"
   git -C "$REPO" ls-files --others --exclude-standard -- "$REL_SITE" | sed "s#^$REL_SITE/##"
