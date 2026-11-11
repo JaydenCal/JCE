@@ -209,8 +209,10 @@ CREATE TABLE IF NOT EXISTS orgs (
   brand_primary TEXT,                -- builder colour scheme, #rrggbb or NULL (migration 0010)
   brand_accent TEXT,
   brand_dark_ink TEXT,
-  brand_dark_bg TEXT
+  brand_dark_bg TEXT,
+  slug TEXT                          -- public builder slug for the home page picker, unique when set (migration 0011)
 );
+CREATE UNIQUE INDEX IF NOT EXISTS idx_orgs_slug ON orgs(slug);
 
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,

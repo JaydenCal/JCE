@@ -780,6 +780,37 @@ for (const [label, d1] of stores) {
     assert.equal((await org.admin.get('/portal/me')).data.org.branding.colours, null);
   });
 
+  t('public brand route: only name, logo and colours for an existing org; 404 otherwise; slug set by the admin route and unique', async () => {
+    const w = makeWorld({ d1 });
+    const org = await w.makeOrg('Hunter Homes Pty Ltd');
+    const anon = w.browser();
+    const base = (await anon.get('/portal/brand/hunter-homes-pty-ltd', { noCsrf: true }));
+    assert.equal(base.status, 200, 'new orgs get a slug from their name');
+    assert.deepEqual(Object.keys(base.data).sort(), ['colours', 'logoUrl', 'name']);
+    assert.equal(base.data.colours, null);
+    assert.equal((await anon.get('/portal/brand/mojo', { noCsrf: true })).status, 404);
+    assert.equal((await anon.get('/portal/brand/Not%20A%20Slug', { noCsrf: true })).status, 404);
+    const url = `/portal/admin/orgs/${org.orgId}/slug`;
+    assert.equal((await w.admin('POST', url, { slug: 'hunter-homes' })).status, 200);
+    assert.equal((await w.admin('POST', url, { slug: 'Bad Slug' })).status, 400);
+    assert.equal((await w.admin('POST', url, { slug: 'x' }, 'wrong-token')).status, 401);
+    await w.admin('POST', `/portal/admin/orgs/${org.orgId}/brand-colours`, { colours: { primary: '#14305a', accent: '#F07A1A' } });
+    const got = (await anon.get('/portal/brand/hunter-homes', { noCsrf: true }));
+    assert.equal(got.data.name, 'Hunter Homes Pty Ltd');
+    assert.equal(got.data.colours.accent, '#f07a1a');
+    assert.equal((await anon.get('/portal/brand/hunter-homes-pty-ltd', { noCsrf: true })).status, 404, 'the old slug no longer resolves');
+    const other = await w.makeOrg('Hotondo Homes Pty Ltd', 'Sam');
+    assert.equal((await w.admin('POST', `/portal/admin/orgs/${other.orgId}/slug`, { slug: 'hunter-homes' })).status, 409);
+  });
+
+  t('public brand route is rate limited', async () => {
+    const w = makeWorld({ d1 });
+    const anon = w.browser();
+    let last = 0;
+    for (let i = 0; i < 125; i += 1) last = (await anon.get('/portal/brand/mojo', { noCsrf: true })).status;
+    assert.equal(last, 429);
+  });
+
   t('billing contact needs the legal name and a valid ABN; branding and settings validate input', async () => {
     const w = makeWorld({ d1 });
     const org = await w.makeOrg();
