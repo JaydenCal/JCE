@@ -71,7 +71,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   document.querySelector('.ps-welcome')?.remove();
   const entitlement = () => ({
     entitled: true, token: null, clientExports: true, role: me.user.role, orgName: brand.displayName || me.org.name, credits: toCredits(credits),
-    exports: me.exports, enquiry: me.enquiry, sendEnquiry: (body) => api.enquiryJce(body),
+    exports: me.exports, enquiry: me.enquiry, watermark: me.exportWatermark === true, serverExport: me.exportWatermark === true, sendEnquiry: (body) => api.enquiryJce(body),
   });
   premium?.setPortalEntitlement?.(entitlement());
   function toCredits(b) { return b ? { total: b.total, used: b.total - b.remaining, remaining: b.remaining } : null; }

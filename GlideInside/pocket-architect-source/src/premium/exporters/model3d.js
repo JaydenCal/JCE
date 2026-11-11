@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { OBJExporter } from 'three/addons/exporters/OBJExporter.js';
+import { markTrialGroup } from './watermark.js';
 import { buildModel } from '../../viewer3d/build.js';
 
 // Base64 without Buffer, so this also runs on edge runtimes.
@@ -45,7 +46,7 @@ function ensureFileReader() {
   };
 }
 
-function modelFor(project, catalogue) {
+function modelFor(project, catalogue, trial = false) {
   const group = buildModel(project, { THREE, catalogue, showRoof: true, statusView: 'proposed', levelFilter: 'all' });
   if (!group) throw new Error('The 3D model builder returned nothing');
   group.name = String(project.name || 'Design');
@@ -57,6 +58,7 @@ function modelFor(project, catalogue) {
     lawn.geometry?.dispose?.();
   }
   group.updateMatrixWorld(true);
+  if (trial) markTrialGroup(THREE, group);
   // Texture images need a canvas, which a server does not have. Colours are kept, textures dropped there.
   if (typeof document === 'undefined') {
     group.traverse((o) => {
@@ -72,9 +74,9 @@ function modelFor(project, catalogue) {
 }
 
 /** GLB as an ArrayBuffer (starts with the ASCII bytes "glTF"). */
-export async function toGLB(project, { catalogue = null } = {}) {
+export async function toGLB(project, { catalogue = null, trial = false } = {}) {
   ensureFileReader();
-  const group = modelFor(project, catalogue);
+  const group = modelFor(project, catalogue, trial);
   const exporter = new GLTFExporter();
   const result = await exporter.parseAsync(group, { binary: true, onlyVisible: true, trs: false });
   if (!(result instanceof ArrayBuffer)) throw new Error('GLB export did not produce binary output');
@@ -115,9 +117,9 @@ export function toOBJ(project, { catalogue = null } = {}) {
 }
 
 /** { obj, mtl } ready to zip: the OBJ refers to model.mtl. */
-export function toOBJBundle(project, { catalogue = null } = {}) {
-  const group = modelFor(project, catalogue);
+export function toOBJBundle(project, { catalogue = null, trial = false } = {}) {
+  const group = modelFor(project, catalogue, trial);
   const materials = nameMaterials(group);
-  const obj = `# Plan Studio, units metres, Y up\nmtllib model.mtl\n${new OBJExporter().parse(group)}`;
+  const obj = `# Plan Studio, units metres, Y up\n${trial ? '# Glide Inside trial export. Contains a GI_TRIAL_WATERMARK object.\n' : ''}mtllib model.mtl\n${new OBJExporter().parse(group)}`;
   return { obj, mtl: mtlFor(materials) };
 }

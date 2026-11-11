@@ -464,6 +464,19 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
   async function exportFile(request, type) {
     if (!EXPORT_TYPES.includes(type)) throw new HttpError('BAD_REQUEST', `Unknown export type. Use one of: ${EXPORT_TYPES.join(', ')}.`);
     const ent = await authenticate(request, { store, config, now, missing: 'NOT_ENTITLED' });
+    return exportCore(request, type, { ent, watermark: false }); // a Plan Pack (homeowner) export is never watermarked
+  }
+
+  // Builder staff and clients (signed in portal session). The free trial watermark is decided here, from the org account state.
+  async function portalExportFile(request, url, type) {
+    if (!EXPORT_TYPES.includes(type)) throw new HttpError('BAD_REQUEST', `Unknown export type. Use one of: ${EXPORT_TYPES.join(', ')}.`);
+    if (!portal) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not available on this server.');
+    if (!config.portalEnabled) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not open yet.');
+    const ctx = await portal.exportContext(request, url, type);
+    return exportCore(request, type, { ent: null, watermark: ctx.watermark, orgId: ctx.org.id });
+  }
+
+  async function exportCore(request, type, { ent, watermark = false, orgId = null }) {
     const body = await readJson(request, config.exportMaxProjectBytes + (type === 'pdf' ? 2_000_000 : 0));
     let project;
     try {
@@ -474,13 +487,14 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (JSON.stringify(body.project).length > config.exportMaxProjectBytes) throw new HttpError('PAYLOAD_TOO_LARGE', 'This project is too large to export.');
     const problems = validate(project);
     if (problems.length) throw new HttpError('BAD_REQUEST', 'The project has problems and cannot be exported.', { details: problems.slice(0, 5) });
-    if (!coversProject(ent, project.id)) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
+    if (ent && !coversProject(ent, project.id)) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
     const image = typeof body.image === 'string' && /^data:image\/png;base64,/.test(body.image) && body.image.length < 1_900_000 ? body.image : null;
 
     // A per Plan Pack hourly limit. The live rule of ONE PDF plan set per job (a repeat gets the same file back) is only applied when PDF_SET_LIMIT=1.
-    const exportCount = await store.hitRate(`export:${ent.id}`, 3600, now());
+    const rateKey = ent ? ent.id : `org:${orgId}`;
+    const exportCount = await store.hitRate(`export:${rateKey}`, 3600, now());
     if (exportCount > config.exportRatePerHour) throw new HttpError('RATE_LIMITED', 'Too many exports in the last hour. Please wait a few minutes and try again.', { limitPerHour: config.exportRatePerHour, retryAfter: 300 });
-    const pdfGuard = type === 'pdf' && config.pdfSetLimit && !!files && typeof store.claimPdfSet === 'function';
+    const pdfGuard = !!ent && type === 'pdf' && config.pdfSetLimit && !!files && typeof store.claimPdfSet === 'function';
     if (pdfGuard) {
       const again = await redeliverPdf(ent.id);
       if (again) return again;
@@ -514,6 +528,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     try {
       file = await mod.buildExport(type, project, {
         image,
+        watermark: watermark === true,
         config: exportConfig,
         catalogue: await getCatalogue(),
         // The host supplies jsPDF (a literal import here would force every host bundle to include it).
@@ -538,7 +553,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
         throw new HttpError('EXPORT_FAILED', 'Could not store the PDF. You have not been charged a set.');
       }
     }
-    await store.logEvent({ id: randomId('export'), type: 'export', detail: { eid: ent.id, type }, createdAt: iso() });
+    await store.logEvent({ id: randomId('export'), type: 'export', detail: { eid: ent ? ent.id : `org:${orgId}`, type, watermark: watermark === true }, createdAt: iso() });
     return new Response(file.bytes, {
       status: 200,
       headers: {
@@ -580,6 +595,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     const sub = /^\/site(\/[a-z]+)$/.exec(path);
     if (sub) return site.handle(sub[1], request, url);
     if (path === '/enquiry/jce') return allow('POST'), enquiryJce(request);
+    const pexp = /^\/portal\/export\/([a-z0-9]+)$/.exec(path);
+    if (pexp) return allow('POST'), portalExportFile(request, url, pexp[1]);
     if (path.startsWith('/portal/') || path === '/billing/run-month') {
       if (!portal) throw new HttpError('PORTAL_NOT_CONFIGURED', 'The builder portal is not available on this server.');
       return portal.route(request, url, path);

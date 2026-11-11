@@ -8,6 +8,7 @@ import {
 } from './shared.js';
 import { levelContent, ddmmyyyy } from './drawing.js';
 import { furnitureStrokes, placeLabel, boxOf } from './symbols.js';
+import { TRIAL_CSS, TRIAL_HTML, TRIAL_NOTE } from './watermark.js';
 import { BRAND, LOGO_PNG } from '../brand/logo.js';
 
 export const HTML_DISCLAIMER = 'Concept design only. Not for construction. Not a development application drawing. Verify all dimensions on site.';
@@ -227,7 +228,7 @@ var h=(location.hash||'').slice(1);show(h==='3d'&&document.getElementById('pa-vi
  * Returns the HTML text.
  */
 export function toHTML(project, options = {}) {
-  const { catalogue = null, config = {}, glb = '', glbEncoding = '', viewerJs = '', logo = LOGO_PNG, date = new Date() } = options;
+  const { catalogue = null, config = {}, glb = '', glbEncoding = '', viewerJs = '', logo = LOGO_PNG, date = new Date(), trial = false } = options;
   const has3d = !!(glb && viewerJs);
   const levels = levelsSorted(project);
   const data = scheduleData(project);
@@ -266,9 +267,9 @@ export function toHTML(project, options = {}) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)} | ${esc(product)}</title>
 <meta name="robots" content="noindex">
-<style>${CSS}</style>
+<style>${CSS}${trial ? TRIAL_CSS : ''}</style>${trial ? `\n<meta name="generator" content="${TRIAL_NOTE}">` : ''}
 </head>
-<body>
+<body>${trial ? `\n${TRIAL_HTML}` : ''}
 <header class="pa-head"><div class="pa-wrap">
 <div class="pa-top"><img class="pa-logo" src="${esc(logo)}" alt="${esc(product)}"><span class="pa-date">${esc(when)}</span></div>
 <h1>${esc(title)}</h1>

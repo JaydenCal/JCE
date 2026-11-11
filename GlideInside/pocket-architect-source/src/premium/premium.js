@@ -77,7 +77,7 @@ export function createPremium(store, options = {}) {
   // "Send to JCE": public Plan Pack users, builder staff, and clients when the builder allows it.
   const canEnquire = () => (portalOn() ? state.portal.enquiry !== false : isEntitled());
   const isEntitled = () => dev() || !!state.token || portalOn();
-  const view = () => ({ entitled: isEntitled(), token: state.token || state.portal?.token || null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false } : null, enquiry: canEnquire() });
+  const view = () => ({ entitled: isEntitled(), token: state.token || state.portal?.token || null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire() });
   // Builder and client logins have the AI included; mock mode lets the owner review it for any session.
   const aiEntitled = () => isEntitled() || orgSession || mockOn;
   const aiView = () => ({ ...view(), entitled: aiEntitled(), token: aiToken(), session: effSession });
@@ -178,7 +178,7 @@ export function createPremium(store, options = {}) {
     state.exporting = type;
     topbar?.setBusy(type, `Preparing ${exportLabel(type)}`);
     try {
-      const out = await runExport(type, store.project, { api, token: state.token || state.portal?.token || null, devUnlock: dev() || (portalOn() && !!state.portal.clientExports), config: cfg, catalogue, getViewer, save: saveFile });
+      const out = await runExport(type, store.project, { api, token: state.token || state.portal?.token || null, devUnlock: dev() || (portalOn() && !!state.portal.clientExports), portalServer: portalOn() && !!state.portal.serverExport, watermark: portalOn() && !!state.portal.watermark, config: cfg, catalogue, getViewer, save: saveFile });
       track('ps_export', { type });
       layer.notify(`${exportLabel(type)} downloaded as ${out.filename}.`, 'ok');
       topbar?.announce(`${exportLabel(type)} downloaded`);
@@ -200,7 +200,7 @@ export function createPremium(store, options = {}) {
   // Send to JCE ---------------------------------------------------------------------------------------------------------------
   async function pdfBase64() {
     let blob = null;
-    await runExport('pdf', store.project, { api, token: state.token || state.portal?.token || null, devUnlock: dev() || (portalOn() && !!state.portal.clientExports), config: cfg, catalogue, getViewer, save: (b) => { blob = b; } });
+    await runExport('pdf', store.project, { api, token: state.token || state.portal?.token || null, devUnlock: dev() || (portalOn() && !!state.portal.clientExports), portalServer: portalOn() && !!state.portal.serverExport, watermark: portalOn() && !!state.portal.watermark, config: cfg, catalogue, getViewer, save: (b) => { blob = b; } });
     if (!blob) return null;
     const bytes = new Uint8Array(await blob.arrayBuffer());
     let bin = '';
