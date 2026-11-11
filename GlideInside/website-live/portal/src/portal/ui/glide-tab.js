@@ -24,7 +24,7 @@ export async function renderGlide(host, { api, me, appLinkFor = appLink }) {
     ])));
   }
   host.append(
-    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'Glide Inside library'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Generic house, granny flat, duplex and shed models made by Glide Inside. They are always available to you and to every client login, at no charge. More models are added over time.'))),
+    h('div', { class: 'pp-head' }, h('div', null, h('h2', null, 'Glide Inside library'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Generic house, granny flat, duplex and shed models made by Glide Inside. They are always available to you. Clients see them only when you tick Show Glide Inside sample designs to clients. More models are added over time.'))),
     h('div', { class: 'pp-filters' }, h('label', { class: 'pp-inline' }, h('span', null, 'Type'), h('select', { onchange: (e) => { state.cat = e.target.value; paint(); } }, h('option', { value: '' }, 'All'), ...cats.map((c) => h('option', { value: c }, c)))), chip(`${lib.length} models`, 'muted')),
     grid);
   paint();

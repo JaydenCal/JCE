@@ -17,7 +17,7 @@ import { NEW_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, formatAu
 const DB_KEY = 'gi.portal.mock.v1';
 const SESSION_KEY = 'gi.portal.session.v1';
 const DAY = 86400000;
-export const DEFAULT_AI_MONTHLY_CAP = 150;
+export const DEFAULT_AI_MONTHLY_CAP = 300;
 export const TEMP_PASSWORD_DAYS = 7;
 export const MAX_FAILED_SIGN_INS = 5;
 export const LOCKOUT_MINUTES = 15;
@@ -95,10 +95,10 @@ function seedDb(now) {
   const users = [
     user('u_priya', 'admin', 'Priya', 'priya@samplehomes.example', 'priya-4827', DEMO_LOGINS.admin.password, { lastSignInAt: iso(now - 3600000) }),
     user('u_tom', 'designer', 'Tom', 'tom@samplehomes.example', 'tom-3948', DEMO_LOGINS.designer.password, { lastSignInAt: iso(now - 2 * DAY) }),
-    user('u_sarah', 'client', 'Sarah', 'sarah.t@example.com', 'sarah-4821', DEMO_LOGINS.client.password, { createdAt: iso(at(m1, 12)), lastSignInAt: iso(now - DAY), lotAddress: 'Lot 14, 22 Banksia Rise, Thornton NSW 2322', houseAccess: ['h_banksia', 'h_wattle'], ai: { used: { [key]: 62 }, topUpBalance: 0 } }),
-    user('u_daniel', 'client', 'Daniel', '', 'daniel-5937', 'plum-lake-84', { createdAt: iso(at(m1, 20)), lastSignInAt: iso(now - 6 * DAY), lotAddress: 'Lot 3 Ironbark Close, Cessnock NSW 2325', ai: { used: { [key]: 140 }, topUpBalance: 300 } }),
+    user('u_sarah', 'client', 'Sarah', 'sarah.t@example.com', 'sarah-4821', DEMO_LOGINS.client.password, { createdAt: iso(at(m1, 12)), lastSignInAt: iso(now - DAY), lotAddress: 'Lot 14, 22 Banksia Rise, Thornton NSW 2322', houseAccess: ['h_banksia', 'h_wattle'], ai: { used: { [key]: 124 }, topUpBalance: 0 } }),
+    user('u_daniel', 'client', 'Daniel', '', 'daniel-5937', 'plum-lake-84', { createdAt: iso(at(m1, 20)), lastSignInAt: iso(now - 6 * DAY), lotAddress: 'Lot 3 Ironbark Close, Cessnock NSW 2325', ai: { used: { [key]: 280 }, topUpBalance: 300 } }),
     user('u_mei', 'client', 'Mei', 'mei.l@example.com', 'mei-6294', 'tulip-bear-29', { createdAt: iso(at(key, 2)), mustChangePassword: true, tempPasswordExpiresAt: iso(now + 5 * DAY), lotAddress: '', houseAccess: ['h_coastal'] }),
-    user('u_jack', 'client', 'Jack', '', 'jack-7382', 'swan-pine-63', { createdAt: iso(at(key, 3, 14)), lotAddress: '15 Wattle Court, Raymond Terrace NSW 2324', lastSignInAt: iso(now - 5 * 3600000), ai: { used: { [key]: 150 }, topUpBalance: 0 } }),
+    user('u_jack', 'client', 'Jack', '', 'jack-7382', 'swan-pine-63', { createdAt: iso(at(key, 3, 14)), lotAddress: '15 Wattle Court, Raymond Terrace NSW 2324', lastSignInAt: iso(now - 5 * 3600000), ai: { used: { [key]: 300 }, topUpBalance: 0 } }),
     user('u_olivia', 'client', 'Olivia', 'olivia.r@example.com', 'olivia-8473', 'jade-fox-75', { createdAt: iso(at(m2, 8)), status: 'disabled', lastSignInAt: iso(at(m2, 30)) }),
     user('u_ahmed', 'client', 'Ahmed', 'ahmed.k@example.com', 'ahmed-2956', 'coral-oak-36', { createdAt: iso(at(key, 3, 16)), lastSignInAt: iso(at(key, 3, 16)), lotAddress: 'Lot 9 Flinders Drive, Medowie NSW 2318' }),
   ];
