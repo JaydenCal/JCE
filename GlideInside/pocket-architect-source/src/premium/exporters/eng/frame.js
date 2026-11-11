@@ -4,7 +4,7 @@
 import { clean, PEN, fit, ink, wrap } from './kit.js';
 import { placeImage } from '../pdf.js';
 import { titleLotDp } from '../../../site/lotplan.js';
-import { DISCLAIMER, ddmmyyyy, normDate, drawingNo, attribution } from './brand.js';
+import { DISCLAIMER, ddmmyyyy, normDate, drawingNo, attribution, projectTitle } from './brand.js';
 
 export const SW = 420;
 export const SH = 297;
@@ -124,7 +124,7 @@ export function drawFrame(doc, ctx, sheet) {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(13);
   ink(doc, PEN.ink);
-  const pname = clean(tb.projectName || project.name || 'Untitled design').toUpperCase();
+  const pname = projectTitle(project).toUpperCase();
   doc.text(fit(doc, pname, w2 - 5), x2 + 2.6, y0 + 9.2);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
@@ -189,14 +189,14 @@ export function drawFrame(doc, ctx, sheet) {
 
   // Footer band: concept statement, then attribution.
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(6.6);
-  ink(doc, PEN.tag);
-  doc.text(fit(doc, DISCLAIMER, SW - 2 * M - 4), x0 + 2, TB_FOOT + 3);
+  doc.setFontSize(6.8);
+  ink(doc, PEN.ink2 || [58, 62, 70]);
+  doc.text(fit(doc, DISCLAIMER, SW - 2 * M - 4), x0 + 2, TB_FOOT + 2.8);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.2);
-  ink(doc, PEN.grey);
+  doc.setFontSize(6.5);
+  ink(doc, [70, 74, 82]);
   const credit = `${attribution(ctx.lot, { aerial: !!ctx.hasAerial })} ${ctx.extraCredit || ''}`.trim();
   const lines = wrap(doc, credit, SW - 2 * M - 4).slice(0, 2);
-  lines.forEach((l, i) => doc.text(l, x0 + 2, TB_FOOT + 5.5 + i * 2.4));
+  lines.forEach((l, i) => doc.text(l, x0 + 2, TB_FOOT + 5.2 + i * 2.35));
   return no;
 }

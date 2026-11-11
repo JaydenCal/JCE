@@ -79,7 +79,7 @@ async function jpegDataUrl(canvas, quality) {
  * Composite the aerial for one viewport. `planToSheet` maps plan mm to sheet mm (affine: a turn, a scale and a shift), `rect` is the
  * viewport in sheet mm. The result is a JPEG of `rect` at `pxPerMm`, washed back towards white by `wash` so linework reads over it.
  */
-export async function renderUnderlay({ bytes, extent, planToSheet, rect, pxPerMm = 4.2, quality = 0.5, wash = 0.2 }) {
+export async function renderUnderlay({ bytes, extent, planToSheet, rect, pxPerMm = 4.2, quality = 0.5, wash = 0.2, desat = 0.4 }) {
   try {
     if (!bytes || !extent) return null;
     const w = Math.max(8, Math.round((rect.x1 - rect.x0) * pxPerMm));
@@ -87,7 +87,7 @@ export async function renderUnderlay({ bytes, extent, planToSheet, rect, pxPerMm
     const [canvas, img] = await Promise.all([makeCanvas(w, h), decode(bytes)]);
     if (!canvas || !img) return null;
     const g = canvas.getContext('2d');
-    g.fillStyle = 'rgb(236,237,239)';
+    g.fillStyle = 'rgb(255,255,255)'; // plain white where the picture does not reach, never a synthetic texture
     g.fillRect(0, 0, w, h);
     const o = planToSheet({ x: 0, y: 0 });
     const ex = planToSheet({ x: 1, y: 0 });
@@ -97,6 +97,13 @@ export async function renderUnderlay({ bytes, extent, planToSheet, rect, pxPerMm
     g.imageSmoothingQuality = 'low';
     g.drawImage(img, extent.x0, extent.y0, extent.x1 - extent.x0, extent.y1 - extent.y0);
     g.setTransform(1, 0, 0, 1, 0, 0);
+    // Slightly desaturated, then lightened, so the linework reads over the photograph
+    try {
+      g.globalCompositeOperation = 'saturation';
+      g.fillStyle = `rgba(128,128,128,${desat})`;
+      g.fillRect(0, 0, w, h);
+    } catch { /* a canvas without blend modes keeps its colour */ }
+    g.globalCompositeOperation = 'source-over';
     g.fillStyle = `rgba(255,255,255,${wash})`;
     g.fillRect(0, 0, w, h);
     return await jpegDataUrl(canvas, quality);

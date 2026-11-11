@@ -27,6 +27,8 @@ export const CONFIG = {
   // siteMock true serves recorded-shape SAMPLE data from src/site/fixtures/ without calling the API (tests and review builds only).
   siteLookupEnabled: true,
   siteMock: false,
+  // URL of the real NSW sample aerial (tools/fixtures/sample-aerial.jpg) for the mock lookup in a browser; null draws the synthetic picture.
+  siteMockAerialUrl: null,
   // Setback rules are served statically from the site, one file per council (see tools/split-setbacks.mjs). Relative to the app page.
   setbacksBase: '../data/setbacks/',
   siteAerialMarginM: 30, // aerial and elevation grid extend this far beyond the lot boundary

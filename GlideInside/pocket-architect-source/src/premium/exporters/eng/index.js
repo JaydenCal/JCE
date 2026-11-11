@@ -3,6 +3,7 @@
 // The result has a non-enumerable `layout`: { paper, mode, sheets: [{ number, title, scale, kind }], pages: [kind] }.
 
 import * as G from '../../../model/geometry.js';
+import { terrainAt } from '../../../site/model.js';
 import { schemeColours } from '../../../model/colour-schemes.js';
 import { rotateHouse } from '../../../model/placement.js';
 import { buildingHull, orientedBox } from '../../../site/lotplan.js';
@@ -10,7 +11,8 @@ import { paperOf, levelContent, chooseScale } from '../drawing.js';
 import { levelsSorted, ascii, outlineBox } from '../shared.js';
 import { scaledDoc, drawLevel } from '../pdf.js';
 import { clean, viewTitle, cleanedDoc, withSuperscripts } from './kit.js';
-import { brandOf, drawingNo } from './brand.js';
+import { brandOf, drawingNo, projectTitle } from './brand.js';
+import { fetchWideAerial, covers } from './locality.js';
 import { drawFrame, BODY } from './frame.js';
 import { drawSitePlan, drawSitePanel, siteFacts, siteView, SITE_VP, keyBox, localityView } from './siteplan.js';
 import { AREA } from '../pdf.js';
@@ -19,7 +21,7 @@ import { drawCover, drawAnalysis, drawSchedules, scheduleCount, COVER_BOX } from
 import { collectTriangles, drawElevations, drawSection, drawRoofPlan, roofAreaM2, roofScale, elevationScale, sectionScale, drawSectionMarker, sectionLinePlan } from './views.js';
 import { drawRoomLabels } from './roomlabels.js';
 import { stairGeometry } from '../shared.js';
-import { drawLevelPanel, analysisScale } from './sheets.js';
+import { drawLevelPanel, analysisScale, analysisView } from './sheets.js';
 
 /**
  * The house turned square to the page for the floor plans, roof plan and elevations (a house turned on its lot would otherwise be
@@ -108,7 +110,20 @@ function drawStairNotes(doc, project, level, T) {
   return boxes;
 }
 
-export async function toEngineeringPDF(project, options = {}) {
+/** An assumed finished floor level is taken from the ground at the house, not the lot centroid (they differ on a large lot). */
+function withHouseFloorRL(project) {
+  const lot = project?.site?.lot;
+  if (!lot?.terrain || lot.floorRL == null || !lot.floorRLAuto) return project;
+  const hull = buildingHull(project);
+  if (hull.length < 3) return project;
+  const c = G.polygonCentroid(hull);
+  const rl = terrainAt(lot.terrain, c.x, c.y);
+  if (rl == null) return project;
+  return { ...project, site: { ...project.site, lot: { ...lot, floorRL: Math.round((rl + 0.15) * 100) / 100 } } };
+}
+
+export async function toEngineeringPDF(project0, options = {}) {
+  const project = withHouseFloorRL(project0);
   const { jsPDF, image = null, aerial = null, config = {}, catalogue = null, date = new Date(), paper = null, scale = null } = options;
   if (typeof jsPDF !== 'function') throw new Error('toEngineeringPDF needs the jsPDF class (options.jsPDF)');
   const plan = engineeringSheets(project, { paper, scale, catalogue });
@@ -118,28 +133,49 @@ export async function toEngineeringPDF(project, options = {}) {
   const brand = brandOf(project, options);
   const tb = project.titleBlock || {};
   raw.setProperties({
-    title: `${ascii(tb.projectName || project.name) || 'Design'} concept plan set`,
+    title: `${ascii(projectTitle(project)) || 'Design'} concept plan set`,
     subject: 'Concept design plans, to be verified by a suitably qualified person',
     author: brand.mode === 'builder' ? brand.name || 'Glide Inside' : ascii(tb.company) || 'Glide Inside',
     creator: 'Glide Inside Pocket Architect',
   });
   const doc = withSuperscripts(scaledDoc(raw, p.k));
   const total = plan.list.length;
-  const ctx = { colours: schemeColours(project), project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
+  const ctx = { colours: schemeColours(project), project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, extraCredit: options.aerialCredit || '', analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
   // The aerial is composited once per view (the site plan, the key plan and the cover locality), turned and cropped as each is drawn.
   const bytes0 = await resolveAerial(project, { aerial });
   const lotA = project.site?.lot;
   if (bytes0 && lotA?.aerial?.extent) {
     const facts = siteFacts(project);
-    const jobs = [];
-    if (facts) { const v = siteView(project, facts, p.k); jobs.push(['site', v.T, SITE_VP, 4.4, 0.5]); }
     const kb = keyBox();
-    const kv = localityView(project, kb, { minSpanM: 400, k: p.k });
-    if (kv) jobs.push(['key', kv.T, kb, 6, 0.5]);
-    const cv = localityView(project, COVER_BOX(ctx), { minSpanM: 280, k: p.k });
-    if (cv) jobs.push(['cover', cv.T, COVER_BOX(ctx), 3.6, 0.5]);
-    for (const [name, T, rect, pxPerMm, quality] of jobs) {
-      const url = await renderUnderlay({ bytes: bytes0, extent: lotA.aerial.extent, planToSheet: T, rect, pxPerMm, quality, wash: 0.18 });
+    // The locality map and key plan want more ground than the stored aerial covers: ask for the aerial over the extent they need
+    let loc = { bytes: bytes0, extent: lotA.aerial.extent };
+    const av = analysisView(project, p.k);
+    const want = [localityView(project, COVER_BOX(ctx), { minSpanM: 700, k: p.k, ideal: true }), localityView(project, kb, { minSpanM: 400, k: p.k, ideal: true })].filter(Boolean).map((v) => v.window);
+    if (av) want.push(av.window);
+    // The site plan fills its viewport edge to edge, so it asks for ground beyond the stored aerial when the viewport reaches past it
+    const sv0 = facts ? siteView(project, facts, p.k) : null;
+    const siteWin = sv0?.windowPlan ? { x0: Math.min(...sv0.windowPlan.map((q) => q.x)), y0: Math.min(...sv0.windowPlan.map((q) => q.y)), x1: Math.max(...sv0.windowPlan.map((q) => q.x)), y1: Math.max(...sv0.windowPlan.map((q) => q.y)) } : null;
+    if (siteWin) want.push(siteWin);
+    if (want.length) {
+      const need = { x0: Math.min(...want.map((q) => q.x0)), y0: Math.min(...want.map((q) => q.y0)), x1: Math.max(...want.map((q) => q.x1)), y1: Math.max(...want.map((q) => q.y1)) };
+      if (!covers(lotA.aerial.extent, need)) {
+        const padM = (need.x1 - need.x0) * 0.04;
+        const wide = await fetchWideAerial(project, { x0: need.x0 - padM, y0: need.y0 - padM, x1: need.x1 + padM, y1: need.y1 + padM }, options);
+        if (wide) loc = wide;
+      }
+    }
+    ctx.locExtent = loc.extent;
+    if (loc.neighbours) ctx.locNeighbours = loc.neighbours;
+    if (loc.roads) ctx.locRoads = loc.roads;
+    const jobs = [];
+    if (facts) { const v = siteView(project, facts, p.k); jobs.push(['site', v.T, SITE_VP, 4.4, 0.5, loc.bytes, loc.extent]); }
+    const kv = localityView(project, kb, { minSpanM: 400, k: p.k, extent: loc.extent });
+    if (kv) jobs.push(['key', kv.T, kb, 6, 0.5, loc.bytes, loc.extent]);
+    if (av) jobs.push(['analysis', av.T, av.rect, 4.4, 0.5, loc.bytes, loc.extent]);
+    const cv = localityView(project, COVER_BOX(ctx), { minSpanM: 700, k: p.k, extent: loc.extent });
+    if (cv) jobs.push(['cover', cv.T, COVER_BOX(ctx), 3.6, 0.5, loc.bytes, loc.extent]);
+    for (const [name, T, rect, pxPerMm, quality, src, ext] of jobs) {
+      const url = await renderUnderlay({ bytes: src, extent: ext, planToSheet: T, rect, pxPerMm, quality, wash: 0.18 });
       if (url) ctx.underlays[name] = { url, rect };
     }
     ctx.hasAerial = Object.keys(ctx.underlays).length > 0;
