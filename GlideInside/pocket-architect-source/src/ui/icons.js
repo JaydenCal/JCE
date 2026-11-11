@@ -16,6 +16,7 @@ const PATHS = {
   wheel: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/><path d="M12 3.5v5.5M12 15v5.5M3.5 12H9M15 12h5.5"/>',
   undo: '<path d="M9 14L4.5 9.5 9 5"/><path d="M4.5 9.5h9a5.5 5.5 0 0 1 0 11H10"/>',
   redo: '<path d="M15 14l4.5-4.5L15 5"/><path d="M19.5 9.5h-9a5.5 5.5 0 0 0 0 11H14"/>',
+  back: '<path d="M19 12H5.5M11 5.5L4.5 12l6.5 6.5"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   new: '<path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3.5V8h4.5M12 11v6M9 14h6"/>',
   open: '<path d="M3.5 7a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>',

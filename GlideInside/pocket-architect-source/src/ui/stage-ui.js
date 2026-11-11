@@ -1,5 +1,6 @@
 // Small overlays on the stage: context chips (plan view) and the first-visit welcome card.
 
+import { hasPlan } from './view-mode.js';
 import { h, clear, storage } from './dom.js';
 import { icon } from './icons.js';
 import { hasExtensionContent, levelsByElevation } from '../editor2d/math.js';
@@ -115,8 +116,8 @@ export function createStageChips(el, store) {
 
   function render() {
     const view = store.ui.view;
-    el.hidden = view !== '2d';
-    if (view !== '2d') {
+    el.hidden = !hasPlan(view);
+    if (!hasPlan(view)) {
       close();
       return;
     }
@@ -170,7 +171,7 @@ export function createWelcome(stage, store, { onChoose } = {}) {
       if (label !== 'Open project') dismiss();
     }),
     store.on('ui', (patch = {}) => {
-      if ('view' in patch && patch.view !== '2d') dismiss(false);
+      if ('view' in patch && !hasPlan(patch.view)) dismiss(false);
     }),
   ];
   return { dismiss };

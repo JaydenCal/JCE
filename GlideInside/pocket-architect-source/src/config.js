@@ -44,6 +44,8 @@ export const CONFIG = {
     aiTopUp: { credits: 300, priceAud: 10 }, // incl. GST, charged on the end of month invoice
     aiMonthlyCredits: 300, // per login per month, hard stop at zero
   },
+  // The Glide Inside home page, relative to Pocket Architect: where Back goes when nothing else is known. The site can set GI_CONFIG.homeUrl.
+  homeUrl: (hasWindow && typeof window.GI_CONFIG?.homeUrl === 'string' && window.GI_CONFIG.homeUrl) || '../../index.html',
   autosaveKey: 'ps.autosave.v1',
   embedMode: params.get('embed') === 'demo' ? 'demo' : 'full',
   // Unlocks client-side exports for local testing only. Never true in production.

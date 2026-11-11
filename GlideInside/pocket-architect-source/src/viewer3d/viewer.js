@@ -13,6 +13,7 @@ import { createEdit } from './edit.js';
 import { createAhead } from './ahead.js';
 import { VIEWER_CSS } from './viewer-css.js';
 import { loadBitmap } from '../editor2d/underlay.js';
+import { edgeColourOf } from './terrain.js';
 
 const STYLE_ID = 'ps3d-style';
 const RAD = Math.PI / 180;
@@ -90,8 +91,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   const scene = new THREE.Scene();
   const sky = makeSky();
   scene.add(sky);
-  scene.fog = new THREE.Fog(SKY.horizon, 120, 480);
-  scene.fog.color.set(SKY.horizon);
+  // No fog: the owner wants a sharp model. The site fades to the horizon colour by itself (terrain.js, fade ring).
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 2000);
   camera.position.set(14, 10, 16);
 
@@ -153,6 +153,9 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   const fadeHints = () => hints.classList.add('is-faded');
 
   // State -----------------------------------------------------------------------------------------
+  // In the split view the plan editor and this viewer are on screen together: the viewer only takes keys while the pointer is over it
+  // or it has focus, so a key press is never answered twice.
+  const keysOk = () => store.ui.view !== 'split' || rootEl.matches(':hover') || rootEl.contains(document.activeElement);
   let active = false;
   let mode = store.ui.view === 'walk' ? 'walk' : 'orbit';
   let model = null;
@@ -199,6 +202,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     getMode: () => mode,
     isActive: () => active,
     suspended: () => !!ahead?.isArmed,
+    keysOk: () => keysOk(),
   });
   walk.setItems(edit.items);
   const ahead = createAhead({
@@ -206,6 +210,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     pickAt: (x, y) => pickAt(x, y),
     getMode: () => mode,
     isActive: () => active,
+    keysOk: () => keysOk(),
     invalidate,
   });
   // Editing needs a clear view of the rooms, so the roof is hidden while Edit is on and restored after.
@@ -228,22 +233,60 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   };
 
   // Model ---------------------------------------------------------------------------------------------
+  // Site layers the person can switch in the 3D view (a small chip at the bottom). Remembered per browser.
+  const LAYERS_KEY = 'ps.view3d.layers';
+  const layers = { contours: false };
+  try {
+    const saved = JSON.parse(localStorage.getItem(LAYERS_KEY) || 'null');
+    if (saved && typeof saved.contours === 'boolean') layers.contours = saved.contours;
+  } catch {
+    /* storage unavailable: defaults */
+  }
+  const contoursChip = document.createElement('button');
+  contoursChip.type = 'button';
+  contoursChip.className = 'ps3d-chip ps3d-chip--toggle';
+  contoursChip.dataset.ps = 'contours-toggle';
+  const syncContoursChip = () => {
+    const lot = store.project.site?.lot;
+    contoursChip.hidden = !lot?.contours?.length;
+    contoursChip.setAttribute('aria-pressed', String(layers.contours));
+    contoursChip.textContent = layers.contours ? 'Contours on' : 'Contours off';
+  };
+  contoursChip.addEventListener('click', () => {
+    layers.contours = !layers.contours;
+    try {
+      localStorage.setItem(LAYERS_KEY, JSON.stringify(layers));
+    } catch {
+      /* ignore */
+    }
+    syncContoursChip();
+    scheduleRebuild(10);
+  });
+  rootEl.appendChild(contoursChip);
   // Aerial texture for the site terrain: loaded from the underlay store, rebuilt when the image changes.
-  const site = { key: null, texture: null, loading: null };
+  const site = { key: null, texture: null, edgeColour: null, loading: null };
   function syncSiteTexture() {
     const key = store.project.site?.lot?.aerial?.key || null;
     if (key === site.key) return;
     site.key = key;
     site.texture?.dispose();
     site.texture = null;
+    site.edgeColour = null;
     if (!key) return;
     site.loading = loadBitmap(key).then((bmp) => {
       if (!bmp || site.key !== key) return;
       // A canvas copy keeps the usual flipY behaviour (an ImageBitmap cannot be flipped) and is drawn 1:1 for a sharp texture.
+      // Full resolution, scaled down only when the GPU cannot take it. No smoothing beyond the resample itself.
+      const maxTex = renderer.capabilities.maxTextureSize || 4096;
+      const k = Math.min(1, maxTex / Math.max(bmp.w, bmp.h));
       const c = document.createElement('canvas');
-      c.width = bmp.w;
-      c.height = bmp.h;
-      c.getContext('2d').drawImage(bmp.img, 0, 0);
+      c.width = Math.max(1, Math.round(bmp.w * k));
+      c.height = Math.max(1, Math.round(bmp.h * k));
+      const cg = c.getContext('2d');
+      cg.imageSmoothingEnabled = true;
+      cg.imageSmoothingQuality = 'high';
+      cg.drawImage(bmp.img, 0, 0, c.width, c.height);
+      site.edgeColour = edgeColourOf(c);
       site.texture = new THREE.CanvasTexture(c);
       site.texture.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
       scheduleRebuild(20);
@@ -260,6 +303,8 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
       statusView: ui.statusView || 'proposed',
       walk: mode === 'walk',
       siteTexture: site.texture,
+      siteEdgeColour: site.edgeColour,
+      showContours: layers.contours,
     };
   }
 
@@ -310,9 +355,6 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     points = collectPoints(model);
     fitSun();
     applyLimits();
-    const R = model.userData.groundR || 200;
-    scene.fog.near = R * 0.3;
-    scene.fog.far = R * 0.97;
     if (!framed || lastProjectId !== store.project.id) {
       frameCamera(false);
       framed = true;
@@ -339,7 +381,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     const v = new THREE.Vector3();
     group.updateMatrixWorld(true);
     group.traverse((o) => {
-      if (!o.isMesh || o.userData?.ground || !o.geometry?.attributes?.position) return;
+      if (!o.isMesh || (o.userData?.ground && !o.userData?.frame) || !o.geometry?.attributes?.position) return;
       const pos = o.geometry.attributes.position;
       const step = Math.max(1, Math.floor(pos.count / 4000));
       for (let i = 0; i < pos.count; i += step) {
@@ -421,7 +463,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     if (mode === 'walk') {
       if (camera.near !== 0.05) {
         camera.near = 0.05;
-        camera.far = 600;
+        camera.far = 1600;
         camera.updateProjectionMatrix();
       }
       return;
@@ -536,6 +578,7 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
     camera.updateProjectionMatrix();
     controls.enabled = !w;
     hints.hidden = w;
+    contoursChip.dataset.walk = String(w);
     edit.onModeChange();
   }
 
@@ -664,15 +707,17 @@ export function createViewer3D(element, store, { catalogue = null, adaptive = tr
   const offProject = store.on('project', (info) => {
     if (info?.label === 'Open project' || info?.label === 'Find my block') framed = false;
     syncSiteTexture();
+    syncContoursChip();
     scheduleRebuild(120);
     if (mode === 'walk') walk.refresh();
   });
   syncSiteTexture();
+  syncContoursChip();
   const offUI = store.on('ui', (patch) => {
     if (!patch) return;
     if ('view' in patch) {
       if (patch.view === 'walk') setMode('walk');
-      else if (patch.view === '3d') setMode('orbit');
+      else if (patch.view === '3d' || patch.view === 'split') setMode('orbit');
     }
     if ('levelFilter' in patch || 'showRoof' in patch || 'statusView' in patch) {
       scheduleRebuild(20);

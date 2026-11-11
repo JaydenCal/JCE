@@ -1,5 +1,6 @@
 // Active tool and each tool's remembered argument (armed furniture item, opening preset, tank size...).
 
+import { hasPlan } from './view-mode.js';
 import { DOOR_FAMILY } from '../editor2d/tools-meta.js';
 
 const remembered = {};
@@ -13,7 +14,7 @@ export function toolArgFor(tool) {
 export function setTool(store, tool, arg) {
   if (arg !== undefined) remembered[tool] = arg;
   const patch = { tool, toolArg: toolArgFor(tool) };
-  if (store.ui.view !== '2d') patch.view = '2d';
+  if (!hasPlan(store.ui.view)) patch.view = '2d';
   store.setUI(patch);
 }
 

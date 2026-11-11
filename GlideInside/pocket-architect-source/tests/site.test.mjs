@@ -328,10 +328,12 @@ test('buildModel drapes the site terrain and keeps the flat ground without a lot
   const flat = buildModel(createProject());
   assert.equal(flat.getObjectByName('site-terrain'), undefined);
   assert.equal(flat.getObjectByName('ground').userData.ground, true);
-  // A project with a lot but no elevation grid keeps the flat ground
+  // A project with a lot but no elevation grid still shows the site: flat ground at slab level, boundary and all
   const noGrid = designOnLot();
   noGrid.site.lot.terrain = null;
-  assert.equal(buildModel(noGrid).getObjectByName('site-terrain'), undefined);
+  const ng = buildModel(noGrid);
+  assert.ok(ng.getObjectByName('site-terrain'));
+  assert.ok(ng.getObjectByName('lot-boundary'));
 });
 
 test('templates still build with schema 2', () => {

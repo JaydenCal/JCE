@@ -71,8 +71,8 @@ export function createHints(ps, { isEnabled, isBusy, layer }) {
     }
     if ('view' in patch && patch.view !== last.view) {
       last.view = patch.view;
-      if (patch.view === '3d' || patch.view === 'walk') kick(patch.view);
-      else close();
+      // No how-to card over the 3D view (it blocks the model): the tips stay as the small chips at the bottom of the viewer.
+      close();
     }
   }));
 

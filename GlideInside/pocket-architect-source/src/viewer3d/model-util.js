@@ -48,7 +48,11 @@ export function disposeModel(group) {
   group.traverse((o) => {
     if (o.geometry) o.geometry.dispose();
     const mats = Array.isArray(o.material) ? o.material : o.material ? [o.material] : [];
-    for (const m of mats) if (!m.userData?.shared) m.dispose();
+    for (const m of mats) {
+      if (m.userData?.shared) continue;
+      if (m.userData?.disposeMap) m.map?.dispose?.();
+      m.dispose();
+    }
   });
 }
 

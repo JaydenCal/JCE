@@ -31,6 +31,9 @@ import { openTitleBlockForm, getLogo } from './ui/titleblock.js';
 import { TOOL_DEFS, DOOR_FAMILY, KIND_LABEL } from './editor2d/tools-meta.js';
 import { track } from './ui/analytics.js';
 import { designTypeOf, changeDesignType, applyDesignType } from './ui/design-type.js';
+import { backTarget, backLabel } from './ui/back-target.js';
+import { startView, readLastView } from './ui/view-mode.js';
+import { portalUrl } from './portal/links.js';
 
 const demoMode = () => CONFIG.embedMode === 'demo';
 
@@ -189,7 +192,32 @@ async function main() {
     onSave: save,
     onOpenFull: () => embed?.openFull(),
     onFindBlock: () => openFindBlock(store),
+    onBack: () => goBack(),
   });
+  const backFacts = () => ({ here: location.href, referrer: document.referrer, back: new URLSearchParams(location.search).get('back'), portalUrl: portalUrl(), homeUrl: CONFIG.homeUrl });
+  const backBtn = refs.topbar.querySelector('[data-action="back"]');
+  if (backBtn) backBtn.title = backLabel(backTarget(backFacts()).kind);
+  // Back keeps the work (autosave) and returns to the page that launched the app. A signed in builder or client with no launching page
+  // goes to the portal dashboard, anyone else to the Glide Inside home page.
+  async function goBack() {
+    try {
+      store.saveNow?.();
+    } catch {
+      /* the autosave already ran on the last edit */
+    }
+    const facts = backFacts();
+    let target = backTarget(facts);
+    if (target.kind === 'home' && CONFIG.portalEnabled) {
+      try {
+        const { getPortalApi } = await import('./portal/api.js');
+        const me = await getPortalApi().me();
+        target = backTarget({ ...facts, role: me?.user?.role || null });
+      } catch {
+        /* signed out or no portal: the home page */
+      }
+    }
+    location.assign(target.url);
+  }
   let wheel = null;
   const inventory = createInventory({ store, catalogue });
   const openInventory = () => {
@@ -329,12 +357,23 @@ async function main() {
   // Start state ------------------------------------------------------------------------------------------------------------------
   const params = new URLSearchParams(location.search);
   const phone = window.matchMedia?.('(max-width: 599.98px) and (pointer: coarse)').matches;
-  const wantedView = params.get('view');
-  if (wantedView === '3d' || wantedView === 'walk' || wantedView === '2d') store.setUI({ view: wantedView });
-  else if (phone) store.setUI({ view: '3d' });
+  let owner = null;
+  try {
+    owner = localStorage.getItem('ps.portal.owner') || null;
+  } catch {
+    owner = null;
+  }
+  let remembered = null;
+  try {
+    remembered = readLastView(localStorage, owner) || readLastView(localStorage, null);
+  } catch {
+    remembered = null;
+  }
+  const first = startView({ param: params.get('view'), phone, remembered, demo: demoMode() });
+  if (first !== '2d') store.setUI({ view: first });
   track('ps_open', { embedMode: CONFIG.embedMode });
 
-  if (!state.fromAutosave && !demoMode() && !narrow) createWelcome(refs.stage, store, { onChoose: openNew });
+  if (!state.fromAutosave && !demoMode() && !narrow && first === '2d') createWelcome(refs.stage, store, { onChoose: openNew });
 
   embed.ready();
 

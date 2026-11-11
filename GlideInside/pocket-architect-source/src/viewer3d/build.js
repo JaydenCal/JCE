@@ -14,6 +14,7 @@ import { buildLevelRoof } from './roof.js';
 import * as F from './footprint.js';
 import { makeMesh, modelBounds } from './model-util.js';
 import { addSiteTerrain } from './terrain.js';
+import { siteReady } from './site-geom.js';
 import { addFloorPoly, addGround, addDeck, addStair, addTank, addFurniture, shade } from './site.js';
 
 export { disposeModel, modelBounds } from './model-util.js';
@@ -313,10 +314,10 @@ export function buildModel(project, opts = {}) {
 
   // ground last so it can size itself to the model
   const bounds = modelBounds(root);
-  // With a lot that has an elevation grid the ground is the real terrain (aerial draped when a texture is given); the flat disc then
-  // only continues it beyond the grid. Without a lot nothing changes.
-  const terrain = project.site?.lot?.terrain ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null }) : null;
-  const groundR = addGround(ctx, root, bounds, terrain ? terrain.edgeY - 0.02 : null);
+  // Whenever a lot is loaded the site is built: terrain with the aerial (when present), boundary, neighbours, labels and envelope.
+  // The elevation grid is optional (flat ground at slab level without it). Without a lot the old flat disc stays.
+  const terrain = siteReady(project) ? addSiteTerrain(ctx, root, project, { texture: opts.siteTexture || null, edgeColour: opts.siteEdgeColour || null, showContours: !!opts.showContours }) : null;
+  const groundR = terrain ? terrain.outerR : addGround(ctx, root, bounds, null);
   root.userData = { groundY, groundR, levelIds: levels.map((l) => l.id), cutIdx };
   return root;
 }

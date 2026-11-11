@@ -29,7 +29,7 @@ export const TOOLS = [
   { id: 'door', label: 'Door', hint: 'Hover a wall to see the door, click to place it.' },
 ];
 
-export function createEdit({ rootEl, canvas, scene, camera, controls, store, catalogue, getModel, pickAt, invalidate, getMode, isActive, suspended = () => false }) {
+export function createEdit({ rootEl, canvas, scene, camera, controls, store, catalogue, getModel, pickAt, invalidate, getMode, isActive, suspended = () => false, keysOk = () => true }) {
   let enabled = false;
   let pinned = false; // selection outline kept on while Edit is off (an item just placed)
   let pinTimer = null;
@@ -705,7 +705,7 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
     e.stopImmediatePropagation();
   }
   function onKey(e) {
-    if (e.ctrlKey || e.metaKey || e.altKey || typing(e) || !isActive() || getMode() !== 'orbit') return;
+    if (e.ctrlKey || e.metaKey || e.altKey || typing(e) || !isActive() || getMode() !== 'orbit' || !keysOk()) return;
     if (e.code === 'KeyB') {
       eat(e);
       if (!e.repeat) setEnabled(!enabled);

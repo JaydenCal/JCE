@@ -1,5 +1,6 @@
 // Status bar: cursor position, snap toggle, zoom, indoor area, current hint and autosave state.
 
+import { hasPlan } from './view-mode.js';
 import { h } from './dom.js';
 import { icon } from './icons.js';
 import { indoorTotalM2 } from './schedules.js';
@@ -99,7 +100,7 @@ export function createStatusBar(el, store, { editor } = {}) {
   ];
   // Cursor, snap and zoom belong to the plan editor. The 3D viewer shows its own hints.
   function syncView() {
-    const plan = store.ui.view === '2d';
+    const plan = hasPlan(store.ui.view);
     for (const c of planCells) c.hidden = !plan;
     if (!plan) setHint('');
   }

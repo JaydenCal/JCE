@@ -12,7 +12,7 @@ const DEG = Math.PI / 180;
 const HINT_PLACED = 'Drag it to move it. Rotate with comma and full stop, Delete removes it.';
 const KIND_NAME = { window: 'Window', door: 'Door', sliding_door: 'Sliding door', garage_door: 'Garage door', roller_door: 'Roller door', opening: 'Opening' };
 
-export function createAhead({ scene, camera, canvas, rootEl, store, catalogue, controls, walk, edit, pickAt, getMode, isActive, invalidate }) {
+export function createAhead({ scene, camera, canvas, rootEl, store, catalogue, controls, walk, edit, pickAt, getMode, isActive, keysOk = () => true, invalidate }) {
   let armed = null; // { type: 'item', itemId, def } | { type: 'opening', preset, kind }
   let ghostInfo = null; // last ghost for an armed opening, or the last placement for an armed item
   let toastTimer = null;
@@ -267,7 +267,7 @@ export function createAhead({ scene, camera, canvas, rootEl, store, catalogue, c
   };
   function onKey(e) {
     // Walk mode keys come through the walk hooks. This is the orbit mode path.
-    if (!armed || getMode() !== 'orbit' || !isActive() || typing(e) || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (!armed || getMode() !== 'orbit' || !isActive() || !keysOk() || typing(e) || e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.code === 'Escape') {
       e.preventDefault();
       e.stopImmediatePropagation();
