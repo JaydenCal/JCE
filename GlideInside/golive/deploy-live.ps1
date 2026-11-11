@@ -1,4 +1,4 @@
-<#
+﻿<#
   Glide Inside LIVE deploy: replaces the Worker "pocket-architect-api" (route glideinside.com.au/api/*) with the release code.
 
   Normal use: double-click RUN-LIVE-DEPLOY.cmd (it runs this script). Run it AFTER SET-LIVE-KEYS-TOMORROW.cmd.
@@ -117,10 +117,11 @@ if (-not $script:WranglerBin) {
   if (Test-Path (Join-Path $stg 'package.json')) {
     Warn 'wrangler is not installed in staging. Running npm ci there (this can take a minute).'
     Push-Location $stg
+    $prevEap2 = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
     try {
       & npm ci 2>&1 | Out-Host
       if ($LASTEXITCODE -ne 0) { Warn 'npm ci failed, trying npm install.'; & npm install 2>&1 | Out-Host }
-    } finally { Pop-Location }
+    } finally { Pop-Location; $ErrorActionPreference = $prevEap2 }
     $cand = Join-Path $stg 'node_modules\.bin\wrangler.cmd'
     if (Test-Path $cand) { $script:WranglerBin = $cand }
   }
@@ -134,10 +135,11 @@ $needSrc = -not (Test-Path (Join-Path $Src 'node_modules\jspdf')) -or -not (Test
 if ($needSrc) {
   Write-Host 'Installing the server libraries (pocket-architect-source), one time...'
   Push-Location $Src
+  $prevEap = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
   try {
     if ($RepoMode) { & npm ci --no-audit --no-fund } else { & npm ci --omit=dev --no-audit --no-fund }
     $npmCode = $LASTEXITCODE
-  } finally { Pop-Location }
+  } finally { Pop-Location; $ErrorActionPreference = $prevEap }
   if ($npmCode -ne 0) { Fail 'npm ci failed in pocket-architect-source.' }
 }
 Ok 'server libraries present (jspdf, three)'
