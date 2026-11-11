@@ -4,6 +4,7 @@
 
 import * as S from './schema.js';
 import * as G from './geometry.js';
+import * as SITE from './site.js';
 
 export class OpError extends Error {
   constructor(message) {
@@ -851,6 +852,78 @@ export const OPS = {
         }
       }
       return { count };
+    },
+  },
+  move_house: {
+    label: 'Move house',
+    description: 'Move the whole house (walls, rooms, furniture and stairs on every level) on the lot by dx east and dy south, in mm. Tanks stay put. Needs a lot on the site. Use check_setbacks afterwards when setbacks matter.',
+    params: { dx: P.num('mm east (+x), west is negative'), dy: P.num('mm south (+y), north is negative') },
+    required: ['dx', 'dy'],
+    run(p, a) {
+      if (!SITE.lotOf(p)) fail('No lot is loaded for this design, so the house cannot be positioned on a lot.');
+      const dx = num(a.dx, 'dx', { min: -100000, max: 100000 });
+      const dy = num(a.dy, 'dy', { min: -100000, max: 100000 });
+      SITE.translateHouse(p, dx, dy);
+      return { dx, dy };
+    },
+  },
+  rotate_house: {
+    label: 'Rotate house',
+    description: 'Rotate the whole house about its centre by an angle in degrees clockwise on screen (negative is anticlockwise). Needs a lot on the site.',
+    params: { degrees: P.num('Degrees clockwise, between -360 and 360') },
+    required: ['degrees'],
+    run(p, a) {
+      if (!SITE.lotOf(p)) fail('No lot is loaded for this design, so the house cannot be positioned on a lot.');
+      const deg = num(a.degrees, 'degrees', { min: -360, max: 360 });
+      SITE.rotateHouse(p, deg, SITE.houseCentre(p));
+      return { degrees: deg };
+    },
+  },
+  set_floor_level: {
+    label: 'Floor level',
+    description: 'Set the finished floor level (FFL) of the ground floor as a reduced level in metres (RL, m AHD) on the lot. Needs a lot on the site. Do not use millimetres.',
+    params: { rl: P.num('Reduced level in metres, e.g. 101.35') },
+    required: ['rl'],
+    run(p, a) {
+      const lot = SITE.lotOf(p);
+      if (!lot) fail('No lot is loaded for this design, so a floor level cannot be set.');
+      const rl = num(a.rl, 'rl', { min: -50, max: 3500 });
+      const fall = SITE.fallAcross(p);
+      if (fall && Math.abs(rl - fall.meanRL) > 5) fail(`A floor level of RL ${rl} m is more than 5 m from the ground on this lot (about RL ${fall.meanRL.toFixed(1)} m). Check the value is in metres.`);
+      p.site.lot.floorRL = Math.round(rl * 1000) / 1000;
+      return { rl: p.site.lot.floorRL };
+    },
+  },
+  check_setbacks: {
+    label: 'Check setbacks',
+    description: 'Check the design against the lot setback envelope and report any breach for each boundary in metres. Changes nothing. If the lot has no setbacks loaded it says so; never state setback values yourself.',
+    params: {},
+    required: [],
+    run(p) {
+      const r = SITE.checkSetbacks(p);
+      return { changed: false, status: r.status, breaches: r.breaches, report: r.message };
+    },
+  },
+  suggest_site_position: {
+    label: 'Suggest site position',
+    description: 'Find a position for the whole house inside the setback envelope. align is centre (default), front (as close to the front boundary as the setbacks allow) or rear. Set apply true to move the house there; otherwise it only reports the move. Needs setbacks or an envelope on the lot.',
+    params: { align: P.enm(['centre', 'front', 'rear'], 'Where to sit the house in the envelope'), apply: P.bool('Move the house to the suggested position (default false)') },
+    required: [],
+    run(p, a) {
+      if (!SITE.lotOf(p)) fail('No lot is loaded for this design, so there is no site position to suggest.');
+      const s = SITE.suggestPosition(p, a.align || 'centre');
+      if (!s.ok) {
+        if (s.reason === 'setbacks_not_loaded') fail(SITE.NOT_LOADED);
+        fail(s.reason === 'no_building' ? 'There is no building on the plan to position.' : s.reason === 'no_room' ? 'The setbacks leave no room to build on this lot.' : 'The setback envelope is not available for this lot shape.');
+      }
+      const mm = (v) => `${(Math.abs(v) / 1000).toFixed(2)} m`;
+      const move = `${mm(s.dx)} ${s.dx >= 0 ? 'east' : 'west'} and ${mm(s.dy)} ${s.dy >= 0 ? 'south' : 'north'}`;
+      if (!s.fits) return { changed: false, fits: false, report: `The house does not fit inside the setbacks at this size; the nearest position (${move}) still breaches by ${s.residualM.toFixed(2)} m.` };
+      if (a.apply === true) {
+        SITE.translateHouse(p, s.dx, s.dy);
+        return { fits: true, dx: s.dx, dy: s.dy, report: `Moved the house ${move} so it sits inside the setbacks.` };
+      }
+      return { changed: false, fits: true, dx: s.dx, dy: s.dy, report: `Moving the house ${move} puts it inside the setbacks.` };
     },
   },
   set_project: {
