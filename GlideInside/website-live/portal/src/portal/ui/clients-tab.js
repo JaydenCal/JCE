@@ -6,8 +6,9 @@ import { ddmmyyyy } from '../billing.js';
 import { appLink, portalUrl } from '../links.js';
 import { slug } from '../../ui/dom.js';
 import { TEMP_PASSWORD_DAYS } from '../mock-api.js';
+import { accountOf, isReadOnly, addBillingButton } from './trial-ui.js';
 
-export const CHARGE_NOTICE = 'A$20 incl. GST is charged on your monthly invoice once your client first signs in.';
+export const CHARGE_NOTICE = 'A$35 incl. GST is charged on your monthly invoice once your client first signs in (A$25 each from the 16th new client login in a month).';
 
 const houseAccessText = (a) => (a === 'all' ? 'All designs' : `${a.length} selected`);
 const day = (iso) => (iso ? ddmmyyyy(iso) : null);
@@ -29,16 +30,19 @@ export function accessPicker(houses, initial = 'all') {
   return { el, value: () => (all.checked ? 'all' : boxes.map((b) => b.querySelector('input')).filter((i) => i.checked).map((i) => i.value)) };
 }
 
-export async function renderClients(host, { api, me, refreshBilling }) {
-  const canWrite = me.permissions.includes('clients.write');
+export async function renderClients(host, { api, me, refreshBilling, goBilling }) {
+  const acct = accountOf(me);
+  const locked = !acct.canIssueClients; // free trial (client logins unlock with billing details) or read only
+  const canWrite = me.permissions.includes('clients.write') && !isReadOnly(me);
+  const canGenerate = canWrite && !locked;
   const houses = await api.listHouses();
   const tbody = h('tbody');
   const table = h('table', { class: 'pp-table pp-table--stack' },
     h('thead', null, h('tr', null, ...['Client', 'Lot address', 'Houses', 'Status', 'Last sign in', 'Projects', 'AI credits', 'Actions'].map((t) => h('th', { scope: 'col' }, t)))), tbody);
-  const empty = h('p', { class: 'pp-empty', hidden: true }, 'No client logins yet. Use Generate account to create the first one.');
+  const empty = h('p', { class: 'pp-empty', hidden: true }, locked ? 'No client logins yet.' : 'No client logins yet. Use Generate account to create the first one.');
 
   function settingsCard() {
-    const canSet = me.permissions.includes('billing.write');
+    const canSet = me.permissions.includes('billing.write') && !isReadOnly(me);
     const row = (key, title, help) => {
       const box = h('input', { type: 'checkbox', checked: !!me.org[key], disabled: !canSet, onchange: async (e) => {
         try {
@@ -68,12 +72,14 @@ export async function renderClients(host, { api, me, refreshBilling }) {
   const td = (label, ...kids) => h('td', { dataset: { label } }, ...kids);
 
   function row(c) {
-    const actions = h('div', { class: 'pp-actions pp-actions--tight' },
-      canWrite ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => editDialog(c) }, 'Edit') : null,
-      canWrite ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: () => resetDialog(c) }, icon('key', 14), 'Reset password') : null,
-      canWrite ? h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => toggle(e.currentTarget, c) }, c.status === 'active' ? 'Disable' : 'Enable') : null,
-      h('button', { class: 'pp-btn pp-btn--sm', type: 'button', onclick: (e) => exportProjects(e.currentTarget, c) }, icon('download', 14), 'Export projects'),
-      canWrite ? h('button', { class: 'pp-btn pp-btn--sm pp-btn--danger-quiet', type: 'button', onclick: () => deleteDialog(c) }, icon('trash', 14), 'Delete') : null);
+    const items = [
+      canWrite ? h('button', { class: 'pp-menu-item', type: 'button', onclick: () => editDialog(c) }, 'Edit') : null,
+      canGenerate ? h('button', { class: 'pp-menu-item', type: 'button', onclick: () => resetDialog(c) }, icon('key', 14), 'Reset password') : null,
+      canWrite && (c.status === 'active' || !locked) ? h('button', { class: 'pp-menu-item', type: 'button', onclick: (e) => toggle(e.currentTarget, c) }, c.status === 'active' ? 'Disable' : 'Enable') : null,
+      h('button', { class: 'pp-menu-item', type: 'button', onclick: (e) => exportProjects(e.currentTarget, c) }, icon('download', 14), 'Export projects'),
+      canWrite ? h('button', { class: 'pp-menu-item pp-menu-item--danger', type: 'button', onclick: () => deleteDialog(c) }, icon('trash', 14), 'Delete') : null].filter(Boolean);
+    const menu = h('details', { class: 'pp-menu', onclick: (e) => { if (e.target.closest('.pp-menu-item')) menu.open = false; } }, h('summary', { class: 'pp-btn pp-btn--sm' }, 'Actions'), h('div', { class: 'pp-menu-list' }, ...items));
+    const actions = menu;
     const sign = c.lastSignInAt ? day(c.lastSignInAt) : 'Not signed in yet';
     return h('tr', { dataset: { id: c.id } },
       td('Client', h('strong', null, c.name), h('div', { class: 'pp-sub' }, c.username), c.email ? h('div', { class: 'pp-sub' }, c.email) : null),
@@ -120,7 +126,7 @@ export async function renderClients(host, { api, me, refreshBilling }) {
       d.setTitle(`Account for ${r.client.name}`);
       d.setBody(h('div', null,
         credentialsCard({ username: r.credentials.username, password: r.credentials.password, who: r.client.name, signInUrl: portalUrl('?client=1'), expiryDays: TEMP_PASSWORD_DAYS }),
-        h('p', { class: 'pp-notice pp-notice--quiet' }, icon('info', 18), 'A$20 incl. GST is charged on your monthly invoice once your client first signs in. Nothing is charged if they never do, and you can delete an unused login free.')));
+        h('p', { class: 'pp-notice pp-notice--quiet' }, icon('info', 18), 'A$35 incl. GST is charged on your monthly invoice once your client first signs in (A$25 each from the 16th new client login in a month). Nothing is charged if they never do, and you can delete an unused login free.')));
       d.setFooter((x) => [h('button', { class: 'pp-btn', type: 'button', onclick: () => { x.close(); generateDialog(); } }, 'Generate another'), h('button', { class: 'pp-btn pp-btn--primary', type: 'button', onclick: () => x.close() }, 'Done')]);
     }
   }
@@ -167,7 +173,7 @@ export async function renderClients(host, { api, me, refreshBilling }) {
   }
   function deleteDialog(c) {
     confirmDialog({ title: `Delete ${c.name}?`, danger: true, confirmLabel: 'Delete login and projects',
-      message: `This removes the login ${c.username} and all ${c.projectCount} of their projects. It cannot be undone. Export their projects first if you want to keep a copy. ${c.billed ? 'The A$20 charge for this login stays on your invoice.' : 'This login has not been used, so there is no charge.'}` }).then(async (ok) => {
+      message: `This removes the login ${c.username} and all ${c.projectCount} of their projects. It cannot be undone. Export their projects first if you want to keep a copy. ${c.billed ? 'The charge for this login stays on your invoice.' : 'This login has not been used, so there is no charge.'}` }).then(async (ok) => {
       if (!ok) return;
       try {
         const r = await api.deleteClient(c.id);
@@ -179,11 +185,14 @@ export async function renderClients(host, { api, me, refreshBilling }) {
     });
   }
 
+  const lockedNotice = acct.status === 'trial'
+    ? h('div', { class: 'pp-notice pp-notice--lock', id: 'clients-locked' }, icon('lock', 18), h('div', null, h('strong', null, 'Client logins unlock when you add billing details.'), h('p', null, 'During your free trial your staff can use the whole portal, including the house library, branding, Pocket Architect and exports. Client logins are charged at A$35 incl. GST each (A$25 each after 15 in a month), once, when the client first signs in. Nothing is charged for a login that is never used.')), addBillingButton(api, { goBilling }))
+    : h('div', { class: 'pp-notice pp-notice--lock', id: 'clients-locked' }, icon('lock', 18), h('div', null, h('strong', null, 'This account is read only.'), h('p', null, 'Add billing details to issue and manage client logins again.')), addBillingButton(api, { goBilling }));
   host.append(
     h('div', { class: 'pp-head' },
       h('div', null, h('h2', null, 'Clients'), h('p', { class: 'pp-lead pp-lead--sm' }, 'Give each client a login to Pocket Architect with your branding and your house designs. The system sends no email, so you pass the username and password on yourself.')),
-      canWrite ? h('button', { class: 'pp-btn pp-btn--primary pp-btn--lg', type: 'button', id: 'generate-account', onclick: generateDialog }, icon('plus', 18), 'Generate account') : null),
-    h('p', { class: 'pp-notice' }, icon('info', 18), CHARGE_NOTICE),
+      canGenerate ? h('button', { class: 'pp-btn pp-btn--primary pp-btn--lg', type: 'button', id: 'generate-account', onclick: generateDialog }, icon('plus', 18), 'Generate account') : null),
+    locked ? lockedNotice : h('p', { class: 'pp-notice' }, icon('info', 18), CHARGE_NOTICE),
     h('div', { class: 'pp-table-wrap' }, table), empty,
     settingsCard());
   return load();

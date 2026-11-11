@@ -12,6 +12,7 @@ const SPECS = {
       allowClientTopUps: 'allow_client_topups:b', allowClientEnquiries: 'allow_client_enquiries:b', showGlideToClients: 'show_glide_to_clients:b',
       allowClientCadExports: 'allow_client_cad_exports:b', aiMonthlyCap: 'ai_monthly_cap', legalName: 'legal_name', abn: 'abn',
       billingName: 'billing_name', billingEmail: 'billing_email', billingPhone: 'billing_phone', stripeCustomerId: 'stripe_customer_id', createdAt: 'created_at',
+      customLoginCents: 'custom_login_cents', // nullable: the owner's per-login price for this org (migration 0008)
     },
   },
   users: {
@@ -44,10 +45,38 @@ const SPECS = {
       error: 'error', snapshot: 'snapshot_json:j',
     },
   },
+  // Trial and billing state of an org. One row per org created through the trial flow (no row = a legacy active org). Merged into the
+  // org object by getOrg and listOrgs, so the rest of the code reads org.status, org.trialEndsAt and so on.
+  orgAccounts: {
+    table: 'org_accounts',
+    cols: {
+      orgId: 'org_id', status: 'status', trialStartedAt: 'trial_started_at', trialEndsAt: 'trial_ends_at', trialExtendedDays: 'trial_extended_days',
+      requestId: 'request_id', convertedAt: 'converted_at', convertedHow: 'converted_how', paymentMethodId: 'payment_method_id', cardBrand: 'card_brand',
+      cardLast4: 'card_last4', cardAddedAt: 'card_added_at', ownerNote: 'owner_note',
+    },
+  },
+  trialRequests: {
+    table: 'trial_requests',
+    cols: {
+      id: 'id', createdAt: 'created_at', status: 'status', companyLegalName: 'company_legal_name', abn: 'abn', tradingName: 'trading_name',
+      firstName: 'first_name', lastName: 'last_name', email: 'email', mobile: 'mobile', region: 'region', homesPerYear: 'homes_per_year',
+      howHeard: 'how_heard', consentAt: 'consent_at', termsVersion: 'terms_version', ipHash: 'ip_hash', notifyStatus: 'notify_status',
+      decidedAt: 'decided_at', decisionNote: 'decision_note', orgId: 'org_id',
+    },
+  },
   loginIssues: {
     table: 'login_issues',
     cols: { loginId: 'login_id', id: 'id', orgId: 'org_id', clientName: 'client_name', issuedAt: 'issued_at', month: 'month', amountCents: 'amount_cents' },
   },
+};
+
+const ACCOUNT_KEYS = Object.keys(SPECS.orgAccounts.cols).filter((k) => k !== 'orgId');
+const withAccount = (org, acct) => (org ? { ...org, ...Object.fromEntries(ACCOUNT_KEYS.map((k) => [k, acct?.[k] ?? null])), status: acct?.status || 'active' } : null);
+const splitOrgPatch = (patch) => {
+  const org = {};
+  const acct = {};
+  for (const [k, v] of Object.entries(patch)) (ACCOUNT_KEYS.includes(k) ? acct : org)[k] = v;
+  return { org, acct };
 };
 
 const colName = (c) => c.split(':')[0];
@@ -104,10 +133,39 @@ export function createD1PortalStore(db) {
     kind: 'd1',
     // Organisations
     createOrg: (o) => insert(SPECS.orgs, o).catch((e) => (isUnique(e) ? false : Promise.reject(e))),
-    getOrg: (id) => one(SPECS.orgs, 'id = ?1', id),
-    getOrgByShortCode: (code) => one(SPECS.orgs, 'short_code = ?1', code),
-    listOrgs: () => many(SPECS.orgs, '1 = 1', [], 'ORDER BY created_at, id'),
-    updateOrg: (id, patch) => update(SPECS.orgs, 'id = ?1', [id], patch),
+    getOrg: async (id) => withAccount(await one(SPECS.orgs, 'id = ?1', id), await one(SPECS.orgAccounts, 'org_id = ?1', id)),
+    getOrgByShortCode: async (code) => {
+      const o = await one(SPECS.orgs, 'short_code = ?1', code);
+      return o && withAccount(o, await one(SPECS.orgAccounts, 'org_id = ?1', o.id));
+    },
+    async listOrgs() {
+      const accts = new Map((await many(SPECS.orgAccounts, '1 = 1', [])).map((a) => [a.orgId, a]));
+      return (await many(SPECS.orgs, '1 = 1', [], 'ORDER BY created_at, id')).map((o) => withAccount(o, accts.get(o.id)));
+    },
+    async updateOrg(id, patch) {
+      const { org, acct } = splitOrgPatch(patch);
+      let done = Object.keys(org).length ? await update(SPECS.orgs, 'id = ?1', [id], org) : true;
+      if (Object.keys(acct).length) done = (await this.saveOrgAccount(id, acct)) && done;
+      return done;
+    },
+    /** Insert or update the org_accounts row (the trial and card state). */
+    async saveOrgAccount(orgId, patch) {
+      if (await first('SELECT 1 AS x FROM org_accounts WHERE org_id = ?1', orgId)) return update(SPECS.orgAccounts, 'org_id = ?1', [orgId], patch);
+      return insert(SPECS.orgAccounts, { status: 'active', ...patch, orgId });
+    },
+    // Trial requests
+    createTrialRequest: (r) => insert(SPECS.trialRequests, r),
+    getTrialRequest: (id) => one(SPECS.trialRequests, 'id = ?1', id),
+    listTrialRequests: (status = null) => (status ? many(SPECS.trialRequests, 'status = ?1', [status], 'ORDER BY created_at DESC, id') : many(SPECS.trialRequests, '1 = 1', [], 'ORDER BY created_at DESC, id')),
+    updateTrialRequest: (id, patch) => update(SPECS.trialRequests, 'id = ?1', [id], patch),
+    findOpenTrialRequestByAbn: (abn) => one(SPECS.trialRequests, "abn = ?1 AND status IN ('pending','approved')", abn),
+    /** Atomic claim: pending -> approved. False when another request already decided it (a double click). */
+    async claimTrialRequest(id, patch) {
+      const keys = Object.keys(patch);
+      const sets = keys.map((k, i) => `${colName(SPECS.trialRequests.cols[k])} = ?${i + 2}`).join(', ');
+      const res = await run(`UPDATE trial_requests SET status = 'deciding', ${sets} WHERE id = ?1 AND status = 'pending'`, id, ...toParams(SPECS.trialRequests, patch, keys));
+      return changed(res);
+    },
     // Users
     createUser: (u) => insert(SPECS.users, u).catch((e) => (isUnique(e) ? false : Promise.reject(e))),
     getUser: (id) => one(SPECS.users, 'id = ?1', id),
@@ -188,6 +246,7 @@ export function createD1PortalStore(db) {
     // Billing
     addLoginIssue: (row) => insert(SPECS.loginIssues, row, { ignore: true }),
     getLoginIssue: (loginId) => one(SPECS.loginIssues, 'login_id = ?1', loginId),
+    updateLoginIssue: (loginId, patch) => update(SPECS.loginIssues, 'login_id = ?1', [loginId], patch),
     listLoginIssues: (orgId) => many(SPECS.loginIssues, 'org_id = ?1', [orgId], 'ORDER BY issued_at, id'),
     insertInvoice: (inv) => insert(SPECS.invoices, inv).catch((e) => (isUnique(e) ? false : Promise.reject(e))),
     getInvoice: (orgId, id) => one(SPECS.invoices, 'id = ?1 AND org_id = ?2', id, orgId),
@@ -205,7 +264,7 @@ export function createD1PortalStore(db) {
 
 // In memory (tests, development) -------------------------------------------------------------------------------------------
 export function createMemoryPortalStore() {
-  const T = { orgs: new Map(), users: new Map(), sessions: new Map(), houses: new Map(), projects: new Map(), invoices: new Map(), loginIssues: new Map(), failures: new Map(), settings: new Map() };
+  const T = { trialRequests: new Map(), orgs: new Map(), users: new Map(), sessions: new Map(), houses: new Map(), projects: new Map(), invoices: new Map(), loginIssues: new Map(), failures: new Map(), settings: new Map() };
   const cp = (o) => (o == null ? null : structuredClone(o));
   const omit = (o, keys) => {
     const c = cp(o);
@@ -224,13 +283,38 @@ export function createMemoryPortalStore() {
       T.orgs.set(o.id, cp(o));
       return true;
     },
-    getOrg: async (id) => cp(T.orgs.get(id)),
-    getOrgByShortCode: async (code) => cp([...T.orgs.values()].find((o) => o.shortCode === code)),
-    listOrgs: async () => [...T.orgs.values()].sort((a, b) => a.createdAt.localeCompare(b.createdAt)).map(cp),
+    getOrg: async (id) => (T.orgs.has(id) ? { ...cp(T.orgs.get(id)), status: T.orgs.get(id).status || 'active' } : null),
+    getOrgByShortCode: async (code) => {
+      const o = [...T.orgs.values()].find((x) => x.shortCode === code);
+      return o ? { ...cp(o), status: o.status || 'active' } : null;
+    },
+    listOrgs: async () => [...T.orgs.values()].sort((a, b) => a.createdAt.localeCompare(b.createdAt)).map((o) => ({ ...cp(o), status: o.status || 'active' })),
     async updateOrg(id, patch) {
       const o = T.orgs.get(id);
       if (!o) return false;
       patchOf(o, patch);
+      return true;
+    },
+    saveOrgAccount(orgId, patch) {
+      return this.updateOrg(orgId, patch);
+    },
+    async createTrialRequest(r) {
+      T.trialRequests.set(r.id, cp(r));
+      return true;
+    },
+    getTrialRequest: async (id) => cp(T.trialRequests.get(id)),
+    listTrialRequests: async (status = null) => [...T.trialRequests.values()].filter((r) => !status || r.status === status).sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.id.localeCompare(b.id)).map(cp),
+    async updateTrialRequest(id, patch) {
+      const r = T.trialRequests.get(id);
+      if (!r) return false;
+      patchOf(r, patch);
+      return true;
+    },
+    findOpenTrialRequestByAbn: async (abn) => cp([...T.trialRequests.values()].find((r) => r.abn === abn && ['pending', 'approved'].includes(r.status))),
+    async claimTrialRequest(id, patch) {
+      const r = T.trialRequests.get(id);
+      if (!r || r.status !== 'pending') return false;
+      patchOf(r, { ...patch, status: 'deciding' });
       return true;
     },
     async createUser(u) {
@@ -324,6 +408,12 @@ export function createMemoryPortalStore() {
       return true;
     },
     getLoginIssue: async (loginId) => cp(T.loginIssues.get(loginId)),
+    async updateLoginIssue(loginId, patch) {
+      const r = T.loginIssues.get(loginId);
+      if (!r) return false;
+      Object.assign(r, patch);
+      return true;
+    },
     listLoginIssues: async (orgId) => [...T.loginIssues.values()].filter((r) => r.orgId === orgId).sort((a, b) => a.issuedAt.localeCompare(b.issuedAt)).map(cp),
     async insertInvoice(inv) {
       if (T.invoices.has(inv.id) || [...T.invoices.values()].some((x) => (x.orgId === inv.orgId && x.month === inv.month) || x.number === inv.number)) return false;

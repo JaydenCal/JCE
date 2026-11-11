@@ -11,6 +11,7 @@ import { renderBilling } from './billing-tab.js';
 import { renderTeam } from './team-tab.js';
 import { renderBranding } from './branding-tab.js';
 import { ddmmyyyy } from '../billing.js';
+import { trialBanner, handleBillingReturn } from './trial-ui.js';
 import { CONFIG } from '../../config.js';
 
 const TABS = [
@@ -74,8 +75,14 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
     let current = null;
     let token = 0;
 
+    const bannerSlot = h('div', { id: 'trial-slot' });
+    const goBilling = () => { location.hash = '/billing'; };
+    function paintBanner() {
+      bannerSlot.replaceChildren(...[trialBanner(me, api, { goBilling })].filter(Boolean));
+    }
     async function refreshMe() {
       me = await api.me();
+      paintBanner();
     }
     async function show(id, { focus = false } = {}) {
       const tab = tabs.find((t) => t.id === id) || tabs[0];
@@ -91,7 +98,7 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
       panel.append(h('p', { class: 'pp-sub', role: 'status' }, 'Loading'));
       const inner = h('div');
       try {
-        await tab.render(inner, { api, me, refreshMe, refreshBilling: () => {} });
+        await tab.render(inner, { api, me, refreshMe, refreshBilling: () => {}, goBilling });
       } catch (e) {
         if (e?.code === 'UNAUTHORISED') return signOut();
         inner.replaceChildren(h('p', { class: 'pp-error', role: 'alert' }, errorMessage(e)));
@@ -117,9 +124,16 @@ export function mountPortal(root, { api = getPortalApi() } = {}) {
     });
     const route = () => show((location.hash.match(/^#\/(\w+)/) || [])[1] || 'houses');
     window.addEventListener('hashchange', route);
-    queueMicrotask(route);
+    paintBanner();
+    queueMicrotask(async () => {
+      if (new URLSearchParams(location.search).get('billing')) {
+        if (!location.hash.startsWith('#/billing')) location.hash = '/billing';
+        await handleBillingReturn(api, refreshMe);
+      }
+      route();
+    });
     return h('div', { dataset: { title: 'Dashboard' } }, brandBar(h('a', { class: 'pp-btn pp-btn--sm', href: appLink(), target: '_blank', rel: 'noopener' }, icon('open', 15), 'Open Pocket Architect')),
-      h('main', { class: 'pp-main' }, tablist, panel));
+      h('main', { class: 'pp-main' }, bannerSlot, tablist, panel));
   }
 
   // Reset links: portal/#reset=<token>

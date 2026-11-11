@@ -52,12 +52,15 @@ ENQUIRY_FROM = "Glide Inside <plans@glideinside.com.au>"   # must be on a domain
 # would replace the secret on deploy.
 
 # Builder portal (docs/PORTAL_API.md). Off until launch. Secrets (wrangler secret put): ADMIN_TOKEN, STRIPE_SECRET_KEY (test key only).
-PORTAL_ENABLED = "0"                                       # launch: leave "0" (builder and client portal stay closed)
+PORTAL_ENABLED = "1"                                       # builder portal ON from 11/11/2026 (free 14 day trial). "0" closes logins again; trial requests and the admin routes stay open.
 SELLER_NAME = "JCE Infrastructure Pty Ltd trading as Glide Inside"  # seller on tax invoices
 SELLER_ABN = "29 699 165 663"
 ORG_MONTHLY_CREDITS = "300"                                # AI credits per login per month
 TOPUP_CREDITS = "300"
 TOPUP_AMOUNT_CENTS = "1000"                                # A$10 incl. GST
+# Free trial (docs/PORTAL_API.md 14). The owner is emailed about a new request at his OWN address; the builder is never emailed.
+TRIAL_NOTIFY = "1"                                         # "0" switches the owner email off
+TRIAL_NOTIFY_TO = "hello@glideinside.com.au"               # owner address. Empty = no email. Also needs the RESEND_API_KEY secret.
 # STRIPE_GST_TAX_RATE_ID = ""                              # optional: an existing inclusive 10% GST tax rate; otherwise one is created
 # STRIPE_LIVE_BILLING_APPROVED stays unset: live Stripe keys are refused without the owner's written go-ahead.
 

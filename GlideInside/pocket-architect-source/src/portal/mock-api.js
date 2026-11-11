@@ -11,7 +11,7 @@ import { houseStats } from './house-stats.js';
 import { projectToSvg } from './thumbnail.js';
 import { generateUsername, generatePassword, generateToken, passwordProblem } from './credentials.js';
 import { gstOfTotal, monthLabel } from './billing.js';
-import { NEW_LOGIN_FEE_CENTS, TOPUP_FEE_CENTS, TOPUP_CREDITS, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js';
+import { NEW_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, formatAud, TOPUP_FEE_CENTS, TOPUP_CREDITS, monthKey, previousMonthKey, monthStartMs, summariseMonth, loginsInMonth } from './billing.js';
 
 const DB_KEY = 'gi.portal.mock.v1';
 const SESSION_KEY = 'gi.portal.session.v1';
@@ -258,8 +258,8 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       user.failedSignIns = 0;
       user.lockedUntil = null;
       user.lastSignInAt = iso();
-      // The A$20 charge for a client login happens here, on the first sign in, and never again for that login.
-      if (user.role === 'client' && !db.issues.some((i) => i.loginId === user.id)) db.issues.push({ id: rid('lc'), orgId: user.orgId, loginId: user.id, clientName: user.name, chargedAt: iso(), amountCents: NEW_LOGIN_FEE_CENTS });
+      // The charge for a client login happens here, on the first sign in, and never again for that login (A$35, A$25 from the 16th in a month).
+      if (user.role === 'client' && !db.issues.some((i) => i.loginId === user.id)) db.issues.push({ id: rid('lc'), orgId: user.orgId, loginId: user.id, clientName: user.name, chargedAt: iso(), amountCents: priceForNthLoginThisMonth(db.issues.filter((i) => i.orgId === user.orgId && monthKey(i.chargedAt) === monthKey(now())).length + 1, db.orgs.find((o) => o.id === user.orgId)) });
       save(db);
       storage.set(SESSION_KEY, JSON.stringify({ userId: user.id, at: iso() }));
       return api.me();
@@ -276,7 +276,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const user = db.users.find((u) => u.id === sessionUserId());
       if (!user || user.status !== 'active') return null;
       const org = db.orgs.find((o) => o.id === user.orgId);
-      return { user: publicUser(user, org), org: publicOrg(org), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai: aiBalance(user, org), canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true, enquiry: isStaff(user) || org.allowClientEnquiries !== false, exports: isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj', 'html'] : ['pdf'] };
+      return { user: publicUser(user, org), org: publicOrg(org), permissions: [...PERMS[user.role]], houseAccess: user.houseAccess, lotAddress: user.lotAddress || '', ai: aiBalance(user, org), canTopUp: isStaff(user) || !!org.allowClientTopUps, plansIncluded: true, enquiry: isStaff(user) || org.allowClientEnquiries !== false, exports: isStaff(user) || org.allowClientCadExports ? ['pdf', 'dxf', 'glb', 'obj', 'html'] : ['pdf'], account: { status: 'active', trialStartedAt: null, trialEndsAt: null, daysLeft: 0, lastTrialDay: null, readOnly: false, canIssueClients: true, canTopUp: true, cardOnFile: false, card: null, dataKeptUntil: null } };
     },
     async changePassword({ currentPassword, newPassword } = {}) {
       await wait();
@@ -441,7 +441,8 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const access = cleanAccess(db, org, houseAccess);
       const { user, credentials } = createAccount(db, org, { firstName, email, role: 'client', lotAddress, houseAccess: access });
       save(db);
-      return { client: clientView(db, org, user), credentials, charge: { amountCents: NEW_LOGIN_FEE_CENTS, trigger: 'first_sign_in', note: 'A$20 incl. GST is charged on your monthly invoice once your client first signs in.' } };
+      const rateNow = priceForNthLoginThisMonth(db.issues.filter((i) => i.orgId === org.id && monthKey(i.chargedAt) === monthKey(now())).length + 1, org);
+      return { client: clientView(db, org, user), credentials, charge: { amountCents: rateNow, trigger: 'first_sign_in', note: `${formatAud(rateNow)} incl. GST is charged on your monthly invoice once your client first signs in.` } };
     },
     async updateClient(id, { firstName, email, lotAddress, houseAccess } = {}) {
       await wait();
@@ -564,6 +565,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const s = summariseMonth({ issues: db.issues.filter((i) => i.orgId === org.id), topUps: db.topUps.filter((t) => t.orgId === org.id) }, key);
       return {
         month: key, timezone: 'Australia/Sydney',
+        loginPricing: loginRateInfo(s.totals.loginsCount, org),
         rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS },
         logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName, firstSignInAt: i.chargedAt ?? i.issuedAt, amountCents: i.amountCents })),
         topUps: s.topUps.map((t) => ({ id: t.id, loginId: t.loginId, clientName: names.get(t.loginId) || '', credits: t.credits, amountCents: t.amountCents, createdAt: t.createdAt })),
@@ -595,7 +597,7 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
       const usage = await api.monthUsage({ month: inv.month });
       const c = org.billingContact || {};
       const lines = [
-        { description: `New client logins first signed in during ${monthLabel(inv.month)} (A$20 each, incl. GST)`, quantity: usage.totals.loginsCount, unitCents: NEW_LOGIN_FEE_CENTS, totalCents: usage.totals.loginsCents },
+        ...[...usage.logins.reduce((m, l) => m.set(l.amountCents, (m.get(l.amountCents) || 0) + 1), new Map())].sort((a, b) => b[0] - a[0]).map(([c, q]) => ({ description: `New client logins first signed in during ${monthLabel(inv.month)} (${formatAud(c)} each, incl. GST)`, quantity: q, unitCents: c, totalCents: c * q })),
         { description: `AI credit top-ups of ${TOPUP_CREDITS} credits (A$10 each, incl. GST)`, quantity: usage.totals.topUpsCount, unitCents: TOPUP_FEE_CENTS, totalCents: usage.totals.topUpsCents },
       ].filter((l) => l.quantity > 0);
       const total = usage.totals.totalCents;
@@ -604,6 +606,13 @@ export function createMockApi({ now = () => Date.now(), storage = browserStorage
     async getBillingContact() {
       await wait();
       return clone(ctx('billing.read').org.billingContact);
+    },
+    // Card details go through Stripe Checkout on the real server. The mock has no Stripe, so it says so.
+    async startBillingSetup() {
+      throw new ApiError('BILLING_UNAVAILABLE', 'Card details are not available in the review mock. They use Stripe Checkout on the live site.');
+    },
+    async confirmBillingSetup() {
+      throw new ApiError('BILLING_UNAVAILABLE', 'Card details are not available in the review mock.');
     },
     async setBillingContact({ name, email, phone, legalName, abn } = {}) {
       await wait();

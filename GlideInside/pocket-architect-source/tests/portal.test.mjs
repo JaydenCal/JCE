@@ -1,7 +1,7 @@
 // Builder portal: billing rules, account generator, mock API, house stats and house placement (docs/PORTAL_API.md).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { monthKey, monthStartMs, sydneyParts, ddmmyyyy, loginsInMonth, summariseMonth, formatAud, gstOfTotal, NEW_LOGIN_FEE_CENTS, TOPUP_FEE_CENTS, TOPUP_CREDITS } from '../src/portal/billing.js';
+import { monthKey, monthStartMs, sydneyParts, ddmmyyyy, loginsInMonth, summariseMonth, formatAud, gstOfTotal, NEW_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, TOPUP_FEE_CENTS, TOPUP_CREDITS } from '../src/portal/billing.js';
 import { WORDS } from '../src/portal/wordlist.js';
 import { generateUsername, generatePassword, generateCredentials, usernameBase, passwordProblem, isBlockedWord, BLOCKED_PARTS, DIGITS } from '../src/portal/credentials.js';
 import { createMockApi, memoryStorage, DEMO_LOGINS } from '../src/portal/mock-api.js';
@@ -37,7 +37,14 @@ test('monthStartMs is midnight Sydney on the 1st', () => {
   }
 });
 
-test('A$20 per NEW client login in the calendar month, once per login, no recurring charge', () => {
+test('volume pricing boundaries: 1 to 15 A$35, 16 to 50 A$25, custom rate for all, null or invalid custom rate ignored', () => {
+  for (const [n, c] of [[1, 3500], [14, 3500], [15, 3500], [16, 2500], [17, 2500], [49, 2500], [50, 2500], [51, 2500], [200, 2500]]) assert.equal(priceForNthLoginThisMonth(n), c, `login ${n}`);
+  for (const n of [1, 15, 16, 50, 51]) assert.equal(priceForNthLoginThisMonth(n, { customLoginCents: 2000 }), 2000, `custom, login ${n}`);
+  for (const bad of [null, undefined, 0, -5, 20.5, '2000']) assert.equal(priceForNthLoginThisMonth(16, { customLoginCents: bad }), 2500, `ignored: ${String(bad)}`);
+  assert.deepEqual([loginRateInfo(15).currentRateCents, loginRateInfo(14).currentRateCents, loginRateInfo(50).over50NeedsCustomRate, loginRateInfo(51).over50NeedsCustomRate, loginRateInfo(51, { customLoginCents: 1800 }).over50NeedsCustomRate], [2500, 3500, false, true, false]);
+});
+
+test('A$35 per NEW client login in the calendar month, once per login, no recurring charge', () => {
   const issues = [
     { loginId: 'a', issuedAt: '2026-10-31T12:00:00Z' }, // 31/10 23:00 Sydney: October
     { loginId: 'b', issuedAt: '2026-10-31T13:00:00Z' }, // 01/11 00:00 Sydney: November
@@ -50,12 +57,12 @@ test('A$20 per NEW client login in the calendar month, once per login, no recurr
   assert.equal(summariseMonth({ issues }, '2026-12').totals.totalCents, 0, 'a login issued earlier is not charged again');
 });
 
-test('month total is A$20 per new login plus A$10 per top-up, and GST is one eleventh', () => {
+test('month total is A$35 per new login plus A$10 per top-up, and GST is one eleventh', () => {
   const issues = [{ loginId: 'a', issuedAt: '2026-11-02T01:00:00Z' }, { loginId: 'b', issuedAt: '2026-11-03T01:00:00Z' }];
   const topUps = [{ createdAt: '2026-11-04T01:00:00Z' }, { createdAt: '2026-11-05T01:00:00Z' }, { createdAt: '2026-12-01T01:00:00Z' }];
   const t = summariseMonth({ issues, topUps }, '2026-11').totals;
-  assert.deepEqual(t, { loginsCount: 2, loginsCents: 4000, topUpsCount: 2, topUpsCents: 2000, totalCents: 6000 });
-  assert.equal(formatAud(t.totalCents), 'A$60');
+  assert.deepEqual(t, { loginsCount: 2, loginsCents: 7000, topUpsCount: 2, topUpsCents: 2000, totalCents: 9000 });
+  assert.equal(formatAud(t.totalCents), 'A$90');
   assert.equal(gstOfTotal(6000), 545);
   assert.equal(formatAud(1050), 'A$10.50');
 });
@@ -160,14 +167,14 @@ test('five failed sign ins lock the login for 15 minutes', async () => {
   assert.equal((await api.signIn(DEMO_LOGINS.admin)).user.role, 'admin');
 });
 
-test('Generate account: only the first name is needed, credentials shown once, A$20 charged once', async () => {
+test('Generate account: only the first name is needed, credentials shown once, A$35 charged once', async () => {
   const { api } = fresh();
   await admin(api);
   const before = (await api.monthUsage()).totals;
   const r = await api.issueClientLogin({ firstName: 'Priscilla' });
   assert.match(r.credentials.username, /^priscilla-[2-9]{4}$/);
   assert.match(r.credentials.password, /^[a-z]+-[a-z]+-[2-9]{2}$/);
-  assert.equal(r.charge.amountCents, 2000);
+  assert.equal(r.charge.amountCents, 3500);
   assert.equal(r.charge.trigger, 'first_sign_in');
   assert.equal(r.client.status, 'active');
   assert.equal(r.client.houseAccess, 'all');
@@ -180,7 +187,7 @@ test('Generate account: only the first name is needed, credentials shown once, A
   await admin(api);
   const after = (await api.monthUsage()).totals;
   assert.equal(after.loginsCount, before.loginsCount + 1);
-  assert.equal(after.totalCents, before.totalCents + 2000);
+  assert.equal(after.totalCents, before.totalCents + 3500);
   // A second sign in does not charge again.
   await api.signOut();
   await api.signIn({ identifier: r.credentials.username, password: r.credentials.password }).catch(() => {});
@@ -369,11 +376,11 @@ test('AI credits: monthly cap per login with a hard stop, top-ups of 300 for A$1
   await rejects(api.aiTopUp(), 'TOPUPS_DISABLED');
 });
 
-test('the month total on the Billing tab and invoice is A$20 per new login plus A$10 per top-up', async () => {
+test('the month total on the Billing tab and invoice is A$35 per new login plus A$10 per top-up', async () => {
   const { api } = fresh();
   await admin(api);
   const before = (await api.monthUsage()).totals;
-  assert.equal(before.totalCents, before.loginsCount * 2000 + before.topUpsCount * 1000);
+  assert.equal(before.totalCents, before.loginsCount * 3500 + before.topUpsCount * 1000);
   const ivy = await api.issueClientLogin({ firstName: 'Ivy' });
   assert.deepEqual((await api.monthUsage()).totals, before, 'no charge until first sign in');
   await api.signOut();
@@ -383,7 +390,7 @@ test('the month total on the Billing tab and invoice is A$20 per new login plus 
   await admin(api);
   await api.aiTopUp();
   const after = (await api.monthUsage()).totals;
-  assert.equal(after.totalCents, before.totalCents + 2000 + 1000);
+  assert.equal(after.totalCents, before.totalCents + 3500 + 1000);
   assert.equal((await api.monthUsage()).topUps.at(-1).amountCents, 1000);
   // Past invoices are tax invoices with the seller ABN, GST and total incl. GST.
   const [first] = await api.listInvoices();

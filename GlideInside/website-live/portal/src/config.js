@@ -40,7 +40,7 @@ export const CONFIG = {
   portal: {
     appUrl: './', // Pocket Architect, relative to the portal page; the site sets GI_CONFIG.portalAppUrl
     signInUrl: '../../portal/', // the portal sign in page, relative to Pocket Architect; the site sets GI_CONFIG.portalSignInUrl
-    clientLoginFeeAud: 20, // per NEW client login in a calendar month, incl. GST
+    clientLoginFeeAud: 35, // per NEW client login in a calendar month, incl. GST
     aiTopUp: { credits: 300, priceAud: 10 }, // incl. GST, charged on the end of month invoice
     aiMonthlyCredits: 300, // per login per month, hard stop at zero
   },
@@ -48,6 +48,9 @@ export const CONFIG = {
   embedMode: params.get('embed') === 'demo' ? 'demo' : 'full',
   // Unlocks client-side exports for local testing only. Never true in production.
   devUnlock: isLocal && params.has('dev'),
+  // STAGING ONLY: the staging site sets GI_CONFIG.staging = true. The app then asks the server for a free test Plan Pack, and the server
+  // only hands one out when it runs with STAGING=1 (health reports devGrant). On the live Worker neither side exists.
+  stagingGrant: hasWindow && window.GI_CONFIG?.staging === true,
   disclaimer:
     'Concept design only. Not for construction. Not a development application or complying development drawing. Not checked against planning controls, the National Construction Code or BASIX. Verify all dimensions on site.',
 };

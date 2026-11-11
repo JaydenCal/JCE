@@ -1,0 +1,54 @@
+# STAGING Worker for Glide Inside and Pocket Architect. Separate from the live Worker "pocket-architect-api" in every way:
+#   its own name, its own D1 database, its own R2 bucket, no routes (never the glideinside.com.au zone), no Stripe, no Resend, no Anthropic key.
+# deploy-staging.ps1 refuses to run if this file names anything else. Nothing here is a secret.
+# Paths are relative to this file.
+
+name = "pocket-architect-staging"
+main = "../pocket-architect-source/server/worker.js"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Served at https://pocket-architect-staging.<your-account>.workers.dev and nowhere else. There are deliberately NO routes.
+workers_dev = true
+preview_urls = false
+
+[limits]
+cpu_ms = 30000
+
+# The website and the app are static assets of this Worker (built by staging/build-staging-site.mjs). /api/* runs the Worker code first.
+[assets]
+directory = "../website-live-staging"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+not_found_handling = "404-page"
+
+[vars]
+STAGING = "1"                              # turns on the free test Plan Pack (dev grant), the static site hand-off and the same-origin URLs
+SITE_URL = "https://pocket-architect-staging.workers.dev"   # placeholder: with STAGING=1 the Worker uses the request's own origin
+APP_URL = "https://pocket-architect-staging.workers.dev/plan-studio/app/"
+PORTAL_ENABLED = "1"
+TRIAL_NOTIFY = "0"                         # no owner email on staging
+TRIAL_NOTIFY_TO = ""
+ENQUIRY_TO = ""
+PLAN_PACK_CREDITS = "500"
+PLAN_PACK_PRICE_CENTS = "3500"
+PDF_SET_LIMIT = "0"
+EXPORT_RATE_PER_HOUR = "60"
+SELLER_NAME = "JCE Infrastructure Pty Ltd trading as Glide Inside (STAGING)"
+SELLER_ABN = "29 699 165 663"
+ORG_MONTHLY_CREDITS = "300"
+TOPUP_CREDITS = "300"
+TOPUP_AMOUNT_CENTS = "1000"
+# No STRIPE_*, RESEND_API_KEY or ANTHROPIC_API_KEY on staging. Secrets set by deploy-staging.ps1: ADMIN_TOKEN, ENTITLEMENT_SECRET, IP_HASH_SALT.
+
+# Staging database. The script creates it if it is missing and writes its id below.
+[[d1_databases]]
+binding = "DB"
+database_name = "pocket-architect-staging"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "../pocket-architect-source/server/migrations"
+
+# Share links (Save and share) and issued PDF sets are stored here. The script creates the bucket if it is missing.
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "pocket-architect-staging-files"

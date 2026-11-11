@@ -158,7 +158,7 @@ curl -sS -X POST https://YOUR-SITE/api/billing/run-month -H "authorization: Bear
 
 Per organisation: needs billing contact (legal name, valid ABN, email), otherwise `skipped: billing_contact_incomplete`; no charges gives `skipped: no_charges`.
 It creates the Stripe customer on first billing, then a `send_invoice` invoice (14 days, AUD, inclusive 10% GST tax rate on each item), adds one item for
-logins (A$20 each) and one for top-ups (A$10 each), finalises and sends it. **Stripe sends the invoice email; this server sends none.**
+logins (A$35 each for the first 15 in a month, A$25 each for 16 to 50, or the org custom rate) and one for top-ups (A$10 each), finalises and sends it. **Stripe sends the invoice email; this server sends none.**
 One row per organisation and month in `invoices` (unique), Stripe idempotency keys on every write, and the steps are recorded so a failed run resumes
 without a second Stripe invoice. `GET /api/portal/billing/invoices` shows only issued invoices.
 

@@ -1,14 +1,18 @@
 // Portal billing (docs/PORTAL_API.md 4 and 5): month usage, tax invoice snapshots and Stripe invoices for the previous month.
-//   A$20 incl. GST per client login, once, at the login's first sign in (login_issues, created by lib/portal.js).
+//   Per client login, once, at the login's first sign in (login_issues, created by lib/portal.js). A$35 incl. GST each for the first 15 in a
+//   month, A$25 for logins 16 to 50, a custom rate above that (priceForNthLoginThisMonth in src/portal/billing.js).
 //   A$10 incl. GST per AI top-up of 300 credits (the AI branch's `ai_topup` events in the main store).
-// Stripe is used only through its REST API with fetch, to create send_invoice invoices. Stripe emails the invoice; this server sends nothing.
+// Stripe is used only through its REST API with fetch. An org with no card on file gets a send_invoice invoice (Stripe emails it; this
+// server sends nothing). An org that added card details (Checkout in setup mode, see lib/portal.js) gets a charge_automatically
+// invoice paid at once with its saved card.
 // TEST MODE ONLY unless STRIPE_LIVE_BILLING_APPROVED=owner-written-go-ahead (see server/README.md).
 
-import { monthKey, monthStartMs, previousMonthKey, summariseMonth, gstOfTotal, NEW_LOGIN_FEE_CENTS, TOPUP_FEE_CENTS, TOPUP_CREDITS, sydneyParts } from '../../src/portal/billing.js';
+import { monthKey, monthStartMs, previousMonthKey, summariseMonth, gstOfTotal, NEW_LOGIN_FEE_CENTS, VOLUME_LOGIN_FEE_CENTS, priceForNthLoginThisMonth, loginRateInfo, TOPUP_FEE_CENTS, TOPUP_CREDITS, sydneyParts } from '../../src/portal/billing.js';
 import { HttpError } from './http.js';
 
 const DAY = 86400000;
 const API = 'https://api.stripe.com/v1';
+export { priceForNthLoginThisMonth, loginRateInfo };
 export const INVOICE_DUE_DAYS = 14;
 export const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
 const randomId = (prefix) => `${prefix}_${[...crypto.getRandomValues(new Uint8Array(10))].map((b) => b.toString(16).padStart(2, '0')).join('')}`;
@@ -26,27 +30,40 @@ export async function topUpRows(store, orgId) {
 export async function usageForMonth({ pstore, store, orgId, month, names }) {
   const issues = (await pstore.listLoginIssues(orgId)).map((i) => ({ id: i.id, loginId: i.loginId, clientName: i.clientName, chargedAt: i.issuedAt, amountCents: i.amountCents }));
   const s = summariseMonth({ issues, topUps: await topUpRows(store, orgId) }, month);
+  const org = await pstore.getOrg(orgId);
   return {
     month, timezone: 'Australia/Sydney',
-    rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS },
+    loginPricing: loginRateInfo(s.totals.loginsCount, org),
+    rates: { newLoginCents: NEW_LOGIN_FEE_CENTS, volumeLoginCents: VOLUME_LOGIN_FEE_CENTS, topUpCents: TOPUP_FEE_CENTS, topUpCredits: TOPUP_CREDITS },
     logins: s.logins.map((i) => ({ id: i.id, loginId: i.loginId, clientName: names.get(i.loginId) || i.clientName || '', firstSignInAt: i.chargedAt, amountCents: i.amountCents })),
     topUps: s.topUps.map((t) => ({ id: t.id, loginId: t.loginId, clientName: names.get(t.loginId) || '', credits: t.credits, amountCents: t.amountCents, createdAt: t.createdAt })),
     totals: { ...s.totals, gstCents: gstOfTotal(s.totals.totalCents) },
   };
 }
 
+/** One invoice line per distinct unit price (the first 15 logins, then the volume rate, or a custom rate). */
+function loginLines(logins, month) {
+  const by = new Map();
+  for (const l of logins) by.set(l.amountCents, (by.get(l.amountCents) || 0) + 1);
+  return [...by.entries()].sort((a, b) => b[0] - a[0]).map(([cents, qty]) => ({
+    description: `New client logins first signed in during ${month} (A$${cents / 100} each, incl. GST)`, quantity: qty, unitCents: cents, totalCents: cents * qty,
+  }));
+}
+
 export const invoiceNumber = (org, month) => `GI-${org.shortCode || String(org.id).slice(-4).toUpperCase()}-${month.replace('-', '')}`;
 
 /** The tax invoice: seller name and ABN, "Tax invoice", date, description of supply, GST amount and total incl. GST. */
-export function buildSnapshot({ org, config, month, usage, number, issuedAtMs }) {
+export function buildSnapshot({ org, config, month, usage, number, issuedAtMs, payment = null }) {
   const t = usage.totals;
+  const card = payment ? payment.method === 'card' : !!org.paymentMethodId;
+  const pay = payment || (card ? { method: 'card', brand: org.cardBrand || '', last4: org.cardLast4 || '' } : { method: 'invoice' });
   const lines = [
-    { description: `New client logins first signed in during ${month} (A$${NEW_LOGIN_FEE_CENTS / 100} each, incl. GST)`, quantity: t.loginsCount, unitCents: t.loginsCount ? Math.round(t.loginsCents / t.loginsCount) : NEW_LOGIN_FEE_CENTS, totalCents: t.loginsCents },
+    ...loginLines(usage.logins, month),
     { description: `AI credit top-ups of ${config.topUpCredits} credits (A$${config.topUpCents / 100} each, incl. GST)`, quantity: t.topUpsCount, unitCents: t.topUpsCount ? Math.round(t.topUpsCents / t.topUpsCount) : config.topUpCents, totalCents: t.topUpsCents },
   ].filter((l) => l.quantity > 0);
   return {
     title: 'Tax invoice', number, month,
-    issuedAt: new Date(issuedAtMs).toISOString(), dueAt: new Date(issuedAtMs + INVOICE_DUE_DAYS * DAY).toISOString(),
+    issuedAt: new Date(issuedAtMs).toISOString(), dueAt: new Date(issuedAtMs + (card ? 0 : INVOICE_DUE_DAYS) * DAY).toISOString(), payment: pay,
     seller: { name: config.sellerName, abn: config.sellerAbn },
     buyer: { name: org.legalName, legalName: org.legalName, abn: org.abn, contact: org.billingName || '', email: org.billingEmail || '' },
     lines, subtotalExGstCents: t.totalCents - gstOfTotal(t.totalCents), gstCents: gstOfTotal(t.totalCents), totalInclGstCents: t.totalCents,
@@ -55,7 +72,7 @@ export function buildSnapshot({ org, config, month, usage, number, issuedAtMs })
 }
 
 // Stripe ----------------------------------------------------------------------------------------------------------------------
-async function stripeCall({ config, fetchImpl, method = 'POST', path, form, idempotencyKey }) {
+export async function stripeCall({ config, fetchImpl, method = 'POST', path, form, idempotencyKey }) {
   const key = config.stripeSecretKey;
   if (!key) throw new HttpError('BILLING_UNAVAILABLE', 'STRIPE_SECRET_KEY is not set.');
   if (/^(sk|rk)_live_/.test(key) && !config.stripeLiveBillingApproved) {
@@ -88,7 +105,7 @@ async function gstTaxRate({ config, pstore, fetchImpl }) {
   return rate.id;
 }
 
-async function ensureCustomer({ config, pstore, fetchImpl, org }) {
+export async function ensureCustomer({ config, pstore, fetchImpl, org }) {
   if (org.stripeCustomerId) return org.stripeCustomerId;
   const form = { name: org.legalName, email: org.billingEmail, 'metadata[org_id]': org.id, 'metadata[abn]': org.abn, 'metadata[short_code]': org.shortCode || '' };
   if (org.billingPhone) form.phone = org.billingPhone;
@@ -121,11 +138,12 @@ export async function invoiceOrgMonth({ pstore, store, config, fetchImpl, nowMs,
     if (!created) return { ...base, status: row && ['due', 'paid'].includes(row.status) ? 'exists' : 'in_progress', invoiceId: row?.id };
   } else {
     // Resuming: refresh the figures and the date so the record matches what is sent.
-    const snapshot = buildSnapshot({ org, config, month, usage, number: row.number, issuedAtMs: nowMs });
+    const snapshot = buildSnapshot({ org, config, month, usage, number: row.number, issuedAtMs: nowMs, payment: row.stripeInvoiceId ? row.snapshot?.payment : null });
     await pstore.updateInvoice(row.id, { issuedAt: snapshot.issuedAt, dueAt: snapshot.dueAt, loginsCount: usage.totals.loginsCount, topUpsCount: usage.totals.topUpsCount, totalCents: usage.totals.totalCents, status: 'pending', snapshot });
     row = await pstore.getInvoice(org.id, row.id);
   }
   const snap = row.snapshot;
+  const byCard = snap.payment?.method === 'card' && !!org.paymentMethodId;
 
   try {
     const call = (opts) => stripeCall({ config, fetchImpl, ...opts });
@@ -137,7 +155,8 @@ export async function invoiceOrgMonth({ pstore, store, config, fetchImpl, nowMs,
       const inv = await call({
         path: '/invoices', idempotencyKey: `gi-inv-${org.id}-${month}`,
         form: {
-          customer, collection_method: 'send_invoice', days_until_due: String(INVOICE_DUE_DAYS), currency: 'aud', auto_advance: 'false', pending_invoice_items_behavior: 'exclude',
+          customer, currency: 'aud', auto_advance: 'false', pending_invoice_items_behavior: 'exclude',
+          ...(byCard ? { collection_method: 'charge_automatically', default_payment_method: org.paymentMethodId } : { collection_method: 'send_invoice', days_until_due: String(INVOICE_DUE_DAYS) }),
           description: `Glide Inside usage for ${month}. Tax invoice ${snap.number}. All amounts include GST.`,
           footer: `Tax invoice. Supplier: ${config.sellerName}, ABN ${config.sellerAbn}. Prices include GST.`,
           'custom_fields[0][name]': 'Supplier ABN', 'custom_fields[0][value]': config.sellerAbn,
@@ -149,7 +168,7 @@ export async function invoiceOrgMonth({ pstore, store, config, fetchImpl, nowMs,
       await pstore.updateInvoice(row.id, { stripeInvoiceId: invoiceId, stripeStep: 'created', error: null });
       row.stripeStep = 'created';
     }
-    if (!['items', 'finalized', 'sent'].includes(row.stripeStep)) {
+    if (!['items', 'finalized', 'sent', 'charged'].includes(row.stripeStep)) {
       // On a resume, items already on the draft (matched by metadata[line]) are not added again.
       const have = new Set();
       if (resumed && row.stripeStep === 'created') {
@@ -175,12 +194,26 @@ export async function invoiceOrgMonth({ pstore, store, config, fetchImpl, nowMs,
       await pstore.updateInvoice(row.id, { stripeStep: 'finalized', stripeHostedUrl: hosted });
       row.stripeStep = 'finalized';
     }
+    if (row.stripeStep === 'finalized' && byCard) {
+      // Saved card: pay the finalized invoice now. A declined card leaves the invoice open and recorded as due with the reason.
+      let paid = false;
+      let declined = null;
+      try {
+        const res = await call({ path: `/invoices/${invoiceId}/pay`, idempotencyKey: `gi-pay-${invoiceId}`, form: { payment_method: org.paymentMethodId, off_session: 'true' } });
+        paid = res?.status === 'paid';
+        hosted = res?.hosted_invoice_url || hosted;
+      } catch (e) {
+        declined = String(e?.message || e).replace(/^Stripe refused the request: /, '').slice(0, 200);
+      }
+      await pstore.updateInvoice(row.id, { stripeStep: 'charged', stripeHostedUrl: hosted, status: paid ? 'paid' : 'due', error: paid ? null : `Card payment did not go through: ${declined || 'the invoice is still open'}` });
+      return { ...base, status: 'issued', invoiceId: row.id, number: row.number, stripeInvoiceId: invoiceId, totalCents: row.totalCents, payment: paid ? 'card_paid' : 'card_failed' };
+    }
     if (row.stripeStep === 'finalized') {
       const sent = await call({ path: `/invoices/${invoiceId}/send`, idempotencyKey: `gi-send-${invoiceId}` });
       hosted = sent.hosted_invoice_url || hosted;
       await pstore.updateInvoice(row.id, { stripeStep: 'sent', stripeHostedUrl: hosted });
     }
-    await pstore.updateInvoice(row.id, { status: 'due', error: null });
+    await pstore.updateInvoice(row.id, { status: byCard ? (row.status === 'paid' ? 'paid' : 'due') : 'due', error: null });
     return { ...base, status: 'issued', invoiceId: row.id, number: row.number, stripeInvoiceId: invoiceId, totalCents: row.totalCents };
   } catch (e) {
     await pstore.updateInvoice(row.id, { status: 'failed', error: String(e?.message || e).slice(0, 300) });

@@ -171,16 +171,17 @@ test('migrations: a fresh database built by the migrations has the same shape as
   const shape = JSON.stringify([columns(live), indexes(live)]);
   live.exec(rd('../server/schema.sql'));
   assert.equal(JSON.stringify([columns(live), indexes(live)]), shape);
-  // 0001 to 0005 and 0007 are repeatable (the live database has run 0001 to 0005 already); only 0006 is applied once
-  for (const f of migrationFiles()) if (f !== '0006_release.sql') live.exec(rd(MIG + f));
+  // 0001 to 0005 and 0007 are repeatable (the live database has run 0001 to 0005 already); 0006 and 0008 add a column, so each is applied once
+  for (const f of migrationFiles()) if (!['0006_release.sql', '0008_trial_volume.sql'].includes(f)) live.exec(rd(MIG + f));
   assert.equal(JSON.stringify([columns(live), indexes(live)]), shape);
   assert.throws(() => live.exec(rd(`${MIG}0006_release.sql`)), /duplicate column/i, '0006 is not repeatable, which is why it is applied with "d1 migrations apply"');
+  assert.throws(() => live.exec(rd(`${MIG}0008_trial_volume.sql`)), /duplicate column/i, '0008 adds orgs.custom_login_cents once');
   // numbering is continuous, so "d1 migrations apply" runs them in the intended order
-  assert.deepEqual(migrationFiles().map((f) => f.slice(0, 4)), ['0001', '0002', '0003', '0004', '0005', '0006', '0007']);
+  assert.deepEqual(migrationFiles().map((f) => f.slice(0, 4)), ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008']);
 });
 
 test('migrations: nothing destructive in any release migration', opts, () => {
-  for (const f of ['0001_base.sql', '0006_release.sql', '0007_portal.sql']) {
+  for (const f of ['0001_base.sql', '0006_release.sql', '0007_portal.sql', '0008_trial_volume.sql']) {
     const sql = rd(MIG + f).replace(/--.*$/gm, '');
     assert.ok(!/\bDROP\b|\bDELETE\s+FROM\b|\bRENAME\b|\bTRUNCATE\b|\bUPDATE\b/i.test(sql), `${f} has no DROP, DELETE, RENAME or UPDATE`);
     const alters = sql.match(/ALTER TABLE[^;]*;/gi) || [];
@@ -800,7 +801,7 @@ test('the release Worker has the live bindings and route, and no secret in wrang
   }
   assert.match(toml, /PDF_SET_LIMIT = "0"/, 'PDF re-exports are allowed (owner decision 11/11/2026)');
   assert.match(rd('../server/wrangler.toml.example').replace(/^\s*#.*$/gm, ''), /PDF_SET_LIMIT = "0"/);
-  assert.match(toml, /PORTAL_ENABLED = "0"/);
+  assert.match(toml, /PORTAL_ENABLED = "1"/);
   assert.doesNotMatch(toml, /^crons\s*=/m, 'the billing cron is off while the portal is off');
   for (const name of ['SITE_URL', 'APP_URL', 'ENQUIRY_TO', 'ENQUIRY_FROM', 'SELLER_NAME', 'SELLER_ABN', 'PLAN_PACK_PRICE_CENTS', 'PLAN_PACK_CREDITS', 'ENTITLEMENT_DAYS']) assert.match(toml, new RegExp(`^${name} = `, 'm'), name);
 });

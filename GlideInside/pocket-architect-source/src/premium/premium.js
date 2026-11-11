@@ -332,7 +332,7 @@ export function createPremium(store, options = {}) {
   // Local testing without Stripe: the site's development server offers a test entitlement (PLAN_STUDIO_DEV_GRANT=1).
   // Only asked for on localhost with ?dev in the address.
   async function devGrant() {
-    if (disposed || state.token || !dev()) return null;
+    if (disposed || state.token || !(dev() || cfg.stagingGrant)) return null;
     const pid = state.projectId;
     try {
       const res = await api.devGrant(pid);

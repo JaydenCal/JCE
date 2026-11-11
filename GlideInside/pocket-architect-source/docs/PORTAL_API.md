@@ -50,7 +50,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 ### Clients (staff; issuing needs admin)
 
 - `listClients()` `GET /portal/clients`: `[{ id, name, username, email, status, lotAddress, houseAccess, projectCount, lastSignInAt, mustChangePassword, tempPasswordExpiresAt, billed, ai: { month, monthlyCap, used, monthlyRemaining, topUpBalance, remaining, total } }]`.
-- `issueClientLogin({ firstName, email?, lotAddress?, houseAccess? })` `POST /portal/clients`: only `firstName` is required. Returns `{ client, credentials: { username, password }, charge: { amountCents: 2000, trigger: 'first_sign_in', note } }`. The password is returned this once and never again. Nothing is billed here.
+- `issueClientLogin({ firstName, email?, lotAddress?, houseAccess? })` `POST /portal/clients`: only `firstName` is required. Returns `{ client, credentials: { username, password }, charge: { amountCents: 3500, trigger: 'first_sign_in', note } }`. The password is returned this once and never again. Nothing is billed here.
 - `updateClient(id, patch)`, `disableClient(id)`, `enableClient(id)`, `resetClientPassword(id)` (new temporary password, shown once, free).
 - `deleteClient(id)` `DELETE /portal/clients/:id`: removes the login and all their projects. Returns `{ ok, removedProjects, charged }` (`charged` is true if the login had already been billed; that charge stays). An unused login (never signed in) is deleted free and never appears on an invoice.
 - `exportClientProjects(id)` `GET /portal/clients/:id/export`: `{ client, exportedAt, projects: [{ id, name, updatedAt, project }] }`.
@@ -94,11 +94,12 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 
 ## 4. Billing rules
 
-- A$20 incl. GST per client login, **no monthly fee**.
-- Charged at the client's **first successful sign in**, not when the login is generated. The row `{ orgId, loginId, chargedAt, amountCents: 2000 }` is created once (unique on `login_id`) in the Sydney month of that first sign in. Generate screen text: "A$20 incl. GST is charged on your monthly invoice once your client first signs in."
+- Client logins, **no monthly fee**. Volume pricing per builder org, counted by logins that first sign in during the Sydney calendar month, GST included: logins 1 to 15 are **A$35** each, logins 16 to 50 are **A$25** each, above 50 is a **custom rate**. `priceForNthLoginThisMonth(n, org)` in `src/portal/billing.js` (re-exported by `server/lib/portal-billing.js`) is the one pure function; the price is computed at the first sign in and stored in `amount_cents`.
+- Custom rate: `orgs.custom_login_cents` (nullable, migration 0008). When set it applies to every login that month, and the owner admin route reprices this month's rows. With no custom rate, logins above 50 are still charged A$25 and the admin page flags the org "over 50 this month, set custom rate". Admin route `POST /portal/admin/orgs/{id}/login-rate` with `{ "cents": 2000 }` (100 to 100000) or `{ "cents": null }` to clear; returns the admin org row. `GET /portal/billing/usage` adds `loginPricing { count, currentRateCents, customRateCents, over50NeedsCustomRate, tiers }`.
+- Charged at the client's **first successful sign in**, not when the login is generated. The row `{ orgId, loginId, chargedAt, amountCents: 3500 }` is created once (unique on `login_id`) in the Sydney month of that first sign in. Generate screen text: "A$35 incl. GST is charged on your monthly invoice once your client first signs in."
 - Resetting passwords, disabling logins, staff logins and deleting an unused login are free.
 - AI top-up: A$10 incl. GST per 300 credits, charged on the end of month invoice.
-- Month total = A$20 x new logins (first sign in that month) + A$10 x top-ups.
+- Month total = sum of the per login prices of the logins that first signed in that month + A$10 x top-ups. The invoice has one line per distinct unit price.
 - Invoices are produced after month end by a scheduled Worker (06:00 on the 1st, Sydney time) through the Stripe REST API: one invoice per organisation per month, `send_invoice`, due in 14 days, prices GST inclusive (an inclusive 10% GST tax rate on each item). Stripe emails the invoice; this server sends no email. Idempotent per organisation and month. **Test mode only** until the owner gives written go-ahead for live billing (a live key is refused). The login charge row is `login_issues` (this draft called it `login_charges`) and top-ups are the AI branch's `ai_topup` events. See `server/README.md`.
 
 ## 5. Tax invoices
@@ -112,7 +113,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
   "issuedAt": "2026-11-01T...", "dueAt": "2026-11-15T...", "month": "2026-10",
   "seller": { "name": "JCE Infrastructure Pty Ltd trading as Glide Inside", "abn": "29 699 165 663" },
   "buyer": { "name": "<billing legalName>", "abn": "<billing ABN>", "email": "..." },
-  "lines": [ { "description": "New client logins first signed in during October 2026 (A$20 each, incl. GST)", "quantity": 3, "unitCents": 2000, "totalCents": 6000 },
+  "lines": [ { "description": "New client logins first signed in during October 2026 (A$35 each, incl. GST)", "quantity": 3, "unitCents": 3500, "totalCents": 10500 },
              { "description": "AI credit top-ups of 300 credits (A$10 each, incl. GST)", "quantity": 1, "unitCents": 1000, "totalCents": 1000 } ],
   "subtotalExGstCents": 6364, "gstCents": 636, "totalInclGstCents": 7000,
   "status": "due"
@@ -172,7 +173,7 @@ Behaviour: 503 `ENQUIRY_NOT_CONFIGURED` when `RESEND_API_KEY` is unset (the UI s
 
 The tables are in `server/schema.sql` (all `CREATE ... IF NOT EXISTS`, purely additive, re-run it after deploying: `wrangler d1 execute plan-studio --remote --file server/schema.sql`). They follow the first proposal with these changes:
 
-- `login_charges` is `login_issues` (`login_id` PRIMARY KEY, so the A$20 charge can exist once; no foreign key, so it survives deleting the client). It also keeps `client_name` and `month`.
+- `login_charges` is `login_issues` (`login_id` PRIMARY KEY, so the A$35 charge can exist once; no foreign key, so it survives deleting the client). It also keeps `client_name` and `month`.
 - `ai_topups` and `ai_usage` are not tables. AI credits live in the `entitlements` rows of the AI branch (monthly pool and top-up pool per login) and each top-up is an `ai_topup` row in `events`. `users.ai_top_up_balance` is gone for the same reason.
 - `users` has no `failed_attempts` or `locked_until`; lockout counters are in `auth_failures` (keys `u:<identifier>` and `ip:<address>`), so unknown usernames lock the same way as real ones.
 - `reset_tokens` is not built (no email, see section 2). `portal_settings` holds one value, the Stripe GST tax rate id.
@@ -213,3 +214,46 @@ Differences from the first draft:
 - `enquiryJce` stays public (no cookie needed), so `allowClientEnquiries` is enforced by the screens only.
 
 Going live: (1) apply `server/schema.sql`; (2) set the secrets and variables in `server/README.md`; (3) create the first organisation; (4) in the site config set `GI_CONFIG.portalEnabled = true` and `GI_CONFIG.portalMock = false` (or build with `REVIEW_BUILD = false`, the default, and no mock), run `node tools/sync-portal.mjs` to refresh `website-live/portal/src`, and set `PORTAL_ENABLED=1` on the Worker; (5) live Stripe only with the owner's written go-ahead.
+
+## 14. Free builder trial (11/11/2026)
+
+Builders ask for a free 14 day trial on `/for-builders/#trial`. The owner approves each request on the private admin page `/portal/admin/`; approval creates the organisation and its first admin login. Code: `server/lib/trial.js` (rules, validation, owner email), `server/lib/portal.js` (routes), `src/portal/ui/trial-ui.js` and `src/portal/ui/admin-app.js` (screens), tests in `tests/trial.test.mjs`.
+
+**Account states.** `me().account.status` is `trial`, `trial_ended`, `active` or `read_only`. They live in the new table `org_accounts` (an org with no row is a legacy `active` org, so the ADMIN_TOKEN create-org job is unchanged). `trial` past `trial_ends_at` is treated as `trial_ended` at request time, so no cron is needed.
+
+**Dates.** The approval day is day 1. `trial_ends_at` is 00:00 Sydney on the day 14 calendar days after the approval date (approved 11/11/2026: read only from 00:00 on 25/11/2026, last full day 24/11/2026). Daylight saving safe (`sydneyDayStartPlus` in `src/portal/billing.js`). Extending adds 7 calendar days from the current end (or from today when already ended). Builder data is kept 90 days after a trial ends.
+
+**Rules.**
+
+| State | Staff | Client logins | AI top-ups | Writes | Exports |
+|---|---|---|---|---|---|
+| trial | everything else | issue, reset, enable refused: `403 TRIAL_NO_CLIENTS` | refused: `403 TRIAL_NO_TOPUPS` (portal and `/api/ai/topup`); monthly cap applies | allowed | `["pdf","dxf","glb","obj"]` |
+| trial_ended, read_only | sign in, view, open projects, save billing details, start card setup | refused | refused | every non GET route: `403 READ_ONLY` (also AI edit, AI token) | `[]`, `enquiry` false |
+| active | everything | allowed | allowed | allowed | normal |
+
+Routes still open while read only: sign in/out, password change, `PUT /billing/contact`, `POST /billing/setup`, `POST /billing/setup/confirm`.
+
+**New routes.**
+
+| Route | Auth | Purpose |
+|---|---|---|
+| `POST /api/portal/trial-request` | none (public, no CSRF header needed) | `{ companyLegalName, abn, tradingName?, firstName, lastName, email, mobile, region, homesPerYear?, howHeard?, consent: true, website: "" }`. `website` is the honeypot. ABN checksum validated. Rate limit 5 per IP per hour and 3 per email per day (`429 RATE_LIMITED`). A second request with an ABN that already has a pending or approved request answers the same success and stores nothing. Stored in `trial_requests` as `pending`. Answers `{ ok: true, message: "Thanks, we will be in touch within one business day." }`. Works while `PORTAL_ENABLED` is 0. |
+| `GET /api/portal/admin/trial-requests?status=` | bearer `ADMIN_TOKEN` | pending, approved, declined |
+| `POST .../admin/trial-requests/:id/approve` | bearer | creates the org (billing details prefilled from the request) and first admin; returns `credentials` once. `409` if already decided or the email already has a login |
+| `POST .../admin/trial-requests/:id/decline` | bearer | `{ note }` |
+| `GET /api/portal/admin/orgs` | bearer | each org: account state, first admin, client logins issued, AI use this month, invoices |
+| `POST .../admin/orgs/:id/extend-trial` | bearer | +7 days; `409` for an active org |
+| `POST .../admin/orgs/:id/convert` | bearer | manual convert to paid (`{ note? }`) |
+| `POST .../admin/orgs/:id/reset-admin` | bearer | new temporary password for the first admin, shown once |
+| `POST /api/portal/billing/setup` | cookie, `billing.write` | Stripe Checkout Session in `setup` mode (card only); needs legal name, ABN and billing email saved. Returns `{ url }` |
+| `POST /api/portal/billing/setup/confirm` | cookie, `billing.write` | `{ sessionId }`. Runs the same completion as the webhook when the customer returns before it arrives |
+
+**Card capture.** The Stripe webhook already receives `checkout.session.completed`. For `mode: "setup"` the server reads the SetupIntent, sets the payment method as the customer's `invoice_settings.default_payment_method`, stores it on the org (brand and last 4 are shown, the id is never sent to the browser), sets the org `active` and fills any missing billing contact from Stripe's customer details. No new webhook event is needed.
+
+**Monthly billing.** An org with a saved card gets a `charge_automatically` invoice with `default_payment_method`, finalized and paid at once (`POST /invoices/:id/pay`, off session); Stripe does not email it. A declined card leaves the invoice `due` with the reason in `error` (shown on the admin page). An org without a card is invoiced as before (`send_invoice`, 14 days). Tax invoice rules are unchanged: seller JCE Infrastructure Pty Ltd trading as Glide Inside, ABN 29 699 165 663; buyer legal name and ABN; the invoice snapshot adds `payment: { method: "card" | "invoice", brand, last4 }`. Test mode only; a live key is refused unless `STRIPE_LIVE_BILLING_APPROVED` is set.
+
+**Owner email.** On a new request, one email to `TRIAL_NOTIFY_TO` (default hello@glideinside.com.au) through Resend: subject `Trial request: <company>`, the details and a link to `/portal/admin/`. Skipped silently when `TRIAL_NOTIFY=0`, `RESEND_API_KEY` is unset or `TRIAL_NOTIFY_TO` is empty. A failure never loses the request. The builder is never emailed by the server.
+
+**Tables** (additive, in `server/schema.sql`): `trial_requests`, `org_accounts`.
+
+**me().** Adds `account` `{ status, trialStartedAt, trialEndsAt, daysLeft, lastTrialDay, readOnly, canIssueClients, canTopUp, cardOnFile, card, dataKeptUntil }`. `canTopUp`, `exports` and `enquiry` follow the state.
