@@ -43,7 +43,7 @@
       var y = window.scrollY, x = window.scrollX;
       f.addEventListener("load", function () {
         // gi:ready can arrive before load fires, so do not reset live.ready here; if a find is still pending, send it now.
-        if (live.pending) { var pa = live.pending; live.pending = null; setTimeout(function () { postFind(pa); }, 300); }
+        if (live.ready && live.pending) { var pa = live.pending; live.pending = null; postFind(pa); }
         box.classList.add("is-live");
         try { if (document.activeElement === f) f.blur(); } catch (e) {}
         if (!address && !live.last) { window.scrollTo(x, y); setTimeout(function () { window.scrollTo(x, y); }, 400); }
