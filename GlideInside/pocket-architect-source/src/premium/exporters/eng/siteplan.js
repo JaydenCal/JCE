@@ -81,7 +81,7 @@ export function fitPoints(facts) {
  * Points for the site plan of a large lot: the house with a margin, the nearest stretch of the frontage road when it is close, and the
  * nearest boundary point when it is close. The whole lot is on the key plan.
  */
-export function focusPoints(facts, marginMm = 22000) {
+export function focusPoints(facts, marginMm = 15000) {
   const hull = facts.hull?.length ? facts.hull : [G.polygonCentroid(facts.lot.boundary)];
   const b = G.bbox(hull);
   const pts = [{ x: b.minX - marginMm, y: b.minY - marginMm }, { x: b.maxX + marginMm, y: b.minY - marginMm }, { x: b.maxX + marginMm, y: b.maxY + marginMm }, { x: b.minX - marginMm, y: b.maxY + marginMm }];
@@ -128,7 +128,8 @@ export function chooseSiteScale(pts, vp, k = 1) {
   const b = G.bbox(pts);
   const w = vp.x1 - vp.x0;
   const h = vp.y1 - vp.y0;
-  const n = SITE_SCALES.find((s) => b.w / (s * k) <= w * 0.96 && b.h / (s * k) <= h * 0.96) || SITE_SCALES.at(-1);
+  // A very large lot goes past the usual scales (the analysis diagram shows the whole lot)
+  const n = [...SITE_SCALES, 5000, 10000, 20000].find((s) => b.w / (s * k) <= w * 0.96 && b.h / (s * k) <= h * 0.96) || 20000;
   return { n, ds: n * k, box: b };
 }
 
@@ -842,7 +843,7 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
     const reach = (view.ds * Math.max(w, h)) * 1.2;
     streets.push({ name: ROAD_NAME(lot, facts), pts: [G.add(mid, G.mul(dir, -reach)), G.add(mid, G.mul(dir, reach))], widthMm: (r.vergeM * 2 + r.gutterM * 2 + r.carriagewayM) * 1000 });
   }
-  for (const rd of lot.roads || []) {
+  for (const rd of (ctx.locRoads || lot.roads || [])) {
     const pts = ptsOf(rd.pts || []);
     if (pts.length > 1 && rd.name && rd.name.toUpperCase() !== (streets[0]?.name || '')) streets.push({ name: clean(rd.name).toUpperCase(), pts, widthMm: 18000 });
   }
@@ -860,10 +861,10 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
       if (q.length > 2) { doc.setFillColor(aerial ? 255 : 226, aerial ? 255 : 228, aerial ? 255 : 232); polygon(doc, q, 'F'); }
     }
   }
-  // Surrounding cadastre
+  // Surrounding cadastre (the wider set when the host supplied one for the locality)
   doc.setDrawColor(...pal.neighbour);
   doc.setLineWidth(key ? 0.12 : pal.neighbourW);
-  for (const nb of lot.neighbours || []) clippedPolyline(doc, (nb.ring || []).map(T), rect, true);
+  for (const nb of ctx.locNeighbours || lot.neighbours || []) clippedPolyline(doc, (nb.ring || []).map(T), rect, true);
   const own = clipPolygon(lot.boundary.map(T), rect);
   if (own.length > 2 && !aerial) { doc.setFillColor(205, 232, 214); polygon(doc, own, 'F'); }
   doc.setDrawColor(...(lot.proposed ? PEN.proposed : pal.boundary));

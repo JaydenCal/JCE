@@ -34,7 +34,7 @@ export async function fetchWideAerial(project, extent, options = {}) {
     if (typeof options.fetchAerial === 'function') {
       const r = await options.fetchAerial({ project, lot, extent });
       const bytes = r ? await toBytes(r.bytes || r.url || r.blob) : null;
-      return bytes && r.extent ? { bytes, extent: r.extent } : null;
+      return bytes && r.extent ? { bytes, extent: r.extent, neighbours: r.neighbours || null, roads: r.roads || null } : null;
     }
     if (options.wideAerial === false || typeof window === 'undefined' || typeof fetch !== 'function' || !lot.state || !lot.srid) return null;
     const { CONFIG } = await import('../../../config.js');

@@ -3,6 +3,7 @@
 // The result has a non-enumerable `layout`: { paper, mode, sheets: [{ number, title, scale, kind }], pages: [kind] }.
 
 import * as G from '../../../model/geometry.js';
+import { terrainAt } from '../../../site/model.js';
 import { schemeColours } from '../../../model/colour-schemes.js';
 import { rotateHouse } from '../../../model/placement.js';
 import { buildingHull, orientedBox } from '../../../site/lotplan.js';
@@ -109,7 +110,20 @@ function drawStairNotes(doc, project, level, T) {
   return boxes;
 }
 
-export async function toEngineeringPDF(project, options = {}) {
+/** An assumed finished floor level is taken from the ground at the house, not the lot centroid (they differ on a large lot). */
+function withHouseFloorRL(project) {
+  const lot = project?.site?.lot;
+  if (!lot?.terrain || lot.floorRL == null || !lot.floorRLAuto) return project;
+  const hull = buildingHull(project);
+  if (hull.length < 3) return project;
+  const c = G.polygonCentroid(hull);
+  const rl = terrainAt(lot.terrain, c.x, c.y);
+  if (rl == null) return project;
+  return { ...project, site: { ...project.site, lot: { ...lot, floorRL: Math.round((rl + 0.15) * 100) / 100 } } };
+}
+
+export async function toEngineeringPDF(project0, options = {}) {
+  const project = withHouseFloorRL(project0);
   const { jsPDF, image = null, aerial = null, config = {}, catalogue = null, date = new Date(), paper = null, scale = null } = options;
   if (typeof jsPDF !== 'function') throw new Error('toEngineeringPDF needs the jsPDF class (options.jsPDF)');
   const plan = engineeringSheets(project, { paper, scale, catalogue });
@@ -145,6 +159,8 @@ export async function toEngineeringPDF(project, options = {}) {
       }
     }
     ctx.locExtent = loc.extent;
+    if (loc.neighbours) ctx.locNeighbours = loc.neighbours;
+    if (loc.roads) ctx.locRoads = loc.roads;
     const jobs = [];
     if (facts) { const v = siteView(project, facts, p.k); jobs.push(['site', v.T, SITE_VP, 4.4, 0.5, bytes0, lotA.aerial.extent]); }
     const kv = localityView(project, kb, { minSpanM: 400, k: p.k, extent: loc.extent });

@@ -109,6 +109,7 @@ export async function sampleProject({ withAerial = true } = {}) {
   // The fixture coordinates are synthetic; place the search point where Calala really is so the locality map can point to the town centre.
   lot.query = { lon: 150.9296, lat: -31.0446 };
   const p = createProject({ name: 'Sample Residence' });
+  p.colourScheme = 'ironstone-brick';
   p.site.lot = lot;
   Object.assign(p.titleBlock, { client: 'A Sample Client', jobNumber: 'TAM24', council: 'Tamworth Regional' });
   const h = catalogue.createFromTemplate('house_double');
@@ -120,7 +121,7 @@ export async function sampleProject({ withAerial = true } = {}) {
 // A large irregular rural lot (50.93 ha, MGA zone 56, near Gunnedah) on Quia Road, with the aerial stored the way the app stores it
 // (the lot plus a 30 m margin) and a wider aerial supplied through options.fetchAerial, the way the site service would. Invented
 // geometry: no real parcel. Cadastre shapes follow the lookup response (metres from the origin, north up).
-const RURAL_RING = [[-560, -250], [-180, -270], [120, -262], [540, -290], [600, -120], [560, 60], [610, 230], [300, 300], [-60, 265], [-330, 290], [-600, 210], [-640, 0]];
+const RURAL_RING = [[-560, -270], [-180, -270], [120, -270], [540, -270], [600, -120], [560, 60], [610, 230], [300, 300], [-60, 265], [-330, 290], [-600, 210], [-640, 0]];
 const shoelace = (r) => Math.abs(r.reduce((a, p, i) => { const q = r[(i + 1) % r.length]; return a + (p[0] * q[1] - q[0] * p[1]); }, 0)) / 2;
 
 function ruralWorld() {
@@ -149,7 +150,8 @@ function ruralWorld() {
   const roads = [
     { name: 'Mullaley Road', points: [[-2400, 700], [-1200, 500], [0, 640], [1400, 760], [2800, 620]] },
     { name: 'Quia Road', points: [[-2800, roadN - 6], [-1400, roadN + 4], [0, roadN], [1400, roadN - 8], [2800, roadN + 2]] },
-    { name: 'River Street', points: [[1200, -1900], [1250, -900], [1300, 400], [1260, 1700]] },
+    { name: 'River Street', points: [[-2400, 330 * k + 30], [-800, 330 * k + 30], [0, 345 * k + 30], [800, 322 * k + 30], [2800, 340 * k + 30]] },
+    { name: 'Boggabri Lane', points: [[1500, -2100], [1560, -900], [1520, 300], [1580, 2100]] },
   ];
   return { k, lotRing, nbs, roads, roadN };
 }
@@ -202,7 +204,8 @@ export async function ruralProject() {
     state: 'NSW', srid: 7856, zone: 56, origin, query: { lon: 150.2711, lat: -30.9864 },
     lot: { lotNumber: '3', planLabel: 'DP 263990', lotLabel: 'Lot 3 DP 263990', areaM2: 509300, registeredAreaM2: 509300, polygons: [{ outer: world.lotRing, holes: [] }], bboxMga: { minE: origin.e + b.minX, minN: origin.n + b.minY, maxE: origin.e + b.maxX, maxN: origin.n + b.maxY } },
     neighbours: world.nbs.filter((n) => n.polygons[0].outer.some(([x, y]) => x > b.minX - 60 && x < b.maxX + 60 && y > b.minY - 60 && y < b.maxY + 60)),
-    roads: world.roads.map((rd) => ({ name: rd.name, points: rd.points })).filter((rd) => rd.points.some(([x, y]) => x > b.minX - 40 && x < b.maxX + 40 && y > b.minY - 40 && y < b.maxY + 40)),
+    // The lookup lists River Street first (it runs along the far boundary), then the frontage road
+    roads: ['River Street', 'Quia Road'].map((n) => world.roads.find((rd) => rd.name === n)).map((rd) => ({ name: rd.name, points: rd.points })),
     lga: 'GUNNEDAH SHIRE', zoning: { code: 'RU1', name: 'Primary Production', instrument: 'Gunnedah Local Environmental Plan 2012' }, zoneNote: null,
     attribution: 'Cadastre: NSW Spatial Services (CC BY).', retrieved: '2026-11-11T00:00:00.000Z',
   };
@@ -222,7 +225,10 @@ export async function ruralProject() {
   // The wider aerial: the same invented ground over the ground the locality map needs (what the site service would return)
   const fetchAerial = async ({ extent }) => {
     const bx = { minE: extent.x0 / 1000, maxE: extent.x1 / 1000, minN: -extent.y1 / 1000, maxN: -extent.y0 / 1000 };
-    return { bytes: await ruralAerialBytes(world, bx, origin), extent };
+    // The wider cadastre and roads for the locality map, in plan mm as the lot carries them
+    const flat = (pts) => pts.flatMap(([e, n]) => [Math.round(e * 1000), Math.round(-n * 1000)]);
+    const neighbours = world.nbs.map((n, i) => ({ id: `w_${i}`, lotNumber: n.lotNumber, planLabel: n.planLabel, isRoad: false, ring: n.polygons[0].outer.map(([e, n2]) => ({ x: Math.round(e * 1000), y: Math.round(-n2 * 1000) })), holes: [] }));
+    return { bytes: await ruralAerialBytes(world, bx, origin), extent, neighbours, roads: world.roads.map((rd) => ({ name: rd.name, pts: flat(rd.points) })) };
   };
   return { project: p, fetchAerial, aerial: `data:image/jpeg;base64,${aerialBytes.toString('base64')}` };
 }

@@ -285,3 +285,67 @@ test('one ridge height on the roof data, elevations and section; no invented ini
   assert.ok(texts.some((t) => /^CHECK\./.test(t)));
   assert.ok(texts.some((t) => /NOT CHECKED/.test(t)));
 });
+
+test('site area: one figure on every sheet, hectares over 10,000 m2, a stored figure that disagrees with the lot never wins', async () => {
+  const { fmtArea, siteAreaOf, siteAreaText, lotIdLines } = await import('../src/premium/exporters/eng/area.js');
+  assert.equal(fmtArea(789.4), '789 m²');
+  assert.equal(fmtArea(10000), '10000 m²');
+  assert.equal(fmtArea(509300), '50.93 ha');
+  const sq = (m) => [{ x: 0, y: 0 }, { x: m * 1000, y: 0 }, { x: m * 1000, y: m * 1000 }, { x: 0, y: m * 1000 }];
+  // The drawn lot decides when no registered area is held
+  assert.equal(siteAreaOf({ boundary: sq(100), areaM2: 789 }).m2, 10000);
+  // A registered area larger than the outline loaded is the legal figure (the outline is part of the lot)
+  const partial = { boundary: sq(28), areaM2: 789, registeredAreaM2: 509300 };
+  assert.equal(siteAreaOf(partial).m2, 509300);
+  assert.match(siteAreaText(partial), /^50\.93 ha \(registered area/);
+  // Registered area in hectares is recognised
+  assert.equal(siteAreaOf({ boundary: sq(1000), registeredAreaM2: 100 }).m2, 1000000);
+  assert.deepEqual(lotIdLines({ titleBlock: { lotDp: 'Lot 3 DP 263990' } }, { lotNumber: '3', planLabel: 'DP 0254' }), { first: 'LOT 3', second: 'DP 263990', proposed: false });
+});
+
+test('large rural lot: site plan shows the house and surrounds with a key plan window, frontage road named from the nearest road, wide locality', async () => {
+  const { ruralProject } = await import('../tools/engplans-sample.mjs');
+  const { siteView, siteFacts, frontageRoadName, localityView } = await import('../src/premium/exporters/eng/siteplan.js');
+  const { project, fetchAerial, aerial } = await ruralProject();
+  const facts = siteFacts(project);
+  const v = siteView(project, facts, 1);
+  assert.equal(v.focus, true);
+  assert.ok(v.n <= 500, `site plan scale 1:${v.n}`);
+  assert.equal(v.windowPlan.length, 4);
+  assert.equal(frontageRoadName(project.site.lot, facts), 'QUIA ROAD');
+  project.site.lot.address = '';
+  assert.equal(frontageRoadName(project.site.lot, facts), 'QUIA ROAD'); // nearest road, not the first the lookup listed (River Street)
+  const box = { x0: 212, y0: 28, x1: 408, y1: 277 };
+  const ideal = localityView(project, box, { minSpanM: 280, k: 1, ideal: true });
+  assert.ok(ideal.n >= 5000, `locality 1:${ideal.n}`);
+  const narrow = localityView(project, box, { minSpanM: 280, k: 1, extent: project.site.lot.aerial.extent });
+  assert.ok(narrow.n <= ideal.n, 'without a wider aerial the view is no more zoomed out than the ideal');
+  // The whole set builds, with the wider aerial supplied and without it
+  const bytes = await toEngineeringPDF(project, { jsPDF, catalogue, date: new Date(2026, 10, 11), aerial, fetchAerial });
+  assert.ok(bytes.length > 20000);
+  const bytes2 = await toEngineeringPDF(project, { jsPDF, catalogue, date: new Date(2026, 10, 11), aerial });
+  assert.ok(bytes2.length > 20000);
+});
+
+test('footer text is dark grey and at least 6.5 pt', async () => {
+  const p = sample();
+  const calls = [];
+  class Spy extends jsPDF {
+    constructor(...a) {
+      super(...a);
+      const text = this.text.bind(this);
+      this.text = (t, ...r) => {
+        const s = Array.isArray(t) ? t.join(' ') : String(t);
+        if (/^CONCEPT ONLY|^Cadastre, imagery/.test(s)) calls.push([s, this.getFontSize(), this.getTextColor()]);
+        return text(t, ...r);
+      };
+    }
+  }
+  await toEngineeringPDF(p, { jsPDF: Spy, catalogue });
+  assert.ok(calls.length >= 2);
+  for (const [t, fs, col] of calls) {
+    assert.ok(fs >= 6.5, `footer ${fs} pt: ${t.slice(0, 20)}`);
+    const rgb = String(col).startsWith('#') ? [1, 3, 5].map((i) => parseInt(String(col).slice(i, i + 2), 16)) : null;
+    if (rgb) assert.ok(rgb[0] < 110 && rgb[0] - rgb[1] < 30, `footer colour ${col}`);
+  }
+});
