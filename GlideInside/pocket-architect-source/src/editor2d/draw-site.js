@@ -1,0 +1,201 @@
+// Site layers drawn under the plan when the project has a lot (site.lot): contours, neighbouring lots, the lot boundary,
+// boundary lengths and lot labels. Screen space drawing so lines and text stay crisp at any zoom.
+// Each layer can be turned off in the panel (site.lot.layers). Nothing here is selectable or editable.
+
+import { worldToScreen } from './math.js';
+import { boundaryEdges } from '../site/model.js';
+import { ringCentroid, signedArea } from '../site/geo.js';
+
+const BOUNDARY = '#d62828'; // red, so the lot reads clearly over an aerial and is never mistaken for proposed work
+const CONTOUR_MINOR = 'rgba(150,102,48,0.6)';
+const CONTOUR_MAJOR = 'rgba(128,78,22,0.95)';
+
+export const layerOn = (lot, id) => !!lot && lot.layers?.[id] !== false;
+
+const toScreen = (view, p) => worldToScreen(view, p);
+
+function tracePoly(ctx, view, ring) {
+  ring.forEach((p, i) => {
+    const s = toScreen(view, p);
+    if (i) ctx.lineTo(s.x, s.y);
+    else ctx.moveTo(s.x, s.y);
+  });
+  ctx.closePath();
+}
+
+function halo(ctx, text, x, y, theme) {
+  ctx.lineWidth = 3.5;
+  ctx.strokeStyle = theme.c.canvas;
+  ctx.globalAlpha = 0.85;
+  ctx.strokeText(text, x, y);
+  ctx.globalAlpha = 1;
+  ctx.fillText(text, x, y);
+}
+
+export function drawContours(ctx, st) {
+  const lot = st.project.site?.lot;
+  if (!layerOn(lot, 'contours') || !lot.contours?.length) return;
+  const { view, size } = st;
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  const labels = [];
+  for (const major of [false, true]) {
+    ctx.beginPath();
+    ctx.strokeStyle = major ? CONTOUR_MAJOR : CONTOUR_MINOR;
+    ctx.lineWidth = major ? 1.5 : 0.7;
+    for (const c of lot.contours) {
+      if (c.major !== major) continue;
+      const pts = c.pts;
+      let minX = Infinity;
+      let maxX = -Infinity;
+      let minY = Infinity;
+      let maxY = -Infinity;
+      for (let i = 0; i < pts.length; i += 2) {
+        const sx = pts[i] * view.scale + view.ox;
+        const sy = pts[i + 1] * view.scale + view.oy;
+        if (sx < minX) minX = sx;
+        if (sx > maxX) maxX = sx;
+        if (sy < minY) minY = sy;
+        if (sy > maxY) maxY = sy;
+      }
+      if (maxX < 0 || minX > size.w || maxY < 0 || minY > size.h) continue;
+      for (let i = 0; i < pts.length; i += 2) {
+        const sx = pts[i] * view.scale + view.ox;
+        const sy = pts[i + 1] * view.scale + view.oy;
+        if (i === 0) ctx.moveTo(sx, sy);
+        else ctx.lineTo(sx, sy);
+      }
+      if (c.closed) ctx.closePath();
+      if (major && pts.length >= 8) {
+        // label at the middle vertex, turned along the line and kept upright
+        const k = Math.floor(pts.length / 4) * 2;
+        const a = { x: pts[Math.max(0, k - 2)] * view.scale + view.ox, y: pts[Math.max(0, k - 1)] * view.scale + view.oy };
+        const b = { x: pts[Math.min(pts.length - 2, k + 2)] * view.scale + view.ox, y: pts[Math.min(pts.length - 1, k + 3)] * view.scale + view.oy };
+        const len = Math.hypot(b.x - a.x, b.y - a.y);
+        if (len > 6) labels.push({ x: pts[k] * view.scale + view.ox, y: pts[k + 1] * view.scale + view.oy, ang: Math.atan2(b.y - a.y, b.x - a.x), text: c.level.toFixed(1) });
+      }
+    }
+    ctx.stroke();
+  }
+  ctx.font = `600 10.5px ${st.theme.f.ui}`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = CONTOUR_MAJOR;
+  for (const l of labels) {
+    if (l.x < 10 || l.y < 10 || l.x > size.w - 10 || l.y > size.h - 10) continue;
+    let ang = l.ang;
+    if (ang > Math.PI / 2) ang -= Math.PI;
+    if (ang < -Math.PI / 2) ang += Math.PI;
+    ctx.save();
+    ctx.translate(l.x, l.y);
+    ctx.rotate(ang);
+    halo(ctx, l.text, 0, 0, st.theme);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+// Neighbouring lots (thin) with the lot number and, on its own line, the plan (DP) in a larger size.
+export function drawNeighbours(ctx, st) {
+  const lot = st.project.site?.lot;
+  if (!layerOn(lot, 'neighbours') || !lot.neighbours?.length) return;
+  const { view, theme } = st;
+  const overAerial = layerOn(lot, 'aerial') && !!st.underlayBitmap;
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = overAerial ? 'rgba(255,236,170,0.95)' : theme.c.lineSoft;
+  ctx.beginPath();
+  for (const n of lot.neighbours) tracePoly(ctx, view, n.ring);
+  ctx.stroke();
+  if (layerOn(lot, 'labels')) {
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = overAerial ? '#ffffff' : theme.c.muted;
+    for (const n of lot.neighbours) {
+      const xs = n.ring.map((p) => p.x * view.scale + view.ox);
+      const ys = n.ring.map((p) => p.y * view.scale + view.oy);
+      const w = Math.max(...xs) - Math.min(...xs);
+      const h = Math.max(...ys) - Math.min(...ys);
+      if (w < 44 || h < 34) continue;
+      const c = ringCentroid(n.ring.map((p) => [p.x, p.y]));
+      const s = toScreen(view, { x: c[0], y: c[1] });
+      const lotSize = 11;
+      ctx.font = `500 ${lotSize}px ${theme.f.ui}`;
+      halo(ctx, n.lotNumber ? `Lot ${n.lotNumber}` : '', s.x, s.y - 7, theme);
+      ctx.font = `600 ${lotSize + 1}px ${theme.f.ui}`; // DP one size larger
+      halo(ctx, n.planLabel || '', s.x, s.y + 7, theme);
+    }
+  }
+  ctx.restore();
+}
+
+// The lot itself: faint fill, bold boundary, lengths, and its own label.
+export function drawLot(ctx, st) {
+  const lot = st.project.site?.lot;
+  if (!layerOn(lot, 'boundary') || !lot.boundary?.length) return;
+  const { view, theme } = st;
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  tracePoly(ctx, view, lot.boundary);
+  for (const h of lot.holes || []) tracePoly(ctx, view, h);
+  ctx.fillStyle = 'rgba(214,40,40,0.07)';
+  ctx.fill('evenodd');
+  ctx.strokeStyle = BOUNDARY;
+  ctx.lineWidth = 2.6;
+  ctx.stroke();
+
+  if (layerOn(lot, 'dimensions')) {
+    const area = signedArea(lot.boundary.map((p) => [p.x, p.y]));
+    ctx.font = `600 11.5px ${theme.f.ui}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = BOUNDARY;
+    for (const e of boundaryEdges(lot)) {
+      const a = toScreen(view, e.a);
+      const b = toScreen(view, e.b);
+      const len = Math.hypot(b.x - a.x, b.y - a.y);
+      if (len < 56) continue;
+      let ang = Math.atan2(b.y - a.y, b.x - a.x);
+      // Outside of the lot: with y down and a positive signed area (counter clockwise on screen terms) the outside is to the right of travel.
+      const dirSign = area > 0 ? 1 : -1;
+      const nx = -Math.sin(ang) * dirSign;
+      const ny = Math.cos(ang) * dirSign;
+      const m = toScreen(view, e.mid);
+      const x = m.x + nx * 13;
+      const y = m.y + ny * 13;
+      if (ang > Math.PI / 2) ang -= Math.PI;
+      if (ang < -Math.PI / 2) ang += Math.PI;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(ang);
+      halo(ctx, `${e.label} m`, 0, 0, theme);
+      ctx.restore();
+    }
+  }
+
+  if (layerOn(lot, 'labels')) {
+    const c = ringCentroid(lot.boundary.map((p) => [p.x, p.y]));
+    const s = toScreen(view, { x: c[0], y: c[1] });
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = BOUNDARY;
+    ctx.font = `500 12px ${theme.f.ui}`;
+    halo(ctx, lot.lotNumber ? `Lot ${lot.lotNumber}` : '', s.x, s.y - 9, theme);
+    ctx.font = `600 13px ${theme.f.ui}`;
+    halo(ctx, lot.planLabel || '', s.x, s.y + 6, theme);
+    ctx.font = `500 11px ${theme.f.ui}`;
+    halo(ctx, `${Math.round(lot.areaM2).toLocaleString('en-AU')} m²`, s.x, s.y + 21, theme);
+  }
+  ctx.restore();
+}
+
+// All site layers in drawing order (called after the aerial underlay, before the plan).
+export function drawSite(ctx, st) {
+  if (!st.project.site?.lot) return;
+  drawContours(ctx, st);
+  drawNeighbours(ctx, st);
+  drawLot(ctx, st);
+}

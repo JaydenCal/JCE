@@ -104,6 +104,7 @@ export function drawUnderlay(ctx, st) {
   const u = st.project.site?.underlay;
   const bmp = st.underlayBitmap;
   if (!u || !bmp) return;
+  if (u.site && st.project.site?.lot?.layers?.aerial === false) return; // aerial layer switched off in the site panel
   const c = worldToScreen(st.view, u);
   ctx.save();
   ctx.translate(c.x, c.y);

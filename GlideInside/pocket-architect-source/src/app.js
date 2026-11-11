@@ -17,6 +17,7 @@ import { createPanel } from './ui/panel.js';
 import { createStatusBar } from './ui/statusbar.js';
 import { createStageChips, createWelcome } from './ui/stage-ui.js';
 import { openTemplatePicker } from './ui/templates.js';
+import { openFindBlock } from './ui/find-block.js';
 import { saveDesign, pickDesignFile } from './ui/files.js';
 import { createEmbed } from './ui/embed.js';
 import { createViewManager } from './ui/views.js';
@@ -182,6 +183,7 @@ async function main() {
     onOpen: openFile,
     onSave: save,
     onOpenFull: () => embed?.openFull(),
+    onFindBlock: () => openFindBlock(store),
   });
   let wheel = null;
   const inventory = createInventory({ store, catalogue });

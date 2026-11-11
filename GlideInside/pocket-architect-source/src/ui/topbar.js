@@ -18,7 +18,7 @@ function textButton({ name, text, title, onClick, cls = '', action }) {
 }
 
 // Handlers: onNew, onOpen, onSave, onOpenFull. `demo` hides the file controls.
-export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, onOpenFull } = {}) {
+export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, onOpenFull, onFindBlock } = {}) {
   const brand = h('div', { class: 'ps-brand' }, h('span', { class: 'ps-logo', 'aria-hidden': 'true' }), h('span', { class: 'ps-product' }, CONFIG.productName));
 
   const nameInput = h('input', { class: 'ps-name', type: 'text', maxlength: '80', 'aria-label': 'Design name', spellcheck: 'false', autocomplete: 'off' });
@@ -50,6 +50,10 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
     textButton({ name: 'new', action: 'new', text: 'New', title: 'New design from a template', onClick: () => onNew?.() }),
     textButton({ name: 'open', action: 'open', text: 'Open', title: 'Open a saved design (.json)', onClick: () => onOpen?.() }),
     textButton({ name: 'save', action: 'save', text: 'Save', title: 'Save this design as a .json file', onClick: () => onSave?.() }));
+
+  // Site lookup: opens the "Find my block" dialog (hidden when the feature is off or in the embedded teaser).
+  const siteBtn = textButton({ name: 'search', action: 'find-block', text: 'Find my block', title: 'Find my block: draw your lot from its street address', cls: 'ps-btn--wide', onClick: () => onFindBlock?.() });
+  siteBtn.hidden = !CONFIG.siteLookupEnabled || !onFindBlock;
 
   // History group ----------------------------------------------------------------------------------------------------------
   const undoBtn = h('button', { class: 'ps-btn ps-btn--icon', type: 'button', onclick: () => store.undo() }, icon('undo', { size: 18 }));
@@ -121,12 +125,13 @@ export function createTopbar(el, store, { demo = false, onNew, onOpen, onSave, o
   // Demo mode (embedded teaser) hides the file and premium controls and offers the full app instead.
   function setDemo(on) {
     fileGroup.hidden = on;
+    siteBtn.hidden = on || !CONFIG.siteLookupEnabled || !onFindBlock;
     premiumSlot.hidden = on;
     fullBtn.hidden = !on;
   }
   setDemo(demo);
 
-  el.append(brand, nameInput, fileGroup, historyGroup, viewSeg, levels, statusSeg, roofBtn, h('span', { class: 'ps-topbar-spacer' }), fullBtn, premiumSlot);
+  el.append(brand, nameInput, fileGroup, siteBtn, historyGroup, viewSeg, levels, statusSeg, roofBtn, h('span', { class: 'ps-topbar-spacer' }), fullBtn, premiumSlot);
 
   // Sync -----------------------------------------------------------------------------------------------------------------------
   function syncHistory() {

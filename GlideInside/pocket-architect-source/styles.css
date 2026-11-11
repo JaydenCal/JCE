@@ -775,3 +775,23 @@ svg { display: block; }
 .ps-logo-preview { width: 140px; height: 64px; display: grid; place-items: center; border: 1px dashed var(--ps-border-strong); border-radius: 6px; background: var(--ps-panel); overflow: hidden; flex: none; }
 .ps-logo-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .ps-logo-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Find my block (site lookup) --------------------------------------------------- */
+.ps-find { position: relative; display: block; }
+.ps-find-box { position: relative; display: flex; align-items: center; }
+.ps-find-box svg { position: absolute; left: 8px; color: var(--ps-muted); pointer-events: none; }
+.ps-find-input { padding-left: 30px; height: 34px; }
+.ps-find-list {
+  list-style: none; margin: 4px 0 0; padding: 4px; position: absolute; left: 0; right: 0; z-index: 20;
+  background: var(--ps-panel); border: 1px solid var(--ps-border-strong); border-radius: var(--ps-radius-sm); box-shadow: var(--ps-shadow);
+  max-height: 260px; overflow: auto;
+}
+.ps-find-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 8px; border-radius: 4px; cursor: pointer; }
+.ps-find-item[aria-selected="true"], .ps-find-item:hover { background: var(--ps-accent-soft, #e6ecfb); }
+.ps-find-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-find-status { min-height: 18px; margin-top: 6px; font-size: 12.5px; color: var(--ps-muted); }
+.ps-find-status[data-kind="warn"] { color: var(--ps-warning); }
+.ps-find-mock { margin: 4px 0 0; }
+.ps-find--compact .ps-find-input { height: 30px; }
+.ps-welcome .ps-find { margin: 0 0 8px; }
+.ps-site-facts { width: 100%; }

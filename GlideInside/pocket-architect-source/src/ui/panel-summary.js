@@ -13,6 +13,7 @@ import { openTitleBlockForm } from './titleblock.js';
 import { DRAWING_SCALES, PAPER_SIZES } from '../model/schema.js';
 import { deleteLevelWithConfirm } from './level-actions.js';
 import { DESIGN_TYPES, designTypeOf, changeDesignType } from './design-type.js';
+import { buildSiteSection } from './panel-site.js';
 
 const ROOF_LABEL = { hip: 'Hip', gable: 'Gable', skillion: 'Skillion', flat: 'Flat' };
 const m2 = (v) => `${v.toFixed(2)} m²`;
@@ -186,7 +187,8 @@ export function buildSummary(ctx) {
     dyn.append(...[areasSection(), extensionSection(), scheduleSection(), roofSection(), warningsSection()].filter(Boolean));
   }
 
-  root.append(design, walls, drawing, lv, dyn);
+  const site = buildSiteSection(ctx);
+  root.append(design, site.el, walls, drawing, lv, dyn);
   buildLevelForm();
   fb.refresh();
   renderTables();
@@ -195,6 +197,7 @@ export function buildSummary(ctx) {
     refresh() {
       if (builtFor !== levelKey()) buildLevelForm();
       fb.refresh();
+      site.refresh();
       levelBlock.refresh?.();
       renderTables();
     },

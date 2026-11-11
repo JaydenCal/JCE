@@ -4,6 +4,30 @@ import { fetchSite } from './client.js';
 import { buildSiteLot, underlayFor } from './model.js';
 import { saveImage, loadBitmap, removeImage, underlayKey } from '../editor2d/underlay.js';
 
+// Move the whole design so the middle of its footprint sits on the lot centroid (plan 0, 0). Only for the first lot.
+export function recentreDesign(p) {
+  const pts = [];
+  for (const l of p.levels) {
+    for (const w of l.walls) pts.push(w.a, w.b);
+    for (const r of l.rooms) pts.push(...r.polygon);
+  }
+  if (!pts.length) return false;
+  const xs = pts.map((q) => q.x);
+  const ys = pts.map((q) => q.y);
+  const dx = -Math.round((Math.min(...xs) + Math.max(...xs)) / 2 / 50) * 50; // keep the snap grid
+  const dy = -Math.round((Math.min(...ys) + Math.max(...ys)) / 2 / 50) * 50;
+  if (!dx && !dy) return false;
+  const move = (q) => { q.x += dx; q.y += dy; };
+  for (const l of p.levels) {
+    for (const w of l.walls) { move(w.a); move(w.b); }
+    for (const r of l.rooms) r.polygon.forEach(move);
+    for (const f of l.furniture) move(f);
+    for (const s of l.stairs) move(s);
+  }
+  for (const t of p.site?.tanks || []) move(t);
+  return true;
+}
+
 const titleCase = (s) => String(s || '').toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase());
 
 /**
@@ -33,7 +57,9 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
     warnings,
   });
   const oldKey = store.project.site?.underlay?.key;
+  const first = !store.project.site?.lot;
   store.apply('Find my block', (p) => {
+    if (first) recentreDesign(p);
     p.site.lot = lot;
     p.site.northDeg = 0; // plan up is MGA grid north
     const u = underlayFor(lot);

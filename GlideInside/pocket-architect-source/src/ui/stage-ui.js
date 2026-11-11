@@ -5,6 +5,8 @@ import { icon } from './icons.js';
 import { hasExtensionContent, levelsByElevation } from '../editor2d/math.js';
 import { deleteLevelWithConfirm } from './level-actions.js';
 import { toast } from './toast.js';
+import { createFindBlock } from './find-block.js';
+import { CONFIG } from '../config.js';
 
 export function createStageChips(el, store) {
   // The level chip is a small menu: switch level, add a level, rename the current one.
@@ -144,13 +146,16 @@ export function createWelcome(stage, store, { onChoose } = {}) {
     if (gone) return;
     gone = true;
     card.remove();
+    find?.dispose();
     offs.forEach((o) => o?.());
     if (remember) storage.set(WELCOME_KEY, '1');
   };
+  const find = CONFIG.siteLookupEnabled ? createFindBlock(store, { compact: true }) : null;
   const card = h('div', { class: 'ps-welcome', role: 'region', 'aria-label': 'Welcome' },
     h('div', { style: { flex: 1, minWidth: 0 } },
       h('h3', null, 'Start with a real plan'),
       h('p', null, 'This design is a starting template. Drag walls, add doors and windows, then switch to 3D. Your work saves in this browser as you go.'),
+      find ? find.el : null,
       h('div', { class: 'ps-welcome-actions' },
         h('button', { class: 'ps-btn ps-btn--primary ps-btn--sm', type: 'button', onclick: () => {
           dismiss();

@@ -7,6 +7,7 @@ import * as M from './math.js';
 import { readTheme } from './theme.js';
 import { buildScene, drawGrid, drawUnderlay, drawGhostLevel, drawRooms, drawRoomLabels, drawWalls } from './draw-plan.js';
 import { drawOpenings, drawStairs, drawFurniture, drawTanks } from './draw-items.js';
+import { drawSite } from './draw-site.js';
 import { drawOverallDims, drawSelection, drawHover, drawNorthArrow, drawScaleBar } from './draw-annot.js';
 import { loadBitmap, removeImage, registerUnderlayEditor, setUnderlayFromBlob, setUnderlayFromCanvas } from './underlay.js';
 import { clashIds, createClashNotifier } from './clash.js';
@@ -271,6 +272,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     ctx.fillRect(0, 0, state.size.w, state.size.h);
     drawGrid(ctx, st);
     drawUnderlay(ctx, st);
+    drawSite(ctx, st);
     drawGhostLevel(ctx, st, M.levelBelow(project, level));
     drawRooms(ctx, st, scene);
     drawWalls(ctx, st, scene);
@@ -296,6 +298,14 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     const pts = [...G.levelPoints(level)];
     if (ed.isGround(level)) for (const t of project.site?.tanks || []) pts.push({ x: t.x - t.diameter / 2, y: t.y - t.diameter / 2 }, { x: t.x + t.diameter / 2, y: t.y + t.diameter / 2 });
     if (!pts.length) pts.push(...project.levels.flatMap(G.levelPoints));
+    const lot = project.site?.lot;
+    if (lot?.boundary?.length) {
+      // With a lot, frame the lot (and the design) rather than the whole aerial image around it.
+      const bb = G.bbox(lot.boundary);
+      const m = Math.max(bb.w, bb.h) * 0.15;
+      pts.push({ x: bb.minX - m, y: bb.minY - m }, { x: bb.maxX + m, y: bb.maxY + m });
+      return G.bbox(pts);
+    }
     const u = project.site?.underlay;
     if (u && state.underlayBitmap) pts.push(...M.underlayCorners(u, state.underlayBitmap.w, state.underlayBitmap.h));
     return G.bbox(pts);
@@ -617,6 +627,10 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       state.hadPreview = false;
       if (label === 'Open project') notifier.silent(state.clashSet);
       else notifier.notify(state.clashSet, (ids) => announce(store.project, ids));
+      if (label === 'Find my block' || label === 'Remove lot') {
+        state.fitted = false;
+        if (state.active) zoomToFit();
+      }
       if (label === 'Open project') {
         state.fitted = false;
         state.calibrating = false;
