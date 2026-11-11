@@ -481,6 +481,13 @@ def coverage(rules):
 def status_from(cov, rules):
     if not rules:
         return 'none'
+    # none: no rule anywhere gives a numeric front setback for a dwelling in a residential-type zone
+    def res_zone(z):
+        return z == '*' or z.startswith('R') or z in ('E4', 'C4', 'E3', 'C3')
+    if not any(r.get('front') and r['front'].get('minM') is not None and res_zone(z) and
+               any(u in ('any', 'dwelling', 'dual_occupancy', 'multi_dwelling', 'secondary_dwelling') for u in r['appliesTo'])
+               for r in rules for z in r['zones']):
+        return 'none'
     star = cov.get('*')
     star_full = bool(star and star['front'] and star['side'] and star['rear'])
     present = [z for z in MAIN_RES if z in cov]

@@ -132,7 +132,8 @@
    ],
    "conditions": {
     "qualifiers": [
-     "adjoins_other"
+     "adjoins_other",
+     "height_plane"
     ]
    },
    "conditionText": "Zone R1 and RU5: 6 m or average of adjoining dwellings, whichever is the lesser",
@@ -164,7 +165,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other, height_plane); see conditionText",
    "quote": "Front setback – 6m or the Nil average of the adjoining dwellings, whichever is the lesser",
    "clause": "Table 3.2",
    "page": 44,
@@ -288,7 +289,8 @@
    ],
    "conditions": {
     "qualifiers": [
-     "adjoins_other"
+     "adjoins_other",
+     "height_plane"
     ]
    },
    "conditionText": "Zone R2: 8 m or average of adjoining dwellings, whichever is the lesser",
@@ -320,7 +322,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other, height_plane); see conditionText",
    "quote": "Front setback – 8m or the Nil average of the adjoining dwellings, whichever is the lesser",
    "clause": "Table 3.2",
    "page": 44,

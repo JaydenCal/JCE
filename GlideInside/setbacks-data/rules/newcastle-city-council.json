@@ -64,7 +64,6 @@
     "dwelling"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 300.0
    },
    "conditionText": "Dwelling house, lots 300 m2 or more, primary road (no established setback)",
@@ -112,7 +111,10 @@
    ],
    "conditions": {
     "wallHeightMaxM": 5.5,
-    "lotWidthMaxM": 10.5
+    "lotWidthMaxM": 10.5,
+    "qualifiers": [
+     "height_plane"
+    ]
    },
    "conditionText": "Dwelling house, lot width under 10.5 m: 900 mm up to 5.5 m height then 4:1 plane",
    "side": {
@@ -144,7 +146,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
+   "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
    "quote": "a. 900mm set back from each side boundary up to a height of 5.5m then in at an angle of",
    "clause": "D2 section 9.0 C-1a",
    "page": 311,
@@ -152,6 +154,57 @@
   },
   {
    "id": "newcastle-city-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightMaxM": 4.5,
+    "lotWidthMinM": 10.5,
+    "qualifiers": [
+     "height_plane"
+    ]
+   },
+   "conditionText": "Dwelling house, lot width 10.5 m or greater: 900 mm up to 4.5 m height then 4:1 plane",
+   "side": {
+    "minM": 0.9,
+    "printed": "900 mm",
+    "basis": "fixed",
+    "sources": [
+     24175
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24175
+   ],
+   "evidence": [
+    {
+     "id": 24175,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "a. 900mm setback from each side boundary up to a height of 4.5m then in at an angle of 4:1 up to",
+     "clause": "D2 section 10.0 C-1a",
+     "page": 313,
+     "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+     "condition": "Dwelling house, lot width 10.5 m or greater: 900 mm up to 4.5 m height then 4:1 plane",
+     "edition": "Version 2 (DCP 2023)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
+   "quote": "a. 900mm setback from each side boundary up to a height of 4.5m then in at an angle of 4:1 up to",
+   "clause": "D2 section 10.0 C-1a",
+   "page": 313,
+   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
+  },
+  {
+   "id": "newcastle-city-council-005",
    "zones": [
     "*"
    ],
@@ -201,7 +254,7 @@
    "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
   },
   {
-   "id": "newcastle-city-council-005",
+   "id": "newcastle-city-council-006",
    "zones": [
     "*"
    ],
@@ -249,7 +302,7 @@
    "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
   },
   {
-   "id": "newcastle-city-council-006",
+   "id": "newcastle-city-council-007",
    "zones": [
     "*"
    ],
@@ -259,10 +312,7 @@
    "conditions": {
     "wallHeightMaxM": 4.5
    },
-   "conditionText": [
-    "Dwelling house, any part of building up to 4.5 m in height",
-    "Dwelling house, lot width 10.5 m or greater: 900 mm up to 4.5 m height then 4:1 plane"
-   ],
+   "conditionText": "Dwelling house, any part of building up to 4.5 m in height",
    "rear": {
     "minM": 3.0,
     "basis": "fixed",
@@ -270,19 +320,11 @@
      24177
     ]
    },
-   "side": {
-    "minM": 0.9,
-    "printed": "900 mm",
-    "basis": "fixed",
-    "sources": [
-     24175
-    ]
-   },
    "front": null,
    "secondaryFront": null,
+   "side": null,
    "garage": null,
    "sources": [
-    24175,
     24177
    ],
    "evidence": [
@@ -296,17 +338,6 @@
      "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
      "condition": "Dwelling house, any part of building up to 4.5 m in height",
      "edition": "Version 2 (DCP 2023)"
-    },
-    {
-     "id": 24175,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "a. 900mm setback from each side boundary up to a height of 4.5m then in at an angle of 4:1 up to",
-     "clause": "D2 section 10.0 C-1a",
-     "page": 313,
-     "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
-     "condition": "Dwelling house, lot width 10.5 m or greater: 900 mm up to 4.5 m height then 4:1 plane",
-     "edition": "Version 2 (DCP 2023)"
     }
    ],
    "confidence": "medium",
@@ -317,7 +348,7 @@
    "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
   },
   {
-   "id": "newcastle-city-council-007",
+   "id": "newcastle-city-council-008",
    "zones": [
     "*"
    ],
@@ -361,7 +392,7 @@
    "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
   },
   {
-   "id": "newcastle-city-council-008",
+   "id": "newcastle-city-council-009",
    "zones": [
     "*"
    ],
@@ -432,14 +463,14 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 8
+   "rules": 9
   }
  },
  "precincts": [],
  "needsPrecinct": false,
  "counts": {
   "records": 10,
-  "rules": 8,
+  "rules": 9,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 0
  }

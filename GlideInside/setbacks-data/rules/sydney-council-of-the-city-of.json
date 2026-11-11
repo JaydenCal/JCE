@@ -179,6 +179,7 @@
     "dual_occupancy"
    ],
    "conditions": {
+    "lotWidthMinM": 14.5,
     "precinct": "Rosebery Estate DCP area"
    },
    "conditionText": "Rosebery Estate DCP area: dual occupancy, frontage 14.5 m or greater, each side boundary for 8 m beyond predominant building line",

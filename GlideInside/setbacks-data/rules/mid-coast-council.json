@@ -927,6 +927,7 @@
     "precinct": "Great Lakes DCP area",
     "qualifiers": [
      "adjoins_other",
+     "height_plane",
      "open_space_frontage",
      "slope"
     ]
@@ -960,7 +961,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage, slope); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other, height_plane, open_space_frontage, slope); see conditionText",
    "quote": "In Pacific Palms and Seal Rocks a 6m rear boundary setback generally applies to any part of a residential",
    "clause": "5.5.2.5 Pacific Palms and Seal Rocks",
    "page": 8,

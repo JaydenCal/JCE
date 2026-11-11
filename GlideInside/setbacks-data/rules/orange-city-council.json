@@ -715,9 +715,7 @@
    "appliesTo": [
     "garage"
    ],
-   "conditions": {
-    "storeysMin": 3
-   },
+   "conditions": {},
    "conditionText": "Three or more garages (openings)",
    "garage": {
     "minM": 8.0,

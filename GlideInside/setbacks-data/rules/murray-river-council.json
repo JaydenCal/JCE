@@ -164,7 +164,6 @@
     "any"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 450.0,
     "lotAreaMaxM2": 1000.0,
     "precinct": "Murray DCP area"
@@ -213,7 +212,6 @@
     "any"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 1000.0,
     "lotAreaMaxM2": 1500.0,
     "precinct": "Murray DCP area"
@@ -262,7 +260,6 @@
     "any"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 1500.0,
     "lotAreaMaxM2": 1800.0,
     "precinct": "Murray DCP area"
@@ -311,7 +308,6 @@
     "any"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 1800.0,
     "precinct": "Murray DCP area"
    },
@@ -406,7 +402,6 @@
     "dwelling"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMaxM2": 1800.0,
     "lotAreaMinM2": 1800.0,
     "precinct": "Murray DCP area"
@@ -456,7 +451,6 @@
     "dwelling"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 1800.0,
     "lotAreaMaxM2": 4000.0,
     "precinct": "Murray DCP area"
@@ -731,7 +725,6 @@
     "dwelling"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 450.0,
     "lotAreaMaxM2": 1000.0,
     "precinct": "Murray DCP area"
@@ -781,7 +774,6 @@
     "dwelling"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 1000.0,
     "lotAreaMaxM2": 1800.0,
     "precinct": "Murray DCP area"
@@ -831,7 +823,6 @@
     "dwelling"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 1800.0,
     "lotAreaMaxM2": 4000.0,
     "precinct": "Murray DCP area"
@@ -977,7 +968,6 @@
     "outbuilding"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 1800.0,
     "lotAreaMaxM2": 4000.0,
     "precinct": "Murray DCP area"
@@ -1109,7 +1099,6 @@
     "swimming_pool"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 1800.0,
     "precinct": "Murray DCP area"
    },

@@ -1136,7 +1136,6 @@
     "any"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 2000.0,
     "lotAreaMaxM2": 4000.0
    },
@@ -1251,7 +1250,6 @@
     "any"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 2000.0
    },
    "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots between 4,000 m2 and 10,000 m2",
@@ -1323,7 +1321,6 @@
     "any"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 2000.0
    },
    "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
@@ -1377,7 +1374,6 @@
     "any"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 2000.0
    },
    "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",

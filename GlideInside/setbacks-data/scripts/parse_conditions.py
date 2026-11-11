@@ -105,7 +105,7 @@ QUAL_PATTERNS = [
     ('slope', r'slope|steep|gradient|fall of'),
     ('corner_splay', r'splayed corner|corner splay|truncated'),
     ('top_floor_attic', r'attic|roof terrace|rooftop'),
-    ('height_plane', r'height plane|building envelope|solar access'),
+    ('height_plane', r'height plane|\bplane\b|\d\s*:\s*\d|building envelope|solar access'),
     ('shared_driveway', r'shared (?:drive|access)|common driveway'),
     ('non_standard_street', r'cul-de-sac|culdesac|turning head|private street|internal road|internal roads|spine road'),
     ('subdivision_stage', r'stage [0-9]+|\bstage\b'),
@@ -164,9 +164,9 @@ def parse_storeys(c):
     """returns dict with storeys / storeysMin / storeysMax / level"""
     cl = c.lower()
     out = {}
-    if re.search(r'two or more|2 or more|more than (?:one|1|a single)|multi-?storey|two storeys? and (?:above|over)|2 storeys? and (?:above|over)|above single|2\+ storey|two\+', cl):
+    if re.search(r'(?:two|2) or more (?:storeys?|stories|levels?)|more than (?:one|1|a single) (?:storey|story|level)|multi-?storey|two storeys? and (?:above|over)|2 storeys? and (?:above|over)|above single|2\+ storey|two\+ storey', cl):
         out['storeysMin'] = 2
-    elif re.search(r'three or more|3 or more|3 storeys? and (?:above|over)|three storeys? and (?:above|over)|3\+ storey|over (?:2|two) storeys?|more than (?:2|two) storeys?|(?:3|three) storeys? or more', cl):
+    elif re.search(r'(?:three|3) or more (?:storeys?|stories|levels?)|3 storeys? and (?:above|over)|three storeys? and (?:above|over)|3\+ storey|over (?:2|two) storeys?|more than (?:2|two) storeys?|(?:3|three) storeys? or more', cl):
         out['storeysMin'] = 3
     elif re.search(r'up to (?:2|two) storeys?|(?:1|one) and (?:2|two) storeys?|(?:1|one) or (?:2|two) storeys?|one to two storeys?|1 and 2 storey|1-2 storey|1 to 2 storey|up to two storeys', cl):
         out['storeysMax'] = 2
@@ -301,8 +301,8 @@ def parse_lot_width(c):
         (K + r'\s*(?:of |is |at (?:the )?(?:building line )?|measured )?\s*' + GT + r'\s*' + N + r'\s*m', 'lotWidthMinM'),
         (LT + r'\s*' + N + r'\s*m\s*(?:lot |site |in )?(?:' + K + r'|wide)', 'lotWidthMaxM'),
         (GT + r'\s*' + N + r'\s*m\s*(?:lot |site |in )?(?:' + K + r'|wide)', 'lotWidthMinM'),
-        (N + r'\s*m\s*(?:lot |site )?(?:wide|width|frontage)?\s*(?:or less|and under|or narrower|and below)', 'lotWidthMaxM'),
-        (N + r'\s*m\s*(?:lot |site )?(?:wide|width|frontage)?\s*(?:or more|and over|or wider|and above|\+|minimum)', 'lotWidthMinM'),
+        (N + r'\s*m\s*(?:lot |site )?(?:wide|width|frontage)?\s*(?:or less|and under|or narrower|and below|or smaller|or under)', 'lotWidthMaxM'),
+        (N + r'\s*m\s*(?:lot |site )?(?:wide|width|frontage)?\s*(?:or more|and over|or wider|and above|or greater|or larger|or over|or above|\+|minimum)', 'lotWidthMinM'),
         (r'(?:lots?|sites?|blocks?)\s*' + LT + r'\s*' + N + r'\s*m\b(?!\s*2)(?!2)(?=[^\d]{0,12}(?:wide|width|frontage))', 'lotWidthMaxM'),
         (r'(?:lots?|sites?|blocks?)\s*' + GT + r'\s*' + N + r'\s*m\b(?!\s*2)(?!2)(?=[^\d]{0,12}(?:wide|width|frontage))', 'lotWidthMinM'),
     ]:

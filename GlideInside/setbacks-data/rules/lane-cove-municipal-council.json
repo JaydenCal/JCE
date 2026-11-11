@@ -529,7 +529,6 @@
     "dwelling"
    ],
    "conditions": {
-    "storeysMin": 2,
     "lotAreaMinM2": 1000.0
    },
    "conditionText": "Dwelling houses (C1): sites more than 1000 m2, greater of 10 m or 35% of site depth (this is the 10 m)",

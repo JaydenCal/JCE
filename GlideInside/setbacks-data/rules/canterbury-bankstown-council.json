@@ -532,24 +532,61 @@
     "dwelling"
    ],
    "conditions": {
-    "lotWidthMaxM": 12.5
+    "lotWidthMaxM": 12.5,
+    "lotWidthMinM": 12.5
    },
-   "conditionText": [
-    "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less",
-    "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)"
-   ],
-   "front": {
-    "minM": 5.5,
-    "basis": "fixed",
-    "sources": [
-     8649
-    ]
-   },
+   "conditionText": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)",
    "rear": {
     "minM": 6.0,
     "basis": "fixed",
     "sources": [
      8651
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    8651
+   ],
+   "evidence": [
+    {
+     "id": 8651,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Minimum setback of 6m from the rear boundary.",
+     "clause": "Table 3, Table 4",
+     "page": 11,
+     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+     "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)",
+     "edition": "Amended March 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Minimum setback of 6m from the rear boundary.",
+   "clause": "Table 3, Table 4",
+   "page": 11,
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+  },
+  {
+   "id": "canterbury-bankstown-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMaxM": 12.5
+   },
+   "conditionText": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less",
+   "front": {
+    "minM": 5.5,
+    "basis": "fixed",
+    "sources": [
+     8649
     ]
    },
    "side": {
@@ -561,11 +598,11 @@
     ]
    },
    "secondaryFront": null,
+   "rear": null,
    "garage": null,
    "sources": [
     8649,
-    8650,
-    8651
+    8650
    ],
    "evidence": [
     {
@@ -577,17 +614,6 @@
      "page": 11,
      "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
      "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less",
-     "edition": "Amended March 2026"
-    },
-    {
-     "id": 8651,
-     "parameter": "rear_setback",
-     "slot": "rear",
-     "quote": "Minimum setback of 6m from the rear boundary.",
-     "clause": "Table 3, Table 4",
-     "page": 11,
-     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
-     "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)",
      "edition": "Amended March 2026"
     },
     {
@@ -610,7 +636,93 @@
    "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-012",
+   "id": "canterbury-bankstown-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotWidthMinM": 12.5
+   },
+   "conditionText": [
+    "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater",
+    "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater, corner lots, secondary street frontage (longer street boundary)"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "note": "6 m or average of nearest dwelling houses either side",
+    "sources": [
+     8652
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     8654
+    ]
+   },
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     8653
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    8652,
+    8653,
+    8654
+   ],
+   "evidence": [
+    {
+     "id": 8652,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Minimum setback of 6m or the average of the existing setback of the nearest dwelling house to either side of the site.",
+     "clause": "Table 4",
+     "page": 11,
+     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+     "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater",
+     "edition": "Amended March 2026"
+    },
+    {
+     "id": 8654,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Corner lots: minimum setback of 2m from the secondary street frontage",
+     "clause": "Table 4",
+     "page": 11,
+     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+     "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater, corner lots, secondary street frontage (longer street boundary)",
+     "edition": "Amended March 2026"
+    },
+    {
+     "id": 8653,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "minimum setback of 1m from side boundaries",
+     "clause": "Table 4",
+     "page": 11,
+     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+     "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater",
+     "edition": "Amended March 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Minimum setback of 6m or the average of the existing setback of the nearest dwelling house to either side of the site.",
+   "clause": "Table 4",
+   "page": 11,
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+  },
+  {
+   "id": "canterbury-bankstown-council-014",
    "zones": [
     "*"
    ],
@@ -659,7 +771,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-013",
+   "id": "canterbury-bankstown-council-015",
    "zones": [
     "*"
    ],
@@ -705,7 +817,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-014",
+   "id": "canterbury-bankstown-council-016",
    "zones": [
     "*"
    ],
@@ -751,7 +863,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-015",
+   "id": "canterbury-bankstown-council-017",
    "zones": [
     "*"
    ],
@@ -759,18 +871,7 @@
     "dwelling"
    ],
    "conditions": {},
-   "conditionText": [
-    "Former Bankstown LGA residential (Ch5.1): dwelling house, building wall",
-    "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater"
-   ],
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "note": "6 m or average of nearest dwelling houses either side",
-    "sources": [
-     8652
-    ]
-   },
+   "conditionText": "Former Bankstown LGA residential (Ch5.1): dwelling house, building wall",
    "secondaryFront": {
     "minM": 3.0,
     "basis": "fixed",
@@ -778,32 +879,14 @@
      8603
     ]
    },
-   "side": {
-    "minM": 1.0,
-    "basis": "fixed",
-    "sources": [
-     8653
-    ]
-   },
+   "front": null,
+   "side": null,
    "rear": null,
    "garage": null,
    "sources": [
-    8603,
-    8652,
-    8653
+    8603
    ],
    "evidence": [
-    {
-     "id": 8652,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Minimum setback of 6m or the average of the existing setback of the nearest dwelling house to either side of the site.",
-     "clause": "Table 4",
-     "page": 11,
-     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
-     "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater",
-     "edition": "Amended March 2026"
-    },
     {
      "id": 8603,
      "parameter": "front_secondary",
@@ -814,72 +897,17 @@
      "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
      "condition": "Former Bankstown LGA residential (Ch5.1): dwelling house, building wall",
      "edition": "Amended March 2026"
-    },
-    {
-     "id": 8653,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "minimum setback of 1m from side boundaries",
-     "clause": "Table 4",
-     "page": 11,
-     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
-     "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater",
-     "edition": "Amended March 2026"
     }
    ],
    "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value",
-   "quote": "Minimum setback of 6m or the average of the existing setback of the nearest dwelling house to either side of the site.",
-   "clause": "Table 4",
-   "page": 11,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "needsReview": null,
+   "quote": "3m for a building wall",
+   "clause": "2.7(a)",
+   "page": 7,
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-016",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {},
-   "conditionText": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater, corner lots, secondary street frontage (longer street boundary)",
-   "secondaryFront": {
-    "minM": 2.0,
-    "basis": "fixed",
-    "sources": [
-     8654
-    ]
-   },
-   "front": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    8654
-   ],
-   "evidence": [
-    {
-     "id": 8654,
-     "parameter": "front_secondary",
-     "slot": "secondaryFront",
-     "quote": "Corner lots: minimum setback of 2m from the secondary street frontage",
-     "clause": "Table 4",
-     "page": 11,
-     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
-     "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater, corner lots, secondary street frontage (longer street boundary)",
-     "edition": "Amended March 2026"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen",
-   "quote": "Corner lots: minimum setback of 2m from the secondary street frontage",
-   "clause": "Table 4",
-   "page": 11,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
-  },
-  {
-   "id": "canterbury-bankstown-council-017",
+   "id": "canterbury-bankstown-council-018",
    "zones": [
     "*"
    ],
@@ -924,7 +952,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-018",
+   "id": "canterbury-bankstown-council-019",
    "zones": [
     "*"
    ],
@@ -969,7 +997,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-019",
+   "id": "canterbury-bankstown-council-020",
    "zones": [
     "*"
    ],
@@ -1015,7 +1043,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-020",
+   "id": "canterbury-bankstown-council-021",
    "zones": [
     "*"
    ],
@@ -1059,7 +1087,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-021",
+   "id": "canterbury-bankstown-council-022",
    "zones": [
     "*"
    ],
@@ -1103,7 +1131,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-022",
+   "id": "canterbury-bankstown-council-023",
    "zones": [
     "*"
    ],
@@ -1151,7 +1179,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-023",
+   "id": "canterbury-bankstown-council-024",
    "zones": [
     "*"
    ],
@@ -1196,7 +1224,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-024",
+   "id": "canterbury-bankstown-council-025",
    "zones": [
     "*"
    ],
@@ -1241,7 +1269,7 @@
    "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-025",
+   "id": "canterbury-bankstown-council-026",
    "zones": [
     "IN*"
    ],
@@ -1311,7 +1339,7 @@
    "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-026",
+   "id": "canterbury-bankstown-council-027",
    "zones": [
     "IN*"
    ],
@@ -1360,7 +1388,7 @@
    "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf"
   },
   {
-   "id": "canterbury-bankstown-council-027",
+   "id": "canterbury-bankstown-council-028",
    "zones": [
     "IN*"
    ],
@@ -1454,7 +1482,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 19
+   "rules": 20
   },
   "IN*": {
    "front": false,
@@ -1469,7 +1497,7 @@
  "needsPrecinct": false,
  "counts": {
   "records": 37,
-  "rules": 27,
+  "rules": 28,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 5
  }

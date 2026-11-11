@@ -13626,7 +13626,7 @@
    ],
    "dcp": "Broken Hill Development Control Plan 2016 (70 pages; adoption date not stated in extracted text) UNVERIFIED",
    "lep": "Broken Hill Local Environmental Plan 2013",
-   "status": "partial",
+   "status": "none",
    "rules": [
     {
      "id": "broken-hill-city-council-001",
@@ -18955,7 +18955,7 @@
    ],
    "dcp": "City of Canada Bay DCP (adopted 04/09/2007, effective 07/03/2008, most recent amendment effective 02/10/2026)",
    "lep": "Canada Bay Local Environmental Plan 2013",
-   "status": "partial",
+   "status": "none",
    "rules": [
     {
      "id": "canada-bay-council-city-of-001",
@@ -19602,24 +19602,61 @@
       "dwelling"
      ],
      "conditions": {
-      "lotWidthMaxM": 12.5
+      "lotWidthMaxM": 12.5,
+      "lotWidthMinM": 12.5
      },
-     "conditionText": [
-      "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less",
-      "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)"
-     ],
-     "front": {
-      "minM": 5.5,
-      "basis": "fixed",
-      "sources": [
-       8649
-      ]
-     },
+     "conditionText": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)",
      "rear": {
       "minM": 6.0,
       "basis": "fixed",
       "sources": [
        8651
+      ]
+     },
+     "front": null,
+     "secondaryFront": null,
+     "side": null,
+     "garage": null,
+     "sources": [
+      8651
+     ],
+     "evidence": [
+      {
+       "id": 8651,
+       "parameter": "rear_setback",
+       "slot": "rear",
+       "quote": "Minimum setback of 6m from the rear boundary.",
+       "clause": "Table 3, Table 4",
+       "page": 11,
+       "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+       "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)",
+       "edition": "Amended March 2026"
+      }
+     ],
+     "confidence": "medium",
+     "needsReview": null,
+     "quote": "Minimum setback of 6m from the rear boundary.",
+     "clause": "Table 3, Table 4",
+     "page": 11,
+     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+    },
+    {
+     "id": "canterbury-bankstown-council-012",
+     "zones": [
+      "*"
+     ],
+     "appliesTo": [
+      "dwelling"
+     ],
+     "conditions": {
+      "lotWidthMaxM": 12.5
+     },
+     "conditionText": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less",
+     "front": {
+      "minM": 5.5,
+      "basis": "fixed",
+      "sources": [
+       8649
       ]
      },
      "side": {
@@ -19631,11 +19668,11 @@
       ]
      },
      "secondaryFront": null,
+     "rear": null,
      "garage": null,
      "sources": [
       8649,
-      8650,
-      8651
+      8650
      ],
      "evidence": [
       {
@@ -19647,17 +19684,6 @@
        "page": 11,
        "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
        "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less",
-       "edition": "Amended March 2026"
-      },
-      {
-       "id": 8651,
-       "parameter": "rear_setback",
-       "slot": "rear",
-       "quote": "Minimum setback of 6m from the rear boundary.",
-       "clause": "Table 3, Table 4",
-       "page": 11,
-       "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
-       "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)",
        "edition": "Amended March 2026"
       },
       {
@@ -19680,7 +19706,93 @@
      "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-012",
+     "id": "canterbury-bankstown-council-013",
+     "zones": [
+      "*"
+     ],
+     "appliesTo": [
+      "dwelling"
+     ],
+     "conditions": {
+      "lotWidthMinM": 12.5
+     },
+     "conditionText": [
+      "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater",
+      "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater, corner lots, secondary street frontage (longer street boundary)"
+     ],
+     "front": {
+      "minM": 6.0,
+      "basis": "fixed",
+      "note": "6 m or average of nearest dwelling houses either side",
+      "sources": [
+       8652
+      ]
+     },
+     "secondaryFront": {
+      "minM": 2.0,
+      "basis": "fixed",
+      "sources": [
+       8654
+      ]
+     },
+     "side": {
+      "minM": 1.0,
+      "basis": "fixed",
+      "sources": [
+       8653
+      ]
+     },
+     "rear": null,
+     "garage": null,
+     "sources": [
+      8652,
+      8653,
+      8654
+     ],
+     "evidence": [
+      {
+       "id": 8652,
+       "parameter": "front_primary",
+       "slot": "front",
+       "quote": "Minimum setback of 6m or the average of the existing setback of the nearest dwelling house to either side of the site.",
+       "clause": "Table 4",
+       "page": 11,
+       "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+       "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater",
+       "edition": "Amended March 2026"
+      },
+      {
+       "id": 8654,
+       "parameter": "front_secondary",
+       "slot": "secondaryFront",
+       "quote": "Corner lots: minimum setback of 2m from the secondary street frontage",
+       "clause": "Table 4",
+       "page": 11,
+       "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+       "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater, corner lots, secondary street frontage (longer street boundary)",
+       "edition": "Amended March 2026"
+      },
+      {
+       "id": 8653,
+       "parameter": "side_setback",
+       "slot": "side",
+       "quote": "minimum setback of 1m from side boundaries",
+       "clause": "Table 4",
+       "page": 11,
+       "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+       "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater",
+       "edition": "Amended March 2026"
+      }
+     ],
+     "confidence": "medium",
+     "needsReview": "averaging alternative printed beside the fixed value",
+     "quote": "Minimum setback of 6m or the average of the existing setback of the nearest dwelling house to either side of the site.",
+     "clause": "Table 4",
+     "page": 11,
+     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+    },
+    {
+     "id": "canterbury-bankstown-council-014",
      "zones": [
       "*"
      ],
@@ -19729,7 +19841,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-013",
+     "id": "canterbury-bankstown-council-015",
      "zones": [
       "*"
      ],
@@ -19775,7 +19887,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-014",
+     "id": "canterbury-bankstown-council-016",
      "zones": [
       "*"
      ],
@@ -19821,7 +19933,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-015",
+     "id": "canterbury-bankstown-council-017",
      "zones": [
       "*"
      ],
@@ -19829,18 +19941,7 @@
       "dwelling"
      ],
      "conditions": {},
-     "conditionText": [
-      "Former Bankstown LGA residential (Ch5.1): dwelling house, building wall",
-      "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater"
-     ],
-     "front": {
-      "minM": 6.0,
-      "basis": "fixed",
-      "note": "6 m or average of nearest dwelling houses either side",
-      "sources": [
-       8652
-      ]
-     },
+     "conditionText": "Former Bankstown LGA residential (Ch5.1): dwelling house, building wall",
      "secondaryFront": {
       "minM": 3.0,
       "basis": "fixed",
@@ -19848,32 +19949,14 @@
        8603
       ]
      },
-     "side": {
-      "minM": 1.0,
-      "basis": "fixed",
-      "sources": [
-       8653
-      ]
-     },
+     "front": null,
+     "side": null,
      "rear": null,
      "garage": null,
      "sources": [
-      8603,
-      8652,
-      8653
+      8603
      ],
      "evidence": [
-      {
-       "id": 8652,
-       "parameter": "front_primary",
-       "slot": "front",
-       "quote": "Minimum setback of 6m or the average of the existing setback of the nearest dwelling house to either side of the site.",
-       "clause": "Table 4",
-       "page": 11,
-       "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
-       "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater",
-       "edition": "Amended March 2026"
-      },
       {
        "id": 8603,
        "parameter": "front_secondary",
@@ -19884,72 +19967,17 @@
        "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
        "condition": "Former Bankstown LGA residential (Ch5.1): dwelling house, building wall",
        "edition": "Amended March 2026"
-      },
-      {
-       "id": 8653,
-       "parameter": "side_setback",
-       "slot": "side",
-       "quote": "minimum setback of 1m from side boundaries",
-       "clause": "Table 4",
-       "page": 11,
-       "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
-       "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater",
-       "edition": "Amended March 2026"
       }
      ],
      "confidence": "medium",
-     "needsReview": "averaging alternative printed beside the fixed value",
-     "quote": "Minimum setback of 6m or the average of the existing setback of the nearest dwelling house to either side of the site.",
-     "clause": "Table 4",
-     "page": 11,
-     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+     "needsReview": null,
+     "quote": "3m for a building wall",
+     "clause": "2.7(a)",
+     "page": 7,
+     "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-016",
-     "zones": [
-      "*"
-     ],
-     "appliesTo": [
-      "dwelling"
-     ],
-     "conditions": {},
-     "conditionText": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater, corner lots, secondary street frontage (longer street boundary)",
-     "secondaryFront": {
-      "minM": 2.0,
-      "basis": "fixed",
-      "sources": [
-       8654
-      ]
-     },
-     "front": null,
-     "side": null,
-     "rear": null,
-     "garage": null,
-     "sources": [
-      8654
-     ],
-     "evidence": [
-      {
-       "id": 8654,
-       "parameter": "front_secondary",
-       "slot": "secondaryFront",
-       "quote": "Corner lots: minimum setback of 2m from the secondary street frontage",
-       "clause": "Table 4",
-       "page": 11,
-       "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
-       "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or greater, corner lots, secondary street frontage (longer street boundary)",
-       "edition": "Amended March 2026"
-      }
-     ],
-     "confidence": "low",
-     "needsReview": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen",
-     "quote": "Corner lots: minimum setback of 2m from the secondary street frontage",
-     "clause": "Table 4",
-     "page": 11,
-     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
-    },
-    {
-     "id": "canterbury-bankstown-council-017",
+     "id": "canterbury-bankstown-council-018",
      "zones": [
       "*"
      ],
@@ -19994,7 +20022,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-018",
+     "id": "canterbury-bankstown-council-019",
      "zones": [
       "*"
      ],
@@ -20039,7 +20067,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-019",
+     "id": "canterbury-bankstown-council-020",
      "zones": [
       "*"
      ],
@@ -20085,7 +20113,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-020",
+     "id": "canterbury-bankstown-council-021",
      "zones": [
       "*"
      ],
@@ -20129,7 +20157,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-021",
+     "id": "canterbury-bankstown-council-022",
      "zones": [
       "*"
      ],
@@ -20173,7 +20201,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-022",
+     "id": "canterbury-bankstown-council-023",
      "zones": [
       "*"
      ],
@@ -20221,7 +20249,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-023",
+     "id": "canterbury-bankstown-council-024",
      "zones": [
       "*"
      ],
@@ -20266,7 +20294,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-024",
+     "id": "canterbury-bankstown-council-025",
      "zones": [
       "*"
      ],
@@ -20311,7 +20339,7 @@
      "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-025",
+     "id": "canterbury-bankstown-council-026",
      "zones": [
       "IN*"
      ],
@@ -20381,7 +20409,7 @@
      "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-026",
+     "id": "canterbury-bankstown-council-027",
      "zones": [
       "IN*"
      ],
@@ -20430,7 +20458,7 @@
      "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf"
     },
     {
-     "id": "canterbury-bankstown-council-027",
+     "id": "canterbury-bankstown-council-028",
      "zones": [
       "IN*"
      ],
@@ -20524,7 +20552,7 @@
      "rear": true,
      "secondaryFront": true,
      "garage": false,
-     "rules": 19
+     "rules": 20
     },
     "IN*": {
      "front": false,
@@ -20539,7 +20567,7 @@
    "needsPrecinct": false,
    "counts": {
     "records": 37,
-    "rules": 27,
+    "rules": 28,
     "recordsNotModelled": 1,
     "otherSetbackKeysNotModelled": 5
    }
@@ -37865,6 +37893,52 @@
       "dwelling"
      ],
      "conditions": {
+      "lotWidthMinM": 15.0
+     },
+     "conditionText": "single dwellings corner lots, site 15 m or greater in width",
+     "secondaryFront": {
+      "minM": 2.0,
+      "basis": "fixed",
+      "sources": [
+       13477
+      ]
+     },
+     "front": null,
+     "side": null,
+     "rear": null,
+     "garage": null,
+     "sources": [
+      13477
+     ],
+     "evidence": [
+      {
+       "id": 13477,
+       "parameter": "front_secondary",
+       "slot": "secondaryFront",
+       "quote": "2.0m to the building line if the site is 15m or greater in width",
+       "clause": "6.1.2 Setbacks Control 3 ii",
+       "page": 6,
+       "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+       "condition": "single dwellings corner lots, site 15 m or greater in width",
+       "edition": "Amendment No.6, 10/06/2024"
+      }
+     ],
+     "confidence": "medium",
+     "needsReview": null,
+     "quote": "2.0m to the building line if the site is 15m or greater in width",
+     "clause": "6.1.2 Setbacks Control 3 ii",
+     "page": 6,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+    },
+    {
+     "id": "georges-river-council-013",
+     "zones": [
+      "*"
+     ],
+     "appliesTo": [
+      "dwelling"
+     ],
+     "conditions": {
       "qualifiers": [
        "waterfront"
       ]
@@ -37905,7 +37979,7 @@
      "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
     },
     {
-     "id": "georges-river-council-013",
+     "id": "georges-river-council-014",
      "zones": [
       "*"
      ],
@@ -37914,7 +37988,6 @@
      ],
      "conditions": {},
      "conditionText": [
-      "single dwellings corner lots, site 15 m or greater in width",
       "single dwellings: 15% of average site length or 6 m, whichever greater",
       "single dwellings: main building wall / facade"
      ],
@@ -37925,13 +37998,6 @@
        13474
       ]
      },
-     "secondaryFront": {
-      "minM": 2.0,
-      "basis": "fixed",
-      "sources": [
-       13477
-      ]
-     },
      "rear": {
       "minM": 6.0,
       "basis": "fixed",
@@ -37939,11 +38005,11 @@
        13478
       ]
      },
+     "secondaryFront": null,
      "side": null,
      "garage": null,
      "sources": [
       13474,
-      13477,
       13478
      ],
      "evidence": [
@@ -37956,17 +38022,6 @@
        "page": 6,
        "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
        "condition": "single dwellings: main building wall / facade",
-       "edition": "Amendment No.6, 10/06/2024"
-      },
-      {
-       "id": 13477,
-       "parameter": "front_secondary",
-       "slot": "secondaryFront",
-       "quote": "2.0m to the building line if the site is 15m or greater in width",
-       "clause": "6.1.2 Setbacks Control 3 ii",
-       "page": 6,
-       "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
-       "condition": "single dwellings corner lots, site 15 m or greater in width",
        "edition": "Amendment No.6, 10/06/2024"
       },
       {
@@ -37989,7 +38044,7 @@
      "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
     },
     {
-     "id": "georges-river-council-014",
+     "id": "georges-river-council-015",
      "zones": [
       "*"
      ],
@@ -38036,7 +38091,7 @@
      "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
     },
     {
-     "id": "georges-river-council-015",
+     "id": "georges-river-council-016",
      "zones": [
       "*"
      ],
@@ -38079,7 +38134,7 @@
      "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
     },
     {
-     "id": "georges-river-council-016",
+     "id": "georges-river-council-017",
      "zones": [
       "*"
      ],
@@ -38123,7 +38178,7 @@
      "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf"
     },
     {
-     "id": "georges-river-council-017",
+     "id": "georges-river-council-018",
      "zones": [
       "*"
      ],
@@ -38226,7 +38281,7 @@
      "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf"
     },
     {
-     "id": "georges-river-council-018",
+     "id": "georges-river-council-019",
      "zones": [
       "*"
      ],
@@ -38270,7 +38325,7 @@
      "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf"
     },
     {
-     "id": "georges-river-council-019",
+     "id": "georges-river-council-020",
      "zones": [
       "*"
      ],
@@ -38316,7 +38371,7 @@
      "source_file": "DCP/Amd-6-GRDCP-Part-6-4-Ancillary-Development.pdf"
     },
     {
-     "id": "georges-river-council-020",
+     "id": "georges-river-council-021",
      "zones": [
       "*"
      ],
@@ -38366,7 +38421,7 @@
      "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
     },
     {
-     "id": "georges-river-council-021",
+     "id": "georges-river-council-022",
      "zones": [
       "IN*"
      ],
@@ -38429,7 +38484,7 @@
      "rear": true,
      "secondaryFront": true,
      "garage": true,
-     "rules": 19
+     "rules": 20
     },
     "IN*": {
      "front": false,
@@ -38444,7 +38499,7 @@
    "needsPrecinct": false,
    "counts": {
     "records": 26,
-    "rules": 21,
+    "rules": 22,
     "recordsNotModelled": 0,
     "otherSetbackKeysNotModelled": 5
    }
@@ -43418,7 +43473,7 @@
    ],
    "dcp": "None in force: the Business Paper (26/05/2026) states the Hay Development Control Plan is under development; Hay Local Environmental Plan 2011 applies. The saved DCP folder holds the Hay Structure Plan (strategy, not a DCP); edition UNVERIFIED",
    "lep": "Hay Local Environmental Plan 2011",
-   "status": "partial",
+   "status": "none",
    "rules": [
     {
      "id": "hay-shire-council-001",
@@ -56327,7 +56382,6 @@
       "dwelling"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 1000.0
      },
      "conditionText": "Dwelling houses (C1): sites more than 1000 m2, greater of 10 m or 35% of site depth (this is the 10 m)",
@@ -57525,18 +57579,12 @@
      "appliesTo": [
       "any"
      ],
-     "conditions": {},
-     "conditionText": [
-      "R1, R2, R3 and RU5 zones",
-      "corner allotment in R1, R2, R3, RU5: 6 m primary, 3 m secondary road"
-     ],
-     "front": {
-      "minM": 6.0,
-      "basis": "fixed",
-      "sources": [
-       20143
+     "conditions": {
+      "qualifiers": [
+       "height_plane"
       ]
      },
+     "conditionText": "corner allotment in R1, R2, R3, RU5: 6 m primary, 3 m secondary road",
      "secondaryFront": {
       "minM": 3.0,
       "basis": "fixed",
@@ -57544,25 +57592,14 @@
        20144
       ]
      },
+     "front": null,
      "side": null,
      "rear": null,
      "garage": null,
      "sources": [
-      20143,
       20144
      ],
      "evidence": [
-      {
-       "id": 20143,
-       "parameter": "front_primary",
-       "slot": "front",
-       "quote": "setback 6m from the boundary fronting the street",
-       "clause": "A1.1",
-       "page": 10,
-       "source_file": "DCP/chapter-1.pdf",
-       "condition": "R1, R2, R3 and RU5 zones",
-       "edition": "Lismore DCP Part A Chapter 1 Residential Development (LEP 2012), edition date UNVERIFIED"
-      },
       {
        "id": 20144,
        "parameter": "front_secondary",
@@ -57575,6 +57612,53 @@
        "edition": "Lismore DCP Part A Chapter 1 Residential Development (LEP 2012), edition date UNVERIFIED"
       }
      ],
+     "confidence": "medium",
+     "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
+     "quote": "and 3m from the secondary road.",
+     "clause": "A1.2",
+     "page": 10,
+     "source_file": "DCP/chapter-1.pdf"
+    },
+    {
+     "id": "lismore-city-council-002",
+     "zones": [
+      "R1",
+      "R2",
+      "R3",
+      "RU5"
+     ],
+     "appliesTo": [
+      "any"
+     ],
+     "conditions": {},
+     "conditionText": "R1, R2, R3 and RU5 zones",
+     "front": {
+      "minM": 6.0,
+      "basis": "fixed",
+      "sources": [
+       20143
+      ]
+     },
+     "secondaryFront": null,
+     "side": null,
+     "rear": null,
+     "garage": null,
+     "sources": [
+      20143
+     ],
+     "evidence": [
+      {
+       "id": 20143,
+       "parameter": "front_primary",
+       "slot": "front",
+       "quote": "setback 6m from the boundary fronting the street",
+       "clause": "A1.1",
+       "page": 10,
+       "source_file": "DCP/chapter-1.pdf",
+       "condition": "R1, R2, R3 and RU5 zones",
+       "edition": "Lismore DCP Part A Chapter 1 Residential Development (LEP 2012), edition date UNVERIFIED"
+      }
+     ],
      "confidence": "high",
      "needsReview": null,
      "quote": "setback 6m from the boundary fronting the street",
@@ -57583,7 +57667,7 @@
      "source_file": "DCP/chapter-1.pdf"
     },
     {
-     "id": "lismore-city-council-002",
+     "id": "lismore-city-council-003",
      "zones": [
       "R5",
       "RU1"
@@ -57632,7 +57716,7 @@
      "source_file": "DCP/chapter-1.pdf"
     },
     {
-     "id": "lismore-city-council-003",
+     "id": "lismore-city-council-004",
      "zones": [
       "*"
      ],
@@ -57675,7 +57759,7 @@
      "source_file": "DCP/chapter-1.pdf"
     },
     {
-     "id": "lismore-city-council-004",
+     "id": "lismore-city-council-005",
      "zones": [
       "*"
      ],
@@ -57723,7 +57807,7 @@
      "source_file": "DCP/chapter-1.pdf"
     },
     {
-     "id": "lismore-city-council-005",
+     "id": "lismore-city-council-006",
      "zones": [
       "*"
      ],
@@ -57770,7 +57854,7 @@
      "source_file": "DCP/chapter-1.pdf"
     },
     {
-     "id": "lismore-city-council-006",
+     "id": "lismore-city-council-007",
      "zones": [
       "*"
      ],
@@ -57838,7 +57922,7 @@
      "rear": false,
      "secondaryFront": true,
      "garage": false,
-     "rules": 1
+     "rules": 2
     },
     "R2": {
      "front": true,
@@ -57846,7 +57930,7 @@
      "rear": false,
      "secondaryFront": true,
      "garage": false,
-     "rules": 1
+     "rules": 2
     },
     "R3": {
      "front": true,
@@ -57854,7 +57938,7 @@
      "rear": false,
      "secondaryFront": true,
      "garage": false,
-     "rules": 1
+     "rules": 2
     },
     "RU5": {
      "front": true,
@@ -57862,7 +57946,7 @@
      "rear": false,
      "secondaryFront": true,
      "garage": false,
-     "rules": 1
+     "rules": 2
     },
     "R5": {
      "front": true,
@@ -57893,7 +57977,7 @@
    "needsPrecinct": false,
    "counts": {
     "records": 8,
-    "rules": 6,
+    "rules": 7,
     "recordsNotModelled": 1,
     "otherSetbackKeysNotModelled": 2
    }
@@ -60908,6 +60992,7 @@
       "storeys": 1,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -60961,7 +61046,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
      "quote": "1 storey 0.9 m 4m",
      "clause": "Table 8",
      "page": 89,
@@ -60979,6 +61064,7 @@
       "storeys": 2,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -61032,7 +61118,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
      "quote": "2 storey 1.2 m 8m",
      "clause": "Table 8",
      "page": 89,
@@ -62596,6 +62682,7 @@
       "storeys": 1,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -62677,7 +62764,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
      "quote": "1 storey 0.9 m 0.9 m 5m 4m",
      "clause": "Table 5",
      "page": 67,
@@ -62696,6 +62783,7 @@
       "storeys": 2,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -62763,7 +62851,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
      "quote": "2 storey 1.2 m 1.2 m 8m 8m",
      "clause": "Table 5",
      "page": 67,
@@ -62782,6 +62870,7 @@
       "storeys": 2,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -62814,7 +62903,7 @@
       }
      ],
      "confidence": "low",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
      "quote": "2 storey 3m 1.2 m 1.2 m 6m 6m 6m",
      "clause": "Table 2",
      "page": 44,
@@ -62833,6 +62922,7 @@
       "storeysMin": 3,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -62886,7 +62976,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
      "quote": "3 storeys and 1.4 m 1.4 m 8m 8m",
      "clause": "Table 5",
      "page": 67,
@@ -63458,6 +63548,7 @@
       "storeys": 1,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -63525,7 +63616,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
      "quote": "1 storey 0.9 m 0.9 m 5m 4m",
      "clause": "Table 5",
      "page": 67,
@@ -63543,6 +63634,7 @@
       "storeys": 1,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -63575,7 +63667,7 @@
       }
      ],
      "confidence": "low",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
      "quote": "1 storey 3m 0.9 m 0.9 m 6m 4m 4m",
      "clause": "Table 2",
      "page": 44,
@@ -63593,6 +63685,7 @@
       "storeys": 2,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -63660,7 +63753,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
      "quote": "2 storey 1.2 m 1.2 m 8m 8m",
      "clause": "Table 5",
      "page": 67,
@@ -63678,6 +63771,7 @@
       "storeys": 2,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -63710,7 +63804,7 @@
       }
      ],
      "confidence": "low",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
      "quote": "2 storey 3m 1.2 m 1.2 m 6m 6m 6m",
      "clause": "Table 2",
      "page": 44,
@@ -63728,6 +63822,7 @@
       "storeysMin": 3,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -63781,7 +63876,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
      "quote": "3 storeys and 1.4 m 1.4 m 8m 8m",
      "clause": "Table 5",
      "page": 67,
@@ -64070,6 +64165,7 @@
       "storeys": 1,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -64123,7 +64219,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
      "quote": "1 storey 3m 0.9 m 0.9 m 6m 4m 4m",
      "clause": "Table 2",
      "page": 44,
@@ -64141,6 +64237,7 @@
       "storeys": 2,
       "precinct": "Edmondson Park precinct",
       "qualifiers": [
+       "height_plane",
        "open_space_frontage"
       ]
      },
@@ -64194,7 +64291,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
      "quote": "2 storey 3m 1.2 m 1.2 m 6m 6m 6m",
      "clause": "Table 2",
      "page": 44,
@@ -64890,7 +64987,10 @@
      ],
      "conditions": {
       "lotAreaMaxM2": 4000.0,
-      "lotAreaMinM2": 4000.0
+      "lotAreaMinM2": 4000.0,
+      "qualifiers": [
+       "height_plane"
+      ]
      },
      "conditionText": "Ancillary structures R1: side and rear (R5/C4 under 4,000 m2: 3 m; over 4,000 m2: 5 m; RU1/RU2/C3: 10 m)",
      "side": {
@@ -64940,7 +65040,7 @@
       }
      ],
      "confidence": "low",
-     "needsReview": null,
+     "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
      "quote": "Minimum Side and 0.9m 3m 5m 10m Rear Setback",
      "clause": "Table 6.8",
      "page": 38,
@@ -64956,7 +65056,10 @@
      ],
      "conditions": {
       "lotAreaMaxM2": 5000.0,
-      "lotAreaMinM2": 5000.0
+      "lotAreaMinM2": 5000.0,
+      "qualifiers": [
+       "height_plane"
+      ]
      },
      "conditionText": "Dwelling house on R5 Large Lot Residential, under 5,000 m2 (over 5,000 m2: 10 m)",
      "secondaryFront": {
@@ -64986,8 +65089,8 @@
        "edition": "MDCP 2026 (adopted 17/03/2026)"
       }
      ],
-     "confidence": "high",
-     "needsReview": null,
+     "confidence": "medium",
+     "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
      "quote": "Dwelling house on <5,000m2: 10m <5,000m 2: 6m <5,000m2:4m <5,000m2: 4m",
      "clause": "Table 6.5",
      "page": 15,
@@ -67519,6 +67622,7 @@
       "precinct": "Great Lakes DCP area",
       "qualifiers": [
        "adjoins_other",
+       "height_plane",
        "open_space_frontage",
        "slope"
       ]
@@ -67552,7 +67656,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage, slope); see conditionText",
+     "needsReview": "Condition not expressible in the structured fields (adjoins_other, height_plane, open_space_frontage, slope); see conditionText",
      "quote": "In Pacific Palms and Seal Rocks a 6m rear boundary setback generally applies to any part of a residential",
      "clause": "5.5.2.5 Pacific Palms and Seal Rocks",
      "page": 8,
@@ -70778,7 +70882,8 @@
      ],
      "conditions": {
       "qualifiers": [
-       "adjoins_other"
+       "adjoins_other",
+       "height_plane"
       ]
      },
      "conditionText": "Zone R1 and RU5: 6 m or average of adjoining dwellings, whichever is the lesser",
@@ -70810,7 +70915,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+     "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other, height_plane); see conditionText",
      "quote": "Front setback – 6m or the Nil average of the adjoining dwellings, whichever is the lesser",
      "clause": "Table 3.2",
      "page": 44,
@@ -70934,7 +71039,8 @@
      ],
      "conditions": {
       "qualifiers": [
-       "adjoins_other"
+       "adjoins_other",
+       "height_plane"
       ]
      },
      "conditionText": "Zone R2: 8 m or average of adjoining dwellings, whichever is the lesser",
@@ -70966,7 +71072,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+     "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other, height_plane); see conditionText",
      "quote": "Front setback – 8m or the Nil average of the adjoining dwellings, whichever is the lesser",
      "clause": "Table 3.2",
      "page": 44,
@@ -71285,7 +71391,7 @@
    ],
    "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
    "lep": "Mosman Local Environmental Plan 2012",
-   "status": "partial",
+   "status": "none",
    "rules": [
     {
      "id": "mosman-municipal-council-001",
@@ -72005,7 +72111,6 @@
       "any"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 450.0,
       "lotAreaMaxM2": 1000.0,
       "precinct": "Murray DCP area"
@@ -72054,7 +72159,6 @@
       "any"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 1000.0,
       "lotAreaMaxM2": 1500.0,
       "precinct": "Murray DCP area"
@@ -72103,7 +72207,6 @@
       "any"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 1500.0,
       "lotAreaMaxM2": 1800.0,
       "precinct": "Murray DCP area"
@@ -72152,7 +72255,6 @@
       "any"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 1800.0,
       "precinct": "Murray DCP area"
      },
@@ -72247,7 +72349,6 @@
       "dwelling"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMaxM2": 1800.0,
       "lotAreaMinM2": 1800.0,
       "precinct": "Murray DCP area"
@@ -72297,7 +72398,6 @@
       "dwelling"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 1800.0,
       "lotAreaMaxM2": 4000.0,
       "precinct": "Murray DCP area"
@@ -72572,7 +72672,6 @@
       "dwelling"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 450.0,
       "lotAreaMaxM2": 1000.0,
       "precinct": "Murray DCP area"
@@ -72622,7 +72721,6 @@
       "dwelling"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 1000.0,
       "lotAreaMaxM2": 1800.0,
       "precinct": "Murray DCP area"
@@ -72672,7 +72770,6 @@
       "dwelling"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 1800.0,
       "lotAreaMaxM2": 4000.0,
       "precinct": "Murray DCP area"
@@ -72818,7 +72915,6 @@
       "outbuilding"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 1800.0,
       "lotAreaMaxM2": 4000.0,
       "precinct": "Murray DCP area"
@@ -72950,7 +73046,6 @@
       "swimming_pool"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 1800.0,
       "precinct": "Murray DCP area"
      },
@@ -78627,7 +78722,6 @@
       "dwelling"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 300.0
      },
      "conditionText": "Dwelling house, lots 300 m2 or more, primary road (no established setback)",
@@ -78675,7 +78769,10 @@
      ],
      "conditions": {
       "wallHeightMaxM": 5.5,
-      "lotWidthMaxM": 10.5
+      "lotWidthMaxM": 10.5,
+      "qualifiers": [
+       "height_plane"
+      ]
      },
      "conditionText": "Dwelling house, lot width under 10.5 m: 900 mm up to 5.5 m height then 4:1 plane",
      "side": {
@@ -78707,7 +78804,7 @@
       }
      ],
      "confidence": "medium",
-     "needsReview": null,
+     "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
      "quote": "a. 900mm set back from each side boundary up to a height of 5.5m then in at an angle of",
      "clause": "D2 section 9.0 C-1a",
      "page": 311,
@@ -78715,6 +78812,57 @@
     },
     {
      "id": "newcastle-city-council-004",
+     "zones": [
+      "*"
+     ],
+     "appliesTo": [
+      "dwelling"
+     ],
+     "conditions": {
+      "wallHeightMaxM": 4.5,
+      "lotWidthMinM": 10.5,
+      "qualifiers": [
+       "height_plane"
+      ]
+     },
+     "conditionText": "Dwelling house, lot width 10.5 m or greater: 900 mm up to 4.5 m height then 4:1 plane",
+     "side": {
+      "minM": 0.9,
+      "printed": "900 mm",
+      "basis": "fixed",
+      "sources": [
+       24175
+      ]
+     },
+     "front": null,
+     "secondaryFront": null,
+     "rear": null,
+     "garage": null,
+     "sources": [
+      24175
+     ],
+     "evidence": [
+      {
+       "id": 24175,
+       "parameter": "side_setback",
+       "slot": "side",
+       "quote": "a. 900mm setback from each side boundary up to a height of 4.5m then in at an angle of 4:1 up to",
+       "clause": "D2 section 10.0 C-1a",
+       "page": 313,
+       "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+       "condition": "Dwelling house, lot width 10.5 m or greater: 900 mm up to 4.5 m height then 4:1 plane",
+       "edition": "Version 2 (DCP 2023)"
+      }
+     ],
+     "confidence": "medium",
+     "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
+     "quote": "a. 900mm setback from each side boundary up to a height of 4.5m then in at an angle of 4:1 up to",
+     "clause": "D2 section 10.0 C-1a",
+     "page": 313,
+     "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
+    },
+    {
+     "id": "newcastle-city-council-005",
      "zones": [
       "*"
      ],
@@ -78764,7 +78912,7 @@
      "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
     },
     {
-     "id": "newcastle-city-council-005",
+     "id": "newcastle-city-council-006",
      "zones": [
       "*"
      ],
@@ -78812,7 +78960,7 @@
      "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
     },
     {
-     "id": "newcastle-city-council-006",
+     "id": "newcastle-city-council-007",
      "zones": [
       "*"
      ],
@@ -78822,10 +78970,7 @@
      "conditions": {
       "wallHeightMaxM": 4.5
      },
-     "conditionText": [
-      "Dwelling house, any part of building up to 4.5 m in height",
-      "Dwelling house, lot width 10.5 m or greater: 900 mm up to 4.5 m height then 4:1 plane"
-     ],
+     "conditionText": "Dwelling house, any part of building up to 4.5 m in height",
      "rear": {
       "minM": 3.0,
       "basis": "fixed",
@@ -78833,19 +78978,11 @@
        24177
       ]
      },
-     "side": {
-      "minM": 0.9,
-      "printed": "900 mm",
-      "basis": "fixed",
-      "sources": [
-       24175
-      ]
-     },
      "front": null,
      "secondaryFront": null,
+     "side": null,
      "garage": null,
      "sources": [
-      24175,
       24177
      ],
      "evidence": [
@@ -78859,17 +78996,6 @@
        "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
        "condition": "Dwelling house, any part of building up to 4.5 m in height",
        "edition": "Version 2 (DCP 2023)"
-      },
-      {
-       "id": 24175,
-       "parameter": "side_setback",
-       "slot": "side",
-       "quote": "a. 900mm setback from each side boundary up to a height of 4.5m then in at an angle of 4:1 up to",
-       "clause": "D2 section 10.0 C-1a",
-       "page": 313,
-       "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
-       "condition": "Dwelling house, lot width 10.5 m or greater: 900 mm up to 4.5 m height then 4:1 plane",
-       "edition": "Version 2 (DCP 2023)"
       }
      ],
      "confidence": "medium",
@@ -78880,7 +79006,7 @@
      "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
     },
     {
-     "id": "newcastle-city-council-007",
+     "id": "newcastle-city-council-008",
      "zones": [
       "*"
      ],
@@ -78924,7 +79050,7 @@
      "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
     },
     {
-     "id": "newcastle-city-council-008",
+     "id": "newcastle-city-council-009",
      "zones": [
       "*"
      ],
@@ -78995,14 +79121,14 @@
      "rear": true,
      "secondaryFront": true,
      "garage": false,
-     "rules": 8
+     "rules": 9
     }
    },
    "precincts": [],
    "needsPrecinct": false,
    "counts": {
     "records": 10,
-    "rules": 8,
+    "rules": 9,
     "recordsNotModelled": 0,
     "otherSetbackKeysNotModelled": 0
    }
@@ -79016,7 +79142,7 @@
    ],
    "dcp": "North Sydney Development Control Plan 2025 (NSDCP 2025), adopted 28/07/2025, in effect 22/09/2025 (amended 01/07/2026 consolidated file also present); repeals NSDCP 2013",
    "lep": "North Sydney Local Environmental Plan 2013 (NSLEP 2013)",
-   "status": "partial",
+   "status": "none",
    "rules": [
     {
      "id": "north-sydney-council-001",
@@ -81358,9 +81484,7 @@
      "appliesTo": [
       "garage"
      ],
-     "conditions": {
-      "storeysMin": 3
-     },
+     "conditions": {},
      "conditionText": "Three or more garages (openings)",
      "garage": {
       "minM": 8.0,
@@ -102696,7 +102820,6 @@
       "any"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 2000.0,
       "lotAreaMaxM2": 4000.0
      },
@@ -102811,7 +102934,6 @@
       "any"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 2000.0
      },
      "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots between 4,000 m2 and 10,000 m2",
@@ -102883,7 +103005,6 @@
       "any"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 2000.0
      },
      "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
@@ -102937,7 +103058,6 @@
       "any"
      ],
      "conditions": {
-      "storeysMin": 2,
       "lotAreaMinM2": 2000.0
      },
      "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
@@ -108217,7 +108337,7 @@
    ],
    "dcp": "Strathfield General Residential DCP (dated 1 September 2026) for dwelling houses, dual occupancies, multi-dwelling housing, terraces, manor homes; Strathfield Consolidated DCP 2005 Parts A (2020), D, I, N (amended 02/2023) and R (in force 10/07/2018). Part A (2020) and the 2026 General Residential DCP overlap for dwelling houses; Part I dates from 1976-1986 sources and its currency is not confirmed",
    "lep": "Strathfield Local Environmental Plan 2012",
-   "status": "partial",
+   "status": "none",
    "rules": [
     {
      "id": "strathfield-municipal-council-001",
@@ -109613,6 +109733,7 @@
       "dual_occupancy"
      ],
      "conditions": {
+      "lotWidthMinM": 14.5,
       "precinct": "Rosebery Estate DCP area"
      },
      "conditionText": "Rosebery Estate DCP area: dual occupancy, frontage 14.5 m or greater, each side boundary for 8 m beyond predominant building line",
@@ -122670,7 +122791,7 @@
    ],
    "dcp": "Waverley Development Control Plan 2022, Amendment 6 (adopted 10/03/2026, effective 18/04/2026); Parts B, C and D and full Amendment 6 document saved",
    "lep": "Waverley Local Environmental Plan 2012 (lot size, height, FSR maps not in saved text)",
-   "status": "ready",
+   "status": "none",
    "rules": [
     {
      "id": "waverley-council-001",
@@ -124669,7 +124790,7 @@
    ],
    "dcp": "Willoughby Development Control Plan (consolidated version May 2026, Parts A to L; Part I Stormwater Management also supplied as standalone version dated June 2025, document set version date 09/07/2025). Parts B residential, C (C4 zone), F transport and parking, I stormwater/flood used",
    "lep": "Willoughby Local Environmental Plan 2012",
-   "status": "partial",
+   "status": "none",
    "rules": [
     {
      "id": "willoughby-city-council-001",

@@ -889,6 +889,7 @@
     "storeys": 1,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -942,7 +943,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
    "quote": "1 storey 0.9 m 4m",
    "clause": "Table 8",
    "page": 89,
@@ -960,6 +961,7 @@
     "storeys": 2,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -1013,7 +1015,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
    "quote": "2 storey 1.2 m 8m",
    "clause": "Table 8",
    "page": 89,
@@ -2577,6 +2579,7 @@
     "storeys": 1,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -2658,7 +2661,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
    "quote": "1 storey 0.9 m 0.9 m 5m 4m",
    "clause": "Table 5",
    "page": 67,
@@ -2677,6 +2680,7 @@
     "storeys": 2,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -2744,7 +2748,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
    "quote": "2 storey 1.2 m 1.2 m 8m 8m",
    "clause": "Table 5",
    "page": 67,
@@ -2763,6 +2767,7 @@
     "storeys": 2,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -2795,7 +2800,7 @@
     }
    ],
    "confidence": "low",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
    "quote": "2 storey 3m 1.2 m 1.2 m 6m 6m 6m",
    "clause": "Table 2",
    "page": 44,
@@ -2814,6 +2819,7 @@
     "storeysMin": 3,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -2867,7 +2873,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
    "quote": "3 storeys and 1.4 m 1.4 m 8m 8m",
    "clause": "Table 5",
    "page": 67,
@@ -3439,6 +3445,7 @@
     "storeys": 1,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -3506,7 +3513,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
    "quote": "1 storey 0.9 m 0.9 m 5m 4m",
    "clause": "Table 5",
    "page": 67,
@@ -3524,6 +3531,7 @@
     "storeys": 1,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -3556,7 +3564,7 @@
     }
    ],
    "confidence": "low",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
    "quote": "1 storey 3m 0.9 m 0.9 m 6m 4m 4m",
    "clause": "Table 2",
    "page": 44,
@@ -3574,6 +3582,7 @@
     "storeys": 2,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -3641,7 +3650,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
    "quote": "2 storey 1.2 m 1.2 m 8m 8m",
    "clause": "Table 5",
    "page": 67,
@@ -3659,6 +3668,7 @@
     "storeys": 2,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -3691,7 +3701,7 @@
     }
    ],
    "confidence": "low",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
    "quote": "2 storey 3m 1.2 m 1.2 m 6m 6m 6m",
    "clause": "Table 2",
    "page": 44,
@@ -3709,6 +3719,7 @@
     "storeysMin": 3,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -3762,7 +3773,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
    "quote": "3 storeys and 1.4 m 1.4 m 8m 8m",
    "clause": "Table 5",
    "page": 67,
@@ -4051,6 +4062,7 @@
     "storeys": 1,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -4104,7 +4116,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
    "quote": "1 storey 3m 0.9 m 0.9 m 6m 4m 4m",
    "clause": "Table 2",
    "page": 44,
@@ -4122,6 +4134,7 @@
     "storeys": 2,
     "precinct": "Edmondson Park precinct",
     "qualifiers": [
+     "height_plane",
      "open_space_frontage"
     ]
    },
@@ -4175,7 +4188,7 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
    "quote": "2 storey 3m 1.2 m 1.2 m 6m 6m 6m",
    "clause": "Table 2",
    "page": 44,

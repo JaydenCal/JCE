@@ -528,6 +528,52 @@
     "dwelling"
    ],
    "conditions": {
+    "lotWidthMinM": 15.0
+   },
+   "conditionText": "single dwellings corner lots, site 15 m or greater in width",
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     13477
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13477
+   ],
+   "evidence": [
+    {
+     "id": 13477,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "2.0m to the building line if the site is 15m or greater in width",
+     "clause": "6.1.2 Setbacks Control 3 ii",
+     "page": 6,
+     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
+     "condition": "single dwellings corner lots, site 15 m or greater in width",
+     "edition": "Amendment No.6, 10/06/2024"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "2.0m to the building line if the site is 15m or greater in width",
+   "clause": "6.1.2 Setbacks Control 3 ii",
+   "page": 6,
+   "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
+  },
+  {
+   "id": "georges-river-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
     "qualifiers": [
      "waterfront"
     ]
@@ -568,7 +614,7 @@
    "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
   },
   {
-   "id": "georges-river-council-013",
+   "id": "georges-river-council-014",
    "zones": [
     "*"
    ],
@@ -577,7 +623,6 @@
    ],
    "conditions": {},
    "conditionText": [
-    "single dwellings corner lots, site 15 m or greater in width",
     "single dwellings: 15% of average site length or 6 m, whichever greater",
     "single dwellings: main building wall / facade"
    ],
@@ -588,13 +633,6 @@
      13474
     ]
    },
-   "secondaryFront": {
-    "minM": 2.0,
-    "basis": "fixed",
-    "sources": [
-     13477
-    ]
-   },
    "rear": {
     "minM": 6.0,
     "basis": "fixed",
@@ -602,11 +640,11 @@
      13478
     ]
    },
+   "secondaryFront": null,
    "side": null,
    "garage": null,
    "sources": [
     13474,
-    13477,
     13478
    ],
    "evidence": [
@@ -619,17 +657,6 @@
      "page": 6,
      "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
      "condition": "single dwellings: main building wall / facade",
-     "edition": "Amendment No.6, 10/06/2024"
-    },
-    {
-     "id": 13477,
-     "parameter": "front_secondary",
-     "slot": "secondaryFront",
-     "quote": "2.0m to the building line if the site is 15m or greater in width",
-     "clause": "6.1.2 Setbacks Control 3 ii",
-     "page": 6,
-     "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf",
-     "condition": "single dwellings corner lots, site 15 m or greater in width",
      "edition": "Amendment No.6, 10/06/2024"
     },
     {
@@ -652,7 +679,7 @@
    "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
   },
   {
-   "id": "georges-river-council-014",
+   "id": "georges-river-council-015",
    "zones": [
     "*"
    ],
@@ -699,7 +726,7 @@
    "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
   },
   {
-   "id": "georges-river-council-015",
+   "id": "georges-river-council-016",
    "zones": [
     "*"
    ],
@@ -742,7 +769,7 @@
    "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
   },
   {
-   "id": "georges-river-council-016",
+   "id": "georges-river-council-017",
    "zones": [
     "*"
    ],
@@ -786,7 +813,7 @@
    "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf"
   },
   {
-   "id": "georges-river-council-017",
+   "id": "georges-river-council-018",
    "zones": [
     "*"
    ],
@@ -889,7 +916,7 @@
    "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf"
   },
   {
-   "id": "georges-river-council-018",
+   "id": "georges-river-council-019",
    "zones": [
     "*"
    ],
@@ -933,7 +960,7 @@
    "source_file": "DCP/Amd-6-GRDCP-Part-6-2-Medium-Density-Residential-Controls.pdf"
   },
   {
-   "id": "georges-river-council-019",
+   "id": "georges-river-council-020",
    "zones": [
     "*"
    ],
@@ -979,7 +1006,7 @@
    "source_file": "DCP/Amd-6-GRDCP-Part-6-4-Ancillary-Development.pdf"
   },
   {
-   "id": "georges-river-council-020",
+   "id": "georges-river-council-021",
    "zones": [
     "*"
    ],
@@ -1029,7 +1056,7 @@
    "source_file": "DCP/Amd-6-GRDCP-Part-6-1-Low-Density-Residential-Controls-NEW.pdf"
   },
   {
-   "id": "georges-river-council-021",
+   "id": "georges-river-council-022",
    "zones": [
     "IN*"
    ],
@@ -1092,7 +1119,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 19
+   "rules": 20
   },
   "IN*": {
    "front": false,
@@ -1107,7 +1134,7 @@
  "needsPrecinct": false,
  "counts": {
   "records": 26,
-  "rules": 21,
+  "rules": 22,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 5
  }
