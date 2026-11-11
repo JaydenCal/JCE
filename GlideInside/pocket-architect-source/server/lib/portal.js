@@ -788,7 +788,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     const topUps = (await topUpRows(store, org.id)).filter((t) => monthKey(t.createdAt) === month).length;
     const admin = staff.filter((u) => u.role === 'admin').sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0];
     return {
-      id: org.id, name: org.name, shortCode: org.shortCode, legalName: org.legalName || '', abn: org.abn || '', createdAt: org.createdAt, requestId: org.requestId || null,
+      id: org.id, name: org.name, slug: org.slug || null, shortCode: org.shortCode, legalName: org.legalName || '', abn: org.abn || '', createdAt: org.createdAt, requestId: org.requestId || null,
       account: accountView(org, nowMs), trialExtendedDays: org.trialExtendedDays || 0, convertedAt: org.convertedAt || null, convertedHow: org.convertedHow || null,
       admin: admin ? { id: admin.id, name: admin.name, username: admin.username, email: admin.email || '', mustChangePassword: !!admin.mustChangePassword, lastSignInAt: admin.lastSignInAt || null } : null,
       billingContact: billingContact(org), staffCount: staff.length,
@@ -801,6 +801,52 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
   async function adminOrgs(r) {
     await adminAuth(r.request);
     return json(await Promise.all((await pstore.listOrgs()).map(adminOrgView)));
+  }
+  /**
+   * POST /portal/admin/orgs/:id/houses (bearer admin token): { houses: [{ name, description?, project }] }.
+   * Owner import of a builder's own designs into that org's house library. Each house goes through the same checks as saveHouse
+   * (migrate, validate, size cap, name rules, stats, thumbnail). Idempotent by name: a design with the same name (any case) in THIS org is
+   * replaced in place (same id, unarchived), otherwise a new one is added. Only the org in the URL is read or written.
+   * Answers 200 { orgId, created, replaced, failed, results: [{ name, status, id?, error? }] }; a bad house fails alone.
+   */
+  async function adminImportHouses(r, id) {
+    await adminAuth(r.request);
+    const org = await adminOrg(r, id);
+    const body = await readJson(r.request, 8000000);
+    if (!Array.isArray(body.houses) || !body.houses.length) throw new HttpError('BAD_REQUEST', 'Send houses as a non-empty array of { name, project }.');
+    if (body.houses.length > 50) throw new HttpError('BAD_REQUEST', 'Send at most 50 houses per request.');
+    const existing = await pstore.listHouses(org.id);
+    const byName = new Map(existing.map((h) => [h.name.toLowerCase(), h]));
+    let count = existing.length;
+    const seen = new Set();
+    const results = [];
+    for (const item of body.houses) {
+      let label = typeof item?.name === 'string' ? item.name.trim() : '';
+      try {
+        if (!item || typeof item !== 'object') throw new HttpError('BAD_REQUEST', 'Each house must be an object.');
+        label = text(item.name ?? item.project?.name, 'Name', { required: true, max: 80 });
+        if (seen.has(label.toLowerCase())) throw new HttpError('CONFLICT', 'The same name appears twice in this request.');
+        seen.add(label.toLowerCase());
+        if (!item.project) throw new HttpError('BAD_REQUEST', 'Send a project.');
+        const p = parseProject(item.project);
+        const problems = validate(p);
+        if (problems.length) throw new HttpError('BAD_REQUEST', `That design has problems: ${problems.slice(0, 3).join('; ')}.`);
+        const description = text(item.description, 'Description', { max: 500 });
+        const prior = byName.get(label.toLowerCase());
+        if (!prior && count >= MAX_HOUSES_PER_ORG) throw new HttpError('BAD_REQUEST', 'This organisation has reached its limit of house designs.');
+        const patch = { name: label, description, updatedAt: iso(), archived: false, sourceType: 'saved', sourceRef: null, project: p, stats: houseStats(p), thumbnail: projectToSvg(p) };
+        const h = prior ? { ...prior, ...patch } : { id: rid('h'), orgId: org.id, createdBy: 'owner-import', createdAt: iso(), ...patch };
+        await pstore.saveHouse(h);
+        if (!prior) count += 1;
+        byName.set(label.toLowerCase(), h);
+        results.push({ name: label, status: prior ? 'replaced' : 'created', id: h.id });
+      } catch (e) {
+        if (!(e instanceof HttpError)) throw e;
+        results.push({ name: label, status: 'failed', error: e.message });
+      }
+    }
+    const n = (k) => results.filter((x) => x.status === k).length;
+    return json({ orgId: org.id, created: n('created'), replaced: n('replaced'), failed: n('failed'), results });
   }
   async function adminOrg(r, id) {
     const org = await pstore.getOrg(id);
@@ -974,6 +1020,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     ['POST', '/trial-request', trialRequest, { noCsrf: true }], ['GET', `/brand/${ID}`, brandBySlug, { noCsrf: true }], ['POST', `/admin/orgs/${ID}/slug`, adminSlug, { token: true }],
     ['GET', '/admin/trial-requests', adminRequests, { token: true }], ['POST', `/admin/trial-requests/${ID}/approve`, adminApprove, { token: true }], ['POST', `/admin/trial-requests/${ID}/decline`, adminDecline, { token: true }],
     ['GET', '/admin/orgs', adminOrgs, { token: true }], ['POST', `/admin/orgs/${ID}/extend-trial`, adminExtend, { token: true }], ['POST', `/admin/orgs/${ID}/convert`, adminConvert, { token: true }], ['POST', `/admin/orgs/${ID}/login-rate`, adminLoginRate, { token: true }], ['POST', `/admin/orgs/${ID}/brand-colours`, adminBrandColours, { token: true }], ['POST', `/admin/orgs/${ID}/reset-admin`, adminResetAdmin, { token: true }],
+    ['POST', `/admin/orgs/${ID}/houses`, adminImportHouses, { token: true }],
   ].map(([method, p, handler, opts]) => ({ method, re: new RegExp(`^${p}$`), handler, opts: opts || {} }));
 
   /** Handles /portal/* (path is the part after /api). Returns null when the path is not a portal path. */

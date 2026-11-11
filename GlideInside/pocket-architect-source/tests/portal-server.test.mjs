@@ -872,6 +872,79 @@ for (const [label, d1] of stores) {
     assert.equal((await w.admin('POST', `/portal/admin/orgs/${other.orgId}/slug`, { slug: 'hunter-homes' })).status, 409);
   });
 
+  t('admin house import: token only, validated like saveHouse, idempotent by name, never touches another org', async () => {
+    const w = makeWorld({ d1 });
+    const a = await w.makeOrg('Alpha Homes Pty Ltd', 'Priya');
+    const b = await w.makeOrg('Beta Homes Pty Ltd', 'Quinn');
+    const url = (o) => `/portal/admin/orgs/${o.orgId}/houses`;
+    const mk = (name, tpl = 'house_single') => ({ name, description: 'Imported', project: createFromTemplate(tpl) });
+    assert.equal((await w.admin('POST', url(a), { houses: [mk('One')] }, 'wrong-token')).status, 401, 'admin token needed');
+    assert.equal((await a.admin.post(url(a), { houses: [mk('One')] })).status, 401, 'a signed in builder admin cannot use it');
+    assert.equal((await w.admin('POST', '/portal/admin/orgs/nope/houses', { houses: [mk('One')] })).status, 404);
+    assert.equal((await w.admin('POST', url(a), { houses: [] })).status, 400);
+    assert.equal((await w.admin('POST', url(a), {})).status, 400);
+
+    const first = await w.admin('POST', url(a), { houses: [mk('Banksia 200'), mk('Wattle 180', 'granny_flat')] });
+    assert.equal(first.status, 200, JSON.stringify(first.data));
+    assert.deepEqual([first.data.created, first.data.replaced, first.data.failed], [2, 0, 0]);
+    const list = (await a.admin.get('/portal/houses')).data;
+    assert.deepEqual(list.map((h) => h.name).sort(), ['Banksia 200', 'Wattle 180']);
+    assert.ok(list.every((h) => h.widthMm > 0 && h.bedrooms >= 0), 'stats are filled like saveHouse');
+    const id = list.find((h) => h.name === 'Banksia 200').id;
+    const opened = (await a.admin.get(`/portal/houses/${id}`)).data;
+    assert.equal(opened.project.name, 'Banksia 200');
+    assert.ok(opened.thumbnail, 'thumbnail is filled like saveHouse');
+    assert.equal((await b.admin.get('/portal/houses')).data.length, 0, 'the other org got nothing');
+
+    // Re-run: replaced in place (same id, any case), no duplicates.
+    const again = await w.admin('POST', url(a), { houses: [mk('banksia 200', 'granny_flat'), mk('Wattle 180', 'granny_flat')] });
+    assert.deepEqual([again.data.created, again.data.replaced, again.data.failed], [0, 2, 0]);
+    const list2 = (await a.admin.get('/portal/houses')).data;
+    assert.equal(list2.length, 2);
+    assert.equal(list2.find((h) => h.name === 'banksia 200').id, id, 'same id after replace');
+
+    // The same name in another org is a separate house, and an archived one comes back when replaced.
+    assert.equal((await w.admin('POST', url(b), { houses: [mk('Banksia 200')] })).data.created, 1);
+    assert.equal((await a.admin.get('/portal/houses')).data.length, 2, 'org A untouched by the import into org B');
+    assert.equal((await a.admin.post(`/portal/houses/${id}/archive`)).status, 200);
+    const back = await w.admin('POST', url(a), { houses: [mk('Banksia 200')] });
+    assert.equal(back.data.replaced, 1);
+    assert.equal((await a.admin.get('/portal/houses')).data.find((h) => h.id === id).archived, false);
+
+    // Bad houses fail alone with a reason; good ones in the same request still import.
+    const bad = createFromTemplate('house_single');
+    bad.levels[0].openings.push({ id: 'o_bad', wallId: 'missing', kind: 'door', offset: 0, width: 800, height: 2000, sill: 0, style: 'hinged', hinge: 'a', side: 1, status: 'new' });
+    const mixed = await w.admin('POST', url(a), { houses: [{ name: 'Broken', project: bad }, { name: 'NoProject' }, { project: { nope: 1 }, name: 'Junk' }, mk('Fine one')] });
+    assert.equal(mixed.status, 200);
+    assert.deepEqual([mixed.data.created, mixed.data.failed], [1, 3]);
+    assert.match(mixed.data.results.find((x) => x.name === 'Broken').error, /problems/);
+    assert.ok((await a.admin.get('/portal/houses')).data.some((h) => h.name === 'Fine one'));
+    assert.equal((await a.admin.get('/portal/houses')).data.some((h) => h.name === 'Broken'), false);
+
+    // A client login is not touched and sees only the houses it is allowed to.
+    const c = await w.makeClient(a, 'Sarah');
+    assert.ok(Array.isArray((await c.browser.get('/portal/houses')).data));
+  });
+
+  t('admin house import: the shipped builder-houses files import cleanly, each builder only gets its own', async () => {
+    const dir = new URL('../../golive/builder-houses/', import.meta.url);
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
+    assert.deepEqual(files.sort(), ['hotondo.json', 'hunter-homes.json', 'mcdonald-jones.json', 'mojo.json', 'montgomery.json', 'tulliplan.json']);
+    const w = makeWorld({ d1 });
+    const orgs = {};
+    for (const f of files) orgs[f] = await w.makeOrg(`${f.replace('.json', '')} Homes`, 'Priya');
+    for (const f of files) {
+      const houses = JSON.parse(fs.readFileSync(new URL(f, dir), 'utf8'));
+      const res = await w.admin('POST', `/portal/admin/orgs/${orgs[f].orgId}/houses`, { houses });
+      assert.equal(res.status, 200, f);
+      assert.deepEqual([res.data.created, res.data.failed], [houses.length, 0], `${f}: ${JSON.stringify(res.data.results.filter((x) => x.error))}`);
+    }
+    for (const f of files) {
+      const names = (await orgs[f].admin.get('/portal/houses')).data.map((h) => h.name).sort();
+      assert.deepEqual(names, JSON.parse(fs.readFileSync(new URL(f, dir), 'utf8')).map((h) => h.name).sort(), `${f} holds exactly its own designs`);
+    }
+  });
+
   t('public brand route is rate limited', async () => {
     const w = makeWorld({ d1 });
     const anon = w.browser();
