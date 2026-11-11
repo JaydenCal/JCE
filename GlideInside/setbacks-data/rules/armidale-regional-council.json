@@ -58,7 +58,9 @@
    "quote": "Where an adjoining front façade setback is less than 4.5m, the setback may be equal to or",
    "clause": "5.2.1 S.3",
    "page": 244,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-002",
@@ -162,7 +164,9 @@
    "quote": "In the R1 zone, the front façade setback of the dwelling is to be a minimum of 4.5m, or",
    "clause": "5.2.1 S.2",
    "page": 243,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-003",
@@ -250,7 +254,9 @@
    "quote": "In the R1 zone, the front façade setback of the dwelling is to be a minimum of 4.5m., or",
    "clause": "5.2.1 S.4",
    "page": 271,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-004",
@@ -298,7 +304,11 @@
    "quote": "the front façade setback of any new building is to be a minimum of 20 metres",
    "clause": "5.3.1 S.14",
    "page": 272,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "armidale-regional-council-005",
@@ -348,7 +358,9 @@
    "quote": "Where an adjoining front façade setback is less than 9m, the setback may be equal to or",
    "clause": "5.2.1 S.5",
    "page": 244,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-006",
@@ -452,7 +464,9 @@
    "quote": "In the R2 zone, the front façade setback of the dwelling is to be a minimum of 9m, or",
    "clause": "5.2.1 S.4",
    "page": 244,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-007",
@@ -539,7 +553,9 @@
    "quote": "is to be setback a minimum of 2.5m. from the side boundary.",
    "clause": "5.3.2 S.13",
    "page": 244,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-008",
@@ -607,7 +623,9 @@
    "quote": "b) if the lot has an area of at least 4000m2 - 10m.",
    "clause": "5.3.2 S.14b",
    "page": 244,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-009",
@@ -673,7 +691,9 @@
    "quote": "is to be setback a minimum of 15m.",
    "clause": "5.3.3 S.17",
    "page": 245,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-010",
@@ -737,7 +757,9 @@
    "quote": "a) 10m, if the only purpose of the outbuilding is for agricultural use only; or",
    "clause": "5.3.4 a",
    "page": 245,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-011",
@@ -783,7 +805,11 @@
    "quote": "b) 5m, in any other case.",
    "clause": "5.3.4 b",
    "page": 245,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "armidale-regional-council-012",
@@ -829,7 +855,11 @@
    "quote": "b) 5m, in any other case.",
    "clause": "5.3.4 b",
    "page": 245,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "armidale-regional-council-013",
@@ -890,7 +920,9 @@
    "quote": "Where there are reduced setbacks, garages must be set back at least 5.5m. from the front",
    "clause": "11.2 S.3",
    "page": 253,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   },
   {
    "id": "armidale-regional-council-014",
@@ -940,7 +972,11 @@
    "quote": "must have a setback of at least 3m from a boundary with a public reserve.",
    "clause": "5.5 S.22",
    "page": 245,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
   },
   {
    "id": "armidale-regional-council-015",
@@ -984,7 +1020,9 @@
    "quote": "A garage or carport is to be set back at least 1m behind the front façade of the dwelling.",
    "clause": "5.1 S.1",
    "page": 243,
-   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt"
+   "source_file": "DCP/Armidale-Regional-Council-Development-Control-Plan-2024.txt",
+   "dcp": "Armidale Regional Council DCP 2024, effective 13/06/2024",
+   "edition": "ARC DCP 2024, effective 13/06/2024"
   }
  ],
  "gaps": [
@@ -1049,5 +1087,32 @@
   "rules": 15,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (armidale-regional-council-009, armidale-regional-council-010, armidale-regional-council-012))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

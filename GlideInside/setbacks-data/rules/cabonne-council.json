@@ -12,9 +12,10 @@
  "gaps": [
   "No rules tagged to R1, R2, R5 or RU5 and none with an unstated residential zone; only other zones or precinct-level text",
   "6 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 6877, 6878, 6879, 6880, 6881, 6897",
-  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): scanned, no text: DCP/dcp-9-strathnook-lane-rural-small-holdings.pdf | scanned, no text: DCP/dcp-16-interim-guidelines-for-development-of-flood-prone-land-in-eugowra-amendment-no-1.pdf (Eugowra flood controls not available) | table not resolved: DCP 5 Appendix One and DCP 6 Appendix One road standards (coded as R CL 3. L1 and NR C1 3. L 3, legend referenced to a manual that is not saved), listed rather than recorded | DCP 10 Annexure 5.0 flood development controls and floor levels not in saved text (file ends at Annexure 4.0) | DCP 2 and DCP 3 maps are images; DCP 4 and DCP 7 contain no numeric parameters | setbacks for urban zones, parking rates, urban lot sizes, site coverage"
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): scanned, no text: DCP/dcp-9-strathnook-lane-rural-small-holdings.pdf | scanned, no text: DCP/dcp-16-interim-guidelines-for-development-of-flood-prone-land-in-eugowra-amendment-no-1.pdf (Eugowra flood controls not available) | table not resolved: DCP 5 Appendix One and DCP 6 Appendix One road standards (coded as R CL 3. L1 and NR C1 3. L 3, legend referenced to a manual that is not saved), listed rather than recorded | DCP 10 Annexure 5.0 flood development controls and floor levels not in saved text (file ends at Annexure 4.0) | DCP 2 and DCP 3 maps are images; DCP 4 and DCP 7 contain no numeric parameters | setbacks for urban zones, parking rates, urban lot sizes, site coverage",
+  "Research: No town/village residential DCP chapter. DCP-5 General Rural Zones (1 Dec 1992) and DCP-6 Rural Small Holdings may carry rural dwelling setbacks but could not be read (fetch of https://www.cabonne.nsw.gov.au/files/sharedassets/public/v/1/planning-and-development/local-environment-plan/dcp-5-general-rural-zones.pdf was blocked by a permission timeout)."
  ],
- "notes": "Built from 6 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "notes": "Built from 6 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text. | Research merged from research-setbacks/councils/cabonne-council.json",
  "coverage": {},
  "precincts": [],
  "needsPrecinct": false,
@@ -23,5 +24,32 @@
   "rules": 0,
   "recordsNotModelled": 6,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  }
  }
 }

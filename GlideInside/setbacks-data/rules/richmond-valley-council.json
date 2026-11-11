@@ -53,7 +53,9 @@
    "quote": "are required to be set back 5.5 metres from a secondary",
    "clause": "A-3.4 control 5",
    "page": 39,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-002",
@@ -119,7 +121,9 @@
    "quote": "a 3 metre setback applies to any secondary or parallel street frontage",
    "clause": "A-3.4 control 4",
    "page": 39,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-003",
@@ -128,7 +132,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {
@@ -168,7 +171,9 @@
    "quote": "First Storey 3 metres",
    "clause": "A-1.3 control 8",
    "page": 19,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-004",
@@ -177,7 +182,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {
@@ -217,7 +221,9 @@
    "quote": "Second Storey 6 metres",
    "clause": "A-1.3 control 8",
    "page": 19,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-005",
@@ -226,7 +232,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {
@@ -267,7 +272,9 @@
    "quote": "shall be set back 3 metres from",
    "clause": "A-1.3 control 9",
    "page": 19,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-006",
@@ -276,7 +283,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {
@@ -318,7 +324,9 @@
    "quote": "The average distance of the setbacks of the nearest",
    "clause": "A-1.3 control 1(b)",
    "page": 17,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-007",
@@ -327,7 +335,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {
@@ -366,7 +373,9 @@
    "quote": "Single Storey dwelling 3 metres",
    "clause": "A-1.3 control 8",
    "page": 19,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-008",
@@ -375,7 +384,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {
@@ -415,7 +423,11 @@
    "quote": ">3.5m to 8.5m",
    "clause": "A-1.3 control 7",
    "page": 18,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "richmond-valley-council-009",
@@ -424,7 +436,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {},
@@ -501,7 +512,9 @@
    "quote": "i. 6 metres, and",
    "clause": "A-1.3 control 1(a)",
    "page": 17,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-010",
@@ -510,7 +523,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "garage"
    ],
    "conditions": {},
@@ -548,7 +560,9 @@
    "quote": "is less than 4.5m from the primary",
    "clause": "A-1.3 control 3",
    "page": 17,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-011",
@@ -557,7 +571,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "outbuilding",
     "garage"
    ],
@@ -594,7 +607,9 @@
    "quote": "ii. 7m for any part of a garage, carport with enclosure",
    "clause": "A-1.3 control 1(a)",
    "page": 17,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-012",
@@ -603,7 +618,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "outbuilding",
     "garage"
    ],
@@ -640,7 +654,11 @@
    "quote": "A 5.5m setback is required from any secondary or parallel road",
    "clause": "A-1.3 control 5",
    "page": 17,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen"
   },
   {
    "id": "richmond-valley-council-013",
@@ -685,7 +703,9 @@
    "quote": "Zone R1 – General Residential Zone 3 metres",
    "clause": "A-8.2.4 control 4",
    "page": 94,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-014",
@@ -730,7 +750,9 @@
    "quote": "Zone RU5 – Village 3 metres",
    "clause": "A-8.2.4 control 4",
    "page": 94,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-015",
@@ -780,7 +802,9 @@
    "quote": "20 metres from a classified road",
    "clause": "A-2.3 control 1",
    "page": 31,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-016",
@@ -866,7 +890,9 @@
    "quote": "15 metres from a local sealed road",
    "clause": "A-2.3 control 1",
    "page": 31,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-017",
@@ -912,7 +938,11 @@
    "quote": "50 metres from a local unsealed road",
    "clause": "A-2.3 control 1",
    "page": 31,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "richmond-valley-council-018",
@@ -958,7 +988,11 @@
    "quote": "Minimum Side Boundary Setback: 5m",
    "clause": "A-2.3 control 4",
    "page": 31,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "richmond-valley-council-019",
@@ -1004,7 +1038,11 @@
    "quote": "Minimum Rear Boundary Setback: 5m",
    "clause": "A-2.3 control 5",
    "page": 31,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "richmond-valley-council-020",
@@ -1069,7 +1107,9 @@
    "quote": "6 metres to primary road frontage",
    "clause": "Table I-3.1",
    "page": 38,
-   "source_file": "DCP/RVDCP-2021-Part-I-Other-Considerations.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-I-Other-Considerations.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part I Other Considerations, adopted 22/06/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-021",
@@ -1113,7 +1153,11 @@
    "quote": "2 metres to a secondary or parallel road",
    "clause": "Table I-3.1",
    "page": 38,
-   "source_file": "DCP/RVDCP-2021-Part-I-Other-Considerations.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-I-Other-Considerations.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part I Other Considerations, adopted 22/06/2021, Amendment 1 effective 27 July 2026",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
   },
   {
    "id": "richmond-valley-council-022",
@@ -1157,7 +1201,9 @@
    "quote": "5.5 metres from the boundary with a road alignment",
    "clause": "Table I-3.1 vehicular access requirements",
    "page": 38,
-   "source_file": "DCP/RVDCP-2021-Part-I-Other-Considerations.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-I-Other-Considerations.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part I Other Considerations, adopted 22/06/2021, Amendment 1 effective 27 July 2026"
   },
   {
    "id": "richmond-valley-council-023",
@@ -1206,7 +1252,11 @@
    "quote": "Setback from public reserve: 3 m",
    "clause": "A-8.2.4 control 5",
    "page": 94,
-   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf"
+   "source_file": "DCP/RVDCP-2021-Part-A-Residential-Development.pdf",
+   "dcp": "Richmond Valley DCP 2021 (Parts A to I), adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026; Part H-1 transitional flood amendment commenced 19/08/2026",
+   "edition": "Richmond Valley DCP 2021 Part A Residential Development, adopted 22/06/2021, effective 01/08/2021, Amendment 1 effective 27 July 2026",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
   }
  ],
  "gaps": [
@@ -1278,5 +1328,32 @@
   "rules": 23,
   "recordsNotModelled": 6,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (richmond-valley-council-016, richmond-valley-council-017)); side (conflicting rules of equal specificity (richmond-valley-council-016, richmond-valley-council-018)); rear (conflicting rules of equal specificity (richmond-valley-council-016, richmond-valley-council-019))"
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

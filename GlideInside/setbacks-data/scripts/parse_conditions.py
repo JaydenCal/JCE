@@ -56,7 +56,7 @@ USE_PATTERNS = [
     ('shop_top_housing', r'shop top|shop-top'),
     ('boarding_house', r'boarding house'),
     ('seniors_housing', r'seniors|aged care|retirement|independent living'),
-    ('multi_dwelling', r'multi[- ]?dwelling|multi[- ]?unit|multiple dwelling|townhouse|town house|terrace|villa|manor house|medium density|group housing|attached dwelling|semi[- ]?detached|row house|attached housing|integrated housing|urban housing'),
+    ('multi_dwelling', r'multi[- ]?dwelling|multi[- ]?unit|multiple dwelling|townhouse|town house|terraces?\b|\bvillas?\b|manor house|medium density|group housing|attached dwelling|semi[- ]?detached|row house|attached housing|integrated housing|urban housing'),
     ('outbuilding', r'outbuilding|\bshed|ancillary building|ancillary structure|studio|cabana|detached garage|farm building|agricultural building|rural shed|workshop'),
     ('garage', r'garage|carport|car port|car accommodation|parking structure|car parking'),
     ('swimming_pool', r'swimming pool|\bpool\b|tennis court'),
@@ -67,6 +67,7 @@ USE_RX = [(n, re.compile(p, re.I)) for n, p in USE_PATTERNS]
 
 
 def parse_uses(cond):
+    cond = re.sub(r'\b(?:low|medium|high) density residential\b|\blarge lot residential\b|\bgeneral residential\b|\bvillage zone\b', ' ', cond, flags=re.I)
     out = []
     for n, rx in USE_RX:
         if rx.search(cond):
@@ -83,7 +84,7 @@ def parse_uses(cond):
 # ---------------------------------------------------------------- qualifiers
 QUAL_PATTERNS = [
     ('battle_axe', r'battle.?ax|hatchet|rear lot|access handle|internal lot|panhandle|pan-handle'),
-    ('laneway', r'lane ?way|rear lane|\blane\b|rear access|rear-loaded|rear loaded'),
+    ('laneway', r'lane ?way|rear lane|(?-i:\blanes?\b)|rear access|rear-loaded|rear loaded'),
     ('classified_road', r'classified road|state highway|arterial|main road|sub-arterial|distributor road|\bhighway|sp2 road|regional road|trunk road'),
     ('heritage', r'heritage|conservation area|character area|townscape'),
     ('flood', r'flood'),
@@ -101,13 +102,14 @@ QUAL_PATTERNS = [
     ('adjoins_other', r'adjoin(?:s|ing)|adjacent to|abutting|backing onto|back(?:s|ing) on|opposite|rear boundary (?:that )?(?:directly )?abuts|directly abuts|next to'),
     ('not_precinct', r'not within a precinct|not in a precinct'),
     ('basement', r'basement|underground|below ground|semi-basement'),
-    ('open_space_frontage', r'open space|public reserve|park\b|reserve\b'),
+    ('open_space_frontage', r'open space|public reserve|public park|adjoining reserve|park frontage|reserve frontage'),
     ('slope', r'slope|steep|gradient|fall of'),
     ('corner_splay', r'splayed corner|corner splay|truncated'),
     ('top_floor_attic', r'attic|roof terrace|rooftop'),
-    ('height_plane', r'height plane|\bplane\b|\d\s*:\s*\d|building envelope|solar access'),
+    ('height_plane', r'height plane|\bplane\b|\b\d:\d\b|building envelope|solar access'),
     ('shared_driveway', r'shared (?:drive|access)|common driveway'),
     ('non_standard_street', r'cul-de-sac|culdesac|turning head|private street|internal road|internal roads|spine road'),
+    ('orientation_specific', r'\b(?:north|south|east|west)(?:ern|erly)?\s+(?:and|or|elevations?|facing|boundar|side|aspect|walls?)|\b(?:northern|southern|eastern|western)\b'),
     ('subdivision_stage', r'stage [0-9]+|\bstage\b'),
 ]
 QUAL_RX = [(n, re.compile(p, re.I)) for n, p in QUAL_PATTERNS]
@@ -117,14 +119,26 @@ ASSERTABLE = {'battle_axe', 'laneway', 'classified_road', 'heritage', 'flood', '
               'non_habitable', 'averaging_impractical', 'no_adjoining_buildings', 'basement', 'open_space_frontage'}
 
 
+NEG = r'\b(?:outside|not within|not in|other than|excluding|except(?: for)?|not on|not adjoining|not adjacent to|not fronting|not a|no)\W+(?:[\w-]+\W+){0,5}?'
+
+
 def parse_qualifiers(cond, skip=()):
+    """Returns (positive qualifiers, negated qualifiers)."""
     q = []
+    qn = []
     for n, rx in QUAL_RX:
         if n in skip:
             continue
-        if rx.search(cond):
+        m = rx.search(cond)
+        if not m:
+            continue
+        if re.search(NEG + '(?:' + rx.pattern + ')', cond, re.I) and n in ('heritage', 'classified_road', 'battle_axe', 'laneway', 'flood', 'bushfire', 'waterfront', 'established_area', 'irregular_lot', 'adjoins_other', 'open_space_frontage'):
+            qn.append(n)
+        else:
             q.append(n)
-    return q
+    if 'adjoins_other' in q and re.search(r'average|averag', cond, re.I):
+        q.remove('adjoins_other')
+    return q, qn
 
 
 # ---------------------------------------------------------------- precinct
@@ -182,9 +196,11 @@ def parse_storeys(c):
         out['storeys'] = 4
     # level of the building the value applies to
     lvl = None
-    if re.search(r'upper (?:level|floor|storey|story|walls?)|second (?:storey|story|floor|level)|first floor|upper-level|second floor|second-storey|level 2\b|2nd storey|upper storeys?', cl):
+    if re.search(r'(?:first|1st) (?:storey|story|floor|level) (?:and|or) (?:above|higher|over|upwards)|upper (?:level|floor|storey|story|walls?)|second (?:storey|story|floor|level)|first floor|upper-level|second floor|second-storey|level 2\b|2nd storey|upper storeys?', cl):
         lvl = 'upper'
-    if re.search(r'ground (?:floor|level|storey|story)|first storey|lower (?:level|floor|storey)|1st storey|first-storey|single storey ground|ground-floor', cl):
+    if re.search(r'first (?:storey|story) (?:and|or) (?:above|higher|over|upwards)', cl):
+        pass
+    elif re.search(r'ground (?:floor|level|storey|story)|first storey|lower (?:level|floor|storey)|1st storey|first-storey|single storey ground|ground-floor', cl):
         lvl = 'ground' if lvl is None else 'both'
     if lvl == 'both':
         lvl = None  # statement mentions both levels; keep as text (no level split)
@@ -197,7 +213,7 @@ def parse_storeys(c):
 def parse_wall_height(c):
     cl = c.lower()
     out = {}
-    if not re.search(r'wall height|building height|height of (?:the )?wall|wall heights|walls? (?:up to|over|exceeding|not exceeding|less than)|\bheight\b|eaves height|external wall', cl):
+    if not re.search(r'wall height|building height|height of (?:the )?wall|wall heights|walls? (?:up to|over|exceeding|not exceeding|less than|more than|greater than|above)|above ground|\bheight\b|eaves height|external wall', cl):
         return out
     m = re.search(r'(?:wall|building|eaves|external|overall)?\s*heights?[^,;:()]{0,50}?(?:not exceeding|up to|no more than|less than|under|below|maximum(?: of)?|max\.?|at or below|of)\s*' + N + r'\s*m\b', cl)
     # direction needs care: split into max/min words
@@ -277,13 +293,13 @@ def parse_lot_area(c):
                 continue
             r = _seg_numbers_area(sl)
             for k, v in r.items():
-                out.setdefault(k, v)
+                out[k] = v
     return out
 
 
-def parse_lot_width(c):
+def _parse_lot_width_seg(c):
     cl = c.lower().replace('metres', 'm').replace('meters', 'm')
-    if not re.search(r'width|frontage|wide|narrow', cl):
+    if not re.search(r'width|frontage|wide|narrow', cl) or re.search(r'road reserve|reserve width|carriageway|verge', cl):
         return {}
     out = {}
     K = r'(?:lot |site |block |allotment |land |street |road |primary |building line |boundary )*(?:width|frontage|wide)'
@@ -309,6 +325,15 @@ def parse_lot_width(c):
         mm = re.search(pat, cl)
         if mm and key not in out:
             out[key] = num(mm.group(1))
+    return out
+
+
+def parse_lot_width(c):
+    out = {}
+    for seg in re.split(r'[;,:()]', c):
+        r = _parse_lot_width_seg(seg)
+        if r:
+            out.update(r)
     return out
 
 

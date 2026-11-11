@@ -51,7 +51,9 @@
    "quote": "5 metres in RU5 Village Zone and 20 metres in R5 Large Lot Residential Zone",
    "clause": "5 Rural dwellings, General controls",
    "page": 241,
-   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf"
+   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf",
+   "dcp": "Goulburn Mulwaree Development Control Plan 2009, consolidated, effective 27/07/2026 (Amendment 27 adopted 21/07/2026, effective 04/09/2026)",
+   "edition": "Goulburn Mulwaree DCP 2009, effective 27/07/2026 (Amendment 27 adopted 21/07/2026)"
   },
   {
    "id": "goulburn-mulwaree-council-002",
@@ -59,7 +61,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {},
@@ -96,7 +97,9 @@
    "quote": "5 metres in RU5 Village Zone and 20 metres in R5 Large Lot Residential Zone",
    "clause": "5 Rural dwellings, General controls",
    "page": 241,
-   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf"
+   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf",
+   "dcp": "Goulburn Mulwaree Development Control Plan 2009, consolidated, effective 27/07/2026 (Amendment 27 adopted 21/07/2026, effective 04/09/2026)",
+   "edition": "Goulburn Mulwaree DCP 2009, effective 27/07/2026 (Amendment 27 adopted 21/07/2026)"
   },
   {
    "id": "goulburn-mulwaree-council-003",
@@ -146,7 +149,9 @@
    "quote": "50 metres in the RU1 Primary Production Zone,RU2 Rural Landscape Zone",
    "clause": "5 Rural dwellings, General controls",
    "page": 241,
-   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf"
+   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf",
+   "dcp": "Goulburn Mulwaree Development Control Plan 2009, consolidated, effective 27/07/2026 (Amendment 27 adopted 21/07/2026, effective 04/09/2026)",
+   "edition": "Goulburn Mulwaree DCP 2009, effective 27/07/2026 (Amendment 27 adopted 21/07/2026)"
   },
   {
    "id": "goulburn-mulwaree-council-004",
@@ -248,7 +253,9 @@
    "quote": "A minimum front setback of 4.5m",
    "clause": "4 Residential development, Setbacks",
    "page": 218,
-   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf"
+   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf",
+   "dcp": "Goulburn Mulwaree Development Control Plan 2009, consolidated, effective 27/07/2026 (Amendment 27 adopted 21/07/2026, effective 04/09/2026)",
+   "edition": "Goulburn Mulwaree DCP 2009, effective 27/07/2026 (Amendment 27 adopted 21/07/2026)"
   },
   {
    "id": "goulburn-mulwaree-council-005",
@@ -259,25 +266,19 @@
     "garage"
    ],
    "conditions": {},
-   "conditionText": [
-    "all garage and carport entries (width not more than 40% or 6 m of front facade, whichever greater)",
-    "garage and carport entries set back from front facade by minimum 1 m"
-   ],
+   "conditionText": "garage and carport entries set back from front facade by minimum 1 m",
    "garage": {
     "minM": 1.0,
     "sources": [
-     13991,
-     13992
-    ],
-    "behindBuildingLineM": 1.0
+     13991
+    ]
    },
    "front": null,
    "secondaryFront": null,
    "side": null,
    "rear": null,
    "sources": [
-    13991,
-    13992
+    13991
    ],
    "evidence": [
     {
@@ -290,17 +291,6 @@
      "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf",
      "condition": "garage and carport entries set back from front facade by minimum 1 m",
      "edition": "Goulburn Mulwaree DCP 2009, effective 27/07/2026 (Amendment 27 adopted 21/07/2026)"
-    },
-    {
-     "id": 13992,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": "All garage and carport entries are to be set back from the front facade of the dwelling by a minimum of 1 metre",
-     "clause": "4 Traffic safety and management",
-     "page": 219,
-     "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf",
-     "condition": "all garage and carport entries (width not more than 40% or 6 m of front facade, whichever greater)",
-     "edition": "Goulburn Mulwaree DCP 2009, effective 27/07/2026 (Amendment 27 adopted 21/07/2026)"
     }
    ],
    "confidence": "medium",
@@ -308,7 +298,9 @@
    "quote": "minimum of 1 metre and comprise of not more",
    "clause": "4 Traffic safety and management, Car parking and driveways",
    "page": 219,
-   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf"
+   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf",
+   "dcp": "Goulburn Mulwaree Development Control Plan 2009, consolidated, effective 27/07/2026 (Amendment 27 adopted 21/07/2026, effective 04/09/2026)",
+   "edition": "Goulburn Mulwaree DCP 2009, effective 27/07/2026 (Amendment 27 adopted 21/07/2026)"
   },
   {
    "id": "goulburn-mulwaree-council-006",
@@ -352,11 +344,16 @@
    "quote": "frontage – 6 metres",
    "clause": "4 Building setbacks - industrial",
    "page": 233,
-   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf"
+   "source_file": "DCP/dcp-full-document-master-version-am-27-special-enterntainment-precinct-effective-september-2026_1.pdf",
+   "dcp": "Goulburn Mulwaree Development Control Plan 2009, consolidated, effective 27/07/2026 (Amendment 27 adopted 21/07/2026, effective 04/09/2026)",
+   "edition": "Goulburn Mulwaree DCP 2009, effective 27/07/2026 (Amendment 27 adopted 21/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
   "No garage setback rule",
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 13992",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP Appendix J flood policy Table 4 matrix (FPCC by land use) could not be resolved by column; only the freeboard values and floor level controls A1 and A2 recorded | DCP Table D1.2(a) speed/radius and Table D1.4 not recorded as records | setbacks for commercial and secondary frontages, fencing, site coverage for general residential not stated in DCP chapter 4 beyond those recorded"
  ],
  "notes": "Built from 10 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -423,7 +420,34 @@
  "counts": {
   "records": 10,
   "rules": 6,
-  "recordsNotModelled": 0,
+  "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

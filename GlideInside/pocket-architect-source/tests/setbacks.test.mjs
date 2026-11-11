@@ -106,9 +106,10 @@ const none = { lga_slug: 'cobar-shire-council', status: 'none', rules: [] };
 test('council with status none falls back to the Housing Code (NSW)', () => {
   const d = pickRulesDetailed(none, { ...base, zone: 'R2' }, { fallbacks: { NSW: nswFb, QLD: qldFb } });
   assert.equal(d.picked.basis, BASIS_LABELS.NSW);
-  assert.equal(d.picked.basis, 'SEPP Housing Code');
+  assert.equal(d.picked.basis, 'Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)');
   assert.equal(d.picked.front.minM, 4.5);
-  assert.equal(d.picked.front.basis, 'SEPP Housing Code');
+  assert.equal(d.picked.front.basis, BASIS_LABELS.NSW);
+  assert.equal(d.picked.front.dcp, 'NSW Codes SEPP Housing Code');
   assert.deepEqual(d.picked.front.sources, ['hc-1-src']);
   assert.equal(d.attempts[0].basis, 'Council DCP');
 });
@@ -117,7 +118,7 @@ test('DCP that cannot determine a zone falls back; DCP that can does not', () =>
   const fromDcp = pickRules(council, base, { fallbacks: { NSW: nswFb } });
   assert.equal(fromDcp.basis, 'Council DCP');
   const fb = pickRules(council, { ...base, zone: 'R1' }, { fallbacks: { NSW: nswFb } });
-  assert.equal(fb.basis, 'SEPP Housing Code');
+  assert.equal(fb.basis, BASIS_LABELS.NSW);
   assert.equal(fb.attempts.length, 2);
 });
 
@@ -133,6 +134,27 @@ test('QLD always uses the QDC default, labelled as such', () => {
   assert.equal(p.basis, 'QDC (default, council planning scheme may vary)');
   assert.equal(p.front.minM, 6);
   assert.equal(pickRules(council, { ...base, state: 'QLD' }, { fallbacks: { NSW: nswFb } }), null);
+});
+
+test('applied setbacks carry clause, page, DCP name, edition and the check_with_council flag', () => {
+  const c = { lga_slug: 'x', council: 'X', dcp: 'X DCP 2020', status: 'ready', rules: [
+    rule('a', ['R2'], { dcp: 'X DCP 2020', edition: 'commenced 01/07/2020', clause: 'cl 3.1', page: 12, front: slot(6), side: slot(1), rear: slot(3) }),
+    rule('b', ['R3'], { dcp: 'X DCP 2020', edition: 'UNVERIFIED', confidence: 'low', needsReview: 'range printed', flag: 'check_with_council', flagReason: 'range printed',
+      front: slot(6), side: slot(1), rear: slot(3) }),
+  ] };
+  const p = pickRules(c, base);
+  assert.equal(p.front.clause, 'cl 3.1');
+  assert.equal(p.front.page, 12);
+  assert.equal(p.front.dcp, 'X DCP 2020');
+  assert.equal(p.front.edition, 'commenced 01/07/2020');
+  assert.equal(p.flag, null);
+  const q = pickRules(c, { ...base, zone: 'R3' });
+  assert.equal(q.flag, 'check_with_council');
+  assert.match(q.flagReason, /range printed/);
+});
+
+test('no output text uses the word compliant', () => {
+  assert.ok(!/compliant/i.test(JSON.stringify(BASIS_LABELS)));
 });
 
 // ---------------------------------------------------------------- envelope

@@ -1,0 +1,847 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "title": "Pocket Architect council setback rules",
+ "type": "object",
+ "required": [
+  "lga_slug",
+  "council",
+  "lgaNames",
+  "dcp",
+  "status",
+  "rules",
+  "gaps"
+ ],
+ "properties": {
+  "lga_slug": {
+   "type": "string"
+  },
+  "council": {
+   "type": "string"
+  },
+  "lgaNames": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "description": "Upper-case name variants; the app should match against NSW LGA boundary names after upper-casing and stripping punctuation"
+  },
+  "dcp": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "lep": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "status": {
+   "enum": [
+    "ready",
+    "partial",
+    "none"
+   ]
+  },
+  "needsPrecinct": {
+   "type": "boolean"
+  },
+  "precincts": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "coverage": {
+   "type": "object",
+   "description": "zone -> which of front/side/rear/secondaryFront/garage have a numeric rule"
+  },
+  "rules": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "zones",
+     "appliesTo",
+     "conditions",
+     "sources",
+     "quote",
+     "confidence"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "zones": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "SI LEP codes as printed in the DCP; \"*\" = zone not stated (matches any zone except business/industrial/special purpose); \"RU*\", \"B*\", \"IN*\" = family inferred from the parameter category"
+     },
+     "appliesTo": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "dwelling, secondary_dwelling, dual_occupancy, multi_dwelling, residential_flat_building, shop_top_housing, boarding_house, seniors_housing, outbuilding, garage, swimming_pool, verandah_deck, commercial, industrial, or \"any\" (use not stated)"
+     },
+     "conditions": {
+      "type": "object",
+      "properties": {
+       "storeys": {
+        "type": "integer"
+       },
+       "storeysMin": {
+        "type": "integer"
+       },
+       "storeysMax": {
+        "type": "integer"
+       },
+       "level": {
+        "enum": [
+         "ground",
+         "upper"
+        ]
+       },
+       "wallHeightMaxM": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "wallHeightOverM": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "lotWidthMinM": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "lotWidthMaxM": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "lotAreaMinM2": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "lotAreaMaxM2": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "cornerLot": {
+        "type": "boolean"
+       },
+       "landSizeMap": {
+        "type": "string"
+       },
+       "precinct": {
+        "type": "string"
+       },
+       "qualifiers": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        },
+        "description": "Conditions the app cannot know; the rule applies only when the caller asserts every qualifier (e.g. battle_axe, laneway, classified_road, established_area, averaging_impractical)"
+       }
+      }
+     },
+     "conditionText": {
+      "type": [
+       "string",
+       "array"
+      ]
+     },
+     "front": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "minM": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "basis": {
+        "enum": [
+         "fixed",
+         "average_neighbours",
+         "greater_of",
+         "lesser_of",
+         "percent_of_primary",
+         "ncc",
+         "text"
+        ]
+       },
+       "note": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "printed": {
+        "type": "string"
+       },
+       "percent": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "formula": {
+        "type": "string"
+       },
+       "rangeM": {
+        "type": "array",
+        "items": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "minItems": 2,
+        "maxItems": 2
+       },
+       "perStorey": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "storey": {
+           "type": "integer"
+          },
+          "minM": {
+           "type": "number"
+          }
+         }
+        }
+       },
+       "sources": {
+        "type": "array",
+        "items": {
+         "type": "integer"
+        }
+       },
+       "bands": {
+        "type": "array",
+        "description": "Optional band table (research files). Bounds inclusive.",
+        "items": {
+         "type": "object",
+         "properties": {
+          "lotWidthMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotWidthMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotAreaMinM2": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotAreaMaxM2": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "buildingHeightMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "buildingHeightMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "wallHeightMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "wallHeightMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "storeys": {
+           "type": "integer"
+          },
+          "minM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "note": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "minM"
+         ]
+        }
+       }
+      }
+     },
+     "secondaryFront": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "minM": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "basis": {
+        "enum": [
+         "fixed",
+         "average_neighbours",
+         "greater_of",
+         "lesser_of",
+         "percent_of_primary",
+         "ncc",
+         "text"
+        ]
+       },
+       "note": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "printed": {
+        "type": "string"
+       },
+       "percent": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "formula": {
+        "type": "string"
+       },
+       "rangeM": {
+        "type": "array",
+        "items": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "minItems": 2,
+        "maxItems": 2
+       },
+       "perStorey": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "storey": {
+           "type": "integer"
+          },
+          "minM": {
+           "type": "number"
+          }
+         }
+        }
+       },
+       "sources": {
+        "type": "array",
+        "items": {
+         "type": "integer"
+        }
+       },
+       "bands": {
+        "type": "array",
+        "description": "Optional band table (research files). Bounds inclusive.",
+        "items": {
+         "type": "object",
+         "properties": {
+          "lotWidthMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotWidthMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotAreaMinM2": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotAreaMaxM2": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "buildingHeightMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "buildingHeightMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "wallHeightMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "wallHeightMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "storeys": {
+           "type": "integer"
+          },
+          "minM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "note": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "minM"
+         ]
+        }
+       }
+      }
+     },
+     "side": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "minM": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "basis": {
+        "enum": [
+         "fixed",
+         "average_neighbours",
+         "greater_of",
+         "lesser_of",
+         "percent_of_primary",
+         "ncc",
+         "text"
+        ]
+       },
+       "note": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "printed": {
+        "type": "string"
+       },
+       "percent": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "formula": {
+        "type": "string"
+       },
+       "rangeM": {
+        "type": "array",
+        "items": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "minItems": 2,
+        "maxItems": 2
+       },
+       "perStorey": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "storey": {
+           "type": "integer"
+          },
+          "minM": {
+           "type": "number"
+          }
+         }
+        }
+       },
+       "sources": {
+        "type": "array",
+        "items": {
+         "type": "integer"
+        }
+       },
+       "bands": {
+        "type": "array",
+        "description": "Optional band table (research files). Bounds inclusive.",
+        "items": {
+         "type": "object",
+         "properties": {
+          "lotWidthMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotWidthMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotAreaMinM2": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotAreaMaxM2": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "buildingHeightMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "buildingHeightMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "wallHeightMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "wallHeightMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "storeys": {
+           "type": "integer"
+          },
+          "minM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "note": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "minM"
+         ]
+        }
+       }
+      }
+     },
+     "rear": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "minM": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "basis": {
+        "enum": [
+         "fixed",
+         "average_neighbours",
+         "greater_of",
+         "lesser_of",
+         "percent_of_primary",
+         "ncc",
+         "text"
+        ]
+       },
+       "note": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "printed": {
+        "type": "string"
+       },
+       "percent": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "formula": {
+        "type": "string"
+       },
+       "rangeM": {
+        "type": "array",
+        "items": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "minItems": 2,
+        "maxItems": 2
+       },
+       "perStorey": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "storey": {
+           "type": "integer"
+          },
+          "minM": {
+           "type": "number"
+          }
+         }
+        }
+       },
+       "sources": {
+        "type": "array",
+        "items": {
+         "type": "integer"
+        }
+       },
+       "bands": {
+        "type": "array",
+        "description": "Optional band table (research files). Bounds inclusive.",
+        "items": {
+         "type": "object",
+         "properties": {
+          "lotWidthMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotWidthMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotAreaMinM2": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "lotAreaMaxM2": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "buildingHeightMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "buildingHeightMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "wallHeightMinM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "wallHeightMaxM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "storeys": {
+           "type": "integer"
+          },
+          "minM": {
+           "type": [
+            "number",
+            "null"
+           ]
+          },
+          "note": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "minM"
+         ]
+        }
+       }
+      }
+     },
+     "garage": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "properties": {
+       "minM": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "behindBuildingLineM": {
+        "type": [
+         "number",
+         "null"
+        ]
+       },
+       "note": {
+        "type": "string"
+       },
+       "sources": {
+        "type": "array"
+       }
+      }
+     },
+     "sources": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      },
+      "description": "extract record ids"
+     },
+     "evidence": {
+      "type": "array",
+      "items": {
+       "type": "object"
+      }
+     },
+     "quote": {
+      "type": "string"
+     },
+     "clause": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "page": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "source_file": {
+      "type": "string"
+     },
+     "confidence": {
+      "enum": [
+       "high",
+       "medium",
+       "low"
+      ]
+     },
+     "needsReview": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "origin": {
+      "type": "string",
+      "description": "\"extract\" (default) or \"research\" for rules merged from the research agent"
+     }
+    }
+   }
+  },
+  "gaps": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "notes": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "basis": {
+   "type": "string",
+   "description": "Basis label for the UI; \"Council DCP\" for rules from this file"
+  }
+ }
+}

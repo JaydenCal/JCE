@@ -71,7 +71,9 @@
    "quote": "boundaries on land in Zone RU1 or RU2 is 10m.",
    "clause": "C7",
    "page": 124,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
   },
   {
    "id": "tweed-shire-council-002",
@@ -158,7 +160,9 @@
    "quote": ">900-1500m²                           6m                              3m",
    "clause": "Table D1.2",
    "page": 121,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
   },
   {
    "id": "tweed-shire-council-003",
@@ -205,7 +209,11 @@
    "quote": ">900-1500m²                                5m                                   12m",
    "clause": "Table D1.4",
    "page": 123,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "tweed-shire-council-004",
@@ -291,7 +299,9 @@
    "quote": "<300m²                                3.5m                            2m",
    "clause": "Table D1.2",
    "page": 121,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
   },
   {
    "id": "tweed-shire-council-005",
@@ -337,7 +347,11 @@
    "quote": "<300m²                                 3m                                  4.5m",
    "clause": "Table D1.4",
    "page": 123,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "tweed-shire-council-006",
@@ -424,7 +438,9 @@
    "quote": ">300-600m²                            4.5m                            2m",
    "clause": "Table D1.2",
    "page": 121,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
   },
   {
    "id": "tweed-shire-council-007",
@@ -471,7 +487,11 @@
    "quote": ">300-600m²                                 4.5m                                  6m",
    "clause": "Table D1.4",
    "page": 123,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "tweed-shire-council-008",
@@ -558,7 +578,9 @@
    "quote": ">600-900m²                            6m                              3m",
    "clause": "Table D1.2",
    "page": 121,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
   },
   {
    "id": "tweed-shire-council-009",
@@ -605,7 +627,11 @@
    "quote": ">600-900m²                                 4.5m                                  8m",
    "clause": "Table D1.4",
    "page": 123,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "tweed-shire-council-010",
@@ -691,7 +717,9 @@
    "quote": ">1500m²                               8m                              5m",
    "clause": "Table D1.2",
    "page": 121,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
   },
   {
    "id": "tweed-shire-council-011",
@@ -737,7 +765,11 @@
    "quote": ">1500m²                                10m                                   15m",
    "clause": "Table D1.4",
    "page": 123,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "tweed-shire-council-012",
@@ -785,7 +817,9 @@
    "quote": "<4.5m                                0.9m                                0.45m",
    "clause": "Table D1.3",
    "page": 123,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
   },
   {
    "id": "tweed-shire-council-013",
@@ -833,7 +867,11 @@
    "quote": ">4.5m                                1.5m                                 0.9m",
    "clause": "Table D1.3",
    "page": 123,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "tweed-shire-council-014",
@@ -882,7 +920,9 @@
    "quote": "average primary road setback of neighbouring dwellings within 40 metres of the site",
    "clause": "C1",
    "page": 121,
-   "source_file": "DCP/dcp-2025.pdf"
+   "source_file": "DCP/dcp-2025.pdf",
+   "dcp": "Tweed Development Control Plan 2025 (effective 01/06/2026) read for Part C subdivision, D1 dwelling controls and E4 parking; Section A3 Development of Flood Liable Land Version 1.7 (4 March 2026). The 2008 DCP sections were not in the saved text; currency versus the 2008 sections is not confirmed here",
+   "edition": "Tweed Development Control Plan 2025 (effective 01/06/2026)"
   }
  ],
  "gaps": [
@@ -939,5 +979,32 @@
   "rules": 14,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-008)); side (no rule for this zone/use/lot); rear (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-007, tweed-shire-council-008, tweed-shire-council-009))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-008)); side (no rule for this zone/use/lot); rear (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-007, tweed-shire-council-008, tweed-shire-council-009))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-008)); side (no rule for this zone/use/lot); rear (conflicting rules of equal specificity (tweed-shire-council-006, tweed-shire-council-007, tweed-shire-council-008, tweed-shire-council-009))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (conflicting rules of equal specificity (tweed-shire-council-010, tweed-shire-council-011))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (conflicting rules of equal specificity (tweed-shire-council-008, tweed-shire-council-009))"
+  }
  }
 }

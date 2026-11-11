@@ -53,7 +53,9 @@
    "quote": "minimum setbacks shall be 5m from the primary road frontage",
    "clause": "2.1.2 Control 2",
    "page": 15,
-   "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf"
+   "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf",
+   "dcp": "Deniliquin Development Control Plan 2016 (Chapters 1 to 14; chapter version dated 25/11/2019); adoption date UNVERIFIED. Single DCP covering Deniliquin",
+   "edition": "Deniliquin DCP 2016 (chapter version date 25/11/2019)"
   },
   {
    "id": "edward-river-council-002",
@@ -65,7 +67,6 @@
    ],
    "conditions": {
     "qualifiers": [
-     "adjoins_other",
      "established_area"
     ]
    },
@@ -99,11 +100,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "needsReview": null,
    "quote": "average of the setback of the adjoining allotments (whichever is the lesser)",
    "clause": "2.1.2 Control 1",
    "page": 15,
-   "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf"
+   "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf",
+   "dcp": "Deniliquin Development Control Plan 2016 (Chapters 1 to 14; chapter version dated 25/11/2019); adoption date UNVERIFIED. Single DCP covering Deniliquin",
+   "edition": "Deniliquin DCP 2016 (chapter version date 25/11/2019)"
   },
   {
    "id": "edward-river-council-003",
@@ -113,12 +116,13 @@
    "appliesTo": [
     "dwelling"
    ],
-   "conditions": {
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Residential zones: minimum or average of adjoining allotments, whichever is lesser",
+   "conditions": {},
+   "conditionText": [
+    "Residential corner allotment, secondary road frontage",
+    "Residential zones: minimum or average of adjoining allotments, whichever is lesser",
+    "Residential zones: rear setbacks per Building Code of Australia",
+    "Residential zones: side setbacks per Building Code of Australia"
+   ],
    "front": {
     "minM": 5.0,
     "basis": "fixed",
@@ -126,47 +130,6 @@
      12211
     ]
    },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    12211
-   ],
-   "evidence": [
-    {
-     "id": 12211,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Setback from the street shall be a minimum of 5m from the front boundary or the average",
-     "clause": "2.1.2 Control 1",
-     "page": 15,
-     "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf",
-     "condition": "Residential zones: minimum or average of adjoining allotments, whichever is lesser",
-     "edition": "Deniliquin DCP 2016 (chapter version date 25/11/2019)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "Setback from the street shall be a minimum of 5m from the front boundary or the average",
-   "clause": "2.1.2 Control 1",
-   "page": 15,
-   "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf"
-  },
-  {
-   "id": "edward-river-council-004",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {},
-   "conditionText": [
-    "Residential corner allotment, secondary road frontage",
-    "Residential zones: rear setbacks per Building Code of Australia",
-    "Residential zones: side setbacks per Building Code of Australia"
-   ],
    "secondaryFront": {
     "minM": 2.0,
     "basis": "fixed",
@@ -190,14 +153,25 @@
      12215
     ]
    },
-   "front": null,
    "garage": null,
    "sources": [
+    12211,
     12213,
     12215,
     12216
    ],
    "evidence": [
+    {
+     "id": 12211,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Setback from the street shall be a minimum of 5m from the front boundary or the average",
+     "clause": "2.1.2 Control 1",
+     "page": 15,
+     "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf",
+     "condition": "Residential zones: minimum or average of adjoining allotments, whichever is lesser",
+     "edition": "Deniliquin DCP 2016 (chapter version date 25/11/2019)"
+    },
     {
      "id": 12213,
      "parameter": "front_secondary",
@@ -233,25 +207,25 @@
     }
    ],
    "confidence": "low",
-   "needsReview": null,
-   "quote": "2m from the secondary road frontage",
-   "clause": "2.1.2 Control 2",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Setback from the street shall be a minimum of 5m from the front boundary or the average",
+   "clause": "2.1.2 Control 1",
    "page": 15,
-   "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf"
+   "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf",
+   "dcp": "Deniliquin Development Control Plan 2016 (Chapters 1 to 14; chapter version dated 25/11/2019); adoption date UNVERIFIED. Single DCP covering Deniliquin",
+   "edition": "Deniliquin DCP 2016 (chapter version date 25/11/2019)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "edward-river-council-005",
+   "id": "edward-river-council-004",
    "zones": [
     "IN*"
    ],
    "appliesTo": [
     "industrial"
    ],
-   "conditions": {
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
+   "conditions": {},
    "conditionText": "Industrial zones, front boundary (or average of adjoining allotments, whichever is lesser)",
    "front": {
     "minM": 10.0,
@@ -281,11 +255,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "needsReview": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
    "quote": "The minimum setback from the front boundary is 10m or an average of the setback of the",
    "clause": "4.3 Control 1",
    "page": 40,
-   "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf"
+   "source_file": "DCP/Deniliquin_DCP2016_Complete.pdf",
+   "dcp": "Deniliquin Development Control Plan 2016 (Chapters 1 to 14; chapter version dated 25/11/2019); adoption date UNVERIFIED. Single DCP covering Deniliquin",
+   "edition": "Deniliquin DCP 2016 (chapter version date 25/11/2019)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -301,7 +279,7 @@
    "rear": false,
    "secondaryFront": true,
    "garage": false,
-   "rules": 4
+   "rules": 3
   },
   "IN*": {
    "front": false,
@@ -316,8 +294,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 8,
-  "rules": 5,
+  "rules": 4,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side; rear"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side; rear"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side; rear"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side; rear"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side; rear"
+  }
  }
 }

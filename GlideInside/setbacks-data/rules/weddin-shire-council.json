@@ -55,7 +55,9 @@
    "quote": "should be setback a minimum 1500mm from the",
    "clause": "5.8 Standard 2",
    "page": 36,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
+   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+   "dcp": "Weddin Development Control Plan 2014 (amended), single consolidated DCP; adoption date UNVERIFIED",
+   "edition": "Weddin DCP 2014 (amended)"
   },
   {
    "id": "weddin-shire-council-002",
@@ -102,7 +104,9 @@
    "quote": "900mm from the side or rear boundary.",
    "clause": "5.8 Standard 1",
    "page": 36,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
+   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+   "dcp": "Weddin Development Control Plan 2014 (amended), single consolidated DCP; adoption date UNVERIFIED",
+   "edition": "Weddin DCP 2014 (amended)"
   },
   {
    "id": "weddin-shire-council-003",
@@ -167,7 +171,9 @@
    "quote": "The minimum building line shall be 6 metres.",
    "clause": "5.7 Standard 1",
    "page": 35,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
+   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+   "dcp": "Weddin Development Control Plan 2014 (amended), single consolidated DCP; adoption date UNVERIFIED",
+   "edition": "Weddin DCP 2014 (amended)"
   },
   {
    "id": "weddin-shire-council-004",
@@ -213,7 +219,9 @@
    "quote": "skillion roof ) can be build a minimum of 500mm",
    "clause": "5.8 Standard 4",
    "page": 36,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
+   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+   "dcp": "Weddin Development Control Plan 2014 (amended), single consolidated DCP; adoption date UNVERIFIED",
+   "edition": "Weddin DCP 2014 (amended)"
   },
   {
    "id": "weddin-shire-council-005",
@@ -257,7 +265,9 @@
    "quote": "Encroachments to the minimum building line are not",
    "clause": "5.7 Standard 3",
    "page": 35,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
+   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+   "dcp": "Weddin Development Control Plan 2014 (amended), single consolidated DCP; adoption date UNVERIFIED",
+   "edition": "Weddin DCP 2014 (amended)"
   },
   {
    "id": "weddin-shire-council-006",
@@ -304,7 +314,9 @@
    "quote": "should be setback a minimum 1500mm from the side",
    "clause": "6.10 Standard 2",
    "page": 36,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
+   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+   "dcp": "Weddin Development Control Plan 2014 (amended), single consolidated DCP; adoption date UNVERIFIED",
+   "edition": "Weddin DCP 2014 (amended)"
   },
   {
    "id": "weddin-shire-council-007",
@@ -351,7 +363,9 @@
    "quote": "900mm from the side or rear boundary.",
    "clause": "6.10 Standard 1",
    "page": 43,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
+   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+   "dcp": "Weddin Development Control Plan 2014 (amended), single consolidated DCP; adoption date UNVERIFIED",
+   "edition": "Weddin DCP 2014 (amended)"
   },
   {
    "id": "weddin-shire-council-008",
@@ -436,7 +450,9 @@
    "quote": "The minimum building line shall 6 metres.",
    "clause": "6.9 Standard 1",
    "page": 43,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
+   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+   "dcp": "Weddin Development Control Plan 2014 (amended), single consolidated DCP; adoption date UNVERIFIED",
+   "edition": "Weddin DCP 2014 (amended)"
   },
   {
    "id": "weddin-shire-council-009",
@@ -446,20 +462,16 @@
    "appliesTo": [
     "industrial"
    ],
-   "conditions": {
-    "qualifiers": [
-     "open_space_frontage"
-    ]
-   },
+   "conditions": {},
    "conditionText": [
-    "Weddin Industrial Park, setback to all other roads",
+    "Industrial (Chapter 11), light industrial development building line",
     "Weddin Industrial Park, side setback to all buildings and trafficable areas"
    ],
    "front": {
-    "minM": 15.0,
+    "minM": 6.0,
     "basis": "fixed",
     "sources": [
-     36924
+     36922
     ]
    },
    "side": {
@@ -473,19 +485,19 @@
    "rear": null,
    "garage": null,
    "sources": [
-    36924,
+    36922,
     36925
    ],
    "evidence": [
     {
-     "id": 36924,
+     "id": 36922,
      "parameter": "setback_industrial",
      "slot": "front",
-     "quote": "A minimum set back of 15 metres shall be provided to",
-     "clause": "11.13.2 Standard 1",
-     "page": 73,
+     "quote": "Generally the building line is 6 metres for light",
+     "clause": "11.7 Standard 1",
+     "page": 70,
      "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
-     "condition": "Weddin Industrial Park, setback to all other roads",
+     "condition": "Industrial (Chapter 11), light industrial development building line",
      "edition": "Weddin DCP 2014 (amended)"
     },
     {
@@ -501,11 +513,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (open_space_frontage); see conditionText",
-   "quote": "A minimum set back of 15 metres shall be provided to",
-   "clause": "11.13.2 Standard 1",
-   "page": 73,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
+   "quote": "Generally the building line is 6 metres for light",
+   "clause": "11.7 Standard 1",
+   "page": 70,
+   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+   "dcp": "Weddin Development Control Plan 2014 (amended), single consolidated DCP; adoption date UNVERIFIED",
+   "edition": "Weddin DCP 2014 (amended)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "weddin-shire-council-010",
@@ -516,56 +532,16 @@
     "industrial"
    ],
    "conditions": {},
-   "conditionText": "Industrial (Chapter 11), light industrial development building line",
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     36922
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    36922
+   "conditionText": [
+    "Industrial (Chapter 11), general and heavy industrial building line",
+    "Weddin Industrial Park, setback to all other roads"
    ],
-   "evidence": [
-    {
-     "id": 36922,
-     "parameter": "setback_industrial",
-     "slot": "front",
-     "quote": "Generally the building line is 6 metres for light",
-     "clause": "11.7 Standard 1",
-     "page": 70,
-     "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
-     "condition": "Industrial (Chapter 11), light industrial development building line",
-     "edition": "Weddin DCP 2014 (amended)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
-   "quote": "Generally the building line is 6 metres for light",
-   "clause": "11.7 Standard 1",
-   "page": 70,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
-  },
-  {
-   "id": "weddin-shire-council-011",
-   "zones": [
-    "IN*"
-   ],
-   "appliesTo": [
-    "industrial"
-   ],
-   "conditions": {},
-   "conditionText": "Industrial (Chapter 11), general and heavy industrial building line",
    "front": {
     "minM": 15.0,
     "basis": "fixed",
     "sources": [
-     36923
+     36923,
+     36924
     ]
    },
    "secondaryFront": null,
@@ -573,7 +549,8 @@
    "rear": null,
    "garage": null,
    "sources": [
-    36923
+    36923,
+    36924
    ],
    "evidence": [
     {
@@ -586,6 +563,17 @@
      "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
      "condition": "Industrial (Chapter 11), general and heavy industrial building line",
      "edition": "Weddin DCP 2014 (amended)"
+    },
+    {
+     "id": 36924,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "A minimum set back of 15 metres shall be provided to",
+     "clause": "11.13.2 Standard 1",
+     "page": 73,
+     "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+     "condition": "Weddin Industrial Park, setback to all other roads",
+     "edition": "Weddin DCP 2014 (amended)"
     }
    ],
    "confidence": "low",
@@ -593,7 +581,11 @@
    "quote": "15 metres for general and",
    "clause": "11.7 Standard 1",
    "page": 70,
-   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf"
+   "source_file": "DCP/Weddin-DCP-2014-Amended-A.pdf",
+   "dcp": "Weddin Development Control Plan 2014 (amended), single consolidated DCP; adoption date UNVERIFIED",
+   "edition": "Weddin DCP 2014 (amended)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   }
  ],
  "gaps": [
@@ -615,15 +607,42 @@
    "rear": false,
    "secondaryFront": false,
    "garage": false,
-   "rules": 3
+   "rules": 2
   }
  },
  "precincts": [],
  "needsPrecinct": false,
  "counts": {
   "records": 15,
-  "rules": 11,
+  "rules": 10,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  }
  }
 }

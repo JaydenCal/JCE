@@ -24,7 +24,8 @@
    "conditions": {},
    "conditionText": "D2.3 Dual Occupancy (R1, R3 and R5 zones): attached garages from property boundary or 1 m behind facade, whichever greater",
    "garage": {
-    "minM": 6.0,
+    "minM": null,
+    "behindBuildingLineM": 6.0,
     "sources": [
      17523
     ]
@@ -40,7 +41,7 @@
     {
      "id": 17523,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "are setback a minimum six (6) metres from the",
      "clause": "Table D2.6, 1.3g",
      "page": 70,
@@ -54,7 +55,9 @@
    "quote": "are setback a minimum six (6) metres from the",
    "clause": "Table D2.6, 1.3g",
    "page": 70,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-002",
@@ -102,7 +105,9 @@
    "quote": "A minimum setback of one and a half (1.5) metres",
    "clause": "Table D2.6, 1.3e",
    "page": 70,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-003",
@@ -169,7 +174,9 @@
    "quote": "A minimum absolute setback of three (3) metres for",
    "clause": "Table D2.6, 1.3f",
    "page": 70,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-004",
@@ -215,7 +222,9 @@
    "quote": "A minimum set back of five (5) metres shall be",
    "clause": "Table D2.6, 1.2a",
    "page": 69,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-005",
@@ -299,7 +308,11 @@
    "quote": "A minimum setback of ten (10) metres shall be",
    "clause": "Table D2.5, 1.2a",
    "page": 62,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "kempsey-shire-council-006",
@@ -307,7 +320,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": "D4 Business and Commercial Development: RU5 Village zone, front setback from front boundary or average of two nearest buildings",
@@ -343,7 +356,11 @@
    "quote": "Is five (5) metres from the front property",
    "clause": "Table D4.1, 1.2f ii",
    "page": 163,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "kempsey-shire-council-007",
@@ -412,7 +429,9 @@
    "quote": "(18) metres from the primary road frontage so as not",
    "clause": "Table D2.6, 1.5a",
    "page": 70,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-008",
@@ -458,7 +477,9 @@
    "quote": "A minimum setback of 1.5 metres for side boundaries",
    "clause": "Table D2.2 controls 1.2e",
    "page": 55,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-009",
@@ -507,7 +528,9 @@
    "quote": "boundary with the classified road of whichever is the",
    "clause": "Table D3.1, 1.2e",
    "page": 124,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-010",
@@ -555,7 +578,9 @@
    "quote": "boundary setback, to a maximum of 1.50 metres and",
    "clause": "controls 1.1b",
    "page": 54,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-011",
@@ -620,7 +645,9 @@
    "quote": "< 300 m2 70 5.00 m 900mm 3.00 m",
    "clause": "Table D2.2; control 1.2f",
    "page": 54,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-012",
@@ -685,7 +712,9 @@
    "quote": "< 300 m2 70 5.00 m 900mm 3.00 m",
    "clause": "Table D2.2",
    "page": 54,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-013",
@@ -698,7 +727,8 @@
    "conditions": {},
    "conditionText": "D2.1 Dwelling Houses: attached garages, from property boundary or 1 m behind house facade, whichever greater",
    "garage": {
-    "minM": 6.0,
+    "minM": null,
+    "behindBuildingLineM": 6.0,
     "sources": [
      17445
     ]
@@ -714,7 +744,7 @@
     {
      "id": 17445,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "setback a minimum 6 metres from the property",
      "clause": "controls 1.2g",
      "page": 55,
@@ -728,7 +758,9 @@
    "quote": "setback a minimum 6 metres from the property",
    "clause": "controls 1.2g",
    "page": 55,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-014",
@@ -796,7 +828,11 @@
    "quote": "or 4.5m or 6m",
    "clause": "Table D2.13",
    "page": 87,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "kempsey-shire-council-015",
@@ -843,7 +879,11 @@
    "quote": "> single 5m 8m",
    "clause": "Table D2.13",
    "page": 87,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "kempsey-shire-council-016",
@@ -911,7 +951,11 @@
    "quote": "or 4.5m or 6m",
    "clause": "Table D2.13",
    "page": 87,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "kempsey-shire-council-017",
@@ -958,7 +1002,11 @@
    "quote": "> single 5m 8m",
    "clause": "Table D2.13",
    "page": 87,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "kempsey-shire-council-018",
@@ -1025,7 +1073,9 @@
    "quote": "6m, or as 6m, or as",
    "clause": "Table D2.13",
    "page": 87,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-019",
@@ -1071,7 +1121,11 @@
    "quote": "> single 1.5m or 1.5m or BCA",
    "clause": "Table D2.13",
    "page": 87,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "kempsey-shire-council-020",
@@ -1140,7 +1194,11 @@
    "quote": "or 4.5m building line or 6m",
    "clause": "Table D2.16",
    "page": 101,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "kempsey-shire-council-021",
@@ -1188,7 +1246,11 @@
    "quote": "5m 8m",
    "clause": "Table D2.16",
    "page": 101,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "kempsey-shire-council-022",
@@ -1257,7 +1319,11 @@
    "quote": "building line or 6m",
    "clause": "Table D2.16",
    "page": 101,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "kempsey-shire-council-023",
@@ -1305,7 +1371,11 @@
    "quote": "5m 8m",
    "clause": "Table D2.16",
    "page": 101,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "kempsey-shire-council-024",
@@ -1352,7 +1422,9 @@
    "quote": "0.9m or BCA 0.9m or BCA",
    "clause": "Table D2.16",
    "page": 101,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-025",
@@ -1399,7 +1471,11 @@
    "quote": "1.5m or BCA 1.5m or BCA",
    "clause": "Table D2.16",
    "page": 101,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "kempsey-shire-council-026",
@@ -1446,7 +1522,9 @@
    "quote": "A minimum setback of 1.5 metres for side",
    "clause": "Table D2.10, 1.2d",
    "page": 78,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-027",
@@ -1494,7 +1572,9 @@
    "quote": "A minimum absolute setback of 900mm for side",
    "clause": "Table D2.10, 1.2c",
    "page": 78,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-028",
@@ -1539,7 +1619,9 @@
    "quote": "A minimum setback of 3 metres for rear",
    "clause": "Table D2.10, 1.2e",
    "page": 78,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-029",
@@ -1583,7 +1665,9 @@
    "quote": "are setback a minimum 6 metres from the property",
    "clause": "Table D2.10, 1.2f",
    "page": 78,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)"
   },
   {
    "id": "kempsey-shire-council-030",
@@ -1629,7 +1713,11 @@
    "quote": "extend to the street alignment (i.e. zero front setback)",
    "clause": "Table D4.1, 1.2a",
    "page": 162,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "kempsey-shire-council-031",
@@ -1673,7 +1761,11 @@
    "quote": "South Street, South Kempsey fifteen (15)",
    "clause": "Table D5.1, 1.3a",
    "page": 179,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "kempsey-shire-council-032",
@@ -1733,7 +1825,11 @@
    "quote": "Akubra Place, South Kempsey six (6) metres;",
    "clause": "Table D5.1, 1.3a",
    "page": 179,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
    "id": "kempsey-shire-council-033",
@@ -1777,7 +1873,11 @@
    "quote": "Woolford Crescent South Kempsey four (4)",
    "clause": "Table D5.1, 1.3a",
    "page": 179,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
    "id": "kempsey-shire-council-034",
@@ -1837,7 +1937,11 @@
    "quote": "Nance Road, South Kempsey twelve (12)",
    "clause": "Table D5.1, 1.3a",
    "page": 179,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
    "id": "kempsey-shire-council-035",
@@ -1940,7 +2044,11 @@
    "quote": "road of at least eighteen (18) metres.",
    "clause": "Table D3.1, 1.2c",
    "page": 124,
-   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf"
+   "source_file": "DCP/part-d-development-requirements-kempsey-shire-council-development-control-plan-2026.pdf",
+   "dcp": "Kempsey DCP 2026, adopted 16/06/2026, in force 01/07/2026 (Parts A to E; DCP 2013 superseded, not used)",
+   "edition": "Kempsey DCP 2026 (adopted 16/06/2026, in force 01/07/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
@@ -2068,5 +2176,32 @@
   "rules": 35,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (kempsey-shire-council-005, kempsey-shire-council-011, kempsey-shire-council-027))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (kempsey-shire-council-011, kempsey-shire-council-027, kempsey-shire-council-035)); rear (conflicting rules of equal specificity (kempsey-shire-council-011, kempsey-shire-council-035))"
+  }
  }
 }

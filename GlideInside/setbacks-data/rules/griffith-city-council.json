@@ -16,7 +16,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "lotAreaMinM2": 30000000.0,
@@ -95,7 +95,9 @@
    "quote": "Front 7.5 m 7.5 m 10 m 15 m",
    "clause": "8.0(c)",
    "page": 67,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-002",
@@ -103,7 +105,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "lotAreaMinM2": 10000.0,
@@ -182,7 +184,9 @@
    "quote": "Front 7.5 m 7.5 m 10 m 15 m",
    "clause": "8.0(c)",
    "page": 67,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-003",
@@ -190,7 +194,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "lotAreaMaxM2": 3000.0
@@ -268,7 +272,9 @@
    "quote": "Front 7.5 m 7.5 m 10 m 15 m",
    "clause": "8.0(c)",
    "page": 67,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-004",
@@ -276,7 +282,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "lotAreaMinM2": 20000.0
@@ -354,7 +360,9 @@
    "quote": "Front 7.5 m 7.5 m 10 m 15 m",
    "clause": "8.0(c)",
    "page": 67,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-005",
@@ -362,7 +370,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "qualifiers": [
@@ -402,7 +410,9 @@
    "quote": "Arterial 20 m 20 m 20 m 20 m",
    "clause": "8.0(c)",
    "page": 67,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-006",
@@ -448,7 +458,9 @@
    "quote": "Ground level: minimum setback is 2 m",
    "clause": "4.7.4(a)",
    "page": 34,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-007",
@@ -494,7 +506,9 @@
    "quote": "Upper storeys: minimum setback is 3 m",
    "clause": "4.7.4(b)",
    "page": 34,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-008",
@@ -542,7 +556,9 @@
    "quote": "permitted to be 4.5 m",
    "clause": "4.7.1(b)",
    "page": 32,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-009",
@@ -587,7 +603,9 @@
    "quote": "The minimum separation between detached dual … occupancies must be 1.8 m",
    "clause": "5.4(i)",
    "page": 52,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-010",
@@ -631,7 +649,9 @@
    "quote": "Front setbacks to primary roads - 3.5 m",
    "clause": "5.4(g)",
    "page": 52,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-011",
@@ -675,7 +695,11 @@
    "quote": "Secondary setback to secondary road – 2 m",
    "clause": "5.4(g)",
    "page": 52,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
   },
   {
    "id": "griffith-city-council-012",
@@ -722,7 +746,9 @@
    "quote": "Two storey dwellings: minimum setback of the upper storey is 1.5 m",
    "clause": "4.7.3(b)",
    "page": 33,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-013",
@@ -768,7 +794,9 @@
    "quote": "Single storey dwellings: minimum setback is 0.9 m with the eaves (overhang) setback a minimum of 450 mm",
    "clause": "4.7.3(a)",
    "page": 33,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-014",
@@ -812,7 +840,9 @@
    "quote": "Front setbacks must generally be 6 m",
    "clause": "4.7.1(a)",
    "page": 32,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-015",
@@ -856,7 +886,11 @@
    "quote": "a reduced setback of 4.5 m will be considered",
    "clause": "4.7.1(a)",
    "page": 32,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "griffith-city-council-016",
@@ -901,7 +935,9 @@
    "quote": "3.5 m from a",
    "clause": "4.17(b)",
    "page": 45,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-017",
@@ -912,25 +948,19 @@
     "garage"
    ],
    "conditions": {},
-   "conditionText": [
-    "Garage door openings, combined width, lot 12 to 15 m",
-    "Garages, general (from front boundary)"
-   ],
+   "conditionText": "Garages, general (from front boundary)",
    "garage": {
     "minM": 5.5,
     "sources": [
-     14406,
-     14465
-    ],
-    "behindBuildingLineM": 5.2
+     14406
+    ]
    },
    "front": null,
    "secondaryFront": null,
    "side": null,
    "rear": null,
    "sources": [
-    14406,
-    14465
+    14406
    ],
    "evidence": [
     {
@@ -943,17 +973,6 @@
      "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
      "condition": "Garages, general (from front boundary)",
      "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
-    },
-    {
-     "id": 14465,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": "12 m – 15 m 5.2 m",
-     "clause": "5.5.1(n)",
-     "page": 55,
-     "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
-     "condition": "Garage door openings, combined width, lot 12 to 15 m",
-     "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
     }
    ],
    "confidence": "medium",
@@ -961,7 +980,9 @@
    "quote": "Garages must be setback a minimum of 5.5 m",
    "clause": "4.7.1(c)",
    "page": 32,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   },
   {
    "id": "griffith-city-council-018",
@@ -1004,98 +1025,14 @@
    "quote": "A 3 m setback from the front boundary must",
    "clause": "4.17(a)",
    "page": 45,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen"
   },
   {
    "id": "griffith-city-council-019",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {},
-   "conditionText": "Garage door openings, combined width, lot over 15 m to 20 m",
-   "garage": {
-    "minM": null,
-    "behindBuildingLineM": 6.0,
-    "sources": [
-     14466
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    14466
-   ],
-   "evidence": [
-    {
-     "id": 14466,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": ">15 m – 20 m 6m",
-     "clause": "5.5.1(n)",
-     "page": 55,
-     "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
-     "condition": "Garage door openings, combined width, lot over 15 m to 20 m",
-     "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different garageBehind value; both retained, no winner chosen",
-   "quote": ">15 m – 20 m 6m",
-   "clause": "5.5.1(n)",
-   "page": 55,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
-  },
-  {
-   "id": "griffith-city-council-020",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {},
-   "conditionText": "Garage door openings, combined width, lot over 20 m",
-   "garage": {
-    "minM": null,
-    "behindBuildingLineM": 9.5,
-    "sources": [
-     14467
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    14467
-   ],
-   "evidence": [
-    {
-     "id": 14467,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": ">20 m 9.5 m",
-     "clause": "5.5.1(n)",
-     "page": 55,
-     "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
-     "condition": "Garage door openings, combined width, lot over 20 m",
-     "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different garageBehind value; both retained, no winner chosen",
-   "quote": ">20 m 9.5 m",
-   "clause": "5.5.1(n)",
-   "page": 55,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
-  },
-  {
-   "id": "griffith-city-council-021",
    "zones": [
     "*"
    ],
@@ -1157,12 +1094,14 @@
    "quote": "Front setbacks must be a minimum of 6 m",
    "clause": "6.0(e)",
    "page": 61,
-   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf"
+   "source_file": "DCP/griffith-residential-development-control-plan-amendment-4.pdf",
+   "dcp": "Griffith Residential Development Control Plan (Amendment 4, operational 17 August 2020) including Appendix 1 Griffith Parking Code and Appendix 2 Griffith Subdivision Code; DCP No. 20 Parking 2011; DCP No. 1 Non-Urban Development",
+   "edition": "Griffith Residential DCP, Amendment 4, operational 17 August 2020"
   }
  ],
  "gaps": [
   "No garage setback rule",
-  "3 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 14431, 14432, 14433",
+  "6 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 14465, 14466, 14467, 14431, 14432, 14433",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): scanned, no text: Engineering std-rd-11 to 18 and 23 drawings, DCP No. 3 Industrial, DCP No. 11 Urban Subdivision, DCP No. 19 Mixed Development | DCP No. 1 Non-Urban Development uses superseded 1(c), 1(e), 1(g) zones and was not mined; its 6 m and 10 m boundary setbacks not recorded | Residential DCP: precinct statements, Character Conservation Area setbacks, height, site coverage tables and Collina/Lake Wyangan/Yenda master plan numeric controls not fully mined; Section 4.7.1 corner lot figures (4.0 m and 2.0 m) unresolved because of column layout | the 2011 Parking DCP and Appendix 1 of the Residential DCP overlap; visitor parking differs (marked as conflict); other Appendix 1 land-use par"
  ],
  "notes": "Built from 34 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -1181,15 +1120,42 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 16
+   "rules": 14
   }
  },
  "precincts": [],
  "needsPrecinct": false,
  "counts": {
   "records": 34,
-  "rules": 21,
-  "recordsNotModelled": 3,
+  "rules": 19,
+  "recordsNotModelled": 6,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (griffith-city-council-014, griffith-city-council-015))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (griffith-city-council-014, griffith-city-council-015))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (griffith-city-council-014, griffith-city-council-015))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (griffith-city-council-014, griffith-city-council-015))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (griffith-city-council-014, griffith-city-council-015))"
+  }
  }
 }

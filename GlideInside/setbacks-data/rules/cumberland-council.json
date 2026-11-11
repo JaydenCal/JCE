@@ -109,7 +109,9 @@
    "quote": "Front Setback (primary Minimum 6m",
    "clause": "Part B 2.1 Table 1: Dwelling house setbacks",
    "page": 8,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part B"
   },
   {
    "id": "cumberland-council-002",
@@ -153,7 +155,11 @@
    "quote": "Secondary Frontage Minimum 4m, with garage to be setback a minimum 5.5m from property",
    "clause": "Part B 2.1 Table 1: Dwelling house setbacks",
    "page": 8,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part B",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
   },
   {
    "id": "cumberland-council-003",
@@ -198,7 +204,9 @@
    "quote": "Secondary Frontage Minimum 4m, with garage to be setback a minimum 5.5m from property",
    "clause": "Part B 2.1 Table 1: Dwelling house setbacks",
    "page": 8,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part B"
   },
   {
    "id": "cumberland-council-004",
@@ -242,7 +250,9 @@
    "quote": "Garages and carports at grade are to be set back a minimum of 1 metre behind the front",
    "clause": "4.2",
    "page": 49,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_G_Miscellaneous_Development_Controls.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_G_Miscellaneous_Development_Controls.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part G"
   },
   {
    "id": "cumberland-council-005",
@@ -287,7 +297,9 @@
    "quote": "setback a minimum of 900mm of the property boundary.",
    "clause": "2.20",
    "page": 24,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part B"
   },
   {
    "id": "cumberland-council-006",
@@ -335,7 +347,9 @@
    "quote": "Secondary street 2m for laneways and 4m for other roads",
    "clause": "Part B Table 7: Residential flat building setbacks",
    "page": 41,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part B"
   },
   {
    "id": "cumberland-council-007",
@@ -419,7 +433,9 @@
    "quote": "Front setback No less than 6m or correspond with the existing",
    "clause": "Part B Table 7: Residential flat building setbacks",
    "page": 41,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part B"
   },
   {
    "id": "cumberland-council-008",
@@ -484,7 +500,9 @@
    "quote": "Rear Setback Minimum 0.9m, 3m for 2 storeys",
    "clause": "Table 5",
    "page": 26,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part B"
   },
   {
    "id": "cumberland-council-009",
@@ -549,7 +567,9 @@
    "quote": "Rear Setback Minimum 0.9m, 3m for 2 storeys",
    "clause": "Table 5",
    "page": 26,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part B"
   },
   {
    "id": "cumberland-council-010",
@@ -594,7 +614,9 @@
    "quote": "Secondary Street (Corner sites) Minimum 3m",
    "clause": "Table 5",
    "page": 26,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_B_Development_in_Residential_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part B"
   },
   {
    "id": "cumberland-council-011",
@@ -663,7 +685,11 @@
    "quote": "Side – adjoining non-industrial zone other 4m 2m",
    "clause": "Part D Table 1: Setback requirements for industrial development",
    "page": 4,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_D_Development_in_Industrial_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_D_Development_in_Industrial_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part D",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
    "id": "cumberland-council-012",
@@ -711,7 +737,11 @@
    "quote": "Side – adjoining a residential use / zone 6m 3m",
    "clause": "Part D Table 1: Setback requirements for industrial development",
    "page": 4,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_D_Development_in_Industrial_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_D_Development_in_Industrial_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part D",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
    "id": "cumberland-council-013",
@@ -759,7 +789,11 @@
    "quote": "Rear – adjoining a residential uses / zone 6m 3m",
    "clause": "Part D Table 1: Setback requirements for industrial development",
    "page": 5,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_D_Development_in_Industrial_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_D_Development_in_Industrial_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part D",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
    "id": "cumberland-council-014",
@@ -803,7 +837,11 @@
    "quote": "Front setbacks are to be 5m.",
    "clause": "2.1 C7",
    "page": 5,
-   "source_file": "DCP/Cumberland_DCP_2021_Part_D_Development_in_Industrial_Zones.pdf"
+   "source_file": "DCP/Cumberland_DCP_2021_Part_D_Development_in_Industrial_Zones.pdf",
+   "dcp": "Cumberland Development Control Plan 2021 (Parts A to G, saved as separate part files; Part B residential, Part G3 and G4 used for values)",
+   "edition": "Cumberland DCP 2021 Part D",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -836,5 +874,32 @@
   "rules": 14,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

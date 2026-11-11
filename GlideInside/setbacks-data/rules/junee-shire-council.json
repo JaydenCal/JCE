@@ -54,7 +54,9 @@
    "quote": "Crawley Estate 20m 20m 10m 10m",
    "clause": "C3.1 Dwelling Siting and Setbacks table",
    "page": 32,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-002",
@@ -100,7 +102,9 @@
    "quote": "Tathra Estate 20m 20m 10m 10m",
    "clause": "C3.1 Dwelling Siting and Setbacks table",
    "page": 32,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-003",
@@ -203,7 +207,9 @@
    "quote": "R5 Large Lot 20m 20m 10m 10m",
    "clause": "C4.1 Building Setbacks table",
    "page": 39,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-004",
@@ -248,7 +254,9 @@
    "quote": "A minimum setback of: a. 10m; or",
    "clause": "C5.4 Performance Criteria 4",
    "page": 43,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-005",
@@ -293,7 +301,9 @@
    "quote": "Front primary street setbacks should generally be a minimum of the average of the setbacks of buildings on adjacent lots within 40m",
    "clause": "D3.4 Setbacks",
    "page": 68,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-006",
@@ -301,7 +311,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {
@@ -341,7 +350,9 @@
    "quote": "RU5 Village 4.5m for lots to 3m for lots to 900mm or NCC NCC standard",
    "clause": "C3.1 Dwelling Siting and Setbacks table",
    "page": 32,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-007",
@@ -349,7 +360,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {
@@ -388,7 +398,9 @@
    "quote": "setback of adjacent 5m for lots 1.5m for second",
    "clause": "C3.1 Dwelling Siting and Setbacks table",
    "page": 33,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-008",
@@ -396,7 +408,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {
@@ -456,7 +467,11 @@
    "quote": "RU5 Village 4.5m for lots to 3m for lots to 900mm or NCC NCC standard",
    "clause": "C3.1 Dwelling Siting and Setbacks table",
    "page": 32,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "junee-shire-council-009",
@@ -464,7 +479,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {
@@ -524,7 +538,11 @@
    "quote": "10m for lots",
    "clause": "C3.1 Dwelling Siting and Setbacks table",
    "page": 33,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "junee-shire-council-010",
@@ -532,7 +550,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {},
@@ -570,7 +587,11 @@
    "quote": "RU5 Village 4.5m for lots to 3m for lots to 900mm or NCC NCC standard",
    "clause": "C3.1 Dwelling Siting and Setbacks table",
    "page": 32,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "junee-shire-council-011",
@@ -618,7 +639,9 @@
    "quote": "Classified Roads (RU5 Village Zone) 8m",
    "clause": "C6.5 Setbacks table",
    "page": 48,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-012",
@@ -721,7 +744,9 @@
    "quote": "RU1 Primary 20m 20m 50m 50m",
    "clause": "C4.1 Building Setbacks table",
    "page": 39,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-013",
@@ -807,7 +832,9 @@
    "quote": "Crawley Estate 20m 20m 10m 10m",
    "clause": "C3.1 Dwelling Siting and Setbacks table",
    "page": 32,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-014",
@@ -893,7 +920,9 @@
    "quote": "Tathra Estate 20m 20m 10m 10m",
    "clause": "C3.1 Dwelling Siting and Setbacks table",
    "page": 32,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
    "id": "junee-shire-council-015",
@@ -904,15 +933,19 @@
     "garage"
    ],
    "conditions": {},
-   "conditionText": "Attached garages and carports, single dwellings",
+   "conditionText": [
+    "Attached garages and carports, single dwellings",
+    "Attached garages and carports, single dwellings, alternative of 5.0m from front boundary"
+   ],
    "garage": {
-    "minM": 0.5,
-    "note": "at least 0.5m behind the front building line or 5.0m from the front boundary",
+    "minM": 5.0,
+    "behindBuildingLineM": 0.5,
     "sources": [
      16822,
-     16825
+     16825,
+     16823
     ],
-    "behindBuildingLineM": 0.5
+    "note": "at least 0.5m behind the front building line or 5.0m from the front boundary"
    },
    "front": null,
    "secondaryFront": null,
@@ -920,13 +953,14 @@
    "rear": null,
    "sources": [
     16822,
+    16823,
     16825
    ],
    "evidence": [
     {
      "id": 16822,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Be located at least 0.5m behind the front building line or 5.0m from the front boundary",
      "clause": "C3.1 Performance Criteria 2a",
      "page": 33,
@@ -944,39 +978,7 @@
      "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
      "condition": "Attached garages and carports, single dwellings",
      "edition": "Version 1.1, October 2023"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "Be located at least 0.5m behind the front building line or 5.0m from the front boundary",
-   "clause": "C3.1 Performance Criteria 2a",
-   "page": 33,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
-  },
-  {
-   "id": "junee-shire-council-016",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {},
-   "conditionText": "Attached garages and carports, single dwellings, alternative of 5.0m from front boundary",
-   "garage": {
-    "minM": 5.0,
-    "sources": [
-     16823
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    16823
-   ],
-   "evidence": [
+    },
     {
      "id": 16823,
      "parameter": "garage_setback",
@@ -989,15 +991,17 @@
      "edition": "Version 1.1, October 2023"
     }
    ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen",
+   "confidence": "medium",
+   "needsReview": null,
    "quote": "Be located at least 0.5m behind the front building line or 5.0m from the front boundary",
    "clause": "C3.1 Performance Criteria 2a",
    "page": 33,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
-   "id": "junee-shire-council-017",
+   "id": "junee-shire-council-016",
    "zones": [
     "*"
    ],
@@ -1041,10 +1045,14 @@
    "quote": "4.5m – single storey OR average setback of",
    "clause": "C6.5 Setbacks table",
    "page": 48,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "junee-shire-council-018",
+   "id": "junee-shire-council-017",
    "zones": [
     "*"
    ],
@@ -1088,10 +1096,14 @@
    "quote": "6.0m – two or more storeys OR average setback",
    "clause": "C6.5 Setbacks table",
    "page": 48,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "junee-shire-council-019",
+   "id": "junee-shire-council-018",
    "zones": [
     "*"
    ],
@@ -1173,10 +1185,12 @@
    "quote": "Secondary Street Front Setback 3m – single storey",
    "clause": "C6.5 Setbacks table",
    "page": 48,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
-   "id": "junee-shire-council-020",
+   "id": "junee-shire-council-019",
    "zones": [
     "*"
    ],
@@ -1258,10 +1272,12 @@
    "quote": "4.5m – two storeys or greater",
    "clause": "C6.5 Setbacks table",
    "page": 48,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023"
   },
   {
-   "id": "junee-shire-council-021",
+   "id": "junee-shire-council-020",
    "zones": [
     "IN*"
    ],
@@ -1324,10 +1340,14 @@
    "quote": "side and rear setback must be a minimum of 6m, incorporating a minimum 2m wide landscaping strip",
    "clause": "D4.2 Setbacks",
    "page": 73,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
-   "id": "junee-shire-council-022",
+   "id": "junee-shire-council-021",
    "zones": [
     "IN*"
    ],
@@ -1426,10 +1446,14 @@
    "quote": "Front setback areas must be a minimum of 8m, incorporating a minimum 2m wide landscaping strip",
    "clause": "D4.2 Setbacks",
    "page": 72,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "junee-shire-council-023",
+   "id": "junee-shire-council-022",
    "zones": [
     "IN*"
    ],
@@ -1470,7 +1494,11 @@
    "quote": "provide an 8m front setback to the primary frontage and a minimum 4m setback to the secondary frontage",
    "clause": "D4.2 Setbacks",
    "page": 73,
-   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf"
+   "source_file": "DCP/Junee-DCP-2021-v1.1.pdf",
+   "dcp": "Junee Shire Council Development Control Plan 2021, Version 1.1, October 2023",
+   "edition": "Version 1.1, October 2023",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   }
  ],
  "gaps": [
@@ -1508,7 +1536,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 8
+   "rules": 7
   },
   "IN*": {
    "front": false,
@@ -1526,8 +1554,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 42,
-  "rules": 23,
+  "rules": 22,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (junee-shire-council-003, junee-shire-council-004, junee-shire-council-016))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear"
+  }
  }
 }

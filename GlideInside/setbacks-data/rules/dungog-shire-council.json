@@ -17,7 +17,54 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "R1 General Residential and RU5 Village, side road boundary on corner allotments",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     12006
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    12006
+   ],
+   "evidence": [
+    {
+     "id": 12006,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "2) 3m from the side road property boundary on corner allotments",
+     "clause": "2.3.3",
+     "page": 2,
+     "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+     "condition": "R1 General Residential and RU5 Village, side road boundary on corner allotments",
+     "edition": "Dungog DCP No. 1 Part C.3 (undated)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "2) 3m from the side road property boundary on corner allotments",
+   "clause": "2.3.3",
+   "page": 2,
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
+  },
+  {
+   "id": "dungog-shire-council-002",
+   "zones": [
+    "R1",
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
    ],
    "conditions": {
     "storeys": 1
@@ -94,16 +141,18 @@
    "quote": "1) 6m for a single storey dwelling and 7.6m for a two storey dwelling",
    "clause": "2.3.3",
    "page": 2,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
   },
   {
-   "id": "dungog-shire-council-002",
+   "id": "dungog-shire-council-003",
    "zones": [
     "R1",
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "dwelling"
    ],
    "conditions": {
     "storeys": 2
@@ -180,52 +229,9 @@
    "quote": "1) 6m for a single storey dwelling and 7.6m for a two storey dwelling",
    "clause": "2.3.3",
    "page": 2,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
-  },
-  {
-   "id": "dungog-shire-council-003",
-   "zones": [
-    "R1",
-    "RU5"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {},
-   "conditionText": "R1 General Residential and RU5 Village, side road boundary on corner allotments",
-   "secondaryFront": {
-    "minM": 3.0,
-    "basis": "fixed",
-    "sources": [
-     12006
-    ]
-   },
-   "front": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    12006
-   ],
-   "evidence": [
-    {
-     "id": 12006,
-     "parameter": "front_secondary",
-     "slot": "secondaryFront",
-     "quote": "2) 3m from the side road property boundary on corner allotments",
-     "clause": "2.3.3",
-     "page": 2,
-     "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
-     "condition": "R1 General Residential and RU5 Village, side road boundary on corner allotments",
-     "edition": "Dungog DCP No. 1 Part C.3 (undated)"
-    }
-   ],
-   "confidence": "high",
-   "needsReview": null,
-   "quote": "2) 3m from the side road property boundary on corner allotments",
-   "clause": "2.3.3",
-   "page": 2,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
   },
   {
    "id": "dungog-shire-council-004",
@@ -290,7 +296,9 @@
    "quote": "1) 70m from a main road",
    "clause": "2.3.2",
    "page": 2,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
   },
   {
    "id": "dungog-shire-council-005",
@@ -373,7 +381,9 @@
    "quote": "2) 30m from any other public road",
    "clause": "2.3.2",
    "page": 2,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
   },
   {
    "id": "dungog-shire-council-006",
@@ -418,7 +428,11 @@
    "quote": "3) 15m from new roads within the subdivision",
    "clause": "2.3.2",
    "page": 2,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "dungog-shire-council-007",
@@ -482,7 +496,9 @@
    "quote": "3) 30m for lots with an area of less than 30 ha",
    "clause": "2.4.1",
    "page": 3,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
   },
   {
    "id": "dungog-shire-council-008",
@@ -547,7 +563,9 @@
    "quote": "2) 40m for lots with an area of more than 30 ha but less than 60 ha",
    "clause": "2.4.1",
    "page": 3,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
   },
   {
    "id": "dungog-shire-council-009",
@@ -611,7 +629,9 @@
    "quote": "1) 50 m for lots with an area of more than 60 ha",
    "clause": "2.4.1",
    "page": 3,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
   },
   {
    "id": "dungog-shire-council-010",
@@ -677,7 +697,11 @@
    "quote": "not less than 25% of the width of the allotment",
    "clause": "2.5 b",
    "page": 4,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "dungog-shire-council-011",
@@ -726,7 +750,9 @@
    "quote": "the minimum setback from the front property boundary shall be:‐ 1) 140m from a main road",
    "clause": "2.3.1",
    "page": 1,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
   },
   {
    "id": "dungog-shire-council-012",
@@ -771,7 +797,9 @@
    "quote": "2) 50m from any other public road",
    "clause": "2.3.1",
    "page": 1,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
   },
   {
    "id": "dungog-shire-council-013",
@@ -854,7 +882,9 @@
    "quote": "On land zoned IN1, the minimum setback from the front property boundary shall be 6 metres",
    "clause": "2.3.4",
    "page": 2,
-   "source_file": "DCP/C3_Building_Line_Setbacks.pdf"
+   "source_file": "DCP/C3_Building_Line_Setbacks.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part C.3 (undated)"
   },
   {
    "id": "dungog-shire-council-014",
@@ -903,7 +933,11 @@
    "quote": "15 metres from internal roads",
    "clause": "8.6.1 a",
    "page": 10,
-   "source_file": "DCP/D8_Boatfalls_Rural_Residential_Estate.pdf"
+   "source_file": "DCP/D8_Boatfalls_Rural_Residential_Estate.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part D.8 Boatfalls Rural Residential Estate (undated)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; Condition not expressible in the structured fields (non_..."
   },
   {
    "id": "dungog-shire-council-015",
@@ -967,7 +1001,11 @@
    "quote": "10m from side and rear boundaries",
    "clause": "8.6.1 a",
    "page": 10,
-   "source_file": "DCP/D8_Boatfalls_Rural_Residential_Estate.pdf"
+   "source_file": "DCP/D8_Boatfalls_Rural_Residential_Estate.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part D.8 Boatfalls Rural Residential Estate (undated)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
    "id": "dungog-shire-council-016",
@@ -980,8 +1018,7 @@
    "conditions": {
     "precinct": "Cangon Park Rural Residential Estate DCP area",
     "qualifiers": [
-     "non_standard_street",
-     "open_space_frontage"
+     "non_standard_street"
     ]
    },
    "conditionText": "Cangon Park Rural Residential Estate DCP area: dwellings, setback from internal roads",
@@ -1013,11 +1050,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; Condition not expressible in the structured fields (non_standard_street, open_space_frontage); see conditionText",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; Condition not expressible in the structured fields (non_standard_street); see conditionText",
    "quote": "iii. 15 metres from internal roads",
    "clause": "Performance Criteria 1 iii",
    "page": 8,
-   "source_file": "DCP/D9_Cangon_Park_Rural_Residential_Estate.pdf"
+   "source_file": "DCP/D9_Cangon_Park_Rural_Residential_Estate.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part D.9 Cangon Park Rural Residential Estate (undated)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; Condition not expressible in the structured fields (non_..."
   },
   {
    "id": "dungog-shire-council-017",
@@ -1028,10 +1069,7 @@
     "dwelling"
    ],
    "conditions": {
-    "precinct": "Cangon Park Rural Residential Estate DCP area",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Cangon Park Rural Residential Estate DCP area"
    },
    "conditionText": [
     "Cangon Park Rural Residential Estate DCP area: dwellings, setback from Clarence Town Road (as printed)",
@@ -1101,11 +1139,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).",
    "quote": "i. 800m minimum from Clarence Town Road",
    "clause": "Residential development, Performance Criteria 1 i",
    "page": 8,
-   "source_file": "DCP/D9_Cangon_Park_Rural_Residential_Estate.pdf"
+   "source_file": "DCP/D9_Cangon_Park_Rural_Residential_Estate.pdf",
+   "dcp": "Dungog Development Control Plan No. 1 (Parts A to D as saved; C.20 Off Street Parking adopted 19/10/10; other Parts undated, UNVERIFIED)",
+   "edition": "Dungog DCP No. 1 Part D.9 Cangon Park Rural Residential Estate (undated)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
@@ -1189,5 +1231,32 @@
   "rules": 17,
   "recordsNotModelled": 5,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (dungog-shire-council-005, dungog-shire-council-006))"
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

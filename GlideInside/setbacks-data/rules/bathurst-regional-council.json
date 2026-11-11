@@ -58,7 +58,11 @@
    "quote": "Within the Bathurst • Must complement the existing setbacks of surrounding",
    "clause": "4.4.2 Front Building Line Setback",
    "page": 62,
-   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt"
+   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt",
+   "dcp": "Bathurst Regional Development Control Plan 2014, adopted 16/12/2013, effective 19/11/2014 (as supplied, includes later amendments up to Amendment No. 28 and Chapter 17 Laffing Waters Master Plan)",
+   "edition": "Bathurst Regional DCP 2014 (as supplied)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "bathurst-regional-council-002",
@@ -69,7 +73,7 @@
     "any"
    ],
    "conditions": {
-    "qualifiers": [
+    "qualifiersNot": [
      "heritage"
     ]
    },
@@ -106,7 +110,9 @@
    "quote": "6 metres, unless the existing streetscape is already established at 8 metres.",
    "clause": "4.4.2 Front Building Line Setback",
    "page": 63,
-   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt"
+   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt",
+   "dcp": "Bathurst Regional Development Control Plan 2014, adopted 16/12/2013, effective 19/11/2014 (as supplied, includes later amendments up to Amendment No. 28 and Chapter 17 Laffing Waters Master Plan)",
+   "edition": "Bathurst Regional DCP 2014 (as supplied)"
   },
   {
    "id": "bathurst-regional-council-003",
@@ -150,7 +156,9 @@
    "quote": "is to be not less than 8 metres, provided that neither is less than 2 metres",
    "clause": "4.4.2 Front Building Line Setback",
    "page": 63,
-   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt"
+   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt",
+   "dcp": "Bathurst Regional Development Control Plan 2014, adopted 16/12/2013, effective 19/11/2014 (as supplied, includes later amendments up to Amendment No. 28 and Chapter 17 Laffing Waters Master Plan)",
+   "edition": "Bathurst Regional DCP 2014 (as supplied)"
   },
   {
    "id": "bathurst-regional-council-004",
@@ -199,7 +207,9 @@
    "quote": "Residential Units, boarding 1.5m Staggered to include",
    "clause": "4.4.2 Side and Rear Building Line Setbacks",
    "page": 65,
-   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt"
+   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt",
+   "dcp": "Bathurst Regional Development Control Plan 2014, adopted 16/12/2013, effective 19/11/2014 (as supplied, includes later amendments up to Amendment No. 28 and Chapter 17 Laffing Waters Master Plan)",
+   "edition": "Bathurst Regional DCP 2014 (as supplied)"
   },
   {
    "id": "bathurst-regional-council-005",
@@ -245,7 +255,9 @@
    "quote": "Garage door openings are to make up less than 50% of the",
    "clause": "4.4.2 Garages for Dual Occupancy and Multi Unit Dwelling developments",
    "page": 63,
-   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt"
+   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt",
+   "dcp": "Bathurst Regional Development Control Plan 2014, adopted 16/12/2013, effective 19/11/2014 (as supplied, includes later amendments up to Amendment No. 28 and Chapter 17 Laffing Waters Master Plan)",
+   "edition": "Bathurst Regional DCP 2014 (as supplied)"
   },
   {
    "id": "bathurst-regional-council-006",
@@ -292,7 +304,9 @@
    "quote": "Garages must be setback a minimum of 1 metre behind the",
    "clause": "17.3.1.2 Table 17:10 (19)(b)",
    "page": 350,
-   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt"
+   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt",
+   "dcp": "Bathurst Regional Development Control Plan 2014, adopted 16/12/2013, effective 19/11/2014 (as supplied, includes later amendments up to Amendment No. 28 and Chapter 17 Laffing Waters Master Plan)",
+   "edition": "Bathurst Regional DCP 2014 (as supplied)"
   },
   {
    "id": "bathurst-regional-council-007",
@@ -396,7 +410,9 @@
    "quote": "least 5 metres from the front (primary) lot boundary.",
    "clause": "17.3.1.2 Table 17:10 (8)(a)",
    "page": 344,
-   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt"
+   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt",
+   "dcp": "Bathurst Regional Development Control Plan 2014, adopted 16/12/2013, effective 19/11/2014 (as supplied, includes later amendments up to Amendment No. 28 and Chapter 17 Laffing Waters Master Plan)",
+   "edition": "Bathurst Regional DCP 2014 (as supplied)"
   },
   {
    "id": "bathurst-regional-council-008",
@@ -499,7 +515,9 @@
    "quote": "setback at least 6.5 metres from the front (primary) lot boundary.",
    "clause": "17.3.1.2 Table 17:10 (8)(b)",
    "page": 344,
-   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt"
+   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt",
+   "dcp": "Bathurst Regional Development Control Plan 2014, adopted 16/12/2013, effective 19/11/2014 (as supplied, includes later amendments up to Amendment No. 28 and Chapter 17 Laffing Waters Master Plan)",
+   "edition": "Bathurst Regional DCP 2014 (as supplied)"
   },
   {
    "id": "bathurst-regional-council-009",
@@ -549,7 +567,11 @@
    "quote": "Dual occupancy, dwelling In accordance with the NCC.",
    "clause": "4.4.2 Side and Rear Building Line Setbacks",
    "page": 65,
-   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt"
+   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt",
+   "dcp": "Bathurst Regional Development Control Plan 2014, adopted 16/12/2013, effective 19/11/2014 (as supplied, includes later amendments up to Amendment No. 28 and Chapter 17 Laffing Waters Master Plan)",
+   "edition": "Bathurst Regional DCP 2014 (as supplied)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "bathurst-regional-council-010",
@@ -597,7 +619,11 @@
    "quote": "houses and secondary dwellings (granny flats), semi-detached dwellings – Single or two storey",
    "clause": "4.4.2 Side and Rear Building Line Setbacks",
    "page": 65,
-   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt"
+   "source_file": "DCP/Bathurst-Regional-Development-Control-Plan-2014.txt",
+   "dcp": "Bathurst Regional Development Control Plan 2014, adopted 16/12/2013, effective 19/11/2014 (as supplied, includes later amendments up to Amendment No. 28 and Chapter 17 Laffing Waters Master Plan)",
+   "edition": "Bathurst Regional DCP 2014 (as supplied)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   }
  ],
  "gaps": [
@@ -624,5 +650,32 @@
   "rules": 10,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 8
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear"
+  }
  }
 }

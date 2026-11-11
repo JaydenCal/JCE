@@ -1,0 +1,298 @@
+{
+ "id": "qld-qdc",
+ "jurisdiction": "QLD",
+ "basisLabel": "QDC",
+ "retrieved": "11/11/2026",
+ "currencyWarning": "The QDC MP 1.1 and MP 1.2 text used here is the 11 March 2010 version. Per the Queensland Government page (https://www.business.qld.gov.au/industries/building-property-development/building-construction/laws-codes-standards/queensland-development-code) it is superseded by the Queensland Housing Code (QHC; listed 14 August 2026, commenced 1 September 2026). The QHC applies in a local government area only once the planning scheme is amended to say how it applies, or from 1 September 2029; until then the 2010 QDC parts continue.",
+ "variationNote": "A council planning scheme can vary these standards (QDC siting can be varied via planning scheme/alternative solutions); not verified per council here.",
+ "rules": [
+  {
+   "basisLabel": "QDC",
+   "zones": [
+    "n/a (QDC applies to class 1a single detached housing, not zone based)"
+   ],
+   "appliesTo": [
+    "detached_house"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 450
+   },
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "note": "Access place or access street 3.0m; collector street 4.0m. If existing dwellings on both adjoining lots with one setback 3m-6m (A1(a)(ii)): difference not more than 2m = distance between the two buildings; more than 2m = average of the adjacent road setbacks."
+   },
+   "secondaryFront": {
+    "minM": 1.0,
+    "note": "Table A1 side to corner street: 1.0m (access place/street), 2.0m (collector street). A1(c)(ii) corner lots with average depth 24m or less.",
+    "basis": "fixed"
+   },
+   "side": {
+    "minM": null,
+    "basis": "text"
+   },
+   "rear": {
+    "minM": null,
+    "basis": "text"
+   },
+   "garage": {
+    "minM": null,
+    "note": "A1(b): garage/carport follows A1(a); openings facing street lesser of 6m and 50% of frontage. Corner truncation: no structure over 2m high within a 9m x 9m truncation."
+   },
+   "sourceUrl": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
+   "document": "Queensland Development Code MP 1.1 Design and Siting Standard for Single Detached Housing, on Lots 450m2 and Under (published 11 March 2010)",
+   "clause": "MP 1.1 Element 1, A1(a)(i), Table A1",
+   "page": null,
+   "quote": "as in Table A1",
+   "confidence": "medium",
+   "needsReview": "Flagged for review by the research agent",
+   "bands": {
+    "front": [
+     {
+      "streetType": "access place or access street",
+      "minM": 3.0
+     },
+     {
+      "streetType": "collector street",
+      "minM": 4.0
+     }
+    ],
+    "secondaryFront": [
+     {
+      "streetType": "access place or access street",
+      "minM": 1.0
+     },
+     {
+      "streetType": "collector street",
+      "minM": 2.0
+     }
+    ]
+   },
+   "dcp": "QDC",
+   "edition": null,
+   "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
+   "sources": []
+  },
+  {
+   "basisLabel": "QDC",
+   "zones": [
+    "n/a (QDC applies to class 1a single detached housing, not zone based)"
+   ],
+   "appliesTo": [
+    "detached_house"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 450
+   },
+   "front": {
+    "minM": null,
+    "basis": "text"
+   },
+   "secondaryFront": null,
+   "side": {
+    "minM": 1.5,
+    "perHeight": [
+     {
+      "heightMaxM": 4.5,
+      "minM": 1.5
+     },
+     {
+      "heightMinM": 4.5,
+      "heightMaxM": 7.5,
+      "minM": 2.0
+     },
+     {
+      "heightMinM": 7.5,
+      "formula": "2m plus 0.5m for every 3m or part exceeding 7.5m"
+     }
+    ],
+    "basis": "fixed"
+   },
+   "rear": {
+    "minM": 1.5,
+    "note": "A2 applies to side and rear boundary clearances.",
+    "basis": "fixed"
+   },
+   "garage": {
+    "minM": null
+   },
+   "sourceUrl": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
+   "document": "Queensland Development Code MP 1.1 Design and Siting Standard for Single Detached Housing, on Lots 450m2 and Under (published 11 March 2010)",
+   "clause": "MP 1.1 Element 1, A2(a)",
+   "page": null,
+   "quote": "where the height of that part is 4.5m or less - 1.5m",
+   "confidence": "medium",
+   "needsReview": "Flagged for review by the research agent",
+   "note": "Quotes: A2(a)(ii) '2m'; A2(a)(iii) '2m plus 0.5m for every 3m or part exceeding 7.5m' (source text reads 'greater that', sic).",
+   "dcp": "QDC",
+   "edition": null,
+   "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
+   "sources": []
+  },
+  {
+   "basisLabel": "QDC",
+   "zones": [
+    "n/a (QDC applies to class 1a single detached housing, not zone based)"
+   ],
+   "appliesTo": [
+    "detached_house"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 450,
+    "lotWidthMaxM": 15
+   },
+   "front": {
+    "minM": null,
+    "basis": "text"
+   },
+   "secondaryFront": null,
+   "side": {
+    "minM": 0.75,
+    "note": "Lot width 10.5m or less: 0.750m (height 4.5m or less), 1.000m (4.5m-7.5m); increases by 0.075m per 0.5m of width (4.5m or less) and 0.1m (4.5-7.5m) up to 14.501-15.000m: 1.425m / 1.900m. Above 7.5m: 2m plus 0.5m per 3m.",
+    "basis": "fixed"
+   },
+   "rear": {
+    "minM": null,
+    "basis": "text"
+   },
+   "garage": {
+    "minM": null
+   },
+   "sourceUrl": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
+   "document": "Queensland Development Code MP 1.1 Design and Siting Standard for Single Detached Housing, on Lots 450m2 and Under (published 11 March 2010)",
+   "clause": "MP 1.1 Element 1, A2(b) and Table A2 (frontage 15m or less)",
+   "page": null,
+   "quote": "in accordance with Table A2",
+   "confidence": "medium",
+   "needsReview": "Flagged for review by the research agent",
+   "bands": {
+    "side": [
+     {
+      "lotWidthMinM": 14.501,
+      "lotWidthMaxM": 15.0,
+      "h0_4_5": 1.425,
+      "h4_5_7_5": 1.9
+     },
+     {
+      "lotWidthMinM": 14.001,
+      "lotWidthMaxM": 14.5,
+      "h0_4_5": 1.35,
+      "h4_5_7_5": 1.8
+     },
+     {
+      "lotWidthMinM": 13.501,
+      "lotWidthMaxM": 14.0,
+      "h0_4_5": 1.275,
+      "h4_5_7_5": 1.7
+     },
+     {
+      "lotWidthMinM": 13.001,
+      "lotWidthMaxM": 13.5,
+      "h0_4_5": 1.2,
+      "h4_5_7_5": 1.6
+     },
+     {
+      "lotWidthMinM": 12.501,
+      "lotWidthMaxM": 13.0,
+      "h0_4_5": 1.125,
+      "h4_5_7_5": 1.5
+     },
+     {
+      "lotWidthMinM": 12.001,
+      "lotWidthMaxM": 12.5,
+      "h0_4_5": 1.05,
+      "h4_5_7_5": 1.4
+     },
+     {
+      "lotWidthMinM": 11.501,
+      "lotWidthMaxM": 12.0,
+      "h0_4_5": 0.975,
+      "h4_5_7_5": 1.3
+     },
+     {
+      "lotWidthMinM": 11.001,
+      "lotWidthMaxM": 11.5,
+      "h0_4_5": 0.9,
+      "h4_5_7_5": 1.2
+     },
+     {
+      "lotWidthMinM": 10.501,
+      "lotWidthMaxM": 11.0,
+      "h0_4_5": 0.825,
+      "h4_5_7_5": 1.1
+     },
+     {
+      "lotWidthMaxM": 10.5,
+      "h0_4_5": 0.75,
+      "h4_5_7_5": 1.0
+     }
+    ]
+   },
+   "dcp": "QDC",
+   "edition": null,
+   "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
+   "sources": []
+  },
+  {
+   "basisLabel": "QDC",
+   "zones": [
+    "n/a (QDC applies to class 1a single detached housing, not zone based)"
+   ],
+   "appliesTo": [
+    "detached_house"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 450
+   },
+   "front": {
+    "minM": null,
+    "basis": "text"
+   },
+   "secondaryFront": null,
+   "side": {
+    "minM": null,
+    "basis": "text"
+   },
+   "rear": {
+    "minM": null,
+    "basis": "text"
+   },
+   "garage": {
+    "minM": 0.0,
+    "note": "Class 10a building may sit within the A2(a)/(b) clearances if part height not more than 4.5m with mean height not more than 3.5m; total length not more than 9m along any one boundary; no closer than 1.5m to a required window in a habitable room of an adjoining dwelling."
+   },
+   "sourceUrl": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
+   "document": "Queensland Development Code MP 1.1 Design and Siting Standard for Single Detached Housing, on Lots 450m2 and Under (published 11 March 2010)",
+   "clause": "MP 1.1 Element 1, A2(d) class 10a buildings",
+   "page": null,
+   "quote": "not more than 4.5m",
+   "confidence": "medium",
+   "needsReview": "Flagged for review by the research agent",
+   "dcp": "QDC",
+   "edition": null,
+   "source_file": "https://www.hpw.qld.gov.au/__data/assets/pdf_file/0010/4303/mp1-1.pdf",
+   "sources": []
+  }
+ ],
+ "mp12NotVerified": {
+  "status": "not_verified",
+  "reason": "MP 1.2 (lots 450m2 and over) PDF could not be fetched (epw.qld.gov.au redirects to treasury.qld.gov.au; hpw/housing.qld.gov.au fetches blocked by permission timeout). The suggested '6m general, 3m secondary' road frontage figures for MP 1.2 are therefore NOT recorded."
+ },
+ "unverifiedLeads": {
+  "source": "https://thegoodbuilder.com.au/the-queensland-housing-code-has-commenced-and-the-old-siting-rules-expire-on-1-september-2029/",
+  "status": "secondary source (trade blog), NOT the QHC text; do not use as rules",
+  "claims": [
+   "Front setback (external wall): 3m lots under 450m2; 5m lots 450m2 and over",
+   "Garage/carport front setback 5m; 5.6m on 450m2+ lots (as reported)",
+   "Side ground floor: 1m; 1.5m on larger lots",
+   "Rear ground floor: 3m; 4m on larger lots",
+   "Councils may still set front setbacks; side and rear fixed statewide"
+  ],
+  "primaryToCheck": "https://www.housing.qld.gov.au/__data/assets/pdf_file/0021/92712/queensland-housing-code-01092026.pdf"
+ },
+ "gaps": [
+  "MP 1.2 and QHC primary text unread",
+  "Table A2 interpolation note in rule 3 is summary; use bands"
+ ],
+ "name": "QDC"
+}

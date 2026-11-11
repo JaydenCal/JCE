@@ -56,7 +56,9 @@
    "quote": "Single storey – 900 mm",
    "clause": "Table 3.2 Minimum setbacks",
    "page": 20,
-   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf"
+   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf",
+   "dcp": "Walcha Council Development Control Plan 2019, adopted 31/07/2019 (Resolution 4/20192020), amended 27/10/2021 (Resolution 59/20212022)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "walcha-council-002",
@@ -104,7 +106,9 @@
    "quote": "Walls greater than 3 m in height - 2 m",
    "clause": "Table 3.2 Minimum setbacks",
    "page": 20,
-   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf"
+   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf",
+   "dcp": "Walcha Council Development Control Plan 2019, adopted 31/07/2019 (Resolution 4/20192020), amended 27/10/2021 (Resolution 59/20212022)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "walcha-council-003",
@@ -171,7 +175,9 @@
    "quote": "6m to main frontage –if corner allotment",
    "clause": "Table 3.2 Minimum setbacks",
    "page": 20,
-   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf"
+   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf",
+   "dcp": "Walcha Council Development Control Plan 2019, adopted 31/07/2019 (Resolution 4/20192020), amended 27/10/2021 (Resolution 59/20212022)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "walcha-council-004",
@@ -186,7 +192,8 @@
    "conditions": {},
    "conditionText": "detached sheds of different material to dwelling in R1, RU5 and R5, behind front facade",
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      36370
     ]
@@ -202,7 +209,7 @@
     {
      "id": 36370,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "must be setback at least 1 metre behind the front",
      "clause": "5.7 b)",
      "page": 39,
@@ -216,7 +223,9 @@
    "quote": "must be setback at least 1 metre behind the front",
    "clause": "5.7 b)",
    "page": 39,
-   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf"
+   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf",
+   "dcp": "Walcha Council Development Control Plan 2019, adopted 31/07/2019 (Resolution 4/20192020), amended 27/10/2021 (Resolution 59/20212022)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "walcha-council-005",
@@ -304,7 +313,9 @@
    "quote": "6m to main frontage – if corner",
    "clause": "Table 3.2 Minimum setbacks",
    "page": 20,
-   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf"
+   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf",
+   "dcp": "Walcha Council Development Control Plan 2019, adopted 31/07/2019 (Resolution 4/20192020), amended 27/10/2021 (Resolution 59/20212022)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "walcha-council-006",
@@ -388,7 +399,9 @@
    "quote": "Front – 15 m",
    "clause": "Table 3.2 Minimum setbacks",
    "page": 20,
-   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf"
+   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf",
+   "dcp": "Walcha Council Development Control Plan 2019, adopted 31/07/2019 (Resolution 4/20192020), amended 27/10/2021 (Resolution 59/20212022)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "walcha-council-007",
@@ -433,7 +446,9 @@
    "quote": "setback at least 15 metres from the front property boundary",
    "clause": "4.4 f)",
    "page": 32,
-   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf"
+   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf",
+   "dcp": "Walcha Council Development Control Plan 2019, adopted 31/07/2019 (Resolution 4/20192020), amended 27/10/2021 (Resolution 59/20212022)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "walcha-council-008",
@@ -482,7 +497,9 @@
    "quote": "consistent with the established setback/building line of adjoining buildings",
    "clause": "3.5 Setbacks b)",
    "page": 20,
-   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf"
+   "source_file": "DCP/Walcha-DCP-2019-amended-adopted-2021-10-27.pdf",
+   "dcp": "Walcha Council Development Control Plan 2019, adopted 31/07/2019 (Resolution 4/20192020), amended 27/10/2021 (Resolution 59/20212022)",
+   "edition": "UNVERIFIED"
   }
  ],
  "gaps": [
@@ -550,5 +567,32 @@
   "rules": 8,
   "recordsNotModelled": 3,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (walcha-council-001, walcha-council-002)); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (walcha-council-001, walcha-council-002)); rear (no rule for this zone/use/lot)"
+  }
  }
 }

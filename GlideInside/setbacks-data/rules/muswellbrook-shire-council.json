@@ -16,7 +16,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": [
@@ -110,7 +110,9 @@
    "quote": "A) Minimum 15m setback from a primary road frontage.",
    "clause": "30.5.8(iii)",
    "page": 9,
-   "source_file": "DCP/Section-30-Ironbark-Ridge-Extension-Urban-Release-Adopted-April-2025.pdf"
+   "source_file": "DCP/Section-30-Ironbark-Ridge-Extension-Urban-Release-Adopted-April-2025.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Adopted April 2025"
   },
   {
    "id": "muswellbrook-shire-council-002",
@@ -157,7 +159,9 @@
    "quote": "3 metres for lots 600m2 - 1500m2;",
    "clause": "6.1.2(ii)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1"
   },
   {
    "id": "muswellbrook-shire-council-003",
@@ -204,7 +208,9 @@
    "quote": "2 metres for lots 450m2 - 600m2;",
    "clause": "6.1.2(ii)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1"
   },
   {
    "id": "muswellbrook-shire-council-004",
@@ -250,7 +256,9 @@
    "quote": "5 metres for lots > 1500m2.",
    "clause": "6.1.2(ii)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1"
   },
   {
    "id": "muswellbrook-shire-council-005",
@@ -296,7 +304,9 @@
    "quote": "Corner allotment 4.5 metres for primary frontage",
    "clause": "6.1.2(ii)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1"
   },
   {
    "id": "muswellbrook-shire-council-006",
@@ -346,7 +356,11 @@
    "quote": "Front setback matches the alignment of the primary facades of adjoining",
    "clause": "6.1.2(i)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "muswellbrook-shire-council-007",
@@ -358,9 +372,61 @@
    ],
    "conditions": {
     "qualifiers": [
-     "adjoins_other",
+     "classified_road"
+    ]
+   },
+   "conditionText": "New residential areas, New England Highway frontage",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     23508
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    23508
+   ],
+   "evidence": [
+    {
+     "id": 23508,
+     "parameter": "setback_classified_road",
+     "slot": "front",
+     "quote": "New England Highway 10 metres",
+     "clause": "6.1.2(ii)",
+     "page": 2,
+     "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+     "condition": "New residential areas, New England Highway frontage",
+     "edition": "Version date 13 September 2010, Revision 1"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "New England Highway 10 metres",
+   "clause": "6.1.2(ii)",
+   "page": 2,
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1"
+  },
+  {
+   "id": "muswellbrook-shire-council-008",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
      "no_adjoining_buildings",
      "non_standard_street"
+    ],
+    "qualifiersNot": [
+     "adjoins_other"
     ]
    },
    "conditionText": "New residential areas with no adjoining dwellings, bulb of cul-de-sac",
@@ -392,14 +458,18 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (adjoins_other, non_standard_street); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (non_standard_street); see conditionText",
    "quote": "Bulb of cul-de-sac 4.5 metres",
    "clause": "6.1.2(ii)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (non_standard_street); see conditionText"
   },
   {
-   "id": "muswellbrook-shire-council-008",
+   "id": "muswellbrook-shire-council-009",
    "zones": [
     "*"
    ],
@@ -408,8 +478,10 @@
    ],
    "conditions": {
     "qualifiers": [
-     "adjoins_other",
      "no_adjoining_buildings"
+    ],
+    "qualifiersNot": [
+     "adjoins_other"
     ]
    },
    "conditionText": [
@@ -457,59 +529,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "needsReview": null,
    "quote": "Local Street 4.5 metres",
    "clause": "6.1.2(ii)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
-  },
-  {
-   "id": "muswellbrook-shire-council-009",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "classified_road"
-    ]
-   },
-   "conditionText": "New residential areas, New England Highway frontage",
-   "front": {
-    "minM": 10.0,
-    "basis": "fixed",
-    "sources": [
-     23508
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    23508
-   ],
-   "evidence": [
-    {
-     "id": 23508,
-     "parameter": "setback_classified_road",
-     "slot": "front",
-     "quote": "New England Highway 10 metres",
-     "clause": "6.1.2(ii)",
-     "page": 2,
-     "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
-     "condition": "New residential areas, New England Highway frontage",
-     "edition": "Version date 13 September 2010, Revision 1"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "New England Highway 10 metres",
-   "clause": "6.1.2(ii)",
-   "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1"
   },
   {
    "id": "muswellbrook-shire-council-010",
@@ -577,7 +603,11 @@
    "quote": "A minimum side or rear setback for all dwellings of:",
    "clause": "6.1.3(i)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "muswellbrook-shire-council-011",
@@ -624,7 +654,11 @@
    "quote": "0.9m plus 0.3m for every metre of wall height over 3m and less than",
    "clause": "6.1.3(i)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "muswellbrook-shire-council-012",
@@ -672,7 +706,9 @@
    "quote": "or provide 5.5m setback",
    "clause": "6.1.2(ii)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-6-Residential-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "Version date 13 September 2010, Revision 1"
   },
   {
    "id": "muswellbrook-shire-council-013",
@@ -716,7 +752,11 @@
    "quote": "Buildings and structures should be setback at least 10.0m from the front (or",
    "clause": "Setbacks Controls (i)",
    "page": 1,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-10-Industrial-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-10-Industrial-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "muswellbrook-shire-council-014",
@@ -760,7 +800,11 @@
    "quote": "Buildings are setback a minimum of 50m from any public road",
    "clause": "Rural development controls (i)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-8-Rural-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-8-Rural-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
    "id": "muswellbrook-shire-council-015",
@@ -804,7 +848,11 @@
    "quote": "Buildings are not located within 10m of any property boundary.",
    "clause": "Rural development controls (ii)",
    "page": 2,
-   "source_file": "DCP/Development-Control-Plan-DCP-Section-8-Rural-Development.pdf"
+   "source_file": "DCP/Development-Control-Plan-DCP-Section-8-Rural-Development.pdf",
+   "dcp": "Muswellbrook Shire Development Control Plan, sections: 5 Subdivision (April 2009), 6 Residential (13/09/2010 Rev 1), 16 Car Parking and Access (13/09/2010 Rev 1), 25 Stormwater (May 2020), 13 Floodplain Management (adopted 2022), 30 Ironbark Ridge Extension (April 2025), 27 West Denman and 29 NEH release areas (edition UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; CONFLICT: another rule with the same applicability gives..."
   }
  ],
  "gaps": [
@@ -854,5 +902,32 @@
   "rules": 15,
   "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (conflicting rules of equal specificity (muswellbrook-shire-council-010, muswellbrook-shire-council-011)); rear"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (conflicting rules of equal specificity (muswellbrook-shire-council-010, muswellbrook-shire-council-011)); rear"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (conflicting rules of equal specificity (muswellbrook-shire-council-010, muswellbrook-shire-council-011)); rear"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (muswellbrook-shire-council-001, muswellbrook-shire-council-010, muswellbrook-shire-council-011)); rear (conflicting rules of equal specificity (muswellbrook-shire-council-001, muswellbrook-shire-council-010))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (muswellbrook-shire-council-014, muswellbrook-shire-council-015)); side (conflicting rules of equal specificity (muswellbrook-shire-council-010, muswellbrook-shire-council-011)); rear"
+  }
  }
 }

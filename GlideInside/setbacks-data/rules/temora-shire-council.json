@@ -52,7 +52,11 @@
    "quote": "Dwellings are to be setback a minimum of 30 metres from the front boundary",
    "clause": "Front Setbacks",
    "page": 1,
-   "source_file": "DCP/large-lot-residential-development.pdf"
+   "source_file": "DCP/large-lot-residential-development.pdf",
+   "dcp": "Temora Shire Development Control Plan 2012, Section C Development Controls (chapters saved individually; edition otherwise UNVERIFIED); draft Residential and Industrial DCP chapters exhibited 24/04/2025 to 04/06/2025 per council minutes, industrial chapter text saved",
+   "edition": "Temora Shire DCP 2012",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "temora-shire-council-002",
@@ -115,7 +119,11 @@
    "quote": "Dwellings, garages and carports are to be setback a minimum 30 metres from side and rear",
    "clause": "Side & Rear Setbacks",
    "page": 1,
-   "source_file": "DCP/large-lot-residential-development.pdf"
+   "source_file": "DCP/large-lot-residential-development.pdf",
+   "dcp": "Temora Shire Development Control Plan 2012, Section C Development Controls (chapters saved individually; edition otherwise UNVERIFIED); draft Residential and Industrial DCP chapters exhibited 24/04/2025 to 04/06/2025 per council minutes, industrial chapter text saved",
+   "edition": "Temora Shire DCP 2012",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "temora-shire-council-003",
@@ -158,7 +166,11 @@
    "quote": "All garages and carports are to be setback at least 6m from the front setback",
    "clause": "Front Setbacks",
    "page": 1,
-   "source_file": "DCP/large-lot-residential-development.pdf"
+   "source_file": "DCP/large-lot-residential-development.pdf",
+   "dcp": "Temora Shire Development Control Plan 2012, Section C Development Controls (chapters saved individually; edition otherwise UNVERIFIED); draft Residential and Industrial DCP chapters exhibited 24/04/2025 to 04/06/2025 per council minutes, industrial chapter text saved",
+   "edition": "Temora Shire DCP 2012",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "temora-shire-council-004",
@@ -223,7 +235,9 @@
    "quote": "Front setback of 50 metres in the RU1 Primary Production Zone",
    "clause": "4. Rural Dwellings",
    "page": 6,
-   "source_file": "DCP/rural-development.pdf"
+   "source_file": "DCP/rural-development.pdf",
+   "dcp": "Temora Shire Development Control Plan 2012, Section C Development Controls (chapters saved individually; edition otherwise UNVERIFIED); draft Residential and Industrial DCP chapters exhibited 24/04/2025 to 04/06/2025 per council minutes, industrial chapter text saved",
+   "edition": "Temora Shire DCP 2012"
   },
   {
    "id": "temora-shire-council-005",
@@ -234,10 +248,7 @@
     "dwelling"
    ],
    "conditions": {
-    "precinct": "Temora Airpark Estate",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Temora Airpark Estate"
    },
    "conditionText": "Temora Airpark Estate residential: front boundary",
    "front": {
@@ -268,11 +279,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "shall not be undertaken within the 5.5 metres setback from the",
    "clause": "5.2 Residential Development, Setbacks",
    "page": 7,
-   "source_file": "DCP/temora-airpark-estate.pdf"
+   "source_file": "DCP/temora-airpark-estate.pdf",
+   "dcp": "Temora Shire Development Control Plan 2012, Section C Development Controls (chapters saved individually; edition otherwise UNVERIFIED); draft Residential and Industrial DCP chapters exhibited 24/04/2025 to 04/06/2025 per council minutes, industrial chapter text saved",
+   "edition": "Temora Shire DCP 2012"
   },
   {
    "id": "temora-shire-council-006",
@@ -318,7 +331,9 @@
    "quote": "front setback for single storey development is six (6) metres and two storey development is eight (8) metres",
    "clause": "3. Setbacks to boundaries",
    "page": 8,
-   "source_file": "DCP/multi-unit-housing.pdf"
+   "source_file": "DCP/multi-unit-housing.pdf",
+   "dcp": "Temora Shire Development Control Plan 2012, Section C Development Controls (chapters saved individually; edition otherwise UNVERIFIED); draft Residential and Industrial DCP chapters exhibited 24/04/2025 to 04/06/2025 per council minutes, industrial chapter text saved",
+   "edition": "Temora Shire DCP 2012"
   },
   {
    "id": "temora-shire-council-007",
@@ -364,7 +379,9 @@
    "quote": "front setback for single storey development is six (6) metres and two storey development is eight (8) metres",
    "clause": "3. Setbacks to boundaries",
    "page": 8,
-   "source_file": "DCP/multi-unit-housing.pdf"
+   "source_file": "DCP/multi-unit-housing.pdf",
+   "dcp": "Temora Shire Development Control Plan 2012, Section C Development Controls (chapters saved individually; edition otherwise UNVERIFIED); draft Residential and Industrial DCP chapters exhibited 24/04/2025 to 04/06/2025 per council minutes, industrial chapter text saved",
+   "edition": "Temora Shire DCP 2012"
   },
   {
    "id": "temora-shire-council-008",
@@ -430,7 +447,9 @@
    "quote": "rear of dwelling setback is three (3) metres",
    "clause": "3. Setbacks to boundaries",
    "page": 8,
-   "source_file": "DCP/multi-unit-housing.pdf"
+   "source_file": "DCP/multi-unit-housing.pdf",
+   "dcp": "Temora Shire Development Control Plan 2012, Section C Development Controls (chapters saved individually; edition otherwise UNVERIFIED); draft Residential and Industrial DCP chapters exhibited 24/04/2025 to 04/06/2025 per council minutes, industrial chapter text saved",
+   "edition": "Temora Shire DCP 2012"
   },
   {
    "id": "temora-shire-council-009",
@@ -513,7 +532,11 @@
    "quote": "Street setback must be a minimum of 5m",
    "clause": "3. Specific Development Controls",
    "page": 2,
-   "source_file": "DCP/industrial-development.pdf"
+   "source_file": "DCP/industrial-development.pdf",
+   "dcp": "Temora Shire Development Control Plan 2012, Section C Development Controls (chapters saved individually; edition otherwise UNVERIFIED); draft Residential and Industrial DCP chapters exhibited 24/04/2025 to 04/06/2025 per council minutes, industrial chapter text saved",
+   "edition": "Temora Shire DCP 2012",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -565,5 +588,32 @@
   "rules": 9,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 9
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

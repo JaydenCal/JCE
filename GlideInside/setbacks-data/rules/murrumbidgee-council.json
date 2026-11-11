@@ -15,7 +15,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "precinct": "Jerilderie DCP area",
@@ -57,7 +57,11 @@
    "quote": "Adjacent to Highway 15m, from a secondary road 10m",
    "clause": "5.3",
    "page": 23,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "murrumbidgee-council-002",
@@ -65,7 +69,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "precinct": "Jerilderie DCP area"
@@ -103,7 +107,9 @@
    "quote": "Adjacent to Highway 15m, from a secondary road 10m",
    "clause": "5.3",
    "page": 23,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
   },
   {
    "id": "murrumbidgee-council-003",
@@ -168,7 +174,9 @@
    "quote": "9 metres for dwellings and agricultural outbuildings",
    "clause": "5.3",
    "page": 23,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
   },
   {
    "id": "murrumbidgee-council-004",
@@ -176,8 +184,7 @@
     "R5"
    ],
    "appliesTo": [
-    "outbuilding",
-    "dwelling"
+    "outbuilding"
    ],
    "conditions": {
     "precinct": "Jerilderie DCP area"
@@ -190,11 +197,18 @@
      23262
     ]
    },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     23262
+    ]
+   },
    "front": null,
    "secondaryFront": null,
-   "rear": null,
    "garage": null,
    "sources": [
+    23262,
     23262
    ],
    "evidence": [
@@ -208,43 +222,7 @@
      "source_file": "DCP/jerilderie-development-control-plan.pdf",
      "condition": "Jerilderie DCP area: R5 Large Lot Residential, side and rear setbacks for non-agricultural outbuildings",
      "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
-   "quote": "5 metres for non-agricultural outbuildings",
-   "clause": "5.3",
-   "page": 23,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
-  },
-  {
-   "id": "murrumbidgee-council-005",
-   "zones": [
-    "R5"
-   ],
-   "appliesTo": [
-    "outbuilding",
-    "dwelling"
-   ],
-   "conditions": {
-    "precinct": "Jerilderie DCP area"
-   },
-   "conditionText": "Jerilderie DCP area: R5 Large Lot Residential, side and rear setbacks for non-agricultural outbuildings",
-   "rear": {
-    "minM": 5.0,
-    "basis": "fixed",
-    "sources": [
-     23262
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "garage": null,
-   "sources": [
-    23262
-   ],
-   "evidence": [
+    },
     {
      "id": 23262,
      "parameter": "setback_rural",
@@ -257,15 +235,17 @@
      "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
     }
    ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "confidence": "high",
+   "needsReview": null,
    "quote": "5 metres for non-agricultural outbuildings",
    "clause": "5.3",
    "page": 23,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
   },
   {
-   "id": "murrumbidgee-council-006",
+   "id": "murrumbidgee-council-005",
    "zones": [
     "RU5"
    ],
@@ -311,10 +291,12 @@
    "quote": "Rear Setback/ Laneway Setback 3000mm or compliance with Building",
    "clause": "4.2.4",
    "page": 20,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
   },
   {
-   "id": "murrumbidgee-council-007",
+   "id": "murrumbidgee-council-006",
    "zones": [
     "RU5"
    ],
@@ -357,10 +339,12 @@
    "quote": "Side Setbacks 3000mm or compliance with Building",
    "clause": "4.2.4",
    "page": 20,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
   },
   {
-   "id": "murrumbidgee-council-008",
+   "id": "murrumbidgee-council-007",
    "zones": [
     "RU5"
    ],
@@ -404,10 +388,12 @@
    "quote": "In line with neighbouring developments or as required for vehicle access if the first development in the street",
    "clause": "4.2.4",
    "page": 20,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
   },
   {
-   "id": "murrumbidgee-council-009",
+   "id": "murrumbidgee-council-008",
    "zones": [
     "RU5"
    ],
@@ -453,10 +439,12 @@
    "quote": "Rear Setback or Laneway Setback 900mm",
    "clause": "4.1.4",
    "page": 17,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
   },
   {
-   "id": "murrumbidgee-council-010",
+   "id": "murrumbidgee-council-009",
    "zones": [
     "RU5"
    ],
@@ -520,10 +508,12 @@
    "quote": "Front setback and dual frontage blocks 5 metres",
    "clause": "4.1.4",
    "page": 17,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
   },
   {
-   "id": "murrumbidgee-council-011",
+   "id": "murrumbidgee-council-010",
    "zones": [
     "RU1"
    ],
@@ -606,10 +596,12 @@
    "quote": "Sealed road frontage 10 metres",
    "clause": "6.3",
    "page": 25,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013"
   },
   {
-   "id": "murrumbidgee-council-012",
+   "id": "murrumbidgee-council-011",
    "zones": [
     "RU1"
    ],
@@ -652,10 +644,14 @@
    "quote": "Unsealed road frontage 20 metres",
    "clause": "6.3",
    "page": 25,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "murrumbidgee-council-013",
+   "id": "murrumbidgee-council-012",
    "zones": [
     "*"
    ],
@@ -702,10 +698,12 @@
    "quote": "Dwelling (up to 5.5m in height) 0.9 metre",
    "clause": "8(C) setback table",
    "page": 6,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023"
   },
   {
-   "id": "murrumbidgee-council-014",
+   "id": "murrumbidgee-council-013",
    "zones": [
     "*"
    ],
@@ -753,10 +751,14 @@
    "quote": "Dwelling (> 5.5m in height) Height of building – 5 metres = setback",
    "clause": "8(C) setback table, footnote 8",
    "page": 6,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
-   "id": "murrumbidgee-council-015",
+   "id": "murrumbidgee-council-014",
    "zones": [
     "*"
    ],
@@ -823,10 +825,12 @@
    "quote": "- Dwelling 3.0 metres",
    "clause": "8(C) setback table",
    "page": 6,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023"
   },
   {
-   "id": "murrumbidgee-council-016",
+   "id": "murrumbidgee-council-015",
    "zones": [
     "*"
    ],
@@ -873,10 +877,14 @@
    "quote": "- Dwelling - Garage (attached or detached) 4.5 metres",
    "clause": "8(C) setback table",
    "page": 6,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023",
+   "flag": "check_with_council",
+   "flagReason": "Source record 23360 is flagged conflict=true in the extract (two council documents disagree)"
   },
   {
-   "id": "murrumbidgee-council-017",
+   "id": "murrumbidgee-council-016",
    "zones": [
     "*"
    ],
@@ -938,10 +946,12 @@
    "quote": "Garages shall be set back a minimum of 5.5 metres from both the primary and secondary street frontages",
    "clause": "8(L)(b)(i)",
    "page": 13,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023"
   },
   {
-   "id": "murrumbidgee-council-018",
+   "id": "murrumbidgee-council-017",
    "zones": [
     "*"
    ],
@@ -986,10 +996,12 @@
    "quote": "Carport (attached or detached) 5.5 metres",
    "clause": "8(C) setback table",
    "page": 6,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023"
   },
   {
-   "id": "murrumbidgee-council-019",
+   "id": "murrumbidgee-council-018",
    "zones": [
     "*"
    ],
@@ -1036,10 +1048,12 @@
    "quote": "An outbuilding with a wall height of 0.9 metres",
    "clause": "8(L)(a)(iii)",
    "page": 12,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023"
   },
   {
-   "id": "murrumbidgee-council-020",
+   "id": "murrumbidgee-council-019",
    "zones": [
     "*"
    ],
@@ -1086,10 +1100,14 @@
    "quote": "An outbuilding with a wall height of 1.5 metres",
    "clause": "8(L)(a)(iii)",
    "page": 12,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
-   "id": "murrumbidgee-council-021",
+   "id": "murrumbidgee-council-020",
    "zones": [
     "*"
    ],
@@ -1156,10 +1174,12 @@
    "quote": "Outbuildings 5.5 metres",
    "clause": "8(C) setback table",
    "page": 6,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023"
   },
   {
-   "id": "murrumbidgee-council-022",
+   "id": "murrumbidgee-council-021",
    "zones": [
     "*"
    ],
@@ -1206,10 +1226,12 @@
    "quote": "Secondary dwelling 4.0 metres",
    "clause": "8(C) setback table",
    "page": 6,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023"
   },
   {
-   "id": "murrumbidgee-council-023",
+   "id": "murrumbidgee-council-022",
    "zones": [
     "*"
    ],
@@ -1273,10 +1295,12 @@
    "quote": "Swimming pools 3.0 metres",
    "clause": "8(C) setback table",
    "page": 6,
-   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf"
+   "source_file": "DCP/river-red-gum-estate-dcp-amendment-no-2-march-2026.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "River Red Gum Estate DCP, Amendment 2, March 2026; in force from 27 June 2023"
   },
   {
-   "id": "murrumbidgee-council-024",
+   "id": "murrumbidgee-council-023",
    "zones": [
     "IN*"
    ],
@@ -1338,10 +1362,14 @@
    "quote": "is within 10 metres of the building alignment of any road",
    "clause": "4.3(d) i",
    "page": 27,
-   "source_file": "DCP/coleambally-and-darlington-point-development-control-plan.pdf"
+   "source_file": "DCP/coleambally-and-darlington-point-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Murrumbidgee Council Draft Development Control Plan No. 1 \"Village\" (undated draft, based on Murrumbidgee LEP 1994)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "murrumbidgee-council-025",
+   "id": "murrumbidgee-council-024",
    "zones": [
     "IN*"
    ],
@@ -1382,10 +1410,14 @@
    "quote": "A secondary building line of 5 metres will apply to the second road",
    "clause": "4.3(d) ii",
    "page": 27,
-   "source_file": "DCP/coleambally-and-darlington-point-development-control-plan.pdf"
+   "source_file": "DCP/coleambally-and-darlington-point-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Murrumbidgee Council Draft Development Control Plan No. 1 \"Village\" (undated draft, based on Murrumbidgee LEP 1994)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
-   "id": "murrumbidgee-council-026",
+   "id": "murrumbidgee-council-025",
    "zones": [
     "IN1"
    ],
@@ -1469,7 +1501,11 @@
    "quote": "Side Setbacks 3000mm or compliance with Building",
    "clause": "7.3",
    "page": 27,
-   "source_file": "DCP/jerilderie-development-control-plan.pdf"
+   "source_file": "DCP/jerilderie-development-control-plan.pdf",
+   "dcp": "Three area DCPs: Jerilderie Development Control Plan 2012 (adopted 6 March 2013); Coleambally and Darlington Point Draft DCP No. 1 \"Village\" (undated draft, Murrumbidgee LEP 1994 era); River Red Gum Estate DCP Amendment 2 (March 2026, in force from 27 June 2023)",
+   "edition": "Jerilderie Shire Development Control Plan 2012, adopted 6 March 2013",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   }
  ],
  "gaps": [
@@ -1486,7 +1522,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 5
+   "rules": 4
   },
   "RU5": {
    "front": true,
@@ -1536,8 +1572,35 @@
  "needsPrecinct": true,
  "counts": {
   "records": 36,
-  "rules": 26,
+  "rules": 25,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

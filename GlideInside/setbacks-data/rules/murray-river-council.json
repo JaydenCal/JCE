@@ -58,7 +58,9 @@
    "quote": "not more than 450m2 — 3m",
    "clause": "2.5 Setbacks from a primary road",
    "page": 10,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-002",
@@ -105,7 +107,9 @@
    "quote": "Minimum setback for dwellings and outbuildings is 10m",
    "clause": "2.5",
    "page": 11,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-003",
@@ -153,7 +157,9 @@
    "quote": "Minimum setback for dwellings, outbuildings and swimming pools is 10m",
    "clause": "2.5",
    "page": 13,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-004",
@@ -201,7 +207,9 @@
    "quote": "not more than 1000m2 — 4.5m",
    "clause": "2.5 Setbacks from a primary road",
    "page": 10,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-005",
@@ -249,7 +257,9 @@
    "quote": "not more than 1500m2 — 6.5m",
    "clause": "2.5 Setbacks from a primary road",
    "page": 10,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-006",
@@ -297,7 +307,9 @@
    "quote": "not more than 1800m2 — 8.5m",
    "clause": "2.5 Setbacks from a primary road",
    "page": 11,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-007",
@@ -344,7 +356,9 @@
    "quote": "area of more than 1800m2 — 10m",
    "clause": "2.5 Setbacks from a primary road",
    "page": 11,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-008",
@@ -391,7 +405,11 @@
    "quote": "Side and rear setbacks (non-street frontages or to a rear lane) must meet the requirements of the Building Code of Australia",
    "clause": "B.2.3",
    "page": 39,
-   "source_file": "DCP/wakool-development-control-plan-2013-amendment-2.pdf"
+   "source_file": "DCP/wakool-development-control-plan-2013-amendment-2.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Wakool Development Control Plan 2013 (Amendment 2, April 2015)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "murray-river-council-009",
@@ -440,7 +458,11 @@
    "quote": "comply with the standards detailed in the Building Code of Australia",
    "clause": "2.5",
    "page": 12,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "murray-river-council-010",
@@ -506,7 +528,9 @@
    "quote": "3m for side setback and 5m for rear setback",
    "clause": "2.5",
    "page": 12,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-011",
@@ -571,7 +595,9 @@
    "quote": "5m for side setback and 10m for rear setback",
    "clause": "2.5",
    "page": 12,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-012",
@@ -621,7 +647,9 @@
    "quote": "the average distance of the setbacks of the nearest 2 dwelling houses",
    "clause": "2.5",
    "page": 10,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-013",
@@ -668,7 +696,9 @@
    "quote": "Garages should not extend forward of the front building line for lots less than 1500m2",
    "clause": "2.5",
    "page": 11,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-014",
@@ -683,7 +713,8 @@
    },
    "conditionText": "Murray DCP area: Front building setback less than 6.5 m, garage behind building setback",
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      23144
     ]
@@ -699,7 +730,7 @@
     {
      "id": 23144,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "any garage must be setback a minimum of 1 metre behind the building setback",
      "clause": "2.5",
      "page": 11,
@@ -713,7 +744,9 @@
    "quote": "any garage must be setback a minimum of 1 metre behind the building setback",
    "clause": "2.5",
    "page": 11,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-015",
@@ -762,7 +795,9 @@
    "quote": "not more than 1000m2 — 3m",
    "clause": "2.5 Setbacks from secondary road",
    "page": 11,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-016",
@@ -811,7 +846,9 @@
    "quote": "not more than 1800m2 — 3.5m",
    "clause": "2.5 Setbacks from secondary road",
    "page": 11,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-017",
@@ -860,7 +897,9 @@
    "quote": "not more than 4000 — 4m",
    "clause": "2.5 Setbacks from secondary road",
    "page": 11,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-018",
@@ -909,7 +948,9 @@
    "quote": "not more than 450m2 — 2m",
    "clause": "2.5 Setbacks from secondary road",
    "page": 11,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-019",
@@ -957,7 +998,9 @@
    "quote": "area of more than 4000m2 — 5m",
    "clause": "2.5 Setbacks from secondary road",
    "page": 11,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-020",
@@ -1023,7 +1066,9 @@
    "quote": "3m for side setback and 3m for rear setback",
    "clause": "2.5",
    "page": 13,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-021",
@@ -1088,7 +1133,9 @@
    "quote": "5m for side setback and 5m for rear setback",
    "clause": "2.5",
    "page": 13,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-022",
@@ -1153,7 +1200,9 @@
    "quote": "more than 1800m2 — 3m for side setback and 3m for rear setback",
    "clause": "2.5",
    "page": 13,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012"
   },
   {
    "id": "murray-river-council-023",
@@ -1199,7 +1248,11 @@
    "quote": "ii) 6 metres otherwise",
    "clause": "B.2.3",
    "page": 39,
-   "source_file": "DCP/wakool-development-control-plan-2013-amendment-2.pdf"
+   "source_file": "DCP/wakool-development-control-plan-2013-amendment-2.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Wakool Development Control Plan 2013 (Amendment 2, April 2015)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
   },
   {
    "id": "murray-river-council-024",
@@ -1246,7 +1299,11 @@
    "quote": "10 metres where the lot is greater than 2,000m2 in area",
    "clause": "B.2.3",
    "page": 39,
-   "source_file": "DCP/wakool-development-control-plan-2013-amendment-2.pdf"
+   "source_file": "DCP/wakool-development-control-plan-2013-amendment-2.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Wakool Development Control Plan 2013 (Amendment 2, April 2015)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "murray-river-council-025",
@@ -1313,7 +1370,11 @@
    "quote": "A minimum 10 metres from the front (primary) property boundary",
    "clause": "3.3",
    "page": 20,
-   "source_file": "DCP/murray-development-control-plan-2012.pdf"
+   "source_file": "DCP/murray-development-control-plan-2012.pdf",
+   "dcp": "Two DCP areas: Murray Development Control Plan 2012 (former Murray Shire) and Wakool Development Control Plan 2013 Amendment 2, April 2015 (former Wakool Shire)",
+   "edition": "Murray Development Control Plan 2012",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -1399,5 +1460,32 @@
   "rules": 25,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

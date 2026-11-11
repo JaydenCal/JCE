@@ -52,7 +52,9 @@
    "quote": "General 4.5 m,",
    "clause": "4.3.1",
    "page": 18,
-   "source_file": "DCP/Walgett_DCP_2016.pdf"
+   "source_file": "DCP/Walgett_DCP_2016.pdf",
+   "dcp": "Walgett Shire Development Control Plan 2016, August 2016",
+   "edition": "Walgett Shire DCP 2016, August 2016"
   },
   {
    "id": "walgett-shire-council-002",
@@ -95,7 +97,9 @@
    "quote": "5.5 m to",
    "clause": "4.3.1",
    "page": 18,
-   "source_file": "DCP/Walgett_DCP_2016.pdf"
+   "source_file": "DCP/Walgett_DCP_2016.pdf",
+   "dcp": "Walgett Shire Development Control Plan 2016, August 2016",
+   "edition": "Walgett Shire DCP 2016, August 2016"
   },
   {
    "id": "walgett-shire-council-003",
@@ -139,7 +143,9 @@
    "quote": "General Residential 4.5 m, 5.5 m",
    "clause": "4.6.1",
    "page": 25,
-   "source_file": "DCP/Walgett_DCP_2016.pdf"
+   "source_file": "DCP/Walgett_DCP_2016.pdf",
+   "dcp": "Walgett Shire Development Control Plan 2016, August 2016",
+   "edition": "Walgett Shire DCP 2016, August 2016"
   },
   {
    "id": "walgett-shire-council-004",
@@ -183,7 +189,9 @@
    "quote": "General Residential 4.5 m, 5.5 m",
    "clause": "4.6.1",
    "page": 25,
-   "source_file": "DCP/Walgett_DCP_2016.pdf"
+   "source_file": "DCP/Walgett_DCP_2016.pdf",
+   "dcp": "Walgett Shire Development Control Plan 2016, August 2016",
+   "edition": "Walgett Shire DCP 2016, August 2016"
   },
   {
    "id": "walgett-shire-council-005",
@@ -191,8 +199,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dual_occupancy",
-    "dwelling"
+    "dual_occupancy"
    ],
    "conditions": {},
    "conditionText": [
@@ -249,7 +256,9 @@
    "quote": "Large Lot Residential 20 m 10m 20 m 10m",
    "clause": "4.5.1",
    "page": 22,
-   "source_file": "DCP/Walgett_DCP_2016.pdf"
+   "source_file": "DCP/Walgett_DCP_2016.pdf",
+   "dcp": "Walgett Shire Development Control Plan 2016, August 2016",
+   "edition": "Walgett Shire DCP 2016, August 2016"
   },
   {
    "id": "walgett-shire-council-006",
@@ -257,8 +266,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "dual_occupancy",
-    "multi_dwelling"
+    "dual_occupancy"
    ],
    "conditions": {},
    "conditionText": "Dual occupancy: Village (RU5) street frontage",
@@ -294,7 +302,9 @@
    "quote": "Village (RU5) 6m 6m",
    "clause": "4.5.1",
    "page": 22,
-   "source_file": "DCP/Walgett_DCP_2016.pdf"
+   "source_file": "DCP/Walgett_DCP_2016.pdf",
+   "dcp": "Walgett Shire Development Control Plan 2016, August 2016",
+   "edition": "Walgett Shire DCP 2016, August 2016"
   },
   {
    "id": "walgett-shire-council-007",
@@ -302,7 +312,6 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
     "dwelling"
    ],
    "conditions": {},
@@ -339,7 +348,9 @@
    "quote": "Village (RU5) 6m",
    "clause": "4.3.1",
    "page": 18,
-   "source_file": "DCP/Walgett_DCP_2016.pdf"
+   "source_file": "DCP/Walgett_DCP_2016.pdf",
+   "dcp": "Walgett Shire Development Control Plan 2016, August 2016",
+   "edition": "Walgett Shire DCP 2016, August 2016"
   },
   {
    "id": "walgett-shire-council-008",
@@ -404,7 +415,9 @@
    "quote": "Production 20 m 10 Not specified",
    "clause": "4.3.1",
    "page": 18,
-   "source_file": "DCP/Walgett_DCP_2016.pdf"
+   "source_file": "DCP/Walgett_DCP_2016.pdf",
+   "dcp": "Walgett Shire Development Control Plan 2016, August 2016",
+   "edition": "Walgett Shire DCP 2016, August 2016"
   },
   {
    "id": "walgett-shire-council-009",
@@ -448,7 +461,9 @@
    "quote": "Street setback must be a minimum of 5m.",
    "clause": "4.8.1",
    "page": 33,
-   "source_file": "DCP/Walgett_DCP_2016.pdf"
+   "source_file": "DCP/Walgett_DCP_2016.pdf",
+   "dcp": "Walgett Shire Development Control Plan 2016, August 2016",
+   "edition": "Walgett Shire DCP 2016, August 2016"
   }
  ],
  "gaps": [
@@ -508,5 +523,32 @@
   "rules": 9,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

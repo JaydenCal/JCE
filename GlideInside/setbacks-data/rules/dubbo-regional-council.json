@@ -54,7 +54,9 @@
    "quote": "5.5 m set-back from the secondary",
    "clause": "2.1.1 Element 2 A3.3",
    "page": 27,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-002",
@@ -100,7 +102,9 @@
    "quote": "R1 and R2 zones a minimum of 5.5 m",
    "clause": "2.1.1 Element 2 A3.1",
    "page": 27,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-003",
@@ -169,7 +173,9 @@
    "quote": "the secondary frontage setback can be reduced to 3",
    "clause": "F1.4.2",
    "page": 73,
-   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Wellington DCP 2013 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-004",
@@ -181,7 +187,7 @@
     "any"
    ],
    "conditions": {
-    "qualifiers": [
+    "qualifiersNot": [
      "established_area"
     ]
    },
@@ -218,7 +224,9 @@
    "quote": "4.5 m from the front property boundary",
    "clause": "2.1.1 Element 2 A1.1",
    "page": 26,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-005",
@@ -263,7 +271,9 @@
    "quote": "set-back is 3 m. Where the corner is",
    "clause": "2.1.1 Element 2 A1.4",
    "page": 26,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-006",
@@ -315,7 +325,9 @@
    "quote": "the average of the setbacks for the two adjoining lots.",
    "clause": "F1.4.2",
    "page": 73,
-   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Wellington DCP 2013 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-007",
@@ -362,7 +374,9 @@
    "quote": "Zones R1 and R2 (new residential areas) – 6 metre front setback",
    "clause": "F1.4.2",
    "page": 73,
-   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Wellington DCP 2013 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-008",
@@ -409,7 +423,11 @@
    "quote": "Residential development is set-back such",
    "clause": "2.1.1 Element 2 A2.1",
    "page": 26,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "dubbo-regional-council-009",
@@ -459,7 +477,9 @@
    "quote": "setback shall be 5.5 metres from the rear boundary",
    "clause": "F1.4.2",
    "page": 73,
-   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Wellington DCP 2013 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-010",
@@ -526,7 +546,9 @@
    "quote": "Zone R5 – 10 metres from the primary road frontage",
    "clause": "F1.4.2",
    "page": 73,
-   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Wellington DCP 2013 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-011",
@@ -588,7 +610,9 @@
    "quote": "other buildings are 35 m from adjoining",
    "clause": "2.4 Rural A1.4",
    "page": 187,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-012",
@@ -634,7 +658,9 @@
    "quote": "generally not less than 1.5",
    "clause": "F1.4.2",
    "page": 73,
-   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Wellington DCP 2013 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-013",
@@ -645,7 +671,7 @@
     "any"
    ],
    "conditions": {
-    "qualifiers": [
+    "qualifiersNot": [
      "established_area"
     ]
    },
@@ -682,7 +708,9 @@
    "quote": "RU5 zone - minimum set-back of 10 m",
    "clause": "2.1.1 Element 2 A1.2",
    "page": 26,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-014",
@@ -746,7 +774,9 @@
    "quote": "set-back is 5 m. Where the corner is",
    "clause": "2.1.1 Element 2 A1.5",
    "page": 26,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-015",
@@ -808,7 +838,9 @@
    "quote": "side or rear boundary is 5 m.",
    "clause": "2.1.1 Element 2 A2.2",
    "page": 27,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-016",
@@ -871,7 +903,9 @@
    "quote": "150 m from adjoining boundaries in the RU1,",
    "clause": "2.4 Rural A1.3",
    "page": 187,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-017",
@@ -882,7 +916,7 @@
     "any"
    ],
    "conditions": {
-    "lotAreaMinM2": 600.0,
+    "lotAreaMinM2": 900.0,
     "lotAreaMaxM2": 899.0,
     "precinct": "Clearmont Rise DCP area"
    },
@@ -918,7 +952,9 @@
    "quote": "Front Setback 5.5 metres to 7 metres to facade 5.5 metres to facade of garage",
    "clause": "Garage setbacks",
    "page": 25,
-   "source_file": "DCP/Clearmont_Rise_DCP.pdf"
+   "source_file": "DCP/Clearmont_Rise_DCP.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "dubbo-regional-council-018",
@@ -966,7 +1002,9 @@
    "quote": "Side Setback (Min) 0.9 – 1.2 metres 1.5 metres 0.9 metres 0.9 metres",
    "clause": "Dwelling Controls Table",
    "page": 25,
-   "source_file": "DCP/Clearmont_Rise_DCP.pdf"
+   "source_file": "DCP/Clearmont_Rise_DCP.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "dubbo-regional-council-019",
@@ -1011,7 +1049,9 @@
    "quote": "5.5m from front boundary to any garage.",
    "clause": "AO4.1.6 b",
    "page": 22,
-   "source_file": "DCP/NorthWest_Residential_DCP2025.pdf"
+   "source_file": "DCP/NorthWest_Residential_DCP2025.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "North-West Urban Release Area Residential Development Control Plan 2025"
   },
   {
    "id": "dubbo-regional-council-020",
@@ -1056,7 +1096,9 @@
    "quote": "Garages must be setback a minimum of 5.5 metres from the primary or",
    "clause": "F1.4.2",
    "page": 73,
-   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Wellington_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Wellington DCP 2013 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-021",
@@ -1104,7 +1146,9 @@
    "quote": "distance of 20 m from the front",
    "clause": "2.3 Industrial Element 1 A1.2",
    "page": 141,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-022",
@@ -1168,7 +1212,9 @@
    "quote": "Secondary Front 3 metres 3 metres 3 metres N/A",
    "clause": "Dwelling Controls Table",
    "page": 24,
-   "source_file": "DCP/Clearmont_Rise_DCP.pdf"
+   "source_file": "DCP/Clearmont_Rise_DCP.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "dubbo-regional-council-023",
@@ -1217,7 +1263,9 @@
    "quote": "1m from a secondary frontage such as a laneway",
    "clause": "AO4.1.6 c",
    "page": 22,
-   "source_file": "DCP/NorthWest_Residential_DCP2025.pdf"
+   "source_file": "DCP/NorthWest_Residential_DCP2025.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "North-West Urban Release Area Residential Development Control Plan 2025"
   },
   {
    "id": "dubbo-regional-council-024",
@@ -1284,7 +1332,9 @@
    "quote": "3m from front boundary.",
    "clause": "AO4.1.6 a",
    "page": 22,
-   "source_file": "DCP/NorthWest_Residential_DCP2025.pdf"
+   "source_file": "DCP/NorthWest_Residential_DCP2025.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "North-West Urban Release Area Residential Development Control Plan 2025"
   },
   {
    "id": "dubbo-regional-council-025",
@@ -1333,7 +1383,9 @@
    "quote": "In established areas, infill development is",
    "clause": "2.1.1 Element 2 A1.3",
    "page": 26,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-026",
@@ -1377,7 +1429,9 @@
    "quote": "0.5 metres 2.4 metres",
    "clause": "2.1.1 Element 12 A4.1",
    "page": 55,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-027",
@@ -1421,7 +1475,11 @@
    "quote": "0.9 metres 2.7 metres",
    "clause": "2.1.1 Element 12 A4.1",
    "page": 55,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "dubbo-regional-council-028",
@@ -1465,7 +1523,11 @@
    "quote": "1.5 metres 3.0 metres",
    "clause": "2.1.1 Element 12 A4.1",
    "page": 55,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "dubbo-regional-council-029",
@@ -1509,7 +1571,11 @@
    "quote": "2.1 metres 3.6 metres",
    "clause": "2.1.1 Element 12 A4.1",
    "page": 55,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "dubbo-regional-council-030",
@@ -1555,7 +1621,9 @@
    "quote": "through provision of a zero set-back.",
    "clause": "2.2 Commercial Element A1.1",
    "page": 117,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-031",
@@ -1601,7 +1669,9 @@
    "quote": "storey of development is 3 m.",
    "clause": "2.2 Commercial Element A1.1",
    "page": 117,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-032",
@@ -1645,7 +1715,9 @@
    "quote": "shall provide a rear boundary set-back of at least 10",
    "clause": "2.2 Commercial Element A2.2",
    "page": 118,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-033",
@@ -1730,7 +1802,11 @@
    "quote": "back a minimum distance of 6 m from",
    "clause": "2.3 Industrial Element 1 A2.1",
    "page": 141,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "dubbo-regional-council-034",
@@ -1775,7 +1851,9 @@
    "quote": "distance of 10 m from the front boundary",
    "clause": "2.3 Industrial Element 1 A1.1",
    "page": 141,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   },
   {
    "id": "dubbo-regional-council-035",
@@ -1819,7 +1897,11 @@
    "quote": "buildings is 50 m.",
    "clause": "2.4 Rural A1.2",
    "page": 187,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
    "id": "dubbo-regional-council-036",
@@ -1870,7 +1952,9 @@
    "quote": "of 5 m (10 m where fronting a highway).",
    "clause": "2.2 Commercial Element A1.5",
    "page": 118,
-   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf"
+   "source_file": "DCP/Dubbo_DCP2013_01May2023.pdf",
+   "dcp": "Dubbo DCP 2013 (consolidated, file dated 01/05/2023, Growth Planning FILE11/63 - ED23/71913); Wellington DCP 2013 (file dated 01/05/2023) for the Wellington area; North-West Urban Release Area Residential DCP 2025 (adoption date UNVERIFIED); NWURA Stage 1 DCP and estate DCPs (edition UNVERIFIED)",
+   "edition": "Growth Planning FILE11/63 - ED23/71913 (file dated 01/05/2023)"
   }
  ],
  "gaps": [
@@ -2035,5 +2119,32 @@
   "rules": 36,
   "recordsNotModelled": 4,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side; rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side; rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (dubbo-regional-council-013, dubbo-regional-council-035))"
+  }
  }
 }

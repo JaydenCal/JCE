@@ -59,7 +59,9 @@
    "quote": "900m2 up to 1500m2 3 metres",
    "clause": "2.1 Secondary Building Line Setback",
    "page": 19,
-   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+   "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+   "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
   },
   {
    "id": "cootamundra-gundagai-regional-council-002",
@@ -109,7 +111,9 @@
    "quote": "Lots up to 600m 2 metres",
    "clause": "2.1 Secondary Building Line Setback",
    "page": 19,
-   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+   "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+   "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
   },
   {
    "id": "cootamundra-gundagai-regional-council-003",
@@ -160,7 +164,9 @@
    "quote": "600m up to 900m 3 metres",
    "clause": "2.1 Secondary Building Line Setback",
    "page": 19,
-   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+   "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+   "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
   },
   {
    "id": "cootamundra-gundagai-regional-council-004",
@@ -210,7 +216,9 @@
    "quote": "1500m or greater 5 metres",
    "clause": "2.1 Secondary Building Line Setback",
    "page": 19,
-   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+   "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+   "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
   },
   {
    "id": "cootamundra-gundagai-regional-council-005",
@@ -261,7 +269,11 @@
    "quote": "900m2 up to 1500m2 6.5metres",
    "clause": "2.1 Front Primary Building Line Setback",
    "page": 18,
-   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+   "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+   "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "cootamundra-gundagai-regional-council-006",
@@ -311,7 +323,11 @@
    "quote": "Lots up to 600m 4.5 metres",
    "clause": "2.1 Front Primary Building Line Setback",
    "page": 18,
-   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+   "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+   "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "cootamundra-gundagai-regional-council-007",
@@ -362,7 +378,11 @@
    "quote": "600m2 up to 900m2 4.5metres",
    "clause": "2.1 Front Primary Building Line Setback",
    "page": 18,
-   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+   "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+   "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "cootamundra-gundagai-regional-council-008",
@@ -412,7 +432,11 @@
    "quote": "1500m2 or greater 10.0 metres",
    "clause": "2.1 Front Primary Building Line Setback",
    "page": 18,
-   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+   "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+   "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "cootamundra-gundagai-regional-council-009",
@@ -465,7 +489,9 @@
    "quote": "houses within forty (40) metres of the",
    "clause": "2.1 Front Primary Building Line Setback",
    "page": 18,
-   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+   "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+   "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
   },
   {
    "id": "cootamundra-gundagai-regional-council-010",
@@ -511,7 +537,9 @@
    "quote": "Garages, sheds and carports must be setback at least 1m from the primary or secondary",
    "clause": "2.1 Setbacks for garages, sheds and carports",
    "page": 21,
-   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf"
+   "source_file": "DCP/Cootamundra-Gundagai_DCP_2013_Adopted_Oct2015.pdf",
+   "dcp": "Cootamundra Shire Council Development Control Plan 2013 (adopted version saved Oct 2015; applies to former Cootamundra area, referencing Cootamundra LEP 2013); Gundagai DCP 2007 saved but is an empty portal page",
+   "edition": "Cootamundra DCP 2013 (version adopted Oct 2015)"
   }
  ],
  "gaps": [
@@ -579,5 +607,32 @@
   "rules": 10,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

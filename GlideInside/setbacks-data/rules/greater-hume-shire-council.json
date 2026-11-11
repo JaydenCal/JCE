@@ -91,7 +91,11 @@
    "quote": "setback at least 20m from the road frontage and 12mtrs from side and rear",
    "clause": "11.2 cl 2.1.7 controls",
    "page": 69,
-   "source_file": "DCP/development-control-plan-version-13.pdf"
+   "source_file": "DCP/development-control-plan-version-13.pdf",
+   "dcp": "Greater Hume Development Control Plan 2013 (adopted 26/06/2013, effective 05/07/2013) with Chapter 11.2 Molkentin Road and Funk Road precinct amendment; South Jindera Low Density Residential Precinct DCP, October 2016",
+   "edition": "Greater Hume DCP 2013, adopted 26/06/2013, effective 05/07/2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "greater-hume-shire-council-002",
@@ -192,7 +196,9 @@
    "quote": "A minimum 4.5m from the front (primary) property boundary or the average of",
    "clause": "2.5 Building setbacks std 4",
    "page": 10,
-   "source_file": "DCP/development-control-plan-version-13.pdf"
+   "source_file": "DCP/development-control-plan-version-13.pdf",
+   "dcp": "Greater Hume Development Control Plan 2013 (adopted 26/06/2013, effective 05/07/2013) with Chapter 11.2 Molkentin Road and Funk Road precinct amendment; South Jindera Low Density Residential Precinct DCP, October 2016",
+   "edition": "Greater Hume DCP 2013, adopted 26/06/2013, effective 05/07/2013"
   },
   {
    "id": "greater-hume-shire-council-003",
@@ -237,7 +243,11 @@
    "quote": "3. As per Part 3, Division 2, Subdivision 3 of the General Housing Code in the",
    "clause": "2.5 std 3",
    "page": 10,
-   "source_file": "DCP/development-control-plan-version-13.pdf"
+   "source_file": "DCP/development-control-plan-version-13.pdf",
+   "dcp": "Greater Hume Development Control Plan 2013 (adopted 26/06/2013, effective 05/07/2013) with Chapter 11.2 Molkentin Road and Funk Road precinct amendment; South Jindera Low Density Residential Precinct DCP, October 2016",
+   "edition": "Greater Hume DCP 2013, adopted 26/06/2013, effective 05/07/2013",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "greater-hume-shire-council-004",
@@ -250,7 +260,8 @@
    "conditions": {},
    "conditionText": "Greater Hume DCP 2013 Ch 2 Residential, all density, garage behind front building line when building is at minimum setback",
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      14113
     ]
@@ -266,7 +277,7 @@
     {
      "id": 14113,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "2. A garage must be setback a minimum 1m behind the front building line if the",
      "clause": "2.5 std 2",
      "page": 10,
@@ -280,7 +291,9 @@
    "quote": "2. A garage must be setback a minimum 1m behind the front building line if the",
    "clause": "2.5 std 2",
    "page": 10,
-   "source_file": "DCP/development-control-plan-version-13.pdf"
+   "source_file": "DCP/development-control-plan-version-13.pdf",
+   "dcp": "Greater Hume Development Control Plan 2013 (adopted 26/06/2013, effective 05/07/2013) with Chapter 11.2 Molkentin Road and Funk Road precinct amendment; South Jindera Low Density Residential Precinct DCP, October 2016",
+   "edition": "Greater Hume DCP 2013, adopted 26/06/2013, effective 05/07/2013"
   },
   {
    "id": "greater-hume-shire-council-005",
@@ -329,7 +342,11 @@
    "quote": "• 7.5 metres from any boundary adjoining a main road; and",
    "clause": "3.3 Building setbacks std 1",
    "page": 19,
-   "source_file": "DCP/development-control-plan-version-13.pdf"
+   "source_file": "DCP/development-control-plan-version-13.pdf",
+   "dcp": "Greater Hume Development Control Plan 2013 (adopted 26/06/2013, effective 05/07/2013) with Chapter 11.2 Molkentin Road and Funk Road precinct amendment; South Jindera Low Density Residential Precinct DCP, October 2016",
+   "edition": "Greater Hume DCP 2013, adopted 26/06/2013, effective 05/07/2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
    "id": "greater-hume-shire-council-006",
@@ -377,7 +394,11 @@
    "quote": "secondary frontage is 5 metres, provided that this frontage does not address",
    "clause": "3.3 std 2",
    "page": 19,
-   "source_file": "DCP/development-control-plan-version-13.pdf"
+   "source_file": "DCP/development-control-plan-version-13.pdf",
+   "dcp": "Greater Hume Development Control Plan 2013 (adopted 26/06/2013, effective 05/07/2013) with Chapter 11.2 Molkentin Road and Funk Road precinct amendment; South Jindera Low Density Residential Precinct DCP, October 2016",
+   "edition": "Greater Hume DCP 2013, adopted 26/06/2013, effective 05/07/2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "greater-hume-shire-council-007",
@@ -421,7 +442,11 @@
    "quote": "• 4.5 metres from the boundary of any other road.",
    "clause": "3.3 std 1",
    "page": 19,
-   "source_file": "DCP/development-control-plan-version-13.pdf"
+   "source_file": "DCP/development-control-plan-version-13.pdf",
+   "dcp": "Greater Hume Development Control Plan 2013 (adopted 26/06/2013, effective 05/07/2013) with Chapter 11.2 Molkentin Road and Funk Road precinct amendment; South Jindera Low Density Residential Precinct DCP, October 2016",
+   "edition": "Greater Hume DCP 2013, adopted 26/06/2013, effective 05/07/2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -463,5 +488,32 @@
   "rules": 7,
   "recordsNotModelled": 5,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (greater-hume-shire-council-002, greater-hume-shire-council-003))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (greater-hume-shire-council-002, greater-hume-shire-council-003))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (greater-hume-shire-council-002, greater-hume-shire-council-003))"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (greater-hume-shire-council-002, greater-hume-shire-council-003))"
+  }
  }
 }

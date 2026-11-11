@@ -19,11 +19,63 @@
     "any"
    ],
    "conditions": {
+    "precinct": "Newmarket Green DCP area",
+    "qualifiers": [
+     "orientation_specific"
+    ]
+   },
+   "conditionText": "Newmarket Green DCP area: Young Street east side, R1 zone",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     28560
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    28560
+   ],
+   "evidence": [
+    {
+     "id": 28560,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "3.0m in R1 zone",
+     "clause": "Table 3 Primary Building Setbacks",
+     "page": 27,
+     "source_file": "DCP/Newmarket-DCP.pdf",
+     "condition": "Newmarket Green DCP area: Young Street east side, R1 zone",
+     "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText",
+   "quote": "3.0m in R1 zone",
+   "clause": "Table 3 Primary Building Setbacks",
+   "page": 27,
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText"
+  },
+  {
+   "id": "randwick-city-council-002",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
     "precinct": "Newmarket Green DCP area"
    },
    "conditionText": [
     "Newmarket Green DCP area: Jane Street, R1 zone",
-    "Newmarket Green DCP area: Young Street east side, R1 zone",
     "Newmarket Green DCP area: new streets, to DV1, ST2, ST3, ST4, R1 zone"
    ],
    "front": {
@@ -31,7 +83,6 @@
     "basis": "fixed",
     "sources": [
      28557,
-     28560,
      28565
     ]
    },
@@ -41,7 +92,6 @@
    "garage": null,
    "sources": [
     28557,
-    28560,
     28565
    ],
    "evidence": [
@@ -54,17 +104,6 @@
      "page": 27,
      "source_file": "DCP/Newmarket-DCP.pdf",
      "condition": "Newmarket Green DCP area: Jane Street, R1 zone",
-     "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
-    },
-    {
-     "id": 28560,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "3.0m in R1 zone",
-     "clause": "Table 3 Primary Building Setbacks",
-     "page": 27,
-     "source_file": "DCP/Newmarket-DCP.pdf",
-     "condition": "Newmarket Green DCP area: Young Street east side, R1 zone",
      "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
     },
     {
@@ -84,10 +123,12 @@
    "quote": "3.0m (in R1 zone)",
    "clause": "Table 3 Primary Building Setbacks",
    "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
   },
   {
-   "id": "randwick-city-council-002",
+   "id": "randwick-city-council-003",
    "zones": [
     "R1"
    ],
@@ -130,10 +171,14 @@
    "quote": "0.5m (to RL) in R1 zone",
    "clause": "Table 3 Primary Building Setbacks",
    "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "randwick-city-council-003",
+   "id": "randwick-city-council-004",
    "zones": [
     "*"
    ],
@@ -141,10 +186,7 @@
     "any"
    ],
    "conditions": {
-    "level": "ground",
-    "qualifiers": [
-     "laneway"
-    ]
+    "level": "ground"
    },
    "conditionText": "D15 Barker Street / Willis Street, Randwick Block B, Kennedy Lane ground floor and above",
    "side": {
@@ -179,10 +221,12 @@
    "quote": "Kennedy Lane 5.5m Ground floor and above",
    "clause": "D15 control e",
    "page": 11,
-   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf"
+   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)"
   },
   {
-   "id": "randwick-city-council-004",
+   "id": "randwick-city-council-005",
    "zones": [
     "*"
    ],
@@ -220,15 +264,146 @@
      "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)"
     }
    ],
-   "confidence": "medium",
-   "needsReview": null,
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
    "quote": "Side 6m Ground floor and above",
    "clause": "D15 control e",
    "page": 11,
-   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf"
+   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
-   "id": "randwick-city-council-005",
+   "id": "randwick-city-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Newmarket Green DCP area",
+    "qualifiers": [
+     "orientation_specific"
+    ]
+   },
+   "conditionText": [
+    "Newmarket Green DCP area: Young Street west side",
+    "Newmarket Green DCP area: eastern boundary, interface with schools"
+   ],
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     28558
+    ]
+   },
+   "side": {
+    "minM": 1.0,
+    "basis": "fixed",
+    "sources": [
+     28567
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    28558,
+    28567
+   ],
+   "evidence": [
+    {
+     "id": 28558,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Young Street (west side) 3.0m",
+     "clause": "Table 3 Primary Building Setbacks",
+     "page": 27,
+     "source_file": "DCP/Newmarket-DCP.pdf",
+     "condition": "Newmarket Green DCP area: Young Street west side",
+     "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
+    },
+    {
+     "id": 28567,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Eastern boundary (interface with schools) 1.0m",
+     "clause": "Table 3 Primary Building Setbacks",
+     "page": 27,
+     "source_file": "DCP/Newmarket-DCP.pdf",
+     "condition": "Newmarket Green DCP area: eastern boundary, interface with schools",
+     "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText",
+   "quote": "Young Street (west side) 3.0m",
+   "clause": "Table 3 Primary Building Setbacks",
+   "page": 27,
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText"
+  },
+  {
+   "id": "randwick-city-council-007",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Newmarket Green DCP area",
+    "qualifiers": [
+     "orientation_specific"
+    ]
+   },
+   "conditionText": "Newmarket Green DCP area: southern boundary, interface with school",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     28568
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    28568
+   ],
+   "evidence": [
+    {
+     "id": 28568,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Southern boundary (interface with school) 3.0m",
+     "clause": "Table 3 Primary Building Setbacks",
+     "page": 27,
+     "source_file": "DCP/Newmarket-DCP.pdf",
+     "condition": "Newmarket Green DCP area: southern boundary, interface with school",
+     "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText; CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "quote": "Southern boundary (interface with school) 3.0m",
+   "clause": "Table 3 Primary Building Setbacks",
+   "page": 27,
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText; CONFLICT: another rule with the same applicability gives a diff..."
+  },
+  {
+   "id": "randwick-city-council-008",
    "zones": [
     "*"
    ],
@@ -272,10 +447,12 @@
    "quote": "3.0m (for 2 storey elements)",
    "clause": "Table 3 Primary Building Setbacks",
    "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
   },
   {
-   "id": "randwick-city-council-006",
+   "id": "randwick-city-council-009",
    "zones": [
     "*"
    ],
@@ -319,10 +496,14 @@
    "quote": "7.0m (for elements above 2 storeys)",
    "clause": "Table 3 Primary Building Setbacks",
    "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "randwick-city-council-007",
+   "id": "randwick-city-council-010",
    "zones": [
     "*"
    ],
@@ -332,10 +513,7 @@
    "conditions": {
     "precinct": "Newmarket Green DCP area"
    },
-   "conditionText": [
-    "Newmarket Green DCP area: Barker Street",
-    "Newmarket Green DCP area: eastern boundary, interface with schools"
-   ],
+   "conditionText": "Newmarket Green DCP area: Barker Street",
    "front": {
     "minM": 5.0,
     "basis": "fixed",
@@ -343,19 +521,12 @@
      28555
     ]
    },
-   "side": {
-    "minM": 1.0,
-    "basis": "fixed",
-    "sources": [
-     28567
-    ]
-   },
    "secondaryFront": null,
+   "side": null,
    "rear": null,
    "garage": null,
    "sources": [
-    28555,
-    28567
+    28555
    ],
    "evidence": [
     {
@@ -368,17 +539,6 @@
      "source_file": "DCP/Newmarket-DCP.pdf",
      "condition": "Newmarket Green DCP area: Barker Street",
      "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
-    },
-    {
-     "id": 28567,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "Eastern boundary (interface with schools) 1.0m",
-     "clause": "Table 3 Primary Building Setbacks",
-     "page": 27,
-     "source_file": "DCP/Newmarket-DCP.pdf",
-     "condition": "Newmarket Green DCP area: eastern boundary, interface with schools",
-     "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
     }
    ],
    "confidence": "medium",
@@ -386,147 +546,9 @@
    "quote": "Barker Street 5.0m",
    "clause": "Table 3 Primary Building Setbacks",
    "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
-  },
-  {
-   "id": "randwick-city-council-008",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {
-    "precinct": "Newmarket Green DCP area"
-   },
-   "conditionText": "Newmarket Green DCP area: Young Street west side",
-   "front": {
-    "minM": 3.0,
-    "basis": "fixed",
-    "sources": [
-     28558
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28558
-   ],
-   "evidence": [
-    {
-     "id": 28558,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Young Street (west side) 3.0m",
-     "clause": "Table 3 Primary Building Setbacks",
-     "page": 27,
-     "source_file": "DCP/Newmarket-DCP.pdf",
-     "condition": "Newmarket Green DCP area: Young Street west side",
-     "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
-   "quote": "Young Street (west side) 3.0m",
-   "clause": "Table 3 Primary Building Setbacks",
-   "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
-  },
-  {
-   "id": "randwick-city-council-009",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {
-    "precinct": "Newmarket Green DCP area"
-   },
-   "conditionText": "Newmarket Green DCP area: southern boundary, interface with school",
-   "side": {
-    "minM": 3.0,
-    "basis": "fixed",
-    "sources": [
-     28568
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28568
-   ],
-   "evidence": [
-    {
-     "id": 28568,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "Southern boundary (interface with school) 3.0m",
-     "clause": "Table 3 Primary Building Setbacks",
-     "page": 27,
-     "source_file": "DCP/Newmarket-DCP.pdf",
-     "condition": "Newmarket Green DCP area: southern boundary, interface with school",
-     "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
-   "quote": "Southern boundary (interface with school) 3.0m",
-   "clause": "Table 3 Primary Building Setbacks",
-   "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
-  },
-  {
-   "id": "randwick-city-council-010",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "laneway"
-    ]
-   },
-   "conditionText": "D15 Barker Street / Willis Street, Randwick Block A, Kennedy Lane",
-   "side": {
-    "minM": 4.0,
-    "basis": "fixed",
-    "sources": [
-     28579
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28579
-   ],
-   "evidence": [
-    {
-     "id": 28579,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "Kennedy Lane 4m Ground floor and above",
-     "clause": "D15 control e",
-     "page": 11,
-     "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf",
-     "condition": "D15 Barker Street / Willis Street, Randwick Block A, Kennedy Lane",
-     "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "Kennedy Lane 4m Ground floor and above",
-   "clause": "D15 control e",
-   "page": 11,
-   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf"
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
   },
   {
    "id": "randwick-city-council-011",
@@ -536,10 +558,62 @@
    "appliesTo": [
     "any"
    ],
+   "conditions": {
+    "qualifiers": [
+     "orientation_specific"
+    ]
+   },
+   "conditionText": "D15 15 Blenheim Street, Randwick: east boundary, all levels",
+   "side": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     28586
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    28586
+   ],
+   "evidence": [
+    {
+     "id": 28586,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "East boundary 3m All levels",
+     "clause": "D15 control d",
+     "page": 16,
+     "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf",
+     "condition": "D15 15 Blenheim Street, Randwick: east boundary, all levels",
+     "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText",
+   "quote": "East boundary 3m All levels",
+   "clause": "D15 control d",
+   "page": 16,
+   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText"
+  },
+  {
+   "id": "randwick-city-council-012",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
    "conditions": {},
    "conditionText": [
-    "D15 15 Blenheim Street, Randwick: east boundary, all levels",
     "D15 Barker Street / Willis Street, Randwick Block A, Barker Street",
+    "D15 Barker Street / Willis Street, Randwick Block A, Kennedy Lane",
     "D15 Barker Street / Willis Street, Randwick Blocks A and B, all floors"
    ],
    "front": {
@@ -557,18 +631,18 @@
     ]
    },
    "side": {
-    "minM": 3.0,
+    "minM": 4.0,
     "basis": "fixed",
     "sources": [
-     28586
+     28579
     ]
    },
    "secondaryFront": null,
    "garage": null,
    "sources": [
     28578,
-    28580,
-    28586
+    28579,
+    28580
    ],
    "evidence": [
     {
@@ -594,14 +668,14 @@
      "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)"
     },
     {
-     "id": 28586,
+     "id": 28579,
      "parameter": "side_setback",
      "slot": "side",
-     "quote": "East boundary 3m All levels",
-     "clause": "D15 control d",
-     "page": 16,
+     "quote": "Kennedy Lane 4m Ground floor and above",
+     "clause": "D15 control e",
+     "page": 11,
      "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf",
-     "condition": "D15 15 Blenheim Street, Randwick: east boundary, all levels",
+     "condition": "D15 Barker Street / Willis Street, Randwick Block A, Kennedy Lane",
      "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)"
     }
    ],
@@ -610,10 +684,12 @@
    "quote": "Barker Street 5m Ground floor and above",
    "clause": "D15 control e",
    "page": 11,
-   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf"
+   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)"
   },
   {
-   "id": "randwick-city-council-012",
+   "id": "randwick-city-council-013",
    "zones": [
     "*"
    ],
@@ -654,10 +730,14 @@
    "quote": "Blenheim Street 3m All levels",
    "clause": "D15 control d",
    "page": 16,
-   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf"
+   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "randwick-city-council-013",
+   "id": "randwick-city-council-014",
    "zones": [
     "*"
    ],
@@ -698,10 +778,67 @@
    "quote": "Rear 3m All levels",
    "clause": "D15 control d",
    "page": 16,
-   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf"
+   "source_file": "DCP/Randwick_DCP_2025_D15_Specific_Sites_Final.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick Development Control Plan 2025, Part D15 Specific Sites (Final)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
-   "id": "randwick-city-council-014",
+   "id": "randwick-city-council-015",
+   "zones": [
+    "B1"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Newmarket Green DCP area",
+    "qualifiers": [
+     "orientation_specific"
+    ]
+   },
+   "conditionText": "Newmarket Green DCP area: Young Street east side, B1 zone",
+   "front": {
+    "minM": 6.5,
+    "basis": "fixed",
+    "sources": [
+     28559
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    28559
+   ],
+   "evidence": [
+    {
+     "id": 28559,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6.5m in B1 zone",
+     "clause": "Table 3 Primary Building Setbacks",
+     "page": 27,
+     "source_file": "DCP/Newmarket-DCP.pdf",
+     "condition": "Newmarket Green DCP area: Young Street east side, B1 zone",
+     "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText",
+   "quote": "6.5m in B1 zone",
+   "clause": "Table 3 Primary Building Setbacks",
+   "page": 27,
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText"
+  },
+  {
+   "id": "randwick-city-council-016",
    "zones": [
     "B1"
    ],
@@ -744,56 +881,12 @@
    "quote": "Jane Street 5.0m (in B1 zone)",
    "clause": "Table 3 Primary Building Setbacks",
    "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
   },
   {
-   "id": "randwick-city-council-015",
-   "zones": [
-    "B1"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {
-    "precinct": "Newmarket Green DCP area"
-   },
-   "conditionText": "Newmarket Green DCP area: Young Street east side, B1 zone",
-   "front": {
-    "minM": 6.5,
-    "basis": "fixed",
-    "sources": [
-     28559
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28559
-   ],
-   "evidence": [
-    {
-     "id": 28559,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "6.5m in B1 zone",
-     "clause": "Table 3 Primary Building Setbacks",
-     "page": 27,
-     "source_file": "DCP/Newmarket-DCP.pdf",
-     "condition": "Newmarket Green DCP area: Young Street east side, B1 zone",
-     "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
-   "quote": "6.5m in B1 zone",
-   "clause": "Table 3 Primary Building Setbacks",
-   "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
-  },
-  {
-   "id": "randwick-city-council-016",
+   "id": "randwick-city-council-017",
    "zones": [
     "B1"
    ],
@@ -836,10 +929,14 @@
    "quote": "2.0m (to ST2) in B1 zone",
    "clause": "Table 3 Primary Building Setbacks",
    "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "randwick-city-council-017",
+   "id": "randwick-city-council-018",
    "zones": [
     "B1"
    ],
@@ -882,7 +979,11 @@
    "quote": "0.5m (to ST1) in B1 zone",
    "clause": "Table 3 Primary Building Setbacks",
    "page": 27,
-   "source_file": "DCP/Newmarket-DCP.pdf"
+   "source_file": "DCP/Newmarket-DCP.pdf",
+   "dcp": "Randwick Development Control Plan 2025 (only Part D15 Specific Sites supplied); Randwick DCP 2013 Chapter E5 Newmarket Green (May 2014, amended 12 April 2016, adopted 30 March 2015). Parts B7 (parking) and B8 (water management) are referenced but not supplied",
+   "edition": "Randwick DCP 2013 Chapter E5 Newmarket Green, Randwick (May 2014, incorporating amendments resolved 12 April 2016; adopted 30 March 2015)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   }
  ],
  "gaps": [
@@ -898,7 +999,7 @@
    "rear": false,
    "secondaryFront": false,
    "garage": false,
-   "rules": 2
+   "rules": 3
   },
   "*": {
    "front": true,
@@ -923,8 +1024,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 22,
-  "rules": 17,
+  "rules": 18,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-013)); side (conflicting rules of equal specificity (randwick-city-council-004, randwick-city-council-005)); rear (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-014))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-013)); side (conflicting rules of equal specificity (randwick-city-council-004, randwick-city-council-005)); rear (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-014))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-013)); side (conflicting rules of equal specificity (randwick-city-council-004, randwick-city-council-005)); rear (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-014))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-013)); side (conflicting rules of equal specificity (randwick-city-council-004, randwick-city-council-005)); rear (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-014))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-013)); side (conflicting rules of equal specificity (randwick-city-council-004, randwick-city-council-005)); rear (conflicting rules of equal specificity (randwick-city-council-012, randwick-city-council-014))"
+  }
  }
 }

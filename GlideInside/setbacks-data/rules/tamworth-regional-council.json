@@ -22,11 +22,12 @@
    "conditions": {},
    "conditionText": "R1 and R2 residential general housing",
    "garage": {
-    "minM": 1.0,
-    "note": "Third garage at least 1 m behind front garage line",
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      33493
-    ]
+    ],
+    "note": "Third garage at least 1 m behind front garage line"
    },
    "front": null,
    "secondaryFront": null,
@@ -39,7 +40,7 @@
     {
      "id": 33493,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Where a three car garage is proposed, the third garage is to be setback at least 1m from the front garage",
      "clause": "Step 2 General Housing and Ancillary Structures, Design",
      "page": 10,
@@ -53,7 +54,9 @@
    "quote": "Where a three car garage is proposed, the third garage is to be setback at least 1m from the front garage",
    "clause": "Step 2 General Housing and Ancillary Structures, Design",
    "page": 10,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-002",
@@ -102,7 +105,9 @@
    "quote": "2m (1125mm#)",
    "clause": "Step 2 Dual Occupancy Development Controls, Building Setbacks",
    "page": 15,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-003",
@@ -208,7 +213,11 @@
    "quote": "R1 4.5m, 5.5m to garage BCA",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "tamworth-regional-council-004",
@@ -253,7 +262,9 @@
    "quote": "4.5m, 5.5m to 4.5m, 5.5m R1 garage 1m (675mm#) to garage 2m (1125mm#)",
    "clause": "Step 2 Residential (Multi-Dwelling) Development Controls, Building Setbacks",
    "page": 19,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-005",
@@ -338,7 +349,9 @@
    "quote": "R2 (LSM –AA1) 10m 4m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-006",
@@ -426,7 +439,11 @@
    "quote": "R2 (LSM – U 7.5m 1.5m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "tamworth-regional-council-007",
@@ -511,7 +528,9 @@
    "quote": "R2 (LSM – U) 5.5m 1m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-008",
@@ -596,7 +615,9 @@
    "quote": "R2 (LSM – V) 10m 2.5m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-009",
@@ -681,7 +702,9 @@
    "quote": "R2 (LSM – W) 10m 2.5m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-010",
@@ -726,7 +749,9 @@
    "quote": "In Zone R2 where a lot has frontage to more than one street, the setback to the secondary frontage is permitted at 4.4 metres",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-011",
@@ -811,7 +836,9 @@
    "quote": "R5 (LSM-W) 10m 4m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-012",
@@ -896,7 +923,9 @@
    "quote": "R5 (LSM-) Y1 20m 10m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-013",
@@ -981,7 +1010,9 @@
    "quote": "R5 (LSM-Z) 20m 10m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-014",
@@ -1027,7 +1058,9 @@
    "quote": "RU5 6m 6m",
    "clause": "Step 2 Dual Occupancy Development Controls, Building Setbacks",
    "page": 15,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-015",
@@ -1112,7 +1145,11 @@
    "quote": "RU5 6m BCA",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "tamworth-regional-council-016",
@@ -1195,7 +1232,9 @@
    "quote": "RU1 20m 10m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-017",
@@ -1278,7 +1317,9 @@
    "quote": "RU4 20m 10m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-018",
@@ -1361,7 +1402,9 @@
    "quote": "RU6 10m 4m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-019",
@@ -1394,11 +1437,12 @@
     ]
    },
    "garage": {
-    "minM": 5.5,
-    "note": "5.5 m and 1 m behind building line (0.5 m to rear laneway)",
+    "minM": null,
+    "behindBuildingLineM": 5.5,
     "sources": [
      33494
-    ]
+    ],
+    "note": "5.5 m and 1 m behind building line (0.5 m to rear laneway)"
    },
    "rear": {
     "minM": 6.0,
@@ -1440,7 +1484,7 @@
     {
      "id": 33494,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Setback to Garage 5.5m and 1m behind 0.5m",
      "clause": "Step 4 Arcadia Estate, Compact Lots, Setbacks",
      "page": 85,
@@ -1465,7 +1509,9 @@
    "quote": "Front Setback 4.5m 3.5m",
    "clause": "Step 4 Arcadia Estate, Compact Lots, Setbacks",
    "page": 85,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-020",
@@ -1514,7 +1560,9 @@
    "quote": "The setback to New Winton Road includes a landscaping buffer of 7.5m.",
    "clause": "Step 4 Site Specific requirements",
    "page": 74,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-021",
@@ -1597,7 +1645,9 @@
    "quote": "C3 20m 10m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-022",
@@ -1642,7 +1692,9 @@
    "quote": "• No concession to secondary frontage.",
    "clause": "Step 2 Residential (Multi-Dwelling) Development Controls, Building Setbacks",
    "page": 19,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   },
   {
    "id": "tamworth-regional-council-023",
@@ -1687,7 +1739,11 @@
    "quote": "Street setback must be a minimum of 5m.",
    "clause": "Step 2 Industrial Development Controls, Building Setbacks",
    "page": 23,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "tamworth-regional-council-024",
@@ -1752,7 +1808,9 @@
    "quote": "SP3 10m 4m",
    "clause": "Step 2 General Housing and Ancillary Structures, Building Setbacks",
    "page": 9,
-   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf"
+   "source_file": "DCP/TRDCP-2010---Amendment-20.pdf",
+   "dcp": "Tamworth Regional Development Control Plan 2010, Amendment No. 20, adopted 12/10/2010",
+   "edition": "Amendment No. 20 (DCP adopted 12/10/2010)"
   }
  ],
  "gaps": [
@@ -1851,5 +1909,32 @@
   "rules": 24,
   "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side; rear"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (ambiguous until inputs are supplied: landSizeMap); side (ambiguous until inputs are supplied: landSizeMap); rear (ambiguous until inputs are supplied: landSizeMap)"
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (ambiguous until inputs are supplied: landSizeMap); side (ambiguous until inputs are supplied: landSizeMap); rear (ambiguous until inputs are supplied: landSizeMap)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side; rear"
+  }
  }
 }

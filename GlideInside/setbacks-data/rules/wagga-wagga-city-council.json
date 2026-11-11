@@ -52,7 +52,9 @@
    "quote": "a) If the lot is in Zone R5 a setback of 2m, or",
    "clause": "9.3.7 C2",
    "page": 25,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-002",
@@ -102,7 +104,9 @@
    "quote": "(a) If the lot is in Zone RU1, RU2 or RU6 – 50m",
    "clause": "8.1 C9",
    "page": 3,
-   "source_file": "DCP/Section-8-Rural-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-8-Rural-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-003",
@@ -148,7 +152,9 @@
    "quote": "(a) If the lot is in Zone RU1, RU2 or RU6 – 10m",
    "clause": "8.1 C10",
    "page": 3,
-   "source_file": "DCP/Section-8-Rural-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-8-Rural-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-004",
@@ -192,7 +198,9 @@
    "quote": "b) If the lot is in Zone RU4 a setback of 10m.",
    "clause": "9.3.7 C2",
    "page": 25,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-005",
@@ -237,7 +245,11 @@
    "quote": "All areas – 10m or the average of setbacks of buildings on",
    "clause": "11.2 C1",
    "page": 3,
-   "source_file": "DCP/Section-11-Industrial-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-11-Industrial-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "wagga-wagga-city-council-006",
@@ -282,7 +294,9 @@
    "quote": "The front setback for new development is to be a minimum of 10m",
    "clause": "C2 (E3 zone)",
    "page": 22,
-   "source_file": "DCP/Section-10-Business-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-10-Business-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-007",
@@ -331,7 +345,9 @@
    "quote": "First storey: Minimum 900mm",
    "clause": "Table 9.1.5.4",
    "page": 12,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-008",
@@ -380,7 +396,9 @@
    "quote": "Second storey: Minimum 1500mm",
    "clause": "Table 9.1.5.4",
    "page": 12,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-009",
@@ -430,7 +448,9 @@
    "quote": "Primary frontage to a main or arterial road 9m #",
    "clause": "9.3.6 C1",
    "page": 24,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-010",
@@ -477,7 +497,9 @@
    "quote": "Primary street frontage (other roads) 6m #",
    "clause": "9.3.6 C1",
    "page": 24,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-011",
@@ -527,7 +549,9 @@
    "quote": "case, a minimum setback of 900mm",
    "clause": "Table 9.1.5.4",
    "page": 12,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-012",
@@ -575,7 +599,9 @@
    "quote": "9m to 14m in width (inclusive) 1.5m",
    "clause": "Table 9.1.5.3b",
    "page": 11,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-013",
@@ -623,7 +649,9 @@
    "quote": "Less than 8m Nil",
    "clause": "Table 9.1.5.4",
    "page": 12,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-014",
@@ -671,7 +699,9 @@
    "quote": "Less than 9m in width Nil",
    "clause": "Table 9.1.5.3b",
    "page": 11,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-015",
@@ -737,7 +767,11 @@
    "quote": "Refer to Section 9.3.6 of the WWDCP 2010.",
    "clause": "14.10.12",
    "page": 26,
-   "source_file": "DCP/Section-14-Boorooma-Urban-Release-Area-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-14-Boorooma-Urban-Release-Area-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "wagga-wagga-city-council-016",
@@ -804,7 +838,9 @@
    "quote": "Fronting Spring Street and 2m",
    "clause": "Table 9.1.5.3a",
    "page": 11,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-017",
@@ -850,7 +886,11 @@
    "quote": "All other lots 3m",
    "clause": "Table 9.1.5.3a",
    "page": 11,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "wagga-wagga-city-council-018",
@@ -900,10 +940,65 @@
    "quote": "increase the front setback to the setback of the adjoining building",
    "clause": "9.3.6 C2",
    "page": 24,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "wagga-wagga-city-council-019",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "villages",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Front setbacks correspond to setbacks of adjoining buildings and existing pattern",
+    "sources": [
+     36289
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    36289
+   ],
+   "evidence": [
+    {
+     "id": 36289,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "Front setbacks are to correspond to the setbacks of adjoining buildings",
+     "clause": "6.1 C8",
+     "page": 20,
+     "source_file": "DCP/Section-6-Villages-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+     "condition": "villages",
+     "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "Front setbacks are to correspond to the setbacks of adjoining buildings",
+   "clause": "6.1 C8",
+   "page": 20,
+   "source_file": "DCP/Section-6-Villages-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
+  },
+  {
+   "id": "wagga-wagga-city-council-020",
    "zones": [
     "*"
    ],
@@ -944,10 +1039,12 @@
    "quote": "Secondary frontage (corner site) 3m",
    "clause": "9.3.6 C1",
    "page": 24,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
-   "id": "wagga-wagga-city-council-020",
+   "id": "wagga-wagga-city-council-021",
    "zones": [
     "*"
    ],
@@ -993,10 +1090,12 @@
    "quote": "40m from the centre line of Red Hill Road, as shown by the Open",
    "clause": "15.7 C1",
    "page": 19,
-   "source_file": "DCP/Section-15-Lloyd-Urban-Release-Area-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-15-Lloyd-Urban-Release-Area-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
-   "id": "wagga-wagga-city-council-021",
+   "id": "wagga-wagga-city-council-022",
    "zones": [
     "*"
    ],
@@ -1040,10 +1139,12 @@
    "quote": "setback a minimum of 1m from the property boundary.",
    "clause": "9.4.4 C2",
    "page": 28,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
-   "id": "wagga-wagga-city-council-022",
+   "id": "wagga-wagga-city-council-023",
    "zones": [
     "*"
    ],
@@ -1085,52 +1186,9 @@
    "quote": "double garages are only permitted on lots 12.5m wide or",
    "clause": "9.4.4 C1",
    "page": 28,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
-  },
-  {
-   "id": "wagga-wagga-city-council-023",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {},
-   "conditionText": "Rowan garages internal width",
-   "garage": {
-    "minM": null,
-    "behindBuildingLineM": 3.0,
-    "sources": [
-     36246
-    ],
-    "note": "3 m single garage; 5.5 m double garage; triple garages not permitted"
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    36246
-   ],
-   "evidence": [
-    {
-     "id": 36246,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": "a) 3 m for a single garage; and",
-     "clause": "17.3.1 C5",
-     "page": 26,
-     "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt",
-     "condition": "Rowan garages internal width",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different garageBehind value; both retained, no winner chosen",
-   "quote": "a) 3 m for a single garage; and",
-   "clause": "17.3.1 C5",
-   "page": 26,
-   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
    "id": "wagga-wagga-city-council-024",
@@ -1179,7 +1237,9 @@
    "quote": "Rear setback for rear loaded 1m",
    "clause": "Table 6",
    "page": 25,
-   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt"
+   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "wagga-wagga-city-council-025",
@@ -1193,11 +1253,12 @@
    "conditions": {},
    "conditionText": "Rowan medium density front loaded garage",
    "garage": {
-    "minM": 5.5,
-    "note": "5.5 m to garage and minimum 1 m behind building line",
+    "minM": null,
+    "behindBuildingLineM": 5.5,
     "sources": [
      36239
-    ]
+    ],
+    "note": "5.5 m to garage and minimum 1 m behind building line"
    },
    "front": null,
    "secondaryFront": null,
@@ -1210,7 +1271,7 @@
     {
      "id": 36239,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Front loaded garage setback 5.5m to garage (and minimum 1m behind building line).",
      "clause": "Table 6",
      "page": 25,
@@ -1224,59 +1285,12 @@
    "quote": "Front loaded garage setback 5.5m to garage (and minimum 1m behind building line).",
    "clause": "Table 6",
    "page": 25,
-   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt"
+   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "wagga-wagga-city-council-026",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "established_area"
-    ]
-   },
-   "conditionText": "villages",
-   "front": {
-    "minM": null,
-    "basis": "average_neighbours",
-    "note": "Front setbacks correspond to setbacks of adjoining buildings and existing pattern",
-    "sources": [
-     36289
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    36289
-   ],
-   "evidence": [
-    {
-     "id": 36289,
-     "parameter": "front_infill_rule",
-     "slot": "front",
-     "quote": "Front setbacks are to correspond to the setbacks of adjoining buildings",
-     "clause": "6.1 C8",
-     "page": 20,
-     "source_file": "DCP/Section-6-Villages-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
-     "condition": "villages",
-     "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "Front setbacks are to correspond to the setbacks of adjoining buildings",
-   "clause": "6.1 C8",
-   "page": 20,
-   "source_file": "DCP/Section-6-Villages-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
-  },
-  {
-   "id": "wagga-wagga-city-council-027",
    "zones": [
     "*"
    ],
@@ -1319,10 +1333,12 @@
    "quote": "Single Story 3m",
    "clause": "Table 6",
    "page": 25,
-   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt"
+   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "wagga-wagga-city-council-028",
+   "id": "wagga-wagga-city-council-027",
    "zones": [
     "*"
    ],
@@ -1365,10 +1381,12 @@
    "quote": "Double story 6m",
    "clause": "Table 6",
    "page": 25,
-   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt"
+   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "wagga-wagga-city-council-029",
+   "id": "wagga-wagga-city-council-028",
    "zones": [
     "*"
    ],
@@ -1451,10 +1469,12 @@
    "quote": "Front setback 3.0m to building façade",
    "clause": "Table 6",
    "page": 25,
-   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt"
+   "source_file": "DCP/Section-17-Rowan-Urban-Release-Area.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "wagga-wagga-city-council-030",
+   "id": "wagga-wagga-city-council-029",
    "zones": [
     "*"
    ],
@@ -1501,10 +1521,12 @@
    "quote": "Rear boundary setbacks to laneways for outbuildings are to be a minimum of 500mm.",
    "clause": "9.1.5.6 C1",
    "page": 13,
-   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-9-Residential-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28"
   },
   {
-   "id": "wagga-wagga-city-council-031",
+   "id": "wagga-wagga-city-council-030",
    "zones": [
     "B*"
    ],
@@ -1546,10 +1568,14 @@
    "quote": "The front setback for new development is to be 10m or",
    "clause": "10.5.1 C1",
    "page": 14,
-   "source_file": "DCP/Section-10-Business-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-10-Business-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
   },
   {
-   "id": "wagga-wagga-city-council-032",
+   "id": "wagga-wagga-city-council-031",
    "zones": [
     "B*"
    ],
@@ -1591,10 +1617,14 @@
    "quote": "Permit a nil setback to the street boundary along Baylis and",
    "clause": "10.1 C1",
    "page": 7,
-   "source_file": "DCP/Section-10-Business-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-10-Business-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).; CONFLICT: another rule with the same applicability g..."
   },
   {
-   "id": "wagga-wagga-city-council-033",
+   "id": "wagga-wagga-city-council-032",
    "zones": [
     "B*"
    ],
@@ -1635,10 +1665,14 @@
    "quote": "Awnings may project into the front setback to a maximum depth of 2m.",
    "clause": "10.5.1 C4",
    "page": 15,
-   "source_file": "DCP/Section-10-Business-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-10-Business-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).; CONFLICT: another rule with the same applicability g..."
   },
   {
-   "id": "wagga-wagga-city-council-034",
+   "id": "wagga-wagga-city-council-033",
    "zones": [
     "IN*"
    ],
@@ -1685,10 +1719,14 @@
    "quote": "15% of the setback area is landscaped.",
    "clause": "11.2 C2",
    "page": 3,
-   "source_file": "DCP/Section-11-Industrial-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-11-Industrial-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "wagga-wagga-city-council-035",
+   "id": "wagga-wagga-city-council-034",
    "zones": [
     "IN*"
    ],
@@ -1749,11 +1787,15 @@
    "quote": "Side and rear setbacks determined in accordance with the Building",
    "clause": "11.2 C4",
    "page": 3,
-   "source_file": "DCP/Section-11-Industrial-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt"
+   "source_file": "DCP/Section-11-Industrial-Development-Version-28-Final-Wagga-Wagga-DCP-2010-as-amended.txt",
+   "dcp": "Wagga Wagga Development Control Plan 2010 as amended, Version 28 (approved 27/05/2010; effective on making of Wagga Wagga LEP 2010); Section 17 Rowan URA (Southern Growth Area Zone 1) edition UNVERIFIED; Section 13 Bomen deleted",
+   "edition": "Wagga Wagga DCP 2010 as amended, Version 28",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
-  "4 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 36171, 36280, 36219, 36217",
+  "5 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 36171, 36246, 36280, 36219, 36217",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Not found in council documents: min_lot_depth, battle_axe_min_area, battle_axe_max_handle_length, height_max, fsr_max, fencing_front_max_height, parking_lane_width, cul_de_sac_reserve_radius, driveway_grade_max, driveway_verge_crossfall, driveway_separation, battle_axe_driveway_width, shared_driveway_width, passing_bay_requirement, pipe_max_grade, pipe_max_velocity, inlet_blockage_factor, pipe_blockage_factor, road_flow_depth_max, osd_ssr, rainwater_tank_requirement, rainwater_tank_reuse, tailwater_condition, culvert_design_aep, culvert_afflux_limit, headwall_requirements, retaining_wall_setback_boundary, retaining_wall_terracing, water_main_min_dia, hydrant_spacing, water_service_size, wate"
  ],
  "notes": "Built from 43 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -1820,7 +1862,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 24
+   "rules": 23
   },
   "B*": {
    "front": false,
@@ -1847,8 +1889,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 43,
-  "rules": 35,
-  "recordsNotModelled": 4,
+  "rules": 34,
+  "recordsNotModelled": 5,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

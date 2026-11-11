@@ -74,7 +74,11 @@
    "quote": "Rear boundary 3m",
    "clause": "Table 6.2.1-c",
    "page": 336,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-002",
@@ -117,7 +121,9 @@
    "quote": "5.5m to a garage/carport",
    "clause": "Table 6.2.1-c",
    "page": 336,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-003",
@@ -161,7 +167,9 @@
    "quote": "Secondary boundary 3m",
    "clause": "Table 3.1.2-a",
    "page": 116,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-004",
@@ -226,7 +234,9 @@
    "quote": "Rear boundary Up to 1 storey = 3m",
    "clause": "Table 3.1.2-a",
    "page": 116,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-005",
@@ -291,7 +301,9 @@
    "quote": "2 storey element = 8m",
    "clause": "Table 3.1.2-a",
    "page": 116,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-006",
@@ -336,7 +348,9 @@
    "quote": "Front boundary 6m to local roads and 9m to",
    "clause": "Table 3.1.2-a",
    "page": 116,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-007",
@@ -381,7 +395,11 @@
    "quote": "Front boundary 6m to local roads and 9m to",
    "clause": "Table 3.1.2-a",
    "page": 116,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-008",
@@ -427,7 +445,9 @@
    "quote": "any garage setback 5.5m",
    "clause": "3.1.2(h)(ii)",
    "page": 116,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-009",
@@ -471,7 +491,9 @@
    "quote": "Attached dual 7.6m (9m if designated road",
    "clause": "Table 3.1.2-a",
    "page": 116,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-010",
@@ -515,7 +537,9 @@
    "quote": "setback 1 metre from the front facade of the",
    "clause": "3.1.8(f)",
    "page": 122,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-011",
@@ -559,7 +583,9 @@
    "quote": "Side Boundary 6m 6m",
    "clause": "Table 3.2.4-a",
    "page": 129,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)"
   },
   {
    "id": "hornsby-the-council-of-the-shire-of-012",
@@ -625,7 +651,9 @@
    "quote": "Front Boundary 7.6m to local roads and 9m to",
    "clause": "Table 3.2.4-a",
    "page": 129,
-   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf"
+   "source_file": "DCP/hdcp-2024-book-version-26-june-2026-current.pdf",
+   "dcp": "Hornsby Development Control Plan 2024, in force 18 July 2024, amended to 23 June 2025 (book version saved; parts 1 to 9 in one document)",
+   "edition": "Hornsby DCP 2024 (amended to 23/06/2025)"
   }
  ],
  "gaps": [
@@ -657,5 +685,32 @@
   "rules": 12,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (hornsby-the-council-of-the-shire-of-006, hornsby-the-council-of-the-shire-of-007))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (hornsby-the-council-of-the-shire-of-006, hornsby-the-council-of-the-shire-of-007))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (hornsby-the-council-of-the-shire-of-006, hornsby-the-council-of-the-shire-of-007))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (hornsby-the-council-of-the-shire-of-006, hornsby-the-council-of-the-shire-of-007))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (hornsby-the-council-of-the-shire-of-006, hornsby-the-council-of-the-shire-of-007))"
+  }
  }
 }

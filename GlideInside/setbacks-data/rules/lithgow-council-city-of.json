@@ -56,7 +56,9 @@
    "quote": "1st storey = 900mm or NCC",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-002",
@@ -103,7 +105,11 @@
    "quote": ">1st storey = 1.5m",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "lithgow-council-city-of-003",
@@ -172,7 +178,9 @@
    "quote": "SECONDARY 2m 3m 4m 6m",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-004",
@@ -241,7 +249,9 @@
    "quote": "SECONDARY 2m 3m 4m 6m",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-005",
@@ -288,7 +298,11 @@
    "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "lithgow-council-city-of-006",
@@ -335,7 +349,11 @@
    "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "lithgow-council-city-of-007",
@@ -381,7 +399,11 @@
    "quote": "4.5m - single storey OR average setback of adjacent",
    "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
    "page": 31,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "lithgow-council-city-of-008",
@@ -427,7 +449,11 @@
    "quote": "6.0m – two or more storeys OR average setback of",
    "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
    "page": 31,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "lithgow-council-city-of-009",
@@ -473,7 +499,9 @@
    "quote": "5.5m to garage/ carport.",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-010",
@@ -519,7 +547,11 @@
    "quote": "6.0m – single storey or average setback of adjacent",
    "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
    "page": 31,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "lithgow-council-city-of-011",
@@ -565,7 +597,11 @@
    "quote": "7.0m – two or more storeys OR average setback of",
    "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
    "page": 31,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "lithgow-council-city-of-012",
@@ -612,7 +648,9 @@
    "quote": "SECONDARY 2m 3m 4m 6m",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-013",
@@ -620,22 +658,12 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "lotAreaMaxM2": 4000.0
    },
-   "conditionText": [
-    "Urban, Zone R5 Large Lot Residential up to 4000 m2",
-    "Urban, Zone R5 Large Lot Residential up to 4000 m2 (greater of 10 m and average of adjacent dwellings)"
-   ],
-   "front": {
-    "minM": 10.0,
-    "basis": "fixed",
-    "sources": [
-     20856
-    ]
-   },
+   "conditionText": "Urban, Zone R5 Large Lot Residential up to 4000 m2",
    "side": {
     "minM": 5.0,
     "basis": "fixed",
@@ -643,25 +671,14 @@
      20864
     ]
    },
+   "front": null,
    "secondaryFront": null,
    "rear": null,
    "garage": null,
    "sources": [
-    20856,
     20864
    ],
    "evidence": [
-    {
-     "id": 20856,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
-     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
-     "page": 17,
-     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
-     "condition": "Urban, Zone R5 Large Lot Residential up to 4000 m2 (greater of 10 m and average of adjacent dwellings)",
-     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
-    },
     {
      "id": 20864,
      "parameter": "side_setback",
@@ -675,14 +692,132 @@
     }
    ],
    "confidence": "high",
+   "needsReview": null,
+   "quote": "1st storey = 900mm or NCC 5m",
+   "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+   "page": 17,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+  },
+  {
+   "id": "lithgow-council-city-of-014",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 4000.0
+   },
+   "conditionText": "Urban, Zone R5 Large Lot Residential up to 4000 m2 (greater of 10 m and average of adjacent dwellings)",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     20856
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    20856
+   ],
+   "evidence": [
+    {
+     "id": 20856,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
+     "clause": "6.4 Dwellings (Urban Areas) Setback Table",
+     "page": 17,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Urban, Zone R5 Large Lot Residential up to 4000 m2 (greater of 10 m and average of adjacent dwellings)",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
    "needsReview": "averaging alternative printed beside the fixed value",
    "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "lithgow-council-city-of-014",
+   "id": "lithgow-council-city-of-015",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 20000.0
+   },
+   "conditionText": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
+   "side": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     20874
+    ]
+   },
+   "rear": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     20874
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    20874,
+    20874
+   ],
+   "evidence": [
+    {
+     "id": 20874,
+     "parameter": "setback_rural",
+     "slot": "side",
+     "quote": "greater than 2ha in area – 20m.",
+     "clause": "6.3 Control 1(e)",
+     "page": 12,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    },
+    {
+     "id": 20874,
+     "parameter": "setback_rural",
+     "slot": "rear",
+     "quote": "greater than 2ha in area – 20m.",
+     "clause": "6.3 Control 1(e)",
+     "page": 12,
+     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
+     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "greater than 2ha in area – 20m.",
+   "clause": "6.3 Control 1(e)",
+   "page": 12,
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
+  },
+  {
+   "id": "lithgow-council-city-of-016",
    "zones": [
     "R5"
    ],
@@ -728,10 +863,12 @@
    "quote": "a) Highway – 100m;",
    "clause": "6.3 Control 1(a)",
    "page": 12,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
-   "id": "lithgow-council-city-of-015",
+   "id": "lithgow-council-city-of-017",
    "zones": [
     "R5"
    ],
@@ -832,99 +969,9 @@
    "quote": "b) Public road frontage – 20m;",
    "clause": "6.3 Control 1(b)",
    "page": 12,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
-  },
-  {
-   "id": "lithgow-council-city-of-016",
-   "zones": [
-    "R5"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "lotAreaMinM2": 4000.0
-   },
-   "conditionText": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
-   "side": {
-    "minM": 20.0,
-    "basis": "fixed",
-    "sources": [
-     20874
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    20874
-   ],
-   "evidence": [
-    {
-     "id": 20874,
-     "parameter": "setback_rural",
-     "slot": "side",
-     "quote": "greater than 2ha in area – 20m.",
-     "clause": "6.3 Control 1(e)",
-     "page": 12,
-     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
-     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
-     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
-   "quote": "greater than 2ha in area – 20m.",
-   "clause": "6.3 Control 1(e)",
-   "page": 12,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
-  },
-  {
-   "id": "lithgow-council-city-of-017",
-   "zones": [
-    "R5"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "lotAreaMinM2": 4000.0
-   },
-   "conditionText": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
-   "rear": {
-    "minM": 20.0,
-    "basis": "fixed",
-    "sources": [
-     20874
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "garage": null,
-   "sources": [
-    20874
-   ],
-   "evidence": [
-    {
-     "id": 20874,
-     "parameter": "setback_rural",
-     "slot": "rear",
-     "quote": "greater than 2ha in area – 20m.",
-     "clause": "6.3 Control 1(e)",
-     "page": 12,
-     "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
-     "condition": "Rural, environmental and large lot R5 over 4000 m2 dwellings: side or rear boundary, land over 2 ha",
-     "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
-   "quote": "greater than 2ha in area – 20m.",
-   "clause": "6.3 Control 1(e)",
-   "page": 12,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-018",
@@ -990,7 +1037,9 @@
    "quote": "SECONDARY 2m 3m 4m 6m",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-019",
@@ -998,7 +1047,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "dwelling"
    ],
    "conditions": {},
    "conditionText": "Urban, Zone RU5 Village (greater of 8 m and average of adjacent dwellings)",
@@ -1034,7 +1083,11 @@
    "quote": "PRIMARY STREET 4.5m or average 6.0m or average 8m 10m or average",
    "clause": "6.4 Dwellings (Urban Areas) Setback Table",
    "page": 17,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "lithgow-council-city-of-020",
@@ -1122,7 +1175,9 @@
    "quote": "Secondary Street Setback 3m (building façade) 3m (building façade)",
    "clause": "Table 4 Key Controls for Large Lots",
    "page": 74,
-   "source_file": "DCP/foundations-dcp-final.pdf"
+   "source_file": "DCP/foundations-dcp-final.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Foundations Portland Site Specific DCP, January 2024"
   },
   {
    "id": "lithgow-council-city-of-021",
@@ -1171,7 +1226,11 @@
    "quote": "Side Setback (min) Nil Nil Nil Nil",
    "clause": "Table 6 Key Controls for Housing Typologies Small Lots",
    "page": 82,
-   "source_file": "DCP/foundations-dcp-final.pdf"
+   "source_file": "DCP/foundations-dcp-final.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Foundations Portland Site Specific DCP, January 2024",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "lithgow-council-city-of-022",
@@ -1219,7 +1278,9 @@
    "quote": "Secondary Street Setback 2m 2m 2m",
    "clause": "Table 5 Key Controls for Traditional Lots",
    "page": 78,
-   "source_file": "DCP/foundations-dcp-final.pdf"
+   "source_file": "DCP/foundations-dcp-final.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Foundations Portland Site Specific DCP, January 2024"
   },
   {
    "id": "lithgow-council-city-of-023",
@@ -1267,7 +1328,9 @@
    "quote": "Secondary Street Setback 2m 2m 2m",
    "clause": "Table 5 Key Controls for Traditional Lots",
    "page": 78,
-   "source_file": "DCP/foundations-dcp-final.pdf"
+   "source_file": "DCP/foundations-dcp-final.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Foundations Portland Site Specific DCP, January 2024"
   },
   {
    "id": "lithgow-council-city-of-024",
@@ -1354,7 +1417,9 @@
    "quote": "Secondary Street Setback 3m (building façade) 3m (building façade)",
    "clause": "Table 4 Key Controls for Large Lots",
    "page": 74,
-   "source_file": "DCP/foundations-dcp-final.pdf"
+   "source_file": "DCP/foundations-dcp-final.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Foundations Portland Site Specific DCP, January 2024"
   },
   {
    "id": "lithgow-council-city-of-025",
@@ -1402,7 +1467,9 @@
    "quote": "b) All other State & Regional Roads - 8m; and",
    "clause": "6.4.1 Control 2",
    "page": 16,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-026",
@@ -1487,7 +1554,9 @@
    "quote": "4m – single storey",
    "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
    "page": 31,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-027",
@@ -1572,7 +1641,9 @@
    "quote": "6m – two storeys or greater",
    "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
    "page": 31,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-028",
@@ -1621,7 +1692,11 @@
    "quote": "Side Setback (min) Nil Nil Nil Nil",
    "clause": "Table 6 Key Controls for Housing Typologies Small Lots",
    "page": 82,
-   "source_file": "DCP/foundations-dcp-final.pdf"
+   "source_file": "DCP/foundations-dcp-final.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Foundations Portland Site Specific DCP, January 2024",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "lithgow-council-city-of-029",
@@ -1669,7 +1744,9 @@
    "quote": "Secondary Street Setback 2m 2m 2m",
    "clause": "Table 5 Key Controls for Traditional Lots",
    "page": 78,
-   "source_file": "DCP/foundations-dcp-final.pdf"
+   "source_file": "DCP/foundations-dcp-final.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Foundations Portland Site Specific DCP, January 2024"
   },
   {
    "id": "lithgow-council-city-of-030",
@@ -1728,7 +1805,9 @@
    "quote": "5.5m from the front boundary AND",
    "clause": "6.5.1 Medium to Higher Density Housing Setback Table",
    "page": 31,
-   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch6_Residential.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 6, November 2021"
   },
   {
    "id": "lithgow-council-city-of-031",
@@ -1777,7 +1856,11 @@
    "quote": "Side Setback (min) Nil Nil Nil Nil",
    "clause": "Table 6 Key Controls for Housing Typologies Small Lots",
    "page": 82,
-   "source_file": "DCP/foundations-dcp-final.pdf"
+   "source_file": "DCP/foundations-dcp-final.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Foundations Portland Site Specific DCP, January 2024",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "lithgow-council-city-of-032",
@@ -1825,7 +1908,11 @@
    "quote": "minimum of 8m, incorporating a minimum 2 metre landscaping strip",
    "clause": "7.3.3 Control 1(a)",
    "page": 13,
-   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 7, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "lithgow-council-city-of-033",
@@ -1869,7 +1956,9 @@
    "quote": "also provide a 4-",
    "clause": "7.3.3 Control 1(b)",
    "page": 13,
-   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 7, November 2021"
   },
   {
    "id": "lithgow-council-city-of-034",
@@ -1956,7 +2045,11 @@
    "quote": "minimum of 8m, incorporating a minimum 2 metre landscaping strip",
    "clause": "7.3.3 Control 1(a)",
    "page": 13,
-   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 7, November 2021",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "lithgow-council-city-of-035",
@@ -2039,7 +2132,9 @@
    "quote": "also provide a 4-",
    "clause": "7.3.3 Control 1(b)",
    "page": 13,
-   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf"
+   "source_file": "DCP/Lithgow_DCP2021_Ch7_Commercial_Industrial.pdf",
+   "dcp": "Lithgow Development Control Plan 2021 (v1.0 in force 01/09/2021; v2.0 in force 17/11/2021, adding Chapter 9 Pottery Estate), saved as chapter files Ch0 to Ch9 plus the consolidated PDF; plus the separate Foundations Portland Site Specific DCP 2024 (January 2024). Chapter files used for values, with page numbers being PDF pages of each chapter file",
+   "edition": "Lithgow DCP 2021, Chapter 7, November 2021"
   }
  ],
  "gaps": [
@@ -2115,5 +2210,32 @@
   "rules": 35,
   "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (lithgow-council-city-of-001, lithgow-council-city-of-002, lithgow-council-city-of-026)); rear (conflicting rules of equal specificity (lithgow-council-city-of-003, lithgow-council-city-of-026))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (lithgow-council-city-of-005, lithgow-council-city-of-010)); side (conflicting rules of equal specificity (lithgow-council-city-of-001, lithgow-council-city-of-002, lithgow-council-city-of-026)); rear (conflicting rules of equal specificity (lithgow-council-city-of-003, lithgow-council-city-of-026))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (lithgow-council-city-of-017, lithgow-council-city-of-026)); rear (conflicting rules of equal specificity (lithgow-council-city-of-017, lithgow-council-city-of-026))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (lithgow-council-city-of-018, lithgow-council-city-of-026))"
+  }
  }
 }

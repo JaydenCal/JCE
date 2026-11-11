@@ -55,7 +55,9 @@
    "quote": "Standard Lot Side and Rear 500mm",
    "clause": "D6.2 Table 17",
    "page": 163,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-002",
@@ -100,7 +102,9 @@
    "quote": "Standard Lot Side and Rear 2m",
    "clause": "D6.2 Table 17",
    "page": 163,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-003",
@@ -168,7 +172,9 @@
    "quote": "5m for second storey building elements 6.5m for second storey building elements",
    "clause": "D1.3 Table 4 Dwelling setbacks on corner lots",
    "page": 106,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-004",
@@ -236,7 +242,9 @@
    "quote": "5m for second storey building elements 6.5m for second storey building elements",
    "clause": "D1.3 Table 4 Dwelling setbacks on corner lots",
    "page": 106,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-005",
@@ -306,7 +314,9 @@
    "quote": "5m for second storey building elements Side boundary",
    "clause": "D1.3 Table 3 Dwelling setbacks on battle-axe lots",
    "page": 105,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-006",
@@ -353,7 +363,9 @@
    "quote": "2m for second storey building elements 2m for second storey building elements",
    "clause": "D1.3 Table 1 Dwelling setbacks on standard lots",
    "page": 103,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-007",
@@ -421,7 +433,9 @@
    "quote": "Secondary Single Storey 3m for single storey building elements 4.5m for single storey building elements",
    "clause": "D1.3 Table 4 Dwelling setbacks on corner lots",
    "page": 106,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-008",
@@ -468,7 +482,11 @@
    "quote": "Primary Single Storey Average building line or 4.5m Average building line or 6m",
    "clause": "D1.3 Table 1 Dwelling setbacks on standard lots",
    "page": 103,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "leeton-shire-council-009",
@@ -536,7 +554,9 @@
    "quote": "Secondary Single Storey 3m for single storey building elements 4.5m for single storey building elements",
    "clause": "D1.3 Table 4 Dwelling setbacks on corner lots",
    "page": 106,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-010",
@@ -583,7 +603,11 @@
    "quote": "Average building line or 4.5m Average building line or 6m",
    "clause": "D1.3 Table 1 Dwelling setbacks on standard lots",
    "page": 103,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "leeton-shire-council-011",
@@ -632,7 +656,9 @@
    "quote": "Front boundary Single Storey Dwelling 3m",
    "clause": "D1.3 Table 3 Dwelling setbacks on battle-axe lots",
    "page": 105,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-012",
@@ -679,7 +705,9 @@
    "quote": "Side Single Storey 0.9m or BCA 0.9m or BCA",
    "clause": "D1.3 Table 1 Dwelling setbacks on standard lots",
    "page": 103,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-013",
@@ -728,7 +756,9 @@
    "quote": "Rear boundary Single Storey Dwelling 5m",
    "clause": "D1.3 Table 3 Dwelling setbacks on battle-axe lots",
    "page": 105,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-014",
@@ -773,7 +803,9 @@
    "quote": "setback a minimum 5.5 metres from the property boundary",
    "clause": "D1.2 c",
    "page": 102,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022"
   },
   {
    "id": "leeton-shire-council-015",
@@ -859,7 +891,11 @@
    "quote": "15m or the average setback of adjoining dwellings, whichever is the lesser Primary road boundary",
    "clause": "D4.3 Table 12",
    "page": 150,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
    "id": "leeton-shire-council-016",
@@ -926,7 +962,11 @@
    "quote": "20m or the average setback of adjoining dwellings, whichever is the lesser Primary road boundary",
    "clause": "D4.3 Table 13",
    "page": 151,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
    "id": "leeton-shire-council-017",
@@ -974,7 +1014,11 @@
    "quote": "5m Side boundary (not adjoining a road)",
    "clause": "D4.3 Tables 12 and 13",
    "page": 150,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; Condition not expressible in the structured fields (adjo..."
   },
   {
    "id": "leeton-shire-council-018",
@@ -1018,7 +1062,11 @@
    "quote": "20m Road corridors.",
    "clause": "D5.2 Table 14",
    "page": 157,
-   "source_file": "DCP/leeton-development-control-plan-dcp.pdf"
+   "source_file": "DCP/leeton-development-control-plan-dcp.pdf",
+   "dcp": "Leeton Comprehensive Development Control Plan 2022, adopted by Council 27/10/2022 (Part A names it a 2021 plan in one place)",
+   "edition": "Leeton Comprehensive DCP 2022, adopted 27/10/2022",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
@@ -1092,5 +1140,32 @@
   "rules": 18,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (leeton-shire-council-009, leeton-shire-council-015))"
+  }
  }
 }

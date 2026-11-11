@@ -56,7 +56,9 @@
    "quote": "• 3m, or",
    "clause": "ASR5.1 a)",
    "page": 26,
-   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+   "dcp": "Hilltops Development Control Plan 2025, adopted 25/06/2025, in force 01/07/2025 (repeals Young DCP 2011 and Boorowa DCP 2013)",
+   "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
   },
   {
    "id": "hilltops-council-002",
@@ -105,7 +107,11 @@
    "quote": "by 3m, plus 0.3m for every metre of height over 3.6 metres",
    "clause": "ASR5.1 b)",
    "page": 26,
-   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+   "dcp": "Hilltops Development Control Plan 2025, adopted 25/06/2025, in force 01/07/2025 (repeals Young DCP 2011 and Boorowa DCP 2013)",
+   "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "hilltops-council-003",
@@ -157,7 +163,11 @@
    "quote": "• the average of those",
    "clause": "ASR4.1",
    "page": 26,
-   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+   "dcp": "Hilltops Development Control Plan 2025, adopted 25/06/2025, in force 01/07/2025 (repeals Young DCP 2011 and Boorowa DCP 2013)",
+   "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "hilltops-council-004",
@@ -205,7 +215,9 @@
    "quote": "• 3m, or",
    "clause": "ASR5.1 a)",
    "page": 26,
-   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+   "dcp": "Hilltops Development Control Plan 2025, adopted 25/06/2025, in force 01/07/2025 (repeals Young DCP 2011 and Boorowa DCP 2013)",
+   "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
   },
   {
    "id": "hilltops-council-005",
@@ -273,7 +285,9 @@
    "quote": "and the R2 Low Density • not less than 6m.",
    "clause": "ASR4.1",
    "page": 26,
-   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+   "dcp": "Hilltops Development Control Plan 2025, adopted 25/06/2025, in force 01/07/2025 (repeals Young DCP 2011 and Boorowa DCP 2013)",
+   "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
   },
   {
    "id": "hilltops-council-006",
@@ -281,7 +295,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": [
@@ -380,56 +394,14 @@
    "quote": "Zone • not less than 10m.",
    "clause": "ASR4.1",
    "page": 26,
-   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
-  },
-  {
-   "id": "hilltops-council-007",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {},
-   "conditionText": "Garages recessed behind front facade",
-   "garage": {
-    "minM": null,
-    "note": "Directly address street; recessed behind front facade; not projecting in front of other parts of the dwelling",
-    "sources": [
-     15950
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    15950
-   ],
-   "evidence": [
-    {
-     "id": 15950,
-     "parameter": "garage_setback",
-     "slot": "garage",
-     "quote": "ASR4.2 Garages in dwellings are to:",
-     "clause": "ASR4.2",
-     "page": 26,
-     "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
-     "condition": "Garages recessed behind front facade",
-     "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "ASR4.2 Garages in dwellings are to:",
-   "clause": "ASR4.2",
-   "page": 26,
-   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf"
+   "source_file": "DCP/Hilltops-Development-Control-Plan-2025-1-July-2025.pdf",
+   "dcp": "Hilltops Development Control Plan 2025, adopted 25/06/2025, in force 01/07/2025 (repeals Young DCP 2011 and Boorowa DCP 2013)",
+   "edition": "Hilltops Development Control Plan 2025, in force 1 July 2025"
   }
  ],
  "gaps": [
   "No garage setback rule",
-  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 15923",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 15950, 15923",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP rural dwelling (Section 2.1) setbacks not extracted; two column page layout in DCP limits quotable table rows"
  ],
  "notes": "Built from 12 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -457,22 +429,41 @@
    "secondaryFront": true,
    "garage": false,
    "rules": 2
-  },
-  "*": {
-   "front": false,
-   "side": false,
-   "rear": false,
-   "secondaryFront": false,
-   "garage": false,
-   "rules": 1
   }
  },
  "precincts": [],
  "needsPrecinct": false,
  "counts": {
   "records": 12,
-  "rules": 7,
-  "recordsNotModelled": 1,
+  "rules": 6,
+  "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

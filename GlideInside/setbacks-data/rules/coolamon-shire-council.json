@@ -16,7 +16,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": [
@@ -92,7 +92,9 @@
    "quote": "Front – 20.0m",
    "clause": "15.3 Building Setback",
    "page": 30,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "coolamon-shire-council-002",
@@ -100,7 +102,116 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling",
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "RU5 Village, corner allotments, minimum from secondary street frontage",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     10675
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10675
+   ],
+   "evidence": [
+    {
+     "id": 10675,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "secondary street frontage is 3m.",
+     "clause": "15.3 Building Setback note",
+     "page": 30,
+     "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+     "condition": "RU5 Village, corner allotments, minimum from secondary street frontage",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "secondary street frontage is 3m.",
+   "clause": "15.3 Building Setback note",
+   "page": 30,
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "coolamon-shire-council-003",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "RU5 Village, residential allotments",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     10672
+    ]
+   },
+   "side": {
+    "minM": 0.9,
+    "basis": "fixed",
+    "sources": [
+     10673
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10672,
+    10673
+   ],
+   "evidence": [
+    {
+     "id": 10672,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front – 8.0m",
+     "clause": "15.3 Building Setback",
+     "page": 30,
+     "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+     "condition": "RU5 Village, residential allotments",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 10673,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Side – 0.9m",
+     "clause": "15.3 Building Setback",
+     "page": 30,
+     "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+     "condition": "RU5 Village, residential allotments",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Front – 8.0m",
+   "clause": "15.3 Building Setback",
+   "page": 30,
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "coolamon-shire-council-004",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
     "garage"
    ],
    "conditions": {
@@ -141,93 +252,12 @@
    "quote": "setback of 1.0m.",
    "clause": "15.3 Building Setback",
    "page": 30,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "coolamon-shire-council-003",
-   "zones": [
-    "RU5"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {},
-   "conditionText": [
-    "RU5 Village, corner allotments, minimum from secondary street frontage",
-    "RU5 Village, residential allotments"
-   ],
-   "front": {
-    "minM": 8.0,
-    "basis": "fixed",
-    "sources": [
-     10672
-    ]
-   },
-   "secondaryFront": {
-    "minM": 3.0,
-    "basis": "fixed",
-    "sources": [
-     10675
-    ]
-   },
-   "side": {
-    "minM": 0.9,
-    "basis": "fixed",
-    "sources": [
-     10673
-    ]
-   },
-   "rear": null,
-   "garage": null,
-   "sources": [
-    10672,
-    10673,
-    10675
-   ],
-   "evidence": [
-    {
-     "id": 10672,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Front – 8.0m",
-     "clause": "15.3 Building Setback",
-     "page": 30,
-     "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
-     "condition": "RU5 Village, residential allotments",
-     "edition": "UNVERIFIED"
-    },
-    {
-     "id": 10675,
-     "parameter": "front_secondary",
-     "slot": "secondaryFront",
-     "quote": "secondary street frontage is 3m.",
-     "clause": "15.3 Building Setback note",
-     "page": 30,
-     "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
-     "condition": "RU5 Village, corner allotments, minimum from secondary street frontage",
-     "edition": "UNVERIFIED"
-    },
-    {
-     "id": 10673,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "Side – 0.9m",
-     "clause": "15.3 Building Setback",
-     "page": 30,
-     "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
-     "condition": "RU5 Village, residential allotments",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "high",
-   "needsReview": null,
-   "quote": "Front – 8.0m",
-   "clause": "15.3 Building Setback",
-   "page": 30,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
-  },
-  {
-   "id": "coolamon-shire-council-004",
+   "id": "coolamon-shire-council-005",
    "zones": [
     "RU1"
    ],
@@ -308,10 +338,12 @@
    "quote": "Front – 20.0m",
    "clause": "15.3 Building Setback",
    "page": 31,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "coolamon-shire-council-005",
+   "id": "coolamon-shire-council-006",
    "zones": [
     "RU4"
    ],
@@ -392,10 +424,12 @@
    "quote": "Front – 20.0m",
    "clause": "15.3 Building Setback",
    "page": 31,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "coolamon-shire-council-006",
+   "id": "coolamon-shire-council-007",
    "zones": [
     "*"
    ],
@@ -498,10 +532,12 @@
    "quote": "setback a minimum 8m from the primary road frontage",
    "clause": "26.3 Development Standards",
    "page": 82,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "coolamon-shire-council-007",
+   "id": "coolamon-shire-council-008",
    "zones": [
     "*"
    ],
@@ -542,10 +578,12 @@
    "quote": "Are not permitted within the building setback area.",
    "clause": "15.7 Carports & Garages",
    "page": 33,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "coolamon-shire-council-008",
+   "id": "coolamon-shire-council-009",
    "zones": [
     "B*"
    ],
@@ -587,10 +625,14 @@
    "quote": "No minimum setback is specified for commercial",
    "clause": "28.3 Setback",
    "page": 86,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
   },
   {
-   "id": "coolamon-shire-council-009",
+   "id": "coolamon-shire-council-010",
    "zones": [
     "IN*"
    ],
@@ -653,10 +695,14 @@
    "quote": "the minimum side and rear setbacks shall be 6m.",
    "clause": "28.3 Setback",
    "page": 87,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
-   "id": "coolamon-shire-council-010",
+   "id": "coolamon-shire-council-011",
    "zones": [
     "IN*"
    ],
@@ -701,10 +747,14 @@
    "quote": "a minimum of 8m behind the front",
    "clause": "28.3 Setback",
    "page": 87,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "coolamon-shire-council-011",
+   "id": "coolamon-shire-council-012",
    "zones": [
     "IN*"
    ],
@@ -749,7 +799,11 @@
    "quote": "incorporating a minimum 3 metre landscaping strip.",
    "clause": "28.3 Setback",
    "page": 87,
-   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf"
+   "source_file": "DCP/Amended-Final-Version-Coolamon-DCP-Commercial-and-Industrial-Controls-April-25.pdf",
+   "dcp": "Coolamon Shire Development Control Plan 2015, commenced 13/07/2015, amended April 2025 (amendments effective 20/02/2020 and 16/11/2023 listed in Table 8.1)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   }
  ],
  "gaps": [
@@ -769,10 +823,10 @@
   "RU5": {
    "front": true,
    "side": true,
-   "rear": true,
+   "rear": false,
    "secondaryFront": true,
    "garage": false,
-   "rules": 2
+   "rules": 3
   },
   "RU1": {
    "front": true,
@@ -819,8 +873,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 22,
-  "rules": 11,
+  "rules": 12,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (coolamon-shire-council-001, coolamon-shire-council-007)); side (conflicting rules of equal specificity (coolamon-shire-council-001, coolamon-shire-council-007)); rear (conflicting rules of equal specificity (coolamon-shire-council-001, coolamon-shire-council-007))"
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

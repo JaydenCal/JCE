@@ -54,7 +54,9 @@
    "quote": "Front setback to primary road access 15m",
    "clause": "6.3.1",
    "page": 38,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
+   "source_file": "DCP/Narrandera-DCP-2013.txt",
+   "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+   "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
   },
   {
    "id": "narrandera-shire-council-002",
@@ -103,59 +105,12 @@
    "quote": "Leeton Road 30m minimum for any building",
    "clause": "6.3.1",
    "page": 38,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
+   "source_file": "DCP/Narrandera-DCP-2013.txt",
+   "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+   "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
   },
   {
    "id": "narrandera-shire-council-003",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "dual_occupancy",
-    "multi_dwelling"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Dual occupancy and multi dwelling housing, minimum (or average of two adjoining buildings)",
-   "front": {
-    "minM": 5.0,
-    "basis": "fixed",
-    "sources": [
-     23973
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    23973
-   ],
-   "evidence": [
-    {
-     "id": 23973,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "is to be a minimum of 5m, or",
-     "clause": "7.4.2",
-     "page": 41,
-     "source_file": "DCP/Narrandera-DCP-2013.txt",
-     "condition": "Dual occupancy and multi dwelling housing, minimum (or average of two adjoining buildings)",
-     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "is to be a minimum of 5m, or",
-   "clause": "7.4.2",
-   "page": 41,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
-  },
-  {
-   "id": "narrandera-shire-council-004",
    "zones": [
     "*"
    ],
@@ -201,10 +156,12 @@
    "quote": "Habitable buildings are to be set back 5m from",
    "clause": "7.4.3",
    "page": 41,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
+   "source_file": "DCP/Narrandera-DCP-2013.txt",
+   "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+   "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
   },
   {
-   "id": "narrandera-shire-council-005",
+   "id": "narrandera-shire-council-004",
    "zones": [
     "*"
    ],
@@ -213,7 +170,17 @@
     "multi_dwelling"
    ],
    "conditions": {},
-   "conditionText": "Dual occupancy and multi dwelling housing, secondary street",
+   "conditionText": [
+    "Dual occupancy and multi dwelling housing, minimum (or average of two adjoining buildings)",
+    "Dual occupancy and multi dwelling housing, secondary street"
+   ],
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     23973
+    ]
+   },
    "secondaryFront": {
     "minM": 3.0,
     "basis": "fixed",
@@ -221,14 +188,25 @@
      23974
     ]
    },
-   "front": null,
    "side": null,
    "rear": null,
    "garage": null,
    "sources": [
+    23973,
     23974
    ],
    "evidence": [
+    {
+     "id": 23973,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "is to be a minimum of 5m, or",
+     "clause": "7.4.2",
+     "page": 41,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Dual occupancy and multi dwelling housing, minimum (or average of two adjoining buildings)",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    },
     {
      "id": 23974,
      "parameter": "front_secondary",
@@ -242,62 +220,18 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
-   "quote": "secondary street setback to a dwelling or building is to be a minimum of 3m",
-   "clause": "7.4.3",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "is to be a minimum of 5m, or",
+   "clause": "7.4.2",
    "page": 41,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
+   "source_file": "DCP/Narrandera-DCP-2013.txt",
+   "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+   "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "narrandera-shire-council-006",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "residential_flat_building"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Residential flat buildings (or 25% greater than average of two adjoining buildings, whichever greater)",
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     23988
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    23988
-   ],
-   "evidence": [
-    {
-     "id": 23988,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "is to be a minimum of 6m, or",
-     "clause": "7.6.1",
-     "page": 45,
-     "source_file": "DCP/Narrandera-DCP-2013.txt",
-     "condition": "Residential flat buildings (or 25% greater than average of two adjoining buildings, whichever greater)",
-     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "is to be a minimum of 6m, or",
-   "clause": "7.6.1",
-   "page": 45,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
-  },
-  {
-   "id": "narrandera-shire-council-007",
+   "id": "narrandera-shire-council-005",
    "zones": [
     "*"
    ],
@@ -342,10 +276,12 @@
    "quote": "supplemented 6m.",
    "clause": "7.6.2",
    "page": 45,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
+   "source_file": "DCP/Narrandera-DCP-2013.txt",
+   "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+   "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
   },
   {
-   "id": "narrandera-shire-council-008",
+   "id": "narrandera-shire-council-006",
    "zones": [
     "*"
    ],
@@ -388,10 +324,12 @@
    "quote": "and to be a minimum of 5m.",
    "clause": "7.6.2",
    "page": 45,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
+   "source_file": "DCP/Narrandera-DCP-2013.txt",
+   "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+   "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
   },
   {
-   "id": "narrandera-shire-council-009",
+   "id": "narrandera-shire-council-007",
    "zones": [
     "*"
    ],
@@ -399,7 +337,17 @@
     "residential_flat_building"
    ],
    "conditions": {},
-   "conditionText": "Residential flat buildings",
+   "conditionText": [
+    "Residential flat buildings",
+    "Residential flat buildings (or 25% greater than average of two adjoining buildings, whichever greater)"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     23988
+    ]
+   },
    "secondaryFront": {
     "minM": 5.0,
     "basis": "fixed",
@@ -407,14 +355,25 @@
      23989
     ]
    },
-   "front": null,
    "side": null,
    "rear": null,
    "garage": null,
    "sources": [
+    23988,
     23989
    ],
    "evidence": [
+    {
+     "id": 23988,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "is to be a minimum of 6m, or",
+     "clause": "7.6.1",
+     "page": 45,
+     "source_file": "DCP/Narrandera-DCP-2013.txt",
+     "condition": "Residential flat buildings (or 25% greater than average of two adjoining buildings, whichever greater)",
+     "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013"
+    },
     {
      "id": 23989,
      "parameter": "front_secondary",
@@ -428,14 +387,18 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
-   "quote": "flat building is to be a minimum of 5m.",
-   "clause": "7.6.2",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "is to be a minimum of 6m, or",
+   "clause": "7.6.1",
    "page": 45,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
+   "source_file": "DCP/Narrandera-DCP-2013.txt",
+   "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+   "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "narrandera-shire-council-010",
+   "id": "narrandera-shire-council-008",
    "zones": [
     "IN*"
    ],
@@ -516,10 +479,14 @@
    "quote": "the minimum front building setback is 12m",
    "clause": "9.5",
    "page": 54,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
+   "source_file": "DCP/Narrandera-DCP-2013.txt",
+   "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+   "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "narrandera-shire-council-011",
+   "id": "narrandera-shire-council-009",
    "zones": [
     "RU*"
    ],
@@ -602,10 +569,14 @@
    "quote": "Setback to secondary road access 15m",
    "clause": "6.3.1",
    "page": 38,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
+   "source_file": "DCP/Narrandera-DCP-2013.txt",
+   "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+   "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
-   "id": "narrandera-shire-council-012",
+   "id": "narrandera-shire-council-010",
    "zones": [
     "RU*"
    ],
@@ -669,7 +640,11 @@
    "quote": "Side setback – residential building 30m",
    "clause": "6.3.1",
    "page": 38,
-   "source_file": "DCP/Narrandera-DCP-2013.txt"
+   "source_file": "DCP/Narrandera-DCP-2013.txt",
+   "dcp": "Narrandera Development Control Plan 2013 (approved 18/06/2013, in effect 28/06/2013)",
+   "edition": "Narrandera DCP 2013, approved 18/06/2013, in effect 28/06/2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
@@ -693,7 +668,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 8
+   "rules": 6
   },
   "IN*": {
    "front": false,
@@ -718,8 +693,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 18,
-  "rules": 12,
+  "rules": 10,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

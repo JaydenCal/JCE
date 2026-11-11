@@ -53,7 +53,9 @@
    "quote": "Secondary Setback 2m",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
    "id": "camden-council-002",
@@ -61,14 +63,12 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": [
-    "R5 large lot rear setback",
     "R5 large lot residential front setback (min)",
-    "R5 large lot residential secondary setback",
-    "R5 large lot side setback"
+    "R5 large lot residential secondary setback"
    ],
    "front": {
     "minM": 20.0,
@@ -84,26 +84,12 @@
      7347
     ]
    },
-   "side": {
-    "minM": 5.0,
-    "basis": "fixed",
-    "sources": [
-     7348
-    ]
-   },
-   "rear": {
-    "minM": 5.0,
-    "basis": "fixed",
-    "sources": [
-     7349
-    ]
-   },
+   "side": null,
+   "rear": null,
    "garage": null,
    "sources": [
     7346,
-    7347,
-    7348,
-    7349
+    7347
    ],
    "evidence": [
     {
@@ -127,7 +113,52 @@
      "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
      "condition": "R5 large lot residential secondary setback",
      "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
-    },
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Front setback (min) 20m",
+   "clause": "Table 4-8",
+   "page": 43,
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
+  },
+  {
+   "id": "camden-council-003",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "R5 large lot rear setback",
+    "R5 large lot side setback"
+   ],
+   "side": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     7348
+    ]
+   },
+   "rear": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     7349
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "garage": null,
+   "sources": [
+    7348,
+    7349
+   ],
+   "evidence": [
     {
      "id": 7348,
      "parameter": "setback_rural",
@@ -153,13 +184,15 @@
    ],
    "confidence": "high",
    "needsReview": null,
-   "quote": "Front setback (min) 20m",
+   "quote": "Side setback 5m",
    "clause": "Table 4-8",
    "page": 43,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-003",
+   "id": "camden-council-004",
    "zones": [
     "*"
    ],
@@ -170,10 +203,7 @@
     "level": "ground",
     "lotWidthMinM": 9.0,
     "lotWidthMaxM": 15.0,
-    "precinct": "Oran Park Precinct DCP area",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Oran Park Precinct DCP area"
    },
    "conditionText": "Oran Park Precinct DCP area: detached boundary, ground floor (frontage 9 to 15 m)",
    "side": {
@@ -204,14 +234,16 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "Ground Floor: 0.9m",
    "clause": "Table 18",
    "page": 116,
-   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf"
+   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "UNVERIFIED (Oran Park Precinct Growth Centres Precinct DCP)"
   },
   {
-   "id": "camden-council-004",
+   "id": "camden-council-005",
    "zones": [
     "*"
    ],
@@ -221,10 +253,7 @@
    "conditions": {
     "level": "ground",
     "lotWidthMinM": 15.0,
-    "precinct": "Oran Park Precinct DCP area",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Oran Park Precinct DCP area"
    },
    "conditionText": "Oran Park Precinct DCP area: lots frontage over 15 m, ground floor Side A/B",
    "side": {
@@ -255,14 +284,16 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "Ground Floor: 0.9m (Side A), 0.9m (Side B)",
    "clause": "Table 19",
    "page": 117,
-   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf"
+   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "UNVERIFIED (Oran Park Precinct Growth Centres Precinct DCP)"
   },
   {
-   "id": "camden-council-005",
+   "id": "camden-council-006",
    "zones": [
     "*"
    ],
@@ -271,10 +302,7 @@
    ],
    "conditions": {
     "level": "ground",
-    "precinct": "Oran Park Precinct DCP area",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Oran Park Precinct DCP area"
    },
    "conditionText": "Oran Park Precinct DCP area: ground level",
    "rear": {
@@ -305,14 +333,16 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "4m (ground level) and 6m (upper levels)",
    "clause": "Table 18",
    "page": 116,
-   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf"
+   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "UNVERIFIED (Oran Park Precinct Growth Centres Precinct DCP)"
   },
   {
-   "id": "camden-council-006",
+   "id": "camden-council-007",
    "zones": [
     "*"
    ],
@@ -321,10 +351,7 @@
    ],
    "conditions": {
     "level": "upper",
-    "precinct": "Oran Park Precinct DCP area",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Oran Park Precinct DCP area"
    },
    "conditionText": "Oran Park Precinct DCP area: upper levels",
    "rear": {
@@ -355,14 +382,16 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "4m (ground level) and 6m (upper levels)",
    "clause": "Table 18",
    "page": 116,
-   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf"
+   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "UNVERIFIED (Oran Park Precinct Growth Centres Precinct DCP)"
   },
   {
-   "id": "camden-council-007",
+   "id": "camden-council-008",
    "zones": [
     "*"
    ],
@@ -406,10 +435,12 @@
    "quote": ">900m2–1,500m2 6.5m",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-008",
+   "id": "camden-council-009",
    "zones": [
     "*"
    ],
@@ -455,10 +486,14 @@
    "quote": "A reduced front setback of 3.5m",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
   },
   {
-   "id": "camden-council-009",
+   "id": "camden-council-010",
    "zones": [
     "*"
    ],
@@ -501,10 +536,12 @@
    "quote": ">1,500m2 10m",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-010",
+   "id": "camden-council-011",
    "zones": [
     "*"
    ],
@@ -514,10 +551,7 @@
    "conditions": {
     "lotWidthMinM": 9.0,
     "lotWidthMaxM": 15.0,
-    "precinct": "Oran Park Precinct DCP area",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Oran Park Precinct DCP area"
    },
    "conditionText": "Oran Park Precinct DCP area: Table 18/19 lots frontage 9 m to 15 m and over 15 m, building facade line",
    "front": {
@@ -548,14 +582,16 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "4.5m to building facade line; 3.5m to building façade fronting open space",
    "clause": "Table 18",
    "page": 116,
-   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf"
+   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "UNVERIFIED (Oran Park Precinct Growth Centres Precinct DCP)"
   },
   {
-   "id": "camden-council-011",
+   "id": "camden-council-012",
    "zones": [
     "*"
    ],
@@ -568,10 +604,7 @@
      "open_space_frontage"
     ]
    },
-   "conditionText": [
-    "Oran Park Precinct DCP area: building facade fronting open space or drainage land",
-    "Oran Park Precinct DCP area: corner lots secondary street setback"
-   ],
+   "conditionText": "Oran Park Precinct DCP area: building facade fronting open space or drainage land",
    "front": {
     "minM": 3.5,
     "basis": "fixed",
@@ -579,19 +612,12 @@
      7463
     ]
    },
-   "secondaryFront": {
-    "minM": 2.0,
-    "basis": "fixed",
-    "sources": [
-     7468
-    ]
-   },
+   "secondaryFront": null,
    "side": null,
    "rear": null,
    "garage": null,
    "sources": [
-    7463,
-    7468
+    7463
    ],
    "evidence": [
     {
@@ -604,7 +630,46 @@
      "source_file": "DCP/oran-park-precinct-development-control-plan.pdf",
      "condition": "Oran Park Precinct DCP area: building facade fronting open space or drainage land",
      "edition": "UNVERIFIED (Oran Park Precinct Growth Centres Precinct DCP)"
-    },
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "quote": "3.5m to building façade fronting open space or drainage land",
+   "clause": "Table 18",
+   "page": 116,
+   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "UNVERIFIED (Oran Park Precinct Growth Centres Precinct DCP)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
+  },
+  {
+   "id": "camden-council-013",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Oran Park Precinct DCP area"
+   },
+   "conditionText": "Oran Park Precinct DCP area: corner lots secondary street setback",
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     7468
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    7468
+   ],
+   "evidence": [
     {
      "id": 7468,
      "parameter": "front_secondary",
@@ -618,14 +683,16 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
-   "quote": "3.5m to building façade fronting open space or drainage land",
+   "needsReview": null,
+   "quote": "Corner lots secondary 2.0m",
    "clause": "Table 18",
    "page": 116,
-   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf"
+   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "UNVERIFIED (Oran Park Precinct Growth Centres Precinct DCP)"
   },
   {
-   "id": "camden-council-012",
+   "id": "camden-council-014",
    "zones": [
     "*"
    ],
@@ -671,10 +738,14 @@
    "quote": "3.5m applies only if the lot fronts an access denied street or open space",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
   },
   {
-   "id": "camden-council-013",
+   "id": "camden-council-015",
    "zones": [
     "*"
    ],
@@ -721,10 +792,12 @@
    "quote": "900mm easement for single storey zero lot walls",
    "clause": "Zero Lot Line control 2",
    "page": 12,
-   "source_file": "DCP/Part-3-Residential-Subdivision-Controls.pdf"
+   "source_file": "DCP/Part-3-Residential-Subdivision-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 3 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-014",
+   "id": "camden-council-016",
    "zones": [
     "*"
    ],
@@ -771,10 +844,12 @@
    "quote": "1200mm easement for two storey zero lot walls",
    "clause": "Zero Lot Line control 2",
    "page": 12,
-   "source_file": "DCP/Part-3-Residential-Subdivision-Controls.pdf"
+   "source_file": "DCP/Part-3-Residential-Subdivision-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 3 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-015",
+   "id": "camden-council-017",
    "zones": [
     "*"
    ],
@@ -820,10 +895,12 @@
    "quote": "except where a 450mm side boundary setback is provided",
    "clause": "Zero Lot Line control 1",
    "page": 14,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-016",
+   "id": "camden-council-018",
    "zones": [
     "*"
    ],
@@ -868,10 +945,12 @@
    "quote": "Rear lane setback (min) 1m.",
    "clause": "Table 4-2",
    "page": 12,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-017",
+   "id": "camden-council-019",
    "zones": [
     "*"
    ],
@@ -916,10 +995,14 @@
    "quote": "the rear lane setback can be reduced to 0.5m only if",
    "clause": "Table 4-2",
    "page": 12,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
-   "id": "camden-council-018",
+   "id": "camden-council-020",
    "zones": [
     "*"
    ],
@@ -960,10 +1043,12 @@
    "quote": "Architectural building design elements on the front façade may encroach 1.5m into the prescribed front setback area",
    "clause": "4.2.4 control 4",
    "page": 10,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-019",
+   "id": "camden-council-021",
    "zones": [
     "*"
    ],
@@ -1004,10 +1089,12 @@
    "quote": "Secondary street setback (min) ≥4.5m",
    "clause": "Table 4-5",
    "page": 29,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-020",
+   "id": "camden-council-022",
    "zones": [
     "*"
    ],
@@ -1050,10 +1137,14 @@
    "quote": "< or equal to 900m2 4.5m",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "camden-council-021",
+   "id": "camden-council-023",
    "zones": [
     "*"
    ],
@@ -1099,10 +1190,14 @@
    "quote": "If there are not 2 dwelling houses within 40m of the lot on the same side of the primary road",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "camden-council-022",
+   "id": "camden-council-024",
    "zones": [
     "*"
    ],
@@ -1145,10 +1240,12 @@
    "quote": "Rear setback – single storey 4m dwelling",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-023",
+   "id": "camden-council-025",
    "zones": [
     "*"
    ],
@@ -1191,10 +1288,12 @@
    "quote": "Rear setback – two storey 6m",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-024",
+   "id": "camden-council-026",
    "zones": [
     "*"
    ],
@@ -1235,10 +1334,12 @@
    "quote": "Side setback 0.9m",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-025",
+   "id": "camden-council-027",
    "zones": [
     "*"
    ],
@@ -1246,14 +1347,12 @@
     "garage"
    ],
    "conditions": {
-    "precinct": "Oran Park Precinct DCP area",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Oran Park Precinct DCP area"
    },
    "conditionText": "Oran Park Precinct DCP area: garage line from street",
    "garage": {
-    "minM": 5.5,
+    "minM": null,
+    "behindBuildingLineM": 5.5,
     "sources": [
      7464
     ]
@@ -1269,7 +1368,7 @@
     {
      "id": 7464,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "5.5m to garage line and 1m behind the building line",
      "clause": "Table 18",
      "page": 116,
@@ -1279,14 +1378,16 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "5.5m to garage line and 1m behind the building line",
    "clause": "Table 18",
    "page": 116,
-   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf"
+   "source_file": "DCP/oran-park-precinct-development-control-plan.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "UNVERIFIED (Oran Park Precinct Growth Centres Precinct DCP)"
   },
   {
-   "id": "camden-council-026",
+   "id": "camden-council-028",
    "zones": [
     "*"
    ],
@@ -1357,10 +1458,12 @@
    "quote": "at least 5.5m from (including garages on the road in accordance with Figure 4-2.",
    "clause": "Table 4-2",
    "page": 11,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-027",
+   "id": "camden-council-029",
    "zones": [
     "*"
    ],
@@ -1421,10 +1524,12 @@
    "quote": "Rear setback (min) Ground floor: 4m",
    "clause": "Table 4-7",
    "page": 41,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-028",
+   "id": "camden-council-030",
    "zones": [
     "*"
    ],
@@ -1485,10 +1590,12 @@
    "quote": "Upper floor: 6m",
    "clause": "Table 4-7",
    "page": 41,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-029",
+   "id": "camden-council-031",
    "zones": [
     "*"
    ],
@@ -1533,10 +1640,12 @@
    "quote": "Front setback (min) 4.5m",
    "clause": "Table 4-6",
    "page": 33,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-030",
+   "id": "camden-council-032",
    "zones": [
     "*"
    ],
@@ -1581,10 +1690,12 @@
    "quote": "Rear Lane setback (min) 1m",
    "clause": "Table 4-6",
    "page": 34,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-031",
+   "id": "camden-council-033",
    "zones": [
     "*"
    ],
@@ -1665,10 +1776,12 @@
    "quote": "Front setback (min) 4.5m",
    "clause": "Table 4-7",
    "page": 40,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   },
   {
-   "id": "camden-council-032",
+   "id": "camden-council-034",
    "zones": [
     "*"
    ],
@@ -1709,10 +1822,14 @@
    "quote": "Secondary street setback (min) 2m",
    "clause": "Table 4-7",
    "page": 41,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
   },
   {
-   "id": "camden-council-033",
+   "id": "camden-council-035",
    "zones": [
     "*"
    ],
@@ -1812,7 +1929,9 @@
    "quote": "Front setback (minimum) As per the existing street setback 6m",
    "clause": "Table 4-9",
    "page": 53,
-   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf"
+   "source_file": "DCP/Part-4-Residential-Dwelling-Controls.pdf",
+   "dcp": "Camden Development Control Plan 2019 (Parts 1-6 and Schedules 1-13; edition and adoption date UNVERIFIED in saved text, Part 1 saved as updated 19 September 2024); Growth Centre areas: Camden Growth Centre Precincts DCP October 2025 and Oran Park Precinct DCP (edition UNVERIFIED)",
+   "edition": "Camden DCP 2019, Part 4 (edition date UNVERIFIED)"
   }
  ],
  "gaps": [
@@ -1851,7 +1970,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 1
+   "rules": 2
   },
   "*": {
    "front": true,
@@ -1859,7 +1978,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 31
+   "rules": 32
   }
  },
  "precincts": [
@@ -1868,8 +1987,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 46,
-  "rules": 33,
+  "rules": 35,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (camden-council-002, camden-council-010)); rear (conflicting rules of equal specificity (camden-council-003, camden-council-024))"
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

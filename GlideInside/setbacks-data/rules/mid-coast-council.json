@@ -16,7 +16,7 @@
     "R1"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "precinct": "Gloucester DCP area"
@@ -108,7 +108,9 @@
    "quote": "R1 General Residential 6 3 1",
    "clause": "4.6 Table 4.6.1 Building line setbacks",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-002",
@@ -116,7 +118,7 @@
     "R2"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "precinct": "Gloucester DCP area"
@@ -208,7 +210,9 @@
    "quote": "R2 Low Density Residential 6 3 1",
    "clause": "4.6 Table 4.6.1 Building line setbacks",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-003",
@@ -308,7 +312,9 @@
    "quote": "R3 Medium Residential 6 3 3",
    "clause": "4.6 Table 4.6.1 Building line setbacks",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-004",
@@ -316,7 +322,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "lotAreaMaxM2": 8000.0,
@@ -409,7 +415,9 @@
    "quote": "R5 Large Lot Residential 15 7.5 7.5",
    "clause": "4.6 Table 4.6.1 Building line setbacks",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-005",
@@ -417,7 +425,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "lotAreaMinM2": 8000.0,
@@ -510,7 +518,9 @@
    "quote": "R5 Large Lot Residential 30 15 15",
    "clause": "4.6 Table 4.6.1 Building line setbacks",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-006",
@@ -518,7 +528,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "precinct": "Great Lakes DCP area"
@@ -595,7 +605,11 @@
    "quote": "A building must be setback a minimum of 18m from the primary road frontage.",
    "clause": "5.5.3 Large Lot Residential Zone (1)",
    "page": 9,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "mid-coast-council-007",
@@ -603,7 +617,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "any"
    ],
    "conditions": {
     "precinct": "Gloucester DCP area"
@@ -695,7 +709,9 @@
    "quote": "RU5 Village 6 3 1",
    "clause": "4.6 Table 4.6.1 Building line setbacks",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-008",
@@ -812,7 +828,9 @@
    "quote": "RU1 Primary Production 30 10 10",
    "clause": "4.6 Table 4.6.1 Building line setbacks",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-009",
@@ -913,7 +931,9 @@
    "quote": "RU1 Primary Production 75 50 50",
    "clause": "4.6 Table 4.6.1 Building line setbacks",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-010",
@@ -928,7 +948,6 @@
     "qualifiers": [
      "adjoins_other",
      "height_plane",
-     "open_space_frontage",
      "slope"
     ]
    },
@@ -961,11 +980,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (adjoins_other, height_plane, open_space_frontage, slope); see conditionText",
+   "needsReview": "Condition not expressible in the structured fields (adjoins_other, height_plane, slope); see conditionText",
    "quote": "In Pacific Palms and Seal Rocks a 6m rear boundary setback generally applies to any part of a residential",
    "clause": "5.5.2.5 Pacific Palms and Seal Rocks",
    "page": 8,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other, height_plane, slope); see conditionText"
   },
   {
    "id": "mid-coast-council-011",
@@ -1015,7 +1038,11 @@
    "quote": "Generally a minimum setback of 3m applies to any part of a residential building or ancillary structure adjoining",
    "clause": "5.5.2.6 Reserves Setback Controls (1)",
    "page": 8,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText"
   },
   {
    "id": "mid-coast-council-012",
@@ -1081,7 +1108,9 @@
    "quote": "A minimum of 3m for a building with a maximum wall height of 3.8m.",
    "clause": "5.5.2.5 (2)(a)",
    "page": 8,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)"
   },
   {
    "id": "mid-coast-council-013",
@@ -1148,7 +1177,11 @@
    "quote": "Where the wall height is greater than 3.8m the minimum setback shall be: 3m + (building height over",
    "clause": "5.5.2.5 (2)(b)",
    "page": 8,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "mid-coast-council-014",
@@ -1195,7 +1228,9 @@
    "quote": "an average of the secondary street",
    "clause": "5.5.2.3 Secondary Setback Controls (1)(a)",
    "page": 7,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)"
   },
   {
    "id": "mid-coast-council-015",
@@ -1241,7 +1276,11 @@
    "quote": "Where there are no neighbouring buildings the minimum secondary street setback must be at least 3m.",
    "clause": "5.5.2.3 Secondary Setback Controls (1)(b)",
    "page": 7,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
   },
   {
    "id": "mid-coast-council-016",
@@ -1291,7 +1330,11 @@
    "quote": "Where the rear property boundary adjoins a public reserve, a minimum 3m building",
    "clause": "H3.1 Setbacks 5",
    "page": 24,
-   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf"
+   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Greater Taree DCP 2010 (effective 25/06/2010, uncontrolled when printed)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText"
   },
   {
    "id": "mid-coast-council-017",
@@ -1358,7 +1401,9 @@
    "quote": "Side and rear setbacks are to be a minimum of 900mm for single",
    "clause": "H3.1 Setbacks 4",
    "page": 24,
-   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf"
+   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Greater Taree DCP 2010 (effective 25/06/2010, uncontrolled when printed)"
   },
   {
    "id": "mid-coast-council-018",
@@ -1425,7 +1470,9 @@
    "quote": "Two storey developments are to be set back a minimum of 1600mm from",
    "clause": "H3.1 Setbacks 6",
    "page": 24,
-   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf"
+   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Greater Taree DCP 2010 (effective 25/06/2010, uncontrolled when printed)"
   },
   {
    "id": "mid-coast-council-019",
@@ -1470,7 +1517,9 @@
    "quote": "The garage door (regardless of the frontage of the site) shall achieve a minimum setback of 5m from",
    "clause": "H3.1 Setbacks 3",
    "page": 24,
-   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf"
+   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Greater Taree DCP 2010 (effective 25/06/2010, uncontrolled when printed)"
   },
   {
    "id": "mid-coast-council-020",
@@ -1516,10 +1565,166 @@
    "quote": "The minimum primary frontage setback is 5m. However, where",
    "clause": "H3.2 Setbacks 1",
    "page": 27,
-   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf"
+   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Greater Taree DCP 2010 (effective 25/06/2010, uncontrolled when printed)"
   },
   {
    "id": "mid-coast-council-021",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 900.0,
+    "precinct": "Great Lakes DCP area"
+   },
+   "conditionText": "Great Lakes DCP area: Residential/village, no neighbouring houses, lots under 900 m2",
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     22257
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22257
+   ],
+   "evidence": [
+    {
+     "id": 22257,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m minimum setbacks on allotments less than 900m2",
+     "clause": "5.5.2.1 Additional Front Setback Controls (1)(a)",
+     "page": 6,
+     "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+     "condition": "Great Lakes DCP area: Residential/village, no neighbouring houses, lots under 900 m2",
+     "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "4.5m minimum setbacks on allotments less than 900m2",
+   "clause": "5.5.2.1 Additional Front Setback Controls (1)(a)",
+   "page": 6,
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "mid-coast-council-022",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 900.0,
+    "precinct": "Great Lakes DCP area"
+   },
+   "conditionText": "Great Lakes DCP area: Residential/village, no neighbouring houses, lots over 900 m2",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     22258
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22258
+   ],
+   "evidence": [
+    {
+     "id": 22258,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "6m minimum setbacks on allotments greater than 900m2.",
+     "clause": "5.5.2.1 Additional Front Setback Controls (1)(b)",
+     "page": 7,
+     "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+     "condition": "Great Lakes DCP area: Residential/village, no neighbouring houses, lots over 900 m2",
+     "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "6m minimum setbacks on allotments greater than 900m2.",
+   "clause": "5.5.2.1 Additional Front Setback Controls (1)(b)",
+   "page": 7,
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "mid-coast-council-023",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Great Lakes DCP area",
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "Great Lakes DCP area: Residential and village zones, neighbours within 40 m",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "Average of setbacks of the nearest two neighbouring houses with same frontage (houses within 40 m)",
+    "sources": [
+     22256
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    22256
+   ],
+   "evidence": [
+    {
+     "id": 22256,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "the primary road setback should be an average of",
+     "clause": "5.5.2.1 Primary Road Setback Controls (1)",
+     "page": 6,
+     "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+     "condition": "Great Lakes DCP area: Residential and village zones, neighbours within 40 m",
+     "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "the primary road setback should be an average of",
+   "clause": "5.5.2.1 Primary Road Setback Controls (1)",
+   "page": 6,
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)"
+  },
+  {
+   "id": "mid-coast-council-024",
    "zones": [
     "*"
    ],
@@ -1584,10 +1789,12 @@
    "quote": "The minimum primary street boundary setback is 5m. However,",
    "clause": "H3.1 Setbacks 1",
    "page": 24,
-   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf"
+   "source_file": "DCP/dcp_2010_part_h_residential_requirements_mhe.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Greater Taree DCP 2010 (effective 25/06/2010, uncontrolled when printed)"
   },
   {
-   "id": "mid-coast-council-022",
+   "id": "mid-coast-council-025",
    "zones": [
     "*"
    ],
@@ -1646,151 +1853,9 @@
    "quote": "Garages, carports and open car parking spaces must be setback at least 6m from the primary road frontage.",
    "clause": "5.5.2.1 Primary Road Setback Controls (2)",
    "page": 6,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
-  },
-  {
-   "id": "mid-coast-council-023",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {
-    "lotAreaMaxM2": 900.0,
-    "precinct": "Great Lakes DCP area"
-   },
-   "conditionText": "Great Lakes DCP area: Residential/village, no neighbouring houses, lots under 900 m2",
-   "front": {
-    "minM": 4.5,
-    "basis": "fixed",
-    "sources": [
-     22257
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    22257
-   ],
-   "evidence": [
-    {
-     "id": 22257,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "4.5m minimum setbacks on allotments less than 900m2",
-     "clause": "5.5.2.1 Additional Front Setback Controls (1)(a)",
-     "page": 6,
-     "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
-     "condition": "Great Lakes DCP area: Residential/village, no neighbouring houses, lots under 900 m2",
-     "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value",
-   "quote": "4.5m minimum setbacks on allotments less than 900m2",
-   "clause": "5.5.2.1 Additional Front Setback Controls (1)(a)",
-   "page": 6,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
-  },
-  {
-   "id": "mid-coast-council-024",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {
-    "lotAreaMinM2": 900.0,
-    "precinct": "Great Lakes DCP area"
-   },
-   "conditionText": "Great Lakes DCP area: Residential/village, no neighbouring houses, lots over 900 m2",
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     22258
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    22258
-   ],
-   "evidence": [
-    {
-     "id": 22258,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "6m minimum setbacks on allotments greater than 900m2.",
-     "clause": "5.5.2.1 Additional Front Setback Controls (1)(b)",
-     "page": 7,
-     "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
-     "condition": "Great Lakes DCP area: Residential/village, no neighbouring houses, lots over 900 m2",
-     "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value",
-   "quote": "6m minimum setbacks on allotments greater than 900m2.",
-   "clause": "5.5.2.1 Additional Front Setback Controls (1)(b)",
-   "page": 7,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
-  },
-  {
-   "id": "mid-coast-council-025",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {
-    "precinct": "Great Lakes DCP area",
-    "qualifiers": [
-     "established_area"
-    ]
-   },
-   "conditionText": "Great Lakes DCP area: Residential and village zones, neighbours within 40 m",
-   "front": {
-    "minM": null,
-    "basis": "average_neighbours",
-    "note": "Average of setbacks of the nearest two neighbouring houses with same frontage (houses within 40 m)",
-    "sources": [
-     22256
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    22256
-   ],
-   "evidence": [
-    {
-     "id": 22256,
-     "parameter": "front_infill_rule",
-     "slot": "front",
-     "quote": "the primary road setback should be an average of",
-     "clause": "5.5.2.1 Primary Road Setback Controls (1)",
-     "page": 6,
-     "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
-     "condition": "Great Lakes DCP area: Residential and village zones, neighbours within 40 m",
-     "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "the primary road setback should be an average of",
-   "clause": "5.5.2.1 Primary Road Setback Controls (1)",
-   "page": 6,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)"
   },
   {
    "id": "mid-coast-council-026",
@@ -1857,7 +1922,11 @@
    "quote": "A building is to be setback a minimum of 7.5m from the primary street frontage.",
    "clause": "7.2 Setbacks (1)",
    "page": 1,
-   "source_file": "DCP/7-industrial-development-18-01-2019.pdf"
+   "source_file": "DCP/7-industrial-development-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "mid-coast-council-027",
@@ -1943,7 +2012,11 @@
    "quote": "Setback to the main street frontage is a minimum of 9m.",
    "clause": "K Industrial - Setbacks 1",
    "page": 6,
-   "source_file": "DCP/dcp_2010_part_k_industrial_requirements.pdf"
+   "source_file": "DCP/dcp_2010_part_k_industrial_requirements.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Greater Taree DCP 2010 (effective 25/06/2010, uncontrolled when printed)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "mid-coast-council-028",
@@ -2043,7 +2116,9 @@
    "quote": "IN1 General Industrial 10 5 3",
    "clause": "4.6 Table 4.6.1 Building line setbacks",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-029",
@@ -2089,7 +2164,9 @@
    "quote": "IN1 General Industrial 10 5 3",
    "clause": "4.6 Table 4.6.1",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-030",
@@ -2189,7 +2266,9 @@
    "quote": "IN3 Heavy Industrial 10 5 3",
    "clause": "4.6 Table 4.6.1 Building line setbacks",
    "page": 120,
-   "source_file": "DCP/gloucester-dcp-2010-amended.pdf"
+   "source_file": "DCP/gloucester-dcp-2010-amended.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Gloucester DCP 2010 (adopted 17/11/2010; amended)"
   },
   {
    "id": "mid-coast-council-031",
@@ -2274,7 +2353,11 @@
    "quote": "A minimum 18m setback applies to the primary road frontage.",
    "clause": "5.5.4 Rural and Environmental Zones (1)",
    "page": 9,
-   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf"
+   "source_file": "DCP/5-single-dwellings-dual-occupancies-villas-and-townhouses-18-01-2019.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014; amended to 30/09/2025)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
    "id": "mid-coast-council-032",
@@ -2359,7 +2442,11 @@
    "quote": "Buildings in all rural zones shall provide a minimum front setback of 20m.",
    "clause": "J1.2 Building setbacks",
    "page": 7,
-   "source_file": "DCP/dcp_2010_part_j_rural_and_environmental_zone_requirements.pdf"
+   "source_file": "DCP/dcp_2010_part_j_rural_and_environmental_zone_requirements.pdf",
+   "dcp": "Three legacy DCPs remain in force across the former LGAs: Great Lakes DCP (adopted 12/11/2013, effective 04/04/2014, amended to 30/09/2025); Greater Taree DCP 2010 (Parts A to O, effective 25/06/2010); Gloucester DCP 2010 (adopted 17/11/2010). A single MidCoast DCP is not in the saved documents.",
+   "edition": "Greater Taree DCP 2010 (effective 25/06/2010, uncontrolled when printed)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
@@ -2469,5 +2556,32 @@
   "rules": 32,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

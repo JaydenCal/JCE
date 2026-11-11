@@ -19,12 +19,13 @@
     "dwelling"
    ],
    "conditions": {
-    "precinct": "Palerang DCP area",
-    "qualifiers": [
-     "adjoins_other"
-    ]
+    "precinct": "Palerang DCP area"
    },
-   "conditionText": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R1",
+   "conditionText": [
+    "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R1",
+    "Palerang DCP area: C2.2.2 Table 13 dwelling houses, setback where the side is a street, R1",
+    "Palerang DCP area: C2.2.2 Table 13 dwelling houses, side setback, R1"
+   ],
    "front": {
     "minM": 7.0,
     "basis": "fixed",
@@ -32,48 +33,6 @@
      28032
     ]
    },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28032
-   ],
-   "evidence": [
-    {
-     "id": 28032,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Front 7 or the average",
-     "clause": "C2.2.2 Table 13",
-     "page": 108,
-     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
-     "condition": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R1",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "Front 7 or the average",
-   "clause": "C2.2.2 Table 13",
-   "page": 108,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
-  },
-  {
-   "id": "queanbeyan-palerang-regional-council-002",
-   "zones": [
-    "R1"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "precinct": "Palerang DCP area"
-   },
-   "conditionText": [
-    "Palerang DCP area: C2.2.2 Table 13 dwelling houses, setback where the side is a street, R1",
-    "Palerang DCP area: C2.2.2 Table 13 dwelling houses, side setback, R1"
-   ],
    "secondaryFront": {
     "minM": 3.0,
     "basis": "fixed",
@@ -88,14 +47,25 @@
      27986
     ]
    },
-   "front": null,
    "rear": null,
    "garage": null,
    "sources": [
     27986,
-    27991
+    27991,
+    28032
    ],
    "evidence": [
+    {
+     "id": 28032,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front 7 or the average",
+     "clause": "C2.2.2 Table 13",
+     "page": 108,
+     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+     "condition": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R1",
+     "edition": "UNVERIFIED"
+    },
     {
      "id": 27991,
      "parameter": "front_secondary",
@@ -120,63 +90,18 @@
     }
    ],
    "confidence": "high",
-   "needsReview": null,
-   "quote": "Where the 3 3 15 3 3",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front 7 or the average",
    "clause": "C2.2.2 Table 13",
    "page": 108,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-003",
-   "zones": [
-    "R1"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {
-    "precinct": "Palerang DCP area",
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Palerang DCP area: C2.3.2 Table 14 multi dwellings R1, front (4 or the average of adjoining lots)",
-   "front": {
-    "minM": 4.0,
-    "basis": "fixed",
-    "sources": [
-     27996
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    27996
-   ],
-   "evidence": [
-    {
-     "id": 27996,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Front 4 or the average of adjoining lots",
-     "clause": "C2.3.2 Table 14",
-     "page": 109,
-     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
-     "condition": "Palerang DCP area: C2.3.2 Table 14 multi dwellings R1, front (4 or the average of adjoining lots)",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "Front 4 or the average of adjoining lots",
-   "clause": "C2.3.2 Table 14",
-   "page": 109,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
-  },
-  {
-   "id": "queanbeyan-palerang-regional-council-004",
+   "id": "queanbeyan-palerang-regional-council-002",
    "zones": [
     "R1"
    ],
@@ -187,10 +112,18 @@
     "precinct": "Palerang DCP area"
    },
    "conditionText": [
+    "Palerang DCP area: C2.3.2 Table 14 multi dwellings R1, front (4 or the average of adjoining lots)",
     "Palerang DCP area: C2.3.2 Table 14 multi dwellings R1, rear where building 3.6 m or more high",
     "Palerang DCP area: C2.3.2 Table 14 multi dwellings R1, side",
     "Palerang DCP area: C2.3.2 Table 14 multi dwellings R1, where the side is a street"
    ],
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     27996
+    ]
+   },
    "secondaryFront": {
     "minM": 3.0,
     "basis": "fixed",
@@ -212,14 +145,25 @@
      27997
     ]
    },
-   "front": null,
    "garage": null,
    "sources": [
+    27996,
     27997,
     27998,
     27999
    ],
    "evidence": [
+    {
+     "id": 27996,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front 4 or the average of adjoining lots",
+     "clause": "C2.3.2 Table 14",
+     "page": 109,
+     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+     "condition": "Palerang DCP area: C2.3.2 Table 14 multi dwellings R1, front (4 or the average of adjoining lots)",
+     "edition": "UNVERIFIED"
+    },
     {
      "id": 27998,
      "parameter": "front_secondary",
@@ -255,14 +199,18 @@
     }
    ],
    "confidence": "high",
-   "needsReview": null,
-   "quote": "Where the side is a street 3",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front 4 or the average of adjoining lots",
    "clause": "C2.3.2 Table 14",
    "page": 109,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-005",
+   "id": "queanbeyan-palerang-regional-council-003",
    "zones": [
     "R1"
    ],
@@ -305,10 +253,14 @@
    "quote": "0.9 if the building is less than 3.6 metres high",
    "clause": "C2.3.2 Table 14",
    "page": 109,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-006",
+   "id": "queanbeyan-palerang-regional-council-004",
    "zones": [
     "R1"
    ],
@@ -353,59 +305,12 @@
    "quote": "Side 0.9 0.9 15 0.9",
    "clause": "C6.2 Table 18",
    "page": 118,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-007",
-   "zones": [
-    "R2"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "precinct": "Palerang DCP area",
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R2",
-   "front": {
-    "minM": 7.0,
-    "basis": "fixed",
-    "sources": [
-     28033
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28033
-   ],
-   "evidence": [
-    {
-     "id": 28033,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Front 7 or the average",
-     "clause": "C2.2.2 Table 13",
-     "page": 108,
-     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
-     "condition": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R2",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "Front 7 or the average",
-   "clause": "C2.2.2 Table 13",
-   "page": 108,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
-  },
-  {
-   "id": "queanbeyan-palerang-regional-council-008",
+   "id": "queanbeyan-palerang-regional-council-005",
    "zones": [
     "R2"
    ],
@@ -416,9 +321,17 @@
     "precinct": "Palerang DCP area"
    },
    "conditionText": [
+    "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R2",
     "Palerang DCP area: C2.2.2 Table 13 dwelling houses, setback where the side is a street, R2",
     "Palerang DCP area: C2.2.2 Table 13 dwelling houses, side setback, R2"
    ],
+   "front": {
+    "minM": 7.0,
+    "basis": "fixed",
+    "sources": [
+     28033
+    ]
+   },
    "secondaryFront": {
     "minM": 3.0,
     "basis": "fixed",
@@ -433,14 +346,25 @@
      27987
     ]
    },
-   "front": null,
    "rear": null,
    "garage": null,
    "sources": [
     27987,
-    27992
+    27992,
+    28033
    ],
    "evidence": [
+    {
+     "id": 28033,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front 7 or the average",
+     "clause": "C2.2.2 Table 13",
+     "page": 108,
+     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+     "condition": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R2",
+     "edition": "UNVERIFIED"
+    },
     {
      "id": 27992,
      "parameter": "front_secondary",
@@ -465,14 +389,18 @@
     }
    ],
    "confidence": "high",
-   "needsReview": null,
-   "quote": "Where the 3 3 15 3 3",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front 7 or the average",
    "clause": "C2.2.2 Table 13",
    "page": 108,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-009",
+   "id": "queanbeyan-palerang-regional-council-006",
    "zones": [
     "R2"
    ],
@@ -517,10 +445,12 @@
    "quote": "Side 0.9 0.9 15 0.9",
    "clause": "C6.2 Table 18",
    "page": 118,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-010",
+   "id": "queanbeyan-palerang-regional-council-007",
    "zones": [
     "R2",
     "R3",
@@ -608,10 +538,65 @@
    "quote": "a minimum secondary street setback of 4m is required",
    "clause": "3B.3.1 b)",
    "page": 5,
-   "source_file": "DCP/qdcp-2012-part-3b-november-2022.txt"
+   "source_file": "DCP/qdcp-2012-part-3b-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-011",
+   "id": "queanbeyan-palerang-regional-council-008",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Palerang DCP area",
+    "qualifiers": [
+     "height_plane"
+    ]
+   },
+   "conditionText": "Palerang DCP area: C1.2.5 Table 12 building envelope setback from front boundary, R5 Large Lot Residential",
+   "front": {
+    "minM": 7.0,
+    "basis": "fixed",
+    "sources": [
+     27977
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    27977
+   ],
+   "evidence": [
+    {
+     "id": 27977,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Front boundary (metres) 50 50 7",
+     "clause": "C1.2.5 Table 12",
+     "page": 94,
+     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+     "condition": "Palerang DCP area: C1.2.5 Table 12 building envelope setback from front boundary, R5 Large Lot Residential",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
+   "quote": "Front boundary (metres) 50 50 7",
+   "clause": "C1.2.5 Table 12",
+   "page": 94,
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
+  },
+  {
+   "id": "queanbeyan-palerang-regional-council-009",
    "zones": [
     "R5"
    ],
@@ -673,10 +658,12 @@
    "quote": "Less than 2ha 6m",
    "clause": "5.4 Table 1",
    "page": 18,
-   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-012",
+   "id": "queanbeyan-palerang-regional-council-010",
    "zones": [
     "R5"
    ],
@@ -742,10 +729,14 @@
    "quote": "be located a minimum side and rear setback of 15m for lots with an area of 2-",
    "clause": "5.3 e)v",
    "page": 15,
-   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-013",
+   "id": "queanbeyan-palerang-regional-council-011",
    "zones": [
     "R5"
    ],
@@ -808,10 +799,12 @@
    "quote": "Less than 4ha 15m",
    "clause": "5.4 Table 1",
    "page": 18,
-   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-014",
+   "id": "queanbeyan-palerang-regional-council-012",
    "zones": [
     "R5"
    ],
@@ -876,10 +869,14 @@
    "quote": "be located a minimum side and rear setback of 25m for lots with an area",
    "clause": "5.3 e)vi",
    "page": 15,
-   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-015",
+   "id": "queanbeyan-palerang-regional-council-013",
    "zones": [
     "R5"
    ],
@@ -941,108 +938,12 @@
    "quote": "Greater than 80ha 50m",
    "clause": "5.4 Table 1",
    "page": 18,
-   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-016",
-   "zones": [
-    "R5"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "precinct": "Palerang DCP area",
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R5 (front 7 or the average of adjoining lots whichever is less)",
-   "front": {
-    "minM": 7.0,
-    "basis": "fixed",
-    "sources": [
-     28034
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28034
-   ],
-   "evidence": [
-    {
-     "id": 28034,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Front 7 or the average",
-     "clause": "C2.2.2 Table 13",
-     "page": 108,
-     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
-     "condition": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R5 (front 7 or the average of adjoining lots whichever is less)",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "Front 7 or the average",
-   "clause": "C2.2.2 Table 13",
-   "page": 108,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
-  },
-  {
-   "id": "queanbeyan-palerang-regional-council-017",
-   "zones": [
-    "R5"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "precinct": "Palerang DCP area",
-    "qualifiers": [
-     "height_plane"
-    ]
-   },
-   "conditionText": "Palerang DCP area: C1.2.5 Table 12 building envelope setback from front boundary, R5 Large Lot Residential",
-   "front": {
-    "minM": 7.0,
-    "basis": "fixed",
-    "sources": [
-     27977
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    27977
-   ],
-   "evidence": [
-    {
-     "id": 27977,
-     "parameter": "setback_rural",
-     "slot": "front",
-     "quote": "Front boundary (metres) 50 50 7",
-     "clause": "C1.2.5 Table 12",
-     "page": 94,
-     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
-     "condition": "Palerang DCP area: C1.2.5 Table 12 building envelope setback from front boundary, R5 Large Lot Residential",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane); see conditionText",
-   "quote": "Front boundary (metres) 50 50 7",
-   "clause": "C1.2.5 Table 12",
-   "page": 94,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
-  },
-  {
-   "id": "queanbeyan-palerang-regional-council-018",
+   "id": "queanbeyan-palerang-regional-council-014",
    "zones": [
     "R5"
    ],
@@ -1053,9 +954,17 @@
     "precinct": "Palerang DCP area"
    },
    "conditionText": [
+    "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R5 (front 7 or the average of adjoining lots whichever is less)",
     "Palerang DCP area: C2.2.2 Table 13 dwelling houses, setback where the side is a street, R5",
     "Palerang DCP area: C2.2.2 Table 13 dwelling houses, side setback, R5"
    ],
+   "front": {
+    "minM": 7.0,
+    "basis": "fixed",
+    "sources": [
+     28034
+    ]
+   },
    "secondaryFront": {
     "minM": 15.0,
     "basis": "fixed",
@@ -1070,14 +979,25 @@
      27988
     ]
    },
-   "front": null,
    "rear": null,
    "garage": null,
    "sources": [
     27988,
-    27993
+    27993,
+    28034
    ],
    "evidence": [
+    {
+     "id": 28034,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front 7 or the average",
+     "clause": "C2.2.2 Table 13",
+     "page": 108,
+     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+     "condition": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", R5 (front 7 or the average of adjoining lots whichever is less)",
+     "edition": "UNVERIFIED"
+    },
     {
      "id": 27993,
      "parameter": "front_secondary",
@@ -1102,14 +1022,18 @@
     }
    ],
    "confidence": "high",
-   "needsReview": null,
-   "quote": "Where the 3 3 15 3 3",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front 7 or the average",
    "clause": "C2.2.2 Table 13",
    "page": 108,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-019",
+   "id": "queanbeyan-palerang-regional-council-015",
    "zones": [
     "R5"
    ],
@@ -1155,10 +1079,14 @@
    "quote": "be located a minimum setback of 50m from the front boundary",
    "clause": "5.3 e)iv",
    "page": 15,
-   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-020",
+   "id": "queanbeyan-palerang-regional-council-016",
    "zones": [
     "R5"
    ],
@@ -1238,10 +1166,12 @@
    "quote": "Single storey 6.0m 10m 10m",
    "clause": "5.4 Table 2",
    "page": 18,
-   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-021",
+   "id": "queanbeyan-palerang-regional-council-017",
    "zones": [
     "R5"
    ],
@@ -1321,10 +1251,12 @@
    "quote": "Two or more storeys 7.5m 10m 10m",
    "clause": "5.4 Table 2",
    "page": 18,
-   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-022",
+   "id": "queanbeyan-palerang-regional-council-018",
    "zones": [
     "R5"
    ],
@@ -1406,10 +1338,12 @@
    "quote": "Building setbacks from the front boundary setback shall be a minimum of 50m",
    "clause": "5.4 b)",
    "page": 18,
-   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-5-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-023",
+   "id": "queanbeyan-palerang-regional-council-019",
    "zones": [
     "R5"
    ],
@@ -1454,59 +1388,12 @@
    "quote": "Side 0.9 0.9 15 0.9",
    "clause": "C6.2 Table 18",
    "page": 118,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-024",
-   "zones": [
-    "RU5"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "precinct": "Palerang DCP area",
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", RU5",
-   "front": {
-    "minM": 7.0,
-    "basis": "fixed",
-    "sources": [
-     28035
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28035
-   ],
-   "evidence": [
-    {
-     "id": 28035,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Front 7 or the average",
-     "clause": "C2.2.2 Table 13",
-     "page": 108,
-     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
-     "condition": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", RU5",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "Front 7 or the average",
-   "clause": "C2.2.2 Table 13",
-   "page": 108,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
-  },
-  {
-   "id": "queanbeyan-palerang-regional-council-025",
+   "id": "queanbeyan-palerang-regional-council-020",
    "zones": [
     "RU5"
    ],
@@ -1517,9 +1404,17 @@
     "precinct": "Palerang DCP area"
    },
    "conditionText": [
+    "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", RU5",
     "Palerang DCP area: C2.2.2 Table 13 dwelling houses, setback where the side is a street, RU5",
     "Palerang DCP area: C2.2.2 Table 13 dwelling houses, side setback, RU5"
    ],
+   "front": {
+    "minM": 7.0,
+    "basis": "fixed",
+    "sources": [
+     28035
+    ]
+   },
    "secondaryFront": {
     "minM": 3.0,
     "basis": "fixed",
@@ -1534,14 +1429,25 @@
      27989
     ]
    },
-   "front": null,
    "rear": null,
    "garage": null,
    "sources": [
     27989,
-    27994
+    27994,
+    28035
    ],
    "evidence": [
+    {
+     "id": 28035,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front 7 or the average",
+     "clause": "C2.2.2 Table 13",
+     "page": 108,
+     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+     "condition": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", RU5",
+     "edition": "UNVERIFIED"
+    },
     {
      "id": 27994,
      "parameter": "front_secondary",
@@ -1566,14 +1472,18 @@
     }
    ],
    "confidence": "high",
-   "needsReview": null,
-   "quote": "Where the 3 3 15 3 3",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front 7 or the average",
    "clause": "C2.2.2 Table 13",
    "page": 108,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-026",
+   "id": "queanbeyan-palerang-regional-council-021",
    "zones": [
     "RU5"
    ],
@@ -1648,10 +1558,12 @@
    "quote": "Side 0.9 0.9 15 0.9",
    "clause": "C6.2 Table 18",
    "page": 118,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-027",
+   "id": "queanbeyan-palerang-regional-council-022",
    "zones": [
     "RU5"
    ],
@@ -1696,10 +1608,14 @@
    "quote": "Side 0.9 0.9 15 0.9",
    "clause": "C6.2 Table 18",
    "page": 118,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-028",
+   "id": "queanbeyan-palerang-regional-council-023",
    "zones": [
     "RU1"
    ],
@@ -1745,10 +1661,14 @@
    "quote": "Front boundary (metres) 50 50 7",
    "clause": "C1.2.5 Table 12",
    "page": 94,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-029",
+   "id": "queanbeyan-palerang-regional-council-024",
    "zones": [
     "RU1"
    ],
@@ -1810,10 +1730,12 @@
    "quote": "<4ha 15 15 15",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-030",
+   "id": "queanbeyan-palerang-regional-council-025",
    "zones": [
     "RU1"
    ],
@@ -1876,10 +1798,12 @@
    "quote": "4ha- 80 ha 25 25 25",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-031",
+   "id": "queanbeyan-palerang-regional-council-026",
    "zones": [
     "RU1"
    ],
@@ -1941,59 +1865,12 @@
    "quote": "> 80 ha 50 50 50",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-032",
-   "zones": [
-    "RU1"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "precinct": "Palerang DCP area",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
-   },
-   "conditionText": "Palerang DCP area: C2.5.1 Table 17 dwellings, national park or nature reserve, RU1 Primary Production",
-   "front": {
-    "minM": 100.0,
-    "basis": "fixed",
-    "sources": [
-     28016
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28016
-   ],
-   "evidence": [
-    {
-     "id": 28016,
-     "parameter": "setback_rural",
-     "slot": "front",
-     "quote": "National park or nature reserve 100 100 100",
-     "clause": "C2.5.1 Table 17",
-     "page": 115,
-     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
-     "condition": "Palerang DCP area: C2.5.1 Table 17 dwellings, national park or nature reserve, RU1 Primary Production",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
-   "quote": "National park or nature reserve 100 100 100",
-   "clause": "C2.5.1 Table 17",
-   "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
-  },
-  {
-   "id": "queanbeyan-palerang-regional-council-033",
+   "id": "queanbeyan-palerang-regional-council-027",
    "zones": [
     "RU1"
    ],
@@ -2036,10 +1913,62 @@
    "quote": "Primary road frontage 50 50 50",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-034",
+   "id": "queanbeyan-palerang-regional-council-028",
+   "zones": [
+    "RU1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "precinct": "Palerang DCP area"
+   },
+   "conditionText": "Palerang DCP area: C2.5.1 Table 17 dwellings, national park or nature reserve, RU1 Primary Production",
+   "front": {
+    "minM": 100.0,
+    "basis": "fixed",
+    "sources": [
+     28016
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    28016
+   ],
+   "evidence": [
+    {
+     "id": 28016,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "National park or nature reserve 100 100 100",
+     "clause": "C2.5.1 Table 17",
+     "page": 115,
+     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+     "condition": "Palerang DCP area: C2.5.1 Table 17 dwellings, national park or nature reserve, RU1 Primary Production",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "National park or nature reserve 100 100 100",
+   "clause": "C2.5.1 Table 17",
+   "page": 115,
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "queanbeyan-palerang-regional-council-029",
    "zones": [
     "C4"
    ],
@@ -2101,10 +2030,12 @@
    "quote": "<4ha 15 15 15",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-035",
+   "id": "queanbeyan-palerang-regional-council-030",
    "zones": [
     "C4"
    ],
@@ -2167,10 +2098,12 @@
    "quote": "4ha- 80 ha 25 25 25",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-036",
+   "id": "queanbeyan-palerang-regional-council-031",
    "zones": [
     "C4"
    ],
@@ -2232,10 +2165,12 @@
    "quote": "> 80 ha 50 50 50",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-037",
+   "id": "queanbeyan-palerang-regional-council-032",
    "zones": [
     "C4"
    ],
@@ -2278,10 +2213,12 @@
    "quote": "Primary road frontage 50 50 50",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-038",
+   "id": "queanbeyan-palerang-regional-council-033",
    "zones": [
     "C4",
     "C3"
@@ -2328,10 +2265,14 @@
    "quote": "Front boundary (metres) 50 50 7",
    "clause": "C1.2.5 Table 12",
    "page": 94,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-039",
+   "id": "queanbeyan-palerang-regional-council-034",
    "zones": [
     "C3"
    ],
@@ -2393,10 +2334,12 @@
    "quote": "<4ha 15 15 15",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-040",
+   "id": "queanbeyan-palerang-regional-council-035",
    "zones": [
     "C3"
    ],
@@ -2459,10 +2402,12 @@
    "quote": "4ha- 80 ha 25 25 25",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-041",
+   "id": "queanbeyan-palerang-regional-council-036",
    "zones": [
     "C3"
    ],
@@ -2524,10 +2469,12 @@
    "quote": "> 80 ha 50 50 50",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-042",
+   "id": "queanbeyan-palerang-regional-council-037",
    "zones": [
     "C3"
    ],
@@ -2570,10 +2517,12 @@
    "quote": "Primary road frontage 50 50 50",
    "clause": "C2.5.1 Table 17",
    "page": 115,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-043",
+   "id": "queanbeyan-palerang-regional-council-038",
    "zones": [
     "*"
    ],
@@ -2656,10 +2605,12 @@
    "quote": "Front 0.0m",
    "clause": "4.1",
    "page": 13,
-   "source_file": "DCP/braidwood-dcp-2006.txt"
+   "source_file": "DCP/braidwood-dcp-2006.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-044",
+   "id": "queanbeyan-palerang-regional-council-039",
    "zones": [
     "*"
    ],
@@ -2702,10 +2653,12 @@
    "quote": "minimum front setback is to be 5 metres",
    "clause": "C8.2 c1",
    "page": 124,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-045",
+   "id": "queanbeyan-palerang-regional-council-040",
    "zones": [
     "*"
    ],
@@ -2752,10 +2705,12 @@
    "quote": "0 metres",
    "clause": "7.x Table 2",
    "page": 25,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-046",
+   "id": "queanbeyan-palerang-regional-council-041",
    "zones": [
     "*"
    ],
@@ -2799,10 +2754,12 @@
    "quote": "front or secondary 5.5 metres",
    "clause": "7.x Table 2",
    "page": 24,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-047",
+   "id": "queanbeyan-palerang-regional-council-042",
    "zones": [
     "*"
    ],
@@ -2849,10 +2806,12 @@
    "quote": "Garage setback to 0m",
    "clause": "7.x Table 2",
    "page": 22,
-   "source_file": "DCP/sjdcp-part-7-november-2022.txt"
+   "source_file": "DCP/sjdcp-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-048",
+   "id": "queanbeyan-palerang-regional-council-043",
    "zones": [
     "*"
    ],
@@ -2896,10 +2855,12 @@
    "quote": "Garage setback to 5.5m",
    "clause": "7.x Table 2",
    "page": 22,
-   "source_file": "DCP/sjdcp-part-7-november-2022.txt"
+   "source_file": "DCP/sjdcp-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-049",
+   "id": "queanbeyan-palerang-regional-council-044",
    "zones": [
     "*"
    ],
@@ -2962,10 +2923,12 @@
    "quote": "Ground Floor - 3.0 metres",
    "clause": "7.x Table 2",
    "page": 25,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-050",
+   "id": "queanbeyan-palerang-regional-council-045",
    "zones": [
     "*"
    ],
@@ -3012,10 +2975,14 @@
    "quote": "4.0 metres where principle private open space is not located",
    "clause": "7.x Table 2",
    "page": 24,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-051",
+   "id": "queanbeyan-palerang-regional-council-046",
    "zones": [
     "*"
    ],
@@ -3062,10 +3029,14 @@
    "quote": "6.0 metres where principle private open space is located",
    "clause": "7.x Table 2",
    "page": 24,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a diffe..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-052",
+   "id": "queanbeyan-palerang-regional-council-047",
    "zones": [
     "*"
    ],
@@ -3110,10 +3081,12 @@
    "quote": "Up to 2 Storeys – 3.0 metres",
    "clause": "7.x Table 2",
    "page": 24,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-053",
+   "id": "queanbeyan-palerang-regional-council-048",
    "zones": [
     "*"
    ],
@@ -3197,10 +3170,12 @@
    "quote": "Dual Occupancy – 6.0 metres",
    "clause": "7.x Table 2",
    "page": 24,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-054",
+   "id": "queanbeyan-palerang-regional-council-049",
    "zones": [
     "*"
    ],
@@ -3244,10 +3219,14 @@
    "quote": "greater than 9m in length the minimum setback is 4.0",
    "clause": "7.x Table 2",
    "page": 24,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-055",
+   "id": "queanbeyan-palerang-regional-council-050",
    "zones": [
     "*"
    ],
@@ -3292,10 +3271,12 @@
    "quote": "Up to 2 Storeys – 3.0m",
    "clause": "7.x Table 2",
    "page": 22,
-   "source_file": "DCP/sjdcp-part-7-november-2022.txt"
+   "source_file": "DCP/sjdcp-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-056",
+   "id": "queanbeyan-palerang-regional-council-051",
    "zones": [
     "*"
    ],
@@ -3379,10 +3360,12 @@
    "quote": "Front setback min 6.0m",
    "clause": "7.x Table 2",
    "page": 22,
-   "source_file": "DCP/sjdcp-part-7-november-2022.txt"
+   "source_file": "DCP/sjdcp-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-057",
+   "id": "queanbeyan-palerang-regional-council-052",
    "zones": [
     "*"
    ],
@@ -3426,10 +3409,14 @@
    "quote": "greater than 9m in length setback is 4.0 metres",
    "clause": "7.x Table 2",
    "page": 22,
-   "source_file": "DCP/sjdcp-part-7-november-2022.txt"
+   "source_file": "DCP/sjdcp-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-058",
+   "id": "queanbeyan-palerang-regional-council-053",
    "zones": [
     "*"
    ],
@@ -3497,10 +3484,12 @@
    "quote": "Corner Allotments with Long Curved 4.0m (see Fig. 5.0m 5.0m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-059",
+   "id": "queanbeyan-palerang-regional-council-054",
    "zones": [
     "*"
    ],
@@ -3548,10 +3537,12 @@
    "quote": "Side setback 0.9m (0m for 0.9m (0m for 0.9m for 1.5m 2.5m",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-060",
+   "id": "queanbeyan-palerang-regional-council-055",
    "zones": [
     "*"
    ],
@@ -3563,7 +3554,7 @@
     "lotAreaMinM2": 900.0,
     "lotAreaMaxM2": 1500.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -3600,10 +3591,12 @@
    "quote": "Rear setback 3.0m for 3.0m for 3.0m for 5.0m for 10.0m for",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-061",
+   "id": "queanbeyan-palerang-regional-council-056",
    "zones": [
     "*"
    ],
@@ -3615,7 +3608,7 @@
     "lotAreaMinM2": 900.0,
     "lotAreaMaxM2": 1500.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -3652,10 +3645,12 @@
    "quote": "Rear setback 4.0m 4.0m 4.0m 5.0m 10.0m",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-062",
+   "id": "queanbeyan-palerang-regional-council-057",
    "zones": [
     "*"
    ],
@@ -3667,7 +3662,7 @@
     "lotAreaMinM2": 900.0,
     "lotAreaMaxM2": 1500.0,
     "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -3704,10 +3699,12 @@
    "quote": "Rear setback for 3.0m 3.0m 3.0m 5.0m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 11,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-063",
+   "id": "queanbeyan-palerang-regional-council-058",
    "zones": [
     "*"
    ],
@@ -3719,7 +3716,7 @@
     "lotAreaMinM2": 900.0,
     "lotAreaMaxM2": 1500.0,
     "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -3756,10 +3753,12 @@
    "quote": "Rear setback for 4.0m 4.0m 4.0m 5.0m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 11,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-064",
+   "id": "queanbeyan-palerang-regional-council-059",
    "zones": [
     "*"
    ],
@@ -3804,10 +3803,12 @@
    "quote": "Side setback 0.9m for two 0.9m (0m for 0.9m for 1.5m 2.5m",
    "clause": "6.x Table 6.3",
    "page": 10,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-065",
+   "id": "queanbeyan-palerang-regional-council-060",
    "zones": [
     "*"
    ],
@@ -3852,10 +3853,12 @@
    "quote": "3.0 metres 3.0 metres 3.0 metres",
    "clause": "7.x Table 1",
    "page": 20,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-066",
+   "id": "queanbeyan-palerang-regional-council-061",
    "zones": [
     "*"
    ],
@@ -3867,7 +3870,7 @@
     "lotAreaMinM2": 170.0,
     "lotAreaMaxM2": 250.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -3904,10 +3907,12 @@
    "quote": "Rear setback Not applicable Not applicable 3.0 metres 3.0 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-067",
+   "id": "queanbeyan-palerang-regional-council-062",
    "zones": [
     "*"
    ],
@@ -3919,7 +3924,7 @@
     "lotAreaMinM2": 170.0,
     "lotAreaMaxM2": 250.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -3956,10 +3961,12 @@
    "quote": "Not applicable Not applicable 4.0 metres 4.0 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-068",
+   "id": "queanbeyan-palerang-regional-council-063",
    "zones": [
     "*"
    ],
@@ -4004,10 +4011,12 @@
    "quote": "3.0 metres 3.0 metres 3.0 metres",
    "clause": "7.x Table 1",
    "page": 20,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-069",
+   "id": "queanbeyan-palerang-regional-council-064",
    "zones": [
     "*"
    ],
@@ -4019,7 +4028,7 @@
     "lotAreaMinM2": 250.0,
     "lotAreaMaxM2": 330.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4056,10 +4065,12 @@
    "quote": "Rear setback Not applicable Not applicable 3.0 metres 3.0 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-070",
+   "id": "queanbeyan-palerang-regional-council-065",
    "zones": [
     "*"
    ],
@@ -4071,7 +4082,7 @@
     "lotAreaMinM2": 250.0,
     "lotAreaMaxM2": 330.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4108,10 +4119,12 @@
    "quote": "Not applicable Not applicable 4.0 metres 4.0 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-071",
+   "id": "queanbeyan-palerang-regional-council-066",
    "zones": [
     "*"
    ],
@@ -4156,10 +4169,12 @@
    "quote": "3.0 metres 3.0 metres 3.0 metres",
    "clause": "7.x Table 1",
    "page": 20,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-072",
+   "id": "queanbeyan-palerang-regional-council-067",
    "zones": [
     "*"
    ],
@@ -4207,10 +4222,12 @@
    "quote": "Side setback 0.9m (0m for 0.9m (0m for 0.9m for 1.5m 2.5m",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-073",
+   "id": "queanbeyan-palerang-regional-council-068",
    "zones": [
     "*"
    ],
@@ -4222,7 +4239,7 @@
     "lotAreaMinM2": 330.0,
     "lotAreaMaxM2": 450.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4259,10 +4276,12 @@
    "quote": "Rear setback 3.0m for 3.0m for 3.0m for 5.0m for 10.0m for",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-074",
+   "id": "queanbeyan-palerang-regional-council-069",
    "zones": [
     "*"
    ],
@@ -4274,7 +4293,7 @@
     "lotAreaMinM2": 330.0,
     "lotAreaMaxM2": 450.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4311,10 +4330,12 @@
    "quote": "Rear setback 4.0m 4.0m 4.0m 5.0m 10.0m",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-075",
+   "id": "queanbeyan-palerang-regional-council-070",
    "zones": [
     "*"
    ],
@@ -4326,7 +4347,7 @@
     "lotAreaMinM2": 330.0,
     "lotAreaMaxM2": 450.0,
     "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4363,10 +4384,12 @@
    "quote": "Rear setback for 3.0m 3.0m 3.0m 5.0m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 11,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-076",
+   "id": "queanbeyan-palerang-regional-council-071",
    "zones": [
     "*"
    ],
@@ -4378,7 +4401,7 @@
     "lotAreaMinM2": 330.0,
     "lotAreaMaxM2": 450.0,
     "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4415,10 +4438,12 @@
    "quote": "Rear setback for 4.0m 4.0m 4.0m 5.0m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 11,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-077",
+   "id": "queanbeyan-palerang-regional-council-072",
    "zones": [
     "*"
    ],
@@ -4463,10 +4488,12 @@
    "quote": "Side setback 0.9m for two 0.9m (0m for 0.9m for 1.5m 2.5m",
    "clause": "6.x Table 6.3",
    "page": 10,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-078",
+   "id": "queanbeyan-palerang-regional-council-073",
    "zones": [
     "*"
    ],
@@ -4514,10 +4541,12 @@
    "quote": "Side setback 0.9m (0m for 0.9m (0m for 0.9m for 1.5m 2.5m",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-079",
+   "id": "queanbeyan-palerang-regional-council-074",
    "zones": [
     "*"
    ],
@@ -4529,7 +4558,7 @@
     "lotAreaMinM2": 450.0,
     "lotAreaMaxM2": 600.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4566,10 +4595,12 @@
    "quote": "Rear setback 3.0m for 3.0m for 3.0m for 5.0m for 10.0m for",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-080",
+   "id": "queanbeyan-palerang-regional-council-075",
    "zones": [
     "*"
    ],
@@ -4581,7 +4612,7 @@
     "lotAreaMinM2": 450.0,
     "lotAreaMaxM2": 600.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4618,10 +4649,12 @@
    "quote": "Rear setback 4.0m 4.0m 4.0m 5.0m 10.0m",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-081",
+   "id": "queanbeyan-palerang-regional-council-076",
    "zones": [
     "*"
    ],
@@ -4633,7 +4666,7 @@
     "lotAreaMinM2": 450.0,
     "lotAreaMaxM2": 600.0,
     "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4670,10 +4703,12 @@
    "quote": "Rear setback for 3.0m 3.0m 3.0m 5.0m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 11,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-082",
+   "id": "queanbeyan-palerang-regional-council-077",
    "zones": [
     "*"
    ],
@@ -4685,7 +4720,7 @@
     "lotAreaMinM2": 450.0,
     "lotAreaMaxM2": 600.0,
     "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4722,10 +4757,12 @@
    "quote": "Rear setback for 4.0m 4.0m 4.0m 5.0m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 11,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-083",
+   "id": "queanbeyan-palerang-regional-council-078",
    "zones": [
     "*"
    ],
@@ -4770,10 +4807,12 @@
    "quote": "Side setback 0.9m for two 0.9m (0m for 0.9m for 1.5m 2.5m",
    "clause": "6.x Table 6.3",
    "page": 10,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-084",
+   "id": "queanbeyan-palerang-regional-council-079",
    "zones": [
     "*"
    ],
@@ -4821,10 +4860,12 @@
    "quote": "Side setback 0.9m (0m for 0.9m (0m for 0.9m for 1.5m 2.5m",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-085",
+   "id": "queanbeyan-palerang-regional-council-080",
    "zones": [
     "*"
    ],
@@ -4836,7 +4877,7 @@
     "lotAreaMinM2": 600.0,
     "lotAreaMaxM2": 900.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4873,10 +4914,12 @@
    "quote": "Rear setback 3.0m for 3.0m for 3.0m for 5.0m for 10.0m for",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-086",
+   "id": "queanbeyan-palerang-regional-council-081",
    "zones": [
     "*"
    ],
@@ -4888,7 +4931,7 @@
     "lotAreaMinM2": 600.0,
     "lotAreaMaxM2": 900.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4925,10 +4968,12 @@
    "quote": "Rear setback 4.0m 4.0m 4.0m 5.0m 10.0m",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-087",
+   "id": "queanbeyan-palerang-regional-council-082",
    "zones": [
     "*"
    ],
@@ -4940,7 +4985,7 @@
     "lotAreaMinM2": 600.0,
     "lotAreaMaxM2": 900.0,
     "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -4977,10 +5022,12 @@
    "quote": "Rear setback for 3.0m 3.0m 3.0m 5.0m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 11,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-088",
+   "id": "queanbeyan-palerang-regional-council-083",
    "zones": [
     "*"
    ],
@@ -4992,7 +5039,7 @@
     "lotAreaMinM2": 600.0,
     "lotAreaMaxM2": 900.0,
     "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -5029,10 +5076,12 @@
    "quote": "Rear setback for 4.0m 4.0m 4.0m 5.0m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 11,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-089",
+   "id": "queanbeyan-palerang-regional-council-084",
    "zones": [
     "*"
    ],
@@ -5077,10 +5126,12 @@
    "quote": "Side setback 0.9m for two 0.9m (0m for 0.9m for 1.5m 2.5m",
    "clause": "6.x Table 6.3",
    "page": 10,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-090",
+   "id": "queanbeyan-palerang-regional-council-085",
    "zones": [
     "*"
    ],
@@ -5127,10 +5178,12 @@
    "quote": "Side setback 0.9m (0m for 0.9m (0m for 0.9m for 1.5m 2.5m",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-091",
+   "id": "queanbeyan-palerang-regional-council-086",
    "zones": [
     "*"
    ],
@@ -5141,7 +5194,7 @@
     "wallHeightMaxM": 4.5,
     "lotAreaMinM2": 1500.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -5178,10 +5231,12 @@
    "quote": "Rear setback 3.0m for 3.0m for 3.0m for 5.0m for 10.0m for",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-092",
+   "id": "queanbeyan-palerang-regional-council-087",
    "zones": [
     "*"
    ],
@@ -5192,7 +5247,7 @@
     "wallHeightOverM": 4.5,
     "lotAreaMinM2": 1500.0,
     "precinct": "Googong DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -5229,10 +5284,12 @@
    "quote": "Rear setback 4.0m 4.0m 4.0m 5.0m 10.0m",
    "clause": "6.x Table 1",
    "page": 13,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-093",
+   "id": "queanbeyan-palerang-regional-council-088",
    "zones": [
     "*"
    ],
@@ -5243,7 +5300,7 @@
     "wallHeightMaxM": 4.5,
     "lotAreaMinM2": 1500.0,
     "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -5280,10 +5337,12 @@
    "quote": "Rear setback for 3.0m 3.0m 3.0m 5.0m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 11,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-094",
+   "id": "queanbeyan-palerang-regional-council-089",
    "zones": [
     "*"
    ],
@@ -5294,7 +5353,7 @@
     "wallHeightOverM": 4.5,
     "lotAreaMinM2": 1500.0,
     "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
+    "qualifiersNot": [
      "laneway"
     ]
    },
@@ -5331,10 +5390,12 @@
    "quote": "Rear setback for 4.0m 4.0m 4.0m 5.0m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 11,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-095",
+   "id": "queanbeyan-palerang-regional-council-090",
    "zones": [
     "*"
    ],
@@ -5378,10 +5439,12 @@
    "quote": "Side setback 0.9m for two 0.9m (0m for 0.9m for 1.5m 2.5m",
    "clause": "6.x Table 6.3",
    "page": 10,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-096",
+   "id": "queanbeyan-palerang-regional-council-091",
    "zones": [
     "*"
    ],
@@ -5465,10 +5528,12 @@
    "quote": "Side street boundary 3.0m or more",
    "clause": "4.3",
    "page": 16,
-   "source_file": "DCP/braidwood-dcp-2006.txt"
+   "source_file": "DCP/braidwood-dcp-2006.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-097",
+   "id": "queanbeyan-palerang-regional-council-092",
    "zones": [
     "*"
    ],
@@ -5512,10 +5577,14 @@
    "quote": "Other side boundary 3.0m",
    "clause": "4.3",
    "page": 16,
-   "source_file": "DCP/braidwood-dcp-2006.txt"
+   "source_file": "DCP/braidwood-dcp-2006.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-098",
+   "id": "queanbeyan-palerang-regional-council-093",
    "zones": [
     "*"
    ],
@@ -5558,59 +5627,12 @@
    "quote": "Front boundary 9.0m, or 3.0m more than adjacent historic",
    "clause": "4.3",
    "page": 16,
-   "source_file": "DCP/braidwood-dcp-2006.txt"
+   "source_file": "DCP/braidwood-dcp-2006.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-099",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "precinct": "Palerang DCP area",
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", B4",
-   "front": {
-    "minM": 7.0,
-    "basis": "fixed",
-    "sources": [
-     28036
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28036
-   ],
-   "evidence": [
-    {
-     "id": 28036,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Front 7 or the average",
-     "clause": "C2.2.2 Table 13",
-     "page": 108,
-     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
-     "condition": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", B4",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "Front 7 or the average",
-   "clause": "C2.2.2 Table 13",
-   "page": 108,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
-  },
-  {
-   "id": "queanbeyan-palerang-regional-council-100",
+   "id": "queanbeyan-palerang-regional-council-094",
    "zones": [
     "*"
    ],
@@ -5621,9 +5643,17 @@
     "precinct": "Palerang DCP area"
    },
    "conditionText": [
+    "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", B4",
     "Palerang DCP area: C2.2.2 Table 13 dwelling houses, setback where the side is a street, B4",
     "Palerang DCP area: C2.2.2 Table 13 dwelling houses, side setback, B4"
    ],
+   "front": {
+    "minM": 7.0,
+    "basis": "fixed",
+    "sources": [
+     28036
+    ]
+   },
    "secondaryFront": {
     "minM": 3.0,
     "basis": "fixed",
@@ -5638,14 +5668,25 @@
      27990
     ]
    },
-   "front": null,
    "rear": null,
    "garage": null,
    "sources": [
     27990,
-    27995
+    27995,
+    28036
    ],
    "evidence": [
+    {
+     "id": 28036,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front 7 or the average",
+     "clause": "C2.2.2 Table 13",
+     "page": 108,
+     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+     "condition": "Palerang DCP area: C2.2.2 Table 13 dwelling houses, front setback \"7 or the average of adjoining lots whichever is less, or 3 more than an adjacent historic structure\", B4",
+     "edition": "UNVERIFIED"
+    },
     {
      "id": 27995,
      "parameter": "front_secondary",
@@ -5670,14 +5711,18 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
-   "quote": "Where the 3 3 15 3 3",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front 7 or the average",
    "clause": "C2.2.2 Table 13",
    "page": 108,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-101",
+   "id": "queanbeyan-palerang-regional-council-095",
    "zones": [
     "*"
    ],
@@ -5761,10 +5806,12 @@
    "quote": "Single Storey * 6.0m 4.0m 4.0m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-102",
+   "id": "queanbeyan-palerang-regional-council-096",
    "zones": [
     "*"
    ],
@@ -5848,10 +5895,12 @@
    "quote": "Two or more Storeys * 7.5m 4.0m 4.0m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-103",
+   "id": "queanbeyan-palerang-regional-council-097",
    "zones": [
     "*"
    ],
@@ -5918,10 +5967,12 @@
    "quote": "Front setback 4.0m 4.0m 4.5m 6.5m 10.0m",
    "clause": "6.x Table 1",
    "page": 12,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-104",
+   "id": "queanbeyan-palerang-regional-council-098",
    "zones": [
     "*"
    ],
@@ -5988,10 +6039,12 @@
    "quote": "Front (Primary) 4.0m 4.0m 4.5m 6.5m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 10,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-105",
+   "id": "queanbeyan-palerang-regional-council-099",
    "zones": [
     "*"
    ],
@@ -6037,10 +6090,12 @@
    "quote": "1.5 metres 1.5 metres 1.5 metres 2.0 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-106",
+   "id": "queanbeyan-palerang-regional-council-100",
    "zones": [
     "*"
    ],
@@ -6086,10 +6141,12 @@
    "quote": "1.5 metres 1.5 metres 1.5 metres 2.0 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-107",
+   "id": "queanbeyan-palerang-regional-council-101",
    "zones": [
     "*"
    ],
@@ -6135,10 +6192,12 @@
    "quote": "1.5 metres 1.5 metres 1.5 metres 2.0 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-108",
+   "id": "queanbeyan-palerang-regional-council-102",
    "zones": [
     "*"
    ],
@@ -6205,10 +6264,12 @@
    "quote": "Front setback 4.0m 4.0m 4.5m 6.5m 10.0m",
    "clause": "6.x Table 1",
    "page": 12,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-109",
+   "id": "queanbeyan-palerang-regional-council-103",
    "zones": [
     "*"
    ],
@@ -6275,10 +6336,12 @@
    "quote": "Front (Primary) 4.0m 4.0m 4.5m 6.5m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 10,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-110",
+   "id": "queanbeyan-palerang-regional-council-104",
    "zones": [
     "*"
    ],
@@ -6345,10 +6408,12 @@
    "quote": "Front setback 4.0m 4.0m 4.5m 6.5m 10.0m",
    "clause": "6.x Table 1",
    "page": 12,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-111",
+   "id": "queanbeyan-palerang-regional-council-105",
    "zones": [
     "*"
    ],
@@ -6415,10 +6480,12 @@
    "quote": "Front (Primary) 4.0m 4.0m 4.5m 6.5m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 10,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-112",
+   "id": "queanbeyan-palerang-regional-council-106",
    "zones": [
     "*"
    ],
@@ -6485,10 +6552,12 @@
    "quote": "Front setback 4.0m 4.0m 4.5m 6.5m 10.0m",
    "clause": "6.x Table 1",
    "page": 12,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-113",
+   "id": "queanbeyan-palerang-regional-council-107",
    "zones": [
     "*"
    ],
@@ -6555,10 +6624,12 @@
    "quote": "Front (Primary) 4.0m 4.0m 4.5m 6.5m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 10,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-114",
+   "id": "queanbeyan-palerang-regional-council-108",
    "zones": [
     "*"
    ],
@@ -6624,10 +6695,12 @@
    "quote": "Front setback 4.0m 4.0m 4.5m 6.5m 10.0m",
    "clause": "6.x Table 1",
    "page": 12,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-115",
+   "id": "queanbeyan-palerang-regional-council-109",
    "zones": [
     "*"
    ],
@@ -6693,10 +6766,12 @@
    "quote": "Front (Primary) 4.0m 4.0m 4.5m 6.5m 10.0m",
    "clause": "6.x Table 6.3",
    "page": 10,
-   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-116",
+   "id": "queanbeyan-palerang-regional-council-110",
    "zones": [
     "*"
    ],
@@ -6741,10 +6816,12 @@
    "quote": "Free standing garage/ carport 6.0m 5.5m Nil",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-117",
+   "id": "queanbeyan-palerang-regional-council-111",
    "zones": [
     "*"
    ],
@@ -6789,10 +6866,12 @@
    "quote": "As per garage 5.5 metres 5.5 metres 5.5 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-118",
+   "id": "queanbeyan-palerang-regional-council-112",
    "zones": [
     "*"
    ],
@@ -6837,10 +6916,12 @@
    "quote": "As per garage 5.5 metres 5.5 metres 5.5 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-119",
+   "id": "queanbeyan-palerang-regional-council-113",
    "zones": [
     "*"
    ],
@@ -6885,10 +6966,12 @@
    "quote": "As per garage 5.5 metres 5.5 metres 5.5 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-120",
+   "id": "queanbeyan-palerang-regional-council-114",
    "zones": [
     "*"
    ],
@@ -6933,10 +7016,12 @@
    "quote": "1.0m behind 1.0m behind 1.0m behind 1.0m behind 1.0m behind",
    "clause": "6.x Table 1",
    "page": 12,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-121",
+   "id": "queanbeyan-palerang-regional-council-115",
    "zones": [
     "*"
    ],
@@ -6944,15 +7029,19 @@
     "garage"
    ],
    "conditions": {
-    "lotAreaMinM2": 170.0,
-    "lotAreaMaxM2": 250.0,
+    "lotAreaMinM2": 130.0,
+    "lotAreaMaxM2": 170.0,
     "precinct": "Googong DCP area"
    },
-   "conditionText": "Googong DCP area (Part 7): Part 7 Table 1 small lot housing, lot size 170 < 250m2, garage setback to front boundary (not permitted for 130<170m2)",
+   "conditionText": [
+    "Googong DCP area (Part 7): Part 7 Table 1 small lot housing, lot size 170 < 250m2, garage setback to front boundary (not permitted for 130<170m2)",
+    "Googong DCP area (Part 7): Part 7 Table 1 small lot housing, lot size 250 < 330m2, garage setback to front boundary (not permitted for 130<170m2)"
+   ],
    "garage": {
     "minM": 5.5,
     "sources": [
-     28081
+     28081,
+     28082
     ]
    },
    "front": null,
@@ -6960,7 +7049,8 @@
    "side": null,
    "rear": null,
    "sources": [
-    28081
+    28081,
+    28082
    ],
    "evidence": [
     {
@@ -6973,43 +7063,7 @@
      "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
      "condition": "Googong DCP area (Part 7): Part 7 Table 1 small lot housing, lot size 170 < 250m2, garage setback to front boundary (not permitted for 130<170m2)",
      "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "Garage setback Not permitted Not permitted 5.5 metres 5.5 metres",
-   "clause": "7.x Table 1",
-   "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
-  },
-  {
-   "id": "queanbeyan-palerang-regional-council-122",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {
-    "lotAreaMinM2": 250.0,
-    "lotAreaMaxM2": 330.0,
-    "precinct": "Googong DCP area"
-   },
-   "conditionText": "Googong DCP area (Part 7): Part 7 Table 1 small lot housing, lot size 250 < 330m2, garage setback to front boundary (not permitted for 130<170m2)",
-   "garage": {
-    "minM": 5.5,
-    "sources": [
-     28082
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    28082
-   ],
-   "evidence": [
+    },
     {
      "id": 28082,
      "parameter": "garage_setback",
@@ -7027,10 +7081,12 @@
    "quote": "Garage setback Not permitted Not permitted 5.5 metres 5.5 metres",
    "clause": "7.x Table 1",
    "page": 21,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-123",
+   "id": "queanbeyan-palerang-regional-council-116",
    "zones": [
     "*"
    ],
@@ -7091,10 +7147,12 @@
    "quote": "5.5m from 5.5m from 5.5m from",
    "clause": "6.x Table 1",
    "page": 12,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-124",
+   "id": "queanbeyan-palerang-regional-council-117",
    "zones": [
     "*"
    ],
@@ -7155,10 +7213,12 @@
    "quote": "5.5m from 5.5m from 5.5m from",
    "clause": "6.x Table 1",
    "page": 12,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-125",
+   "id": "queanbeyan-palerang-regional-council-118",
    "zones": [
     "*"
    ],
@@ -7219,10 +7279,12 @@
    "quote": "5.5m from 5.5m from 5.5m from",
    "clause": "6.x Table 1",
    "page": 12,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-126",
+   "id": "queanbeyan-palerang-regional-council-119",
    "zones": [
     "*"
    ],
@@ -7266,10 +7328,12 @@
    "quote": "1.0m behind 1.0m behind 1.0m behind 1.0m behind 1.0m behind",
    "clause": "6.x Table 1",
    "page": 12,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-127",
+   "id": "queanbeyan-palerang-regional-council-120",
    "zones": [
     "*"
    ],
@@ -7311,10 +7375,12 @@
    "quote": "a minimum of 5.5m from the",
    "clause": "6.9 d",
    "page": 10,
-   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-6-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-128",
+   "id": "queanbeyan-palerang-regional-council-121",
    "zones": [
     "*"
    ],
@@ -7356,10 +7422,12 @@
    "quote": "Free standing garage/ carport 6.0m 5.5m Nil",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-129",
+   "id": "queanbeyan-palerang-regional-council-122",
    "zones": [
     "*"
    ],
@@ -7401,10 +7469,14 @@
    "quote": "Free standing garage/ carport 6.0m 5.5m Nil",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-130",
+   "id": "queanbeyan-palerang-regional-council-123",
    "zones": [
     "*"
    ],
@@ -7450,10 +7522,12 @@
    "quote": "0.9 metres 0.9 metres 0.9 metres 0.9 metres",
    "clause": "7.x Table 1",
    "page": 20,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-131",
+   "id": "queanbeyan-palerang-regional-council-124",
    "zones": [
     "*"
    ],
@@ -7499,10 +7573,12 @@
    "quote": "0.9 metres 0.9 metres 0.9 metres 0.9 metres",
    "clause": "7.x Table 1",
    "page": 20,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-132",
+   "id": "queanbeyan-palerang-regional-council-125",
    "zones": [
     "*"
    ],
@@ -7548,10 +7624,12 @@
    "quote": "0.9 metres 0.9 metres 0.9 metres 0.9 metres",
    "clause": "7.x Table 1",
    "page": 20,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-133",
+   "id": "queanbeyan-palerang-regional-council-126",
    "zones": [
     "*"
    ],
@@ -7595,10 +7673,12 @@
    "quote": "0.9 metres 0.9 metres 0.9 metres 0.9 metres",
    "clause": "7.x Table 1",
    "page": 20,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-134",
+   "id": "queanbeyan-palerang-regional-council-127",
    "zones": [
     "*"
    ],
@@ -7641,10 +7721,12 @@
    "quote": "Garage setback to front 6.0m",
    "clause": "7.x Table 3",
    "page": 24,
-   "source_file": "DCP/sjdcp-part-7-november-2022.txt"
+   "source_file": "DCP/sjdcp-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-135",
+   "id": "queanbeyan-palerang-regional-council-128",
    "zones": [
     "*"
    ],
@@ -7687,10 +7769,14 @@
    "quote": "Garage setback to 5.5m",
    "clause": "7.x Table 3",
    "page": 24,
-   "source_file": "DCP/sjdcp-part-7-november-2022.txt"
+   "source_file": "DCP/sjdcp-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-136",
+   "id": "queanbeyan-palerang-regional-council-129",
    "zones": [
     "*"
    ],
@@ -7736,10 +7822,12 @@
    "quote": "1 (6m) 3.0m",
    "clause": "Table 3",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-137",
+   "id": "queanbeyan-palerang-regional-council-130",
    "zones": [
     "*"
    ],
@@ -7785,10 +7873,12 @@
    "quote": "2 (8.5m) 3.5m",
    "clause": "Table 3",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-138",
+   "id": "queanbeyan-palerang-regional-council-131",
    "zones": [
     "*"
    ],
@@ -7834,10 +7924,12 @@
    "quote": "3 (11m) 4.0m",
    "clause": "Table 3",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-139",
+   "id": "queanbeyan-palerang-regional-council-132",
    "zones": [
     "*"
    ],
@@ -7883,10 +7975,12 @@
    "quote": "4 (14m) 5.0m",
    "clause": "Table 3",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-140",
+   "id": "queanbeyan-palerang-regional-council-133",
    "zones": [
     "*"
    ],
@@ -7934,10 +8028,12 @@
    "quote": "and 6.5 metres for 3 to 4 storeys",
    "clause": "3C.5.3 a)iii",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-141",
+   "id": "queanbeyan-palerang-regional-council-134",
    "zones": [
     "*"
    ],
@@ -7985,10 +8081,12 @@
    "quote": "a building line of 5 metres for up to 2 storeys",
    "clause": "3C.5.3 a)iii",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-142",
+   "id": "queanbeyan-palerang-regional-council-135",
    "zones": [
     "*"
    ],
@@ -8054,10 +8152,12 @@
    "quote": "1 (6m) 3.0m",
    "clause": "Table 3",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-143",
+   "id": "queanbeyan-palerang-regional-council-136",
    "zones": [
     "*"
    ],
@@ -8103,10 +8203,12 @@
    "quote": "A minimum setback of 6 metres should be provided to the main street frontage",
    "clause": "3C.5.3 a)i",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-144",
+   "id": "queanbeyan-palerang-regional-council-137",
    "zones": [
     "*"
    ],
@@ -8172,10 +8274,12 @@
    "quote": "2 (8.5m) 3.5m",
    "clause": "Table 3",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-145",
+   "id": "queanbeyan-palerang-regional-council-138",
    "zones": [
     "*"
    ],
@@ -8220,10 +8324,12 @@
    "quote": "3 (11m) 4.0m",
    "clause": "Table 3",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-146",
+   "id": "queanbeyan-palerang-regional-council-139",
    "zones": [
     "*"
    ],
@@ -8268,10 +8374,12 @@
    "quote": "4 (14m) 5.0m",
    "clause": "Table 3",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-147",
+   "id": "queanbeyan-palerang-regional-council-140",
    "zones": [
     "*"
    ],
@@ -8316,10 +8424,12 @@
    "quote": "A minimum setback of 7.5m should be provided to the main street frontage",
    "clause": "3C.5.3 a)ii",
    "page": 14,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-148",
+   "id": "queanbeyan-palerang-regional-council-141",
    "zones": [
     "*"
    ],
@@ -8363,10 +8473,12 @@
    "quote": "Setbacks between separate internal buildings on a development site are to be a minimum of 6m",
    "clause": "3C.5.3 d)i",
    "page": 15,
-   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt"
+   "source_file": "DCP/part-3c-dual-occupancies-multi-dwelling-housing-and-residential-flat-buildings-version-2018.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-149",
+   "id": "queanbeyan-palerang-regional-council-142",
    "zones": [
     "*"
    ],
@@ -8410,10 +8522,12 @@
    "quote": "Garage setback to front 6.0 metres",
    "clause": "7.15 Table 3",
    "page": 27,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-150",
+   "id": "queanbeyan-palerang-regional-council-143",
    "zones": [
     "*"
    ],
@@ -8457,10 +8571,14 @@
    "quote": "Garage setback to 5.5 metres",
    "clause": "7.15 Table 3",
    "page": 27,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-151",
+   "id": "queanbeyan-palerang-regional-council-144",
    "zones": [
     "*"
    ],
@@ -8505,10 +8623,12 @@
    "quote": "3.0 metres – up to two storeys plus an additional 0.5 metres",
    "clause": "7.15 Table 3",
    "page": 27,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-152",
+   "id": "queanbeyan-palerang-regional-council-145",
    "zones": [
     "*"
    ],
@@ -8573,59 +8693,12 @@
    "quote": "Residential Flat Buildings - 6.0 metres",
    "clause": "7.15 Table 3",
    "page": 26,
-   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt"
+   "source_file": "DCP/googong-dcp-2010-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-153",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "residential_flat_building"
-   ],
-   "conditions": {
-    "precinct": "Palerang DCP area",
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Palerang DCP area: C2.4.2.2 residential flat buildings, front setback (4 m or average of adjoining lots)",
-   "front": {
-    "minM": 4.0,
-    "basis": "fixed",
-    "sources": [
-     28006
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    28006
-   ],
-   "evidence": [
-    {
-     "id": 28006,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Front 4 m or the average of adjoining lots",
-     "clause": "C2.4.2.2",
-     "page": 113,
-     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
-     "condition": "Palerang DCP area: C2.4.2.2 residential flat buildings, front setback (4 m or average of adjoining lots)",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "Front 4 m or the average of adjoining lots",
-   "clause": "C2.4.2.2",
-   "page": 113,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
-  },
-  {
-   "id": "queanbeyan-palerang-regional-council-154",
+   "id": "queanbeyan-palerang-regional-council-146",
    "zones": [
     "*"
    ],
@@ -8635,7 +8708,17 @@
    "conditions": {
     "precinct": "Palerang DCP area"
    },
-   "conditionText": "Palerang DCP area: C2.4.2.2 residential flat buildings",
+   "conditionText": [
+    "Palerang DCP area: C2.4.2.2 residential flat buildings",
+    "Palerang DCP area: C2.4.2.2 residential flat buildings, front setback (4 m or average of adjoining lots)"
+   ],
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     28006
+    ]
+   },
    "rear": {
     "minM": 3.0,
     "basis": "fixed",
@@ -8650,14 +8733,25 @@
      28007
     ]
    },
-   "front": null,
    "secondaryFront": null,
    "garage": null,
    "sources": [
+    28006,
     28007,
     28008
    ],
    "evidence": [
+    {
+     "id": 28006,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Front 4 m or the average of adjoining lots",
+     "clause": "C2.4.2.2",
+     "page": 113,
+     "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+     "condition": "Palerang DCP area: C2.4.2.2 residential flat buildings, front setback (4 m or average of adjoining lots)",
+     "edition": "UNVERIFIED"
+    },
     {
      "id": 28008,
      "parameter": "rear_setback",
@@ -8682,14 +8776,18 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
-   "quote": "Rear 3m",
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "Front 4 m or the average of adjoining lots",
    "clause": "C2.4.2.2",
    "page": 113,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-155",
+   "id": "queanbeyan-palerang-regional-council-147",
    "zones": [
     "*"
    ],
@@ -8733,10 +8831,12 @@
    "quote": "3.0m – up to two storeys plus an additional 0.5m",
    "clause": "7.x Table 3",
    "page": 24,
-   "source_file": "DCP/sjdcp-part-7-november-2022.txt"
+   "source_file": "DCP/sjdcp-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-156",
+   "id": "queanbeyan-palerang-regional-council-148",
    "zones": [
     "*"
    ],
@@ -8819,10 +8919,12 @@
    "quote": "Residential Flat Buildings - 6.0m",
    "clause": "7.x Table 3",
    "page": 23,
-   "source_file": "DCP/sjdcp-part-7-november-2022.txt"
+   "source_file": "DCP/sjdcp-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-157",
+   "id": "queanbeyan-palerang-regional-council-149",
    "zones": [
     "*"
    ],
@@ -8867,10 +8969,12 @@
    "quote": "Subsequent Storeys – 6.0m",
    "clause": "7.x Table 4",
    "page": 25,
-   "source_file": "DCP/sjdcp-part-7-november-2022.txt"
+   "source_file": "DCP/sjdcp-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-158",
+   "id": "queanbeyan-palerang-regional-council-150",
    "zones": [
     "*"
    ],
@@ -8955,10 +9059,12 @@
    "quote": "Swimming pool or similar 6.0m 4.0m Nil",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-159",
+   "id": "queanbeyan-palerang-regional-council-151",
    "zones": [
     "*"
    ],
@@ -9042,10 +9148,12 @@
    "quote": "Attached pergola/deck 6.0m 4.0m 0.9m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt"
+   "source_file": "DCP/qdcp-2012-part-3a-august-2023.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "queanbeyan-palerang-regional-council-160",
+   "id": "queanbeyan-palerang-regional-council-152",
    "zones": [
     "IN*"
    ],
@@ -9109,10 +9217,14 @@
    "quote": "the minimum setback is to be 5 metres",
    "clause": "C8.2 c2",
    "page": 124,
-   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt"
+   "source_file": "DCP/palerang-dcp-2015-updated-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-161",
+   "id": "queanbeyan-palerang-regional-council-153",
    "zones": [
     "IN*"
    ],
@@ -9179,10 +9291,14 @@
    "quote": "Main Street frontage 7.5m 7.5m",
    "clause": "7.2.1 Table 1",
    "page": 4,
-   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt"
+   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-162",
+   "id": "queanbeyan-palerang-regional-council-154",
    "zones": [
     "IN*"
    ],
@@ -9228,10 +9344,14 @@
    "quote": "Faunce Street 10m 10m",
    "clause": "7.2.1 Table 1",
    "page": 4,
-   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt"
+   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-163",
+   "id": "queanbeyan-palerang-regional-council-155",
    "zones": [
     "IN*"
    ],
@@ -9293,10 +9413,14 @@
    "quote": "Cooper Place and 6m 6m",
    "clause": "7.2.1 Table 1",
    "page": 4,
-   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt"
+   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-164",
+   "id": "queanbeyan-palerang-regional-council-156",
    "zones": [
     "IN*"
    ],
@@ -9342,10 +9466,14 @@
    "quote": "Morton Street 8m 8m",
    "clause": "7.2.1 Table 1",
    "page": 4,
-   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt"
+   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-165",
+   "id": "queanbeyan-palerang-regional-council-157",
    "zones": [
     "IN*"
    ],
@@ -9388,10 +9516,14 @@
    "quote": "John Bull Street 7.5m 3m",
    "clause": "7.2.1 Table 1",
    "page": 4,
-   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt"
+   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-166",
+   "id": "queanbeyan-palerang-regional-council-158",
    "zones": [
     "IN*"
    ],
@@ -9434,10 +9566,14 @@
    "quote": "Kendall Avenue North 10m 5m",
    "clause": "7.2.1 Table 1",
    "page": 4,
-   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt"
+   "source_file": "DCP/qdcp-2012-part-7-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
-   "id": "queanbeyan-palerang-regional-council-167",
+   "id": "queanbeyan-palerang-regional-council-159",
    "zones": [
     "IN*"
    ],
@@ -9445,10 +9581,7 @@
     "industrial"
    ],
    "conditions": {
-    "precinct": "South Jerrabomberra DCP area",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "South Jerrabomberra DCP area"
    },
    "conditionText": [
     "South Jerrabomberra DCP area: Part 11 Table 1 business park and employment lands, main street frontage building line setback",
@@ -9500,11 +9633,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
    "quote": "Main Street frontage 7.5m 7.5m",
    "clause": "11.x Table 1",
    "page": 3,
-   "source_file": "DCP/sjdcp-2015-part-11-november-2022.txt"
+   "source_file": "DCP/sjdcp-2015-part-11-november-2022.txt",
+   "dcp": "Five area DCPs: Queanbeyan DCP 2012 (QDCP; principal plan adopted 12/12/2012, parts dated Nov 2022 / Aug 2023); Palerang DCP 2015 (updated Nov 2022); Braidwood DCP 2006; Googong DCP 2010 (Part 10 dated 25 May 2023); South Jerrabomberra DCP 2015 (SJDCP)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -9520,7 +9657,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 6
+   "rules": 4
   },
   "R2": {
    "front": true,
@@ -9528,7 +9665,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 4
+   "rules": 3
   },
   "R3": {
    "front": false,
@@ -9552,7 +9689,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 14
+   "rules": 13
   },
   "RU5": {
    "front": true,
@@ -9560,7 +9697,7 @@
    "rear": false,
    "secondaryFront": true,
    "garage": false,
-   "rules": 4
+   "rules": 3
   },
   "RU1": {
    "front": true,
@@ -9592,7 +9729,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 117
+   "rules": 114
   },
   "IN*": {
    "front": false,
@@ -9613,8 +9750,35 @@
  "needsPrecinct": true,
  "counts": {
   "records": 229,
-  "rules": 167,
+  "rules": 159,
   "recordsNotModelled": 9,
   "otherSetbackKeysNotModelled": 9
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

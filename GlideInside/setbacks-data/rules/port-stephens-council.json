@@ -54,59 +54,12 @@
    "quote": "Second-storey: 4m (above 4.5m)",
    "clause": "C4.5",
    "page": 84,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-002",
-   "zones": [
-    "R2",
-    "R3"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "C4 Residential general (R2, R3): minimum or existing average building line of adjoining properties, whichever is less",
-   "front": {
-    "minM": 4.5,
-    "basis": "fixed",
-    "sources": [
-     27061
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    27061
-   ],
-   "evidence": [
-    {
-     "id": 27061,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "A minimum of 4.5m or the existing average building line",
-     "clause": "C4.2",
-     "page": 83,
-     "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
-     "condition": "C4 Residential general (R2, R3): minimum or existing average building line of adjoining properties, whichever is less",
-     "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "A minimum of 4.5m or the existing average building line",
-   "clause": "C4.2",
-   "page": 83,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
-  },
-  {
-   "id": "port-stephens-council-003",
    "zones": [
     "R2",
     "R3"
@@ -168,10 +121,12 @@
    "quote": "Single-storey: 2m (up to 4.5m)",
    "clause": "C4.5",
    "page": 84,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
-   "id": "port-stephens-council-004",
+   "id": "port-stephens-council-003",
    "zones": [
     "R2",
     "R3"
@@ -215,10 +170,12 @@
    "quote": "Two-storey: 1.5m (above 4.5m)",
    "clause": "C4.3",
    "page": 84,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
-   "id": "port-stephens-council-005",
+   "id": "port-stephens-council-004",
    "zones": [
     "R2",
     "R3"
@@ -280,10 +237,12 @@
    "quote": "Three-storey (or above): 6m",
    "clause": "C4.5",
    "page": 84,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
-   "id": "port-stephens-council-006",
+   "id": "port-stephens-council-005",
    "zones": [
     "R2",
     "R3"
@@ -293,14 +252,14 @@
    ],
    "conditions": {},
    "conditionText": [
-    "C4 Residential general (R2, R3): Koala Bay and Tanilba Bay area",
-    "C4 Residential general (R2, R3): minimum from secondary property boundary"
+    "C4 Residential general (R2, R3): minimum from secondary property boundary",
+    "C4 Residential general (R2, R3): minimum or existing average building line of adjoining properties, whichever is less"
    ],
    "front": {
-    "minM": 6.0,
+    "minM": 4.5,
     "basis": "fixed",
     "sources": [
-     27062
+     27061
     ]
    },
    "secondaryFront": {
@@ -314,19 +273,19 @@
    "rear": null,
    "garage": null,
    "sources": [
-    27062,
+    27061,
     27066
    ],
    "evidence": [
     {
-     "id": 27062,
+     "id": 27061,
      "parameter": "front_primary",
      "slot": "front",
-     "quote": "minimum front setback of 6m to allow for Koala movement",
+     "quote": "A minimum of 4.5m or the existing average building line",
      "clause": "C4.2",
      "page": 83,
      "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
-     "condition": "C4 Residential general (R2, R3): Koala Bay and Tanilba Bay area",
+     "condition": "C4 Residential general (R2, R3): minimum or existing average building line of adjoining properties, whichever is less",
      "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
     },
     {
@@ -342,11 +301,64 @@
     }
    ],
    "confidence": "high",
-   "needsReview": null,
+   "needsReview": "averaging alternative printed beside the fixed value",
+   "quote": "A minimum of 4.5m or the existing average building line",
+   "clause": "C4.2",
+   "page": 83,
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "port-stephens-council-006",
+   "zones": [
+    "R2",
+    "R3"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "C4 Residential general (R2, R3): Koala Bay and Tanilba Bay area",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     27062
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    27062
+   ],
+   "evidence": [
+    {
+     "id": 27062,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "minimum front setback of 6m to allow for Koala movement",
+     "clause": "C4.2",
+     "page": 83,
+     "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+     "condition": "C4 Residential general (R2, R3): Koala Bay and Tanilba Bay area",
+     "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
    "quote": "minimum front setback of 6m to allow for Koala movement",
    "clause": "C4.2",
    "page": 83,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "port-stephens-council-007",
@@ -390,7 +402,9 @@
    "quote": "Garages must be setback a minimum of 5.5m from the front boundary",
    "clause": "C4.9",
    "page": 85,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-008",
@@ -437,7 +451,9 @@
    "quote": "minimum side and rear setback of 0.9m",
    "clause": "C4.28, C4.24",
    "page": 88,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-009",
@@ -483,7 +499,9 @@
    "quote": "may be set back a minimum of 0.9m from the rear property boundary",
    "clause": "C4.7",
    "page": 84,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-010",
@@ -590,7 +608,11 @@
    "quote": "A minimum of 10m or the existing average building line",
    "clause": "C4.34",
    "page": 91,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "port-stephens-council-011",
@@ -637,7 +659,9 @@
    "quote": "Garages must be setback a minimum of 10m",
    "clause": "C4.38",
    "page": 91,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-012",
@@ -705,7 +729,9 @@
    "quote": "Minimum 4m to rear for ground level",
    "clause": "D10.24",
    "page": 151,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-013",
@@ -770,7 +796,9 @@
    "quote": "Minimum 6m to rear for upper storeys",
    "clause": "D10.24",
    "page": 151,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-014",
@@ -816,7 +844,9 @@
    "quote": "Minimum 2m to any road frontage",
    "clause": "D10.24",
    "page": 151,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-015",
@@ -865,7 +895,9 @@
    "quote": "setback 10m from the front boundary with a 5m wide landscape strip",
    "clause": "D1.1",
    "page": 106,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-016",
@@ -910,7 +942,9 @@
    "quote": "Minimum 5.5m to garage from the road frontage",
    "clause": "D10.24",
    "page": 151,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-017",
@@ -928,7 +962,8 @@
    },
    "conditionText": "C4.C Multi-dwelling housing (up to 8 dwellings) and attached dwellings: garages from street where individual driveways connect, or 1 m behind building line",
    "garage": {
-    "minM": 5.5,
+    "minM": null,
+    "behindBuildingLineM": 5.5,
     "sources": [
      27095
     ]
@@ -944,7 +979,7 @@
     {
      "id": 27095,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "garages must be setback a minimum of 5.5m from the street",
      "clause": "C4.51",
      "page": 94,
@@ -958,7 +993,9 @@
    "quote": "garages must be setback a minimum of 5.5m from the street",
    "clause": "C4.51",
    "page": 94,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)"
   },
   {
    "id": "port-stephens-council-018",
@@ -1008,7 +1045,11 @@
    "quote": "a minimum rear setback of 5m, plus an additional 0.5m",
    "clause": "C3.4",
    "page": 71,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
    "id": "port-stephens-council-019",
@@ -1052,7 +1093,11 @@
    "quote": "Development is to be setback 5m from the front property line",
    "clause": "C3.2",
    "page": 77,
-   "source_file": "DCP/Port-Stephens-DCP-2025.pdf"
+   "source_file": "DCP/Port-Stephens-DCP-2025.pdf",
+   "dcp": "Port Stephens Development Control Plan 2025 (adopted 28/10/2025, commenced 30/10/2025); superseded Port Stephens DCP 2014 saved but not used for values",
+   "edition": "Port Stephens DCP 2025 (adopted 28/10/2025, commenced 30/10/2025)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -1125,5 +1170,32 @@
   "rules": 19,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (port-stephens-council-005, port-stephens-council-006))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (port-stephens-council-005, port-stephens-council-006))"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

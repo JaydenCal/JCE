@@ -54,7 +54,9 @@
    "quote": "buildings are to be set back from the new street frontage property boundary by a minimum of 1.0m",
    "clause": "5.2.10(2)",
    "page": 94,
-   "source_file": "DCP/section5-dcp2012_041124.pdf"
+   "source_file": "DCP/section5-dcp2012_041124.pdf",
+   "dcp": "Sydney Development Control Plan 2012 (Sections 1 to 6 and Schedules; footers read December 2012, saved section files carry reference dates 280223 to 121225); adoption date UNVERIFIED",
+   "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
   },
   {
    "id": "sydney-council-of-the-city-of-002",
@@ -121,7 +123,9 @@
    "quote": "Development must be set back a minimum of 6m from the front property boundary.",
    "clause": "5.6.4(1)",
    "page": 210,
-   "source_file": "DCP/section5-dcp2012_041124.pdf"
+   "source_file": "DCP/section5-dcp2012_041124.pdf",
+   "dcp": "Sydney Development Control Plan 2012 (Sections 1 to 6 and Schedules; footers read December 2012, saved section files carry reference dates 280223 to 121225); adoption date UNVERIFIED",
+   "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
   },
   {
    "id": "sydney-council-of-the-city-of-003",
@@ -168,7 +172,9 @@
    "quote": "Front setbacks are to be consistent with the Building setbacks map.",
    "clause": "4.1.2(1)",
    "page": 6,
-   "source_file": "DCP/section4_dcp2012_091222.pdf"
+   "source_file": "DCP/section4_dcp2012_091222.pdf",
+   "dcp": "Sydney Development Control Plan 2012 (Sections 1 to 6 and Schedules; footers read December 2012, saved section files carry reference dates 280223 to 121225); adoption date UNVERIFIED",
+   "edition": "Sydney DCP 2012 Section 4 Development Types (file ref 091222; footer December 2012)"
   },
   {
    "id": "sydney-council-of-the-city-of-004",
@@ -215,7 +221,9 @@
    "quote": "the building must be set back a minimum of 3m from both side boundaries.",
    "clause": "5.6.5.2(2)",
    "page": 213,
-   "source_file": "DCP/section5-dcp2012_041124.pdf"
+   "source_file": "DCP/section5-dcp2012_041124.pdf",
+   "dcp": "Sydney Development Control Plan 2012 (Sections 1 to 6 and Schedules; footers read December 2012, saved section files carry reference dates 280223 to 121225); adoption date UNVERIFIED",
+   "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
   },
   {
    "id": "sydney-council-of-the-city-of-005",
@@ -261,7 +269,9 @@
    "quote": "Buildings are to be set back at least 1m from one side boundary and 3m from the other side boundary.",
    "clause": "5.6.5.1(1)",
    "page": 211,
-   "source_file": "DCP/section5-dcp2012_041124.pdf"
+   "source_file": "DCP/section5-dcp2012_041124.pdf",
+   "dcp": "Sydney Development Control Plan 2012 (Sections 1 to 6 and Schedules; footers read December 2012, saved section files carry reference dates 280223 to 121225); adoption date UNVERIFIED",
+   "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
   },
   {
    "id": "sydney-council-of-the-city-of-006",
@@ -307,7 +317,11 @@
    "quote": "Buildings are to be set back at least 1m from one side boundary and 3m from the other side boundary.",
    "clause": "5.6.5.1(1)",
    "page": 211,
-   "source_file": "DCP/section5-dcp2012_041124.pdf"
+   "source_file": "DCP/section5-dcp2012_041124.pdf",
+   "dcp": "Sydney Development Control Plan 2012 (Sections 1 to 6 and Schedules; footers read December 2012, saved section files carry reference dates 280223 to 121225); adoption date UNVERIFIED",
+   "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "sydney-council-of-the-city-of-007",
@@ -352,7 +366,9 @@
    "quote": "Enclosed car parking is not permitted within 14m of the front property boundary.",
    "clause": "5.6.5.1(5)",
    "page": 211,
-   "source_file": "DCP/section5-dcp2012_041124.pdf"
+   "source_file": "DCP/section5-dcp2012_041124.pdf",
+   "dcp": "Sydney Development Control Plan 2012 (Sections 1 to 6 and Schedules; footers read December 2012, saved section files carry reference dates 280223 to 121225); adoption date UNVERIFIED",
+   "edition": "Sydney DCP 2012 Section 5 Specific Areas (file ref 041124; footer December 2012)"
   },
   {
    "id": "sydney-council-of-the-city-of-008",
@@ -401,7 +417,9 @@
    "quote": "either the adjacent or average front setback or alignment is to be adopted.",
    "clause": "4.2.2.1(1)",
    "page": 27,
-   "source_file": "DCP/section4_dcp2012_091222.pdf"
+   "source_file": "DCP/section4_dcp2012_091222.pdf",
+   "dcp": "Sydney Development Control Plan 2012 (Sections 1 to 6 and Schedules; footers read December 2012, saved section files carry reference dates 280223 to 121225); adoption date UNVERIFIED",
+   "edition": "Sydney DCP 2012 Section 4 Development Types (file ref 091222; footer December 2012)"
   }
  ],
  "gaps": [
@@ -430,5 +448,32 @@
   "rules": 8,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front; side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front; side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front; side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front; side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front; side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

@@ -19,7 +19,7 @@
     "dwelling"
    ],
    "conditions": {
-    "qualifiers": [
+    "qualifiersNot": [
      "established_area"
     ]
    },
@@ -57,7 +57,9 @@
    "quote": "a setback from the road reserve which considers the streetscape and adjacent structures",
    "clause": "3.2.2 Single detached dwellings design guidance",
    "page": 16,
-   "source_file": "DCP/Broken-Hill-DCP-2016.txt"
+   "source_file": "DCP/Broken-Hill-DCP-2016.txt",
+   "dcp": "Broken Hill Development Control Plan 2016 (70 pages; adoption date not stated in extracted text) UNVERIFIED",
+   "edition": "Broken Hill DCP 2016"
   },
   {
    "id": "broken-hill-city-council-002",
@@ -101,7 +103,11 @@
    "quote": "the setback from the street frontage to the building line should generally be no less than 6 metres",
    "clause": "3.4 Industrial zones controls",
    "page": 22,
-   "source_file": "DCP/Broken-Hill-DCP-2016.txt"
+   "source_file": "DCP/Broken-Hill-DCP-2016.txt",
+   "dcp": "Broken Hill Development Control Plan 2016 (70 pages; adoption date not stated in extracted text) UNVERIFIED",
+   "edition": "Broken Hill DCP 2016",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -136,5 +142,32 @@
   "rules": 2,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  }
  }
 }

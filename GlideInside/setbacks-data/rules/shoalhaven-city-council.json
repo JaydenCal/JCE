@@ -59,7 +59,9 @@
    "quote": "• 4m to verandahs, Lots 600m2 and over: patios and awnings. 450mm from eaves/ 3.5m gutters.",
    "clause": "Table 2",
    "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
    "id": "shoalhaven-city-council-002",
@@ -113,7 +115,9 @@
    "quote": "patios and awnings. 450mm from eaves/ 3.5m",
    "clause": "Table 2",
    "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
    "id": "shoalhaven-city-council-003",
@@ -130,7 +134,6 @@
    "conditions": {
     "lotAreaMaxM2": 2000.0,
     "qualifiers": [
-     "open_space_frontage",
      "waterfront"
     ]
    },
@@ -162,12 +165,14 @@
      "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
     }
    ],
-   "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "confidence": "high",
+   "needsReview": null,
    "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
    "clause": "Table 2",
    "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
    "id": "shoalhaven-city-council-004",
@@ -186,15 +191,13 @@
    },
    "conditionText": [
     "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, parallel road frontage",
-    "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, rear setback",
-    "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, side setback to secondary road frontage, lots under 600 m2"
+    "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, rear setback"
    ],
    "secondaryFront": {
     "minM": 3.0,
     "basis": "fixed",
     "sources": [
-     30303,
-     30307
+     30303
     ]
    },
    "rear": {
@@ -209,7 +212,6 @@
    "garage": null,
    "sources": [
     30303,
-    30307,
     30309
    ],
    "evidence": [
@@ -222,17 +224,6 @@
      "page": 27,
      "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
      "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, parallel road frontage",
-     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
-    },
-    {
-     "id": 30307,
-     "parameter": "front_secondary",
-     "slot": "secondaryFront",
-     "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
-     "clause": "Table 2",
-     "page": 27,
-     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
-     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, side setback to secondary road frontage, lots under 600 m2",
      "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
     },
     {
@@ -252,10 +243,64 @@
    "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
    "clause": "Table 2",
    "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
    "id": "shoalhaven-city-council-005",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, side setback to secondary road frontage, lots under 600 m2",
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     30307
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30307
+   ],
+   "evidence": [
+    {
+     "id": 30307,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, side setback to secondary road frontage, lots under 600 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+  },
+  {
+   "id": "shoalhaven-city-council-006",
    "zones": [
     "R1",
     "R2",
@@ -302,10 +347,12 @@
    "quote": "and adjacent less than 4.5m (refer to • 1.5 metres for rear",
    "clause": "Table 2",
    "page": 14,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
-   "id": "shoalhaven-city-council-006",
+   "id": "shoalhaven-city-council-007",
    "zones": [
     "R1",
     "R2",
@@ -352,10 +399,12 @@
    "quote": "Lots under 600m2: Dual occupancy 900mm to the part of the 3m. Single storey 7.5m. • 5m to dwellings. (detached): dwelling located within development (up",
    "clause": "Table 2",
    "page": 14,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
-   "id": "shoalhaven-city-council-007",
+   "id": "shoalhaven-city-council-008",
    "zones": [
     "R1",
     "R2",
@@ -403,10 +452,12 @@
    "quote": "Lots 600m2 - 900m2: at Figure 3) or 5m, Where the above does lot. • 6m to dwellings. whichever is the not apply, 1.5m to",
    "clause": "Table 2",
    "page": 14,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
-   "id": "shoalhaven-city-council-008",
+   "id": "shoalhaven-city-council-009",
    "zones": [
     "R1",
     "R2",
@@ -453,10 +504,12 @@
    "quote": "Lots over 900m2: than 4.5 m in height): 6m. • 7.5m to dwellings. • 3m to the dwelling. habitable outbuildings.",
    "clause": "Table 2",
    "page": 14,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
-   "id": "shoalhaven-city-council-009",
+   "id": "shoalhaven-city-council-010",
    "zones": [
     "R1",
     "R2",
@@ -523,10 +576,12 @@
    "quote": "• 7.5m to dwellings. • 3m to the dwelling. habitable outbuildings.",
    "clause": "Table 2",
    "page": 14,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
-   "id": "shoalhaven-city-council-010",
+   "id": "shoalhaven-city-council-011",
    "zones": [
     "R1",
     "R2",
@@ -571,10 +626,14 @@
    "quote": "• 6m to dwellings. whichever is the not apply, 1.5m to any • 900mm to detached",
    "clause": "Table 2",
    "page": 14,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
-   "id": "shoalhaven-city-council-011",
+   "id": "shoalhaven-city-council-012",
    "zones": [
     "R1",
     "R2",
@@ -620,10 +679,12 @@
    "quote": "• 6.5m to verandahs, • 5.5m to garages.",
    "clause": "Table 2",
    "page": 14,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
-   "id": "shoalhaven-city-council-012",
+   "id": "shoalhaven-city-council-013",
    "zones": [
     "R1",
     "R2",
@@ -669,10 +730,12 @@
    "quote": "patios and awnings. setbacks of the front • 3 metres to dwelling.",
    "clause": "Table 2",
    "page": 14,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
-   "id": "shoalhaven-city-council-013",
+   "id": "shoalhaven-city-council-014",
    "zones": [
     "R1",
     "R2",
@@ -737,58 +800,9 @@
    "quote": "600m2: Dual occupancy 900mm to the part of the 3m. Single storey 7.5m. • 5m to dwellings. (detached): dwelling located within development (up to 4.5m",
    "clause": "Table 2",
    "page": 14,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
-  },
-  {
-   "id": "shoalhaven-city-council-014",
-   "zones": [
-    "R1",
-    "R2",
-    "R3",
-    "RU5",
-    "SP3"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "lotAreaMaxM2": 2000.0,
-    "lotAreaMinM2": 600.0
-   },
-   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to dwellings",
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     30299
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    30299
-   ],
-   "evidence": [
-    {
-     "id": 30299,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Lots 600m2 - 900m2: are proposed at the • 6m to dwellings. rear of a dwelling, one",
-     "clause": "Table 2",
-     "page": 27,
-     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
-     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to dwellings",
-     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
-    }
-   ],
-   "confidence": "high",
-   "needsReview": null,
-   "quote": "Lots 600m2 - 900m2: are proposed at the • 6m to dwellings. rear of a dwelling, one",
-   "clause": "Table 2",
-   "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
    "id": "shoalhaven-city-council-015",
@@ -839,7 +853,9 @@
    "quote": "Lots over 900m2: • 7.5m to dwellings.",
    "clause": "Table 2",
    "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
    "id": "shoalhaven-city-council-016",
@@ -856,17 +872,7 @@
    "conditions": {
     "lotAreaMaxM2": 2000.0
    },
-   "conditionText": [
-    "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots under 600 m2, to dwellings",
-    "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, one 2.4 m side setback required where parking spaces are proposed at the rear of a dwelling for vehicular access"
-   ],
-   "front": {
-    "minM": 5.0,
-    "basis": "fixed",
-    "sources": [
-     30297
-    ]
-   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, one 2.4 m side setback required where parking spaces are proposed at the rear of a dwelling for vehicular access",
    "side": {
     "minM": 2.4,
     "basis": "fixed",
@@ -874,25 +880,14 @@
      30306
     ]
    },
+   "front": null,
    "secondaryFront": null,
    "rear": null,
    "garage": null,
    "sources": [
-    30297,
     30306
    ],
    "evidence": [
-    {
-     "id": 30297,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m. • 5m to dwellings. and detached non-",
-     "clause": "Table 2",
-     "page": 27,
-     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
-     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots under 600 m2, to dwellings",
-     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
-    },
     {
      "id": 30306,
      "parameter": "side_setback",
@@ -907,13 +902,120 @@
    ],
    "confidence": "high",
    "needsReview": null,
-   "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m. • 5m to dwellings. and detached non-",
+   "quote": "• 5m to verandahs, 2.4m side setback is",
    "clause": "Table 2",
    "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
    "id": "shoalhaven-city-council-017",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 600.0
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots under 600 m2, to dwellings",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     30297
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30297
+   ],
+   "evidence": [
+    {
+     "id": 30297,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m. • 5m to dwellings. and detached non-",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots under 600 m2, to dwellings",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m. • 5m to dwellings. and detached non-",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+  },
+  {
+   "id": "shoalhaven-city-council-018",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 900.0,
+    "lotAreaMinM2": 600.0
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to dwellings",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     30299
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30299
+   ],
+   "evidence": [
+    {
+     "id": 30299,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Lots 600m2 - 900m2: are proposed at the • 6m to dwellings. rear of a dwelling, one",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to dwellings",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Lots 600m2 - 900m2: are proposed at the • 6m to dwellings. rear of a dwelling, one",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+  },
+  {
+   "id": "shoalhaven-city-council-019",
    "zones": [
     "R1",
     "R2",
@@ -928,7 +1030,9 @@
    "conditions": {
     "lotAreaMaxM2": 2000.0,
     "qualifiers": [
-     "non_habitable",
+     "non_habitable"
+    ],
+    "qualifiersNot": [
      "open_space_frontage"
     ]
    },
@@ -961,66 +1065,17 @@
      "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
     }
    ],
-   "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "confidence": "high",
+   "needsReview": null,
    "quote": "Lots under 600m2: 3m 900mm to dwellings Lots under 600m2: 3m 3m (average). 7.5m.",
    "clause": "Table 2",
    "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
-   "id": "shoalhaven-city-council-018",
-   "zones": [
-    "R1",
-    "R2",
-    "R3",
-    "RU5",
-    "SP3"
-   ],
-   "appliesTo": [
-    "verandah_deck"
-   ],
-   "conditions": {
-    "lotAreaMaxM2": 2000.0,
-    "lotAreaMinM2": 600.0
-   },
-   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to verandahs, patios and awnings",
-   "front": {
-    "minM": 5.0,
-    "basis": "fixed",
-    "sources": [
-     30302
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    30302
-   ],
-   "evidence": [
-    {
-     "id": 30302,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "• 5m to verandahs, 2.4m side setback is",
-     "clause": "Table 2",
-     "page": 27,
-     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
-     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to verandahs, patios and awnings",
-     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
-    }
-   ],
-   "confidence": "high",
-   "needsReview": null,
-   "quote": "• 5m to verandahs, 2.4m side setback is",
-   "clause": "Table 2",
-   "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
-  },
-  {
-   "id": "shoalhaven-city-council-019",
+   "id": "shoalhaven-city-council-020",
    "zones": [
     "R1",
     "R2",
@@ -1068,10 +1123,12 @@
    "quote": "• 6.5m to verandahs,",
    "clause": "Table 2",
    "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
-   "id": "shoalhaven-city-council-020",
+   "id": "shoalhaven-city-council-021",
    "zones": [
     "R1",
     "R2",
@@ -1083,7 +1140,7 @@
     "verandah_deck"
    ],
    "conditions": {
-    "lotAreaMaxM2": 2000.0
+    "lotAreaMaxM2": 600.0
    },
    "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots under 600 m2, to verandahs, patios and awnings",
    "front": {
@@ -1118,10 +1175,65 @@
    "quote": "• 4m to verandahs, Lots 600m2 and over:",
    "clause": "Table 2",
    "page": 27,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
-   "id": "shoalhaven-city-council-021",
+   "id": "shoalhaven-city-council-022",
+   "zones": [
+    "R1",
+    "R2",
+    "R3",
+    "RU5",
+    "SP3"
+   ],
+   "appliesTo": [
+    "verandah_deck"
+   ],
+   "conditions": {
+    "lotAreaMaxM2": 900.0,
+    "lotAreaMinM2": 600.0
+   },
+   "conditionText": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to verandahs, patios and awnings",
+   "front": {
+    "minM": 5.0,
+    "basis": "fixed",
+    "sources": [
+     30302
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30302
+   ],
+   "evidence": [
+    {
+     "id": 30302,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "• 5m to verandahs, 2.4m side setback is",
+     "clause": "Table 2",
+     "page": 27,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "R1, R2 (under 2000 m2), R3, RU5 and SP3 zones, lots 600 m2 to 900 m2, to verandahs, patios and awnings",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "• 5m to verandahs, 2.4m side setback is",
+   "clause": "Table 2",
+   "page": 27,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+  },
+  {
+   "id": "shoalhaven-city-council-023",
    "zones": [
     "R2",
     "R5",
@@ -1232,10 +1344,85 @@
    "quote": "For lots up to 4,000m2 12.5m 50% of the 5m 7.5m",
    "clause": "Table 1",
    "page": 26,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
-   "id": "shoalhaven-city-council-022",
+   "id": "shoalhaven-city-council-024",
+   "zones": [
+    "R2",
+    "R5",
+    "RU1",
+    "RU2",
+    "RU4",
+    "C4",
+    "C3",
+    "C2"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "lotAreaMinM2": 10000.0
+   },
+   "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
+   "front": {
+    "minM": 30.0,
+    "basis": "fixed",
+    "sources": [
+     30291
+    ]
+   },
+   "side": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     30295
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    30291,
+    30295
+   ],
+   "evidence": [
+    {
+     "id": 30291,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "For lots greater than 30m 10m",
+     "clause": "Table 1",
+     "page": 26,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    },
+    {
+     "id": 30295,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "For lots greater than 30m 10m",
+     "clause": "Table 1",
+     "page": 26,
+     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
+     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "For lots greater than 30m 10m",
+   "clause": "Table 1",
+   "page": 26,
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
+  },
+  {
+   "id": "shoalhaven-city-council-025",
    "zones": [
     "R2",
     "R5",
@@ -1303,116 +1490,12 @@
    "quote": "For lots between 4,000m2 20m 7.5m",
    "clause": "Table 1",
    "page": 26,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
   },
   {
-   "id": "shoalhaven-city-council-023",
-   "zones": [
-    "R2",
-    "R5",
-    "RU1",
-    "RU2",
-    "RU4",
-    "C4",
-    "C3",
-    "C2"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {
-    "lotAreaMinM2": 2000.0
-   },
-   "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
-   "front": {
-    "minM": 30.0,
-    "basis": "fixed",
-    "sources": [
-     30291
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    30291
-   ],
-   "evidence": [
-    {
-     "id": 30291,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "For lots greater than 30m 10m",
-     "clause": "Table 1",
-     "page": 26,
-     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
-     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
-     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
-   "quote": "For lots greater than 30m 10m",
-   "clause": "Table 1",
-   "page": 26,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
-  },
-  {
-   "id": "shoalhaven-city-council-024",
-   "zones": [
-    "R2",
-    "R5",
-    "RU1",
-    "RU2",
-    "RU4",
-    "C4",
-    "C3",
-    "C2"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {
-    "lotAreaMinM2": 2000.0
-   },
-   "conditionText": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
-   "side": {
-    "minM": 10.0,
-    "basis": "fixed",
-    "sources": [
-     30295
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    30295
-   ],
-   "evidence": [
-    {
-     "id": 30295,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "For lots greater than 30m 10m",
-     "clause": "Table 1",
-     "page": 26,
-     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
-     "condition": "RU1, RU2, RU4, C2, C3, C4, R2 (2000 m2 or more) and R5 zones, lots greater than 10,000 m2",
-     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
-   "quote": "For lots greater than 30m 10m",
-   "clause": "Table 1",
-   "page": 26,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
-  },
-  {
-   "id": "shoalhaven-city-council-025",
+   "id": "shoalhaven-city-council-026",
    "zones": [
     "R5",
     "RU1",
@@ -1501,10 +1584,12 @@
    "quote": "For lots between 4,000m2 and 20m 10m 7.5m",
    "clause": "Table 3",
    "page": 15,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
-   "id": "shoalhaven-city-council-026",
+   "id": "shoalhaven-city-council-027",
    "zones": [
     "R5",
     "RU1",
@@ -1611,10 +1696,12 @@
    "quote": "For lots up to 4,000m2 12.5m 6m 5m 7.5m 7.5m",
    "clause": "Table 3",
    "page": 15,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
-   "id": "shoalhaven-city-council-027",
+   "id": "shoalhaven-city-council-028",
    "zones": [
     "R5",
     "RU1",
@@ -1702,10 +1789,12 @@
    "quote": "For lots greater than 10,000m2 (1ha) 30m 15m 10m",
    "clause": "Table 3",
    "page": 15,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
-   "id": "shoalhaven-city-council-028",
+   "id": "shoalhaven-city-council-029",
    "zones": [
     "*"
    ],
@@ -1715,8 +1804,7 @@
    "conditions": {
     "lotWidthMaxM": 9.0,
     "qualifiers": [
-     "classified_road",
-     "laneway"
+     "classified_road"
     ]
    },
    "conditionText": "Berry West of Princes Highway, Hitchcocks Lane subdivision (N3): dwelling houses on lots 9 m wide or less, each side",
@@ -1753,10 +1841,12 @@
    "quote": "9 m or less 900 mm on each side",
    "clause": "Table 7",
    "page": 31,
-   "source_file": "DCP/chapter-n3.txt"
+   "source_file": "DCP/chapter-n3.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter N3 version 3 (adopted 11/05/2021, commenced 16/06/2021)"
   },
   {
-   "id": "shoalhaven-city-council-029",
+   "id": "shoalhaven-city-council-030",
    "zones": [
     "*"
    ],
@@ -1765,8 +1855,7 @@
    ],
    "conditions": {
     "qualifiers": [
-     "classified_road",
-     "laneway"
+     "classified_road"
     ]
    },
    "conditionText": "Berry West of Princes Highway, Hitchcocks Lane subdivision (N3): dwelling houses on lots wider than 9 m, one side: 10% of lot width up to a maximum of 2.5 m (900 mm on the other side)",
@@ -1802,51 +1891,9 @@
    "quote": "than 9 m equivalent to 10% of the width of the allotment, up to a maximum of 2.5 m.",
    "clause": "Table 7",
    "page": 32,
-   "source_file": "DCP/chapter-n3.txt"
-  },
-  {
-   "id": "shoalhaven-city-council-030",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {},
-   "conditionText": "Garage facade width addressing street, maximum 9 m or 50% of frontage length, whichever is lesser",
-   "garage": {
-    "minM": null,
-    "behindBuildingLineM": 9.0,
-    "sources": [
-     30324
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    30324
-   ],
-   "evidence": [
-    {
-     "id": 30324,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": "• Provide opportunity for passive the street shall not exceed 9m or 50% of",
-     "clause": "A26.2",
-     "page": 32,
-     "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt",
-     "condition": "Garage facade width addressing street, maximum 9 m or 50% of frontage length, whichever is lesser",
-     "edition": "DCP Chapter G12 Version 2 (adopted 12/02/2024, commenced 28/02/2024)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "• Provide opportunity for passive the street shall not exceed 9m or 50% of",
-   "clause": "A26.2",
-   "page": 32,
-   "source_file": "DCP/DCP2014.51---Chapter-G12---Dwelling-Houses-and-Other-Low-Density-Residential-Development_0.txt"
+   "source_file": "DCP/chapter-n3.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter N3 version 3 (adopted 11/05/2021, commenced 16/06/2021)"
   },
   {
    "id": "shoalhaven-city-council-031",
@@ -1893,7 +1940,9 @@
    "quote": "• 5.5m to dwellings. outbuildings. dwelling greater than 4.5m",
    "clause": "Table 4",
    "page": 15,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
    "id": "shoalhaven-city-council-032",
@@ -1905,7 +1954,7 @@
     "dwelling"
    ],
    "conditions": {
-    "qualifiers": [
+    "qualifiersNot": [
      "open_space_frontage"
     ]
    },
@@ -1938,11 +1987,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "Multi dwelling housing, attached Ground level – 3m 1.5m 3m to the part of a dwelling 7.5m to dwellings",
    "clause": "Table 4",
    "page": 15,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
    "id": "shoalhaven-city-council-033",
@@ -1990,7 +2041,9 @@
    "quote": "dwellings and semi-detached • 4.5m to verandahs, 900mm to detached up to 4.5m high. and detached",
    "clause": "Table 4",
    "page": 15,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
    "id": "shoalhaven-city-council-034",
@@ -2034,7 +2087,9 @@
    "quote": "Multi dwelling housing, attached Ground level – 3m 1.5m 3m to the part of a dwelling 7.5m to dwellings",
    "clause": "Table 4",
    "page": 15,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)"
   },
   {
    "id": "shoalhaven-city-council-035",
@@ -2078,10 +2133,15 @@
    "quote": "dwellings. awnings and patios. non-habitable 6m to the part of the outbuildings.",
    "clause": "Table 4",
    "page": 15,
-   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt"
+   "source_file": "DCP/DCP2014.51---Chapter-G13---Medium-Density-and-Other-Residential-Development_0.txt",
+   "dcp": "Shoalhaven Development Control Plan 2014 (chapter based). Chapters used: G11 Subdivision (Amendment 24, June 2023), G2 Sustainable Stormwater (Amendment 31, version 3 adopted 20/01/2020), G12 Dwelling Houses (version 2, commenced 28/02/2024), G13 Medium Density, G21 Car Parking and Traffic; precinct chapters NB3, NB4, N3. Chapter edition dates for G13 and G21 UNVERIFIED",
+   "edition": "DCP Chapter G13 (edition UNVERIFIED, DCP2014.51 series)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   }
  ],
  "gaps": [
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 30324",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): scanned, no text: DCP/D25-272638-Chapter-G9-Development-on-Flood-Prone-Land.pdf (Chapter G9 flood planning level, freeboard and floor level rules not extracted; only precinct chapters NB3, NB4 give 0.5 m freeboard) | access: residential driveway widths for single dwellings by frontage, driveway grades transitions (AS 2890 cited), layback type | contributions: s7.11 plan rates (Chapter G21 Contributions Plan 2026 saved in DCP folder but not extracted), bonds, maintenance period (G11 section 6 not extracted) | setbacks: commercial and industrial zone setbacks (G20 Industrial and business chapters not extracted); town-specific chapters (S1, S3, S6 to S10, N-series other than N3) only skimmed, n"
  ],
  "notes": "Built from 51 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -2092,7 +2152,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 20
+   "rules": 22
   },
   "R2": {
    "front": true,
@@ -2100,7 +2160,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 24
+   "rules": 25
   },
   "R3": {
    "front": true,
@@ -2108,7 +2168,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 20
+   "rules": 22
   },
   "RU5": {
    "front": true,
@@ -2116,7 +2176,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 20
+   "rules": 22
   },
   "SP3": {
    "front": true,
@@ -2124,7 +2184,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 11
+   "rules": 13
   },
   "R5": {
    "front": true,
@@ -2132,7 +2192,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 7
+   "rules": 6
   },
   "RU1": {
    "front": true,
@@ -2140,7 +2200,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 7
+   "rules": 6
   },
   "RU2": {
    "front": true,
@@ -2148,7 +2208,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 7
+   "rules": 6
   },
   "RU4": {
    "front": true,
@@ -2156,7 +2216,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 7
+   "rules": 6
   },
   "C4": {
    "front": true,
@@ -2164,7 +2224,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 7
+   "rules": 6
   },
   "C3": {
    "front": true,
@@ -2172,7 +2232,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 7
+   "rules": 6
   },
   "C2": {
    "front": true,
@@ -2180,7 +2240,7 @@
    "rear": true,
    "secondaryFront": false,
    "garage": false,
-   "rules": 4
+   "rules": 3
   },
   "*": {
    "front": true,
@@ -2188,7 +2248,7 @@
    "rear": true,
    "secondaryFront": false,
    "garage": false,
-   "rules": 8
+   "rules": 7
   }
  },
  "precincts": [],
@@ -2196,7 +2256,34 @@
  "counts": {
   "records": 51,
   "rules": 35,
-  "recordsNotModelled": 0,
+  "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-007, shoalhaven-city-council-008, shoalhaven-city-council-017, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-025, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-025, shoalhaven-city-council-032)); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (shoalhaven-city-council-008, shoalhaven-city-council-018, shoalhaven-city-council-031, shoalhaven-city-council-033)); side (conflicting rules of equal specificity (shoalhaven-city-council-016, shoalhaven-city-council-032))"
+  }
  }
 }

@@ -59,7 +59,11 @@
    "quote": "than 6 metres and in the R5 zones greater",
    "clause": "C17.1-C17.2",
    "page": 28,
-   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "clarence-valley-council-002",
@@ -127,7 +131,9 @@
    "quote": "Up to 6.5m 900mm",
    "clause": "C16.2 Table C5",
    "page": 27,
-   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
   },
   {
    "id": "clarence-valley-council-003",
@@ -193,7 +199,9 @@
    "quote": "Over 6.5m 1.5 metres",
    "clause": "C16.2 Table C5",
    "page": 27,
-   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
   },
   {
    "id": "clarence-valley-council-004",
@@ -259,7 +267,9 @@
    "quote": "Over 9m and 3 metres",
    "clause": "C16.2 Table C5",
    "page": 27,
-   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
   },
   {
    "id": "clarence-valley-council-005",
@@ -327,7 +337,9 @@
    "quote": "Front - 6 metres",
    "clause": "C16.2",
    "page": 27,
-   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
   },
   {
    "id": "clarence-valley-council-006",
@@ -338,56 +350,22 @@
     "any"
    ],
    "conditions": {},
-   "conditionText": "corner lots, R5 zone",
-   "secondaryFront": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     9992
-    ]
-   },
-   "front": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    9992
+   "conditionText": [
+    "R5 Large Lot Residential zone",
+    "corner lots, R5 zone"
    ],
-   "evidence": [
-    {
-     "id": 9992,
-     "parameter": "front_secondary",
-     "slot": "secondaryFront",
-     "quote": "R5 zone - 6 metres.",
-     "clause": "C16.5",
-     "page": 27,
-     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
-     "condition": "corner lots, R5 zone",
-     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
-    }
-   ],
-   "confidence": "high",
-   "needsReview": null,
-   "quote": "R5 zone - 6 metres.",
-   "clause": "C16.5",
-   "page": 27,
-   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
-  },
-  {
-   "id": "clarence-valley-council-007",
-   "zones": [
-    "R5"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {},
-   "conditionText": "R5 Large Lot Residential zone",
    "front": {
     "minM": 10.0,
     "basis": "fixed",
     "sources": [
      9990
+    ]
+   },
+   "secondaryFront": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9992
     ]
    },
    "rear": {
@@ -404,10 +382,10 @@
      10000
     ]
    },
-   "secondaryFront": null,
    "garage": null,
    "sources": [
     9990,
+    9992,
     10000,
     10001
    ],
@@ -421,6 +399,17 @@
      "page": 27,
      "source_file": "DCP/residential-dcp_1-july-2026.pdf",
      "condition": "R5 Large Lot Residential zone",
+     "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
+    },
+    {
+     "id": 9992,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "R5 zone - 6 metres.",
+     "clause": "C16.5",
+     "page": 27,
+     "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+     "condition": "corner lots, R5 zone",
      "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
     },
     {
@@ -451,10 +440,12 @@
    "quote": "Front – 10 metres",
    "clause": "C16.3",
    "page": 27,
-   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
   },
   {
-   "id": "clarence-valley-council-008",
+   "id": "clarence-valley-council-007",
    "zones": [
     "*"
    ],
@@ -500,10 +491,14 @@
    "quote": "Additional setbacks may be",
    "clause": "C16.9",
    "page": 28,
-   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
-   "id": "clarence-valley-council-009",
+   "id": "clarence-valley-council-008",
    "zones": [
     "*"
    ],
@@ -548,10 +543,14 @@
    "quote": "road buildings must be setback 15 metres",
    "clause": "C7.1",
    "page": 16,
-   "source_file": "DCP/industrial-dcp_1-july-2026.pdf"
+   "source_file": "DCP/industrial-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "clarence-valley-council-010",
+   "id": "clarence-valley-council-009",
    "zones": [
     "*"
    ],
@@ -595,10 +594,12 @@
    "quote": "should be setback 4.5 metres from the",
    "clause": "C16.8",
    "page": 28,
-   "source_file": "DCP/residential-dcp_1-july-2026.pdf"
+   "source_file": "DCP/residential-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)"
   },
   {
-   "id": "clarence-valley-council-011",
+   "id": "clarence-valley-council-010",
    "zones": [
     "B*"
    ],
@@ -607,7 +608,7 @@
    ],
    "conditions": {
     "qualifiers": [
-     "laneway"
+     "orientation_specific"
     ]
    },
    "conditionText": "business zones, Queens Lane Iluka (northern side)",
@@ -639,14 +640,18 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).",
+   "needsReview": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).; Condition not expressible in the structured fields (orientation_specific); see conditionText",
    "quote": "A minimum 3.6 metre setback to",
    "clause": "C8.3",
    "page": 18,
-   "source_file": "DCP/business-dcp_1-july-2026.pdf"
+   "source_file": "DCP/business-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial).; Condition not expressible in the structured fields (..."
   },
   {
-   "id": "clarence-valley-council-012",
+   "id": "clarence-valley-council-011",
    "zones": [
     "B*"
    ],
@@ -688,10 +693,14 @@
    "quote": "built to the front boundary (zero setback)",
    "clause": "C8.1",
    "page": 18,
-   "source_file": "DCP/business-dcp_1-july-2026.pdf"
+   "source_file": "DCP/business-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
   },
   {
-   "id": "clarence-valley-council-013",
+   "id": "clarence-valley-council-012",
    "zones": [
     "IN*"
    ],
@@ -754,10 +763,14 @@
    "quote": "and rear setback must be 3 metres.",
    "clause": "C7.3",
    "page": 16,
-   "source_file": "DCP/industrial-dcp_1-july-2026.pdf"
+   "source_file": "DCP/industrial-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
-   "id": "clarence-valley-council-014",
+   "id": "clarence-valley-council-013",
    "zones": [
     "IN*"
    ],
@@ -819,10 +832,14 @@
    "quote": "minimum of 9 metres from the front",
    "clause": "C7.1",
    "page": 16,
-   "source_file": "DCP/industrial-dcp_1-july-2026.pdf"
+   "source_file": "DCP/industrial-dcp_1-july-2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "clarence-valley-council-015",
+   "id": "clarence-valley-council-014",
    "zones": [
     "RU*"
    ],
@@ -903,7 +920,11 @@
    "quote": "Front – 10 metres",
    "clause": "C5.1",
    "page": 17,
-   "source_file": "DCP/rural-dcp_1_july_2026.pdf"
+   "source_file": "DCP/rural-dcp_1_july_2026.pdf",
+   "dcp": "Clarence Valley Residential Zones, Rural Zones, Industrial Zones, Business Zones and E and Other Zones DCPs 2011 (in force 23/12/2011; versions amended to 1 July 2026); Sustainable Water Information for Applicants Final ver 3 (in force 29/07/2022)",
+   "edition": "Amended to 1 July 2026 (DCP in force from 23/12/2011)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
@@ -942,7 +963,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 3
+   "rules": 2
   },
   "*": {
    "front": true,
@@ -981,8 +1002,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 24,
-  "rules": 15,
+  "rules": 14,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  }
  }
 }

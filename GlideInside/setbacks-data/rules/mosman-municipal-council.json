@@ -57,7 +57,9 @@
    "quote": "(a) for single storey development – 1.5m;",
    "clause": "4.2 P17(a)",
    "page": 21,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
+   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
+   "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
+   "edition": "Amended August 2026 (effective 07/08/2026)"
   },
   {
    "id": "mosman-municipal-council-002",
@@ -106,7 +108,9 @@
    "quote": "(b) for two storey development – 3m",
    "clause": "4.2 P17(b)",
    "page": 21,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
+   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
+   "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
+   "edition": "Amended August 2026 (effective 07/08/2026)"
   },
   {
    "id": "mosman-municipal-council-003",
@@ -155,7 +159,11 @@
    "quote": "the foreshore building line is the prevailing rear",
    "clause": "4.2 P20",
    "page": 22,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
+   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
+   "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
+   "edition": "Amended August 2026 (effective 07/08/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "mosman-municipal-council-004",
@@ -203,7 +211,9 @@
    "quote": "height): 900mm.",
    "clause": "4.2 P8(a)",
    "page": 20,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
+   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
+   "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
+   "edition": "Amended August 2026 (effective 07/08/2026)"
   },
   {
    "id": "mosman-municipal-council-005",
@@ -250,7 +260,9 @@
    "quote": "1.5m.",
    "clause": "4.2 P8(b)",
    "page": 20,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
+   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
+   "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
+   "edition": "Amended August 2026 (effective 07/08/2026)"
   },
   {
    "id": "mosman-municipal-council-006",
@@ -297,7 +309,9 @@
    "quote": "(c) three storey (or over 7.2m wall height): 3m.",
    "clause": "4.2 P8(c)",
    "page": 20,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
+   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
+   "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
+   "edition": "Amended August 2026 (effective 07/08/2026)"
   },
   {
    "id": "mosman-municipal-council-007",
@@ -344,7 +358,9 @@
    "quote": "(d) four storeys (or up to 11m wall height): 4m.",
    "clause": "4.2 P8(d)",
    "page": 20,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
+   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
+   "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
+   "edition": "Amended August 2026 (effective 07/08/2026)"
   },
   {
    "id": "mosman-municipal-council-008",
@@ -389,7 +405,11 @@
    "quote": "new buildings should be setback a similar",
    "clause": "4.2 P3 and P4",
    "page": 19,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
+   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
+   "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
+   "edition": "Amended August 2026 (effective 07/08/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "mosman-municipal-council-009",
@@ -439,54 +459,14 @@
    "quote": "is 50% of the length of that",
    "clause": "4.2 P16",
    "page": 21,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
+   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
+   "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
+   "edition": "Amended August 2026 (effective 07/08/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "mosman-municipal-council-010",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {},
-   "conditionText": "No garages forward of the front building alignment (exceptions for single carports where building is at least 5.5 m from front boundary)",
-   "garage": {
-    "minM": null,
-    "behindBuildingLineM": 5.5,
-    "sources": [
-     23059
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    23059
-   ],
-   "evidence": [
-    {
-     "id": 23059,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": "the distance between the building and the front property boundary is a minimum 5.5m;",
-     "clause": "5.2 P5(d)",
-     "page": 46,
-     "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
-     "condition": "No garages forward of the front building alignment (exceptions for single carports where building is at least 5.5 m from front boundary)",
-     "edition": "Amended August 2026 (effective 07/08/2026)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "the distance between the building and the front property boundary is a minimum 5.5m;",
-   "clause": "5.2 P5(d)",
-   "page": 46,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
-  },
-  {
-   "id": "mosman-municipal-council-011",
    "zones": [
     "*"
    ],
@@ -533,13 +513,15 @@
    "quote": "is 3.5m (unless matching an existing or",
    "clause": "4.2 P14(c)",
    "page": 20,
-   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt"
+   "source_file": "DCP/Mosman_Residential_Development_Control_Plan.txt",
+   "dcp": "Mosman Residential DCP 2012 (adopted 06/03/2012, in force 29/03/2012; amended August 2026, last amendment adopted 04/08/2026, effective 07/08/2026); Mosman Open Space and Infrastructure DCP 2012 (amended December 2024); Mosman Business Centres DCP 2012 (amended December 2024)",
+   "edition": "Amended August 2026 (effective 07/08/2026)"
   }
  ],
  "gaps": [
   "No secondary (corner lot) frontage setback rule",
   "No garage setback rule",
-  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 23088",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 23059, 23088",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): roads: no road hierarchy, reserve or carriageway widths, kerb returns, cul-de-sacs, pavement design or subdivision road standards in the saved set (Mosman is a built-out LGA; Residential DCP 4.1 only gives access handle width) | flood: Residential DCP has no flood planning level or freeboard (only 300 mm freeboard in stormwater policy and basement level 4 m AHD); Mosman LEP flood clause not saved | setbacks: front, rear setbacks are pattern or merit based; townscape-specific numeric setbacks (Residential DCP Part 7, 22 townscapes) and Business Centres setbacks not mined"
  ],
  "notes": "Built from 12 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -550,15 +532,42 @@
    "rear": false,
    "secondaryFront": false,
    "garage": false,
-   "rules": 11
+   "rules": 10
   }
  },
  "precincts": [],
  "needsPrecinct": false,
  "counts": {
   "records": 12,
-  "rules": 11,
-  "recordsNotModelled": 1,
+  "rules": 10,
+  "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  }
  }
 }

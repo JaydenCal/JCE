@@ -57,10 +57,64 @@
    "quote": "the building shall be set back a minimum of 3 metres from the property boundary",
    "clause": "2.1(c)",
    "page": 7,
-   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf"
+   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText"
   },
   {
    "id": "coonamble-shire-council-002",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "DCP 1 general village sector (VG), State Highways 9 m and other roads",
+   "front": {
+    "minM": 7.5,
+    "basis": "fixed",
+    "sources": [
+     10804
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    10804
+   ],
+   "evidence": [
+    {
+     "id": 10804,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "All land uses are to be set back a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
+     "clause": "cl.29",
+     "page": 4,
+     "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+     "condition": "DCP 1 general village sector (VG), State Highways 9 m and other roads",
+     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "All land uses are to be set back a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
+   "clause": "cl.29",
+   "page": 4,
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
+  },
+  {
+   "id": "coonamble-shire-council-003",
    "zones": [
     "*"
    ],
@@ -100,15 +154,19 @@
      "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
     }
    ],
-   "confidence": "medium",
-   "needsReview": null,
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
    "quote": "Buildings must be set back a minimum of 18 metres from arterial roads",
    "clause": "cl.7(ii)(a)",
    "page": 4,
-   "source_file": "DCP/DCP_091111_DCP2_Rural_Small_Holdings.pdf"
+   "source_file": "DCP/DCP_091111_DCP2_Rural_Small_Holdings.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "coonamble-shire-council-003",
+   "id": "coonamble-shire-council-004",
    "zones": [
     "*"
    ],
@@ -171,10 +229,14 @@
    "quote": "the other street property boundary shall be 3 metres minimum",
    "clause": "2.1(a)",
    "page": 7,
-   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf"
+   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
-   "id": "coonamble-shire-council-004",
+   "id": "coonamble-shire-council-005",
    "zones": [
     "*"
    ],
@@ -220,55 +282,11 @@
    "quote": "There is no building setback from laneways which are less than 6.0 metres wide",
    "clause": "cl.18",
    "page": 3,
-   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
-  },
-  {
-   "id": "coonamble-shire-council-005",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "classified_road"
-    ]
-   },
-   "conditionText": "DCP 1 general village sector (VG), State Highways 9 m and other roads",
-   "front": {
-    "minM": 7.5,
-    "basis": "fixed",
-    "sources": [
-     10804
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    10804
-   ],
-   "evidence": [
-    {
-     "id": 10804,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "All land uses are to be set back a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
-     "clause": "cl.29",
-     "page": 4,
-     "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
-     "condition": "DCP 1 general village sector (VG), State Highways 9 m and other roads",
-     "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "All land uses are to be set back a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
-   "clause": "cl.29",
-   "page": 4,
-   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "coonamble-shire-council-006",
@@ -276,7 +294,7 @@
     "*"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "dwelling"
    ],
    "conditions": {},
    "conditionText": "DCP 1 village residential sector, preferred land uses, other roads",
@@ -312,7 +330,9 @@
    "quote": "a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
    "clause": "cl.19",
    "page": 3,
-   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED"
   },
   {
    "id": "coonamble-shire-council-007",
@@ -320,7 +340,7 @@
     "*"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "dwelling"
    ],
    "conditions": {},
    "conditionText": "DCP 1 village residential sector, other land uses, all roads",
@@ -356,7 +376,11 @@
    "quote": "Other land uses are to be set back a minimum of 9 metres from all roads",
    "clause": "cl.20",
    "page": 3,
-   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "coonamble-shire-council-008",
@@ -400,7 +424,11 @@
    "quote": "Other land uses are to be set back a minimum of 7.5 metres from",
    "clause": "cl.25",
    "page": 3,
-   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
   },
   {
    "id": "coonamble-shire-council-009",
@@ -448,7 +476,11 @@
    "quote": "Buildings are to be set back from all main roads/state highways a minimum of 9 metres from the property boundary",
    "clause": "2.1(a)",
    "page": 7,
-   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf"
+   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "coonamble-shire-council-010",
@@ -508,7 +540,11 @@
    "quote": "Preferred land uses are to be set back a minimum of 9 metres from State Highways and a minimum of 7.5 metres from other roads",
    "clause": "cl.33",
    "page": 3,
-   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "coonamble-shire-council-011",
@@ -552,7 +588,11 @@
    "quote": "Other land uses are to be set back a minimum of 9 metres from all roads",
    "clause": "cl.34",
    "page": 4,
-   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf"
+   "source_file": "DCP/DCP_091111_DCP1_Coonamble_Township_and_Surrounds.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
    "id": "coonamble-shire-council-012",
@@ -596,7 +636,11 @@
    "quote": "Car parking shall be setback a minimum of three metres (3) from the front boundary",
    "clause": "2.2(a)",
    "page": 7,
-   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf"
+   "source_file": "DCP/DCP_091111_DCP1_Annexure_-_Development_Requirements_for_Industrial_Land_Use.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
    "id": "coonamble-shire-council-013",
@@ -640,7 +684,11 @@
    "quote": "Buildings must be set back a minimum of 10 metres from other roads",
    "clause": "cl.7(ii)(a)",
    "page": 4,
-   "source_file": "DCP/DCP_091111_DCP2_Rural_Small_Holdings.pdf"
+   "source_file": "DCP/DCP_091111_DCP2_Rural_Small_Holdings.pdf",
+   "dcp": "Coonamble DCP No.1 Coonamble Township and Surrounds, DCP 1 Annexure (Industrial Land Use), DCP 2 Rural Small Holdings, DCP 3 Small Cattle Feedlots, DCP 4 Small Intensive Piggeries (file dated 09/11/11 in file names; currency UNVERIFIED; made under Coonamble LEP No. 1). Design specification also cites a Coonamble DCP 2012 that is not in the saved set",
+   "edition": "DCP file dated 09/11/11 (file name 091111); currency UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
@@ -690,5 +738,32 @@
   "rules": 13,
   "recordsNotModelled": 3,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (coonamble-shire-council-006, coonamble-shire-council-007)); side; rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (coonamble-shire-council-006, coonamble-shire-council-007)); side; rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (coonamble-shire-council-006, coonamble-shire-council-007)); side; rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (coonamble-shire-council-006, coonamble-shire-council-007)); side; rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (coonamble-shire-council-006, coonamble-shire-council-007, coonamble-shire-council-013)); side; rear (no rule for this zone/use/lot)"
+  }
  }
 }

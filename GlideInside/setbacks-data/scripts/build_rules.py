@@ -195,7 +195,7 @@ def item_context(rec, slot):
     if param in ('garage_setback', 'garage_setback_behind_facade'):
         # garage rules apply to the garage element of whatever building type is named
         pass
-    quals = P.parse_qualifiers(cond)
+    quals, quals_not = P.parse_qualifiers(cond)
     if param == 'setback_classified_road' and 'classified_road' not in quals:
         quals.append('classified_road')
     if param == 'front_infill_rule' and 'established_area' not in quals:
@@ -210,13 +210,13 @@ def item_context(rec, slot):
     lsm = P.parse_land_size_map(cond)
     corner = P.parse_corner(cond) if slot != 'secondaryFront' else False
     prec = P.parse_precinct(cond)
-    ctx = {'zones': zones, 'uses': uses or ['any'], 'quals': sorted(set(quals)), 'precinct': prec,
+    ctx = {'zones': zones, 'uses': uses or ['any'], 'quals': sorted(set(quals)), 'quals_not': sorted(set(quals_not)), 'precinct': prec,
            'storeys': st, 'wall': wh, 'width': lw, 'area': la, 'lsm': lsm, 'corner': corner}
     return ctx, zoneFlag, how
 
 
 def ctx_key(ctx, zone):
-    return json.dumps([zone, ctx['uses'], ctx['quals'], ctx['precinct'], sorted(ctx['storeys'].items()),
+    return json.dumps([zone, ctx['uses'], ctx['quals'], ctx['quals_not'], ctx['precinct'], sorted(ctx['storeys'].items()),
                        sorted(ctx['wall'].items()), sorted(ctx['width'].items()), sorted(ctx['area'].items()),
                        ctx['lsm'], ctx['corner']], sort_keys=True)
 
@@ -241,6 +241,8 @@ def conditions_from_ctx(ctx):
         c['precinct'] = ctx['precinct']
     if ctx['quals']:
         c['qualifiers'] = list(ctx['quals'])
+    if ctx['quals_not']:
+        c['qualifiersNot'] = list(ctx['quals_not'])
     return c
 
 
@@ -272,6 +274,14 @@ def build_council(c, records, other_counts):
             if not slots:
                 unmodelled.append(rec['id'])
                 continue
+        for slot in list(slots):
+            pass
+        txt = rec['condition'] + ' ' + (rec['quote'] or '') + ' ' + (rec['value_text'] or '')
+        if slots == ['garage'] and re.search(r'behind|recess', txt, re.I) and not re.search(r'from (?:the )?(?:front|primary|road|street|rear|side)? ?(?:boundary|frontage|road)', rec['condition'], re.I):
+            slots = ['garageBehind']
+        if slots == ['garageBehind'] and re.search(r'projec|forward of|in front of|not forward|maximum width|width|share|%', rec['condition'] + ' ' + (rec['unit'] or ''), re.I):
+            unmodelled.append(rec['id'])
+            continue
         for slot in slots:
             if slot == 'garageBehind':
                 if rec['unit'] not in ('m', 'mm', '', None) or (rec['value_num'] is None):
@@ -346,6 +356,9 @@ def build_council(c, records, other_counts):
         r['clause'] = first['clause']
         r['page'] = first['page']
         r['source_file'] = first['source_file']
+        r['dcp'] = c['governing_dcp']
+        r['edition'] = first.get('edition')
+        flag_rule(r)
     out['rules'] = rules
 
     # counts and coverage
@@ -361,6 +374,17 @@ def build_council(c, records, other_counts):
                      'otherSetbackKeysNotModelled': sum(other_counts.values()) if other_counts else 0}
     out['notes'] = 'Built from %d extract records (review status: %s). Unit mm values are converted to metres (printed value kept in "printed"). Values not given as a metre figure are kept as null minM with the printed text.' % (len(records), c.get('review_status'))
     return out
+
+
+def flag_rule(r):
+    """Owner ruling 11/11/2026: rules with needsReview or low confidence are shown but marked check_with_council."""
+    if r.get('needsReview') or r.get('confidence') == 'low':
+        r['flag'] = 'check_with_council'
+        nr = r.get('needsReview')
+        reason = nr if isinstance(nr, str) and nr else 'Low confidence: value not given as a number or not confirmed'
+        r['flagReason'] = reason if len(reason) <= 160 else reason[:157] + '...'
+    else:
+        r.pop('flag', None); r.pop('flagReason', None)
 
 
 def make_rule(slotmap, ctx, zone, conflict):
@@ -421,7 +445,7 @@ def make_rule(slotmap, ctx, zone, conflict):
     for f in dict.fromkeys(flags):
         needs.append(f)
     q = ctx['quals']
-    unmod = [x for x in q if x in ('adjoins_other', 'height_plane', 'slope', 'subdivision_stage', 'non_standard_street', 'shared_driveway', 'top_floor_attic', 'corner_splay', 'open_space_frontage')]
+    unmod = [x for x in q if x in ('orientation_specific', 'adjoins_other', 'height_plane', 'slope', 'subdivision_stage', 'non_standard_street', 'shared_driveway', 'top_floor_attic', 'corner_splay', 'open_space_frontage')]
     if unmod:
         needs.append('Condition not expressible in the structured fields (%s); see conditionText' % ', '.join(unmod))
     if conflict:

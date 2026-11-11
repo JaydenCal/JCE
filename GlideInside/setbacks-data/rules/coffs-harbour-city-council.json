@@ -61,7 +61,11 @@
    "quote": "the development has a maximum boundary wall height of three metres",
    "clause": "D3.3 Exceptions",
    "page": 78,
-   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt"
+   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt",
+   "dcp": "Coffs Harbour Development Control Plan 2015, snapshot as at 28/04/2023 (printed 11/05/2023); adoption date UNVERIFIED",
+   "edition": "Coffs Harbour DCP 2015 as at 28/04/2023 (printed 11/05/2023)",
+   "flag": "check_with_council",
+   "flagReason": "range printed (None to 3.0); band not resolved"
   },
   {
    "id": "coffs-harbour-city-council-002",
@@ -69,7 +73,7 @@
     "R2"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": "R2 Low Density Residential",
@@ -143,7 +147,9 @@
    "quote": "Land zoned R2 Low Density Residential 6m",
    "clause": "D3.2(1)",
    "page": 74,
-   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt"
+   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt",
+   "dcp": "Coffs Harbour Development Control Plan 2015, snapshot as at 28/04/2023 (printed 11/05/2023); adoption date UNVERIFIED",
+   "edition": "Coffs Harbour DCP 2015 as at 28/04/2023 (printed 11/05/2023)"
   },
   {
    "id": "coffs-harbour-city-council-003",
@@ -227,7 +233,9 @@
    "quote": "6m for buildings ≤ 8.5m in height",
    "clause": "D3.2(1)",
    "page": 74,
-   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt"
+   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt",
+   "dcp": "Coffs Harbour Development Control Plan 2015, snapshot as at 28/04/2023 (printed 11/05/2023); adoption date UNVERIFIED",
+   "edition": "Coffs Harbour DCP 2015 as at 28/04/2023 (printed 11/05/2023)"
   },
   {
    "id": "coffs-harbour-city-council-004",
@@ -272,7 +280,11 @@
    "quote": "9m for buildings >8.5m in height",
    "clause": "D3.2(1)",
    "page": 74,
-   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt"
+   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt",
+   "dcp": "Coffs Harbour Development Control Plan 2015, snapshot as at 28/04/2023 (printed 11/05/2023); adoption date UNVERIFIED",
+   "edition": "Coffs Harbour DCP 2015 as at 28/04/2023 (printed 11/05/2023)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "coffs-harbour-city-council-005",
@@ -316,7 +328,9 @@
    "quote": "3m for buildings ≤ 8.5m in height",
    "clause": "D3.3(1)",
    "page": 77,
-   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt"
+   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt",
+   "dcp": "Coffs Harbour Development Control Plan 2015, snapshot as at 28/04/2023 (printed 11/05/2023); adoption date UNVERIFIED",
+   "edition": "Coffs Harbour DCP 2015 as at 28/04/2023 (printed 11/05/2023)"
   },
   {
    "id": "coffs-harbour-city-council-006",
@@ -364,7 +378,11 @@
    "quote": "Front: six metres",
    "clause": "D2.1(1)",
    "page": 61,
-   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt"
+   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt",
+   "dcp": "Coffs Harbour Development Control Plan 2015, snapshot as at 28/04/2023 (printed 11/05/2023); adoption date UNVERIFIED",
+   "edition": "Coffs Harbour DCP 2015 as at 28/04/2023 (printed 11/05/2023)",
+   "flag": "check_with_council",
+   "flagReason": "range printed (6.0 to None); band not resolved"
   },
   {
    "id": "coffs-harbour-city-council-007",
@@ -412,7 +430,9 @@
    "quote": "An articulation zone is not permissible where the front setback area to the primary road is less than 4.5 metres.",
    "clause": "D3.2 Exceptions",
    "page": 74,
-   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt"
+   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt",
+   "dcp": "Coffs Harbour Development Control Plan 2015, snapshot as at 28/04/2023 (printed 11/05/2023); adoption date UNVERIFIED",
+   "edition": "Coffs Harbour DCP 2015 as at 28/04/2023 (printed 11/05/2023)"
   },
   {
    "id": "coffs-harbour-city-council-008",
@@ -457,7 +477,9 @@
    "quote": "On corner lots buildings can be set back three metres from the secondary road boundary",
    "clause": "D3.2 Exceptions",
    "page": 76,
-   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt"
+   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt",
+   "dcp": "Coffs Harbour Development Control Plan 2015, snapshot as at 28/04/2023 (printed 11/05/2023); adoption date UNVERIFIED",
+   "edition": "Coffs Harbour DCP 2015 as at 28/04/2023 (printed 11/05/2023)"
   },
   {
    "id": "coffs-harbour-city-council-009",
@@ -504,7 +526,9 @@
    "quote": "Dwellings fronting a lane are to be setback three metres with garages and carports being setback 4.5 metres.",
    "clause": "D3.2 Exceptions",
    "page": 76,
-   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt"
+   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt",
+   "dcp": "Coffs Harbour Development Control Plan 2015, snapshot as at 28/04/2023 (printed 11/05/2023); adoption date UNVERIFIED",
+   "edition": "Coffs Harbour DCP 2015 as at 28/04/2023 (printed 11/05/2023)"
   },
   {
    "id": "coffs-harbour-city-council-010",
@@ -549,7 +573,11 @@
    "quote": "On corner lots, development may be setback three metres from the secondary road boundary.",
    "clause": "D2.1 Exceptions",
    "page": 62,
-   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt"
+   "source_file": "DCP/Snapshot/DCP-2015-as-at-28-April-2023.txt",
+   "dcp": "Coffs Harbour Development Control Plan 2015, snapshot as at 28/04/2023 (printed 11/05/2023); adoption date UNVERIFIED",
+   "edition": "Coffs Harbour DCP 2015 as at 28/04/2023 (printed 11/05/2023)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -616,5 +644,32 @@
   "rules": 10,
   "recordsNotModelled": 4,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (coffs-harbour-city-council-003, coffs-harbour-city-council-004))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

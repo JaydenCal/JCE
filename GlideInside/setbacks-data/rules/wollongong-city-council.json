@@ -57,7 +57,11 @@
    "quote": "Infill development sites require a minimum setback of 6m from the front property boundary",
    "clause": "4.2.2(1)(a)",
    "page": 5,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "wollongong-city-council-002",
@@ -106,7 +110,11 @@
    "quote": "Greenfield sites require a minimum setback of 4m",
    "clause": "4.2.2(1)(d)",
    "page": 5,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "wollongong-city-council-003",
@@ -152,7 +160,9 @@
    "quote": "where development occurs within the 8m rear setback the development is limited to single storey",
    "clause": "4.1.2 (R2 rear setback note)",
    "page": 5,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
   },
   {
    "id": "wollongong-city-council-004",
@@ -199,7 +209,11 @@
    "quote": "R2 Low Density 0.8 x ceiling height 1.0 x ceiling height",
    "clause": "5.4.2(1)",
    "page": 28,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "wollongong-city-council-005",
@@ -246,7 +260,11 @@
    "quote": "R3 Medium 0.8 x ceiling height 1.0 x ceiling height",
    "clause": "5.4.2(1)",
    "page": 28,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "wollongong-city-council-006",
@@ -293,7 +311,11 @@
    "quote": "R4 High Density 0.4 x ceiling height 0.6 x ceiling height",
    "clause": "5.4.2(1)",
    "page": 28,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "wollongong-city-council-007",
@@ -342,7 +364,9 @@
    "quote": "Infill development sites require a minimum setback of 6m, or",
    "clause": "4.2.2(2)(a)",
    "page": 5,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
   },
   {
    "id": "wollongong-city-council-008",
@@ -355,132 +379,13 @@
    "conditions": {
     "qualifiers": [
      "building_element",
-     "laneway"
-    ]
-   },
-   "conditionText": [
-    "Hayes Lane and Iredell Road Neighbourhood Plan: corner lot secondary road",
-    "Wongawilli North Neighbourhood Plan: lots fronting Wongawilli Road and Smiths Lane"
-   ],
-   "front": {
-    "minM": 4.5,
-    "basis": "fixed",
-    "sources": [
-     39621
-    ]
-   },
-   "secondaryFront": {
-    "minM": 2.0,
-    "basis": "fixed",
-    "sources": [
-     39626
-    ]
-   },
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    39621,
-    39626
-   ],
-   "evidence": [
-    {
-     "id": 39621,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Minimum front building line setback of 4.5m for all lots fronting Wongawilli Road",
-     "clause": "14.5.3",
-     "page": 62,
-     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
-     "condition": "Wongawilli North Neighbourhood Plan: lots fronting Wongawilli Road and Smiths Lane",
-     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
-    },
-    {
-     "id": 39626,
-     "parameter": "front_secondary",
-     "slot": "secondaryFront",
-     "quote": "Minimum setback of two metres from a secondary road on a corner lot",
-     "clause": "14.5.13(5)",
-     "page": 82,
-     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
-     "condition": "Hayes Lane and Iredell Road Neighbourhood Plan: corner lot secondary road",
-     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value",
-   "quote": "Minimum front building line setback of 4.5m for all lots fronting Wongawilli Road",
-   "clause": "14.5.3",
-   "page": 62,
-   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
-  },
-  {
-   "id": "wollongong-city-council-009",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "building_element",
-     "laneway"
-    ]
-   },
-   "conditionText": "Hayes Lane and Iredell Road Neighbourhood Plan: primary road frontage",
-   "front": {
-    "minM": 4.0,
-    "basis": "fixed",
-    "sources": [
-     39624
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    39624
-   ],
-   "evidence": [
-    {
-     "id": 39624,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Minimum setback of four metres from primary road frontage",
-     "clause": "14.5.13(4)",
-     "page": 82,
-     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
-     "condition": "Hayes Lane and Iredell Road Neighbourhood Plan: primary road frontage",
-     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "averaging alternative printed beside the fixed value; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
-   "quote": "Minimum setback of four metres from primary road frontage",
-   "clause": "14.5.13(4)",
-   "page": 82,
-   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
-  },
-  {
-   "id": "wollongong-city-council-010",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "building_element"
+     "orientation_specific"
     ]
    },
    "conditionText": [
     "Bong Bong East and North Neighbourhood Plan: corner allotments, secondary street frontage",
     "Bong Bong East and North Neighbourhood Plan: front building line",
-    "Bong Bong East and North Neighbourhood Plan: maximum rear setback for buildings over 3.8 m",
-    "eaves and gutters to side and rear boundaries"
+    "Bong Bong East and North Neighbourhood Plan: maximum rear setback for buildings over 3.8 m"
    ],
    "front": {
     "minM": 4.5,
@@ -503,17 +408,9 @@
      39619
     ]
    },
-   "side": {
-    "minM": 0.45,
-    "printed": "450 mm",
-    "basis": "fixed",
-    "sources": [
-     39472
-    ]
-   },
+   "side": null,
    "garage": null,
    "sources": [
-    39472,
     39614,
     39616,
     39619
@@ -551,6 +448,88 @@
      "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
      "condition": "Bong Bong East and North Neighbourhood Plan: maximum rear setback for buildings over 3.8 m",
      "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (orientation_specific); see conditionText",
+   "quote": "Front building line: 4.5m minimum setback",
+   "clause": "14.5.1 (replaces B1 4.25 Controls 1 and 2)",
+   "page": 59,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (orientation_specific); see conditionText"
+  },
+  {
+   "id": "wollongong-city-council-009",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": [
+    "Hayes Lane and Iredell Road Neighbourhood Plan: corner lot secondary road",
+    "Wongawilli North Neighbourhood Plan: lots fronting Wongawilli Road and Smiths Lane",
+    "eaves and gutters to side and rear boundaries"
+   ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     39621
+    ]
+   },
+   "secondaryFront": {
+    "minM": 2.0,
+    "basis": "fixed",
+    "sources": [
+     39626
+    ]
+   },
+   "side": {
+    "minM": 0.45,
+    "printed": "450 mm",
+    "basis": "fixed",
+    "sources": [
+     39472
+    ]
+   },
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39472,
+    39621,
+    39626
+   ],
+   "evidence": [
+    {
+     "id": 39621,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Minimum front building line setback of 4.5m for all lots fronting Wongawilli Road",
+     "clause": "14.5.3",
+     "page": 62,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Wongawilli North Neighbourhood Plan: lots fronting Wongawilli Road and Smiths Lane",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    },
+    {
+     "id": 39626,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "Minimum setback of two metres from a secondary road on a corner lot",
+     "clause": "14.5.13(5)",
+     "page": 82,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Hayes Lane and Iredell Road Neighbourhood Plan: corner lot secondary road",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
     },
     {
      "id": 39472,
@@ -566,10 +545,66 @@
    ],
    "confidence": "medium",
    "needsReview": "averaging alternative printed beside the fixed value",
-   "quote": "Front building line: 4.5m minimum setback",
-   "clause": "14.5.1 (replaces B1 4.25 Controls 1 and 2)",
-   "page": 59,
-   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+   "quote": "Minimum front building line setback of 4.5m for all lots fronting Wongawilli Road",
+   "clause": "14.5.3",
+   "page": 62,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
+  },
+  {
+   "id": "wollongong-city-council-010",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "building_element"
+    ]
+   },
+   "conditionText": "Hayes Lane and Iredell Road Neighbourhood Plan: primary road frontage",
+   "front": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     39624
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    39624
+   ],
+   "evidence": [
+    {
+     "id": 39624,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Minimum setback of four metres from primary road frontage",
+     "clause": "14.5.13(4)",
+     "page": 82,
+     "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+     "condition": "Hayes Lane and Iredell Road Neighbourhood Plan: primary road frontage",
+     "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "averaging alternative printed beside the fixed value; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Minimum setback of four metres from primary road frontage",
+   "clause": "14.5.13(4)",
+   "page": 82,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; CONFLICT: another rule with the same applicability gives a different front value; both retained, no win..."
   },
   {
    "id": "wollongong-city-council-011",
@@ -615,7 +650,9 @@
    "quote": "that exceed 7 metres overall height must be setback at least 3 metres from the side and rear boundaries",
    "clause": "4.3.2(2)",
    "page": 6,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
   },
   {
    "id": "wollongong-city-council-012",
@@ -659,7 +696,9 @@
    "quote": "Secondary building line must be setback a minimum of 3 metres",
    "clause": "4.2.2(2)(c)",
    "page": 5,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
   },
   {
    "id": "wollongong-city-council-013",
@@ -705,7 +744,9 @@
    "quote": "Walls must be setback at least 900mm from any side or rear property boundary",
    "clause": "4.3.2(1)",
    "page": 6,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
   },
   {
    "id": "wollongong-city-council-014",
@@ -719,7 +760,8 @@
     "wallHeightMaxM": 3.8,
     "lotAreaMinM2": 450.0,
     "qualifiers": [
-     "building_element"
+     "building_element",
+     "orientation_specific"
     ]
    },
    "conditionText": "Bong Bong East and North Neighbourhood Plan: dwelling up to 3.8 m height on lot 450 m2 or greater",
@@ -752,11 +794,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText",
    "quote": "must have a setback from a side boundary of at least 900mm",
    "clause": "14.5.1",
    "page": 60,
-   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText"
   },
   {
    "id": "wollongong-city-council-015",
@@ -769,7 +815,8 @@
    "conditions": {
     "wallHeightMaxM": 3.8,
     "qualifiers": [
-     "building_element"
+     "building_element",
+     "orientation_specific"
     ]
    },
    "conditionText": "Bong Bong East and North Neighbourhood Plan: dwelling and attached structures up to 3.8 m building height",
@@ -801,11 +848,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText",
    "quote": "must have a setback from the rear boundary of at least 3m",
    "clause": "14.5.1",
    "page": 60,
-   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText"
   },
   {
    "id": "wollongong-city-council-016",
@@ -853,7 +904,9 @@
    "quote": "which require a 5.5m setback",
    "clause": "14.5.17(4)",
    "page": 92,
-   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
   },
   {
    "id": "wollongong-city-council-017",
@@ -898,7 +951,9 @@
    "quote": "except for garages which must be setback at least 5.5 metres from the property boundary on the secondary road",
    "clause": "4.2.2(2)(c)",
    "page": 5,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
   },
   {
    "id": "wollongong-city-council-018",
@@ -911,14 +966,14 @@
    "conditions": {
     "qualifiers": [
      "building_element",
-     "laneway"
+     "orientation_specific"
     ]
    },
-   "conditionText": "Hayes Lane and Iredell Road Neighbourhood Plan: garages from property boundary on primary road",
+   "conditionText": "Bong Bong East and North Neighbourhood Plan: garages from primary road property boundary",
    "garage": {
-    "minM": 5.0,
+    "minM": 5.5,
     "sources": [
-     39625
+     39615
     ]
    },
    "front": null,
@@ -926,27 +981,31 @@
    "side": null,
    "rear": null,
    "sources": [
-    39625
+    39615
    ],
    "evidence": [
     {
-     "id": 39625,
+     "id": 39615,
      "parameter": "garage_setback",
      "slot": "garage",
-     "quote": "garages which must be setback at least five metres from the property boundary",
-     "clause": "14.5.13(4)",
-     "page": 82,
+     "quote": "garages which must be setback at least 5.5m from the property boundary on the primary road",
+     "clause": "14.5.1",
+     "page": 59,
      "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
-     "condition": "Hayes Lane and Iredell Road Neighbourhood Plan: garages from property boundary on primary road",
+     "condition": "Bong Bong East and North Neighbourhood Plan: garages from primary road property boundary",
      "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
-   "quote": "garages which must be setback at least five metres from the property boundary",
-   "clause": "14.5.13(4)",
-   "page": 82,
-   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText",
+   "quote": "garages which must be setback at least 5.5m from the property boundary on the primary road",
+   "clause": "14.5.1",
+   "page": 59,
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText"
   },
   {
    "id": "wollongong-city-council-019",
@@ -962,7 +1021,7 @@
     ]
    },
    "conditionText": [
-    "Bong Bong East and North Neighbourhood Plan: garages from primary road property boundary",
+    "Hayes Lane and Iredell Road Neighbourhood Plan: garages from property boundary on primary road",
     "Iowna Neighbourhood Plan: corner lot secondary road, other than garages",
     "Wongawilli North Neighbourhood Plan: garages and carports on dual frontage lots"
    ],
@@ -974,9 +1033,9 @@
     ]
    },
    "garage": {
-    "minM": 5.5,
+    "minM": 5.0,
     "sources": [
-     39615
+     39625
     ]
    },
    "rear": {
@@ -989,8 +1048,8 @@
    "front": null,
    "side": null,
    "sources": [
-    39615,
     39623,
+    39625,
     39629
    ],
    "evidence": [
@@ -1006,14 +1065,14 @@
      "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
     },
     {
-     "id": 39615,
+     "id": 39625,
      "parameter": "garage_setback",
      "slot": "garage",
-     "quote": "garages which must be setback at least 5.5m from the property boundary on the primary road",
-     "clause": "14.5.1",
-     "page": 59,
+     "quote": "garages which must be setback at least five metres from the property boundary",
+     "clause": "14.5.13(4)",
+     "page": 82,
      "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
-     "condition": "Bong Bong East and North Neighbourhood Plan: garages from primary road property boundary",
+     "condition": "Hayes Lane and Iredell Road Neighbourhood Plan: garages from property boundary on primary road",
      "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
     },
     {
@@ -1033,7 +1092,9 @@
    "quote": "Minimum setback of 2-metres from secondary road on a corner lot, except for garages",
    "clause": "14.5.17(4)",
    "page": 92,
-   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf"
+   "source_file": "DCP/Chapter-D16-West-Dapto-Release-Area.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter D16 West Dapto Release Area, in force 23/06/2025"
   },
   {
    "id": "wollongong-city-council-020",
@@ -1092,7 +1153,9 @@
    "quote": "Garages and carports must be setback a minimum of 5.5 metres",
    "clause": "4.2.2(1)(c)",
    "page": 5,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
   },
   {
    "id": "wollongong-city-council-021",
@@ -1176,7 +1239,9 @@
    "quote": "A 6m setback requirements applies from the front property boundary to the front façade",
    "clause": "5.3.2(1)",
    "page": 27,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
   },
   {
    "id": "wollongong-city-council-022",
@@ -1227,7 +1292,9 @@
    "quote": "second storey must be setback at least 900mm from a side or rear property boundary",
    "clause": "4.3.2(3)",
    "page": 6,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
   },
   {
    "id": "wollongong-city-council-023",
@@ -1275,7 +1342,9 @@
    "quote": "Detached single storey garages/outbuildings must be setback at least 500mm from a side or rear boundary",
    "clause": "4.3.2(4)",
    "page": 6,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B01-Residential-Development.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B1 Residential Development (adopted 21/11/2016, in force 14/12/2016)"
   },
   {
    "id": "wollongong-city-council-024",
@@ -1380,7 +1449,9 @@
    "quote": "Front Building Line Setback 10 metres",
    "clause": "4.2.2 Table 1",
    "page": 5,
-   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B07-Development-in-Rural-Zones.pdf"
+   "source_file": "DCP/Wollongong-DCP-2009-Chapter-B07-Development-in-Rural-Zones.pdf",
+   "dcp": "Wollongong Development Control Plan 2009 (chapters as printed: E14 Stormwater, E13 Floodplain, E15 WSUD 2025, E3 Parking 2025, B1, B7, D16 West Dapto, E19, E22, E23; Appendix 4 in force 4 August 2025)",
+   "edition": "Wollongong DCP 2009 Chapter B7 Development in Rural Zones (edition UNVERIFIED)"
   }
  ],
  "gaps": [
@@ -1438,5 +1509,32 @@
   "rules": 24,
   "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 13
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (wollongong-city-council-013, wollongong-city-council-024))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (wollongong-city-council-013, wollongong-city-council-024)); rear (conflicting rules of equal specificity (wollongong-city-council-003, wollongong-city-council-024))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (wollongong-city-council-013, wollongong-city-council-024))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (wollongong-city-council-013, wollongong-city-council-024))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (wollongong-city-council-013, wollongong-city-council-024))"
+  }
  }
 }

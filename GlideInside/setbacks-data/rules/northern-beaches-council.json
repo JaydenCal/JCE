@@ -53,7 +53,11 @@
    "quote": "a minimum 6m front setback generally applies",
    "clause": "4.1.4.1",
    "page": 73,
-   "source_file": "DCP/Older-reference/Manly-DCP-2013-Amendment-11-2017.txt"
+   "source_file": "DCP/Older-reference/Manly-DCP-2013-Amendment-11-2017.txt",
+   "dcp": "Three legacy DCP areas: Manly DCP 2013 (Amendment 11, last amended 28/08/2017, saved under Older-reference), Pittwater 21 DCP (only Appendices saved; Appendix 10 and 11 contain no text), Warringah DCP 2000 (Amendment 4, 01/12/2019; only 12 pages saved, no development controls). Conditions start with the DCP area name",
+   "edition": "Manly Development Control Plan 2013 Amendment 11, last amended 28/08/2017",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "northern-beaches-council-002",
@@ -126,7 +130,11 @@
    "quote": "the minimum 8m setback prevails",
    "clause": "4.1.4.6",
    "page": 76,
-   "source_file": "DCP/Older-reference/Manly-DCP-2013-Amendment-11-2017.txt"
+   "source_file": "DCP/Older-reference/Manly-DCP-2013-Amendment-11-2017.txt",
+   "dcp": "Three legacy DCP areas: Manly DCP 2013 (Amendment 11, last amended 28/08/2017, saved under Older-reference), Pittwater 21 DCP (only Appendices saved; Appendix 10 and 11 contain no text), Warringah DCP 2000 (Amendment 4, 01/12/2019; only 12 pages saved, no development controls). Conditions start with the DCP area name",
+   "edition": "Manly Development Control Plan 2013 Amendment 11, last amended 28/08/2017",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   }
  ],
  "gaps": [
@@ -187,5 +195,32 @@
   "rules": 2,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

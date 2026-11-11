@@ -57,7 +57,9 @@
    "quote": "900mm or NCC",
    "clause": "B2.1 table",
    "page": 6,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
    "id": "blayney-shire-council-002",
@@ -105,7 +107,11 @@
    "quote": ">1st storey = 1.5m",
    "clause": "B2.1 table",
    "page": 6,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "blayney-shire-council-003",
@@ -121,8 +127,16 @@
    },
    "conditionText": [
     "R1 / RU5, lots up to 900 m2",
-    "R1 / RU5, lots up to 900 m2, secondary street/corner"
+    "R1 / RU5, lots up to 900 m2, secondary street/corner",
+    "R1 General Residential / RU5 Village, lots up to 900 m2"
    ],
+   "front": {
+    "minM": 4.5,
+    "basis": "fixed",
+    "sources": [
+     5019
+    ]
+   },
    "secondaryFront": {
     "minM": 3.0,
     "basis": "fixed",
@@ -143,14 +157,25 @@
      5024
     ]
    },
-   "front": null,
    "side": null,
    "sources": [
+    5019,
     5020,
     5023,
     5024
    ],
    "evidence": [
+    {
+     "id": 5019,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "4.5m or average setback of",
+     "clause": "B2.1 table",
+     "page": 6,
+     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+     "condition": "R1 General Residential / RU5 Village, lots up to 900 m2",
+     "edition": "Blayney Shire DCP (header reads 2025/2026)"
+    },
     {
      "id": 5023,
      "parameter": "front_secondary",
@@ -187,10 +212,12 @@
    ],
    "confidence": "high",
    "needsReview": null,
-   "quote": "3m 1.5m",
+   "quote": "4.5m or average setback of",
    "clause": "B2.1 table",
    "page": 6,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
    "id": "blayney-shire-council-004",
@@ -273,57 +300,12 @@
    "quote": "4.5m or average setback of",
    "clause": "B2.1 table",
    "page": 7,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
    "id": "blayney-shire-council-005",
-   "zones": [
-    "R1",
-    "RU5"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {
-    "lotAreaMaxM2": 900.0
-   },
-   "conditionText": "R1 General Residential / RU5 Village, lots up to 900 m2",
-   "front": {
-    "minM": 4.5,
-    "basis": "fixed",
-    "sources": [
-     5019
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    5019
-   ],
-   "evidence": [
-    {
-     "id": 5019,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "4.5m or average setback of",
-     "clause": "B2.1 table",
-     "page": 6,
-     "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
-     "condition": "R1 General Residential / RU5 Village, lots up to 900 m2",
-     "edition": "Blayney Shire DCP (header reads 2025/2026)"
-    }
-   ],
-   "confidence": "high",
-   "needsReview": null,
-   "quote": "4.5m or average setback of",
-   "clause": "B2.1 table",
-   "page": 6,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
-  },
-  {
-   "id": "blayney-shire-council-006",
    "zones": [
     "R1",
     "RU5"
@@ -369,15 +351,17 @@
    "quote": "Classified Roads (Zone R1 / RU5 only) 8m",
    "clause": "B5.5",
    "page": 29,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
-   "id": "blayney-shire-council-007",
+   "id": "blayney-shire-council-006",
    "zones": [
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "lotAreaMaxM2": 10000.0
@@ -469,10 +453,12 @@
    "quote": "8.0m or average setback of",
    "clause": "B2.1 table",
    "page": 7,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
-   "id": "blayney-shire-council-008",
+   "id": "blayney-shire-council-007",
    "zones": [
     "R5",
     "RU1",
@@ -555,10 +541,12 @@
    "quote": "Public road frontage – 20m.",
    "clause": "B4.1",
    "page": 24,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
-   "id": "blayney-shire-council-009",
+   "id": "blayney-shire-council-008",
    "zones": [
     "*"
    ],
@@ -604,10 +592,14 @@
    "quote": "at least 3m from a boundary with a public reserve",
    "clause": "B2.1(2)",
    "page": 6,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText"
   },
   {
-   "id": "blayney-shire-council-010",
+   "id": "blayney-shire-council-009",
    "zones": [
     "*"
    ],
@@ -648,10 +640,12 @@
    "quote": "a) Be located at least 0.5m behind the front building",
    "clause": "B3.3(1)",
    "page": 19,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
-   "id": "blayney-shire-council-011",
+   "id": "blayney-shire-council-010",
    "zones": [
     "*"
    ],
@@ -692,10 +686,12 @@
    "quote": "5.5m from the front boundary AND",
    "clause": "B5.5",
    "page": 29,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
-   "id": "blayney-shire-council-012",
+   "id": "blayney-shire-council-011",
    "zones": [
     "*"
    ],
@@ -777,10 +773,12 @@
    "quote": "4.5m – single storey OR average setback of",
    "clause": "B5.5",
    "page": 29,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
-   "id": "blayney-shire-council-013",
+   "id": "blayney-shire-council-012",
    "zones": [
     "*"
    ],
@@ -844,10 +842,12 @@
    "quote": "4.5m – two storeys or greater",
    "clause": "B5.5",
    "page": 29,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
-   "id": "blayney-shire-council-014",
+   "id": "blayney-shire-council-013",
    "zones": [
     "*"
    ],
@@ -890,10 +890,12 @@
    "quote": "6.0m – two or more storeys OR average setback",
    "clause": "B5.5",
    "page": 29,
-   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf"
+   "source_file": "DCP/Part-B-Residential-pdf-3-5MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)"
   },
   {
-   "id": "blayney-shire-council-015",
+   "id": "blayney-shire-council-014",
    "zones": [
     "IN*"
    ],
@@ -956,10 +958,14 @@
    "quote": "must be a minimum of 6 metres, incorporating a minimum 2 metre landscaping strip",
    "clause": "C3.2(2)(b)",
    "page": 15,
-   "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf"
+   "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
-   "id": "blayney-shire-council-016",
+   "id": "blayney-shire-council-015",
    "zones": [
     "IN*"
    ],
@@ -1039,7 +1045,11 @@
    "quote": "a) Industrial buildings must be setback 3 metres",
    "clause": "C3.2(2)",
    "page": 15,
-   "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf"
+   "source_file": "DCP/Part-C-Commercial-Community-and-Industrial-pdf-1-6MB.pdf",
+   "dcp": "Blayney Shire Development Control Plan (page headers read 2025 and 2026; Parts A to G as saved); adoption date UNVERIFIED",
+   "edition": "Blayney Shire DCP (header reads 2025/2026)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -1054,7 +1064,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 6
+   "rules": 5
   },
   "RU5": {
    "front": true,
@@ -1062,7 +1072,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 6
+   "rules": 5
   },
   "R5": {
    "front": true,
@@ -1109,8 +1119,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 29,
-  "rules": 16,
+  "rules": 15,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (blayney-shire-council-001, blayney-shire-council-002))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (blayney-shire-council-001, blayney-shire-council-002))"
+  }
  }
 }

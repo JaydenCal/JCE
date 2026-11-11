@@ -2,14 +2,14 @@
 //
 // Data shape: see setbacks-data/setback-rules.schema.json. One council file = { lga_slug, status, rules: [...] }.
 // Fallback chain (owner decision 11/11/2026): council DCP rule for the zone -> NSW Housing Code (NSW) or
-// QDC (QLD) -> null. Every result carries `basis` ("Council DCP" | "SEPP Housing Code" | "QDC (default, council planning scheme may vary)") and a source.
+// QDC (QLD) -> null. Every result carries `basis` ("Council DCP" | "Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)" | "QDC (default, council planning scheme may vary)") and a source.
 //
 // Rule slot values (front, secondaryFront, side, rear, garage) are { minM, basis, note, rangeM, formula,
 // percent, bands?: [...] }. A band is { lotWidthMinM?, lotWidthMaxM?, lotAreaMinM2?, lotAreaMaxM2?,
 // buildingHeightMinM?, buildingHeightMaxM?, wallHeightMinM?, wallHeightMaxM?, storeys?, minM, note? }.
 // Band and condition bounds are inclusive.
 
-export const BASIS_LABELS = Object.freeze({ council: 'Council DCP', NSW: 'SEPP Housing Code', QLD: 'QDC (default, council planning scheme may vary)' });
+export const BASIS_LABELS = Object.freeze({ council: 'Council DCP', NSW: 'Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)', QLD: 'QDC (default, council planning scheme may vary)' });
 const SLOTS = ['front', 'secondaryFront', 'side', 'rear', 'garage'];
 const NON_RESIDENTIAL_ZONE = /^(B\d|IN\d|MU1|E1|E2|E5|SP\d|RE\d|W\d)$/;
 
@@ -79,6 +79,10 @@ function evalConds(c, input, keys) {
   if (c.qualifiers && c.qualifiers.length) {
     const have = new Set((input.qualifiers || []).map(String));
     for (const q of c.qualifiers) { if (have.has(q)) keys.push('q:' + q); else ok = false; }
+  }
+  if (c.qualifiersNot && c.qualifiersNot.length) {
+    const have = new Set((input.qualifiers || []).map(String));
+    for (const q of c.qualifiersNot) { if (have.has(q)) ok = false; else keys.push('qn:' + q); }
   }
   if (c.level) keys.push('level');
   return { ok, undecided, keys };
@@ -171,6 +175,10 @@ function resolveSlot(rules, slot, input, zone, use) {
     source_file: ctrl.rule.source_file || null,
     confidence: ctrl.rule.confidence || null,
     needsReview: ctrl.rule.needsReview || null,
+    dcp: ctrl.rule.dcp || null,
+    edition: ctrl.rule.edition || null,
+    flag: chosen.some((e) => e.rule.flag === 'check_with_council') ? 'check_with_council' : null,
+    flagReason: (chosen.find((e) => e.rule.flag === 'check_with_council') || { rule: {} }).rule.flagReason || null,
   };
   if (levelsNeeded.length > 1) {
     out.perLevel = {};
@@ -196,7 +204,7 @@ function finishAverage(slotVal, input, frontVal) {
 }
 
 // Picks within one rule set. Returns { picked, missing: [...], reasons: {...} }.
-function pickFrom(rules, input, basisLabel) {
+function pickFrom(rules, input, basisLabel, dcpName) {
   const zone = input.zone;
   const use = input.use || 'dwelling';
   const reasons = {};
@@ -218,7 +226,7 @@ function pickFrom(rules, input, basisLabel) {
   for (const s of SLOTS) {
     const v = res[s];
     if (!v || (s === 'secondaryFront' && input.cornerLot !== true)) { picked[s] = null; continue; }
-    picked[s] = { ...v, basis: basisLabel };
+    picked[s] = { ...v, basis: basisLabel, dcp: v.dcp || dcpName || null };
   }
   return { picked, missing, reasons };
 }
@@ -250,7 +258,7 @@ export function pickRulesDetailed(rulesForCouncil, input, options = {}) {
   if (fb && Array.isArray(fb.rules)) chain.push({ label: BASIS_LABELS[state] || fb.basis || 'Fallback', data: fb, kind: 'fallback' });
   else if (state && !chain.length) attempts.push({ basis: BASIS_LABELS[state] || 'Fallback', reason: 'fallback rule set not loaded' });
   for (const step of chain) {
-    const r = pickFrom(step.data.rules, inp, step.label);
+    const r = pickFrom(step.data.rules, inp, step.label, step.kind === 'council' ? council.dcp : (step.data.name || step.label));
     if (!r.missing.length) {
       const picked = {
         basis: step.label,
@@ -268,6 +276,8 @@ export function pickRulesDetailed(rulesForCouncil, input, options = {}) {
         const v = picked[s];
         if (v && v.needsReview) picked.warnings.push(s + ': ' + v.needsReview);
       }
+      picked.flag = SLOTS.some((s) => picked[s] && picked[s].flag) ? 'check_with_council' : null;
+      picked.flagReason = picked.flag ? SLOTS.filter((s) => picked[s] && picked[s].flag).map((s) => s + ': ' + picked[s].flagReason).join('; ') : null;
       return { picked, attempts: picked.attempts };
     }
     attempts.push({ basis: step.label, reason: 'not determinable: ' + r.missing.map((s) => s + (r.reasons[s] ? ' (' + r.reasons[s] + ')' : '')).join('; ') });

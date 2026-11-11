@@ -54,7 +54,11 @@
    "quote": "The minimum side setback is 900mm for the entire length of",
    "clause": "Part F1 DS4.4",
    "page": 8,
-   "source_file": "DCP/InnerWest_Ashfield_DCP2016_ChF_Development_Category.pdf"
+   "source_file": "DCP/InnerWest_Ashfield_DCP2016_ChF_Development_Category.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Comprehensive Inner West DCP 2016 (Ashfield)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "inner-west-council-002",
@@ -102,7 +106,11 @@
    "quote": "a minimum of 1 metre from the rear boundary to",
    "clause": "Part F1 DS6.5",
    "page": 9,
-   "source_file": "DCP/InnerWest_Ashfield_DCP2016_ChF_Development_Category.pdf"
+   "source_file": "DCP/InnerWest_Ashfield_DCP2016_ChF_Development_Category.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Comprehensive Inner West DCP 2016 (Ashfield)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "inner-west-council-003",
@@ -117,7 +125,8 @@
    },
    "conditionText": "Ashfield DCP area: low density residential: garages and carports behind front building line",
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      16639
     ]
@@ -133,7 +142,7 @@
     {
      "id": 16639,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Garages and carports are setback a minimum of 1 metre from",
      "clause": "Part F1 DS6.3",
      "page": 8,
@@ -147,7 +156,11 @@
    "quote": "Garages and carports are setback a minimum of 1 metre from",
    "clause": "Part F1 DS6.3",
    "page": 8,
-   "source_file": "DCP/InnerWest_Ashfield_DCP2016_ChF_Development_Category.pdf"
+   "source_file": "DCP/InnerWest_Ashfield_DCP2016_ChF_Development_Category.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Comprehensive Inner West DCP 2016 (Ashfield)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "inner-west-council-004",
@@ -156,8 +169,7 @@
    ],
    "appliesTo": [
     "outbuilding",
-    "garage",
-    "dwelling"
+    "garage"
    ],
    "conditions": {
     "precinct": "Ashfield DCP area"
@@ -196,7 +208,11 @@
    "quote": "The minimum side setback for outbuildings, including garages and sheds, where not located between the main building and side boundary is 450mm",
    "clause": "Part F1 DS4.5",
    "page": 8,
-   "source_file": "DCP/InnerWest_Ashfield_DCP2016_ChF_Development_Category.pdf"
+   "source_file": "DCP/InnerWest_Ashfield_DCP2016_ChF_Development_Category.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Comprehensive Inner West DCP 2016 (Ashfield)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "inner-west-council-005",
@@ -244,7 +260,11 @@
    "quote": "Less than 8 metres At Council's discretion",
    "clause": "4.1.6.2 C10(ii)",
    "page": 13,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "inner-west-council-006",
@@ -293,7 +313,9 @@
    "quote": "8 metres and over One storey 900mm",
    "clause": "4.1.6.2 C10(ii)",
    "page": 13,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-007",
@@ -341,7 +363,9 @@
    "quote": "Two storeys 1.5 metres",
    "clause": "4.1.6.2 C10(ii)",
    "page": 13,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-008",
@@ -389,7 +413,9 @@
    "quote": "Three storeys 2.5 metres",
    "clause": "4.1.6.2 C10(ii)",
    "page": 13,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-009",
@@ -436,7 +462,9 @@
    "quote": "Consistent with the setback of adjoining development or the dominant setback found along the street",
    "clause": "4.1.6.2 C10(i)",
    "page": 13,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-010",
@@ -482,7 +510,9 @@
    "quote": "Parking structures forward of the building line are not permitted.",
    "clause": "4.1.7 C17",
    "page": 18,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4.1_Low_Density_Residential_Development.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-011",
@@ -552,7 +582,9 @@
    "quote": "Must be 4 metres where there is no driveway along the rear",
    "clause": "4.2 C11(iii)(a)",
    "page": 10,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-012",
@@ -601,7 +633,11 @@
    "quote": "Must be 7 metres where a driveway is proposed along that",
    "clause": "4.2 C11(iii)(b)",
    "page": 10,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "inner-west-council-013",
@@ -650,7 +686,11 @@
    "quote": "Must be 7 metres where a driveway is proposed along that",
    "clause": "4.2 C11(ii)(b)",
    "page": 10,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "inner-west-council-014",
@@ -717,7 +757,9 @@
    "quote": "Must be 6 metres from the front boundary;",
    "clause": "4.2 C11(i)(a)",
    "page": 10,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-015",
@@ -765,7 +807,9 @@
    "quote": "A minimum setback of 3 metres must be maintained for one",
    "clause": "4.2 C12(vi)(a)",
    "page": 11,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-016",
@@ -813,7 +857,9 @@
    "quote": "One storey – 3.5 metres",
    "clause": "4.2 C12(vi)(b)",
    "page": 11,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-017",
@@ -860,7 +906,9 @@
    "quote": "Two storeys – 4 metres",
    "clause": "4.2 C12(vi)(b)",
    "page": 11,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-018",
@@ -907,7 +955,9 @@
    "quote": "Three storeys – 4.5 metres",
    "clause": "4.2 C12(vi)(b)",
    "page": 11,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   },
   {
    "id": "inner-west-council-019",
@@ -953,7 +1003,9 @@
    "quote": "Must be 9 metres; and",
    "clause": "4.2 C12(v)(a)",
    "page": 10,
-   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf"
+   "source_file": "DCP/InnerWest_Marrickville_DCP2011_4_2_Multi_Dwelling_Housing_and_RFBs_-_with_IWLEP_2022_amendm.pdf",
+   "dcp": "Three legacy DCPs apply by area: Marrickville Development Control Plan 2011 (adopted 12/07/2011, in force 15/12/2011; Nov 2022 consolidation with Inner West LEP 2022 amendments), Leichhardt Development Control Plan 2013 (Amendment No. 18; adopted 24/09/2013, in force 03/02/2014), and Comprehensive Inner West DCP 2016 for the Ashfield area (adopted 06/12/2016; Part 15 added 05/12/2017). No single Inner West DCP is saved.",
+   "edition": "Marrickville DCP 2011 (Nov 2022 consolidation with IWLEP 2022 amendments)"
   }
  ],
  "gaps": [
@@ -990,5 +1042,32 @@
   "rules": 19,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

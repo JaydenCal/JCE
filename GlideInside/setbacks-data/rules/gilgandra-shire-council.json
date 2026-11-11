@@ -78,7 +78,9 @@
    "quote": "Classified road 9.0m 9.0 m",
    "clause": "Table 7-1 Minimum Front Setbacks",
    "page": 33,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version"
   },
   {
    "id": "gilgandra-shire-council-002",
@@ -162,60 +164,17 @@
    "quote": "Local access street 7.5 m 7.5 m",
    "clause": "Table 7-1 Minimum Front Setbacks",
    "page": 33,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version"
   },
   {
    "id": "gilgandra-shire-council-003",
    "zones": [
-    "R5",
-    "E3"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {},
-   "conditionText": "R5 and E3 zones: minimum side setback to corner street (Table)",
-   "secondaryFront": {
-    "minM": 10.0,
-    "basis": "fixed",
-    "sources": [
-     13541
-    ]
-   },
-   "front": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    13541
-   ],
-   "evidence": [
-    {
-     "id": 13541,
-     "parameter": "setback_rural",
-     "slot": "secondaryFront",
-     "quote": "R5 15m (non Classified Rd) 10 m",
-     "clause": "7.1.3 table",
-     "page": 31,
-     "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
-     "condition": "R5 and E3 zones: minimum side setback to corner street (Table)",
-     "edition": "Gilgandra Shire DCP 2011, July 2012 version"
-    }
-   ],
-   "confidence": "high",
-   "needsReview": null,
-   "quote": "R5 15m (non Classified Rd) 10 m",
-   "clause": "7.1.3 table",
-   "page": 31,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
-  },
-  {
-   "id": "gilgandra-shire-council-004",
-   "zones": [
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "qualifiers": [
@@ -255,15 +214,17 @@
    "quote": "and 50 metres in R5 Large",
    "clause": "7.1.3 a",
    "page": 31,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version"
   },
   {
-   "id": "gilgandra-shire-council-005",
+   "id": "gilgandra-shire-council-004",
    "zones": [
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "qualifiers": [
@@ -303,18 +264,25 @@
    "quote": "15 metres in R5 Large Lot Residential Zone (non classified road)",
    "clause": "7.1.3 a",
    "page": 31,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "gilgandra-shire-council-006",
+   "id": "gilgandra-shire-council-005",
    "zones": [
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
-   "conditionText": "R5 Large Lot Residential: side and rear setback",
+   "conditionText": [
+    "R5 Large Lot Residential: side and rear setback",
+    "R5 and E3 zones: minimum side setback to corner street (Table)"
+   ],
    "side": {
     "minM": 10.0,
     "basis": "fixed",
@@ -329,12 +297,19 @@
      13539
     ]
    },
+   "secondaryFront": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     13541
+    ]
+   },
    "front": null,
-   "secondaryFront": null,
    "garage": null,
    "sources": [
     13539,
-    13539
+    13539,
+    13541
    ],
    "evidence": [
     {
@@ -358,6 +333,17 @@
      "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
      "condition": "R5 Large Lot Residential: side and rear setback",
      "edition": "Gilgandra Shire DCP 2011, July 2012 version"
+    },
+    {
+     "id": 13541,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "R5 15m (non Classified Rd) 10 m",
+     "clause": "7.1.3 table",
+     "page": 31,
+     "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+     "condition": "R5 and E3 zones: minimum side setback to corner street (Table)",
+     "edition": "Gilgandra Shire DCP 2011, July 2012 version"
     }
    ],
    "confidence": "high",
@@ -365,10 +351,12 @@
    "quote": "10 metres in R5 Large Lot Residential Zone",
    "clause": "7.1.3 b",
    "page": 31,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version"
   },
   {
-   "id": "gilgandra-shire-council-007",
+   "id": "gilgandra-shire-council-006",
    "zones": [
     "RU1"
    ],
@@ -413,10 +401,12 @@
    "quote": "and 50 metres in RU1",
    "clause": "7.1.3 a",
    "page": 31,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version"
   },
   {
-   "id": "gilgandra-shire-council-008",
+   "id": "gilgandra-shire-council-007",
    "zones": [
     "RU1"
    ],
@@ -461,10 +451,14 @@
    "quote": "30 metres in the RU1 Primary Production Zone (non classified road)",
    "clause": "7.1.3 a",
    "page": 31,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "gilgandra-shire-council-009",
+   "id": "gilgandra-shire-council-008",
    "zones": [
     "RU1"
    ],
@@ -523,7 +517,55 @@
    "quote": "50 metres in the RU1 Primary Production Zone",
    "clause": "7.1.3 b",
    "page": 31,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version"
+  },
+  {
+   "id": "gilgandra-shire-council-009",
+   "zones": [
+    "E3"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {},
+   "conditionText": "R5 and E3 zones: minimum side setback to corner street (Table)",
+   "secondaryFront": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     13541
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13541
+   ],
+   "evidence": [
+    {
+     "id": 13541,
+     "parameter": "setback_rural",
+     "slot": "secondaryFront",
+     "quote": "R5 15m (non Classified Rd) 10 m",
+     "clause": "7.1.3 table",
+     "page": 31,
+     "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+     "condition": "R5 and E3 zones: minimum side setback to corner street (Table)",
+     "edition": "Gilgandra Shire DCP 2011, July 2012 version"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "R5 15m (non Classified Rd) 10 m",
+   "clause": "7.1.3 table",
+   "page": 31,
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version"
   },
   {
    "id": "gilgandra-shire-council-010",
@@ -588,7 +630,9 @@
    "quote": "Front set back – 6 metres",
    "clause": "9.5 a",
    "page": 41,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version"
   },
   {
    "id": "gilgandra-shire-council-011",
@@ -632,7 +676,11 @@
    "quote": "Minimum front set back is 9 m between the industrial building and street boundary",
    "clause": "10.1 a",
    "page": 44,
-   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt"
+   "source_file": "DCP/gilgandra-dcp-2011-july-2012-version.doc-gilgandradcp2011july2012version2.txt",
+   "dcp": "Gilgandra Shire Development Control Plan 2011 (July 2012 version)",
+   "edition": "Gilgandra Shire DCP 2011, July 2012 version",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -663,15 +711,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 4
-  },
-  "E3": {
-   "front": false,
-   "side": false,
-   "rear": false,
-   "secondaryFront": true,
-   "garage": false,
-   "rules": 1
+   "rules": 3
   },
   "RU1": {
    "front": true,
@@ -680,6 +720,14 @@
    "secondaryFront": false,
    "garage": false,
    "rules": 3
+  },
+  "E3": {
+   "front": false,
+   "side": false,
+   "rear": false,
+   "secondaryFront": true,
+   "garage": false,
+   "rules": 1
   },
   "*": {
    "front": true,
@@ -705,5 +753,32 @@
   "rules": 11,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

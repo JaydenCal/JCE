@@ -55,7 +55,11 @@
    "quote": "is 0.9m (ground floor) and 1.5m (first storey",
    "clause": "5.2.1 Setbacks C6",
    "page": 200,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "bayside-council-002",
@@ -68,7 +72,7 @@
     "dwelling"
    ],
    "conditions": {
-    "level": "ground"
+    "level": "upper"
    },
    "conditionText": "Low density residential (dwellings, dual occupancy, semi-detached): side boundary, first storey and above",
    "side": {
@@ -98,65 +102,19 @@
      "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
     }
    ],
-   "confidence": "low",
-   "needsReview": "Zone code inferred from the zone name printed in the record; CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "confidence": "medium",
+   "needsReview": "Zone code inferred from the zone name printed in the record",
    "quote": "is 0.9m (ground floor) and 1.5m (first storey",
    "clause": "5.2.1 Setbacks C6",
    "page": 200,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "bayside-council-003",
-   "zones": [
-    "R2"
-   ],
-   "appliesTo": [
-    "dual_occupancy",
-    "multi_dwelling",
-    "dwelling"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
-   "conditionText": "Low density residential (dwellings, dual occupancy, semi-detached): primary road, where no average of adjoining dwellings applies",
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     2748
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    2748
-   ],
-   "evidence": [
-    {
-     "id": 2748,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "otherwise, 6m.",
-     "clause": "5.2.1 Setbacks C1",
-     "page": 200,
-     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
-     "condition": "Low density residential (dwellings, dual occupancy, semi-detached): primary road, where no average of adjoining dwellings applies",
-     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Zone code inferred from the zone name printed in the record; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "otherwise, 6m.",
-   "clause": "5.2.1 Setbacks C1",
-   "page": 200,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
-  },
-  {
-   "id": "bayside-council-004",
    "zones": [
     "R2"
    ],
@@ -204,10 +162,14 @@
    "quote": "a. where habitable: 1.5m",
    "clause": "5.2.1 Setbacks C3",
    "page": 200,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
-   "id": "bayside-council-005",
+   "id": "bayside-council-004",
    "zones": [
     "R2"
    ],
@@ -255,7 +217,65 @@
    "quote": "b. where non-habitable: 1m",
    "clause": "5.2.1 Setbacks C3",
    "page": 200,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
+  },
+  {
+   "id": "bayside-council-005",
+   "zones": [
+    "R2"
+   ],
+   "appliesTo": [
+    "dual_occupancy",
+    "multi_dwelling",
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiersNot": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Low density residential (dwellings, dual occupancy, semi-detached): primary road, where no average of adjoining dwellings applies",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     2748
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    2748
+   ],
+   "evidence": [
+    {
+     "id": 2748,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "otherwise, 6m.",
+     "clause": "5.2.1 Setbacks C1",
+     "page": 200,
+     "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+     "condition": "Low density residential (dwellings, dual occupancy, semi-detached): primary road, where no average of adjoining dwellings applies",
+     "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "averaging alternative printed beside the fixed value; Zone code inferred from the zone name printed in the record",
+   "quote": "otherwise, 6m.",
+   "clause": "5.2.1 Setbacks C1",
+   "page": 200,
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "bayside-council-006",
@@ -322,7 +342,11 @@
    "quote": "road is 1.5m",
    "clause": "5.2.1 Setbacks C2",
    "page": 200,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "bayside-council-007",
@@ -390,7 +414,11 @@
    "quote": "a. For a ground storey: 4m",
    "clause": "5.2.3 Setbacks C5",
    "page": 210,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "bayside-council-008",
@@ -437,7 +465,11 @@
    "quote": "b. For above the ground storey: 6m",
    "clause": "5.2.3 Setbacks C5",
    "page": 211,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record; CONFLICT: another rule with the same applicability gives a different rear value; both retained, ..."
   },
   {
    "id": "bayside-council-009",
@@ -484,7 +516,11 @@
    "quote": "a. 0.9m (ground floor) and 1.5m first",
    "clause": "5.2.3 Setbacks C4",
    "page": 210,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "bayside-council-010",
@@ -569,7 +605,11 @@
    "quote": "existing setback: 6m",
    "clause": "5.2.3 Setbacks C1",
    "page": 210,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "bayside-council-011",
@@ -613,7 +653,11 @@
    "quote": "6m from the front boundary if the garage",
    "clause": "5.2.3 Setbacks C9",
    "page": 211,
-   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt"
+   "source_file": "DCP/Bayside-Development-Control-Plan-2022.txt",
+   "dcp": "Bayside Development Control Plan 2022 (adopted 25/03/2026, effective 17/04/2026)",
+   "edition": "Bayside DCP 2022, adopted 25 March 2026, effective 17 April 2026",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   }
  ],
  "gaps": [
@@ -645,5 +689,32 @@
   "rules": 11,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (bayside-council-007, bayside-council-008))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

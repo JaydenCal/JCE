@@ -54,7 +54,9 @@
    "quote": "Less than 20m 1.5m 2m",
    "clause": "4A.2 control 8",
    "page": 7,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-002",
@@ -101,7 +103,9 @@
    "quote": "Less than 20m 1.5m 2m",
    "clause": "4A.2 control 8",
    "page": 7,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-003",
@@ -148,7 +152,9 @@
    "quote": "Less than 25m 1.5m 2m",
    "clause": "5A.3 control 8",
    "page": 8,
-   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt"
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-004",
@@ -195,7 +201,9 @@
    "quote": "Less than 25m 1.5m 2m",
    "clause": "5A.3 control 8",
    "page": 8,
-   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt"
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-005",
@@ -243,7 +251,9 @@
    "quote": "25-36m 1.5m 2.5m",
    "clause": "5A.3 control 8",
    "page": 8,
-   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt"
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-006",
@@ -291,7 +301,9 @@
    "quote": "25-36m 1.5m 2.5m",
    "clause": "5A.3 control 8",
    "page": 8,
-   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt"
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-007",
@@ -339,7 +351,11 @@
    "quote": "20m or more 9% of site width 12% of site width",
    "clause": "4A.2 control 8",
    "page": 7,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "ku-ring-gai-council-008",
@@ -387,7 +403,11 @@
    "quote": "20m or more 9% of site width 12% of site width",
    "clause": "4A.2 control 8",
    "page": 7,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "ku-ring-gai-council-009",
@@ -434,7 +454,9 @@
    "quote": "Greater than 36m 2.5m 2.5m",
    "clause": "5A.3 control 8",
    "page": 8,
-   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt"
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-010",
@@ -481,7 +503,9 @@
    "quote": "Greater than 36m 2.5m 2.5m",
    "clause": "5A.3 control 8",
    "page": 8,
-   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt"
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-011",
@@ -527,7 +551,9 @@
    "quote": "Low side 9 metres Low side 9 metres 11 metres",
    "clause": "4A.2 control 3",
    "page": 6,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-012",
@@ -573,7 +599,11 @@
    "quote": "High side 12 metres High side 12 metres 14 metres",
    "clause": "4A.2 control 3",
    "page": 6,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "ku-ring-gai-council-013",
@@ -619,7 +649,11 @@
    "quote": "Low side 9 metres Low side 9 metres 11 metres",
    "clause": "4A.2 control 3",
    "page": 6,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "ku-ring-gai-council-014",
@@ -665,7 +699,11 @@
    "quote": "High side 12 metres High side 12 metres 14 metres",
    "clause": "4A.2 control 3",
    "page": 6,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value; CONFLICT: another rule with the same applicability gives a different front value; both retained, no win..."
   },
   {
    "id": "ku-ring-gai-council-015",
@@ -744,7 +782,9 @@
    "quote": "Setback 3.8m 4.5m",
    "clause": "4A.2 control 13",
    "page": 9,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-016",
@@ -788,7 +828,11 @@
    "quote": "Setback 3.8m 4.5m",
    "clause": "4A.2 control 13",
    "page": 9,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
   },
   {
    "id": "ku-ring-gai-council-017",
@@ -833,7 +877,11 @@
    "quote": "a minimum rear setback",
    "clause": "4A.2 control 7",
    "page": 7,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "ku-ring-gai-council-018",
@@ -877,7 +925,11 @@
    "quote": "48m or less 8m",
    "clause": "5A.3 control 14",
    "page": 10,
-   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt"
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "ku-ring-gai-council-019",
@@ -942,7 +994,9 @@
    "quote": "dwelling is to be a minimum of 12m.",
    "clause": "5A.3 control 6",
    "page": 8,
-   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt"
+   "source_file": "DCP/kdcp-section-a-part-5-dual-occupancy.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-020",
@@ -953,26 +1007,19 @@
     "garage"
    ],
    "conditions": {},
-   "conditionText": [
-    "Part 4B.3 detached carports setback from boundary",
-    "Part 4B.3 width of garage or carport visible from the street, maximum"
-   ],
+   "conditionText": "Part 4B.3 detached carports setback from boundary",
    "garage": {
     "minM": 0.6,
     "sources": [
-     18236,
-     18253
-    ],
-    "behindBuildingLineM": 6.0,
-    "note": "Maximum width 6 m"
+     18236
+    ]
    },
    "front": null,
    "secondaryFront": null,
    "side": null,
    "rear": null,
    "sources": [
-    18236,
-    18253
+    18236
    ],
    "evidence": [
     {
@@ -985,17 +1032,6 @@
      "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
      "condition": "Part 4B.3 detached carports setback from boundary",
      "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
-    },
-    {
-     "id": 18253,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": "is not to be greater than 6m, as measured to the outer",
-     "clause": "4B.3 control 6",
-     "page": 18,
-     "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
-     "condition": "Part 4B.3 width of garage or carport visible from the street, maximum",
-     "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
     }
    ],
    "confidence": "medium",
@@ -1003,7 +1039,9 @@
    "quote": "Detached carports are to be single storey and set back 0.6m",
    "clause": "4B.3 control 11",
    "page": 19,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-021",
@@ -1047,7 +1085,9 @@
    "quote": "Detached garages are to be single storey and set back 1.5m",
    "clause": "4B.3 control 10",
    "page": 19,
-   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt"
+   "source_file": "DCP/kdcp-section-a-part-4-dwelling-houses.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-022",
@@ -1091,7 +1131,9 @@
    "quote": "a minimum of 6m from the side boundary for all levels up to the",
    "clause": "7A.3 control 5(i)",
    "page": 11,
-   "source_file": "DCP/kdcp-section-a-part-7-residential-flat-buildings.txt"
+   "source_file": "DCP/kdcp-section-a-part-7-residential-flat-buildings.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   },
   {
    "id": "ku-ring-gai-council-023",
@@ -1135,7 +1177,11 @@
    "quote": "ii) a minimum of 9m to the fifth storey and above",
    "clause": "7A.3 control 5(ii)",
    "page": 11,
-   "source_file": "DCP/kdcp-section-a-part-7-residential-flat-buildings.txt"
+   "source_file": "DCP/kdcp-section-a-part-7-residential-flat-buildings.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "ku-ring-gai-council-024",
@@ -1180,12 +1226,14 @@
    "quote": "Rear setbacks for secondary dwellings are to be a minimum of 6m",
    "clause": "4.1A.3 control 2",
    "page": 7,
-   "source_file": "DCP/kdcp-section-a-part-4.1-secondary-dwellings.txt"
+   "source_file": "DCP/kdcp-section-a-part-4.1-secondary-dwellings.txt",
+   "dcp": "Ku-ring-gai Development Control Plan (Sections A, B and C; Part 24 Water Management, Part 4 Dwelling Houses revised, Part 5 Dual Occupancy, Part 6 and 7 with 2023 and later drafts; adoption date UNVERIFIED)",
+   "edition": "Ku-ring-gai DCP (edition not stated in extracted text) UNVERIFIED"
   }
  ],
  "gaps": [
   "No garage setback rule",
-  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 18234",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 18253, 18234",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP Part 6 and 7 side, rear and street setback diagrams and Part 4C.1 envelope diagrams are graphics; only table text recorded | Dual occupancy front setback built-upon area by layout table (Part 5A.4 control 2) and garage width percentage table (Part 5B.2) layouts could not be resolved from text; not recorded"
  ],
  "notes": "Built from 29 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -1204,7 +1252,34 @@
  "counts": {
   "records": 29,
   "rules": 24,
-  "recordsNotModelled": 1,
+  "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 6
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); side (conflicting rules of equal specificity (ku-ring-gai-council-007, ku-ring-gai-council-009)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (ku-ring-gai-council-011, ku-ring-gai-council-012, ku-ring-gai-council-019)); side (conflicting rules of equal specificity (ku-ring-gai-council-001, ku-ring-gai-council-003, ku-ring-gai-council-007)); rear (conflicting rules of equal specificity (ku-ring-gai-council-019, ku-ring-gai-council-024))"
+  }
  }
 }

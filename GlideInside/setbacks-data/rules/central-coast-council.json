@@ -56,7 +56,9 @@
    "quote": "To a local roadway on lots with a site 3.0m",
    "clause": "Table 1 a(iii)",
    "page": 7,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-002",
@@ -109,7 +111,9 @@
    "quote": "of the nearest 2 dwelling houses",
    "clause": "Table 1 a(i)",
    "page": 7,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-003",
@@ -158,7 +162,9 @@
    "quote": "within 40m of the lot - 4.5m",
    "clause": "Table 1 a(i)",
    "page": 7,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-004",
@@ -207,7 +213,9 @@
    "quote": "0 (Zero) to one side only for a",
    "clause": "Table 1 c(ii)",
    "page": 8,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-005",
@@ -256,7 +264,9 @@
    "quote": "0 (Zero) for 20m or 50% of the",
    "clause": "Table 1 c(iii)",
    "page": 8,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-006",
@@ -307,7 +317,9 @@
    "quote": "To a Classified Road. 7.5m",
    "clause": "Table 1 a(ii)",
    "page": 7,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-007",
@@ -358,7 +370,11 @@
    "quote": "To a parallel road or public reserve 3.0m",
    "clause": "Table 1 b(ii)",
    "page": 7,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
   },
   {
    "id": "central-coast-council-008",
@@ -407,7 +423,9 @@
    "quote": "0.9 m for a maximum width 50%",
    "clause": "Table 1 b(i)",
    "page": 7,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-009",
@@ -457,7 +475,9 @@
    "quote": "0.9m plus one-quarter of the height",
    "clause": "Table 1 c(i)",
    "page": 8,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-010",
@@ -544,7 +564,9 @@
    "quote": "Secondary boundary setback Note: a corner lot must have an interior angle at the 2m",
    "clause": "Table 1 d",
    "page": 8,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-011",
@@ -591,7 +613,11 @@
    "quote": "height greater than 4.5m – 6m",
    "clause": "Table 1 b(i)",
    "page": 7,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "central-coast-council-012",
@@ -607,7 +633,8 @@
    "conditions": {},
    "conditionText": "Residential lots (R1, R2, R3, RU5): garage and carport structures behind front boundary setback",
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      9192
     ]
@@ -623,7 +650,7 @@
     {
      "id": 9192,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "A minimum of 1m behind the front",
      "clause": "Table 1 a(iv)",
      "page": 7,
@@ -637,7 +664,9 @@
    "quote": "A minimum of 1m behind the front",
    "clause": "Table 1 a(iv)",
    "page": 7,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-013",
@@ -688,56 +717,12 @@
    "quote": "lots with a site area up to 4000m2 10m",
    "clause": "Table 2 a(i)",
    "page": 10,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
    "id": "central-coast-council-014",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {
-    "lotWidthMaxM": 12.0
-   },
-   "conditionText": "Garage door openings within 7.5 m of and facing primary or parallel road: lot 12 m wide or less at building line, maximum total width",
-   "garage": {
-    "minM": null,
-    "behindBuildingLineM": 6.0,
-    "sources": [
-     9225
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    9225
-   ],
-   "evidence": [
-    {
-     "id": 9225,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": "6m if the lot has a width measured at the building line of 12m or less",
-     "clause": "2.1.3.3.2 a",
-     "page": 12,
-     "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
-     "condition": "Garage door openings within 7.5 m of and facing primary or parallel road: lot 12 m wide or less at building line, maximum total width",
-     "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "6m if the lot has a width measured at the building line of 12m or less",
-   "clause": "2.1.3.3.2 a",
-   "page": 12,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
-  },
-  {
-   "id": "central-coast-council-015",
    "zones": [
     "*"
    ],
@@ -780,10 +765,12 @@
    "quote": "height of up to 3.3m— 0 (Zero)",
    "clause": "Table 1 g(i)",
    "page": 9,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
-   "id": "central-coast-council-016",
+   "id": "central-coast-council-015",
    "zones": [
     "*"
    ],
@@ -826,10 +813,12 @@
    "quote": "height of up to 3.8m— 0.5m",
    "clause": "Table 1 g(ii)",
    "page": 9,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development"
   },
   {
-   "id": "central-coast-council-017",
+   "id": "central-coast-council-016",
    "zones": [
     "RU*"
    ],
@@ -872,10 +861,14 @@
    "quote": "for dwellings and ancillary development 2.5m",
    "clause": "Table 2 c(i)",
    "page": 10,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
-   "id": "central-coast-council-018",
+   "id": "central-coast-council-017",
    "zones": [
     "RU*"
    ],
@@ -918,10 +911,14 @@
    "quote": "lots with a site area greater than 4000m2 20m",
    "clause": "Table 2 a(ii)",
    "page": 10,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
-   "id": "central-coast-council-019",
+   "id": "central-coast-council-018",
    "zones": [
     "RU*"
    ],
@@ -966,10 +963,14 @@
    "quote": "40m or as mapped",
    "clause": "Table 2 e",
    "page": 11,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
-   "id": "central-coast-council-020",
+   "id": "central-coast-council-019",
    "zones": [
     "RU*"
    ],
@@ -1011,10 +1012,14 @@
    "quote": "for dwellings and ancillary development 10m",
    "clause": "Table 2 b(i)",
    "page": 10,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
-   "id": "central-coast-council-021",
+   "id": "central-coast-council-020",
    "zones": [
     "RU*"
    ],
@@ -1056,13 +1061,17 @@
    "quote": "outbuildings – other 5m",
    "clause": "Table 2 b(iii)",
    "page": 10,
-   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf"
+   "source_file": "DCP/2.1_Dwelling_Houses_Secondary_Dwellings_and_Ancillary_Development.pdf",
+   "dcp": "Central Coast Development Control Plan 2022 (chapters saved as separate files; legacy Gosford DCP 2013 and Wyong-era chapters also saved; adoption date UNVERIFIED)",
+   "edition": "Central Coast DCP 2022 Chapter 2.1 Dwelling Houses, Secondary Dwellings and Ancillary Development",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; CONFLICT: another rule with the same applicability gives..."
   }
  ],
  "gaps": [
   "R5: no numeric side/rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
   "No garage setback rule",
-  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 9207",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 9225, 9207",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): DCP chapters 2.2, 2.3, 2.5, 2.9, 3.3, 5.9 and Legacy/4-Subdivision skimmed only or not extracted (precinct and site-specific controls)"
  ],
  "notes": "Built from 24 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -1153,7 +1162,7 @@
    "rear": false,
    "secondaryFront": false,
    "garage": false,
-   "rules": 3
+   "rules": 2
   },
   "RU*": {
    "front": true,
@@ -1168,8 +1177,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 24,
-  "rules": 21,
-  "recordsNotModelled": 1,
+  "rules": 20,
+  "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

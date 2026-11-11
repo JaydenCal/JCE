@@ -53,7 +53,9 @@
    "quote": "Primary road 3m 4.5m",
    "clause": "D2 section 6.0 C-2",
    "page": 306,
-   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
+   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+   "dcp": "Newcastle Development Control Plan 2023, Version 2 (adoption date UNVERIFIED)",
+   "edition": "Version 2 (DCP 2023)"
   },
   {
    "id": "newcastle-city-council-002",
@@ -99,7 +101,9 @@
    "quote": "Primary road 3m 4.5m",
    "clause": "D2 section 6.0 C-2",
    "page": 306,
-   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
+   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+   "dcp": "Newcastle Development Control Plan 2023, Version 2 (adoption date UNVERIFIED)",
+   "edition": "Version 2 (DCP 2023)"
   },
   {
    "id": "newcastle-city-council-003",
@@ -150,7 +154,11 @@
    "quote": "a. 900mm set back from each side boundary up to a height of 5.5m then in at an angle of",
    "clause": "D2 section 9.0 C-1a",
    "page": 311,
-   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
+   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+   "dcp": "Newcastle Development Control Plan 2023, Version 2 (adoption date UNVERIFIED)",
+   "edition": "Version 2 (DCP 2023)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
   },
   {
    "id": "newcastle-city-council-004",
@@ -201,60 +209,14 @@
    "quote": "a. 900mm setback from each side boundary up to a height of 4.5m then in at an angle of 4:1 up to",
    "clause": "D2 section 10.0 C-1a",
    "page": 313,
-   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
+   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+   "dcp": "Newcastle Development Control Plan 2023, Version 2 (adoption date UNVERIFIED)",
+   "edition": "Version 2 (DCP 2023)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (height_plane); see conditionText"
   },
   {
    "id": "newcastle-city-council-005",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "wallHeightOverM": 4.5,
-    "qualifiers": [
-     "adjoins_other",
-     "no_adjoining_buildings"
-    ]
-   },
-   "conditionText": "Dwelling house, part of building over 4.5 m height with no adjoining dwellings over 4.5 m",
-   "rear": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     24178
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "garage": null,
-   "sources": [
-    24178
-   ],
-   "evidence": [
-    {
-     "id": 24178,
-     "parameter": "rear_setback",
-     "slot": "rear",
-     "quote": "ii. if there are no adjoining dwellings over 4.5m in height - a 6m setback",
-     "clause": "D2 section 9.0 C-4b",
-     "page": 312,
-     "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
-     "condition": "Dwelling house, part of building over 4.5 m height with no adjoining dwellings over 4.5 m",
-     "edition": "Version 2 (DCP 2023)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "ii. if there are no adjoining dwellings over 4.5m in height - a 6m setback",
-   "clause": "D2 section 9.0 C-4b",
-   "page": 312,
-   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
-  },
-  {
-   "id": "newcastle-city-council-006",
    "zones": [
     "*"
    ],
@@ -299,7 +261,63 @@
    "quote": "or if none exists 9m.",
    "clause": "D2 section 6.0 C-2",
    "page": 306,
-   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
+   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+   "dcp": "Newcastle Development Control Plan 2023, Version 2 (adoption date UNVERIFIED)",
+   "edition": "Version 2 (DCP 2023)"
+  },
+  {
+   "id": "newcastle-city-council-006",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "wallHeightOverM": 4.5,
+    "qualifiers": [
+     "no_adjoining_buildings"
+    ],
+    "qualifiersNot": [
+     "adjoins_other"
+    ]
+   },
+   "conditionText": "Dwelling house, part of building over 4.5 m height with no adjoining dwellings over 4.5 m",
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     24178
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    24178
+   ],
+   "evidence": [
+    {
+     "id": 24178,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "ii. if there are no adjoining dwellings over 4.5m in height - a 6m setback",
+     "clause": "D2 section 9.0 C-4b",
+     "page": 312,
+     "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+     "condition": "Dwelling house, part of building over 4.5 m height with no adjoining dwellings over 4.5 m",
+     "edition": "Version 2 (DCP 2023)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "ii. if there are no adjoining dwellings over 4.5m in height - a 6m setback",
+   "clause": "D2 section 9.0 C-4b",
+   "page": 312,
+   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+   "dcp": "Newcastle Development Control Plan 2023, Version 2 (adoption date UNVERIFIED)",
+   "edition": "Version 2 (DCP 2023)"
   },
   {
    "id": "newcastle-city-council-007",
@@ -345,7 +363,9 @@
    "quote": "a. any part of the building up to 4.5m in height – a 3m setback",
    "clause": "D2 section 9.0 C-4a",
    "page": 312,
-   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
+   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+   "dcp": "Newcastle Development Control Plan 2023, Version 2 (adoption date UNVERIFIED)",
+   "edition": "Version 2 (DCP 2023)"
   },
   {
    "id": "newcastle-city-council-008",
@@ -389,7 +409,9 @@
    "quote": "Corner lot 2m 2m",
    "clause": "D2 section 6.0 C-2",
    "page": 306,
-   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
+   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+   "dcp": "Newcastle Development Control Plan 2023, Version 2 (adoption date UNVERIFIED)",
+   "edition": "Version 2 (DCP 2023)"
   },
   {
    "id": "newcastle-city-council-009",
@@ -449,7 +471,9 @@
    "quote": "the entry to the basement car park, garage or carport is setback at least of 5.5m",
    "clause": "D3 C-1",
    "page": 359,
-   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf"
+   "source_file": "DCP/Newcastle-DCP-2023-Version-2.pdf",
+   "dcp": "Newcastle Development Control Plan 2023, Version 2 (adoption date UNVERIFIED)",
+   "edition": "Version 2 (DCP 2023)"
   }
  ],
  "gaps": [
@@ -473,5 +497,32 @@
   "rules": 9,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  }
  }
 }

@@ -21,7 +21,8 @@
    "conditions": {
     "precinct": "Ploughmans Valley DCP area",
     "qualifiers": [
-     "classified_road"
+     "classified_road",
+     "orientation_specific"
     ]
    },
    "conditionText": "Ploughmans Valley DCP area: from centreline of Northern Distributor Road",
@@ -53,11 +54,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText",
    "quote": "A 50m setback applies from the centreline of the Northern Distributor Road.",
    "clause": "PO 7.7-4 guideline n",
    "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText"
   },
   {
    "id": "orange-city-council-002",
@@ -68,59 +73,7 @@
     "any"
    ],
    "conditions": {
-    "precinct": "Ploughmans Valley DCP area",
-    "qualifiers": [
-     "laneway"
-    ]
-   },
-   "conditionText": "Ploughmans Valley DCP area: lots along Ploughmans Lane",
-   "front": {
-    "minM": 8.0,
-    "basis": "fixed",
-    "sources": [
-     25111
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    25111
-   ],
-   "evidence": [
-    {
-     "id": 25111,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "A 8m setback applies from the street frontage for lots along Ploughmans Lane.",
-     "clause": "PO 7.7-4 guideline o",
-     "page": 24,
-     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
-     "condition": "Ploughmans Valley DCP area: lots along Ploughmans Lane",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "A 8m setback applies from the street frontage for lots along Ploughmans Lane.",
-   "clause": "PO 7.7-4 guideline o",
-   "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
-  },
-  {
-   "id": "orange-city-council-003",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {
-    "precinct": "Ploughmans Valley DCP area",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Ploughmans Valley DCP area"
    },
    "conditionText": "Ploughmans Valley DCP area: local service roads (22 m road reserve)",
    "front": {
@@ -151,14 +104,16 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "A 6m setback applies to local service roads in Ploughmans Valley.",
    "clause": "PO 7.7-4 guideline l",
    "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "orange-city-council-004",
+   "id": "orange-city-council-003",
    "zones": [
     "*"
    ],
@@ -196,12 +151,66 @@
      "edition": "UNVERIFIED"
     }
    ],
-   "confidence": "medium",
-   "needsReview": null,
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
    "quote": "A 15m setback applies from the street frontage for lots along Forbes Road and Cargo Road.",
    "clause": "PO 7.7-4 guideline m",
    "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "orange-city-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Ploughmans Valley DCP area"
+   },
+   "conditionText": "Ploughmans Valley DCP area: lots along Ploughmans Lane",
+   "front": {
+    "minM": 8.0,
+    "basis": "fixed",
+    "sources": [
+     25111
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    25111
+   ],
+   "evidence": [
+    {
+     "id": 25111,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "A 8m setback applies from the street frontage for lots along Ploughmans Lane.",
+     "clause": "PO 7.7-4 guideline o",
+     "page": 24,
+     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+     "condition": "Ploughmans Valley DCP area: lots along Ploughmans Lane",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "A 8m setback applies from the street frontage for lots along Ploughmans Lane.",
+   "clause": "PO 7.7-4 guideline o",
+   "page": 24,
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "orange-city-council-005",
@@ -249,7 +258,9 @@
    "quote": "A 9-metre front setback applies from the street frontage for main or defined arterial roads.",
    "clause": "PO 7.7-4 guideline e",
    "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "orange-city-council-006",
@@ -298,7 +309,9 @@
    "quote": "the setback shall be up to the front building line of the residential part of a",
    "clause": "PO 7.7-4 guideline c",
    "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "orange-city-council-007",
@@ -322,12 +335,12 @@
     ]
    },
    "garage": {
-    "minM": 5.5,
-    "note": "1.5 m behind building line or at least 5.5 m, whichever is greater",
+    "minM": null,
+    "behindBuildingLineM": 5.5,
     "sources": [
      25107
     ],
-    "basis": "greater_of"
+    "note": "1.5 m behind building line or at least 5.5 m, whichever is greater"
    },
    "side": {
     "minM": 0.9,
@@ -359,7 +372,7 @@
     {
      "id": 25107,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Garages shall be setback 1.5m behind the building line as established above, or at least 5.5m which",
      "clause": "PO 7.7-4 guideline g",
      "page": 24,
@@ -384,7 +397,9 @@
    "quote": "a 2m secondary setback applies to corner",
    "clause": "PO 7.7-4 guideline d",
    "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "orange-city-council-008",
@@ -433,7 +448,9 @@
    "quote": "Rear lane setbacks 3.0m",
    "clause": "5.1 Setbacks, large lot table",
    "page": 33,
-   "source_file": "DCP/Shiralee-DCP-2015.pdf"
+   "source_file": "DCP/Shiralee-DCP-2015.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "orange-city-council-009",
@@ -519,7 +536,9 @@
    "quote": "Primary Front Setback 8.0m",
    "clause": "5.1 Setbacks, large lot table",
    "page": 33,
-   "source_file": "DCP/Shiralee-DCP-2015.pdf"
+   "source_file": "DCP/Shiralee-DCP-2015.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "orange-city-council-010",
@@ -568,7 +587,11 @@
    "quote": "A 15-metre setback applies for dwellings with a rear or side boundary adjoining a distributor road.",
    "clause": "PO 7.7-4 guideline f",
    "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "orange-city-council-011",
@@ -612,7 +635,9 @@
    "quote": "recent years) a 4.5m setback applies or as otherwise defined for specific roads.",
    "clause": "PO 7.7-4 guideline b",
    "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "orange-city-council-012",
@@ -657,58 +682,12 @@
    "quote": "Garage / Carport 10.0m",
    "clause": "5.1 Setbacks, large lot table",
    "page": 33,
-   "source_file": "DCP/Shiralee-DCP-2015.pdf"
+   "source_file": "DCP/Shiralee-DCP-2015.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "orange-city-council-013",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "building_element"
-    ]
-   },
-   "conditionText": "Garage projection in front of main facade (maximum)",
-   "garage": {
-    "minM": null,
-    "behindBuildingLineM": 3.0,
-    "sources": [
-     25087
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    25087
-   ],
-   "evidence": [
-    {
-     "id": 25087,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": "project up to 3m (half the normal depth of a garage) in",
-     "clause": "PO 7.7-4 guideline h",
-     "page": 24,
-     "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
-     "condition": "Garage projection in front of main facade (maximum)",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "project up to 3m (half the normal depth of a garage) in",
-   "clause": "PO 7.7-4 guideline h",
-   "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
-  },
-  {
-   "id": "orange-city-council-014",
    "zones": [
     "*"
    ],
@@ -748,10 +727,13 @@
    "quote": "For three or more garages, the garage openings must be set back at least 8m from the front building",
    "clause": "PO 7.7-4 guideline j",
    "page": 24,
-   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf"
+   "source_file": "DCP/DCP-07-Development-in-Residential-Areas-As-Adopted-7-October-2025.pdf",
+   "dcp": "Orange Development Control Plan 2004 (chapters 00 to 19 as adopted 7 October 2025 where printed; Chapter 7 Development in Residential Areas, Chapter 15 Car Parking, Chapter 4A Flood Affected Land, Shiralee DCP 2015 for the Shiralee release area). Orange LEP 2000 is cited by the DCP; the DCP text refers to an earlier LEP, so edition currency is UNVERIFIED",
+   "edition": "UNVERIFIED"
   }
  ],
  "gaps": [
+  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 25087",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): roads: road_hierarchy per-class design speeds, intersection spacing, kerb return radii (Code defers to Austroads and TfNSW; Shiralee DCP radii not extracted) | earthworks: fill/cut exemption depths (DCP exempt-development criteria in Appendices not extracted) | dev_controls: flood Annexure 3 matrix mapping land use and flood zone to response level (column layout lost, not recorded); height_max and fsr_max set by LEP; Shiralee DCP two-column text jumbled so only large-lot setback and lot tables recorded | Standard drawings file Adopted-2024-Subdivision-and-Development-Code-Drawings-April-2024 not mined; Redmond Place Precinct DCP, West End Precinct DCP, Phillip Street DCP, Eastside Precinct D"
  ],
  "notes": "Built from 18 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -762,7 +744,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": true,
-   "rules": 14
+   "rules": 13
   }
  },
  "precincts": [
@@ -772,8 +754,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 18,
-  "rules": 14,
-  "recordsNotModelled": 0,
+  "rules": 13,
+  "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  }
  }
 }

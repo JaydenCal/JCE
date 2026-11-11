@@ -152,7 +152,9 @@
    "quote": "boundary a minimum of 10 metres.",
    "clause": "G.1.5.1(c)",
    "page": 14,
-   "source_file": "DCP/Cowra_DCP2026_Part_G_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_G_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-002",
@@ -196,7 +198,11 @@
    "quote": "from the front property boundary and 15 metres from the",
    "clause": "G.1.5.4(a)",
    "page": 15,
-   "source_file": "DCP/Cowra_DCP2026_Part_G_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_G_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "cowra-shire-council-003",
@@ -240,7 +246,11 @@
    "quote": "from the front property boundary and 15 metres from the",
    "clause": "G.1.5.4(a)",
    "page": 15,
-   "source_file": "DCP/Cowra_DCP2026_Part_G_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_G_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "cowra-shire-council-004",
@@ -300,7 +310,9 @@
    "quote": "A minimum distance of 15 metres in cases where 2",
    "clause": "G.1.5(a)(ii)",
    "page": 14,
-   "source_file": "DCP/Cowra_DCP2026_Part_G_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_G_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-005",
@@ -346,7 +358,9 @@
    "quote": "a minimum 3 metres from the rear boundary.",
    "clause": "E.1.11(a)",
    "page": 17,
-   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-006",
@@ -413,7 +427,9 @@
    "quote": "front setback is 4.5m.",
    "clause": "E.1.9.1(a)(iii)",
    "page": 12,
-   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-007",
@@ -480,7 +496,9 @@
    "quote": "minimum front setback is 6m.",
    "clause": "E.1.9.1(a)(iv)",
    "page": 12,
-   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-008",
@@ -529,7 +547,9 @@
    "quote": "setback difference is not more than 2m, the lesser",
    "clause": "E.1.9.1(a)(i)",
    "page": 12,
-   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-009",
@@ -575,7 +595,9 @@
    "quote": "Single storey buildings should be setback a minimum 0.9",
    "clause": "E.1.10(a)",
    "page": 16,
-   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-010",
@@ -621,7 +643,9 @@
    "quote": "Two storey buildings should be setback a minimum 1.5",
    "clause": "E.1.10(b)",
    "page": 16,
-   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-011",
@@ -665,7 +689,9 @@
    "quote": "4.5 metres.",
    "clause": "E.1.9.4",
    "page": 15,
-   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-012",
@@ -729,7 +755,9 @@
    "quote": "Single storey buildings should be setback a minimum 3",
    "clause": "E.2.13(a)",
    "page": 41,
-   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-013",
@@ -793,7 +821,9 @@
    "quote": "Two storey buildings should be setback a minimum 6",
    "clause": "E.2.13(b)",
    "page": 41,
-   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-014",
@@ -858,7 +888,9 @@
    "quote": "minimum front setback is 6m.",
    "clause": "E.2.11.1 Scenario 1",
    "page": 36,
-   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_E_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cowra-shire-council-015",
@@ -925,7 +957,11 @@
    "quote": "i. 3m, incorporating a 2m wide landscape strip, where",
    "clause": "I.1.4.2(b)(i)",
    "page": 8,
-   "source_file": "DCP/Cowra_DCP2026_Part_I_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_I_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
    "id": "cowra-shire-council-016",
@@ -974,7 +1010,11 @@
    "quote": "ii. 6m, incorporating a 3m wide landscape strip, where",
    "clause": "I.1.4.2(b)(ii)",
    "page": 8,
-   "source_file": "DCP/Cowra_DCP2026_Part_I_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_I_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
    "id": "cowra-shire-council-017",
@@ -1023,7 +1063,11 @@
    "quote": "ii. 6m, incorporating a 3m wide landscape strip, where",
    "clause": "I.1.4.2(b)(ii)",
    "page": 8,
-   "source_file": "DCP/Cowra_DCP2026_Part_I_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_I_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
    "id": "cowra-shire-council-018",
@@ -1067,7 +1111,11 @@
    "quote": "a. Front setback areas must be a minimum of 8m,",
    "clause": "I.1.4.1(a)",
    "page": 7,
-   "source_file": "DCP/Cowra_DCP2026_Part_I_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_I_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "cowra-shire-council-019",
@@ -1111,7 +1159,11 @@
    "quote": "All new industrial buildings are to be setback a minimum 30",
    "clause": "I.2.5",
    "page": 17,
-   "source_file": "DCP/Cowra_DCP2026_Part_I_main_index.txt"
+   "source_file": "DCP/Cowra_DCP2026_Part_I_main_index.txt",
+   "dcp": "Cowra Development Control Plan 2026, Parts A to P (adoption date UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   }
  ],
  "gaps": [
@@ -1153,5 +1205,32 @@
   "rules": 19,
   "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (cowra-shire-council-004, cowra-shire-council-007)); side (conflicting rules of equal specificity (cowra-shire-council-001, cowra-shire-council-003, cowra-shire-council-009)); rear (conflicting rules of equal specificity (cowra-shire-council-001, cowra-shire-council-002, cowra-shire-council-007))"
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

@@ -57,7 +57,11 @@
    "quote": "Front Setback 50m",
    "clause": "B. Additional Controls",
    "page": 6,
-   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf"
+   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "the-hills-shire-council-002",
@@ -108,7 +112,9 @@
    "quote": "2 storey 900mm 675mm",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "the-hills-shire-council-003",
@@ -159,7 +165,9 @@
    "quote": "2 storey 4 metres 3775mm",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "the-hills-shire-council-004",
@@ -210,7 +218,9 @@
    "quote": "2 storey 4 metres 3775mm",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "the-hills-shire-council-005",
@@ -260,7 +270,9 @@
    "quote": "1 storey 900 mm 675 mm",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "the-hills-shire-council-006",
@@ -310,7 +322,9 @@
    "quote": "1 storey 900 mm 675 mm",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "the-hills-shire-council-007",
@@ -358,7 +372,9 @@
    "quote": "- Urban 10 metres",
    "clause": "Table 2",
    "page": 8,
-   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "the-hills-shire-council-008",
@@ -424,7 +440,9 @@
    "quote": "a minimum of 4.5 metres",
    "clause": "Table 2",
    "page": 8,
-   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "the-hills-shire-council-009",
@@ -436,7 +454,7 @@
    ],
    "conditions": {
     "cornerLot": true,
-    "qualifiers": [
+    "qualifiersNot": [
      "classified_road"
     ]
    },
@@ -473,7 +491,9 @@
    "quote": "a setback of not less than 6 metres for the",
    "clause": "2.14.1(d)",
    "page": 11,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
    "id": "the-hills-shire-council-010",
@@ -523,7 +543,11 @@
    "quote": "1 storey 6 metres",
    "clause": "2.14.1(j)",
    "page": 12,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "the-hills-shire-council-011",
@@ -572,7 +596,9 @@
    "quote": "4m for the single storey element and 6m for the 2",
    "clause": "2.14.1(i)",
    "page": 12,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
    "id": "the-hills-shire-council-012",
@@ -621,7 +647,9 @@
    "quote": "4m for the single storey element and 6m for the 2",
    "clause": "2.14.1(i)",
    "page": 12,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
    "id": "the-hills-shire-council-013",
@@ -671,7 +699,9 @@
    "quote": "3 storey 1500mm 1175mm",
    "clause": "2.14.1(g)",
    "page": 12,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
    "id": "the-hills-shire-council-014",
@@ -721,7 +751,9 @@
    "quote": "1 or 2 storeys 900mm 675mm",
    "clause": "2.14.1(g)",
    "page": 12,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
    "id": "the-hills-shire-council-015",
@@ -771,7 +803,9 @@
    "quote": "3 storey 1500mm 1175mm",
    "clause": "2.14.1(g)",
    "page": 12,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
    "id": "the-hills-shire-council-016",
@@ -821,7 +855,9 @@
    "quote": "1 or 2 storeys 900mm 675mm",
    "clause": "2.14.1(g)",
    "page": 12,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
    "id": "the-hills-shire-council-017",
@@ -870,7 +906,9 @@
    "quote": "8 metres",
    "clause": "2.14.1(j)",
    "page": 12,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
    "id": "the-hills-shire-council-018",
@@ -886,7 +924,6 @@
     ]
    },
    "conditionText": [
-    "Residential DCP (Part B Section 2): corner allotments with no classified road frontage, secondary road frontage",
     "Residential DCP (Part B Section 2): minimum road frontage setback for any classified road",
     "Residential DCP (Part B Section 2): non classified roads, default primary road frontage setback"
    ],
@@ -898,20 +935,13 @@
      34289
     ]
    },
-   "secondaryFront": {
-    "minM": 4.0,
-    "basis": "fixed",
-    "sources": [
-     34296
-    ]
-   },
+   "secondaryFront": null,
    "side": null,
    "rear": null,
    "garage": null,
    "sources": [
     34289,
-    34290,
-    34296
+    34290
    ],
    "evidence": [
     {
@@ -935,17 +965,6 @@
      "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
      "condition": "Residential DCP (Part B Section 2): minimum road frontage setback for any classified road",
      "edition": "In Force 6 May 2022"
-    },
-    {
-     "id": 34296,
-     "parameter": "front_secondary",
-     "slot": "secondaryFront",
-     "quote": "primary frontage and 4 metres to a secondary road",
-     "clause": "2.14.1(d)",
-     "page": 11,
-     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
-     "condition": "Residential DCP (Part B Section 2): corner allotments with no classified road frontage, secondary road frontage",
-     "edition": "In Force 6 May 2022"
     }
    ],
    "confidence": "medium",
@@ -953,7 +972,9 @@
    "quote": "Primary Road Frontage Setback 10m",
    "clause": "2.14.1(b)",
    "page": 11,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
    "id": "the-hills-shire-council-019",
@@ -1002,10 +1023,62 @@
    "quote": "the greater setback",
    "clause": "2.14.1(c)",
    "page": 11,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
    "id": "the-hills-shire-council-020",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiersNot": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "Residential DCP (Part B Section 2): corner allotments with no classified road frontage, secondary road frontage",
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     34296
+    ]
+   },
+   "front": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    34296
+   ],
+   "evidence": [
+    {
+     "id": 34296,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "primary frontage and 4 metres to a secondary road",
+     "clause": "2.14.1(d)",
+     "page": 11,
+     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+     "condition": "Residential DCP (Part B Section 2): corner allotments with no classified road frontage, secondary road frontage",
+     "edition": "In Force 6 May 2022"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "primary frontage and 4 metres to a secondary road",
+   "clause": "2.14.1(d)",
+   "page": 11,
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
+  },
+  {
+   "id": "the-hills-shire-council-021",
    "zones": [
     "*"
    ],
@@ -1048,10 +1121,12 @@
    "quote": "4 metres",
    "clause": "2.14.1(h)",
    "page": 12,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
-   "id": "the-hills-shire-council-021",
+   "id": "the-hills-shire-council-022",
    "zones": [
     "*"
    ],
@@ -1094,10 +1169,12 @@
    "quote": "6 metres",
    "clause": "2.14.1(h)",
    "page": 12,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
-   "id": "the-hills-shire-council-022",
+   "id": "the-hills-shire-council-023",
    "zones": [
     "*"
    ],
@@ -1187,10 +1264,12 @@
    "quote": "West Pennant Hills Valley 1 7.5",
    "clause": "2.14.1(b) table",
    "page": 11,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
-   "id": "the-hills-shire-council-023",
+   "id": "the-hills-shire-council-024",
    "zones": [
     "*"
    ],
@@ -1231,10 +1310,14 @@
    "quote": "Bella Vista Residential 4 6m",
    "clause": "2.14.1(b) table",
    "page": 11,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "the-hills-shire-council-024",
+   "id": "the-hills-shire-council-025",
    "zones": [
     "*"
    ],
@@ -1275,10 +1358,14 @@
    "quote": "Setback to access road: 4.5m",
    "clause": "Minimum Setbacks",
    "page": 10,
-   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf"
+   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "the-hills-shire-council-025",
+   "id": "the-hills-shire-council-026",
    "zones": [
     "*"
    ],
@@ -1286,27 +1373,21 @@
     "garage"
    ],
    "conditions": {},
-   "conditionText": [
-    "Residential DCP (Part B Section 2): garage maximum width",
-    "Residential DCP (Part B Section 2): garages, minimum"
-   ],
+   "conditionText": "Residential DCP (Part B Section 2): garages, minimum",
    "garage": {
     "minM": 5.5,
-    "note": "Garages no more than 6.5 m wide and not extending across more than 50% of property width at the building line",
+    "note": "Garage setback is the greater of the setbacks in (a), (b), (c) or 5.5 m",
     "sources": [
-     34298,
-     34315
+     34298
     ],
-    "basis": "greater_of",
-    "behindBuildingLineM": 6.5
+    "basis": "greater_of"
    },
    "front": null,
    "secondaryFront": null,
    "side": null,
    "rear": null,
    "sources": [
-    34298,
-    34315
+    34298
    ],
    "evidence": [
     {
@@ -1319,17 +1400,6 @@
      "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
      "condition": "Residential DCP (Part B Section 2): garages, minimum",
      "edition": "In Force 6 May 2022"
-    },
-    {
-     "id": 34315,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": "more than 6.5m in width and should not extend",
-     "clause": "2.14.6(e)",
-     "page": 19,
-     "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
-     "condition": "Residential DCP (Part B Section 2): garage maximum width",
-     "edition": "In Force 6 May 2022"
     }
    ],
    "confidence": "medium",
@@ -1337,10 +1407,12 @@
    "quote": "5.5 metres, whichever is the greater",
    "clause": "2.14.1(e)",
    "page": 11,
-   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf"
+   "source_file": "DCP/the-hills-dcp-part-b-section-2-residential.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "In Force 6 May 2022"
   },
   {
-   "id": "the-hills-shire-council-026",
+   "id": "the-hills-shire-council-027",
    "zones": [
     "*"
    ],
@@ -1380,10 +1452,14 @@
    "quote": "Garages: 5.5m",
    "clause": "Minimum Setbacks",
    "page": 10,
-   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf"
+   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different garage value; both retained, no winner chosen"
   },
   {
-   "id": "the-hills-shire-council-027",
+   "id": "the-hills-shire-council-028",
    "zones": [
     "*"
    ],
@@ -1426,10 +1502,12 @@
    "quote": "Second Storey Components 6 metres",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "the-hills-shire-council-028",
+   "id": "the-hills-shire-council-029",
    "zones": [
     "*"
    ],
@@ -1474,10 +1552,12 @@
    "quote": "Urban Classified Road 10 metres",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "the-hills-shire-council-029",
+   "id": "the-hills-shire-council-030",
    "zones": [
     "*"
    ],
@@ -1520,10 +1600,12 @@
    "quote": "A 5 metre portion of the unit 1.5 metres",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "the-hills-shire-council-030",
+   "id": "the-hills-shire-council-031",
    "zones": [
     "*"
    ],
@@ -1566,10 +1648,14 @@
    "quote": "The remainder of the single storey 4.5 metres",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
-   "id": "the-hills-shire-council-031",
+   "id": "the-hills-shire-council-032",
    "zones": [
     "*"
    ],
@@ -1631,10 +1717,12 @@
    "quote": "Existing Urban Road 10 metres",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "the-hills-shire-council-032",
+   "id": "the-hills-shire-council-033",
    "zones": [
     "*"
    ],
@@ -1675,10 +1763,14 @@
    "quote": "Rouse Hill Development Area 6 metres",
    "clause": "Table 1",
    "page": 7,
-   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf"
+   "source_file": "DCP/part_b_section_4_-_multi_dwelling_housing.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "the-hills-shire-council-033",
+   "id": "the-hills-shire-council-034",
    "zones": [
     "RU*"
    ],
@@ -1723,10 +1815,14 @@
    "quote": "Lots fronting a classified road 30m",
    "clause": "Minimum Setbacks",
    "page": 10,
-   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf"
+   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
-   "id": "the-hills-shire-council-034",
+   "id": "the-hills-shire-council-035",
    "zones": [
     "RU*"
    ],
@@ -1806,10 +1902,14 @@
    "quote": "Lots fronting any other road 10m",
    "clause": "Minimum Setbacks",
    "page": 10,
-   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf"
+   "source_file": "DCP/the-hills-dcp-2012-part-b-section-1-rural.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
-   "id": "the-hills-shire-council-035",
+   "id": "the-hills-shire-council-036",
    "zones": [
     "RU*"
    ],
@@ -1854,12 +1954,16 @@
    "quote": "- Rural 30 metres",
    "clause": "Table 2",
    "page": 8,
-   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf"
+   "source_file": "DCP/part_b_section_3_-_dual_occupancy.pdf",
+   "dcp": "The Hills DCP 2012 (Part A Sept 2026; parts at their stated editions, e.g. Residential Part B Section 2 in force 6 May 2022; Parking May 2026)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
   "No garage setback rule",
-  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 34472",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 34315, 34472",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): Not read in detail: B5 RFB, B6 Business, B7 Industrial, C3 Landscaping, Part D precinct sections, Box Hill Growth Centres DCP, rest of North Kellyville DCP tables 11-15"
  ],
  "notes": "Built from 45 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -1870,7 +1974,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 32
+   "rules": 33
   },
   "RU*": {
    "front": true,
@@ -1885,8 +1989,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 45,
-  "rules": 35,
-  "recordsNotModelled": 1,
+  "rules": 36,
+  "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-024, the-hills-shire-council-025))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-024, the-hills-shire-council-025))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-024, the-hills-shire-council-025))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-024, the-hills-shire-council-025))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-024, the-hills-shire-council-025, the-hills-shire-council-035)); side (conflicting rules of equal specificity (the-hills-shire-council-023, the-hills-shire-council-035)); rear (conflicting rules of equal specificity (the-hills-shire-council-021, the-hills-shire-council-035))"
+  }
  }
 }

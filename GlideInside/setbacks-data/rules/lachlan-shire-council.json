@@ -58,7 +58,9 @@
    "quote": "provision of landscaped area to a minimum depth of three metres,",
    "clause": "3.3.3 Front Boundary",
    "page": 29,
-   "source_file": "DCP/dcp-2018-amendment-2.pdf"
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
   },
   {
    "id": "lachlan-shire-council-002",
@@ -108,7 +110,9 @@
    "quote": "All buildings shall be setback six metres to provide for adequate landscaping",
    "clause": "3.3.3 Main Roads",
    "page": 29,
-   "source_file": "DCP/dcp-2018-amendment-2.pdf"
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
   },
   {
    "id": "lachlan-shire-council-003",
@@ -158,7 +162,11 @@
    "quote": "Car parking shall be setback a minimum of three metres from the front",
    "clause": "3.3.3 Controls - landscaping and car parking",
    "page": 29,
-   "source_file": "DCP/dcp-2018-amendment-2.pdf"
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "lachlan-shire-council-004",
@@ -263,7 +271,11 @@
    "quote": "buildings are to be set back from all other front boundaries a minimum of six metres",
    "clause": "3.3.3 Other Roads",
    "page": 29,
-   "source_file": "DCP/dcp-2018-amendment-2.pdf"
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "lachlan-shire-council-005",
@@ -309,7 +321,11 @@
    "quote": "Car parking shall be setback a minimum of three metres from the front",
    "clause": "3.3.3 Controls - landscaping and car parking",
    "page": 30,
-   "source_file": "DCP/dcp-2018-amendment-2.pdf"
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "lachlan-shire-council-006",
@@ -355,7 +371,9 @@
    "quote": "at which a building may be erected is 6.0 metres",
    "clause": "3.1.2 Controls",
    "page": 20,
-   "source_file": "DCP/dcp-2018-amendment-2.pdf"
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
   },
   {
    "id": "lachlan-shire-council-007",
@@ -399,7 +417,9 @@
    "quote": "the distance from one street may be reduced to 3.0 metres",
    "clause": "3.1.2 Controls",
    "page": 20,
-   "source_file": "DCP/dcp-2018-amendment-2.pdf"
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
   },
   {
    "id": "lachlan-shire-council-008",
@@ -445,7 +465,9 @@
    "quote": "a street alignment at which a building may be erected is 6m",
    "clause": "3.4.2 Setbacks",
    "page": 42,
-   "source_file": "DCP/dcp-2018-amendment-2.pdf"
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
   },
   {
    "id": "lachlan-shire-council-009",
@@ -489,7 +511,9 @@
    "quote": "distance from one street may be reduced to 3m",
    "clause": "3.4.2 Setbacks",
    "page": 42,
-   "source_file": "DCP/dcp-2018-amendment-2.pdf"
+   "source_file": "DCP/dcp-2018-amendment-2.pdf",
+   "dcp": "Lachlan Development Control Plan 2018, adopted 26/09/2018, in force 05/10/2018; amended 11/12/2019 (Chapter 4 removed) and 27/09/2023 (Chapters 2 and 4 bushfire)",
+   "edition": "Lachlan Development Control Plan 2018 (adopted 26/09/2018, in force 05/10/2018; amendments to 27/09/2023)"
   }
  ],
  "gaps": [
@@ -541,5 +565,32 @@
   "rules": 9,
   "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

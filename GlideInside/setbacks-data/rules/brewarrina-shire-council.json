@@ -16,8 +16,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dual_occupancy",
-    "dwelling"
+    "dual_occupancy"
    ],
    "conditions": {
     "storeys": 1
@@ -76,7 +75,9 @@
    "quote": "Large Lot Residential (R5) 20 m 10m 20 m 10m",
    "clause": "4.4.1 Building Setbacks table",
    "page": 12,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "brewarrina-shire-council-002",
@@ -84,8 +85,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dual_occupancy",
-    "dwelling"
+    "dual_occupancy"
    ],
    "conditions": {
     "storeys": 2
@@ -144,7 +144,9 @@
    "quote": "Large Lot Residential (R5) 20 m 10m 20 m 10m",
    "clause": "4.4.1 Building Setbacks table",
    "page": 12,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "brewarrina-shire-council-003",
@@ -268,7 +270,9 @@
    "quote": "Large Lot Residential (R5) 2 ha 20 m 10m 150 m2 200 m2",
    "clause": "4.3.1 Building Setbacks table",
    "page": 9,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "brewarrina-shire-council-004",
@@ -276,8 +280,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "dual_occupancy",
-    "multi_dwelling"
+    "dual_occupancy"
    ],
    "conditions": {
     "storeys": 1
@@ -336,7 +339,9 @@
    "quote": "Village (RU5) 6m 1 m (675mm#) 6m 2 m (1,125mm#)",
    "clause": "4.4.1 Building Setbacks table",
    "page": 12,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "brewarrina-shire-council-005",
@@ -344,8 +349,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "dual_occupancy",
-    "multi_dwelling"
+    "dual_occupancy"
    ],
    "conditions": {
     "storeys": 2
@@ -404,10 +408,82 @@
    "quote": "Village (RU5) 6m 1 m (675mm#) 6m 2 m (1,125mm#)",
    "clause": "4.4.1 Building Setbacks table",
    "page": 12,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "brewarrina-shire-council-006",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "house, side/rear boundary, Village (RU5)",
+    "house, street frontage, Village (RU5)"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     5596
+    ]
+   },
+   "side": {
+    "minM": null,
+    "basis": "ncc",
+    "note": "BCA requirements",
+    "sources": [
+     5597
+    ]
+   },
+   "secondaryFront": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    5596,
+    5597
+   ],
+   "evidence": [
+    {
+     "id": 5596,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Village (RU5) 6m BCA Requirements 75 m2 150 m2",
+     "clause": "4.3.1 Building Setbacks table",
+     "page": 9,
+     "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+     "condition": "house, street frontage, Village (RU5)",
+     "edition": "UNVERIFIED"
+    },
+    {
+     "id": 5597,
+     "parameter": "side_setback",
+     "slot": "side",
+     "quote": "Village (RU5) 6m BCA Requirements 75 m2 150 m2",
+     "clause": "4.3.1 Building Setbacks table",
+     "page": 9,
+     "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+     "condition": "house, side/rear boundary, Village (RU5)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": null,
+   "quote": "Village (RU5) 6m BCA Requirements 75 m2 150 m2",
+   "clause": "4.3.1 Building Setbacks table",
+   "page": 9,
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
+  },
+  {
+   "id": "brewarrina-shire-council-007",
    "zones": [
     "RU5"
    ],
@@ -472,10 +548,12 @@
    "quote": "4.5 m, 5.5 m to",
    "clause": "4.5.1 Building Setbacks",
    "page": 15,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "brewarrina-shire-council-007",
+   "id": "brewarrina-shire-council-008",
    "zones": [
     "RU5"
    ],
@@ -519,10 +597,12 @@
    "quote": "2 m (1,125 mm#)",
    "clause": "4.5.1 Building Setbacks",
    "page": 15,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED"
   },
   {
-   "id": "brewarrina-shire-council-008",
+   "id": "brewarrina-shire-council-009",
    "zones": [
     "RU5"
    ],
@@ -563,73 +643,9 @@
    "quote": "4.5 m, 5.5 m to",
    "clause": "4.5.1 Building Setbacks",
    "page": 15,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
-  },
-  {
-   "id": "brewarrina-shire-council-009",
-   "zones": [
-    "RU5"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {},
-   "conditionText": [
-    "house, side/rear boundary, Village (RU5)",
-    "house, street frontage, Village (RU5)"
-   ],
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     5596
-    ]
-   },
-   "side": {
-    "minM": null,
-    "basis": "ncc",
-    "note": "BCA requirements",
-    "sources": [
-     5597
-    ]
-   },
-   "secondaryFront": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    5596,
-    5597
-   ],
-   "evidence": [
-    {
-     "id": 5596,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Village (RU5) 6m BCA Requirements 75 m2 150 m2",
-     "clause": "4.3.1 Building Setbacks table",
-     "page": 9,
-     "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
-     "condition": "house, street frontage, Village (RU5)",
-     "edition": "UNVERIFIED"
-    },
-    {
-     "id": 5597,
-     "parameter": "side_setback",
-     "slot": "side",
-     "quote": "Village (RU5) 6m BCA Requirements 75 m2 150 m2",
-     "clause": "4.3.1 Building Setbacks table",
-     "page": 9,
-     "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
-     "condition": "house, side/rear boundary, Village (RU5)",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": null,
-   "quote": "Village (RU5) 6m BCA Requirements 75 m2 150 m2",
-   "clause": "4.3.1 Building Setbacks table",
-   "page": 9,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "brewarrina-shire-council-010",
@@ -712,7 +728,9 @@
    "quote": "Primary Production (RU1) 20 m 10 Not specified",
    "clause": "4.3.1 Building Setbacks table",
    "page": 9,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "brewarrina-shire-council-011",
@@ -776,7 +794,11 @@
    "quote": "No minimum setbacks are specified.",
    "clause": "4.6.1 Building Setbacks",
    "page": 18,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
   },
   {
    "id": "brewarrina-shire-council-012",
@@ -824,7 +846,11 @@
    "quote": "Street setback must be a minimum of 5m.",
    "clause": "Annexure 4 cl 1.1",
    "page": 32,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "brewarrina-shire-council-013",
@@ -888,7 +914,11 @@
    "quote": "Side and rear setbacks to meet BCA requirements.",
    "clause": "Annexure 4 cl 1.1",
    "page": 32,
-   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf"
+   "source_file": "DCP/Brewarrina-Development-Control-Plan-2023.pdf",
+   "dcp": "Brewarrina Shire Development Control Plan 2023, adopted by Council 23/06/2023 (replaces DCP 2012)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -947,5 +977,32 @@
   "rules": 13,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  }
  }
 }

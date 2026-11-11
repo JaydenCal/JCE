@@ -57,7 +57,11 @@
    "quote": "For lots with an area of 901m2 – 1,500m2 – 6.5 metres",
    "clause": "D1.2 Table 6",
    "page": 51,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "yass-valley-council-002",
@@ -107,7 +111,11 @@
    "quote": "For lots with an area of 200m2 – 300m2 – 3 metres",
    "clause": "D1.2 Table 6",
    "page": 51,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "yass-valley-council-003",
@@ -157,7 +165,11 @@
    "quote": "For lots with an area of 301m2 – 900m2 – 4.5 metres",
    "clause": "D1.2 Table 6",
    "page": 51,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "yass-valley-council-004",
@@ -206,7 +218,11 @@
    "quote": "For lots with an area greater than 1,500m2 – 10 metres",
    "clause": "D1.2 Table 6",
    "page": 51,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "yass-valley-council-005",
@@ -215,7 +231,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": "Yass Valley DCP 2024: R2 Low Density Residential and RU5 Village: secondary street setback (minimum)",
@@ -251,7 +267,9 @@
    "quote": "the setback to the secondary street is to be a minimum of 3 metres;",
    "clause": "D1.2 b",
    "page": 52,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-006",
@@ -298,7 +316,9 @@
    "quote": "0.5 – 1ha 20 metres 10 metres",
    "clause": "E1.1 Table 13",
    "page": 68,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-007",
@@ -345,7 +365,9 @@
    "quote": "1.1 – 2ha 30 metres 10 metres",
    "clause": "E1.1 Table 13",
    "page": 68,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-008",
@@ -392,7 +414,9 @@
    "quote": "0.2 – 0.49ha 10 metres 5 metres",
    "clause": "E1.1 Table 13",
    "page": 68,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-009",
@@ -439,7 +463,9 @@
    "quote": "2.1- 5 ha 30 metres 30 metres",
    "clause": "E1.1 Table 13",
    "page": 68,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-010",
@@ -485,7 +511,9 @@
    "quote": "Above 5 ha 50 metres 50 metres",
    "clause": "E1.1 Table 13",
    "page": 68,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-011",
@@ -550,7 +578,9 @@
    "quote": "of at least 10 metres;",
    "clause": "F2 Table 19",
    "page": 76,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-012",
@@ -594,7 +624,11 @@
    "quote": "on the adjacent lots or 10 metres -whichever is the lesser;",
    "clause": "F2 Table 19",
    "page": 77,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "yass-valley-council-013",
@@ -682,7 +716,9 @@
    "quote": "Corner lot – secondary setback 2.0m 2.0m 2.0m 3.0m",
    "clause": "7.6 Table 5",
    "page": 84,
-   "source_file": "DCP/parkwood-dcp.pdf"
+   "source_file": "DCP/parkwood-dcp.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Draft Parkwood DCP (footer: Parkwood DCP 2025)"
   },
   {
    "id": "yass-valley-council-014",
@@ -730,7 +766,9 @@
    "quote": "Rear setback minimum 4.0m 4.0m 4.0m 5.0m",
    "clause": "7.6 Table 5",
    "page": 85,
-   "source_file": "DCP/parkwood-dcp.pdf"
+   "source_file": "DCP/parkwood-dcp.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Draft Parkwood DCP (footer: Parkwood DCP 2025)"
   },
   {
    "id": "yass-valley-council-015",
@@ -778,7 +816,9 @@
    "quote": "Rear setback minimum 4.0m 4.0m 4.0m 5.0m",
    "clause": "7.6 Table 5",
    "page": 85,
-   "source_file": "DCP/parkwood-dcp.pdf"
+   "source_file": "DCP/parkwood-dcp.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Draft Parkwood DCP (footer: Parkwood DCP 2025)"
   },
   {
    "id": "yass-valley-council-016",
@@ -826,7 +866,9 @@
    "quote": "Corner lot – secondary setback 2.0m 2.0m 2.0m 3.0m",
    "clause": "7.6 Table 5",
    "page": 84,
-   "source_file": "DCP/parkwood-dcp.pdf"
+   "source_file": "DCP/parkwood-dcp.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Draft Parkwood DCP (footer: Parkwood DCP 2025)"
   },
   {
    "id": "yass-valley-council-017",
@@ -874,7 +916,9 @@
    "quote": "Rear setback minimum 4.0m 4.0m 4.0m 5.0m",
    "clause": "7.6 Table 5",
    "page": 85,
-   "source_file": "DCP/parkwood-dcp.pdf"
+   "source_file": "DCP/parkwood-dcp.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Draft Parkwood DCP (footer: Parkwood DCP 2025)"
   },
   {
    "id": "yass-valley-council-018",
@@ -919,7 +963,9 @@
    "quote": "Buildings shall be setback at least 900mm from the side boundary.",
    "clause": "D1.3 a",
    "page": 53,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-019",
@@ -968,7 +1014,9 @@
    "quote": "Front setback minimum 4.0m 4.0m 4.0m 6.0m",
    "clause": "7.6 Table 5",
    "page": 84,
-   "source_file": "DCP/parkwood-dcp.pdf"
+   "source_file": "DCP/parkwood-dcp.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Draft Parkwood DCP (footer: Parkwood DCP 2025)"
   },
   {
    "id": "yass-valley-council-020",
@@ -1017,7 +1065,9 @@
    "quote": "Front setback minimum 4.0m 4.0m 4.0m 6.0m",
    "clause": "7.6 Table 5",
    "page": 84,
-   "source_file": "DCP/parkwood-dcp.pdf"
+   "source_file": "DCP/parkwood-dcp.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Draft Parkwood DCP (footer: Parkwood DCP 2025)"
   },
   {
    "id": "yass-valley-council-021",
@@ -1066,7 +1116,9 @@
    "quote": "Front setback minimum 4.0m 4.0m 4.0m 6.0m",
    "clause": "7.6 Table 5",
    "page": 84,
-   "source_file": "DCP/parkwood-dcp.pdf"
+   "source_file": "DCP/parkwood-dcp.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Draft Parkwood DCP (footer: Parkwood DCP 2025)"
   },
   {
    "id": "yass-valley-council-022",
@@ -1115,7 +1167,9 @@
    "quote": "Front setback minimum 4.0m 4.0m 4.0m 6.0m",
    "clause": "7.6 Table 5",
    "page": 84,
-   "source_file": "DCP/parkwood-dcp.pdf"
+   "source_file": "DCP/parkwood-dcp.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Draft Parkwood DCP (footer: Parkwood DCP 2025)"
   },
   {
    "id": "yass-valley-council-023",
@@ -1159,7 +1213,9 @@
    "quote": "a garage shall be a minimum 1.5 metres from the front of the building",
    "clause": "D1.2 d",
    "page": 52,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-024",
@@ -1206,7 +1262,9 @@
    "quote": "5 metres for lots with an area of 900m2 – 1,500m2",
    "clause": "D2.2.2 Table 9",
    "page": 59,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-025",
@@ -1253,7 +1311,11 @@
    "quote": "12 metres for lots with an area of 900m2 – 1,500m2",
    "clause": "D2.2.2 Table 9",
    "page": 59,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "yass-valley-council-026",
@@ -1300,7 +1362,11 @@
    "quote": "RU5 – Village 6.5 metres",
    "clause": "D2.2.1 Table 8",
    "page": 58,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "yass-valley-council-027",
@@ -1347,7 +1413,11 @@
    "quote": "R2 – Low Density Residential 4.5 metres",
    "clause": "D2.2.1 Table 8",
    "page": 58,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "yass-valley-council-028",
@@ -1394,7 +1464,9 @@
    "quote": "3 metres for lots with an area of 600m2 – 900m2",
    "clause": "D2.2.2 Table 9",
    "page": 59,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-029",
@@ -1441,7 +1513,11 @@
    "quote": "8 metres for lots with an area of 600m2 – 900m2",
    "clause": "D2.2.2 Table 9",
    "page": 59,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "yass-valley-council-030",
@@ -1508,7 +1584,11 @@
    "quote": "For lots with an area greater than 1,500m2 10 metres",
    "clause": "D2.2.1 Table 8",
    "page": 58,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "yass-valley-council-031",
@@ -1554,7 +1634,11 @@
    "quote": "15 metres for lots with an area greater than 1,500m2",
    "clause": "D2.2.2 Table 9",
    "page": 59,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "yass-valley-council-032",
@@ -1600,7 +1684,9 @@
    "quote": "Side boundary Single Storey 1.5 metres",
    "clause": "D2.2.2 Table 9",
    "page": 59,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-033",
@@ -1645,7 +1731,9 @@
    "quote": "Garages must be setback a minimum of 5.5 metres from the front boundary",
    "clause": "D3.1 c",
    "page": 63,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   },
   {
    "id": "yass-valley-council-034",
@@ -1689,7 +1777,9 @@
    "quote": "E1 – Local Centre 6 metres",
    "clause": "D1.2 Table 6",
    "page": 51,
-   "source_file": "DCP/yass-valley-dcp-2024.pdf"
+   "source_file": "DCP/yass-valley-dcp-2024.pdf",
+   "dcp": "Yass Valley Development Control Plan 2024 (LGA wide); Draft Parkwood DCP (footer Parkwood DCP 2025) for the Parkwood growth area; Fairley Commercial Centre Murrumbateman DCP (November 2015). Adoption dates UNVERIFIED",
+   "edition": "Yass Valley DCP 2024"
   }
  ],
  "gaps": [
@@ -1781,5 +1871,32 @@
   "rules": 34,
   "recordsNotModelled": 3,
   "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  }
  }
 }

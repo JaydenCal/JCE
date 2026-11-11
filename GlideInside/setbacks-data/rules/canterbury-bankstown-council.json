@@ -54,7 +54,9 @@
    "quote": "A minimum setback of 3m from the rear boundary",
    "clause": "Setbacks in the R3 zone",
    "page": 53,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
    "id": "canterbury-bankstown-council-002",
@@ -99,7 +101,9 @@
    "quote": "A minimum setback of 6m from the front boundary.",
    "clause": "Setbacks in the R3 zone",
    "page": 53,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
    "id": "canterbury-bankstown-council-003",
@@ -143,7 +147,9 @@
    "quote": "A minimum of setback of 1.5m from the side boundaries",
    "clause": "Setbacks in the R3 zone",
    "page": 53,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
    "id": "canterbury-bankstown-council-004",
@@ -187,7 +193,11 @@
    "quote": "A minimum setback of 2.5m from the side boundaries",
    "clause": "Setbacks in the R3 zone",
    "page": 53,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "canterbury-bankstown-council-005",
@@ -252,7 +262,9 @@
    "quote": "A minimum setback of 6m from the front and rear boundary.",
    "clause": "Setbacks in the R4 zone",
    "page": 53,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
    "id": "canterbury-bankstown-council-006",
@@ -299,7 +311,9 @@
    "quote": "5.5m for the first storey (i.e. the ground floor)",
    "clause": "4.7(a)",
    "page": 16,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
    "id": "canterbury-bankstown-council-007",
@@ -344,7 +358,9 @@
    "quote": "minimum setback for a building wall to the side boundary of the site is 0.9m",
    "clause": "4.9",
    "page": 16,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
    "id": "canterbury-bankstown-council-008",
@@ -429,7 +445,9 @@
    "quote": "Minimum setback of 6m from the front boundary.",
    "clause": "Table 8",
    "page": 32,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
    "id": "canterbury-bankstown-council-009",
@@ -475,7 +493,9 @@
    "quote": "5.5m for the first storey (i.e. the ground floor)",
    "clause": "2.6(a)",
    "page": 7,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
    "id": "canterbury-bankstown-council-010",
@@ -521,7 +541,9 @@
    "quote": "6.5m for the second storey",
    "clause": "2.6(b)",
    "page": 7,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
    "id": "canterbury-bankstown-council-011",
@@ -532,61 +554,24 @@
     "dwelling"
    ],
    "conditions": {
-    "lotWidthMaxM": 12.5,
-    "lotWidthMinM": 12.5
-   },
-   "conditionText": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)",
-   "rear": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     8651
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "garage": null,
-   "sources": [
-    8651
-   ],
-   "evidence": [
-    {
-     "id": 8651,
-     "parameter": "rear_setback",
-     "slot": "rear",
-     "quote": "Minimum setback of 6m from the rear boundary.",
-     "clause": "Table 3, Table 4",
-     "page": 11,
-     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
-     "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)",
-     "edition": "Amended March 2026"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "Minimum setback of 6m from the rear boundary.",
-   "clause": "Table 3, Table 4",
-   "page": 11,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
-  },
-  {
-   "id": "canterbury-bankstown-council-012",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
     "lotWidthMaxM": 12.5
    },
-   "conditionText": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less",
+   "conditionText": [
+    "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less",
+    "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)"
+   ],
    "front": {
     "minM": 5.5,
     "basis": "fixed",
     "sources": [
      8649
+    ]
+   },
+   "rear": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     8651
     ]
    },
    "side": {
@@ -598,11 +583,11 @@
     ]
    },
    "secondaryFront": null,
-   "rear": null,
    "garage": null,
    "sources": [
     8649,
-    8650
+    8650,
+    8651
    ],
    "evidence": [
     {
@@ -614,6 +599,17 @@
      "page": 11,
      "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
      "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less",
+     "edition": "Amended March 2026"
+    },
+    {
+     "id": 8651,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "Minimum setback of 6m from the rear boundary.",
+     "clause": "Table 3, Table 4",
+     "page": 11,
+     "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+     "condition": "Former Canterbury LGA residential (Ch5.2): dwelling houses with frontage 12.5 m or less (Table 3) and 12.5 m or greater (Table 4)",
      "edition": "Amended March 2026"
     },
     {
@@ -633,10 +629,12 @@
    "quote": "Minimum setback of 5.5m from the front boundary.",
    "clause": "Table 3",
    "page": 11,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
-   "id": "canterbury-bankstown-council-013",
+   "id": "canterbury-bankstown-council-012",
    "zones": [
     "*"
    ],
@@ -719,10 +717,14 @@
    "quote": "Minimum setback of 6m or the average of the existing setback of the nearest dwelling house to either side of the site.",
    "clause": "Table 4",
    "page": 11,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
-   "id": "canterbury-bankstown-council-014",
+   "id": "canterbury-bankstown-council-013",
    "zones": [
     "*"
    ],
@@ -768,10 +770,12 @@
    "quote": "fronting a major road must have a minimum front setback of 9m",
    "clause": "C1",
    "page": 11,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
-   "id": "canterbury-bankstown-council-015",
+   "id": "canterbury-bankstown-council-014",
    "zones": [
     "*"
    ],
@@ -814,10 +818,12 @@
    "quote": "wall height less than or equal to 7m, the minimum setback to the side boundary of the site is 0.9m",
    "clause": "2.8",
    "page": 7,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
-   "id": "canterbury-bankstown-council-016",
+   "id": "canterbury-bankstown-council-015",
    "zones": [
     "*"
    ],
@@ -860,10 +866,12 @@
    "quote": "minimum setback to the side boundary of the site is 1.5m",
    "clause": "2.9",
    "page": 7,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
-   "id": "canterbury-bankstown-council-017",
+   "id": "canterbury-bankstown-council-016",
    "zones": [
     "*"
    ],
@@ -904,10 +912,12 @@
    "quote": "3m for a building wall",
    "clause": "2.7(a)",
    "page": 7,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
-   "id": "canterbury-bankstown-council-018",
+   "id": "canterbury-bankstown-council-017",
    "zones": [
     "*"
    ],
@@ -949,10 +959,12 @@
    "quote": "5.5m for a garage or carport that is attached to the building wall",
    "clause": "2.7(b)",
    "page": 7,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
-   "id": "canterbury-bankstown-council-019",
+   "id": "canterbury-bankstown-council-018",
    "zones": [
     "*"
    ],
@@ -994,10 +1006,12 @@
    "quote": "Minimum setback of 5.5m from the front boundary.",
    "clause": "Table 7",
    "page": 32,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
-   "id": "canterbury-bankstown-council-020",
+   "id": "canterbury-bankstown-council-019",
    "zones": [
     "*"
    ],
@@ -1040,17 +1054,23 @@
    "quote": "primary and secondary street frontages is 5.5m",
    "clause": "7.5",
    "page": 31,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
-   "id": "canterbury-bankstown-council-021",
+   "id": "canterbury-bankstown-council-020",
    "zones": [
     "*"
    ],
    "appliesTo": [
     "multi_dwelling"
    ],
-   "conditions": {},
+   "conditions": {
+    "qualifiers": [
+     "orientation_specific"
+    ]
+   },
    "conditionText": "Former Bankstown LGA residential (Ch5.1): multi dwelling housing, side boundary; southern boundary of east-west sites is 3 m",
    "side": {
     "minM": 0.9,
@@ -1080,21 +1100,29 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText",
    "quote": "minimum setback for a building wall to the side boundary is 0.9m except",
    "clause": "7.6",
    "page": 31,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText"
   },
   {
-   "id": "canterbury-bankstown-council-022",
+   "id": "canterbury-bankstown-council-021",
    "zones": [
     "*"
    ],
    "appliesTo": [
     "multi_dwelling"
    ],
-   "conditions": {},
+   "conditions": {
+    "qualifiers": [
+     "orientation_specific"
+    ]
+   },
    "conditionText": "Former Bankstown LGA residential (Ch5.1): multi dwelling housing, southern boundary of east-west orientated sites",
    "side": {
     "minM": 3.0,
@@ -1124,14 +1152,18 @@
     }
    ],
    "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText; CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
    "quote": "the minimum side setback to the southern boundary is 3m",
    "clause": "7.6",
    "page": 31,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText; CONFLICT: another rule with the same applicability gives a diff..."
   },
   {
-   "id": "canterbury-bankstown-council-023",
+   "id": "canterbury-bankstown-council-022",
    "zones": [
     "*"
    ],
@@ -1176,10 +1208,12 @@
    "quote": "External wall height over 2.7m a minimum setback of 450mm from the side boundary.",
    "clause": "Table 5",
    "page": 12,
-   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.2_Residential_Former_Canterbury_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
-   "id": "canterbury-bankstown-council-024",
+   "id": "canterbury-bankstown-council-023",
    "zones": [
     "*"
    ],
@@ -1221,10 +1255,12 @@
    "quote": "0.9m for walls with windows",
    "clause": "12.9(c)",
    "page": 57,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026"
   },
   {
-   "id": "canterbury-bankstown-council-025",
+   "id": "canterbury-bankstown-council-024",
    "zones": [
     "*"
    ],
@@ -1266,10 +1302,14 @@
    "quote": "0.45m for non-masonry walls that do not contain a windows",
    "clause": "12.9(b)",
    "page": 57,
-   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch5.1_Residential_Former_Bankstown_LGA.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended March 2026",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
-   "id": "canterbury-bankstown-council-026",
+   "id": "canterbury-bankstown-council-025",
    "zones": [
     "IN*"
    ],
@@ -1282,10 +1322,7 @@
      "classified_road"
     ]
    },
-   "conditionText": [
-    "Industrial precincts, former Bankstown LGA, sites adjoining a state or regional road, primary and secondary street frontages",
-    "Industrial precincts, former Bankstown LGA, sites not adjoining state or regional road, primary street frontage"
-   ],
+   "conditionText": "Industrial precincts, former Bankstown LGA, sites adjoining a state or regional road, primary and secondary street frontages",
    "secondaryFront": {
     "minM": 15.0,
     "basis": "fixed",
@@ -1293,19 +1330,12 @@
      8722
     ]
    },
-   "front": {
-    "minM": 10.0,
-    "basis": "fixed",
-    "sources": [
-     8723
-    ]
-   },
+   "front": null,
    "side": null,
    "rear": null,
    "garage": null,
    "sources": [
-    8722,
-    8723
+    8722
    ],
    "evidence": [
     {
@@ -1318,7 +1348,61 @@
      "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf",
      "condition": "Industrial precincts, former Bankstown LGA, sites adjoining a state or regional road, primary and secondary street frontages",
      "edition": "Amended April 2025"
-    },
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "the minimum setback to the primary and secondary street frontages is 15m",
+   "clause": "2.2(a)",
+   "page": 5,
+   "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended April 2025",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
+  },
+  {
+   "id": "canterbury-bankstown-council-026",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "adjoins_other"
+    ],
+    "qualifiersNot": [
+     "classified_road"
+    ]
+   },
+   "conditionText": [
+    "Industrial precincts, former Bankstown LGA, sites not adjoining state or regional road, primary street frontage",
+    "Industrial precincts, former Bankstown LGA, sites not adjoining state or regional road, secondary street frontage"
+   ],
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     8723
+    ]
+   },
+   "secondaryFront": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     8724
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    8723,
+    8724
+   ],
+   "evidence": [
     {
      "id": 8723,
      "parameter": "setback_industrial",
@@ -1329,45 +1413,7 @@
      "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf",
      "condition": "Industrial precincts, former Bankstown LGA, sites not adjoining state or regional road, primary street frontage",
      "edition": "Amended April 2025"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "the minimum setback to the primary and secondary street frontages is 15m",
-   "clause": "2.2(a)",
-   "page": 5,
-   "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf"
-  },
-  {
-   "id": "canterbury-bankstown-council-027",
-   "zones": [
-    "IN*"
-   ],
-   "appliesTo": [
-    "industrial"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "adjoins_other",
-     "classified_road"
-    ]
-   },
-   "conditionText": "Industrial precincts, former Bankstown LGA, sites not adjoining state or regional road, secondary street frontage",
-   "secondaryFront": {
-    "minM": 3.0,
-    "basis": "fixed",
-    "sources": [
-     8724
-    ]
-   },
-   "front": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    8724
-   ],
-   "evidence": [
+    },
     {
      "id": 8724,
      "parameter": "setback_industrial",
@@ -1380,15 +1426,19 @@
      "edition": "Amended April 2025"
     }
    ],
-   "confidence": "low",
-   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText; CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen",
-   "quote": "the secondary street frontage is 3m",
-   "clause": "2.2(b)(ii)",
+   "confidence": "medium",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "quote": "the primary street frontage is 10m",
+   "clause": "2.2(b)(i)",
    "page": 5,
-   "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended April 2025",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields ..."
   },
   {
-   "id": "canterbury-bankstown-council-028",
+   "id": "canterbury-bankstown-council-027",
    "zones": [
     "IN*"
    ],
@@ -1450,7 +1500,11 @@
    "quote": "The minimum setback to the primary street frontage is 5m.",
    "clause": "2.3(a)",
    "page": 6,
-   "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf"
+   "source_file": "DCP/CB_DCP2023_Ch9.1_Industrial_Precincts_General.pdf",
+   "dcp": "Canterbury-Bankstown Development Control Plan 2023 (June 2023; chapters amended 2024 to 2026, e.g. Ch3.1 March 2026, Ch5.1 and 5.2 March 2026, Ch3.2 August 2025); a second saved copy of Chapter 1.1 exists",
+   "edition": "Amended April 2025",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -1482,7 +1536,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 20
+   "rules": 19
   },
   "IN*": {
    "front": false,
@@ -1497,8 +1551,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 37,
-  "rules": 28,
+  "rules": 27,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 5
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (canterbury-bankstown-council-006, canterbury-bankstown-council-009, canterbury-bankstown-council-012)); side (conflicting rules of equal specificity (canterbury-bankstown-council-012, canterbury-bankstown-council-014, canterbury-bankstown-council-022)); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (canterbury-bankstown-council-006, canterbury-bankstown-council-009, canterbury-bankstown-council-012)); side (conflicting rules of equal specificity (canterbury-bankstown-council-012, canterbury-bankstown-council-014, canterbury-bankstown-council-022)); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (canterbury-bankstown-council-002, canterbury-bankstown-council-006, canterbury-bankstown-council-009, canterbury-bankstown-council-012)); side (conflicting rules of equal specificity (canterbury-bankstown-council-012, canterbury-bankstown-council-014, canterbury-bankstown-council-022))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (canterbury-bankstown-council-006, canterbury-bankstown-council-009, canterbury-bankstown-council-012)); side (conflicting rules of equal specificity (canterbury-bankstown-council-012, canterbury-bankstown-council-014, canterbury-bankstown-council-022)); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (canterbury-bankstown-council-006, canterbury-bankstown-council-009, canterbury-bankstown-council-012)); side (conflicting rules of equal specificity (canterbury-bankstown-council-012, canterbury-bankstown-council-014, canterbury-bankstown-council-022)); rear (no rule for this zone/use/lot)"
+  }
  }
 }

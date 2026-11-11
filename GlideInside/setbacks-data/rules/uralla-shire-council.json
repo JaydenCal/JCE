@@ -58,7 +58,9 @@
    "quote": "least the average distance of the setback of the two adjoining dwelling houses located within 40m",
    "clause": "Table 3.2",
    "page": 27,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)"
   },
   {
    "id": "uralla-shire-council-002",
@@ -124,7 +126,9 @@
    "quote": "Rear setback – 1.5m",
    "clause": "Table 3.2",
    "page": 27,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)"
   },
   {
    "id": "uralla-shire-council-003",
@@ -212,7 +216,11 @@
    "quote": "Street setback (from secondary street frontage if Nil applicable) – as per the Codes SEPP",
    "clause": "Table 3.2",
    "page": 27,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "uralla-shire-council-004",
@@ -257,7 +265,9 @@
    "quote": "the front setback shall be a minimum of 6m",
    "clause": "Table 3.2",
    "page": 27,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)"
   },
   {
    "id": "uralla-shire-council-005",
@@ -321,7 +331,9 @@
    "quote": "Rear setback – 3.2 m",
    "clause": "Table 3.2",
    "page": 28,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)"
   },
   {
    "id": "uralla-shire-council-006",
@@ -331,7 +343,9 @@
    "appliesTo": [
     "any"
    ],
-   "conditions": {},
+   "conditions": {
+    "wallHeightOverM": 3.5
+   },
    "conditionText": "R2, walls greater than 3.5m high",
    "rear": {
     "minM": 3.2,
@@ -366,7 +380,9 @@
    "quote": "Rear setback – 3.2m + 0.5 m for each metre wall is",
    "clause": "Table 3.2",
    "page": 28,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)"
   },
   {
    "id": "uralla-shire-council-007",
@@ -374,7 +390,7 @@
     "R2"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": [
@@ -431,7 +447,9 @@
    "quote": "the front setback shall be a minimum of 8m",
    "clause": "Table 3.2",
    "page": 28,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)"
   },
   {
    "id": "uralla-shire-council-008",
@@ -439,7 +457,7 @@
     "R2"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": "Barleyfields low density residential lots (R2), main frontage",
@@ -475,7 +493,11 @@
    "quote": "10 m to main frontage",
    "clause": "17.9 Controls 2",
    "page": 148,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "uralla-shire-council-009",
@@ -519,7 +541,9 @@
    "quote": "A front setback of 0 metres would generally be appropriate",
    "clause": "B2 Building lines",
    "page": 50,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)"
   },
   {
    "id": "uralla-shire-council-010",
@@ -563,7 +587,9 @@
    "quote": "Other street frontages in the zone - Generally a front setback of 6m applies",
    "clause": "B4 Building lines and setbacks",
    "page": 51,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)"
   },
   {
    "id": "uralla-shire-council-011",
@@ -607,7 +633,9 @@
    "quote": "Generally a front setback of 8m applies",
    "clause": "B6 Building lines and setbacks",
    "page": 51,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)"
   },
   {
    "id": "uralla-shire-council-012",
@@ -651,7 +679,11 @@
    "quote": "Generally a front setback of 8m applies",
    "clause": "Industrial Building lines and setbacks",
    "page": 52,
-   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt"
+   "source_file": "DCP/Uralla-DCP-amended-2021-03.txt",
+   "dcp": "Uralla Shire Council Development Control Plan, adopted 19/12/2011, amended 23/03/2021, version v29012021",
+   "edition": "v29012021 (amended March 2021)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -724,5 +756,32 @@
   "rules": 12,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (uralla-shire-council-007, uralla-shire-council-008))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

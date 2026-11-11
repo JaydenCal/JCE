@@ -54,7 +54,9 @@
    "quote": "a minimum 10m from the front (primary) property boundary",
    "clause": "2.5 Building setbacks",
    "page": 11,
-   "source_file": "DCP/development_control_plan3.pdf"
+   "source_file": "DCP/development_control_plan3.pdf",
+   "dcp": "Federation Council saved DCPs: DCP 3 (development_control_plan3, former Corowa/Federation area) and Urana Shire Development Control Plans; adoption dates UNVERIFIED",
+   "edition": "Corowa Development Control Plan 2013 (CDCP, saved as development_control_plan3; amendments recorded to 2016, adoption date UNVERIFIED)"
   },
   {
    "id": "federation-council-002",
@@ -88,12 +90,12 @@
     ]
    },
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      13070,
      13039
-    ],
-    "behindBuildingLineM": 1.0
+    ]
    },
    "rear": {
     "minM": 2.0,
@@ -143,7 +145,7 @@
     {
      "id": 13070,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "A garage must be setback a minimum 1m behind the front building line",
      "clause": "2.5 Building setbacks",
      "page": 11,
@@ -190,10 +192,60 @@
    "quote": "A minimum 4.5m from the front (primary) property boundary",
    "clause": "2.5 Building setbacks",
    "page": 11,
-   "source_file": "DCP/development_control_plan3.pdf"
+   "source_file": "DCP/development_control_plan3.pdf",
+   "dcp": "Federation Council saved DCPs: DCP 3 (development_control_plan3, former Corowa/Federation area) and Urana Shire Development Control Plans; adoption dates UNVERIFIED",
+   "edition": "Corowa Development Control Plan 2013 (CDCP, saved as development_control_plan3; amendments recorded to 2016, adoption date UNVERIFIED)"
   },
   {
    "id": "federation-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "precinct": "Urana DCP area"
+   },
+   "conditionText": "Urana DCP area: V1 village zones, buildings generally",
+   "rear": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     13115
+    ]
+   },
+   "front": null,
+   "secondaryFront": null,
+   "side": null,
+   "garage": null,
+   "sources": [
+    13115
+   ],
+   "evidence": [
+    {
+     "id": 13115,
+     "parameter": "rear_setback",
+     "slot": "rear",
+     "quote": "A minimum rear boundary setback of 3m applies",
+     "clause": "V1 10.4",
+     "page": 48,
+     "source_file": "DCP/urana_shire_development_control_plans.pdf",
+     "condition": "Urana DCP area: V1 village zones, buildings generally",
+     "edition": "Urana Shire Development Control Plan 2011 (circulars C1, E1, F1, S3, V1 etc; saved as urana_shire_development_control_plans; adoption date UNVERIFIED)"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "A minimum rear boundary setback of 3m applies",
+   "clause": "V1 10.4",
+   "page": 48,
+   "source_file": "DCP/urana_shire_development_control_plans.pdf",
+   "dcp": "Federation Council saved DCPs: DCP 3 (development_control_plan3, former Corowa/Federation area) and Urana Shire Development Control Plans; adoption dates UNVERIFIED",
+   "edition": "Urana Shire Development Control Plan 2011 (circulars C1, E1, F1, S3, V1 etc; saved as urana_shire_development_control_plans; adoption date UNVERIFIED)"
+  },
+  {
+   "id": "federation-council-004",
    "zones": [
     "*"
    ],
@@ -239,53 +291,9 @@
    "quote": "A 1m wide articulation zone for no more than 25% of the frontage",
    "clause": "2.5 Building setbacks",
    "page": 10,
-   "source_file": "DCP/development_control_plan3.pdf"
-  },
-  {
-   "id": "federation-council-004",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {
-    "precinct": "Urana DCP area"
-   },
-   "conditionText": "Urana DCP area: V1 village zones, buildings generally",
-   "rear": {
-    "minM": 3.0,
-    "basis": "fixed",
-    "sources": [
-     13115
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "garage": null,
-   "sources": [
-    13115
-   ],
-   "evidence": [
-    {
-     "id": 13115,
-     "parameter": "rear_setback",
-     "slot": "rear",
-     "quote": "A minimum rear boundary setback of 3m applies",
-     "clause": "V1 10.4",
-     "page": 48,
-     "source_file": "DCP/urana_shire_development_control_plans.pdf",
-     "condition": "Urana DCP area: V1 village zones, buildings generally",
-     "edition": "Urana Shire Development Control Plan 2011 (circulars C1, E1, F1, S3, V1 etc; saved as urana_shire_development_control_plans; adoption date UNVERIFIED)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "A minimum rear boundary setback of 3m applies",
-   "clause": "V1 10.4",
-   "page": 48,
-   "source_file": "DCP/urana_shire_development_control_plans.pdf"
+   "source_file": "DCP/development_control_plan3.pdf",
+   "dcp": "Federation Council saved DCPs: DCP 3 (development_control_plan3, former Corowa/Federation area) and Urana Shire Development Control Plans; adoption dates UNVERIFIED",
+   "edition": "Corowa Development Control Plan 2013 (CDCP, saved as development_control_plan3; amendments recorded to 2016, adoption date UNVERIFIED)"
   },
   {
    "id": "federation-council-005",
@@ -334,7 +342,11 @@
    "quote": "9m from the street alignment of a main road",
    "clause": "3.3 Building setbacks",
    "page": 20,
-   "source_file": "DCP/development_control_plan3.pdf"
+   "source_file": "DCP/development_control_plan3.pdf",
+   "dcp": "Federation Council saved DCPs: DCP 3 (development_control_plan3, former Corowa/Federation area) and Urana Shire Development Control Plans; adoption dates UNVERIFIED",
+   "edition": "Corowa Development Control Plan 2013 (CDCP, saved as development_control_plan3; amendments recorded to 2016, adoption date UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "federation-council-006",
@@ -401,7 +413,11 @@
    "quote": "4.5mfrom the street alignment of any other road",
    "clause": "3.3 Building setbacks",
    "page": 20,
-   "source_file": "DCP/development_control_plan3.pdf"
+   "source_file": "DCP/development_control_plan3.pdf",
+   "dcp": "Federation Council saved DCPs: DCP 3 (development_control_plan3, former Corowa/Federation area) and Urana Shire Development Control Plans; adoption dates UNVERIFIED",
+   "edition": "Corowa Development Control Plan 2013 (CDCP, saved as development_control_plan3; amendments recorded to 2016, adoption date UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "federation-council-007",
@@ -466,7 +482,11 @@
    "quote": "a minimum 5m from the side and rear property boundaries",
    "clause": "2.5 Building setbacks",
    "page": 11,
-   "source_file": "DCP/development_control_plan3.pdf"
+   "source_file": "DCP/development_control_plan3.pdf",
+   "dcp": "Federation Council saved DCPs: DCP 3 (development_control_plan3, former Corowa/Federation area) and Urana Shire Development Control Plans; adoption dates UNVERIFIED",
+   "edition": "Corowa Development Control Plan 2013 (CDCP, saved as development_control_plan3; amendments recorded to 2016, adoption date UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
@@ -511,5 +531,32 @@
   "rules": 7,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

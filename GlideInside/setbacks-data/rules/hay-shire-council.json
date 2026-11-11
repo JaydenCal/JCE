@@ -57,15 +57,18 @@
    "quote": "Side setbacks require a minimum 450mm clearance",
    "clause": "DA report 379 Russell Street, response to Objection 2",
    "page": 40,
-   "source_file": "Engineering/2026-05-26-Business-Paper-DCP-Engineering-status-evidence.txt"
+   "source_file": "Engineering/2026-05-26-Business-Paper-DCP-Engineering-status-evidence.txt",
+   "dcp": "None in force: the Business Paper (26/05/2026) states the Hay Development Control Plan is under development; Hay Local Environmental Plan 2011 applies. The saved DCP folder holds the Hay Structure Plan (strategy, not a DCP); edition UNVERIFIED",
+   "edition": "Ordinary Meeting Business Paper 26/05/2026 (DA reports, not an engineering manual)"
   }
  ],
  "gaps": [
   "No secondary (corner lot) frontage setback rule",
   "No garage setback rule",
-  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): no DCP and no engineering manual or standard drawings saved or in force: the two saved files are the Hay Structure Plan and a Council meeting Business Paper with DA reports | access: driveway width, grade, setbacks and standard drawing not found (Road Opening Permit required only) | setbacks: only an eave clearance of 450 mm from DA reasoning; front, side and rear setback tables not found"
+  "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): no DCP and no engineering manual or standard drawings saved or in force: the two saved files are the Hay Structure Plan and a Council meeting Business Paper with DA reports | access: driveway width, grade, setbacks and standard drawing not found (Road Opening Permit required only) | setbacks: only an eave clearance of 450 mm from DA reasoning; front, side and rear setback tables not found",
+  "Research: No DCP residential setback controls located; dwellings rely on the LEP and the Codes SEPP."
  ],
- "notes": "Built from 1 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
+ "notes": "Built from 1 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text. | Research merged from research-setbacks/councils/hay-shire-council.json",
  "coverage": {
   "*": {
    "front": false,
@@ -83,5 +86,32 @@
   "rules": 1,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  }
  }
 }

@@ -16,7 +16,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": [
@@ -73,7 +73,9 @@
    "quote": "be a minimum of six (6) metres from the front boundary",
    "clause": "Policy statements",
    "page": 1,
-   "source_file": "Engineering/071-Building-Line-Policy-v6.pdf"
+   "source_file": "Engineering/071-Building-Line-Policy-v6.pdf",
+   "dcp": "None saved. Carrathool Shire has no DCP in the library; only council policies were saved. Controls sit in Carrathool Local Environmental Plan 2012 (not saved)",
+   "edition": "Policy 71 v6, effective 19/12/2023"
   }
  ],
  "gaps": [
@@ -99,5 +101,32 @@
   "rules": 1,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

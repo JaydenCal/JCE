@@ -59,7 +59,9 @@
    "quote": "Ground Floor Front Setback 4.5m",
    "clause": "Menangle Landscape Conservation Area",
    "page": 48,
-   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt"
+   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt",
+   "dcp": "Wollondilly Development Control Plan 2016: Volume 1 General (updated 31 July 2026), Volume 2 Urban Release Areas, Volume 3 Subdivision of Land, Volume 5 Commercial and Community Uses (updated 15 July 2026), Volume 6 Tourist Uses (10 Jan 2018 file), Volume 7 Industry and Infrastructure Uses, Volume 8 Primary Agricultural and Rural Uses. Volume 4 Residential Developments is cited but not saved.",
+   "edition": "Volume 1 General (updated 31 July 2026)"
   },
   {
    "id": "wollondilly-shire-council-002",
@@ -110,7 +112,9 @@
    "quote": "Ground Floor Front Setback 6m",
    "clause": "Menangle Landscape Conservation Area",
    "page": 48,
-   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt"
+   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt",
+   "dcp": "Wollondilly Development Control Plan 2016: Volume 1 General (updated 31 July 2026), Volume 2 Urban Release Areas, Volume 3 Subdivision of Land, Volume 5 Commercial and Community Uses (updated 15 July 2026), Volume 6 Tourist Uses (10 Jan 2018 file), Volume 7 Industry and Infrastructure Uses, Volume 8 Primary Agricultural and Rural Uses. Volume 4 Residential Developments is cited but not saved.",
+   "edition": "Volume 1 General (updated 31 July 2026)"
   },
   {
    "id": "wollondilly-shire-council-003",
@@ -161,7 +165,9 @@
    "quote": "Side Setback 1.9m",
    "clause": "Menangle Landscape Conservation Area",
    "page": 49,
-   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt"
+   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt",
+   "dcp": "Wollondilly Development Control Plan 2016: Volume 1 General (updated 31 July 2026), Volume 2 Urban Release Areas, Volume 3 Subdivision of Land, Volume 5 Commercial and Community Uses (updated 15 July 2026), Volume 6 Tourist Uses (10 Jan 2018 file), Volume 7 Industry and Infrastructure Uses, Volume 8 Primary Agricultural and Rural Uses. Volume 4 Residential Developments is cited but not saved.",
+   "edition": "Volume 1 General (updated 31 July 2026)"
   },
   {
    "id": "wollondilly-shire-council-004",
@@ -207,7 +213,9 @@
    "quote": "Setback from any boundary is no less than 900mm",
    "clause": "Part 1 Table 1 notification",
    "page": 15,
-   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt"
+   "source_file": "DCP/WDCP-2016-Volume-1-General-Updated-31-July-2026.txt",
+   "dcp": "Wollondilly Development Control Plan 2016: Volume 1 General (updated 31 July 2026), Volume 2 Urban Release Areas, Volume 3 Subdivision of Land, Volume 5 Commercial and Community Uses (updated 15 July 2026), Volume 6 Tourist Uses (10 Jan 2018 file), Volume 7 Industry and Infrastructure Uses, Volume 8 Primary Agricultural and Rural Uses. Volume 4 Residential Developments is cited but not saved.",
+   "edition": "Volume 1 General (updated 31 July 2026)"
   },
   {
    "id": "wollondilly-shire-council-005",
@@ -255,7 +263,11 @@
    "quote": "Front setback 30 metres from an arterial road",
    "clause": "cl 2.1 control 1",
    "page": 4,
-   "source_file": "DCP/Volume-7-Industry-and-Infrastructure-Uses.txt"
+   "source_file": "DCP/Volume-7-Industry-and-Infrastructure-Uses.txt",
+   "dcp": "Wollondilly Development Control Plan 2016: Volume 1 General (updated 31 July 2026), Volume 2 Urban Release Areas, Volume 3 Subdivision of Land, Volume 5 Commercial and Community Uses (updated 15 July 2026), Volume 6 Tourist Uses (10 Jan 2018 file), Volume 7 Industry and Infrastructure Uses, Volume 8 Primary Agricultural and Rural Uses. Volume 4 Residential Developments is cited but not saved.",
+   "edition": "Volume 7 Industry and Infrastructure Uses",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "wollondilly-shire-council-006",
@@ -299,7 +311,11 @@
    "quote": "10 metres all other roads",
    "clause": "cl 2.1 control 1",
    "page": 4,
-   "source_file": "DCP/Volume-7-Industry-and-Infrastructure-Uses.txt"
+   "source_file": "DCP/Volume-7-Industry-and-Infrastructure-Uses.txt",
+   "dcp": "Wollondilly Development Control Plan 2016: Volume 1 General (updated 31 July 2026), Volume 2 Urban Release Areas, Volume 3 Subdivision of Land, Volume 5 Commercial and Community Uses (updated 15 July 2026), Volume 6 Tourist Uses (10 Jan 2018 file), Volume 7 Industry and Infrastructure Uses, Volume 8 Primary Agricultural and Rural Uses. Volume 4 Residential Developments is cited but not saved.",
+   "edition": "Volume 7 Industry and Infrastructure Uses",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -334,5 +350,32 @@
   "rules": 6,
   "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

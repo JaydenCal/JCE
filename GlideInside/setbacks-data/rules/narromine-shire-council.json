@@ -52,60 +52,12 @@
    "quote": "Side 5 metres",
    "clause": "Setbacks table",
    "page": 4,
-   "source_file": "DCP/Chapter-5a---Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
    "id": "narromine-shire-council-002",
-   "zones": [
-    "R1"
-   ],
-   "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "adjoins_other",
-     "established_area"
-    ]
-   },
-   "conditionText": "R1 residential infill: same as adjoining buildings if setback difference is 2m or less, else the average",
-   "front": {
-    "minM": null,
-    "basis": "average_neighbours",
-    "note": "same distance as adjoining buildings where difference between their setbacks is 2 m or less, otherwise the average of the adjoining setbacks",
-    "sources": [
-     24010
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    24010
-   ],
-   "evidence": [
-    {
-     "id": 24010,
-     "parameter": "front_infill_rule",
-     "slot": "front",
-     "quote": "provided the difference between the setbacks is less than or equal to 2m ELSE the average",
-     "clause": "Setbacks table",
-     "page": 4,
-     "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
-     "condition": "R1 residential infill: same as adjoining buildings if setback difference is 2m or less, else the average",
-     "edition": "Narromine Shire DCP 2011"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (adjoins_other); see conditionText",
-   "quote": "provided the difference between the setbacks is less than or equal to 2m ELSE the average",
-   "clause": "Setbacks table",
-   "page": 4,
-   "source_file": "DCP/Chapter-5a---Residential-Development.pdf"
-  },
-  {
-   "id": "narromine-shire-council-003",
    "zones": [
     "R1"
    ],
@@ -150,10 +102,12 @@
    "quote": "Front Main Road 9 metres",
    "clause": "Setbacks table",
    "page": 4,
-   "source_file": "DCP/Chapter-5a---Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
-   "id": "narromine-shire-council-004",
+   "id": "narromine-shire-council-003",
    "zones": [
     "R1"
    ],
@@ -218,10 +172,14 @@
    "quote": "Rear One Storey 4 metres 4 metres",
    "clause": "Setbacks table",
    "page": 4,
-   "source_file": "DCP/Chapter-5a---Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
-   "id": "narromine-shire-council-005",
+   "id": "narromine-shire-council-004",
    "zones": [
     "R1"
    ],
@@ -285,7 +243,60 @@
    "quote": "Two Storey 7 metres 7 metres",
    "clause": "Setbacks table",
    "page": 4,
-   "source_file": "DCP/Chapter-5a---Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
+  },
+  {
+   "id": "narromine-shire-council-005",
+   "zones": [
+    "R1"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "established_area"
+    ]
+   },
+   "conditionText": "R1 residential infill: same as adjoining buildings if setback difference is 2m or less, else the average",
+   "front": {
+    "minM": null,
+    "basis": "average_neighbours",
+    "note": "same distance as adjoining buildings where difference between their setbacks is 2 m or less, otherwise the average of the adjoining setbacks",
+    "sources": [
+     24010
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24010
+   ],
+   "evidence": [
+    {
+     "id": 24010,
+     "parameter": "front_infill_rule",
+     "slot": "front",
+     "quote": "provided the difference between the setbacks is less than or equal to 2m ELSE the average",
+     "clause": "Setbacks table",
+     "page": 4,
+     "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
+     "condition": "R1 residential infill: same as adjoining buildings if setback difference is 2m or less, else the average",
+     "edition": "Narromine Shire DCP 2011"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "provided the difference between the setbacks is less than or equal to 2m ELSE the average",
+   "clause": "Setbacks table",
+   "page": 4,
+   "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
    "id": "narromine-shire-council-006",
@@ -329,7 +340,9 @@
    "quote": "Feeder Road 7.5 metres",
    "clause": "Setbacks table",
    "page": 4,
-   "source_file": "DCP/Chapter-5a---Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
    "id": "narromine-shire-council-007",
@@ -337,55 +350,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "classified_road"
-    ]
-   },
-   "conditionText": "R5 large lot residential, single dwelling front Main Road",
-   "front": {
-    "minM": 25.0,
-    "basis": "fixed",
-    "sources": [
-     24016
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    24016
-   ],
-   "evidence": [
-    {
-     "id": 24016,
-     "parameter": "setback_rural",
-     "slot": "front",
-     "quote": "Front Main Road 25 metres",
-     "clause": "Setbacks",
-     "page": 3,
-     "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf",
-     "condition": "R5 large lot residential, single dwelling front Main Road",
-     "edition": "Narromine Shire DCP 2011"
-    }
-   ],
-   "confidence": "high",
-   "needsReview": null,
-   "quote": "Front Main Road 25 metres",
-   "clause": "Setbacks",
-   "page": 3,
-   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf"
-  },
-  {
-   "id": "narromine-shire-council-008",
-   "zones": [
-    "R5"
-   ],
-   "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "storeys": 1
@@ -423,15 +388,17 @@
    "quote": "Rear One Storey 4 metres",
    "clause": "Setbacks",
    "page": 3,
-   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
-   "id": "narromine-shire-council-009",
+   "id": "narromine-shire-council-008",
    "zones": [
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "storeys": 2
@@ -490,28 +457,20 @@
    "quote": "Two Storey 3 metres",
    "clause": "Setbacks",
    "page": 3,
-   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
-   "id": "narromine-shire-council-010",
+   "id": "narromine-shire-council-009",
    "zones": [
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
-   "conditionText": [
-    "R5 large lot residential, corner allotment front",
-    "R5 large lot residential, single dwelling front Feeder Road"
-   ],
-   "front": {
-    "minM": 20.0,
-    "basis": "fixed",
-    "sources": [
-     24017
-    ]
-   },
+   "conditionText": "R5 large lot residential, corner allotment front",
    "secondaryFront": {
     "minM": 25.0,
     "basis": "fixed",
@@ -519,25 +478,14 @@
      24021
     ]
    },
+   "front": null,
    "side": null,
    "rear": null,
    "garage": null,
    "sources": [
-    24017,
     24021
    ],
    "evidence": [
-    {
-     "id": 24017,
-     "parameter": "setback_rural",
-     "slot": "front",
-     "quote": "Feeder Road 20 metres",
-     "clause": "Setbacks",
-     "page": 3,
-     "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf",
-     "condition": "R5 large lot residential, single dwelling front Feeder Road",
-     "edition": "Narromine Shire DCP 2011"
-    },
     {
      "id": 24021,
      "parameter": "setback_rural",
@@ -552,18 +500,20 @@
    ],
    "confidence": "high",
    "needsReview": null,
-   "quote": "Feeder Road 20 metres",
+   "quote": "Corner Front 25 metres",
    "clause": "Setbacks",
    "page": 3,
-   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
-   "id": "narromine-shire-council-011",
+   "id": "narromine-shire-council-010",
    "zones": [
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": "R5 large lot residential, corner allotment side",
@@ -599,10 +549,110 @@
    "quote": "Allotment Side 15 metres",
    "clause": "Setbacks",
    "page": 3,
-   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different secondaryFront value; both retained, no winner chosen"
+  },
+  {
+   "id": "narromine-shire-council-011",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "classified_road"
+    ]
+   },
+   "conditionText": "R5 large lot residential, single dwelling front Main Road",
+   "front": {
+    "minM": 25.0,
+    "basis": "fixed",
+    "sources": [
+     24016
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24016
+   ],
+   "evidence": [
+    {
+     "id": 24016,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Front Main Road 25 metres",
+     "clause": "Setbacks",
+     "page": 3,
+     "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf",
+     "condition": "R5 large lot residential, single dwelling front Main Road",
+     "edition": "Narromine Shire DCP 2011"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Front Main Road 25 metres",
+   "clause": "Setbacks",
+   "page": 3,
+   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
    "id": "narromine-shire-council-012",
+   "zones": [
+    "R5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "R5 large lot residential, single dwelling front Feeder Road",
+   "front": {
+    "minM": 20.0,
+    "basis": "fixed",
+    "sources": [
+     24017
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24017
+   ],
+   "evidence": [
+    {
+     "id": 24017,
+     "parameter": "setback_rural",
+     "slot": "front",
+     "quote": "Feeder Road 20 metres",
+     "clause": "Setbacks",
+     "page": 3,
+     "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf",
+     "condition": "R5 large lot residential, single dwelling front Feeder Road",
+     "edition": "Narromine Shire DCP 2011"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "Feeder Road 20 metres",
+   "clause": "Setbacks",
+   "page": 3,
+   "source_file": "DCP/Chapter-5b---Rural-Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
+  },
+  {
+   "id": "narromine-shire-council-013",
    "zones": [
     "RU5"
    ],
@@ -647,10 +697,12 @@
    "quote": "9 metres from the front boundary to a non-classified road",
    "clause": "Tomingley",
    "page": 46,
-   "source_file": "DCP/Chapter-5a---Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
-   "id": "narromine-shire-council-013",
+   "id": "narromine-shire-council-014",
    "zones": [
     "RU5"
    ],
@@ -695,10 +747,14 @@
    "quote": "20 metres from the front boundary of any allotment that has frontage to a classified road",
    "clause": "Tomingley",
    "page": 46,
-   "source_file": "DCP/Chapter-5a---Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
-   "id": "narromine-shire-council-014",
+   "id": "narromine-shire-council-015",
    "zones": [
     "RU5"
    ],
@@ -739,10 +795,12 @@
    "quote": "5 metres from any side or rear boundary",
    "clause": "Tomingley",
    "page": 46,
-   "source_file": "DCP/Chapter-5a---Residential-Development.pdf"
+   "source_file": "DCP/Chapter-5a---Residential-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
-   "id": "narromine-shire-council-015",
+   "id": "narromine-shire-council-016",
    "zones": [
     "*"
    ],
@@ -787,10 +845,12 @@
    "quote": "100 metres from any arterial or main road",
    "clause": "Rural setbacks",
    "page": 3,
-   "source_file": "DCP/Chapter-5c---Rural-Development.pdf"
+   "source_file": "DCP/Chapter-5c---Rural-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011"
   },
   {
-   "id": "narromine-shire-council-016",
+   "id": "narromine-shire-council-017",
    "zones": [
     "RU*"
    ],
@@ -870,7 +930,11 @@
    "quote": "50 metres from any local road",
    "clause": "Rural setbacks",
    "page": 3,
-   "source_file": "DCP/Chapter-5c---Rural-Development.pdf"
+   "source_file": "DCP/Chapter-5c---Rural-Development.pdf",
+   "dcp": "Narromine Shire Council Development Control Plan 2011 (Chapters 1 to 5h); Flood Policy for Developments in Urban Floodplains, Lyall & Associates, Rev 8.0 February 2011",
+   "edition": "Narromine Shire DCP 2011",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
@@ -895,7 +959,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 5
+   "rules": 6
   },
   "RU5": {
    "front": true,
@@ -926,8 +990,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 22,
-  "rules": 16,
+  "rules": 17,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

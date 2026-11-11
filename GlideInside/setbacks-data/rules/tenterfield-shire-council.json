@@ -16,7 +16,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "any"
    ],
    "conditions": {
     "qualifiers": [
@@ -56,7 +56,9 @@
    "quote": "No continuous section of wall built in a side boundary shall be longer than 10 metres or exceed 50% of the length of the boundary",
    "clause": "Chapter 3, Side or Rear Setbacks",
    "page": 30,
-   "source_file": "DCP/Development-Control-Plan-2014.pdf"
+   "source_file": "DCP/Development-Control-Plan-2014.pdf",
+   "dcp": "Tenterfield Development Control Plan 2014, adopted 27/08/2014 (Res 308/14), amended 22/10/2018 (Res 207/18)",
+   "edition": "Adopted 27/08/2014, amended 22/10/2018"
   },
   {
    "id": "tenterfield-shire-council-002",
@@ -64,7 +66,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "dwelling"
    ],
    "conditions": {
     "qualifiers": [
@@ -104,7 +106,9 @@
    "quote": "the minimum distance from the street alignment to the extremity of the eaves, steps or other similar projections is four (4) metres",
    "clause": "Chapter 3, Building Line",
    "page": 30,
-   "source_file": "DCP/Development-Control-Plan-2014.pdf"
+   "source_file": "DCP/Development-Control-Plan-2014.pdf",
+   "dcp": "Tenterfield Development Control Plan 2014, adopted 27/08/2014 (Res 308/14), amended 22/10/2018 (Res 207/18)",
+   "edition": "Adopted 27/08/2014, amended 22/10/2018"
   },
   {
    "id": "tenterfield-shire-council-003",
@@ -112,7 +116,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "dwelling"
    ],
    "conditions": {
     "qualifiers": [
@@ -153,7 +157,9 @@
    "quote": "predominantly sited further from the front boundary, in which case the setback for the proposed development shall be comparable to that of the existing development",
    "clause": "Chapter 3, Building Line",
    "page": 30,
-   "source_file": "DCP/Development-Control-Plan-2014.pdf"
+   "source_file": "DCP/Development-Control-Plan-2014.pdf",
+   "dcp": "Tenterfield Development Control Plan 2014, adopted 27/08/2014 (Res 308/14), amended 22/10/2018 (Res 207/18)",
+   "edition": "Adopted 27/08/2014, amended 22/10/2018"
   },
   {
    "id": "tenterfield-shire-council-004",
@@ -161,7 +167,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "dwelling"
    ],
    "conditions": {
     "wallHeightMaxM": 3.0
@@ -217,7 +223,9 @@
    "quote": "For walls less than 3 metres in height, side or rear setbacks shall not be less than 1 metre.",
    "clause": "Chapter 3, Side or Rear Setbacks",
    "page": 30,
-   "source_file": "DCP/Development-Control-Plan-2014.pdf"
+   "source_file": "DCP/Development-Control-Plan-2014.pdf",
+   "dcp": "Tenterfield Development Control Plan 2014, adopted 27/08/2014 (Res 308/14), amended 22/10/2018 (Res 207/18)",
+   "edition": "Adopted 27/08/2014, amended 22/10/2018"
   },
   {
    "id": "tenterfield-shire-council-005",
@@ -225,7 +233,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "dwelling"
    ],
    "conditions": {
     "wallHeightMaxM": 3.0
@@ -264,7 +272,11 @@
    "quote": "may be built to within 900mm of the boundary",
    "clause": "Chapter 3, Side or Rear Setbacks",
    "page": 30,
-   "source_file": "DCP/Development-Control-Plan-2014.pdf"
+   "source_file": "DCP/Development-Control-Plan-2014.pdf",
+   "dcp": "Tenterfield Development Control Plan 2014, adopted 27/08/2014 (Res 308/14), amended 22/10/2018 (Res 207/18)",
+   "edition": "Adopted 27/08/2014, amended 22/10/2018",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "tenterfield-shire-council-006",
@@ -272,28 +284,12 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "dwelling"
    ],
-   "conditions": {},
-   "conditionText": [
-    "RU5 Village residential, corner lot secondary street frontage",
-    "RU5 Village residential, minimum building line",
-    "RU5 Village residential, walls greater than 3 m high"
-   ],
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     33686
-    ]
+   "conditions": {
+    "wallHeightOverM": 3.0
    },
-   "secondaryFront": {
-    "minM": 4.0,
-    "basis": "fixed",
-    "sources": [
-     33689
-    ]
-   },
+   "conditionText": "RU5 Village residential, walls greater than 3 m high",
    "rear": {
     "minM": 2.0,
     "basis": "fixed",
@@ -308,36 +304,14 @@
      33692
     ]
    },
+   "front": null,
+   "secondaryFront": null,
    "garage": null,
    "sources": [
-    33686,
-    33689,
     33692,
     33697
    ],
    "evidence": [
-    {
-     "id": 33686,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "The minimum building line is six (6) metres for residential housing development in RU5 Village",
-     "clause": "Chapter 3, Building Line",
-     "page": 30,
-     "source_file": "DCP/Development-Control-Plan-2014.pdf",
-     "condition": "RU5 Village residential, minimum building line",
-     "edition": "Adopted 27/08/2014, amended 22/10/2018"
-    },
-    {
-     "id": 33689,
-     "parameter": "front_secondary",
-     "slot": "secondaryFront",
-     "quote": "The minimum setback for residential housing development from the secondary street frontage of a corner lot is four (4) metres.",
-     "clause": "Chapter 3, Building Line",
-     "page": 30,
-     "source_file": "DCP/Development-Control-Plan-2014.pdf",
-     "condition": "RU5 Village residential, corner lot secondary street frontage",
-     "edition": "Adopted 27/08/2014, amended 22/10/2018"
-    },
     {
      "id": 33697,
      "parameter": "rear_setback",
@@ -363,13 +337,82 @@
    ],
    "confidence": "high",
    "needsReview": null,
-   "quote": "The minimum building line is six (6) metres for residential housing development in RU5 Village",
-   "clause": "Chapter 3, Building Line",
+   "quote": "The minimum setback from the side or rear boundaries is to be 2 metres for walls of height greater than 3 metres.",
+   "clause": "Chapter 3, Side or Rear Setbacks",
    "page": 30,
-   "source_file": "DCP/Development-Control-Plan-2014.pdf"
+   "source_file": "DCP/Development-Control-Plan-2014.pdf",
+   "dcp": "Tenterfield Development Control Plan 2014, adopted 27/08/2014 (Res 308/14), amended 22/10/2018 (Res 207/18)",
+   "edition": "Adopted 27/08/2014, amended 22/10/2018"
   },
   {
    "id": "tenterfield-shire-council-007",
+   "zones": [
+    "RU5"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": [
+    "RU5 Village residential, corner lot secondary street frontage",
+    "RU5 Village residential, minimum building line"
+   ],
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     33686
+    ]
+   },
+   "secondaryFront": {
+    "minM": 4.0,
+    "basis": "fixed",
+    "sources": [
+     33689
+    ]
+   },
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    33686,
+    33689
+   ],
+   "evidence": [
+    {
+     "id": 33686,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "The minimum building line is six (6) metres for residential housing development in RU5 Village",
+     "clause": "Chapter 3, Building Line",
+     "page": 30,
+     "source_file": "DCP/Development-Control-Plan-2014.pdf",
+     "condition": "RU5 Village residential, minimum building line",
+     "edition": "Adopted 27/08/2014, amended 22/10/2018"
+    },
+    {
+     "id": 33689,
+     "parameter": "front_secondary",
+     "slot": "secondaryFront",
+     "quote": "The minimum setback for residential housing development from the secondary street frontage of a corner lot is four (4) metres.",
+     "clause": "Chapter 3, Building Line",
+     "page": 30,
+     "source_file": "DCP/Development-Control-Plan-2014.pdf",
+     "condition": "RU5 Village residential, corner lot secondary street frontage",
+     "edition": "Adopted 27/08/2014, amended 22/10/2018"
+    }
+   ],
+   "confidence": "high",
+   "needsReview": null,
+   "quote": "The minimum building line is six (6) metres for residential housing development in RU5 Village",
+   "clause": "Chapter 3, Building Line",
+   "page": 30,
+   "source_file": "DCP/Development-Control-Plan-2014.pdf",
+   "dcp": "Tenterfield Development Control Plan 2014, adopted 27/08/2014 (Res 308/14), amended 22/10/2018 (Res 207/18)",
+   "edition": "Adopted 27/08/2014, amended 22/10/2018"
+  },
+  {
+   "id": "tenterfield-shire-council-008",
    "zones": [
     "*"
    ],
@@ -411,10 +454,14 @@
    "quote": "corner allotment secondary frontage 3m to secondary frontage",
    "clause": "Chapter 3, Table 1",
    "page": 24,
-   "source_file": "DCP/Development-Control-Plan-2014.pdf"
+   "source_file": "DCP/Development-Control-Plan-2014.pdf",
+   "dcp": "Tenterfield Development Control Plan 2014, adopted 27/08/2014 (Res 308/14), amended 22/10/2018 (Res 207/18)",
+   "edition": "Adopted 27/08/2014, amended 22/10/2018",
+   "flag": "check_with_council",
+   "flagReason": "Source record 33691 is flagged conflict=true in the extract (two council documents disagree)"
   },
   {
-   "id": "tenterfield-shire-council-008",
+   "id": "tenterfield-shire-council-009",
    "zones": [
     "*"
    ],
@@ -496,10 +543,12 @@
    "quote": "Street Setbacks 6m to main 6m to main frontage",
    "clause": "Chapter 3, Table 1",
    "page": 24,
-   "source_file": "DCP/Development-Control-Plan-2014.pdf"
+   "source_file": "DCP/Development-Control-Plan-2014.pdf",
+   "dcp": "Tenterfield Development Control Plan 2014, adopted 27/08/2014 (Res 308/14), amended 22/10/2018 (Res 207/18)",
+   "edition": "Adopted 27/08/2014, amended 22/10/2018"
   },
   {
-   "id": "tenterfield-shire-council-009",
+   "id": "tenterfield-shire-council-010",
    "zones": [
     "*"
    ],
@@ -558,7 +607,9 @@
    "quote": "Side/Rear 900mm 4m Setbacks",
    "clause": "Chapter 3, Table 1",
    "page": 24,
-   "source_file": "DCP/Development-Control-Plan-2014.pdf"
+   "source_file": "DCP/Development-Control-Plan-2014.pdf",
+   "dcp": "Tenterfield Development Control Plan 2014, adopted 27/08/2014 (Res 308/14), amended 22/10/2018 (Res 207/18)",
+   "edition": "Adopted 27/08/2014, amended 22/10/2018"
   }
  ],
  "gaps": [
@@ -573,7 +624,7 @@
    "rear": true,
    "secondaryFront": true,
    "garage": false,
-   "rules": 6
+   "rules": 7
   },
   "*": {
    "front": true,
@@ -588,8 +639,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 16,
-  "rules": 9,
+  "rules": 10,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 4
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (no rule for this zone/use/lot); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (tenterfield-shire-council-004, tenterfield-shire-council-005, tenterfield-shire-council-006)); rear (conflicting rules of equal specificity (tenterfield-shire-council-004, tenterfield-shire-council-006))"
+  }
  }
 }

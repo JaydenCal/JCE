@@ -74,7 +74,9 @@
    "quote": "Boundary to land in R2 & R3 zones 10 m 10 m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-002",
@@ -143,7 +145,9 @@
    "quote": "Classified 7.0 m 7.0 m",
    "clause": "Table 1",
    "page": 4,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-003",
@@ -212,7 +216,11 @@
    "quote": "Boundary to public open space 6m 6m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
   },
   {
    "id": "liverpool-city-council-004",
@@ -279,7 +287,9 @@
    "quote": "Boundary to land in R4 zone (Greater than 10m in height) 8m 8m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-005",
@@ -382,7 +392,9 @@
    "quote": "Other Streets 5.5 m 5.5 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-006",
@@ -426,7 +438,11 @@
    "quote": "Boundary to land in R4 zone (First 10m in height, excluding roof/attic) 3m 8m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "liverpool-city-council-007",
@@ -470,7 +486,11 @@
    "quote": "Boundary to land in R4 zone (First 10m in height, excluding roof/attic) 3m 8m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.7-Residential-Flat-Buildings-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "liverpool-city-council-008",
@@ -559,7 +579,11 @@
    "quote": "setback between 12 and 25m from all streets",
    "clause": "Controls 1",
    "page": 6,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.1-Dwelling-Houses-in-R5-zone.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.1-Dwelling-Houses-in-R5-zone.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "range printed (12.0 to 25.0); band not resolved"
   },
   {
    "id": "liverpool-city-council-009",
@@ -572,7 +596,8 @@
    "conditions": {},
    "conditionText": "Part 3.1 dwelling houses in R5 zone: garage behind main face of dwelling house",
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      21211
     ]
@@ -588,7 +613,7 @@
     {
      "id": 21211,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Garages must be set back a minimum of 1m behind the main face of the dwelling house",
      "clause": "Controls 2",
      "page": 6,
@@ -602,7 +627,9 @@
    "quote": "Garages must be set back a minimum of 1m behind the main face of the dwelling house",
    "clause": "Controls 2",
    "page": 6,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.1-Dwelling-Houses-in-R5-zone.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.1-Dwelling-Houses-in-R5-zone.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-010",
@@ -650,7 +677,9 @@
    "quote": "Ground floor 4.5m* 2.0m** 2.5m",
    "clause": "Table 2",
    "page": 23,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.14-Elizabeth-Hills.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.14-Elizabeth-Hills.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-011",
@@ -698,7 +727,9 @@
    "quote": "Ground floor 4.5m* 2.0m** 2.5m",
    "clause": "Table 2",
    "page": 23,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.14-Elizabeth-Hills.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.14-Elizabeth-Hills.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-012",
@@ -745,7 +776,9 @@
    "quote": "Ground floor 4.5m* 2.0m** 2.5m",
    "clause": "Table 2",
    "page": 23,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.14-Elizabeth-Hills.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.14-Elizabeth-Hills.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-013",
@@ -810,7 +843,9 @@
    "quote": "Second storey component of dwelling houses 1.2 m 6.0 m",
    "clause": "Table 3",
    "page": 23,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.14-Elizabeth-Hills.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.14-Elizabeth-Hills.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-014",
@@ -875,7 +910,9 @@
    "quote": "External walls on second storey component of dwelling 1.2 m 6.0 m",
    "clause": "Table 3",
    "page": 17,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.15-New-Brighton-Golf-Course.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.15-New-Brighton-Golf-Course.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-015",
@@ -887,11 +924,7 @@
    ],
    "conditions": {
     "storeys": 1,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 14 dw/ha area, Table 8: 1 storey, rear setback",
@@ -943,11 +976,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "1 storey 0.9 m 4m",
    "clause": "Table 8",
    "page": 89,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-016",
@@ -959,11 +994,7 @@
    ],
    "conditions": {
     "storeys": 2,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 14 dw/ha area, Table 8: 2 storey, rear setback",
@@ -1015,11 +1046,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "2 storey 1.2 m 8m",
    "clause": "Table 8",
    "page": 89,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-017",
@@ -1030,10 +1063,7 @@
     "any"
    ],
    "conditions": {
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 14 dw/ha area: front setback",
@@ -1127,11 +1157,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "4.5 m 2.5 m",
    "clause": "Table 1",
    "page": 44,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-018",
@@ -1180,7 +1212,11 @@
    "quote": "setback of 1.2 m to be observed to the opposite boundary.",
    "clause": "Zero lot Controls 13",
    "page": 7,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "liverpool-city-council-019",
@@ -1248,7 +1284,9 @@
    "quote": "Other Streets (ground 4.5 m 2.5 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-020",
@@ -1316,7 +1354,9 @@
    "quote": "Other Streets (ground 4.5 m 2.5 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-021",
@@ -1385,7 +1425,9 @@
    "quote": "Height above 3m from the existing ground level 5.0 m 7.0 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.3-Dwelling-Houses-on-Hatchet-Shaped-lots-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.3-Dwelling-Houses-on-Hatchet-Shaped-lots-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-022",
@@ -1490,7 +1532,9 @@
    "quote": "Other Streets (first floor) 5.5 m 2.5 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-023",
@@ -1596,7 +1640,9 @@
    "quote": "Other Streets (first floor) 5.5 m 2.5 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-024",
@@ -1666,7 +1712,9 @@
    "quote": "Classified Roads 7.0 m 7.0 m",
    "clause": "3 Setbacks Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-025",
@@ -1731,7 +1779,9 @@
    "quote": "Single storey dwelling houses 0.9 m 4.0 m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-026",
@@ -1777,7 +1827,9 @@
    "quote": "Living room doors (such as family, dining or rumpus rooms) 4.0 m 4.0 m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-027",
@@ -1847,7 +1899,9 @@
    "quote": "Classified Roads 7.0 m 7.0 m",
    "clause": "3 Setbacks Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-028",
@@ -1912,7 +1966,9 @@
    "quote": "Single storey dwelling houses 0.9 m 4.0 m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-029",
@@ -1958,7 +2014,9 @@
    "quote": "Living room doors (such as family, dining or rumpus rooms) 4.0 m 4.0 m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-030",
@@ -2023,7 +2081,9 @@
    "quote": "Single storey dwelling houses 0.9 m 4.0 m*",
    "clause": "Table 3",
    "page": 23,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.14-Elizabeth-Hills.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.14-Elizabeth-Hills.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-031",
@@ -2088,7 +2148,9 @@
    "quote": "External walls on single storey dwelling houses 0.9 m 4.0 m*",
    "clause": "Table 3",
    "page": 17,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.15-New-Brighton-Golf-Course.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.15-New-Brighton-Golf-Course.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-032",
@@ -2139,7 +2201,11 @@
    "quote": "adjoining the access driveway is 1.2m",
    "clause": "Front setback Controls 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.3-Dwelling-Houses-on-Hatchet-Shaped-lots-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.3-Dwelling-Houses-on-Hatchet-Shaped-lots-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "liverpool-city-council-033",
@@ -2207,7 +2273,9 @@
    "quote": "Single storey dwelling houses 0.9 m 4.0 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.3-Dwelling-Houses-on-Hatchet-Shaped-lots-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.3-Dwelling-Houses-on-Hatchet-Shaped-lots-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-034",
@@ -2274,7 +2342,9 @@
    "quote": "Living room doors (such as family, dining or rumpus rooms) 4.0 m 7.0 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.3-Dwelling-Houses-on-Hatchet-Shaped-lots-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.3-Dwelling-Houses-on-Hatchet-Shaped-lots-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-035",
@@ -2318,7 +2388,9 @@
    "quote": "Setback within an a proposed internal subdivision 0.9 m 4.0 m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-036",
@@ -2364,7 +2436,9 @@
    "quote": "Garages that address the secondary frontage must a have minimum setback of 5.5m.",
    "clause": "Controls 5",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-037",
@@ -2410,7 +2484,9 @@
    "quote": "Garages that address the secondary frontage must a have minimum setback of 5.5m.",
    "clause": "Controls 5",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-038",
@@ -2425,7 +2501,8 @@
    },
    "conditionText": "Part 3.5 dwelling houses on lots under 400 m2: garage behind main face of dwelling",
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      21114
     ]
@@ -2441,7 +2518,7 @@
     {
      "id": 21114,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Garages must be set back a minimum of 1m behind the main face of the dwelling",
      "clause": "Controls 2",
      "page": 5,
@@ -2455,7 +2532,9 @@
    "quote": "Garages must be set back a minimum of 1m behind the main face of the dwelling",
    "clause": "Controls 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.5-Dwelling-Houses-less-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-039",
@@ -2470,7 +2549,8 @@
    },
    "conditionText": "Part 3.2 dwelling houses on lots over 400 m2: garage behind main face of dwelling",
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      21098
     ]
@@ -2486,7 +2566,7 @@
     {
      "id": 21098,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Garages must be set back a minimum of 1m behind the main face of the dwelling",
      "clause": "Controls 2",
      "page": 5,
@@ -2500,7 +2580,9 @@
    "quote": "Garages must be set back a minimum of 1m behind the main face of the dwelling",
    "clause": "Controls 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.2-Dwelling-Houses-greater-than-400sqm-R2-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-040",
@@ -2511,10 +2593,7 @@
     "garage"
    ],
    "conditions": {
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 14 dw/ha area: garage from any frontage",
@@ -2560,11 +2639,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "Garages shall be setback 5.5m from any street frontage",
    "clause": "Front and Secondary Setbacks Controls 3",
    "page": 44,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-041",
@@ -2577,11 +2658,7 @@
    ],
    "conditions": {
     "storeys": 1,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 17 and 21 dw/ha areas, Table 5: 1 storey, dwelling house, attached and semi-detached dwelling, rear setback",
@@ -2661,11 +2738,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "1 storey 0.9 m 0.9 m 5m 4m",
    "clause": "Table 5",
    "page": 67,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-042",
@@ -2678,11 +2757,7 @@
    ],
    "conditions": {
     "storeys": 2,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 17 and 21 dw/ha areas, Table 5: 2 storey, dwelling house, attached and semi-detached dwelling, rear setback",
@@ -2748,11 +2823,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "2 storey 1.2 m 1.2 m 8m 8m",
    "clause": "Table 5",
    "page": 67,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-043",
@@ -2765,11 +2842,7 @@
    ],
    "conditions": {
     "storeys": 2,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": "Edmondson Park precinct, 28 dw/ha area, Table 2: 2 storey, dwelling house, attached and semi-detached dwelling, rear setback",
    "rear": {
@@ -2800,11 +2873,15 @@
     }
    ],
    "confidence": "low",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
    "quote": "2 storey 3m 1.2 m 1.2 m 6m 6m 6m",
    "clause": "Table 2",
    "page": 44,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "liverpool-city-council-044",
@@ -2817,11 +2894,7 @@
    ],
    "conditions": {
     "storeysMin": 3,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 17 and 21 dw/ha areas, Table 5: 3 storeys and above, dwelling house, attached and semi-detached dwelling, rear setback",
@@ -2873,11 +2946,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "3 storeys and 1.4 m 1.4 m 8m 8m",
    "clause": "Table 5",
    "page": 67,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-045",
@@ -2894,7 +2969,8 @@
     "Part 3.6 multi dwelling housing: garages or carports behind main face of dwelling"
    ],
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      21144,
      21183
@@ -2912,7 +2988,7 @@
     {
      "id": 21144,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Garages or Carports must be set back a minimum of 1m behind the main face of the dwelling",
      "clause": "Controls 2",
      "page": 5,
@@ -2923,7 +2999,7 @@
     {
      "id": 21183,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Garages must be set back a minimum of 1m behind the main face of the dwelling",
      "clause": "Controls 2",
      "page": 5,
@@ -2937,7 +3013,9 @@
    "quote": "Garages or Carports must be set back a minimum of 1m behind the main face of the dwelling",
    "clause": "Controls 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-046",
@@ -3020,7 +3098,9 @@
    "quote": "Ground floor without windows to habitable rooms 0.9 m 4.0 m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-047",
@@ -3069,7 +3149,11 @@
    "quote": "Ground floor with windows to habitable rooms 4.0 m 4.0 m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "liverpool-city-council-048",
@@ -3164,7 +3248,9 @@
    "quote": "Other Streets 4.5 m 2.5 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-049",
@@ -3232,7 +3318,11 @@
    "quote": "First floor with windows to habitable rooms and neighbouring private open space 4.0 m 6.0 m",
    "clause": "Table 2",
    "page": 6,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
   },
   {
    "id": "liverpool-city-council-050",
@@ -3299,7 +3389,9 @@
    "quote": "First floor without windows to habitable rooms 1.2 m 4.5 m",
    "clause": "Table 2",
    "page": 6,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-051",
@@ -3431,7 +3523,9 @@
    "quote": "Other Streets 5.5 m 2.5 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-052",
@@ -3443,11 +3537,7 @@
    ],
    "conditions": {
     "storeys": 1,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 17 and 21 dw/ha areas, Table 5: 1 storey, multi dwelling housing, rear setback",
@@ -3513,11 +3603,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "1 storey 0.9 m 0.9 m 5m 4m",
    "clause": "Table 5",
    "page": 67,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-053",
@@ -3529,11 +3621,7 @@
    ],
    "conditions": {
     "storeys": 1,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": "Edmondson Park precinct, 28 dw/ha area, Table 2: 1 storey, multi dwelling housing, rear setback",
    "rear": {
@@ -3564,11 +3652,15 @@
     }
    ],
    "confidence": "low",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
    "quote": "1 storey 3m 0.9 m 0.9 m 6m 4m 4m",
    "clause": "Table 2",
    "page": 44,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "liverpool-city-council-054",
@@ -3580,11 +3672,7 @@
    ],
    "conditions": {
     "storeys": 2,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 17 and 21 dw/ha areas, Table 5: 2 storey, multi dwelling housing, rear setback",
@@ -3650,11 +3738,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "2 storey 1.2 m 1.2 m 8m 8m",
    "clause": "Table 5",
    "page": 67,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-055",
@@ -3666,11 +3756,7 @@
    ],
    "conditions": {
     "storeys": 2,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": "Edmondson Park precinct, 28 dw/ha area, Table 2: 2 storey, multi dwelling housing, rear setback",
    "rear": {
@@ -3701,11 +3787,15 @@
     }
    ],
    "confidence": "low",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText; CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen",
    "quote": "2 storey 3m 1.2 m 1.2 m 6m 6m 6m",
    "clause": "Table 2",
    "page": 44,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "liverpool-city-council-056",
@@ -3717,11 +3807,7 @@
    ],
    "conditions": {
     "storeysMin": 3,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 17 and 21 dw/ha areas, Table 5: 3 storeys and above, multi dwelling housing, rear setback",
@@ -3773,11 +3859,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "3 storeys and 1.4 m 1.4 m 8m 8m",
    "clause": "Table 5",
    "page": 67,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-057",
@@ -3825,7 +3913,9 @@
    "quote": "Buildings shall be setback a minimum of 8m from other buildings across a driveway.",
    "clause": "Controls 7",
    "page": 6,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-058",
@@ -3922,7 +4012,9 @@
    "quote": "Classified Roads 7.0 m 7.0 m",
    "clause": "Table 1",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.6-Multi-Dwelling-Housing-Terraces-Townhouses-Villas-R3-R4.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-059",
@@ -3986,7 +4078,9 @@
    "quote": "Single storey buildings 0.9 m 4.0 m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.4-Semi-Detached-and-Attached-Dwellings-R2-R3.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.4-Semi-Detached-and-Attached-Dwellings-R2-R3.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-060",
@@ -4048,7 +4142,9 @@
    "quote": "Living room doors (such as family, dining or rumpus rooms) 4.0 m 4.0 m",
    "clause": "Table 2",
    "page": 5,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-3.4-Semi-Detached-and-Attached-Dwellings-R2-R3.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-3.4-Semi-Detached-and-Attached-Dwellings-R2-R3.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-061",
@@ -4060,11 +4156,7 @@
    ],
    "conditions": {
     "storeys": 1,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 28 dw/ha area, Table 2: 1 storey, residential flat building, rear setback",
@@ -4116,11 +4208,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "1 storey 3m 0.9 m 0.9 m 6m 4m 4m",
    "clause": "Table 2",
    "page": 44,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   },
   {
    "id": "liverpool-city-council-062",
@@ -4132,11 +4226,7 @@
    ],
    "conditions": {
     "storeys": 2,
-    "precinct": "Edmondson Park precinct",
-    "qualifiers": [
-     "height_plane",
-     "open_space_frontage"
-    ]
+    "precinct": "Edmondson Park precinct"
    },
    "conditionText": [
     "Edmondson Park precinct, 28 dw/ha area, Table 2: 2 storey, residential flat building, rear setback",
@@ -4188,11 +4278,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (height_plane, open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "2 storey 3m 1.2 m 1.2 m 6m 6m 6m",
    "clause": "Table 2",
    "page": 44,
-   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf"
+   "source_file": "DCP/Liverpool-DCP-2008-Part-2.11-Edmondson-Park.pdf",
+   "dcp": "Liverpool Development Control Plan 2008 (adopted 28 July 2008, in force 29 August 2008, amended through Stage 1 2025/4634, July 2026), with Part 2 locality plans, Part 3 residential parts, Edmondson Park South DCP 2012, Growth Centre Precincts DCP Schedules 1 to 3 and the Western Sydney Aerotropolis Phase 2 DCP Amendment 1 (Sep 2024)",
+   "edition": "Liverpool DCP 2008 (as amended)"
   }
  ],
  "gaps": [
@@ -4253,5 +4345,32 @@
   "rules": 62,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (liverpool-city-council-008, liverpool-city-council-020)); side (conflicting rules of equal specificity (liverpool-city-council-008, liverpool-city-council-028)); rear (conflicting rules of equal specificity (liverpool-city-council-008, liverpool-city-council-028))"
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

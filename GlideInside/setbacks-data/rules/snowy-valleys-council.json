@@ -92,7 +92,9 @@
    "quote": "from the primary street frontage is to be a minimum of 10 metres",
    "clause": "4.7.3",
    "page": 44,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-002",
@@ -158,7 +160,11 @@
    "quote": "the minimum side or rear setback must be 3 metres",
    "clause": "5.3.3",
    "page": 60,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "snowy-valleys-council-003",
@@ -202,7 +208,9 @@
    "quote": "may be reduced up to 3.0 metres",
    "clause": "4.5.2",
    "page": 38,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-004",
@@ -247,7 +255,9 @@
    "quote": "set back at least 1metre from the front façade",
    "clause": "4.10.4",
    "page": 51,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-005",
@@ -294,7 +304,9 @@
    "quote": "second level of two-storey dual occupancies is to be setback 2.0m from the side boundary",
    "clause": "4.10.2",
    "page": 50,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-006",
@@ -340,7 +352,9 @@
    "quote": "single-storey dual occupancies are to be a minimum of 0.9 metre",
    "clause": "4.10.2",
    "page": 50,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-007",
@@ -389,7 +403,9 @@
    "quote": "the setback will be consistent with the average setback of neighbouring houses",
    "clause": "4.5.2",
    "page": 37,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-008",
@@ -450,7 +466,9 @@
    "quote": "not permitted to be located forward of the primary and secondary building lines",
    "clause": "4.5.4",
    "page": 39,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-009",
@@ -496,7 +514,9 @@
    "quote": "side setbacks are to be three (3) metres for single-storey development",
    "clause": "4.11.3",
    "page": 52,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-010",
@@ -542,7 +562,9 @@
    "quote": "3.75 metres for two- storey development",
    "clause": "4.11.3",
    "page": 52,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-011",
@@ -626,7 +648,9 @@
    "quote": "the front setbacks are to be six (6) metres",
    "clause": "4.11.3",
    "page": 52,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-012",
@@ -671,7 +695,9 @@
    "quote": "permitted to project up to 2m forward of the dwelling setback",
    "clause": "4.5.2",
    "page": 37,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)"
   },
   {
    "id": "snowy-valleys-council-013",
@@ -719,7 +745,11 @@
    "quote": "A minimum building line of 10 metres is to be provided along the frontage of any highway",
    "clause": "6.3.4",
    "page": 77,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "snowy-valleys-council-014",
@@ -821,7 +851,11 @@
    "quote": "A minimum building line of 20 metres is to be provided along the frontage of any road in rural",
    "clause": "6.3.4",
    "page": 77,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "snowy-valleys-council-015",
@@ -865,7 +899,11 @@
    "quote": "are to be set back 7.5 metres",
    "clause": "6.3.4",
    "page": 77,
-   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf"
+   "source_file": "DCP/ecm_3220933_v13_development-control-plan-2024-snowy-valleys-svc-corpplan-pln-031-02-adopted-by-council-16-nove.pdf",
+   "dcp": "Snowy Valleys Development Control Plan 2024 (SVC-CorpPlan-Pln-013-02), adopted by Council 16 November (year in saved file name truncated; DCP 2024)",
+   "edition": "DCP 2024 (SVC-CorpPlan-Pln-013-02)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   }
  ],
  "gaps": [
@@ -946,5 +984,32 @@
   "rules": 15,
   "recordsNotModelled": 1,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

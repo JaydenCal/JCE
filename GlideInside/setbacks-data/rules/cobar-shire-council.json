@@ -12,11 +12,40 @@
  "rules": [],
  "gaps": [
   "No setback records in the extract (no front, side, rear, garage, rural, commercial, industrial or classified road setback values found in the saved council documents).",
-  "Extraction gaps noted for this council (verbatim): No DCP, subdivision code or engineering design specification saved for Cobar: dev_controls, setbacks, roads, access, earthworks, water, sewer, services, contributions not available | Local Strategic Planning Statement 2020 (DCP/Reference) is a policy document with no design parameters; read, no records"
+  "Extraction gaps noted for this council (verbatim): No DCP, subdivision code or engineering design specification saved for Cobar: dev_controls, setbacks, roads, access, earthworks, water, sewer, services, contributions not available | Local Strategic Planning Statement 2020 (DCP/Reference) is a policy document with no design parameters; read, no records",
+  "Research: No DCP residential setback controls located; dwellings rely on the LEP and the Codes SEPP."
  ],
- "notes": "Extract reviewed: reviewed (Opus full-set audit 01/11/2026).",
+ "notes": "Extract reviewed: reviewed (Opus full-set audit 01/11/2026). | Research merged from research-setbacks/councils/cobar-shire-council.json",
  "counts": {
   "records": 0,
   "rules": 0
+ },
+ "coverage": {},
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "council status is none (no DCP setback rules)"
+  }
  }
 }

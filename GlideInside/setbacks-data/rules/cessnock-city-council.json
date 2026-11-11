@@ -75,59 +75,12 @@
    "quote": "2m second storey and above",
    "clause": "Table 6",
    "page": 69,
-   "source_file": "DCP/E-E17---Huntlee.txt"
+   "source_file": "DCP/E-E17---Huntlee.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cessnock-city-council-002",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "any"
-   ],
-   "conditions": {
-    "lotWidthMinM": 5.0,
-    "qualifiers": [
-     "new_release_area"
-    ]
-   },
-   "conditionText": "D2 new areas: Other Street (carriageway width over 5.0 m)",
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     9612
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    9612
-   ],
-   "evidence": [
-    {
-     "id": 9612,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Other Street (carriageway Width >5.0 6.0 metres metres)",
-     "clause": "Table 1 Street Setbacks in New Area",
-     "page": 7,
-     "source_file": "DCP/D-D2---Urban-Housing.txt",
-     "condition": "D2 new areas: Other Street (carriageway width over 5.0 m)",
-     "edition": "UNVERIFIED"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "Other Street (carriageway Width >5.0 6.0 metres metres)",
-   "clause": "Table 1 Street Setbacks in New Area",
-   "page": 7,
-   "source_file": "DCP/D-D2---Urban-Housing.txt"
-  },
-  {
-   "id": "cessnock-city-council-003",
    "zones": [
     "*"
    ],
@@ -172,7 +125,61 @@
    "quote": "Access Place & Access Street 4.0 metres",
    "clause": "Table 1 Street Setbacks in New Area",
    "page": 7,
-   "source_file": "DCP/D-D2---Urban-Housing.txt"
+   "source_file": "DCP/D-D2---Urban-Housing.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED"
+  },
+  {
+   "id": "cessnock-city-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "any"
+   ],
+   "conditions": {
+    "qualifiers": [
+     "new_release_area"
+    ]
+   },
+   "conditionText": "D2 new areas: Other Street (carriageway width over 5.0 m)",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     9612
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    9612
+   ],
+   "evidence": [
+    {
+     "id": 9612,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Other Street (carriageway Width >5.0 6.0 metres metres)",
+     "clause": "Table 1 Street Setbacks in New Area",
+     "page": 7,
+     "source_file": "DCP/D-D2---Urban-Housing.txt",
+     "condition": "D2 new areas: Other Street (carriageway width over 5.0 m)",
+     "edition": "UNVERIFIED"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Other Street (carriageway Width >5.0 6.0 metres metres)",
+   "clause": "Table 1 Street Setbacks in New Area",
+   "page": 7,
+   "source_file": "DCP/D-D2---Urban-Housing.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "cessnock-city-council-004",
@@ -236,7 +243,9 @@
    "quote": "Corner Lot Secondary Street Setback 1m single storey",
    "clause": "Table 6",
    "page": 69,
-   "source_file": "DCP/E-E17---Huntlee.txt"
+   "source_file": "DCP/E-E17---Huntlee.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cessnock-city-council-005",
@@ -282,7 +291,9 @@
    "quote": "A minimum side or rear boundary setback of 1.0 metre shall be provided for walls up to 3.0 metres in height",
    "clause": "2.4.4 Provisions 1",
    "page": 12,
-   "source_file": "DCP/D-D2---Urban-Housing.txt"
+   "source_file": "DCP/D-D2---Urban-Housing.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cessnock-city-council-006",
@@ -329,7 +340,11 @@
    "quote": "the minimum setback shall be 1.0 metres plus 300 mm for every metre of height over 3.0",
    "clause": "2.4.4 Provisions 2",
    "page": 12,
-   "source_file": "DCP/D-D2---Urban-Housing.txt"
+   "source_file": "DCP/D-D2---Urban-Housing.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Low confidence: value not given as a number or not confirmed"
   },
   {
    "id": "cessnock-city-council-007",
@@ -446,7 +461,9 @@
    "quote": "Front Setback 3.5m",
    "clause": "Table 4",
    "page": 64,
-   "source_file": "DCP/E-E17---Huntlee.txt"
+   "source_file": "DCP/E-E17---Huntlee.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cessnock-city-council-008",
@@ -506,7 +523,11 @@
    "quote": "Front Setback (min) 4.5m (building façade)",
    "clause": "Table 5",
    "page": 68,
-   "source_file": "DCP/E-E17---Huntlee.txt"
+   "source_file": "DCP/E-E17---Huntlee.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "cessnock-city-council-009",
@@ -550,7 +571,11 @@
    "quote": "Front Setback (min) 6m",
    "clause": "Table 8",
    "page": 70,
-   "source_file": "DCP/E-E17---Huntlee.txt"
+   "source_file": "DCP/E-E17---Huntlee.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "cessnock-city-council-010",
@@ -594,7 +619,11 @@
    "quote": "Rear Setback (min) 4m (excludes detached garages and other ancillary",
    "clause": "Table 6",
    "page": 69,
-   "source_file": "DCP/E-E17---Huntlee.txt"
+   "source_file": "DCP/E-E17---Huntlee.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "cessnock-city-council-011",
@@ -641,7 +670,9 @@
    "quote": "Street Setbacks 6.0 metres to main 6.0 metres to main 9.0 metres",
    "clause": "Table 2 Yield Table",
    "page": 28,
-   "source_file": "DCP/D-D2---Urban-Housing.txt"
+   "source_file": "DCP/D-D2---Urban-Housing.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cessnock-city-council-012",
@@ -686,7 +717,9 @@
    "quote": "if corner allotment 3.0 if corner allotment 3.0",
    "clause": "Table 2 Yield Table",
    "page": 28,
-   "source_file": "DCP/D-D2---Urban-Housing.txt"
+   "source_file": "DCP/D-D2---Urban-Housing.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cessnock-city-council-013",
@@ -729,7 +762,9 @@
    "quote": "5.5m (garage)",
    "clause": "Table 5",
    "page": 68,
-   "source_file": "DCP/E-E17---Huntlee.txt"
+   "source_file": "DCP/E-E17---Huntlee.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cessnock-city-council-014",
@@ -775,7 +810,9 @@
    "quote": "Side/Rear Setbacks 1.0 metres 3.0 metres 6.0 metres",
    "clause": "Table 2 Yield Table",
    "page": 28,
-   "source_file": "DCP/D-D2---Urban-Housing.txt"
+   "source_file": "DCP/D-D2---Urban-Housing.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cessnock-city-council-015",
@@ -842,7 +879,9 @@
    "quote": "Street Setbacks 6.0 metres to main 6.0 metres to main 9.0 metres",
    "clause": "Table 2 Yield Table",
    "page": 28,
-   "source_file": "DCP/D-D2---Urban-Housing.txt"
+   "source_file": "DCP/D-D2---Urban-Housing.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "cessnock-city-council-016",
@@ -890,7 +929,11 @@
    "quote": "the front setback area to a minimum depth of 6.0 metres;",
    "clause": "3.2.1",
    "page": 1,
-   "source_file": "DCP/D-D3---Industrial-Development.txt"
+   "source_file": "DCP/D-D3---Industrial-Development.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
    "id": "cessnock-city-council-017",
@@ -955,7 +998,11 @@
    "quote": "Minimum setback of dwelling houses from the road shall be 30 metres.",
    "clause": "Schedule 4, Setbacks",
    "page": 52,
-   "source_file": "DCP/D-D1---Subdivision-Guidelines.txt"
+   "source_file": "DCP/D-D1---Subdivision-Guidelines.txt",
+   "dcp": "Cessnock Development Control Plan 2010 (chapter-based; D1 Subdivision Guidelines Version 1 adopted 15/05/2024, commenced 17/07/2024; C1 Parking and Access issued as Cessnock DCP 2021 format; other chapters UNVERIFIED)",
+   "edition": "Version 1, adopted 15/05/2024, commenced 17/07/2024",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   }
  ],
  "gaps": [
@@ -996,5 +1043,32 @@
   "rules": 17,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-008, cessnock-city-council-009)); side (conflicting rules of equal specificity (cessnock-city-council-004, cessnock-city-council-005, cessnock-city-council-006)); rear (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-010))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-008, cessnock-city-council-009)); side (conflicting rules of equal specificity (cessnock-city-council-004, cessnock-city-council-005, cessnock-city-council-006)); rear (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-010))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-008, cessnock-city-council-009)); side (conflicting rules of equal specificity (cessnock-city-council-004, cessnock-city-council-005, cessnock-city-council-006)); rear (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-010))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-008, cessnock-city-council-009)); side (conflicting rules of equal specificity (cessnock-city-council-004, cessnock-city-council-005, cessnock-city-council-006)); rear (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-010))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (cessnock-city-council-004, cessnock-city-council-005, cessnock-city-council-006, cessnock-city-council-017)); rear (conflicting rules of equal specificity (cessnock-city-council-007, cessnock-city-council-010))"
+  }
  }
 }

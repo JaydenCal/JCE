@@ -53,7 +53,9 @@
    "quote": "in which case the minimum setback is 30m",
    "clause": "2.2 A1.1",
    "page": 8,
-   "source_file": "DCP/Rural-R5-Large-Lot-Residential-and-E4-Environmental-Living-Zones-DCP.pdf"
+   "source_file": "DCP/Rural-R5-Large-Lot-Residential-and-E4-Environmental-Living-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Rural R5 and E4 DCP (edition UNVERIFIED)"
   },
   {
    "id": "eurobodalla-shire-council-002",
@@ -98,7 +100,11 @@
    "quote": "setback at least 20m from the road frontage and",
    "clause": "2.2 A1.2",
    "page": 8,
-   "source_file": "DCP/Rural-R5-Large-Lot-Residential-and-E4-Environmental-Living-Zones-DCP.pdf"
+   "source_file": "DCP/Rural-R5-Large-Lot-Residential-and-E4-Environmental-Living-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Rural R5 and E4 DCP (edition UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "eurobodalla-shire-council-003",
@@ -150,7 +156,9 @@
    "quote": "building, 900mm (including a minimum of",
    "clause": "2.2 A3",
    "page": 11,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
    "id": "eurobodalla-shire-council-004",
@@ -199,7 +207,9 @@
    "quote": "For any part of the building higher than 4.5m, 1.5m",
    "clause": "2.2 A3",
    "page": 11,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
    "id": "eurobodalla-shire-council-005",
@@ -267,7 +277,9 @@
    "quote": "7m from the front boundary",
    "clause": "2.2 A1",
    "page": 10,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
    "id": "eurobodalla-shire-council-006",
@@ -314,7 +326,11 @@
    "quote": "30m from the front boundary where the boundary is to an unsealed public road",
    "clause": "2.2 A1",
    "page": 10,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "eurobodalla-shire-council-007",
@@ -327,7 +343,9 @@
    "conditions": {
     "qualifiers": [
      "adjoins_other",
-     "open_space_frontage",
+     "open_space_frontage"
+    ],
+    "qualifiersNot": [
      "waterfront"
     ]
    },
@@ -364,7 +382,11 @@
    "quote": "the minimum setback for any building from the reserve must be 3m",
    "clause": "2.2 A8.2",
    "page": 13,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other, open_space_frontage); see conditionText"
   },
   {
    "id": "eurobodalla-shire-council-008",
@@ -412,7 +434,11 @@
    "quote": "Neighbourhood shops must be setback a minimum of 3 metres from the road frontage",
    "clause": "2.2 A2.2",
    "page": 10,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "eurobodalla-shire-council-009",
@@ -424,7 +450,6 @@
    ],
    "conditions": {
     "qualifiers": [
-     "open_space_frontage",
      "waterfront"
     ]
    },
@@ -457,11 +482,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "must be 12m",
    "clause": "2.2 A8.1 / A8.3",
    "page": 13,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
    "id": "eurobodalla-shire-council-010",
@@ -505,7 +532,9 @@
    "quote": "frontage side boundary is 3m.",
    "clause": "2.2 A5.1",
    "page": 11,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
    "id": "eurobodalla-shire-council-011",
@@ -556,7 +585,9 @@
    "quote": "to within 20% of the average front setbacks of the",
    "clause": "2.2 A2.1",
    "page": 10,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
    "id": "eurobodalla-shire-council-012",
@@ -605,7 +636,9 @@
    "quote": "In new subdivisions where a setback has not been established a setback of 5.5m applies",
    "clause": "2.2 A2.3",
    "page": 10,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
    "id": "eurobodalla-shire-council-013",
@@ -651,7 +684,9 @@
    "quote": "Up to 50% of the front façade of the dwelling (excluding garages or carports) may be setback 4.5m",
    "clause": "2.2 A2.3",
    "page": 10,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
    "id": "eurobodalla-shire-council-014",
@@ -696,58 +731,12 @@
    "quote": "and a minimum of 5.5m from the secondary property boundary",
    "clause": "2.2 A5.3",
    "page": 12,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
    "id": "eurobodalla-shire-council-015",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "garage"
-   ],
-   "conditions": {
-    "qualifiers": [
-     "building_element"
-    ]
-   },
-   "conditionText": "Carports and garages: maximum projection forward of front facade, for no more than 50% of the facade",
-   "garage": {
-    "minM": null,
-    "behindBuildingLineM": 1.2,
-    "sources": [
-     12400
-    ]
-   },
-   "front": null,
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "sources": [
-    12400
-   ],
-   "evidence": [
-    {
-     "id": 12400,
-     "parameter": "garage_setback_behind_facade",
-     "slot": "garageBehind",
-     "quote": "1.2m and for no more than 50% of that façade.",
-     "clause": "2.3 A1",
-     "page": 15,
-     "source_file": "DCP/Residential-Zones-DCP.pdf",
-     "condition": "Carports and garages: maximum projection forward of front facade, for no more than 50% of the facade",
-     "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "1.2m and for no more than 50% of that façade.",
-   "clause": "2.3 A1",
-   "page": 15,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
-  },
-  {
-   "id": "eurobodalla-shire-council-016",
    "zones": [
     "*"
    ],
@@ -787,10 +776,12 @@
    "quote": "must be set back a minimum of 5.5 metres from the property boundary",
    "clause": "2.2 A2.4",
    "page": 10,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
-   "id": "eurobodalla-shire-council-017",
+   "id": "eurobodalla-shire-council-016",
    "zones": [
     "*"
    ],
@@ -836,10 +827,12 @@
    "quote": "sheds, detached garages and other detached ancillary buildings (eg. gazebos, aviaries, green houses, pool houses, etc), 450mm",
    "clause": "2.2 A3",
    "page": 11,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
-   "id": "eurobodalla-shire-council-018",
+   "id": "eurobodalla-shire-council-017",
    "zones": [
     "*"
    ],
@@ -885,10 +878,12 @@
    "quote": "A minimum rear boundary setback of 3m",
    "clause": "2.2 A6.1",
    "page": 12,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
-   "id": "eurobodalla-shire-council-019",
+   "id": "eurobodalla-shire-council-018",
    "zones": [
     "*"
    ],
@@ -935,10 +930,14 @@
    "quote": "A minimum rear boundary setback of 450mm",
    "clause": "2.2 A6.2",
    "page": 12,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
-   "id": "eurobodalla-shire-council-020",
+   "id": "eurobodalla-shire-council-019",
    "zones": [
     "*"
    ],
@@ -983,10 +982,12 @@
    "quote": "A minimum ‘front’ boundary setback of 3m",
    "clause": "2.2 A7.1",
    "page": 12,
-   "source_file": "DCP/Residential-Zones-DCP.pdf"
+   "source_file": "DCP/Residential-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Residential Zones DCP (Amendment No. 3, 11/10/2019)"
   },
   {
-   "id": "eurobodalla-shire-council-021",
+   "id": "eurobodalla-shire-council-020",
    "zones": [
     "IN*"
    ],
@@ -1031,13 +1032,17 @@
    "quote": "following roads shall be 12m:",
    "clause": "2.1 A1.1",
    "page": 7,
-   "source_file": "DCP/Industrial-Zones-DCP.pdf"
+   "source_file": "DCP/Industrial-Zones-DCP.pdf",
+   "dcp": "Residential Zones DCP (Amendment No. 3 adopted 11/10/2019), Rural R5 Large Lot Residential and E4 Environmental Living Zones DCP, Industrial Zones DCP; town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) saved but not extracted; Parking and Access Code effective 28/11/2011 (review date Sept 2012). Edition otherwise UNVERIFIED",
+   "edition": "Industrial Zones DCP (edition UNVERIFIED)",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
   "R5: no numeric rear setback rule (printed as text, BCA/NCC reference, range, or absent)",
   "No garage setback rule",
-  "1 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 12414",
+  "2 records not modelled as lot-boundary setbacks (rural, commercial, industrial or garage records that are not front/side/rear controls, e.g. buffers, widths, gates): ids 12400, 12414",
   "Extraction gaps noted for this council (verbatim, may be partly unrelated to setbacks): IFD zone tables in IDS Appendix A not extracted | Town DCPs (Moruya, Narooma, Batemans Bay, Nelligen, Bodalla, Mogo, Tilba, Neighbourhood Centres) not extracted"
  ],
  "notes": "Built from 23 extract records (review status: reviewed (Opus full-set audit 01/11/2026)). Unit mm values are converted to metres (printed value kept in \"printed\"). Values not given as a metre figure are kept as null minM with the printed text.",
@@ -1064,7 +1069,7 @@
    "rear": false,
    "secondaryFront": true,
    "garage": false,
-   "rules": 18
+   "rules": 17
   },
   "IN*": {
    "front": false,
@@ -1079,8 +1084,35 @@
  "needsPrecinct": false,
  "counts": {
   "records": 23,
-  "rules": 21,
-  "recordsNotModelled": 1,
+  "rules": 20,
+  "recordsNotModelled": 2,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (eurobodalla-shire-council-001, eurobodalla-shire-council-002, eurobodalla-shire-council-005, eurobodalla-shire-council-006)); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

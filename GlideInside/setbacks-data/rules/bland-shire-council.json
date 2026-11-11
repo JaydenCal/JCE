@@ -16,7 +16,7 @@
     "R1"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {
     "storeys": 2,
@@ -55,7 +55,9 @@
    "quote": "boundaries by 3 metres,",
    "clause": "Ch 3 AD10.4.1",
    "page": 38,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "bland-shire-council-002",
@@ -63,7 +65,7 @@
     "R1"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": [
@@ -120,7 +122,9 @@
    "quote": "At least 5 metres from the",
    "clause": "Ch 3 AD10.4.1",
    "page": 38,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "bland-shire-council-003",
@@ -128,7 +132,7 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": "R5 Large Lot Residential, from front and side boundaries",
@@ -164,7 +168,9 @@
    "quote": "Buildings are setback 20 metres",
    "clause": "Ch 3 AD11.2",
    "page": 39,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "bland-shire-council-004",
@@ -172,7 +178,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": [
@@ -229,7 +235,9 @@
    "quote": "distance of 5 metres from the front",
    "clause": "Ch 8 AV3",
    "page": 62,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "bland-shire-council-005",
@@ -237,7 +245,7 @@
     "RU5"
    ],
    "appliesTo": [
-    "multi_dwelling"
+    "any"
    ],
    "conditions": {},
    "conditionText": "village RU5 Barmedman and Ungarie, rear and side",
@@ -274,7 +282,11 @@
    "quote": "boundary and 900mm from the rear",
    "clause": "Ch 8 AV3",
    "page": 62,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen"
   },
   {
    "id": "bland-shire-council-006",
@@ -322,7 +334,11 @@
    "quote": "at least 150 metres from",
    "clause": "Ch 9 APPP1",
    "page": 65,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "bland-shire-council-007",
@@ -371,7 +387,9 @@
    "quote": "boundaries by 3 metres, plus 0.3 metres",
    "clause": "Ch 4 AMD2.5",
    "page": 41,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "bland-shire-council-008",
@@ -438,7 +456,9 @@
    "quote": "At least 5 metres from the",
    "clause": "Ch 4 AMD2.5",
    "page": 41,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "bland-shire-council-009",
@@ -486,7 +506,9 @@
    "quote": "The dwelling is not within 30 metres of",
    "clause": "Ch 3 ARD2.2",
    "page": 31,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "bland-shire-council-010",
@@ -534,7 +556,9 @@
    "quote": "Buildings are set back at least 15",
    "clause": "Ch 6 AE6",
    "page": 53,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "bland-shire-council-011",
@@ -578,7 +602,9 @@
    "quote": "street frontage and 3 metres from any",
    "clause": "Ch 6 AE6",
    "page": 53,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED"
   },
   {
    "id": "bland-shire-council-012",
@@ -622,7 +648,11 @@
    "quote": "within 1.5 metres of the",
    "clause": "Ch 7 AI15",
    "page": 58,
-   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf"
+   "source_file": "DCP/Development-Control-Plan-2012-0-pdf.pdf",
+   "dcp": "Bland Shire Development Control Plan 2012, adopted 19/03/2013, in force 25/03/2013",
+   "edition": "UNVERIFIED",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   }
  ],
  "gaps": [
@@ -699,5 +729,32 @@
   "rules": 12,
   "recordsNotModelled": 4,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (conflicting rules of equal specificity (bland-shire-council-004, bland-shire-council-005)); rear (no rule for this zone/use/lot)"
+  }
  }
 }

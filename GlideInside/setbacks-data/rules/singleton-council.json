@@ -55,7 +55,9 @@
    "quote": "0.9m where the height of the wall(s) adjacent to the respective boundary do",
    "clause": "2.12(3)(a)",
    "page": 25,
-   "source_file": "DCP/Singleton DCP - Amendment 4.pdf"
+   "source_file": "DCP/Singleton DCP - Amendment 4.pdf",
+   "dcp": "Singleton Development Control Plan 2014, Version 4 (Amendment 4, commenced 25/03/2020); Huntlee DCP 2013 (precinct, only partly mined); reference copy of Singleton DCP 2014 (2015) not mined",
+   "edition": "Singleton DCP 2014, Version 4 (Amendment 4)"
   },
   {
    "id": "singleton-council-002",
@@ -103,7 +105,9 @@
    "quote": "1.5m where the height of the wall(s) adjacent to the respective boundary",
    "clause": "2.12(3)(b)",
    "page": 25,
-   "source_file": "DCP/Singleton DCP - Amendment 4.pdf"
+   "source_file": "DCP/Singleton DCP - Amendment 4.pdf",
+   "dcp": "Singleton Development Control Plan 2014, Version 4 (Amendment 4, commenced 25/03/2020); Huntlee DCP 2013 (precinct, only partly mined); reference copy of Singleton DCP 2014 (2015) not mined",
+   "edition": "Singleton DCP 2014, Version 4 (Amendment 4)"
   },
   {
    "id": "singleton-council-003",
@@ -189,7 +193,9 @@
    "quote": "5.5 R1 General Residential, R2 Low Density Residential",
    "clause": "2.10 Table 2.10A",
    "page": 24,
-   "source_file": "DCP/Singleton DCP - Amendment 4.pdf"
+   "source_file": "DCP/Singleton DCP - Amendment 4.pdf",
+   "dcp": "Singleton Development Control Plan 2014, Version 4 (Amendment 4, commenced 25/03/2020); Huntlee DCP 2013 (precinct, only partly mined); reference copy of Singleton DCP 2014 (2015) not mined",
+   "edition": "Singleton DCP 2014, Version 4 (Amendment 4)"
   },
   {
    "id": "singleton-council-004",
@@ -197,10 +203,20 @@
     "R5"
    ],
    "appliesTo": [
-    "dwelling"
+    "any"
    ],
    "conditions": {},
-   "conditionText": "Singleton DCP: R5 Large Lot Residential zone",
+   "conditionText": [
+    "Singleton DCP: R5 Large Lot Residential zone",
+    "Singleton DCP: minimum building line, zones B1, B5, IN3, R5, E4"
+   ],
+   "front": {
+    "minM": 15.0,
+    "basis": "fixed",
+    "sources": [
+     30786
+    ]
+   },
    "rear": {
     "minM": 10.0,
     "basis": "fixed",
@@ -215,14 +231,25 @@
      30796
     ]
    },
-   "front": null,
    "secondaryFront": null,
    "garage": null,
    "sources": [
+    30786,
     30796,
     30797
    ],
    "evidence": [
+    {
+     "id": 30786,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "15 B1 Neighbourhood Centre, B5 Business Development, IN3 Heavy",
+     "clause": "2.10 Table 2.10A",
+     "page": 24,
+     "source_file": "DCP/Singleton DCP - Amendment 4.pdf",
+     "condition": "Singleton DCP: minimum building line, zones B1, B5, IN3, R5, E4",
+     "edition": "Singleton DCP 2014, Version 4 (Amendment 4)"
+    },
     {
      "id": 30797,
      "parameter": "rear_setback",
@@ -248,10 +275,12 @@
    ],
    "confidence": "high",
    "needsReview": null,
-   "quote": "Lot Residential is 10m.",
-   "clause": "2.12(7)",
-   "page": 26,
-   "source_file": "DCP/Singleton DCP - Amendment 4.pdf"
+   "quote": "15 B1 Neighbourhood Centre, B5 Business Development, IN3 Heavy",
+   "clause": "2.10 Table 2.10A",
+   "page": 24,
+   "source_file": "DCP/Singleton DCP - Amendment 4.pdf",
+   "dcp": "Singleton Development Control Plan 2014, Version 4 (Amendment 4, commenced 25/03/2020); Huntlee DCP 2013 (precinct, only partly mined); reference copy of Singleton DCP 2014 (2015) not mined",
+   "edition": "Singleton DCP 2014, Version 4 (Amendment 4)"
   },
   {
    "id": "singleton-council-005",
@@ -317,7 +346,9 @@
    "quote": "6 RU5 Village",
    "clause": "2.10 Table 2.10A",
    "page": 24,
-   "source_file": "DCP/Singleton DCP - Amendment 4.pdf"
+   "source_file": "DCP/Singleton DCP - Amendment 4.pdf",
+   "dcp": "Singleton Development Control Plan 2014, Version 4 (Amendment 4, commenced 25/03/2020); Huntlee DCP 2013 (precinct, only partly mined); reference copy of Singleton DCP 2014 (2015) not mined",
+   "edition": "Singleton DCP 2014, Version 4 (Amendment 4)"
   },
   {
    "id": "singleton-council-006",
@@ -402,7 +433,9 @@
    "quote": "40 RU1 Primary Production, RU2 Rural Landscape, RU4 Primary",
    "clause": "2.10 Table 2.10A",
    "page": 24,
-   "source_file": "DCP/Singleton DCP - Amendment 4.pdf"
+   "source_file": "DCP/Singleton DCP - Amendment 4.pdf",
+   "dcp": "Singleton Development Control Plan 2014, Version 4 (Amendment 4, commenced 25/03/2020); Huntlee DCP 2013 (precinct, only partly mined); reference copy of Singleton DCP 2014 (2015) not mined",
+   "edition": "Singleton DCP 2014, Version 4 (Amendment 4)"
   },
   {
    "id": "singleton-council-007",
@@ -464,7 +497,9 @@
    "quote": "this clause applies is 10m.",
    "clause": "2.11(3)",
    "page": 25,
-   "source_file": "DCP/Singleton DCP - Amendment 4.pdf"
+   "source_file": "DCP/Singleton DCP - Amendment 4.pdf",
+   "dcp": "Singleton Development Control Plan 2014, Version 4 (Amendment 4, commenced 25/03/2020); Huntlee DCP 2013 (precinct, only partly mined); reference copy of Singleton DCP 2014 (2015) not mined",
+   "edition": "Singleton DCP 2014, Version 4 (Amendment 4)"
   },
   {
    "id": "singleton-council-008",
@@ -508,12 +543,13 @@
    "quote": "9 B6 Enterprise Corridor",
    "clause": "2.10 Table 2.10A",
    "page": 24,
-   "source_file": "DCP/Singleton DCP - Amendment 4.pdf"
+   "source_file": "DCP/Singleton DCP - Amendment 4.pdf",
+   "dcp": "Singleton Development Control Plan 2014, Version 4 (Amendment 4, commenced 25/03/2020); Huntlee DCP 2013 (precinct, only partly mined); reference copy of Singleton DCP 2014 (2015) not mined",
+   "edition": "Singleton DCP 2014, Version 4 (Amendment 4)"
   },
   {
    "id": "singleton-council-009",
    "zones": [
-    "R5",
     "B1",
     "B5",
     "IN3"
@@ -555,7 +591,9 @@
    "quote": "15 B1 Neighbourhood Centre, B5 Business Development, IN3 Heavy",
    "clause": "2.10 Table 2.10A",
    "page": 24,
-   "source_file": "DCP/Singleton DCP - Amendment 4.pdf"
+   "source_file": "DCP/Singleton DCP - Amendment 4.pdf",
+   "dcp": "Singleton Development Control Plan 2014, Version 4 (Amendment 4, commenced 25/03/2020); Huntlee DCP 2013 (precinct, only partly mined); reference copy of Singleton DCP 2014 (2015) not mined",
+   "edition": "Singleton DCP 2014, Version 4 (Amendment 4)"
   }
  ],
  "gaps": [
@@ -593,7 +631,7 @@
    "rear": true,
    "secondaryFront": false,
    "garage": false,
-   "rules": 2
+   "rules": 1
   },
   "RU1": {
    "front": true,
@@ -667,5 +705,32 @@
   "rules": 9,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "RU5": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  }
  }
 }

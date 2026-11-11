@@ -56,7 +56,11 @@
    "quote": "In this situation the setback must be not less than 7.5 m for 50% of the frontage and not less",
    "clause": "3.5.1 (c)",
    "page": 15,
-   "source_file": "DCP/dcp-2014-3.4-multi-dwelling-housing-for-low-density-residential-zone.pdf"
+   "source_file": "DCP/dcp-2014-3.4-multi-dwelling-housing-for-low-density-residential-zone.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.4 Multi Dwelling Housing (for Low Density Residential Zone)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "ryde-council-of-the-city-of-002",
@@ -104,7 +108,11 @@
    "quote": "than 6.5 m for 50% of the frontage.",
    "clause": "3.5.1 (c)",
    "page": 15,
-   "source_file": "DCP/dcp-2014-3.4-multi-dwelling-housing-for-low-density-residential-zone.pdf"
+   "source_file": "DCP/dcp-2014-3.4-multi-dwelling-housing-for-low-density-residential-zone.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.4 Multi Dwelling Housing (for Low Density Residential Zone)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record; CONFLICT: another rule with the same applicability gives a different front value; both retained,..."
   },
   {
    "id": "ryde-council-of-the-city-of-003",
@@ -188,7 +196,11 @@
    "quote": "than 4.5 m from that boundary.",
    "clause": "3.5.3 (a)",
    "page": 15,
-   "source_file": "DCP/dcp-2014-3.4-multi-dwelling-housing-for-low-density-residential-zone.pdf"
+   "source_file": "DCP/dcp-2014-3.4-multi-dwelling-housing-for-low-density-residential-zone.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.4 Multi Dwelling Housing (for Low Density Residential Zone)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record"
   },
   {
    "id": "ryde-council-of-the-city-of-004",
@@ -232,7 +244,11 @@
    "quote": "vehicular access is provided within this area, the minimum setback shall be 6 metres.",
    "clause": "3.5.4 (a)",
    "page": 16,
-   "source_file": "DCP/dcp-2014-3.4-multi-dwelling-housing-for-low-density-residential-zone.pdf"
+   "source_file": "DCP/dcp-2014-3.4-multi-dwelling-housing-for-low-density-residential-zone.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.4 Multi Dwelling Housing (for Low Density Residential Zone)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record; CONFLICT: another rule with the same applicability gives a different side value; both retained, ..."
   },
   {
    "id": "ryde-council-of-the-city-of-005",
@@ -276,7 +292,11 @@
    "quote": "Multi dwelling housing dwelling to be not less than 3 metres from the side and rear boundary.",
    "clause": "3.5.4 (d)",
    "page": 16,
-   "source_file": "DCP/dcp-2014-3.4-multi-dwelling-housing-for-low-density-residential-zone.pdf"
+   "source_file": "DCP/dcp-2014-3.4-multi-dwelling-housing-for-low-density-residential-zone.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.4 Multi Dwelling Housing (for Low Density Residential Zone)",
+   "flag": "check_with_council",
+   "flagReason": "Zone code inferred from the zone name printed in the record; CONFLICT: another rule with the same applicability gives a different side value; both retained, ..."
   },
   {
    "id": "ryde-council-of-the-city-of-006",
@@ -324,7 +344,9 @@
    "quote": "not less than 1.5 m from the side boundaries.",
    "clause": "2.9.2(c)",
    "page": 26,
-   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf"
+   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.3 Dwelling Houses and Dual Occupancy (attached)"
   },
   {
    "id": "ryde-council-of-the-city-of-007",
@@ -374,7 +396,9 @@
    "quote": "a minimum of 8 m. A single storey garage or outbuilding may be located",
    "clause": "2.9.3(c)",
    "page": 28,
-   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf"
+   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.3 Dwelling Houses and Dual Occupancy (attached)"
   },
   {
    "id": "ryde-council-of-the-city-of-008",
@@ -422,7 +446,9 @@
    "quote": "The outside walls of a one storey dwelling are to be set back from the side boundaries not less than 900 mm.",
    "clause": "2.9.2(a)",
    "page": 26,
-   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf"
+   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.3 Dwelling Houses and Dual Occupancy (attached)"
   },
   {
    "id": "ryde-council-of-the-city-of-009",
@@ -469,7 +495,9 @@
    "quote": "The outside walls of a two storey dwelling are to be set back from side boundaries not less than 1.5 m.",
    "clause": "2.9.2(b)",
    "page": 26,
-   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf"
+   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.3 Dwelling Houses and Dual Occupancy (attached)"
   },
   {
    "id": "ryde-council-of-the-city-of-010",
@@ -554,7 +582,9 @@
    "quote": "Dwellings are generally to be set back 6 m from the street front boundary.",
    "clause": "2.9.1(a)",
    "page": 25,
-   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf"
+   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.3 Dwelling Houses and Dual Occupancy (attached)"
   },
   {
    "id": "ryde-council-of-the-city-of-011",
@@ -599,7 +629,11 @@
    "quote": "are to have a minimum rear setback of 4 m.",
    "clause": "2.9.3(b)",
    "page": 28,
-   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf"
+   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.3 Dwelling Houses and Dual Occupancy (attached)",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different rear value; both retained, no winner chosen"
   },
   {
    "id": "ryde-council-of-the-city-of-012",
@@ -616,12 +650,12 @@
     "Part 3.3 dwelling house and dual occupancy (attached): garages and carports behind dwelling front facade"
    ],
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      29469,
      29460
-    ],
-    "behindBuildingLineM": 1.0
+    ]
    },
    "front": null,
    "secondaryFront": null,
@@ -635,7 +669,7 @@
     {
      "id": 29469,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "are to be set back a minimum of 1 m from the dwelling",
      "clause": "2.9.1(c)",
      "page": 25,
@@ -660,7 +694,9 @@
    "quote": "are to be set back a minimum of 1 m from the dwelling",
    "clause": "2.9.1(c)",
    "page": 25,
-   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf"
+   "source_file": "DCP/dcp-2014-3.3-dwelling-houses-and-dual-occupancy.pdf",
+   "dcp": "City of Ryde Development Control Plan 2014 (Parts 3.3, 3.4, 8.1, 8.2, 8.3, 8.5, 9.3 used)",
+   "edition": "Ryde DCP 2014 Part 3.3 Dwelling Houses and Dual Occupancy (attached)"
   }
  ],
  "gaps": [
@@ -692,5 +728,32 @@
   "rules": 12,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (ryde-council-of-the-city-of-010, ryde-council-of-the-city-of-011))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (ryde-council-of-the-city-of-010, ryde-council-of-the-city-of-011))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (ryde-council-of-the-city-of-010, ryde-council-of-the-city-of-011))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (ryde-council-of-the-city-of-010, ryde-council-of-the-city-of-011))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: rear (conflicting rules of equal specificity (ryde-council-of-the-city-of-010, ryde-council-of-the-city-of-011))"
+  }
  }
 }

@@ -74,7 +74,9 @@
    "quote": "minimum 1500mm from the side or rear boundary.",
    "clause": "Ch 5 s5.7(2)",
    "page": 38,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013"
   },
   {
    "id": "forbes-shire-council-002",
@@ -124,7 +126,9 @@
    "quote": "The minimum distance of eaves and gutter of a single storey building shall be 450mm.",
    "clause": "Ch 5 s5.7(3)",
    "page": 38,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013"
   },
   {
    "id": "forbes-shire-council-003",
@@ -190,7 +194,9 @@
    "quote": "A single storey building should be a minimum of 900mm from the side or rear boundary.",
    "clause": "Ch 5 s5.7(1)",
    "page": 38,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013"
   },
   {
    "id": "forbes-shire-council-004",
@@ -255,7 +261,9 @@
    "quote": "a) Minimum building line shall be 6 metres where the existing building line has not been established;",
    "clause": "Ch 5 s5.6(1)(a)",
    "page": 38,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013"
   },
   {
    "id": "forbes-shire-council-005",
@@ -299,7 +307,11 @@
    "quote": "shall have a building line of 8 metres where an",
    "clause": "Ch 5 s5.6(1)(b)",
    "page": 38,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "forbes-shire-council-006",
@@ -343,7 +355,11 @@
    "quote": "must have a minimum building line of 10 metres where an existing building",
    "clause": "Ch 5 s5.6(1)(c)",
    "page": 38,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
   },
   {
    "id": "forbes-shire-council-007",
@@ -387,7 +403,9 @@
    "quote": "Encroachments to the minimum building line are not permitted for garages to maintain stacked parking options.",
    "clause": "Ch 5 s5.6(4)",
    "page": 38,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013"
   },
   {
    "id": "forbes-shire-council-008",
@@ -434,7 +452,9 @@
    "quote": "A single storey building should be a minimum of 900mm from the side or rear boundary.",
    "clause": "Ch 6 s6.9(1)",
    "page": 47,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013"
   },
   {
    "id": "forbes-shire-council-009",
@@ -499,7 +519,9 @@
    "quote": "shall have a building line of 8 metres where an existing line",
    "clause": "Ch 6 s6.8(2)",
    "page": 47,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013"
   },
   {
    "id": "forbes-shire-council-010",
@@ -544,7 +566,11 @@
    "quote": "There is no formal building line setback, however the siting of buildings is to be harmonious",
    "clause": "Ch 10 s10.5(1)",
    "page": 79,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family B* assumed from the parameter category (setback_commercial)."
   },
   {
    "id": "forbes-shire-council-011",
@@ -554,20 +580,16 @@
    "appliesTo": [
     "industrial"
    ],
-   "conditions": {
-    "qualifiers": [
-     "open_space_frontage"
-    ]
-   },
+   "conditions": {},
    "conditionText": [
-    "Forbes Mid-State Industrial Park: setback to all other roads",
-    "Forbes Mid-State Industrial Park: side setback to buildings and trafficable areas"
+    "Forbes Mid-State Industrial Park: side setback to buildings and trafficable areas",
+    "Light industrial: general building line"
    ],
    "front": {
-    "minM": 10.0,
+    "minM": 6.0,
     "basis": "fixed",
     "sources": [
-     13270
+     13267
     ]
    },
    "side": {
@@ -581,19 +603,19 @@
    "rear": null,
    "garage": null,
    "sources": [
-    13270,
+    13267,
     13271
    ],
    "evidence": [
     {
-     "id": 13270,
+     "id": 13267,
      "parameter": "setback_industrial",
      "slot": "front",
-     "quote": "A minimum set back of 10 metres shall be provided to all other roads.",
-     "clause": "Ch 11 s11.13.2(2)",
-     "page": 89,
+     "quote": "Generally the building line is 6 metres for light industrial development and 15 metres for general and heavy industrial",
+     "clause": "Ch 11 s11.6(1)",
+     "page": 85,
      "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
-     "condition": "Forbes Mid-State Industrial Park: setback to all other roads",
+     "condition": "Light industrial: general building line",
      "edition": "Forbes DCP 2013"
     },
     {
@@ -609,58 +631,18 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; Condition not expressible in the structured fields (open_space_frontage); see conditionText",
-   "quote": "A minimum set back of 10 metres shall be provided to all other roads.",
-   "clause": "Ch 11 s11.13.2(2)",
-   "page": 89,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
-  },
-  {
-   "id": "forbes-shire-council-012",
-   "zones": [
-    "IN*"
-   ],
-   "appliesTo": [
-    "industrial"
-   ],
-   "conditions": {},
-   "conditionText": "Light industrial: general building line",
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     13267
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    13267
-   ],
-   "evidence": [
-    {
-     "id": 13267,
-     "parameter": "setback_industrial",
-     "slot": "front",
-     "quote": "Generally the building line is 6 metres for light industrial development and 15 metres for general and heavy industrial",
-     "clause": "Ch 11 s11.6(1)",
-     "page": 85,
-     "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
-     "condition": "Light industrial: general building line",
-     "edition": "Forbes DCP 2013"
-    }
-   ],
-   "confidence": "medium",
    "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).",
    "quote": "Generally the building line is 6 metres for light industrial development and 15 metres for general and heavy industrial",
    "clause": "Ch 11 s11.6(1)",
    "page": 85,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial)."
   },
   {
-   "id": "forbes-shire-council-013",
+   "id": "forbes-shire-council-012",
    "zones": [
     "IN*"
    ],
@@ -701,7 +683,59 @@
    "quote": "Generally the building line is 6 metres for light industrial development and 15 metres for general and heavy industrial",
    "clause": "Ch 11 s11.6(1)",
    "page": 85,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
+  },
+  {
+   "id": "forbes-shire-council-013",
+   "zones": [
+    "IN*"
+   ],
+   "appliesTo": [
+    "industrial"
+   ],
+   "conditions": {},
+   "conditionText": "Forbes Mid-State Industrial Park: setback to all other roads",
+   "front": {
+    "minM": 10.0,
+    "basis": "fixed",
+    "sources": [
+     13270
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    13270
+   ],
+   "evidence": [
+    {
+     "id": 13270,
+     "parameter": "setback_industrial",
+     "slot": "front",
+     "quote": "A minimum set back of 10 metres shall be provided to all other roads.",
+     "clause": "Ch 11 s11.13.2(2)",
+     "page": 89,
+     "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+     "condition": "Forbes Mid-State Industrial Park: setback to all other roads",
+     "edition": "Forbes DCP 2013"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "A minimum set back of 10 metres shall be provided to all other roads.",
+   "clause": "Ch 11 s11.13.2(2)",
+   "page": 89,
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family IN* assumed from the parameter category (setback_industrial).; CONFLICT: another rule with the same applicability ..."
   },
   {
    "id": "forbes-shire-council-014",
@@ -766,7 +800,11 @@
    "quote": "A minimum set back of 30 metres is required for all rural dwellings to all existing public roads.",
    "clause": "Ch 9 s9.6(2)",
    "page": 68,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural)."
   },
   {
    "id": "forbes-shire-council-015",
@@ -810,7 +848,11 @@
    "quote": "Bedgerebong Road – 6 metres minimum.",
    "clause": "Ch 8 s8.13(2)",
    "page": 62,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; CONFLICT: another rule with the same applicability gives..."
   },
   {
    "id": "forbes-shire-council-016",
@@ -854,7 +896,11 @@
    "quote": "Clarence Street – 40 metres minimum.",
    "clause": "Ch 8 s8.13(2)",
    "page": 62,
-   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf"
+   "source_file": "DCP/Forbes-Development-Control-Plan-2013V2.pdf",
+   "dcp": "Forbes Development Control Plan 2013 (Chapters 1 to 15; edition date UNVERIFIED) and Chapter 16 Agri-Tourism (section 2 file)",
+   "edition": "Forbes DCP 2013",
+   "flag": "check_with_council",
+   "flagReason": "Zone not stated in the record; zone family RU* assumed from the parameter category (setback_rural).; CONFLICT: another rule with the same applicability gives..."
   }
  ],
  "gaps": [
@@ -904,5 +950,32 @@
   "rules": 16,
   "recordsNotModelled": 3,
   "otherSetbackKeysNotModelled": 1
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (forbes-shire-council-004, forbes-shire-council-005, forbes-shire-council-006))"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (forbes-shire-council-004, forbes-shire-council-005, forbes-shire-council-006))"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (forbes-shire-council-004, forbes-shire-council-005, forbes-shire-council-006))"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (forbes-shire-council-004, forbes-shire-council-005, forbes-shire-council-006))"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (forbes-shire-council-014, forbes-shire-council-015, forbes-shire-council-016)); side (conflicting rules of equal specificity (forbes-shire-council-003, forbes-shire-council-014))"
+  }
  }
 }

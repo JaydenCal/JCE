@@ -57,7 +57,9 @@
    "quote": "Lane 3.5m",
    "clause": "3.3.3.1 Table 4.3",
    "page": 16,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)"
   },
   {
    "id": "ballina-shire-council-002",
@@ -107,7 +109,11 @@
    "quote": "Public Reserve or Foreshore* 6.0m",
    "clause": "3.3.3.1 Table 4.3",
    "page": 16,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (open_space_frontage); see conditionText"
   },
   {
    "id": "ballina-shire-council-003",
@@ -173,7 +179,9 @@
    "quote": "Primary Road 4.5m",
    "clause": "3.3.3.1 Table 4.3",
    "page": 16,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)"
   },
   {
    "id": "ballina-shire-council-004",
@@ -183,7 +191,12 @@
    "appliesTo": [
     "any"
    ],
-   "conditions": {},
+   "conditions": {
+    "wallHeightOverM": 4.5,
+    "qualifiers": [
+     "orientation_specific"
+    ]
+   },
    "conditionText": "Walls more than 4.5 m above ground, western and southern elevations",
    "side": {
     "minM": 2.5,
@@ -213,11 +226,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": null,
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText",
    "quote": "2.5m for western and southern elevations.",
    "clause": "3.1.3.2 vi",
    "page": 9,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText"
   },
   {
    "id": "ballina-shire-council-005",
@@ -227,7 +244,12 @@
    "appliesTo": [
     "any"
    ],
-   "conditions": {},
+   "conditions": {
+    "wallHeightOverM": 4.5,
+    "qualifiers": [
+     "orientation_specific"
+    ]
+   },
    "conditionText": "Walls more than 4.5 m above ground, northern and eastern elevations",
    "side": {
     "minM": 1.5,
@@ -257,11 +279,15 @@
     }
    ],
    "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
+   "needsReview": "Condition not expressible in the structured fields (orientation_specific); see conditionText; CONFLICT: another rule with the same applicability gives a different side value; both retained, no winner chosen",
    "quote": "1.5m for northern and eastern elevations.",
    "clause": "3.1.3.2 vi",
    "page": 9,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (orientation_specific); see conditionText; CONFLICT: another rule with the same applicability gives a diff..."
   },
   {
    "id": "ballina-shire-council-006",
@@ -272,11 +298,7 @@
     "dual_occupancy",
     "dwelling"
    ],
-   "conditions": {
-    "qualifiers": [
-     "adjoins_other"
-    ]
-   },
+   "conditions": {},
    "conditionText": "Dwellings and dual occupancies not on Building Line Map: greater of 4.5 m or average of adjoining dwellings",
    "front": {
     "minM": 4.5,
@@ -306,11 +328,15 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "averaging alternative printed beside the fixed value; Condition not expressible in the structured fields (adjoins_other); see conditionText",
+   "needsReview": "averaging alternative printed beside the fixed value",
    "quote": "• 4.5m; or",
    "clause": "3.1.3.2 ii",
    "page": 9,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "ballina-shire-council-007",
@@ -354,7 +380,9 @@
    "quote": "Garages and carports must be setback a minimum of 5.5m from the front boundary.",
    "clause": "3.1.3.2 iii",
    "page": 9,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)"
   },
   {
    "id": "ballina-shire-council-008",
@@ -400,7 +428,9 @@
    "quote": "a minimum of 4.0m from the rear boundary",
    "clause": "3.1.3.2 viii",
    "page": 10,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)"
   },
   {
    "id": "ballina-shire-council-009",
@@ -451,7 +481,9 @@
    "quote": "is to be setback a minimum of 900mm from the side and rear boundary line to the wall",
    "clause": "3.1.3.2 v",
    "page": 9,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)"
   },
   {
    "id": "ballina-shire-council-010",
@@ -495,7 +527,9 @@
    "quote": "the dwelling must be setback a minimum of 3m from the boundary on the secondary",
    "clause": "3.1.3.2 iv",
    "page": 9,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)"
   },
   {
    "id": "ballina-shire-council-011",
@@ -540,7 +574,9 @@
    "quote": "must be setback a minimum of 5.5m",
    "clause": "3.1.3.2 iv",
    "page": 9,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)"
   },
   {
    "id": "ballina-shire-council-012",
@@ -586,7 +622,9 @@
    "quote": "than 50m2 must be setback a minimum of 2 metres from the side and rear boundaries of the site",
    "clause": "3.3.3.1 Side & Rear iv",
    "page": 17,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)"
   },
   {
    "id": "ballina-shire-council-013",
@@ -633,7 +671,9 @@
    "quote": "Ground floors are to be setback a minimum of 900mm from side and rear boundaries.",
    "clause": "3.3.3.1 Side & Rear i",
    "page": 17,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)"
   },
   {
    "id": "ballina-shire-council-014",
@@ -677,7 +717,9 @@
    "quote": "a minimum of 5.5 metres from the street boundary; and",
    "clause": "3.4.3.3 Garages and Sheds i",
    "page": 26,
-   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf"
+   "source_file": "DCP/Chapter-4-Residential-and-Tourist-Development.pdf",
+   "dcp": "Ballina Development Control Plan 2012 (Chapters 2, 2B, 3, 4 read; chapter edition dates not printed in extracted text)",
+   "edition": "Ballina Development Control Plan 2012 Chapter 4 (unverified edition)"
   }
  ],
  "gaps": [
@@ -717,5 +759,32 @@
   "rules": 14,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 2
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot)"
+  }
  }
 }

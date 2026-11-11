@@ -56,7 +56,9 @@
    "quote": "side setbacks must be a minimum of 1.5 metres for building height over",
    "clause": "Part 3, 3.3 Side setback",
    "page": 29,
-   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf"
+   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf",
+   "dcp": "Lake Macquarie Development Control Plan 2014, Revision 38 (adopted 11/11/2024) and Revision 39 (Parts 1, 3, 8, 9, 13 adopted 23/02/2026)",
+   "edition": "Revision 39, adopted 23/02/2026"
   },
   {
    "id": "lake-macquarie-city-council-002",
@@ -103,7 +105,9 @@
    "quote": "rear setbacks must be a minimum of six metres for buildings over 4.5 metres",
    "clause": "Part 3, 3.4 Rear setback",
    "page": 30,
-   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf"
+   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf",
+   "dcp": "Lake Macquarie Development Control Plan 2014, Revision 38 (adopted 11/11/2024) and Revision 39 (Parts 1, 3, 8, 9, 13 adopted 23/02/2026)",
+   "edition": "Revision 39, adopted 23/02/2026"
   },
   {
    "id": "lake-macquarie-city-council-003",
@@ -168,7 +172,9 @@
    "quote": "the rear setback must be a minimum of nine metres for building height of",
    "clause": "Part 3, 3.4 Rear setback",
    "page": 30,
-   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf"
+   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf",
+   "dcp": "Lake Macquarie Development Control Plan 2014, Revision 38 (adopted 11/11/2024) and Revision 39 (Parts 1, 3, 8, 9, 13 adopted 23/02/2026)",
+   "edition": "Revision 39, adopted 23/02/2026"
   },
   {
    "id": "lake-macquarie-city-council-004",
@@ -234,7 +240,9 @@
    "quote": "rear setbacks must be a minimum of three metres for buildings up to 4.5",
    "clause": "Part 3, 3.4 Rear setback",
    "page": 30,
-   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf"
+   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf",
+   "dcp": "Lake Macquarie Development Control Plan 2014, Revision 38 (adopted 11/11/2024) and Revision 39 (Parts 1, 3, 8, 9, 13 adopted 23/02/2026)",
+   "edition": "Revision 39, adopted 23/02/2026"
   },
   {
    "id": "lake-macquarie-city-council-005",
@@ -278,7 +286,9 @@
    "quote": "The secondary street setback for corner allotments must be a minimum of two metres.",
    "clause": "Part 3, 3.2 Street setback",
    "page": 27,
-   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf"
+   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf",
+   "dcp": "Lake Macquarie Development Control Plan 2014, Revision 38 (adopted 11/11/2024) and Revision 39 (Parts 1, 3, 8, 9, 13 adopted 23/02/2026)",
+   "edition": "Revision 39, adopted 23/02/2026"
   },
   {
    "id": "lake-macquarie-city-council-006",
@@ -328,7 +338,11 @@
    "quote": "between the setback of the two nearest properties as is shown in figure 2.",
    "clause": "Part 3, 3.2 Street setback",
    "page": 27,
-   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf"
+   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf",
+   "dcp": "Lake Macquarie Development Control Plan 2014, Revision 38 (adopted 11/11/2024) and Revision 39 (Parts 1, 3, 8, 9, 13 adopted 23/02/2026)",
+   "edition": "Revision 39, adopted 23/02/2026",
+   "flag": "check_with_council",
+   "flagReason": "Condition not expressible in the structured fields (adjoins_other); see conditionText"
   },
   {
    "id": "lake-macquarie-city-council-007",
@@ -388,7 +402,11 @@
    "quote": "i. four meters or more, or",
    "clause": "Part 3, 3.2 Street setback",
    "page": 27,
-   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf"
+   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf",
+   "dcp": "Lake Macquarie Development Control Plan 2014, Revision 38 (adopted 11/11/2024) and Revision 39 (Parts 1, 3, 8, 9, 13 adopted 23/02/2026)",
+   "edition": "Revision 39, adopted 23/02/2026",
+   "flag": "check_with_council",
+   "flagReason": "averaging alternative printed beside the fixed value"
   },
   {
    "id": "lake-macquarie-city-council-008",
@@ -431,7 +449,9 @@
    "quote": "The carport is set back a minimum of two metres from the front street boundary;",
    "clause": "Part 3, 3.7 control 6",
    "page": 33,
-   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf"
+   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf",
+   "dcp": "Lake Macquarie Development Control Plan 2014, Revision 38 (adopted 11/11/2024) and Revision 39 (Parts 1, 3, 8, 9, 13 adopted 23/02/2026)",
+   "edition": "Revision 39, adopted 23/02/2026"
   },
   {
    "id": "lake-macquarie-city-council-009",
@@ -448,12 +468,12 @@
     "garages and sheds, behind front building line"
    ],
    "garage": {
-    "minM": 1.0,
+    "minM": null,
+    "behindBuildingLineM": 1.0,
     "sources": [
      18904,
      18905
-    ],
-    "behindBuildingLineM": 1.0
+    ]
    },
    "front": null,
    "secondaryFront": null,
@@ -467,7 +487,7 @@
     {
      "id": 18904,
      "parameter": "garage_setback",
-     "slot": "garage",
+     "slot": "garageBehind",
      "quote": "Garages and sheds must be setback a minimum of one metre from the front building line.",
      "clause": "Part 3, 3.7 control 1",
      "page": 33,
@@ -492,7 +512,9 @@
    "quote": "Garages and sheds must be setback a minimum of one metre from the front building line.",
    "clause": "Part 3, 3.7 control 1",
    "page": 33,
-   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf"
+   "source_file": "DCP/dcp-2014-revision-39-part-3-development-within-residential-zones-adopted-23-february-2026.pdf",
+   "dcp": "Lake Macquarie Development Control Plan 2014, Revision 38 (adopted 11/11/2024) and Revision 39 (Parts 1, 3, 8, 9, 13 adopted 23/02/2026)",
+   "edition": "Revision 39, adopted 23/02/2026"
   }
  ],
  "gaps": [
@@ -532,5 +554,32 @@
   "rules": 9,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 3
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R3": {
+   "dcpDeterminable": true,
+   "basisWithFallbacks": "Council DCP",
+   "reasonIfNot": null
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }

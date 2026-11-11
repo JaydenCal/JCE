@@ -18,10 +18,7 @@
     "any"
    ],
    "conditions": {
-    "precinct": "Cunynghame Park Estate",
-    "qualifiers": [
-     "open_space_frontage"
-    ]
+    "precinct": "Cunynghame Park Estate"
    },
    "conditionText": "Cunynghame Park Estate: front boundary setback minimum",
    "front": {
@@ -52,11 +49,13 @@
     }
    ],
    "confidence": "medium",
-   "needsReview": "Condition not expressible in the structured fields (open_space_frontage); see conditionText",
+   "needsReview": null,
    "quote": "Front Boundary Setbacks are to be a minimum of 3 metres from the allotment frontage.",
    "clause": "L (setbacks)",
    "page": 2,
-   "source_file": "DCP/dcp-part-l-cunynghame-park-estate.pdf"
+   "source_file": "DCP/dcp-part-l-cunynghame-park-estate.pdf",
+   "dcp": "Oberon Development Control Plan 2001 (Parts A to P; consolidated copy and individual parts saved); adoption and amendment dates UNVERIFIED; references Oberon LEP 1998",
+   "edition": "Oberon DCP 2001"
   },
   {
    "id": "oberon-council-002",
@@ -102,10 +101,106 @@
    "quote": "Front Boundary Setbacks are to be a minimum of 3 metres from the allotment frontage.",
    "clause": "P (setbacks)",
    "page": 2,
-   "source_file": "DCP/Part-P-Tasman-Estate.pdf"
+   "source_file": "DCP/Part-P-Tasman-Estate.pdf",
+   "dcp": "Oberon Development Control Plan 2001 (Parts A to P; consolidated copy and individual parts saved); adoption and amendment dates UNVERIFIED; references Oberon LEP 1998",
+   "edition": "Oberon DCP 2001"
   },
   {
    "id": "oberon-council-003",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Residential development village zone, absolute minimum to street",
+   "front": {
+    "minM": 3.0,
+    "basis": "fixed",
+    "sources": [
+     24786
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24786
+   ],
+   "evidence": [
+    {
+     "id": 24786,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "no residential building, dwelling or associated building shall be set within 3 metres of the",
+     "clause": "C.5.7",
+     "page": 7,
+     "source_file": "DCP/dcp-part-c-residential-development.pdf",
+     "condition": "Residential development village zone, absolute minimum to street",
+     "edition": "Oberon DCP 2001"
+    }
+   ],
+   "confidence": "medium",
+   "needsReview": null,
+   "quote": "no residential building, dwelling or associated building shall be set within 3 metres of the",
+   "clause": "C.5.7",
+   "page": 7,
+   "source_file": "DCP/dcp-part-c-residential-development.pdf",
+   "dcp": "Oberon Development Control Plan 2001 (Parts A to P; consolidated copy and individual parts saved); adoption and amendment dates UNVERIFIED; references Oberon LEP 1998",
+   "edition": "Oberon DCP 2001"
+  },
+  {
+   "id": "oberon-council-004",
+   "zones": [
+    "*"
+   ],
+   "appliesTo": [
+    "dwelling"
+   ],
+   "conditions": {},
+   "conditionText": "Residential development village zone, typical acceptable",
+   "front": {
+    "minM": 6.0,
+    "basis": "fixed",
+    "sources": [
+     24787
+    ]
+   },
+   "secondaryFront": null,
+   "side": null,
+   "rear": null,
+   "garage": null,
+   "sources": [
+    24787
+   ],
+   "evidence": [
+    {
+     "id": 24787,
+     "parameter": "front_primary",
+     "slot": "front",
+     "quote": "Typically, a minimum 6 metre setback from the street boundary would be acceptable.",
+     "clause": "C.5.7",
+     "page": 7,
+     "source_file": "DCP/dcp-part-c-residential-development.pdf",
+     "condition": "Residential development village zone, typical acceptable",
+     "edition": "Oberon DCP 2001"
+    }
+   ],
+   "confidence": "low",
+   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
+   "quote": "Typically, a minimum 6 metre setback from the street boundary would be acceptable.",
+   "clause": "C.5.7",
+   "page": 7,
+   "source_file": "DCP/dcp-part-c-residential-development.pdf",
+   "dcp": "Oberon Development Control Plan 2001 (Parts A to P; consolidated copy and individual parts saved); adoption and amendment dates UNVERIFIED; references Oberon LEP 1998",
+   "edition": "Oberon DCP 2001",
+   "flag": "check_with_council",
+   "flagReason": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen"
+  },
+  {
+   "id": "oberon-council-005",
    "zones": [
     "*"
    ],
@@ -145,95 +240,9 @@
    "quote": "Car parking spaces shall not be provided within 5.5 metres of the street alignment of any",
    "clause": "C.6.2",
    "page": 9,
-   "source_file": "DCP/dcp-part-c-residential-development.pdf"
-  },
-  {
-   "id": "oberon-council-004",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {},
-   "conditionText": "Residential development village zone, absolute minimum to street",
-   "front": {
-    "minM": 3.0,
-    "basis": "fixed",
-    "sources": [
-     24786
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    24786
-   ],
-   "evidence": [
-    {
-     "id": 24786,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "no residential building, dwelling or associated building shall be set within 3 metres of the",
-     "clause": "C.5.7",
-     "page": 7,
-     "source_file": "DCP/dcp-part-c-residential-development.pdf",
-     "condition": "Residential development village zone, absolute minimum to street",
-     "edition": "Oberon DCP 2001"
-    }
-   ],
-   "confidence": "medium",
-   "needsReview": null,
-   "quote": "no residential building, dwelling or associated building shall be set within 3 metres of the",
-   "clause": "C.5.7",
-   "page": 7,
-   "source_file": "DCP/dcp-part-c-residential-development.pdf"
-  },
-  {
-   "id": "oberon-council-005",
-   "zones": [
-    "*"
-   ],
-   "appliesTo": [
-    "multi_dwelling"
-   ],
-   "conditions": {},
-   "conditionText": "Residential development village zone, typical acceptable",
-   "front": {
-    "minM": 6.0,
-    "basis": "fixed",
-    "sources": [
-     24787
-    ]
-   },
-   "secondaryFront": null,
-   "side": null,
-   "rear": null,
-   "garage": null,
-   "sources": [
-    24787
-   ],
-   "evidence": [
-    {
-     "id": 24787,
-     "parameter": "front_primary",
-     "slot": "front",
-     "quote": "Typically, a minimum 6 metre setback from the street boundary would be acceptable.",
-     "clause": "C.5.7",
-     "page": 7,
-     "source_file": "DCP/dcp-part-c-residential-development.pdf",
-     "condition": "Residential development village zone, typical acceptable",
-     "edition": "Oberon DCP 2001"
-    }
-   ],
-   "confidence": "low",
-   "needsReview": "CONFLICT: another rule with the same applicability gives a different front value; both retained, no winner chosen",
-   "quote": "Typically, a minimum 6 metre setback from the street boundary would be acceptable.",
-   "clause": "C.5.7",
-   "page": 7,
-   "source_file": "DCP/dcp-part-c-residential-development.pdf"
+   "source_file": "DCP/dcp-part-c-residential-development.pdf",
+   "dcp": "Oberon Development Control Plan 2001 (Parts A to P; consolidated copy and individual parts saved); adoption and amendment dates UNVERIFIED; references Oberon LEP 1998",
+   "edition": "Oberon DCP 2001"
   }
  ],
  "gaps": [
@@ -262,5 +271,32 @@
   "rules": 5,
   "recordsNotModelled": 0,
   "otherSetbackKeysNotModelled": 0
+ },
+ "zoneProbe": {
+  "R1": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (oberon-council-003, oberon-council-004)); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R2": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (oberon-council-003, oberon-council-004)); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R3": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (oberon-council-003, oberon-council-004)); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "R5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (oberon-council-003, oberon-council-004)); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  },
+  "RU5": {
+   "dcpDeterminable": false,
+   "basisWithFallbacks": null,
+   "reasonIfNot": "not determinable: front (conflicting rules of equal specificity (oberon-council-003, oberon-council-004)); side (no rule for this zone/use/lot); rear (no rule for this zone/use/lot)"
+  }
  }
 }
