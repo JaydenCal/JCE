@@ -216,7 +216,7 @@ export function hatch(doc, poly, kind, over = {}) {
 
 // Dimensions -------------------------------------------------------------------------------------------------------------------
 /** Two arrow ticks, an extension line pair and the text centred on the line (white behind the text). */
-export function dimLine(doc, a, b, text, { colour = PEN.dim, size = 6, offset = 0, textSide = 1, whiteBehind = true } = {}) {
+export function dimLine(doc, a, b, text, { colour = PEN.dim, size = 6, offset = 0, textSide = 1, whiteBehind = true, field = null } = {}) {
   const d = G.norm(G.sub(b, a));
   const n = { x: -d.y, y: d.x };
   const A = G.add(a, G.mul(n, offset));
@@ -239,34 +239,22 @@ export function dimLine(doc, a, b, text, { colour = PEN.dim, size = 6, offset = 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(size);
   const w = doc.getTextWidth(text);
-  const mid = G.lerp(A, B, 0.5);
-  if (Math.hypot(B.x - A.x, B.y - A.y) < w + 3) {
-    // Too short to carry its text: the text sits horizontally beside the line, with a halo.
-    const side = textSide >= 0 ? 1 : -1;
-    const right = n.x * side >= 0;
-    const px = mid.x + n.x * side * 1.8 + (right ? 0 : 0);
-    const py = mid.y + n.y * side * 1.8 + 1;
-    haloText(doc, text, px, py, { size, colour, align: n.x * side >= 0 ? 'left' : 'right', halo: 0.9 });
-    const x0 = n.x * side >= 0 ? px : px - w;
-    return { x0: x0 - 0.5, y0: py - size * 0.3528 - 0.5, x1: x0 + w + 0.5, y1: py + 0.8 };
-  }
-  let ang = (Math.atan2(d.y, d.x) * 180) / Math.PI;
-  if (ang > 90) ang -= 180;
-  if (ang < -90) ang += 180;
-  const rad = (ang * Math.PI) / 180;
-  const off = textSide * 2.4;
-  const tx = mid.x + Math.sin(rad) * off;
-  const ty = mid.y - Math.cos(rad) * off;
-  const hw = Math.abs(Math.cos(rad)) * w / 2 + Math.abs(Math.sin(rad)) * 1.5;
-  const hh = Math.abs(Math.sin(rad)) * w / 2 + Math.abs(Math.cos(rad)) * 1.5;
-  if (whiteBehind) { doc.setFillColor(255, 255, 255); doc.rect(tx - hw, ty - hh, 2 * hw, 2 * hh, 'F'); }
-  // Written from its start point: jsPDF centres rotated text along the wrong axis.
-  const dv = { x: Math.cos(rad), y: Math.sin(rad) };
-  const upv = { x: Math.sin(rad), y: -Math.cos(rad) };
   const capH = size * 0.3528 * 0.72;
-  doc.setTextColor(...colour);
-  doc.text(text, tx - dv.x * w / 2 - upv.x * capH / 2, ty - dv.y * w / 2 - upv.y * capH / 2, { angle: -ang });
-  return { x0: tx - hw, y0: ty - hh, x1: tx + hw, y1: ty + hh };
+  const hh = capH / 2 + 0.7;
+  const hw = w / 2 + 0.7;
+  // The text is always upright (horizontal), beside the line: centred on a point offset along the normal far enough that the box clears the line.
+  const clearT = Math.abs(n.x) * hw + Math.abs(n.y) * hh + 0.9;
+  const tryAt = (f, side) => {
+    const m = G.lerp(A, B, f);
+    const c = { x: m.x + n.x * side * clearT, y: m.y + n.y * side * clearT };
+    return { c, box: { x0: c.x - hw, y0: c.y - hh, x1: c.x + hw, y1: c.y + hh } };
+  };
+  const first = textSide >= 0 ? 1 : -1;
+  const cands = [];
+  for (const f of [0.5, 0.35, 0.65, 0.22, 0.78]) for (const side of [first, -first]) cands.push(tryAt(f, side));
+  const pick = (field && cands.find((q) => field.free(q.box, { lines: false }))) || cands[0];
+  haloText(doc, text, pick.c.x, pick.c.y + capH / 2, { size, colour, align: 'center', halo: 0.9 });
+  return pick.box;
 }
 
 // Call outs --------------------------------------------------------------------------------------------------------------------
