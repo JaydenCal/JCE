@@ -3,6 +3,7 @@
 // The result has a non-enumerable `layout`: { paper, mode, sheets: [{ number, title, scale, kind }], pages: [kind] }.
 
 import * as G from '../../../model/geometry.js';
+import { schemeColours } from '../../../model/colour-schemes.js';
 import { rotateHouse } from '../../../model/placement.js';
 import { buildingHull, orientedBox } from '../../../site/lotplan.js';
 import { paperOf, levelContent, chooseScale } from '../drawing.js';
@@ -124,7 +125,7 @@ export async function toEngineeringPDF(project, options = {}) {
   });
   const doc = withSuperscripts(scaledDoc(raw, p.k));
   const total = plan.list.length;
-  const ctx = { project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
+  const ctx = { colours: schemeColours(project), project, brand, unalign: aligned.unalign, date, total, paper: p.name, k: p.k, lot: project.site?.lot || null, image, catalogue, config, underlays: {}, analysisNumber: plan.list.findIndex((s) => s.kind === 'analysis') + 1 || null };
   // The aerial is composited once per view (the site plan, the key plan and the cover locality), turned and cropped as each is drawn.
   const bytes0 = await resolveAerial(project, { aerial });
   const lotA = project.site?.lot;

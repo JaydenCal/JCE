@@ -11,6 +11,7 @@ import { drawLocality, siteFacts, lotBounds, chooseSiteScale, makeT, paletteFor 
 
 const cap = (t) => { const x = String(t ?? ''); return x ? x[0].toUpperCase() + x.slice(1) : x; };
 import { ddmmyyyy, normDate } from './brand.js';
+import { schemeById, effectiveSchemeId, schemeLine } from '../../../model/colour-schemes.js';
 import { compassWord } from './views.js';
 
 /** Generic ruled table with wrapped cells. cols: [{ w, head, align }], rows: [[string]] | { cells, bold, fill }. Returns the bottom y. */
@@ -455,6 +456,18 @@ export function drawSchedules(doc, ctx, page, extra = {}) {
     ink(doc, PEN.ink);
     doc.text(`Total openings: ${total}`, colC, y);
     y += 9;
+    const sch = schemeById(effectiveSchemeId(project));
+    if (sch) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(TXT.body);
+      doc.text(`Colour scheme: ${sch.name}`, colC, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(TXT.small);
+      ink(doc, PEN.grey);
+      doc.text(schemeLine(sch) === 'Standard colours' ? 'Roof and trim in charcoal. Walls as drawn in the design.' : `${sch.roofName} roof, ${sch.wallName} walls.`, colC, y + 4.4);
+      ink(doc, PEN.ink);
+      y += 12;
+    }
     heading(doc, 'Schedule notes', colC, y);
     y += 6;
     doc.setFont('helvetica', 'normal');
