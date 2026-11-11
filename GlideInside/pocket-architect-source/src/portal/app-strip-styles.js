@@ -28,6 +28,9 @@ const CSS = `
 .pas-item:hover{border-color:var(--ps-accent,#1b4fd1);background:var(--ps-accent-soft,#e6ecfb)}
 .pas-item img{width:84px;height:52px;flex:none;object-fit:contain;background:#fff;border:1px solid var(--ps-border,#dcdde0);border-radius:3px}
 .pas-item span{display:block;min-width:0}.pas-item strong{display:block;font-size:13px}.pas-item small{display:block;color:var(--ps-muted,#5a5e66);font-size:11.5px}
+/* Signed in people are not shown the demo tips chip. */
+.pso-dock{display:none!important}
+.pas-findfirst{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 .pas-empty{color:var(--ps-muted,#5a5e66);margin:6px 2px}
 .pas-modal-scrim{position:fixed;inset:0;z-index:80;background:var(--ps-scrim,rgba(16,18,22,.42));display:grid;place-items:center;padding:12px}
 .pas-modal{background:var(--ps-panel,#fff);border-radius:var(--ps-radius-lg,6px);box-shadow:var(--ps-shadow);width:min(460px,100%);max-height:calc(100vh - 24px);overflow:auto;padding:16px;display:grid;gap:10px}

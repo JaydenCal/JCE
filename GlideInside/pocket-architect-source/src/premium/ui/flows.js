@@ -81,12 +81,12 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
     }
 
     checkoutBtn = el('button', { class: 'psp-btn psp-btn--primary', type: 'button', disabled: !isOn(), onclick: startCheckout },
-      isOn() ? 'Continue to secure checkout' : 'Plan Pack coming soon');
+      isOn() ? 'Continue to secure checkout' : 'Plan Pack unavailable, try again');
 
     modal = layer.openModal({
-      title: isOn() ? 'Unlock the Plan Pack' : 'Plan Pack coming soon',
+      title: isOn() ? 'Unlock the Plan Pack' : 'Plan Pack unavailable, try again',
       body: el('div', null,
-        !isOn() ? el('div', { class: 'psp-note psp-note--warn' }, icon('info', 16), el('span', null, 'The Plan Pack is not on sale yet. The drawing tools, 3D view and walk-through stay free and need no account.')) : null,
+        !isOn() ? el('div', { class: 'psp-note psp-note--warn' }, icon('info', 16), el('span', null, 'The Plan Pack is unavailable right now, so try again shortly. The drawing tools, 3D view and walk-through stay free and need no account.')) : null,
         el('div', { class: 'psp-hero' },
           el('span', { class: 'psp-price' }, priceText.replace(' incl. GST', '')),
           el('span', { class: 'psp-price-note' }, `${pack.gstInclusive ? 'incl. GST, ' : ''}one payment for this project`)),

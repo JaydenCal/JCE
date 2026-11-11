@@ -55,7 +55,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
         el('p', { class: 'psp-muted' }, `${pack.credits ?? 500} AI credits per job, plus PDF, DXF and 3D model exports. Drawing, the 3D view and walking through your design stay free.`),
         isOn()
           ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--block', type: 'button', onclick: () => actions.unlock('assistant') }, icon('lock', 14), `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`)
-          : el('button', { class: 'psp-btn psp-btn--block', type: 'button', disabled: true }, icon('lock', 14), 'Plan Pack coming soon'),
+          : el('button', { class: 'psp-btn psp-btn--block', type: 'button', disabled: true }, icon('lock', 14), 'Plan Pack unavailable, try again'),
         isOn() ? el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => actions.restore() }, 'Already bought? Restore purchase') : null),
     ];
   }

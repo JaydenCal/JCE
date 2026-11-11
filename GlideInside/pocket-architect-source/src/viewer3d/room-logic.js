@@ -266,6 +266,7 @@ export function defaultFocus(project, roomId) {
 }
 
 // Eye viewpoint --------------------------------------------------------------------------------------
+const isTallAppliance = (r) => /fridge|freezer/.test(String(r.item?.id || r.item?.name || r.id || '')) || /fridge|freezer/i.test(String(r.item?.name || ''));
 const GROUP_CATEGORY = { kitchen: 'Kitchen', dining: 'Dining', living: 'Living' };
 
 function sightPenalty(from, to, poly, rects, skipIds, stepMm = 150) {
@@ -307,7 +308,9 @@ export function resolveFocus(project, roomId, group = null) {
   const { room, level } = found;
   const cat = GROUP_CATEGORY[group];
   if (cat && (group === 'kitchen' || group === 'dining') && groupsOfRoom(room).length > 1) {
-    const hits = furnitureRects(level, 0).filter((r) => G.pointInPolygon(r.c, room.polygon) && r.category === cat);
+    const all = furnitureRects(level, 0).filter((r) => G.pointInPolygon(r.c, room.polygon) && r.category === cat);
+    // The view looks into the kitchen, not at the fridge: tall appliances do not pull the aim point and count as obstacles.
+    const hits = all.filter((r) => !isTallAppliance(r)).length ? all.filter((r) => !isTallAppliance(r)) : all;
     if (hits.length) {
       const c = { x: hits.reduce((s, r) => s + r.c.x, 0) / hits.length, y: hits.reduce((s, r) => s + r.c.y, 0) / hits.length };
       return { point: c, text: group === 'kitchen' ? 'to the kitchen' : 'to the dining area', furniture: true, skip: hits.map((r) => r.id) };
@@ -383,7 +386,20 @@ export function roomViewpoint(project, roomId, opts = {}) {
           const half = Math.max(...r.poly.map((q) => G.dist(q, r.c)));
           if (G.dist(c.p, r.c) - half < 1500) crowd += 900;
         }
-        const pen = garage ? 0 : sightPenalty(c.p, aim, poly, rects, focusSkip) + crowd;
+        // Looking straight at a fridge from the kitchen tab is a poor first view: keep any fridge well off the line of sight.
+        let fridgePen = 0;
+        if (focus?.furniture && opts.group === 'kitchen') {
+          const dv = G.norm(G.sub(aim, c.p));
+          for (const r of rects) {
+            if (!isTallAppliance(r)) continue;
+            const v = G.sub(r.c, c.p);
+            const along = G.dot(v, dv);
+            if (along <= 0 || along > 6000) continue;
+            const perp = Math.abs(v.x * dv.y - v.y * dv.x);
+            if (perp < 1400) fridgePen += 2500 * (1 - perp / 1400) + (along < 3500 ? 1500 : 0);
+          }
+        }
+        const pen = garage ? 0 : sightPenalty(c.p, aim, poly, rects, focusSkip) + crowd + fridgePen;
         const s = c.score - pen;
         if (!best || s > best.s) best = { ...c, s };
       }

@@ -779,7 +779,7 @@ test('UI, locked by default: Unlock button, locked Exports menu, locked assistan
     out.closedOnEscape = !$('.psp-modal');
   `);
   assert.equal(r.topbar, 'Unlock plans, A$30');
-  assert.equal(r.requestsAtStart, 0, 'the locked state makes no network calls');
+  assert.ok(r.requestsAtStart <= 1, 'the locked state makes no network calls beyond the one health check (payments off switch)');
   assert.deepEqual(r.items, ['PDF plans', 'DXF drawing', '3D model (GLB)', '3D model (OBJ)', 'Interactive HTML']);
   assert.equal(r.itemsLocked, true);
   assert.equal(r.menuOpen, true);
@@ -796,14 +796,14 @@ test('UI, locked by default: Unlock button, locked Exports menu, locked assistan
   assert.ok(!/[–—]/.test(r.modalText), 'no dashes in the copy');
   assert.equal(r.menuClosed, true, 'the menu closes when an item is chosen');
   assert.equal(r.navigated, 'https://checkout.stripe.com/c/pay/cs_test_mock');
-  assert.deepEqual(r.paths, ['/checkout']);
+  assert.deepEqual(r.paths.filter((x) => x !== '/health'), ['/checkout']);
   assert.deepEqual(r.checkoutBody, { projectId: 'p_testpage', projectName: 'Smith residence' });
   assert.deepEqual(r.events, ['ps_upgrade_click', 'ps_checkout_started']);
   assert.equal(r.dialogs, 0, 'in-page modals only');
   assert.equal(r.closedOnEscape, true);
 });
 
-test('UI, coming soon: the button is disabled and says so, and the modal cannot start checkout', { skip: skipUi }, () => {
+test('UI, unavailable: the button is disabled and says so, and the modal cannot start checkout', { skip: skipUi }, () => {
   const r = browser('?state=soon', String.raw`
     out.topbar = text($('#tp-topbar .psp-bar-slot .psp-btn'));
     out.topbarDisabled = $('#tp-topbar .psp-bar-slot .psp-btn').disabled;
@@ -813,14 +813,14 @@ test('UI, coming soon: the button is disabled and says so, and the modal cannot 
     await sleep(100);
     const modal = $('.psp-modal');
     out.title = text(modal.querySelector('h2'));
-    out.checkout = button(modal, 'Plan Pack coming soon').disabled;
+    out.checkout = button(modal, 'Plan Pack unavailable, try again').disabled;
     out.requests = T.requests.length;
   `);
-  assert.equal(r.topbar, 'Plan Pack coming soon');
+  assert.equal(r.topbar, 'Plan Pack unavailable, try again');
   assert.equal(r.topbarDisabled, true);
-  assert.equal(r.aiButton, 'Plan Pack coming soon');
+  assert.equal(r.aiButton, 'Plan Pack unavailable, try again');
   assert.equal(r.aiDisabled, true);
-  assert.equal(r.title, 'Plan Pack coming soon');
+  assert.equal(r.title, 'Plan Pack unavailable, try again');
   assert.equal(r.checkout, true);
   assert.equal(r.requests, 1, 'only the health check goes out when there is no back end');
 });
@@ -1254,14 +1254,14 @@ test('PDF import: pdf.js loads from the package and reads a real PDF (pages and 
   await pdf.destroy();
 });
 
-test('UI, no back end: the Plan Pack stays "coming soon" and health is asked once', { skip: skipUi }, () => {
+test('UI, no back end: the Plan Pack stays unavailable and health is asked once', { skip: skipUi }, () => {
   const r = browser('?state=soon', String.raw`
     await sleep(300);
     out.topbar = text($('#tp-topbar .psp-bar-slot .psp-btn'));
     out.paths = T.requests.map((x) => x.path);
     out.enabled = T.premium.state.entitled;
   `);
-  assert.equal(r.topbar, 'Plan Pack coming soon');
+  assert.equal(r.topbar, 'Plan Pack unavailable, try again');
   assert.deepEqual(r.paths, ['/health']);
 });
 

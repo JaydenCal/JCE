@@ -84,8 +84,16 @@
   function postFind(address) {
     try { live.frame.contentWindow.postMessage({ type: "gi:find-address", address: address }, location.origin); } catch (e) {}
   }
+  // "Open full editor" carries the last searched address into the app.
+  function syncEdit() {
+    document.querySelectorAll(".lh-edit").forEach(function (a) {
+      var u = new URL(APP, location.href);
+      if (live.last) u.searchParams.set("address", live.last);
+      a.setAttribute("href", u.pathname + u.search);
+    });
+  }
   function openAddress(address) {
-    live.last = address;
+    live.last = address; syncEdit();
     try { if (window.gtag) window.gtag("event", "address_search", {}); } catch (e) {}
     if (phoneMq.matches || !live.frame) { location.assign(appUrl(address)); return; }
     live.box.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
@@ -114,7 +122,7 @@
     if (m.type === "gi:ready") { live.ready = true; clearTimeout(live.fallback); if (live.pending) { var a = live.pending; live.pending = null; postFind(a); } }
     else if (m.type === "gi:status") {
       if (m.state === "loading") setStatus("Loading your block");
-      else if (m.state === "done") { setBusy(false); if (m.address) live.last = m.address; setStatus(m.address ? "Showing " + m.address : "", ""); }
+      else if (m.state === "done") { setBusy(false); if (m.address) { live.last = m.address; syncEdit(); } setStatus(m.address ? "Showing " + m.address : "", ""); }
       else if (m.state === "error") { setBusy(false); setStatus(m.message || "That address could not be loaded.", "warn"); }
     }
   });
@@ -238,7 +246,15 @@
       total.textContent = "A$" + sum;
       var url = f && r ? links.both : f ? links.fly : r ? links.renders : "";
       if (url) { pay.href = url; pay.setAttribute("aria-disabled", "false"); note.textContent = "Secure card payment by Stripe."; }
-      else { pay.removeAttribute("href"); pay.setAttribute("aria-disabled", "true"); note.textContent = !f && !r ? "Choose an add-on." : "Payment link not set up yet."; }
+      else if (f || r) {
+        // No Stripe link yet: order by email instead, naming the chosen add-ons.
+        var what = f && r ? "fly-through and renders" : f ? "fly-through" : "renders";
+        var base = cfg.orderUrl || ("mailto:" + (cfg.email || ""));
+        pay.href = base.split("?")[0] + "?subject=" + encodeURIComponent("Plan add-on order: " + what);
+        pay.setAttribute("aria-disabled", "false"); pay.textContent = "Email us to order"; note.textContent = "We reply with a secure payment link.";
+      }
+      else { pay.removeAttribute("href"); pay.setAttribute("aria-disabled", "true"); pay.textContent = "Pay with Stripe"; note.textContent = "Choose an add-on."; }
+      if (url) pay.textContent = "Pay with Stripe";
     }
     root.addEventListener("change", upd); upd();
   });

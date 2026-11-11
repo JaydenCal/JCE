@@ -30,9 +30,10 @@ export function signInView({ api, client = false, onSignedIn, goForgot, builder 
     host.replaceChildren(h('div', { class: 'pp-nobuilder' },
       h('h2', null, `${name} isn\u2019t\u00a0using Glide Inside yet.`),
       mode === 'client'
-        ? h('p', { class: 'pp-lead pp-lead--sm' }, 'Ask your consultant about designing with Glide Inside.')
+        ? h('p', { class: 'pp-lead pp-lead--sm' }, 'Ask your builder about designing with Glide Inside, or design on your own block now without a builder.')
         : h('p', { class: 'pp-lead pp-lead--sm' }, 'Builder staff can try it free for 14 days.'),
-      mode === 'builder' ? h('a', { class: 'pp-btn pp-btn--primary pp-btn--block', href: `/for-builders/?builder=${encodeURIComponent(builder)}#trial` }, 'Start a free 14 day trial') : null,
+      h('a', { class: 'pp-btn pp-btn--primary pp-btn--block', href: '/plan-studio/app/' }, 'Design on your block without a builder'),
+      mode === 'builder' ? h('a', { class: 'pp-btn pp-btn--block', href: `/for-builders/?builder=${encodeURIComponent(builder)}#trial` }, 'Start a free 14 day trial') : null,
       h('p', { class: 'pp-center' }, h('a', { href: '/' }, 'Choose a different builder'))));
   }
   if (builder && api.getBrand) {
@@ -108,9 +109,17 @@ export function forgotView({ api, goBack, goReset }) {
     h('p', { class: 'pp-center' }, h('a', { href: '#', onclick: (e) => { e.preventDefault(); goBack(); } }, 'Back to sign in')));
 }
 
+// Checked in script and shown in the page's own error box, not as a native browser tooltip.
+function passwordProblem(next, again) {
+  if (!next.value) return 'Enter a new password.';
+  if (next.value.length < MIN_PASSWORD_LENGTH) return `The new password needs at least ${MIN_PASSWORD_LENGTH} characters.`;
+  if (next.value !== again.value) return 'The two passwords do not match.';
+  return '';
+}
+
 function passwordFields() {
   return [
-    field('New password', (id) => h('input', { id, type: 'password', name: 'next', autocomplete: 'new-password', minlength: String(MIN_PASSWORD_LENGTH), required: true }), { required: true, hint: `At least ${MIN_PASSWORD_LENGTH} characters. A few words with spaces works well. Common passwords are refused.` }),
+    field('New password', (id) => h('input', { id, type: 'password', name: 'next', autocomplete: 'new-password', required: true }), { required: true, hint: `At least ${MIN_PASSWORD_LENGTH} characters. A few words with spaces works well. Common passwords are refused.` }),
     field('Type it again', (id) => h('input', { id, type: 'password', name: 'again', autocomplete: 'new-password', required: true }), { required: true }),
   ];
 }
@@ -118,11 +127,12 @@ function passwordFields() {
 export function resetView({ api, token, goBack }) {
   const err = errorBox();
   const submit = h('button', { class: 'pp-btn pp-btn--primary pp-btn--block', type: 'submit' }, 'Save new password');
-  const form = h('form', { class: 'pp-form', onsubmit: async (e) => {
+  const form = h('form', { class: 'pp-form', novalidate: true, onsubmit: async (e) => {
     e.preventDefault();
     showError(err, '');
     const { next, again } = form.elements;
-    if (next.value !== again.value) return showError(err, 'The two passwords do not match.');
+    const problem = passwordProblem(next, again);
+    if (problem) return showError(err, problem);
     await busy(submit, async () => {
       try {
         await api.completePasswordReset({ token, newPassword: next.value });
@@ -140,11 +150,13 @@ export function resetView({ api, token, goBack }) {
 export function changePasswordView({ api, me, onDone, onSignOut }) {
   const err = errorBox();
   const submit = h('button', { class: 'pp-btn pp-btn--primary pp-btn--block', type: 'submit' }, 'Save and continue');
-  const form = h('form', { class: 'pp-form', onsubmit: async (e) => {
+  const form = h('form', { class: 'pp-form', novalidate: true, onsubmit: async (e) => {
     e.preventDefault();
     showError(err, '');
     const { current, next, again } = form.elements;
-    if (next.value !== again.value) return showError(err, 'The two passwords do not match.');
+    if (!current.value) return showError(err, 'Enter the temporary password you were given.');
+    const problem = passwordProblem(next, again);
+    if (problem) return showError(err, problem);
     await busy(submit, async () => {
       try {
         await api.changePassword({ currentPassword: current.value, newPassword: next.value });

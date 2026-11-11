@@ -145,18 +145,19 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
 }
 
 // The dialog opened from the top bar.
-export function openFindBlock(store) {
+export function openFindBlock(store, { onDone } = {}) {
   let box = null;
+  let found = null;
   const modal = openModal({
     title: 'Find my block',
     size: 'find',
     body: () => {
-      box = createFindBlock(store, { autofocus: true, large: true, onDone: () => modal.close('done') });
+      box = createFindBlock(store, { autofocus: true, large: true, onDone: (lot) => { found = lot; modal.close('done'); } });
       return h('div', null,
         h('p', { class: 'ps-hint', style: { margin: '0 0 8px' } }, 'Type your street address. The lot boundary, neighbouring lots, an aerial image and ground contours are drawn to scale so you can place the house on the real block.'),
         box.el);
     },
-    onClose: () => box?.dispose(),
+    onClose: (reason) => { box?.dispose(); if (reason === 'done' && found) onDone?.(found); },
   });
   return modal;
 }

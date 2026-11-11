@@ -868,6 +868,14 @@ svg { display: block; }
   width: min(520px, calc(100% - 24px)); display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px;
   background: var(--ps-panel); border: 1px solid var(--ps-accent); border-radius: var(--ps-radius-lg); box-shadow: var(--ps-shadow);
 }
+.ps-frontage-chip {
+  position: absolute; left: 12px; top: 12px; z-index: 6; display: inline-flex; align-items: center; gap: 2px; padding: 3px;
+  background: var(--ps-panel); border: 1px solid var(--ps-accent); border-radius: 999px; box-shadow: var(--ps-shadow); font-size: 12.5px;
+}
+.ps-frontage-chip[hidden] { display: none; }
+.ps-frontage-chip button { font: inherit; border: 0; background: transparent; color: var(--ps-text, inherit); padding: 4px 10px; border-radius: 999px; cursor: pointer; }
+.ps-frontage-chip button:hover { background: rgba(0,0,0,.06); }
+.ps-frontage-chip-done { background: var(--ps-accent) !important; color: #fff !important; }
 .ps-frontage h3 { margin: 0 0 2px; font-size: 14px; font-weight: 600; }
 .ps-frontage-text { color: var(--ps-muted); font-size: 12.5px; }
 
