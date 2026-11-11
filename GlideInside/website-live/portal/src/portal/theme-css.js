@@ -73,12 +73,12 @@ const SETTINGS_CSS = `
 .gi-col-field label{display:block;font-weight:700;font-size:14px;margin-bottom:5px}
 .gi-col-row{display:flex;gap:8px;align-items:center}
 .gi-col-row input[type=color]{width:48px;height:44px;padding:2px;border:1px solid var(--line,#d3dad4);border-radius:10px;background:#fff;cursor:pointer;flex:none}
-.gi-col-row input[type=text]{font:500 16px var(--font,system-ui);width:9ch;min-height:44px;border:1px solid var(--line,#d3dad4);border-radius:10px;padding:0 10px;background:#fff;color:var(--ink,#16211d);text-transform:lowercase}
+.gi-col-row input[type=text]{font:500 16px var(--font,system-ui);width:11ch;min-height:44px;border:1px solid var(--line,#d3dad4);border-radius:10px;padding:0 10px;background:#fff;color:var(--ink,#16211d);text-transform:lowercase}
 .gi-col-row input[aria-invalid=true]{border-color:#9b2c1a}
-.gi-swatches{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.gi-swatches{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
 .gi-swatch{display:grid;gap:4px;justify-items:center;font:600 12px var(--font,system-ui);color:var(--muted,#55625b)}
 .gi-swatch i{display:block;width:44px;height:44px;border-radius:10px;border:1px solid rgba(0,0,0,.2)}
-.gi-swatch span{display:flex;gap:4px}
+.gi-swatch span{display:flex;gap:4px;flex-wrap:nowrap}
 .gi-swatch button{font:600 11px var(--font,system-ui);padding:3px 7px;border:1px solid var(--line,#d3dad4);border-radius:6px;background:#fff;color:var(--ink,#16211d);cursor:pointer}
 .gi-dark summary{cursor:pointer;font-weight:700;padding:4px 0}
 .gi-prev{border:1px solid var(--line,#d3dad4);border-radius:12px;overflow:hidden;background:#fff;max-width:520px;font:500 14px var(--font,system-ui);color:var(--ink,#16211d)}
@@ -93,7 +93,7 @@ const SETTINGS_CSS = `
 .gi-prev-link{color:var(--bt-link);font-weight:700;text-decoration:underline}
 .gi-prev-note{background:var(--bt-soft);padding:8px 10px;border-radius:8px;font-size:13px}
 .gi-prev-foot{padding:6px 14px;font-size:11px;color:var(--muted,#55625b);border-top:1px solid var(--line,#d3dad4);background:#fff}
-.gi-adjust{margin:0;padding-left:18px;font-size:13px;color:var(--muted,#55625b)}
+.gi-adjust{margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--muted,#55625b)}
 `;
 export function injectSettingsStyles(doc = typeof document !== 'undefined' ? document : null) {
   if (!doc || doc.getElementById('gi-brand-settings-css')) return;

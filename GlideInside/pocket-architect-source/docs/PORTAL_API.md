@@ -77,7 +77,7 @@ Paths are under `{apiBase}` (default `/api`). "Staff" means admin or designer.
 
 ### Branding and settings (admin)
 
-- `setBranding({ displayName, logoDataUrl })`: PNG or JPEG or SVG data URL, scaled to 600 px wide by the screen, max 400 KB.
+- `setBranding({ displayName, logoDataUrl, colours })`: PNG or JPEG or SVG data URL, scaled to 600 px wide by the screen, max 400 KB. `colours` is `{ primary, accent, darkInk, darkBg }` (hex, only primary required; accent defaults to primary), `null` to go back to the Glide Inside look, or left out to keep what is saved. Stored on the org (`orgs.brand_primary`, `brand_accent`, `brand_dark_ink`, `brand_dark_bg`, migration 0010) and returned as `org.branding.colours` in `me` for staff and clients, who switch the portal and Pocket Architect chrome to those colours (`src/portal/theme.js`, `theme-css.js`: CSS custom properties over the existing tokens, text and button colours derived to WCAG AA). The 3D scene, aerial, map linework and setback red, green and amber are never recoloured. Owner route `POST /portal/admin/orgs/{id}/brand-colours` with `{ "colours": {...} | null }`.
 - `setOrgSettings({ allowClientTopUps, allowClientEnquiries, showGlideToClients, allowClientCadExports })` `PATCH /portal/org/settings`. Defaults: top-ups on, enquiries on, show Glide library on, client CAD exports **off**.
 
 ### Send to JCE

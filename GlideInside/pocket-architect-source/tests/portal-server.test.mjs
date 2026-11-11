@@ -767,6 +767,19 @@ for (const [label, d1] of stores) {
     assert.equal((await b.get('/portal/me')).data.org.branding.colours, null);
   });
 
+  t('owner admin route sets and clears an org colour scheme with validation and the admin token', async () => {
+    const w = makeWorld({ d1 });
+    const org = await w.makeOrg();
+    const url = `/portal/admin/orgs/${org.orgId}/brand-colours`;
+    assert.equal((await w.admin('POST', url, { colours: { primary: '#14305a', accent: '#F07A1A' } })).status, 200);
+    assert.equal((await org.admin.get('/portal/me')).data.org.branding.colours.accent, '#f07a1a');
+    assert.equal((await w.admin('POST', url, { colours: { primary: 'navy' } })).status, 400);
+    assert.equal((await w.admin('POST', url, {})).status, 400);
+    assert.equal((await w.admin('POST', url, { colours: { primary: '#000000' } }, 'wrong-token')).status, 401);
+    assert.equal((await w.admin('POST', url, { colours: null })).status, 200);
+    assert.equal((await org.admin.get('/portal/me')).data.org.branding.colours, null);
+  });
+
   t('billing contact needs the legal name and a valid ABN; branding and settings validate input', async () => {
     const w = makeWorld({ d1 });
     const org = await w.makeOrg();
