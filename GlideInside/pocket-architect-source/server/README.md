@@ -50,7 +50,7 @@ limits), `src/premium/exporters/*` and `src/viewer3d/build.js`. Deploy the whole
 | `GET /api/site/contours?state=&srid=&bbox=&buffer=&origin=` | none, rate limited | Elevation grid, contour lines (minor 0.5 m, major 2.5 m) and provenance |
 | `GET /api/site/health` | none | Probes each upstream service. `ok` needs the cadastre and address services, `allOk` needs every one |
 | `POST /api/enquiry/jce` | none, rate limited | "Send to JCE for engineering and DA plans". Body `{ name, phone, email, need, notes, consent: true, lot, project, pdfBase64, source }`. Emails JCE through Resend with the PDF attached, keeps a copy in `jce_enquiries`, returns `{ ok, reference }`. `503 ENQUIRY_NOT_CONFIGURED` until `RESEND_API_KEY` is set |
-| `POST /api/export/:type` | Bearer | `pdf`, `dxf`, `glb`, `obj`. Body `{ project, image? }`. Returns the file |
+| `POST /api/export/:type` | Bearer | `pdf`, `dxf`, `glb`, `obj`, `html` (interactive plan and 3D, one offline file). Body `{ project, image? }`. Returns the file |
 
 Builder and client logins use the same AI endpoints plus two more (see "Builder and client logins" below).
 
@@ -366,5 +366,5 @@ This server also serves everything the live Worker `pocket-architect-api` (15/10
 - Save and share: `lib/projects.js` (`POST /api/projects`, `GET` and `PUT /api/projects/:id`), R2 binding `FILES` under `projects/<id>.json`, D1 table `projects`. The builder portal's saved projects are in `portal_projects`.
 - D1 shape: the live `entitlements` table is the one in use (payment intent in `payment_intent`, `pdf_used`, `pdf_allowed`, `pdf_file`) plus `credits_reserved`. Schema changes go in `migrations/` (applied with `wrangler d1 migrations apply pocket-architect --remote`); `schema.sql` is the same end shape for a fresh database and the tests.
 - Tokens use the live format (HMAC over the base64url payload text); the first release format is still accepted.
-- Kept from live: friends code (`TEST_CODES`), one PDF set per job (`pdf/<entitlement>.pdf`), per IP and per pack limits, dispute and out-of-order refund handling, `metadata.app`, A$35 minimum and AUD check.
+- Kept from live: friends code (`TEST_CODES`), the one-PDF-set-per-job rule (`pdf/<entitlement>.pdf`, now off by default: `PDF_SET_LIMIT="0"` lets a paid job re-export, `"1"` restores it), per IP and per pack limits, dispute and out-of-order refund handling, `metadata.app`, A$35 minimum and AUD check.
 - Tests: `tests/live-merge.test.mjs` (migrations on a live shaped SQLite database, live links and tokens, ported live share and payment suites).

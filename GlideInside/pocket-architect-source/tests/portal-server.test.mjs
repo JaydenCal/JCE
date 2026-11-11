@@ -718,9 +718,9 @@ for (const [label, d1] of stores) {
     assert.equal((await b.patch('/portal/org/settings', { allowClientTopUps: 'yes' })).status, 400);
     const cl = await w.makeClient(org);
     const me = (await cl.browser.get('/portal/me')).data;
-    assert.deepEqual(me.exports, ['pdf', 'dxf', 'glb', 'obj']);
+    assert.deepEqual(me.exports, ['pdf', 'dxf', 'glb', 'obj', 'html']);
     assert.equal(me.enquiry, false);
-    assert.deepEqual((await org.admin.get('/portal/me')).data.exports, ['pdf', 'dxf', 'glb', 'obj']);
+    assert.deepEqual((await org.admin.get('/portal/me')).data.exports, ['pdf', 'dxf', 'glb', 'obj', 'html']);
   });
 
   t('team: admin invites staff, resets their passwords, guards the last admin, role changes apply at once', async () => {

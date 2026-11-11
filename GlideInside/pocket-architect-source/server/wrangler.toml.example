@@ -42,7 +42,7 @@ PROJECT_MAX_BYTES = "2000000"                              # largest design that
 PROJECT_TTL_DAYS = "365"                                   # how long a shared link lasts after the last save (each save extends it)
 PROJECT_SAVE_RATE_MAX = "20"                               # saves per hour per visitor address (reads: PROJECT_READ_RATE_MAX, 600)
 EXPORT_RATE_PER_HOUR = "20"                                # exports per Plan Pack per hour
-PDF_SET_LIMIT = "1"                                        # ONE PDF plan set per job, repeat requests get the same file. "0" turns it off
+PDF_SET_LIMIT = "0"                                        # "0": a paid job can re-export its current design as often as the hourly export limit allows. "1" gives back ONE locked PDF set per job (the live Worker rule until 11/11/2026)
 # Secrets the live Worker already has, read under the same names: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_ID,
 # ENTITLEMENT_SECRET, ANTHROPIC_API_KEY, IP_HASH_SALT, TEST_CODES (optional). New secrets: RESEND_API_KEY, ADMIN_TOKEN.
 # Printed on the PDF title block (default to src/config.js when empty).

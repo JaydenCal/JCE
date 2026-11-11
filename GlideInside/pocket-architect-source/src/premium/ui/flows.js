@@ -31,6 +31,7 @@ export function createFlows({ layer, store, config, api, accept, getState, navig
     'PDF plan set. A3 sheets to scale with dimensions, door and window schedules, and a title block.',
     'DXF drawing for your CAD software.',
     '3D model files (GLB and OBJ) for Blender, viewers and game engines.',
+    'Interactive HTML file with the plan and a 3D model you can turn around. It opens offline in any browser, so you can send it to a client.',
     `Re-export this project as often as you like for ${pack.reexportMonths ?? 12} months.`,
   ];
 

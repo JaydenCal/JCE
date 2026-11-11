@@ -22,6 +22,7 @@ import { openFindBlock } from './ui/find-block.js';
 import { createFrontageBar } from './ui/frontage.js';
 import { saveDesign, pickDesignFile } from './ui/files.js';
 import { createEmbed } from './ui/embed.js';
+import { initShare } from './ui/share.js';
 import { createViewManager } from './ui/views.js';
 import { createSampleProject, SAMPLE_TEMPLATE } from './ui/sample.js';
 import { setTool } from './ui/toolstate.js';
@@ -115,8 +116,10 @@ async function main() {
   let embed = null;
   const hasEdits = () => store.canUndo() || state.fromAutosave;
 
+  let share = null; // Save and share, created below
   // Loading designs --------------------------------------------------------------------------------------------------------
   function replaceProject(project) {
+    if (share?.state.id) share.leave(); // another design replaces the shared one: the read only notice goes
     try {
       store.replace(project);
     } catch (e) {
@@ -247,6 +250,10 @@ async function main() {
     },
   });
 
+  // Save and share (the live app's Share button and ?share=<id> links). The link is opened after the first frame, below.
+  share = initShare({ store, refs, config: CONFIG, replaceProject, hasEdits, setAutosaveShown: (on) => statusbar.setAutosave(on) });
+  const shareId = demoMode() ? null : share.linkFromAddress();
+
   // Keyboard -------------------------------------------------------------------------------------------------------------------
   // After a mouse click on a bar button, drop focus so Space (pan) and Delete reach the plan, not the button.
   refs.shell.addEventListener('click', (e) => {
@@ -296,6 +303,10 @@ async function main() {
   };
   const report = (err, where = 'error') => {
     if (!err || isPointerLockRefusal(err)) return false;
+    if (err.name === 'ReadOnlyError') {
+      toast(err.message, { kind: 'info' });
+      return true;
+    }
     console.error(`[app] unexpected ${where}`, err?.stack || err?.message || err);
     const now = Date.now();
     if (now - lastReport < 10000) return true;
@@ -323,7 +334,7 @@ async function main() {
     ...DOOR_FAMILY.filter((id) => id !== 'door').map((id) => ({ id, label: KIND_LABEL[id], keys: [] })),
   ];
   const keys = { wheel: 'Q', inventory: 'I', rotateLeft: ',', rotateRight: '.', rotateFine: 'Shift', pan: 'Right drag', quickMeasure: 'Right click' };
-  const api = { changeDesignType: (id, opts) => changeDesignType(store, id, catalogue, opts), applyDesignType: (id) => applyDesignType(store, id, catalogue), designTypeOf: () => designTypeOf(store.project), tools, keys, setTool: (id, arg) => setTool(store, id, arg), wheel, inventory, openInventory, openTitleBlock: () => openTitleBlockForm(store), getLogo, store, editor, getViewer, premium: null, catalogue, CONFIG, embed, panel, topbar, toolbox, drawer, statusbar, chips, views, openNew, loadTemplate, loadBlank, replaceProject, setMode };
+  const api = { changeDesignType: (id, opts) => changeDesignType(store, id, catalogue, opts), share, applyDesignType: (id) => applyDesignType(store, id, catalogue), designTypeOf: () => designTypeOf(store.project), tools, keys, setTool: (id, arg) => setTool(store, id, arg), wheel, inventory, openInventory, openTitleBlock: () => openTitleBlockForm(store), getLogo, store, editor, getViewer, premium: null, catalogue, CONFIG, embed, panel, topbar, toolbox, drawer, statusbar, chips, views, openNew, loadTemplate, loadBlank, replaceProject, setMode };
   window.__ps = api;
 
   // Start state ------------------------------------------------------------------------------------------------------------------
@@ -334,9 +345,10 @@ async function main() {
   else if (phone) store.setUI({ view: '3d' });
   track('ps_open', { embedMode: CONFIG.embedMode });
 
-  if (!state.fromAutosave && !demoMode() && !narrow) createWelcome(refs.stage, store, { onChoose: openNew });
+  if (!state.fromAutosave && !demoMode() && !narrow && !shareId) createWelcome(refs.stage, store, { onChoose: openNew });
 
   embed.ready();
+  if (shareId) await share.openLink(shareId);
 
   // Plan Pack (optional). Loaded after the first frame; the tool works without it.
   if (!demoMode()) await mountPremium();

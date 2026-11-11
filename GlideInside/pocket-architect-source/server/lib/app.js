@@ -20,7 +20,7 @@ import { createPortal } from './portal.js';
 import { createProjects } from './projects.js';
 import { createMemoryPortalStore } from './portal-store.js';
 
-const EXPORT_TYPES = ['pdf', 'dxf', 'glb', 'obj'];
+const EXPORT_TYPES = ['pdf', 'dxf', 'glb', 'obj', 'html'];
 const WEBHOOK_MAX_BYTES = 1_000_000;
 const randomId = (prefix) => `${prefix}_${[...crypto.getRandomValues(new Uint8Array(10))].map((b) => b.toString(16).padStart(2, '0')).join('')}`;
 
@@ -469,7 +469,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (!coversProject(ent, project.id)) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
     const image = typeof body.image === 'string' && /^data:image\/png;base64,/.test(body.image) && body.image.length < 1_900_000 ? body.image : null;
 
-    // Carried over from the live Worker: a per Plan Pack limit, then ONE PDF plan set per job (a repeat gets the same file back).
+    // A per Plan Pack hourly limit. The live rule of ONE PDF plan set per job (a repeat gets the same file back) is only applied when PDF_SET_LIMIT=1.
     const exportCount = await store.hitRate(`export:${ent.id}`, 3600, now());
     if (exportCount > config.exportRatePerHour) throw new HttpError('RATE_LIMITED', 'Too many exports in the last hour. Please wait a few minutes and try again.', { limitPerHour: config.exportRatePerHour, retryAfter: 300 });
     const pdfGuard = type === 'pdf' && config.pdfSetLimit && !!files && typeof store.claimPdfSet === 'function';
@@ -500,6 +500,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     }
     const exportConfig = {
       disclaimer: config.disclaimer || SITE_CONFIG.disclaimer,
+      seller: SITE_CONFIG.seller,
     };
     let file;
     try {
@@ -538,6 +539,7 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
         'content-length': String(file.bytes.byteLength),
         'cache-control': 'no-store',
         'x-content-type-options': 'nosniff',
+        ...(type === 'html' ? { 'content-security-policy': 'sandbox' } : {}),
       },
     });
   }

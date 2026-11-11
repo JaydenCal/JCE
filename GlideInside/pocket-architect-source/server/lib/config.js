@@ -99,8 +99,9 @@ export function readConfig(env = {}) {
     checkoutRateMax: Math.round(num(env.CHECKOUT_RATE_MAX, 20)), // per IP address per hour
     restoreRateMax: Math.round(num(env.RESTORE_RATE_MAX, 10)), // per IP address per 10 minutes
     exportRatePerHour: Math.round(num(env.EXPORT_RATE_PER_HOUR, 20)), // per Plan Pack
-    // One PDF plan set per job (the live rule and the site wording). A repeat request gets the same file back. 0 turns it off.
-    pdfSetLimit: !['0', 'false', 'off', 'no'].includes(str(env.PDF_SET_LIMIT, '1').toLowerCase()),
+    // Off by default (owner decision 11/11/2026): a paid job can re-export its current design; the hourly export limit still applies.
+    // PDF_SET_LIMIT=1 brings back the old live rule: ONE PDF plan set per job, a repeat request gets the same file back.
+    pdfSetLimit: !['0', 'false', 'off', 'no'].includes(str(env.PDF_SET_LIMIT, '0').toLowerCase()),
     pdfWaitMs: Math.round(num(env.EXPORT_PDF_WAIT_MS, 10000)),
   };
 }
