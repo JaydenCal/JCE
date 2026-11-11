@@ -52,7 +52,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       el('div', { class: 'psp-prompts', role: 'list' },
         EXAMPLE_PROMPTS.map((text) => el('button', { class: 'psp-prompt', type: 'button', disabled: true, role: 'listitem', title: 'Unlock the Plan Pack to use the assistant' }, icon('lock', 12), text))),
       el('div', { class: 'psp-locked-box' },
-        el('p', { class: 'psp-muted' }, `${pack.credits ?? 500} AI credits per project, plus PDF, DXF and 3D model exports. Drawing, the 3D view and walking through your design stay free.`),
+        el('p', { class: 'psp-muted' }, `${pack.credits ?? 500} AI credits per job, plus PDF, DXF and 3D model exports. Drawing, the 3D view and walking through your design stay free.`),
         isOn()
           ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--block', type: 'button', onclick: () => actions.unlock('assistant') }, icon('lock', 14), `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`)
           : el('button', { class: 'psp-btn psp-btn--block', type: 'button', disabled: true }, icon('lock', 14), 'Plan Pack coming soon'),
@@ -288,6 +288,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     const failed = [];
     const notes = [];
     let label = null;
+    let honest = null; // a refused fit: the reply written before the attempt may say otherwise, so this one message wins
     if (ops.length) {
       label = `AI: ${summariseOps(phrases)}`;
       let results = null;
@@ -304,7 +305,10 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
           if (r.ok && typeof r.result?.report === 'string') notes.push(r.result.report);
           if (r.ok && r.result?.changed === false) return; // a report or a suggestion: nothing to list or undo
           if (r.ok) applied.push(phrases[i]);
-          else failed.push(`${opLabel(ops[i].op)}: ${r.error || 'it could not be applied.'}`);
+          else {
+            failed.push(`${opLabel(ops[i].op)}: ${r.error || 'it could not be applied.'}`);
+            if (ops[i].op === 'suggest_site_position' && r.error) honest = r.error;
+          }
         });
         if (!applied.length) {
           store.undo(); // nothing changed, so do not leave an empty step in the history
@@ -317,10 +321,11 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       failed.push(`${opLabel(r.op)}: ${r.error || 'it was not valid.'}`);
     }
     msg.pending = false;
-    msg.text = (res.reply || '').trim() || (applied.length || notes.length ? 'Done.' : 'I could not work out a change from that. Try describing it a different way.');
+    msg.text = honest || (res.reply || '').trim() || (applied.length || notes.length ? 'Done.' : 'I could not work out a change from that. Try describing it a different way.');
     msg.applied = applied;
     msg.notes = notes;
-    msg.failed = failed;
+    msg.failed = honest ? [] : failed;
+    if (honest) msg.notes = [];
     msg.credits = Number.isFinite(res.credits?.charged) ? res.credits.charged : null;
     if (label) msg.undo = { label, available: true };
     return { appliedCount: applied.length };

@@ -158,7 +158,7 @@ function labelSprite(lines, kind) {
   mat.userData.disposeMap = true;
   const sp = new THREE.Sprite(mat);
   // Size is a fraction of the view height (sizeAttenuation off), so a label stays readable at any zoom.
-  sp.scale.y = (strong ? 0.026 : 0.019) * lines.length + 0.012;
+  sp.scale.y = (strong ? 0.021 : 0.016) * lines.length + 0.01;
   sp.scale.x = sp.scale.y * (width / height);
   sp.renderOrder = 20;
   return sp;
@@ -284,11 +284,11 @@ function addSiteOverlays(root, lot, surf, { showContours }) {
   if (S.layerOn(lot, 'setbacks') && Array.isArray(lot.envelope) && lot.envelope.length > 2) {
     const solid = drape(lot.envelope, true, 0.4, 0.09);
     const dashes = S.dashPolyline(solid, 1.8, 1.1, true).map((pts) => ({ pts, closed: false }));
-    addLines(group, 'setback-envelope', dashes, { half: 0.08, color: '#0b7a5b', userData: { setbackEnvelope: true }, order: 3 });
+    addLines(group, 'setback-envelope', dashes, { half: 0.055, color: '#0b7a5b', userData: { setbackEnvelope: true }, order: 3 });
   }
   const fronts = S.frontagePolylines(lot);
   if (fronts.length) {
-    addLines(group, 'street-frontage', fronts.map((e) => ({ pts: drape(e, false, 0.5, 0.04), closed: false })), { half: 0.55, color: '#1d5fd1', userData: { frontage: true }, order: 2 });
+    addLines(group, 'street-frontage', fronts.map((e) => ({ pts: drape(e, false, 0.5, 0.04), closed: false })), { half: 0.22, color: '#1d5fd1', userData: { frontage: true }, order: 2 });
   }
   if (showContours && S.layerOn(lot, 'contours') && lot.contours?.length) {
     const minor = [];

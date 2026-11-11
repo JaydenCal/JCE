@@ -95,8 +95,10 @@ export function streetTreeSpots(rings, unitsPerM = 1) {
     const r = rng(77 + li);
     for (let k = 0; k < n; k++) {
       const a = ((k + 0.5) / n - 0.5) * f.W + (r() - 0.5) * 2 * unitsPerM;
+      // The first ring is the person's own lot: keep its street view clear (the neighbours' trees frame it).
+      if (li === 0) continue;
       const b = -3.2 * unitsPerM;
-      out.push({ x: f.fm[0] + a * f.ux + b * f.nx, y: f.fm[1] + a * f.uy + b * f.ny, r: 2.3 + r() * 1.2, h: 5.5 + r() * 3, seed: li * 10 + k });
+      out.push({ x: f.fm[0] + a * f.ux + b * f.nx, y: f.fm[1] + a * f.uy + b * f.ny, r: 1.9 + r() * 0.9, h: 5 + r() * 2.5, seed: li * 10 + k });
     }
   });
   return out;

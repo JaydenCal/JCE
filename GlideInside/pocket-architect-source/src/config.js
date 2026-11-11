@@ -9,7 +9,7 @@ const isLocal = hasWindow && ['localhost', '127.0.0.1', '[::1]'].includes(window
 const REVIEW_BUILD = false;
 
 export const CONFIG = {
-  productName: 'Plan Studio',
+  productName: 'Pocket Architect',
   // Selling entity printed on paid exports. Placeholder until decision 17.1 is made.
   seller: { name: 'JCE Infrastructure Pty Ltd trading as Glide Inside', abn: '29 699 165 663' },
   // Same origin: the Cloudflare Worker is routed at glideinside.com.au/api/* (one site, no CORS, cookie sessions stay same-site).

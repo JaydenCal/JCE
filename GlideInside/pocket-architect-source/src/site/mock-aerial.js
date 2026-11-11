@@ -89,13 +89,13 @@ export async function mockAerialBlob(meta, lotResp) {
     g.save();
     trace(ring);
     g.clip();
-    // soft patches 1 to 4 m across (read at ground level), then blades
-    for (let k = 0; k < 90; k++) {
-      const rx = (3 + rand() * 20) * ppm;
-      g.globalAlpha = 0.07 + rand() * 0.08;
+    // soft mowing patches 1 to 4 m across (read at ground level), faint so the lawn reads as one surface
+    for (let k = 0; k < 260; k++) {
+      const rx = (0.8 + rand() * 2.6) * ppm;
+      g.globalAlpha = 0.035 + rand() * 0.05;
       g.fillStyle = rand() > 0.5 ? '#a8c47a' : '#3f6a34';
       g.beginPath();
-      g.ellipse(rand() * w, rand() * h, rx, rx * (0.5 + rand() * 0.6), rand() * Math.PI, 0, Math.PI * 2);
+      g.ellipse(rand() * w, rand() * h, rx, rx * (0.4 + rand() * 0.5), rand() * Math.PI, 0, Math.PI * 2);
       g.fill();
     }
     g.globalAlpha = 1;

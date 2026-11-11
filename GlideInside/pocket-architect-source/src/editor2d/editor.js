@@ -8,7 +8,7 @@ import { readTheme } from './theme.js';
 import { buildScene, drawGrid, drawUnderlay, drawGhostLevel, drawRooms, drawRoomLabels, drawWalls } from './draw-plan.js';
 import { drawOpenings, drawStairs, drawFurniture, drawTanks } from './draw-items.js';
 import { drawSite, drawCredits } from './draw-site.js';
-import { drawArrangeOverlay } from './draw-lotplan.js';
+import { drawArrangeOverlay, drawBreachWalls } from './draw-lotplan.js';
 import { nearestEdge, toggleEdge, isCorner } from '../site/frontage.js';
 import { drawOverallDims, drawSelection, drawHover, drawNorthArrow, drawScaleBar } from './draw-annot.js';
 import { loadBitmap, removeImage, registerUnderlayEditor, setUnderlayFromBlob, setUnderlayFromCanvas } from './underlay.js';
@@ -292,6 +292,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     if (state.hover && (!sel || state.hover.id !== sel.id) && !state.pan) drawHover(ctx, st, scene, state.hover);
     drawSelection(ctx, st, scene, sel);
     current?.draw?.(ctx, st, ed);
+    drawBreachWalls(ctx, st);
     drawArrangeOverlay(ctx, st);
     drawNorthArrow(ctx, st);
     drawScaleBar(ctx, st);

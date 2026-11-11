@@ -7,6 +7,8 @@ import { worldToScreen } from './math.js';
 import { layerOn } from './draw-site.js';
 import { roadReserve, deriveDriveway, clearances, buildingHull, orientedBox, garageDoor, inwardNormalOf } from '../site/lotplan.js';
 import { lotOf } from '../model/placement.js';
+import { lotChecks } from '../site/lot-checks.js';
+import * as G from '../model/geometry.js';
 
 export const OK = '#2f7d4f';
 export const BAD = '#c0392b';
@@ -193,6 +195,40 @@ export function drawLotPlan(ctx, st) {
   drawRoad(ctx, st);
   drawEnvelope(ctx, st);
   drawDriveway(ctx, st);
+}
+
+// Breaching walls ---------------------------------------------------------------------------------------------------------
+const checksOf = (st) => {
+  if (st._lotChecks?.key === st.project) return st._lotChecks.value;
+  let value;
+  try { value = lotChecks(st.project); } catch { value = { breachWallIds: new Set(), messages: [] }; }
+  st._lotChecks = { key: st.project, value };
+  return value;
+};
+
+/** Exterior walls over the lot boundary or inside the setback, drawn red over the plan (same wall bodies as the 3D tint). */
+export function drawBreachWalls(ctx, st) {
+  if (!lotOf(st.project)) return;
+  const c = checksOf(st);
+  if (!c.breachWallIds.size) return;
+  ctx.save();
+  ctx.fillStyle = 'rgba(192,57,43,0.78)';
+  ctx.strokeStyle = BAD;
+  ctx.lineWidth = 1.6;
+  ctx.lineJoin = 'round';
+  for (const level of st.project.levels || []) {
+    for (const w of level.walls || []) {
+      if (!c.breachWallIds.has(w.id)) continue;
+      let ring;
+      try { ring = G.wallPolygon(w); } catch { continue; }
+      ctx.beginPath();
+      ring.forEach((p, i) => { const q = S(st, p); if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); });
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
 }
 
 // Rotation ring -----------------------------------------------------------------------------------------------------------

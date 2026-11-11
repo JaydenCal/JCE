@@ -6,6 +6,8 @@
 //   picked = { front: { minM }, secondaryFront: { minM }, side: { minM }, rear: { minM } } as returned by pickRules.
 
 /** Same signature as src/site/setbacks.js buildEnvelope. Convex lots only; returns null when the setbacks consume the lot. */
+import { buildEnvelope } from '../site/setbacks.js';
+
 export function stubBuildEnvelope(lotPolygonMm, frontEdgeIndices, picked) {
   if (!picked || !Array.isArray(lotPolygonMm) || lotPolygonMm.length < 3) return null;
   const pts = lotPolygonMm.map((p) => ({ x: Array.isArray(p) ? p[0] : p.x, y: Array.isArray(p) ? p[1] : p.y }));
@@ -65,18 +67,9 @@ export function stubBuildEnvelope(lotPolygonMm, frontEdgeIndices, picked) {
   return poly.map((p) => ({ x: Math.round(p.x), y: Math.round(p.y) }));
 }
 
-let real;
-/** buildEnvelope from src/site/setbacks.js when it exists in this build, otherwise the stub. */
+/** buildEnvelope from src/site/setbacks.js (a static import, so the single-file build bundles it). */
 export async function lotEnvelope(lotPolygonMm, frontEdgeIndices, picked) {
-  if (real === undefined) {
-    try {
-      const spec = '../site/setbacks.js';
-      real = (await import(/* @vite-ignore */ spec)).buildEnvelope || null;
-    } catch {
-      real = null;
-    }
-  }
-  return (real || stubBuildEnvelope)(lotPolygonMm, frontEdgeIndices, picked);
+  return (buildEnvelope || stubBuildEnvelope)(lotPolygonMm, frontEdgeIndices, picked);
 }
 
 /** A sample lot for review builds (and the "Use a sample lot" button): 14 m x 36 m, street at the bottom (south). */

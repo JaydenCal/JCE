@@ -181,12 +181,17 @@ export function previewPlacement(project, house, pose) {
   return copy;
 }
 
-/** Size check against a lot: does the rotated footprint fit within lot width x depth (mm)? Used for a gentle warning. */
+/**
+ * Size check against a lot { widthMm, depthMm }: can the house footprint (width x depth, either way round) fit in the lot
+ * rectangle at all? Independent of where the house is now placed and of its current rotation, so a 15 x 16 m house is never
+ * "larger than" a 20 x 40 m lot however the lot is turned on the plan. Used for a gentle warning.
+ */
 export function fitsLot(house, pose, lot) {
   if (!lot?.widthMm || !lot?.depthMm) return true;
-  const xs = footprintCorners(house, pose).map((c) => c.x);
-  const ys = footprintCorners(house, pose).map((c) => c.y);
-  return Math.max(...xs) - Math.min(...xs) <= lot.widthMm && Math.max(...ys) - Math.min(...ys) <= lot.depthMm;
+  const b = houseBounds(house);
+  const [hs, hl] = [b.width, b.depth].sort((x, y) => x - y);
+  const [ls, ll] = [lot.widthMm, lot.depthMm].sort((x, y) => x - y);
+  return hs <= ls && hl <= ll;
 }
 
 export { lowestLevel };

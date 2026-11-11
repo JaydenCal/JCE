@@ -16,7 +16,7 @@ import { createToolbox } from './ui/toolbox.js';
 import { createDrawer } from './ui/drawer.js';
 import { createPanel } from './ui/panel.js';
 import { createStatusBar } from './ui/statusbar.js';
-import { createStageChips, createWelcome } from './ui/stage-ui.js';
+import { createStageChips, createWelcome, createMapCredit } from './ui/stage-ui.js';
 import { openTemplatePicker } from './ui/templates.js';
 import { openFindBlock } from './ui/find-block.js';
 import { createFrontageBar } from './ui/frontage.js';
@@ -373,6 +373,7 @@ async function main() {
   if (first !== '2d') store.setUI({ view: first });
   track('ps_open', { embedMode: CONFIG.embedMode });
 
+  createMapCredit(refs.stage, store);
   if (!state.fromAutosave && !demoMode() && !narrow && first === '2d') createWelcome(refs.stage, store, { onChoose: openNew });
 
   embed.ready();

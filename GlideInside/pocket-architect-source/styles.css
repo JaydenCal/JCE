@@ -251,7 +251,8 @@ svg { display: block; }
 .ps-name:focus { border-color: var(--ps-accent); }
 .ps-group { display: flex; align-items: center; gap: 4px; }
 .ps-topbar-spacer { flex: 1 1 0; min-width: 0; }
-.ps-premium-slot { display: flex; align-items: center; gap: 8px; min-height: 32px; margin-left: auto; }
+.ps-premium-slot { display: flex; align-items: center; gap: 8px; min-height: 32px; margin-left: auto; flex: 0 0 auto; white-space: nowrap; }
+@media (max-width: 1699.98px) { .ps-product { font-size: 14px; letter-spacing: 0.03em; } .ps-name { width: 110px; } .ps-topbar { gap: 8px; } .ps-shell .ps-topbar .ps-back .ps-btn-text { display: none !important; } .ps-shell .ps-topbar .ps-back.ps-btn--wide:has(.ps-btn-text) { width: 32px !important; padding: 0 !important; } }
 
 /* Buttons and segmented controls ------------------------------------------ */
 .ps-btn {
@@ -624,10 +625,10 @@ svg { display: block; }
 }
 /* The 3D views add level tabs and a Roof toggle, so the file buttons go icon-only a little sooner there. */
 @media (min-width: 1400px) and (max-width: 1599.98px) {
-  .ps-shell:is([data-view="3d"], [data-view="walk"], [data-view="split"]) .ps-btn .ps-btn-text { display: none; }
-  .ps-shell:is([data-view="3d"], [data-view="walk"], [data-view="split"]) .ps-btn:has(.ps-btn-text) { width: 32px; padding: 0; }
-  .ps-shell:is([data-view="3d"], [data-view="walk"], [data-view="split"]) .ps-btn--wide .ps-btn-text { display: inline; }
-  .ps-shell:is([data-view="3d"], [data-view="walk"], [data-view="split"]) .ps-btn--wide:has(.ps-btn-text) { width: auto; padding: 0 11px; }
+  .ps-shell .ps-btn .ps-btn-text { display: none; }
+  .ps-shell .ps-btn:has(.ps-btn-text) { width: 32px; padding: 0; }
+  .ps-shell .ps-btn--wide .ps-btn-text { display: inline; }
+  .ps-shell .ps-btn--wide:has(.ps-btn-text) { width: auto; padding: 0 11px; }
 }
 @media (max-width: 899.98px) {
   #app { padding-block: 8px; }

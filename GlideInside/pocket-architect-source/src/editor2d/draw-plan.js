@@ -186,10 +186,16 @@ function hatch(ctx, colour, cache = hatchCache) {
 
 export function drawRooms(ctx, st, scene) {
   const { view, theme } = st;
+  const aerialUnder = !!(st.project.site?.underlay?.site && st.project.site?.lot?.layers?.aerial !== false);
   for (const r of scene.rooms) {
     const pts = toScreenPoly(view, r.polygon);
     ctx.beginPath();
     tracePoly(ctx, pts);
+    if (aerialUnder && !r.outdoor) {
+      // A light translucent base so rooms and their names read over the aerial photo.
+      ctx.fillStyle = theme.dark ? 'rgba(20,22,26,0.5)' : 'rgba(255,255,255,0.6)';
+      ctx.fill();
+    }
     ctx.fillStyle = roomTint(theme, r.type);
     ctx.fill();
     if (r.outdoor) {

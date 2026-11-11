@@ -508,7 +508,7 @@ function addBushes(group, spots, H, stats) {
 }
 
 // A lumpy ball with vertex colours: dark underneath, light on top, a little patchy.
-function foliageBlob(r, detail, squash = 1) {
+function foliageBlob(r, detail, squash = 1, phase = 0) {
   const g = new THREE.IcosahedronGeometry(r, detail);
   const p = g.attributes.position;
   const colors = new Float32Array(p.count * 3);
@@ -517,10 +517,10 @@ function foliageBlob(r, detail, squash = 1) {
     const x = p.getX(i);
     const y = p.getY(i);
     const z = p.getZ(i);
-    const bump = 1 + 0.09 * Math.sin(x * 5.1 + z * 3.3) * Math.cos(y * 4.2 + x * 2.1);
+    const bump = 1 + 0.12 * Math.sin(x * 5.1 / r + z * 3.3 / r + phase) * Math.cos(y * 4.2 / r + x * 2.1 / r);
     p.setXYZ(i, x * bump, y * bump * squash, z * bump);
     const t = (y / r + 1) / 2;
-    const patch = 0.92 + 0.16 * (Math.sin(x * 7 + y * 3) * Math.cos(z * 6) * 0.5 + 0.5);
+    const patch = 0.9 + 0.2 * (Math.sin((x * 7 + y * 3) / r + phase) * Math.cos(z * 6 / r) * 0.5 + 0.5);
     c.setScalar(0.5 + 0.62 * t).multiplyScalar(patch);
     colors[i * 3] = c.r;
     colors[i * 3 + 1] = c.g;
@@ -535,7 +535,7 @@ function foliageBlob(r, detail, squash = 1) {
 // Instanced trees: a trunk and a canopy of four overlapping blobs, one merged geometry. Canopy radius r, height h (metres).
 function addTrees(group, spots, H, stats) {
   if (!spots.length) return;
-  const trunk = new THREE.CylinderGeometry(0.1, 0.17, 1, 7, 1);
+  const trunk = new THREE.CylinderGeometry(0.1, 0.17, 1, 7, 1).toNonIndexed();
   trunk.translate(0, 0.5, 0);
   const tc = new Float32Array(trunk.attributes.position.count * 3);
   for (let i = 0; i < tc.length; i += 3) {
@@ -546,13 +546,15 @@ function addTrees(group, spots, H, stats) {
   trunk.setAttribute('color', new THREE.BufferAttribute(tc, 3));
   trunk.deleteAttribute('uv');
   trunk.deleteAttribute('normal');
-  const blobs = [[0, 0.62, 0, 0.5], [0.35, 0.5, 0.1, 0.38], [-0.3, 0.55, -0.15, 0.4], [0.05, 0.84, 0.05, 0.36]].map(([x, y, z, rr]) => {
-    const b = foliageBlob(rr, 2, 0.9);
+  const crown = [[0, 0.64, 0, 0.46], [0.34, 0.52, 0.1, 0.34], [-0.3, 0.56, -0.15, 0.36], [0.05, 0.86, 0.05, 0.3], [-0.12, 0.45, 0.3, 0.28], [0.18, 0.7, -0.28, 0.3], [-0.34, 0.74, 0.1, 0.24]];
+  const blobs = crown.map(([x, y, z, rr], k) => {
+    const b = foliageBlob(rr, 2, 0.9, k * 1.7);
     b.translate(x, y, z);
     return b;
   });
   // trunk height 0.45 of the tree; canopy sits above (heights are fractions of h)
-  const geo = mergeGeometries([trunk.clone().scale(1, 0.55, 1), ...blobs.map((b) => b)], false);
+  const geo = mergeGeometries([trunk.clone().scale(1, 0.55, 1), ...blobs], false);
+  if (!geo) return;
   const m = basic('#ffffff', { vertexColors: true });
   const mesh = new THREE.InstancedMesh(geo, m, spots.length);
   const GREENS = ['#3f7436', '#4d8340', '#35692f', '#5b8f44', '#487b3a', '#6b9448'];
@@ -679,7 +681,7 @@ function buildNeighbourHouses(group, rings, H, stats, treeSpots) {
       const tb = setback + hd + 3 + rand() * Math.max(2, f.depth - setback - hd - 6);
       const r = 1.7 + rand() * 1.8;
       const w = toWorld(f, ta, tb);
-      treeSpots.push({ x: w[0], z: w[1], r, h: 5 + r * 1.6, seed: li * 7 + t });
+      treeSpots.push({ x: w[0], z: w[1], r, h: 4.2 + r * 1.5, seed: li * 7 + t });
     }
     // shed: box with a skillion roof
     const sx = -side * (f.W * 0.28);

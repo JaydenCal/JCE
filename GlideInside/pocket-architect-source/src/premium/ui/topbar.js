@@ -62,7 +62,7 @@ export function createTopbarUI({ root, config, getState, actions }) {
     const info = tokenInfo(st.token);
     menu.append(el('div', { class: 'psp-menu-foot' },
       locked
-        ? el('span', null, `Exports come with the Plan Pack, ${formatAud(pack.priceAud ?? 30)} per project. `, el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { closeMenu(false); actions.restore(); } }, 'Restore purchase'))
+        ? el('span', null, `Exports come with the Plan Pack, ${formatAud(pack.priceAud ?? 35)} per job. `, el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => { closeMenu(false); actions.restore(); } }, 'Restore purchase'))
         : el('span', null, st.devUnlock && !st.token ? 'Developer unlock: files are built in this browser.' : info?.exp ? `Re-export as often as you like until ${ddmmyyyy(info.exp * 1000)}.` : 'Re-export as often as you like.')));
   }
 

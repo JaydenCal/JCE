@@ -13,10 +13,11 @@ import { h } from '../ui/dom.js';
 import { clearances, clearanceText, deriveDriveway, faceGarageAngle } from '../site/lotplan.js';
 import { ringOf, OK, BAD, UNKNOWN } from '../editor2d/draw-lotplan.js';
 import { lotOf } from '../model/placement.js';
+import { lotChecks } from '../site/lot-checks.js';
 import { injectStripStyles } from './app-strip-styles.js';
 
 const CSS = `
-.pas-pose{position:absolute;right:12px;top:12px;z-index:30;background:var(--ps-panel,#fff);border:1px solid var(--ps-border-strong,#b6b8bd);border-radius:var(--ps-radius-lg,6px);box-shadow:var(--ps-shadow,0 10px 30px rgba(0,0,0,.2));padding:10px 12px;display:grid;gap:8px;width:min(320px,calc(100% - 24px));font:500 13px var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-text,#1a1c20)}
+.pas-pose{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--ps-panel,#fff);border-top:1px solid var(--ps-border-strong,#b6b8bd);box-shadow:0 -4px 16px rgba(0,0,0,.12);padding:8px 14px;display:grid;grid-template-columns:minmax(220px,1.1fr) minmax(200px,1fr) minmax(220px,1fr) auto;gap:6px 18px;align-items:start;max-height:34%;overflow:auto;font:500 13px var(--ps-font-ui,system-ui,sans-serif);color:var(--ps-text,#1a1c20)}
 .pas-pose h3{margin:0;font:700 14px var(--ps-font-ui,system-ui,sans-serif)}
 .pas-pose p{margin:0;color:var(--ps-muted,#5a5e66);font-size:12px}
 .pas-pose .pas-row{justify-content:flex-start;align-items:center;gap:6px}
@@ -27,6 +28,10 @@ const CSS = `
 .pas-clr li b{font-weight:700;font-variant-numeric:tabular-nums}
 .pas-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:baseline}
 .pas-fit{font-weight:700;font-size:12.5px}
+.pas-pose .pas-col{display:grid;gap:6px;align-content:start}
+.pas-block{color:#b3261e;font-weight:700;font-size:12.5px}
+.pas-pose .pas-btn[disabled]{opacity:.45;cursor:not-allowed}
+@media (max-width:900px){.pas-pose{grid-template-columns:1fr 1fr}}
 `;
 
 const injectPoseStyles = () => {
@@ -70,6 +75,9 @@ export function runPoseSession({ store, editor, host = document.getElementById('
   store.setUI({ view: '2d' });
   let pose = { rotation: 0, mirrored: false, ...initialPose };
   let preview = null;
+  let state = { messages: [] };
+  const history = []; // earlier poses, for Ctrl+Z while placing
+  const redo = [];
   const hasLot = () => !!lotOf(store.project);
 
   const live = h('div', { class: 'pas-sr', role: 'status', 'aria-live': 'polite' });
@@ -86,16 +94,27 @@ export function runPoseSession({ store, editor, host = document.getElementById('
     if (a == null) { live.textContent = 'No garage door or street frontage to face.'; return; }
     setPose({ rotation: normDeg((pose.rotation || 0) + a) });
   });
+  const blockLine = h('div', { class: 'pas-block', role: 'alert' });
+  const placeBtn = btn(commitText, () => commit(), 'pas-btn--primary');
+  const anywayBtn = btn('Place anyway', () => commit({ anyway: true }), '', { hidden: true, title: 'The house is inside the lot but outside the indicative setback envelope. Council decides.' });
   const panel = h('div', { class: 'pas-pose', role: 'group', 'aria-label': title },
-    h('h3', null, title),
-    h('p', null, describe || 'Drag the house to move it. Drag the gold handle to turn it. Arrow keys nudge 0.5 m (Shift 0.1 m). Q and E turn 15 degrees.'),
-    h('div', { class: 'pas-row' }, btn('↶ 15°', () => turn(-15)), btn('15° ↷', () => turn(15)), btn('↶ 1°', () => turn(-1)), btn('1° ↷', () => turn(1))),
-    h('div', { class: 'pas-row' }, btn('Turn 90°', () => turn(90)), mirrorBtn, h('label', { style: { display: 'flex', alignItems: 'center', gap: '4px' } }, rotInput, '°')),
-    h('div', { class: 'pas-row' }, faceBtn),
-    clrList, fitLine, driveLine, fitBadge,
-    h('div', { class: 'pas-row pas-end' }, btn('Cancel', () => cancel()), btn(commitText, () => commit(), 'pas-btn--primary')),
+    h('div', { class: 'pas-col' },
+      h('h3', null, title),
+      h('p', null, describe || 'Drag the house to move it. Drag the gold handle to turn it. Arrow keys nudge 0.5 m (Shift 0.1 m). Q and E turn 15 degrees. Ctrl+Z undoes a move.'),
+      fitBadge),
+    h('div', { class: 'pas-col' },
+      h('div', { class: 'pas-row' }, btn('↶ 15°', () => turn(-15)), btn('15° ↷', () => turn(15)), btn('↶ 1°', () => turn(-1)), btn('1° ↷', () => turn(1))),
+      h('div', { class: 'pas-row' }, btn('Turn 90°', () => turn(90)), mirrorBtn, h('label', { style: { display: 'flex', alignItems: 'center', gap: '4px' } }, rotInput, '°')),
+      h('div', { class: 'pas-row' }, faceBtn)),
+    h('div', { class: 'pas-col' }, clrList, fitLine, blockLine, driveLine),
+    h('div', { class: 'pas-col' }, h('div', { class: 'pas-row pas-end' }, btn('Cancel', () => cancel()), anywayBtn, placeBtn)),
     live);
   host.append(catcher, panel);
+  const planHost = document.getElementById('ps-plan-host');
+  const dock = () => { if (planHost) { planHost.style.bottom = `${panel.offsetHeight}px`; catcher.style.bottom = `${panel.offsetHeight}px`; } };
+  const roDock = typeof ResizeObserver === 'function' ? new ResizeObserver(dock) : null;
+  roDock?.observe(panel);
+  setTimeout(dock, 0);
 
   const turn = (d) => setPose({ rotation: normDeg(Math.round(pose.rotation || 0) + d) });
 
@@ -107,7 +126,26 @@ export function runPoseSession({ store, editor, host = document.getElementById('
     if (!preview || !hasLot()) {
       fitLine.textContent = '';
       driveLine.textContent = '';
+      blockLine.textContent = '';
+      anywayBtn.hidden = true;
+      placeBtn.disabled = false;
       return;
+    }
+    state = lotChecks(preview);
+    const over = state.messages.filter((m) => m.kind === 'boundary');
+    const env = state.messages.filter((m) => m.kind === 'envelope');
+    if (over.length) {
+      blockLine.textContent = `Cannot place here: ${over[0].text}${over.length > 1 ? ` (and ${over.length - 1} more boundary)` : ''} Move the house inside the lot.`;
+      placeBtn.disabled = true;
+      anywayBtn.hidden = true;
+    } else if (env.length) {
+      blockLine.textContent = env.map((m) => m.text).join(' ');
+      placeBtn.disabled = true;
+      anywayBtn.hidden = false;
+    } else {
+      blockLine.textContent = '';
+      placeBtn.disabled = false;
+      anywayBtn.hidden = true;
     }
     const c = clearances(preview);
     const rows = [...c.rows].sort((a, b) => (KIND_ORDER[a.kind] ?? 9) - (KIND_ORDER[b.kind] ?? 9) || a.edge - b.edge).filter((r) => r.kind !== 'unknown' || c.rows.every((x) => x.kind === 'unknown'));
@@ -129,7 +167,8 @@ export function runPoseSession({ store, editor, host = document.getElementById('
     editor.setOverlay?.({ arrange: true, rotation: pose.rotation || 0 });
     paint();
   }
-  function setPose(patch) {
+  function setPose(patch, { record = true } = {}) {
+    if (record) { history.push(pose); if (history.length > 200) history.shift(); redo.length = 0; }
     pose = { ...pose, ...patch };
     draw();
     live.textContent = `Position ${(pose.x / 1000).toFixed(1)} m, ${(pose.y / 1000).toFixed(1)} m, rotation ${Math.round(pose.rotation || 0)} degrees${pose.mirrored ? ', mirrored' : ''}`;
@@ -151,6 +190,7 @@ export function runPoseSession({ store, editor, host = document.getElementById('
       if (Math.hypot(hs.x - s.x, hs.y - s.y) <= 16) drag = { mode: 'rotate' };
     }
     if (!drag) drag = { mode: 'move', x: e.clientX, y: e.clientY };
+    history.push(pose); redo.length = 0;
     catcher.setPointerCapture?.(e.pointerId);
     e.preventDefault();
   });
@@ -163,13 +203,13 @@ export function runPoseSession({ store, editor, host = document.getElementById('
       const s = rel(e);
       const c = { x: ring.centre.x * v.scale + v.ox, y: ring.centre.y * v.scale + v.oy };
       const a = (Math.atan2(s.y - c.y, s.x - c.x) * 180) / Math.PI; // handle sits at -90 degrees when the rotation is 0
-      setPose({ rotation: normDeg(snapAngle(a + 90, e.shiftKey)) });
+      setPose({ rotation: normDeg(snapAngle(a + 90, e.shiftKey)) }, { record: false });
       return;
     }
     const dx = (e.clientX - drag.x) / v.scale;
     const dy = (e.clientY - drag.y) / v.scale;
     drag = { mode: 'move', x: e.clientX, y: e.clientY };
-    setPose({ x: Math.round(pose.x + dx), y: Math.round(pose.y + dy) });
+    setPose({ x: Math.round(pose.x + dx), y: Math.round(pose.y + dy) }, { record: false });
   });
   const endDrag = () => { drag = null; };
   catcher.addEventListener('pointerup', endDrag);
@@ -180,13 +220,21 @@ export function runPoseSession({ store, editor, host = document.getElementById('
     const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT');
     const step = e.shiftKey ? 100 : 500;
     const move = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
-    if (e.key === 'Escape' && !document.querySelector('.pas-modal')) cancel();
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && !typing && (e.key === 'z' || e.key === 'Z' || e.key === 'y' || e.key === 'Y')) {
+      // Undo the last move, turn or mirror of this placement; never the app level undo or a confirm.
+      const redoing = e.key === 'y' || e.key === 'Y' || e.shiftKey;
+      const from = redoing ? redo : history;
+      const to = redoing ? history : redo;
+      if (from.length) { to.push(pose); pose = from.pop(); draw(); live.textContent = redoing ? 'Move redone' : 'Move undone'; }
+      else live.textContent = 'Nothing to undo in this placement';
+    } else if (e.key === 'Escape' && !document.querySelector('.pas-modal')) cancel();
     else if (!typing && move) setPose({ x: pose.x + move[0], y: pose.y + move[1] });
     else if (!typing && (e.key === 'q' || e.key === 'Q')) turn(e.shiftKey ? -1 : -15);
     else if (!typing && (e.key === 'e' || e.key === 'E')) turn(e.shiftKey ? 1 : 15);
     else if (!typing && (e.key === ',' || e.key === '.')) turn((e.key === '.' ? 1 : -1) * (e.shiftKey ? 1 : 15));
     else if (!typing && (e.key === 'r' || e.key === 'R')) turn(90);
-    else if (!typing && e.key === 'Enter' && !(t && t.tagName === 'BUTTON')) commit();
+    else if (!typing && e.key === 'Enter' && !(t && t.tagName === 'BUTTON')) { if (!placeBtn.disabled) commit(); else live.textContent = blockLine.textContent; }
     else return;
     e.preventDefault();
     e.stopPropagation();
@@ -197,10 +245,18 @@ export function runPoseSession({ store, editor, host = document.getElementById('
     document.removeEventListener('keydown', onKey, true);
     editor.clearPreview?.();
     editor.setOverlay?.(null);
+    roDock?.disconnect();
+    if (planHost) planHost.style.bottom = '';
     catcher.remove();
     panel.remove();
   }
-  function commit() {
+  function commit({ anyway = false } = {}) {
+    // A house over the lot boundary can never be placed. Outside the setback envelope needs an explicit Place anyway.
+    if (hasLot() && preview) {
+      const c = lotChecks(preview);
+      if (c.crossesBoundary) { live.textContent = blockLine.textContent = `Cannot place here: ${c.messages.find((m) => m.kind === 'boundary').text}`; return; }
+      if (c.messages.length && !anyway) { live.textContent = c.messages.map((m) => m.text).join(' '); return; }
+    }
     teardown();
     let record = null;
     store.apply(commitLabel, (p) => { record = apply(p, pose); });
@@ -212,5 +268,5 @@ export function runPoseSession({ store, editor, host = document.getElementById('
   }
   draw();
   panel.querySelector('.pas-btn--primary')?.focus({ preventScroll: true });
-  return { setPose, getPose: () => ({ ...pose }), commit, cancel, preview: () => preview, text: () => clearanceText(clearances(preview || store.project).byKind.front) };
+  return { setPose, getPose: () => ({ ...pose }), commit, cancel, checks: () => state, undoPose: () => { if (history.length) { redo.push(pose); pose = history.pop(); draw(); } }, preview: () => preview, text: () => clearanceText(clearances(preview || store.project).byKind.front) };
 }

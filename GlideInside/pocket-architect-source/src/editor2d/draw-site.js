@@ -35,6 +35,16 @@ function halo(ctx, text, x, y, theme) {
   ctx.fillText(text, x, y);
 }
 
+// A thin, light halo for the many neighbour labels: readable over the aerial without a heavy blurred smudge round each one.
+function softHalo(ctx, text, x, y, theme, dark = false) {
+  ctx.lineWidth = dark ? 2.4 : 2;
+  ctx.strokeStyle = dark ? 'rgba(18,22,28,0.8)' : theme.c.canvas;
+  ctx.globalAlpha = dark ? 0.7 : 0.55;
+  ctx.strokeText(text, x, y);
+  ctx.globalAlpha = 1;
+  ctx.fillText(text, x, y);
+}
+
 export function drawContours(ctx, st) {
   const lot = st.project.site?.lot;
   if (!layerOn(lot, 'contours') || !lot.contours?.length) return;
@@ -126,9 +136,9 @@ export function drawNeighbours(ctx, st) {
       const s = toScreen(view, { x: c[0], y: c[1] });
       const lotSize = 11;
       ctx.font = `500 ${lotSize}px ${theme.f.ui}`;
-      halo(ctx, n.lotNumber ? `Lot ${n.lotNumber}` : '', s.x, s.y - 7, theme);
+      softHalo(ctx, n.lotNumber ? `Lot ${n.lotNumber}` : '', s.x, s.y - 7, theme, overAerial);
       ctx.font = `600 ${lotSize + 1}px ${theme.f.ui}`; // DP one size larger
-      halo(ctx, n.planLabel || '', s.x, s.y + 7, theme);
+      softHalo(ctx, n.planLabel || '', s.x, s.y + 7, theme, overAerial);
     }
   }
   ctx.restore();
@@ -213,7 +223,7 @@ export function drawLot(ctx, st) {
       ctx.rotate(ang);
       // Survey style: bearing then distance. The bearing is dropped when the edge is too short on screen for both.
       const bd = bearings[ei];
-      halo(ctx, bd && len > 150 ? `${bd.bearing}  ${e.label} m` : `${e.label} m`, 0, 0, theme);
+      halo(ctx, bd && len > 100 ? `${bd.bearing}  ${e.label} m` : `${e.label} m`, 0, 0, theme);
       ctx.restore();
     }
   }
@@ -253,6 +263,8 @@ export function drawLot(ctx, st) {
 
 // Attribution and contour accuracy, small, bottom right. Required wherever the data is shown.
 export function drawCredits(ctx, st) {
+  // The credit is a small "Map data" chip in the stage now (src/ui/stage-ui.js createMapCredit); canvas export keeps the full text.
+  if (!st.printCredits) return;
   const lot = st.project.site?.lot;
   if (!lot || st.size.w < 520) return;
   const lines = siteCredits(lot).filter((c) => c.id !== 'zoning' && c.id !== 'setbacks' && (c.id !== 'aerial' || layerOn(lot, 'aerial')) && (c.id !== 'contours' || layerOn(lot, 'contours')));

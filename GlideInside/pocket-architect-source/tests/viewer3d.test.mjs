@@ -445,7 +445,12 @@ test('finish changes flow through to materials', () => {
   applyOp(p, 'set_finish', { target: 'roof', material: 'standing_seam', colour: 'steel-dune' }, { catalogue: { validateFinish: finishes.validateFinish } });
   const after = roofMat(buildModel(p, { materials: lib, catalogue }));
   assert.notEqual(before, after);
-  assert.equal(after.color.getHexString(), finishes.getColour('steel-dune').hex.replace('#', '').toLowerCase());
+  // Very dark finishes are lifted to a lightness floor in 3D so a charcoal roof does not go black under tone mapping.
+  const want = new THREE.Color(finishes.getColour('steel-dune').hex);
+  const w = {}; want.getHSL(w);
+  const got = {}; after.color.getHSL(got);
+  assert.ok(Math.abs(got.l - Math.max(w.l, 0.27)) < 0.01, `lightness ${got.l} vs ${w.l}`);
+  assert.ok(Math.abs(got.h - w.h) < 0.02 || w.s < 0.05, 'same hue');
 });
 
 test('performance: a 300 m2 house builds quickly with a modest draw call count', () => {

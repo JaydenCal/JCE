@@ -487,7 +487,7 @@ export function createEdit({ rootEl, canvas, scene, camera, controls, store, cat
         roomDrag.b = snapWallPoint(roomDrag.level, plan);
         showRect(roomDrag.a, roomDrag.b, roomDrag.level);
         const r = rectFromPoints(roomDrag.a, roomDrag.b);
-        showTip(`${formatDims(r.width, r.depth)}  ${((r.width * r.depth) / 1e6).toFixed(1)} m2`, e.clientX, e.clientY);
+        showTip(`${formatDims(r.width, r.depth)}  ${((r.width * r.depth) / 1e6).toFixed(1)} m²`, e.clientX, e.clientY);
       }
       return;
     }

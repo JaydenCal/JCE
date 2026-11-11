@@ -21,6 +21,7 @@ import { startPlacement } from './placement.js';
 import { defaultPose } from './place-house.js';
 import { autoPose } from './auto-place.js';
 import { lotOf } from '../model/placement.js';
+import { orientedBox } from '../site/lotplan.js';
 import { projectToSvg, svgDataUri } from './thumbnail.js';
 import { createProject } from '../model/schema.js';
 
@@ -171,7 +172,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   }
   async function openPicker() {
     const list = h('div', { class: 'pas-list' }, h('p', { class: 'pas-empty' }, 'Loading designs...'));
-    const m = modal('House designs', h('div', null, h('p', null, envelopeNow() ? `Ranked for ${lotIsSample ? SAMPLE_LOT.name : lot.address || 'your lot'}. Designs that do not fit can still be placed.` : 'Find your block to see which designs fit.'), list), []);
+    const m = modal('House designs', h('div', null, h('p', null, envelopeNow() ? `Ranked for ${lotOf(store.project)?.address || (lotIsSample ? SAMPLE_LOT.name : lot.address) || 'your lot'}. Designs that do not fit can still be placed.` : lotOf(store.project) ? 'Setbacks are not available for this lot, so designs are not ranked. Check with council.' : 'Find your block to see which designs fit.'), list), []);
     let designs;
     try { designs = await loadDesigns(); } catch (e) { list.replaceChildren(h('p', { class: 'pas-empty' }, e.message || 'Could not load designs.')); return; }
     // The builder's own designs first, then the Glide Inside library; within each, best fit first.
@@ -191,7 +192,8 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   // The envelope that applies now: the lot on the design (Find my block) when it carries one, else the portal lot.
   const envelopeNow = () => {
     const sl = lotOf(store.project);
-    return sl?.envelope?.length >= 3 ? sl.envelope : envelope;
+    if (sl) return sl.envelope?.length >= 3 ? sl.envelope : null; // a found lot is never ranked against the sample lot
+    return envelope;
   };
   function choose(d) {
     const house = structuredClone(d.project);
@@ -211,7 +213,9 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     else if (rankPose) initialPose = { ...base, ...rankPose };
     else if (auto?.pose) initialPose = auto.pose;
     const env = envelopeNow();
-    const lotBox = env ? { widthMm: Math.max(...env.map((p) => p.x)) - Math.min(...env.map((p) => p.x)), depthMm: Math.max(...env.map((p) => p.y)) - Math.min(...env.map((p) => p.y)) } : null;
+    const sl0 = lotOf(store.project);
+    const hull = sl0?.boundary?.length >= 3 ? orientedBox(sl0.boundary) : null;
+    const lotBox = hull ? { widthMm: hull.w, depthMm: hull.d } : env ? { widthMm: Math.max(...env.map((p) => p.x)) - Math.min(...env.map((p) => p.x)), depthMm: Math.max(...env.map((p) => p.y)) - Math.min(...env.map((p) => p.y)) } : null;
     startPlacement({
       store, editor, house, lot: lotBox, initialPose, fit,
       onDone: () => toast(`${d.name} placed. Every wall, room and opening is editable.`, { kind: 'ok' }),

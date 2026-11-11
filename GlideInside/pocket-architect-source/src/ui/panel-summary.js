@@ -14,6 +14,7 @@ import { DRAWING_SCALES, PAPER_SIZES } from '../model/schema.js';
 import { deleteLevelWithConfirm } from './level-actions.js';
 import { DESIGN_TYPES, designTypeOf, changeDesignType } from './design-type.js';
 import { buildSiteSection } from './panel-site.js';
+import { lotChecks } from '../site/lot-checks.js';
 
 const ROOF_LABEL = { hip: 'Hip', gable: 'Gable', skillion: 'Skillion', flat: 'Flat' };
 const m2 = (v) => `${v.toFixed(2)} m²`;
@@ -166,6 +167,14 @@ export function buildSummary(ctx) {
   function warningsSection() {
     const warns = computeWarnings(store.project, { catalogue: ctx.catalogue });
     const sec = section('Checks');
+    let lc = { messages: [] };
+    try { lc = lotChecks(store.project); } catch { /* no lot checks without a lot */ }
+    if (lc.messages.length) {
+      const lotList = h('div', { class: 'ps-warns' });
+      for (const m of lc.messages) lotList.append(h('div', { class: 'ps-warn ps-warn--lot', role: 'alert', dataset: { ps: 'lot-check' }, style: { color: '#b3261e' } }, icon('warning', { size: 16 }), m.text));
+      sec.append(lotList);
+    }
+    if (!warns.length && lc.messages.length) return sec;
     if (!warns.length) {
       sec.append(h('div', { class: 'ps-ok-note' }, icon('check', { size: 16 }), 'No overlaps, stray openings, unreachable rooms or furniture clipping walls found.'));
       return sec;

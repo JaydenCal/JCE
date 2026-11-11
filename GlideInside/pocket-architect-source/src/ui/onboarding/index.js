@@ -104,11 +104,13 @@ export function initOnboarding(ps = window.__ps) {
   };
   ps.onboarding = api;
 
-  if (enabled && ls.get(KEYS.tourDone) !== '1') {
-    autoTimer = setTimeout(() => {
-      if (!disposed && enabled && ls.get(KEYS.tourDone) !== '1') api.startTour();
-    }, 900);
-  }
+  // One welcome card at a time: the tour waits until the welcome card has been used or dismissed.
+  const startWhenQuiet = () => {
+    if (disposed || !enabled || ls.get(KEYS.tourDone) === '1') return;
+    if (document.querySelector('.ps-welcome')) { autoTimer = setTimeout(startWhenQuiet, 1500); return; }
+    api.startTour();
+  };
+  if (enabled && ls.get(KEYS.tourDone) !== '1') autoTimer = setTimeout(startWhenQuiet, 900);
   return api;
 }
 
