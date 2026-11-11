@@ -2,7 +2,7 @@
 // Plain text uses far fewer tokens than JSON. No DOM or Node APIs, so the server can reuse it.
 
 import * as G from '../../model/geometry.js';
-import * as SITE from '../../model/site.js';
+import * as SITE from '../../model/placement.js';
 
 export const DEFAULT_TOKEN_CAP = 40000;
 
@@ -110,7 +110,12 @@ export function siteLines(project) {
   else {
     const v = (k) => (typeof sb[k] === 'number' ? metre(sb[k]) : 'n/a');
     const src = (sb.sources || []).slice(0, 3).map((s) => [s.dcp, s.clause && `cl ${s.clause}`, s.page && `p${s.page}`].filter(Boolean).join(' ')).filter(Boolean);
-    out.push(`SETBACKS m front=${v('front')} side=${v('side')} rear=${v('rear')} secondary_front=${v('secondaryFront')} garage=${v('garage')}${src.length ? ` source: ${src.join('; ').slice(0, 160)}` : ''}`);
+    const notes = SITE.setbackNotes(lot);
+    const labels = [...new Set(notes.filter((n) => n.source).map((n) => n.source))];
+    const where = labels.length === 1 ? labels[0] : notes.filter((n) => n.source).map((n) => `${n.rule}=${n.source}`).join('; ');
+    const flagged = notes.filter((n) => n.flagged).map((n) => `${n.rule}(${n.source || 'source not recorded'})`);
+    out.push(`SETBACKS m front=${v('front')} side=${v('side')} rear=${v('rear')} secondary_front=${v('secondaryFront')} garage=${v('garage')}${where ? ` source: ${where.slice(0, 160)}` : src.length ? ` source: ${src.join('; ').slice(0, 160)}` : ''}`);
+    if (flagged.length) out.push(`SETBACKS_CHECK_WITH_COUNCIL ${flagged.join(', ')} (still used; say they are flagged and name the source)`);
   }
   if (Array.isArray(lot.envelope) && lot.envelope.length >= 3) {
     const bb = G.bbox(lot.envelope);
@@ -119,10 +124,10 @@ export function siteLines(project) {
   const fall = SITE.fallAcross(project);
   if (fall) {
     const dir = fall.direction ? ` falling to the ${fall.direction}` : ' (flat)';
-    out.push(`FALL ${metre(fall.fallM)}m across lot, ${fall.slopePct}%${dir}, RL ${metre(fall.minRL)}..${metre(fall.maxRL)}${typeof lot.floorRL === 'number' ? ` floor_rl=${metre(lot.floorRL)}` : ''}`);
+    out.push(`FALL ${metre(fall.fallM)}m across lot, ${fall.slopePct}%${dir}, RL ${metre(fall.minRL)}..${metre(fall.maxRL)}${typeof lot.floorRL === 'number' ? ` floor_rl=${metre(lot.floorRL)}${lot.floorRLAuto ? '(auto)' : ''}` : ''}`);
   } else if (typeof lot.floorRL === 'number') out.push(`FALL no level data; floor_rl=${metre(lot.floorRL)}`);
   const chk = SITE.checkSetbacks(project);
-  if (chk.status === 'ok') out.push('SETBACK_CHECK inside the envelope');
+  if (chk.status === 'ok') out.push('SETBACK_CHECK inside the indicative setback envelope');
   else if (chk.status === 'breach') out.push(`SETBACK_CHECK breach ${chk.breaches.map((b) => `${b.label} ${b.breachM.toFixed(2)}m`).join(', ') || 'no room to build'}`);
   else if (chk.status === 'setbacks_not_loaded') out.push('SETBACK_CHECK not possible, setbacks not loaded');
   return out;

@@ -191,6 +191,11 @@ textarea.psp-input { resize: vertical; min-height: 64px; }
 .psp-meter[data-level="warn"] .psp-meter-fill { background: var(--psp-warn); }
 .psp-meter[data-level="danger"] .psp-meter-fill { background: var(--psp-danger); }
 .psp-meter-text { display: flex; justify-content: space-between; gap: 8px; color: var(--psp-muted); font-size: 12px; }
+.psp-meter-reset { color: var(--psp-muted); font-size: 12px; }
+.psp-meter-reset[hidden], .psp-topup[hidden], .psp-site-note[hidden] { display: none; }
+.psp-topup { justify-self: start; white-space: normal; text-align: left; height: auto; padding-block: 6px; }
+.psp-banner .psp-topup { display: block; margin-top: 8px; }
+.psp-site-note { margin: 0; font-size: 12px; }
 .psp-banners { display: grid; gap: 6px; }
 .psp-banners:empty { display: none; }
 .psp-banner {

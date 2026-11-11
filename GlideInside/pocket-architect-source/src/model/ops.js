@@ -4,7 +4,7 @@
 
 import * as S from './schema.js';
 import * as G from './geometry.js';
-import * as SITE from './site.js';
+import * as SITE from './placement.js';
 
 export class OpError extends Error {
   constructor(message) {
@@ -891,6 +891,7 @@ export const OPS = {
       const fall = SITE.fallAcross(p);
       if (fall && Math.abs(rl - fall.meanRL) > 5) fail(`A floor level of RL ${rl} m is more than 5 m from the ground on this lot (about RL ${fall.meanRL.toFixed(1)} m). Check the value is in metres.`);
       p.site.lot.floorRL = Math.round(rl * 1000) / 1000;
+      p.site.lot.floorRLAuto = false;
       return { rl: p.site.lot.floorRL };
     },
   },

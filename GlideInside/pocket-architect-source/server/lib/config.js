@@ -37,11 +37,27 @@ export function readConfig(env = {}) {
     creditUsd: num(env.CREDIT_USD, 0.001),
     planPackCredits: Math.round(num(env.PLAN_PACK_CREDITS, 500)),
     warnThresholds: thresholds.length ? thresholds : [0.5, 0.8, 0.95],
+    // Builder and client logins are off until the public launch is done (PORTAL_ENABLED=1).
+    portalEnabled: ['1', 'true', 'yes'].includes(str(env.PORTAL_ENABLED).toLowerCase()),
+    orgMonthlyCredits: Math.round(num(env.ORG_MONTHLY_CREDITS, 300)),
+    topUpCredits: Math.round(num(env.TOPUP_CREDITS, 300)),
+    topUpCents: Math.round(num(env.TOPUP_AMOUNT_CENTS, 1000)),
     largeRequestCredits: num(env.LARGE_REQUEST_CREDITS, 10),
     ratePerMin: Math.round(num(env.AI_RATE_PER_MIN, 6)),
     ratePerDay: Math.round(num(env.AI_RATE_PER_DAY, 150)),
     dailyCapUsd: num(env.AI_DAILY_CAP_USD, 5),
     monthlyCapUsd: num(env.AI_MONTHLY_CAP_USD, 50),
+    orgDailyCapUsd: num(env.ORG_DAILY_CAP_USD, 1),
+    orgMonthlyCapUsd: num(env.ORG_MONTHLY_CAP_USD, 10),
+    publicReserveShare: Math.min(0.9, Math.max(0, num(env.PUBLIC_RESERVE_SHARE, 0.3))),
+    orgBudgets: (() => {
+      try {
+        const o = JSON.parse(str(env.ORG_BUDGETS, '{}'));
+        return o && typeof o === 'object' && !Array.isArray(o) ? o : {};
+      } catch {
+        return {};
+      }
+    })(),
     fxAudPerUsd: num(env.FX_AUD_PER_USD, 1.67),
     stripeSecretKey: str(env.STRIPE_SECRET_KEY),
     stripeWebhookSecret: str(env.STRIPE_WEBHOOK_SECRET),

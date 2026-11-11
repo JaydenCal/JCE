@@ -130,6 +130,11 @@ export function createUpstashStore({ url, token, fetchImpl } = {}) {
     async settleCredits(id, reserved, actual) {
       await evalLua(LUA.settle, [entKey(id)], [reserved, actual]);
     },
+    async addCredits(id, n) {
+      if (!(await cmd('EXISTS', entKey(id)))) return false;
+      await cmd('HINCRBY', entKey(id), 'creditsTotal', n);
+      return true;
+    },
     async releaseCredits(id, reserved) {
       await evalLua(LUA.release, [entKey(id)], [reserved]);
     },

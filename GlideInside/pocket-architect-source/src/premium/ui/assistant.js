@@ -6,15 +6,12 @@ import { el, clear, formatAud, humanise, track } from '../util.js';
 import { icon } from '../icons.js';
 import { buildContext } from '../ai/context.js';
 import { describeOp, summariseOps, nameResolver } from '../ai/summary.js';
+import { siteCallProblem } from '../ai/tools.js';
 import { friendlyError, isAuthLoss } from '../messages.js';
-import { normaliseCredits, meterText, leftFraction, meterLevel, isExhausted, warningText, exhaustedText, claimWarning } from '../credits.js';
+import { normaliseCredits, meterText, resetText, leftFraction, meterLevel, isExhausted, warningText, exhaustedText, claimWarning, canTopUp, topUpLabel, availableCredits } from '../credits.js';
+import { promptsFor, BASE_PROMPTS } from '../ai/suggestions.js';
 
-export const EXAMPLE_PROMPTS = [
-  'Change the roof colour to charcoal',
-  'Make the deck 1 m deeper',
-  'Add a 3 by 3 m study next to the living room',
-  'Flip the plan left to right',
-];
+export const EXAMPLE_PROMPTS = BASE_PROMPTS;
 
 const MAX_MESSAGE = 2000;
 const opLabel = (op) => OPS[op]?.label || humanise(op);
@@ -35,6 +32,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
   let messages = [];
   let projectId = store.project.id;
   let busy = false;
+  let toppingUp = false;
   let nextId = 1;
   let disposed = false;
   let els = {};
@@ -71,8 +69,22 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     els.meterText = el('span', null, text);
     els.fill = el('div', { class: 'psp-meter-fill', style: { width: `${Math.round(leftFraction(c) * 100)}%` } });
     els.bar = el('div', { class: 'psp-meter-bar', role: 'progressbar', 'aria-label': 'AI credits left', 'aria-valuemin': '0', 'aria-valuemax': String(c?.total ?? 0), 'aria-valuenow': String(c?.remaining ?? 0) }, els.fill);
-    els.meter = el('div', { class: 'psp-meter', 'data-level': level }, el('div', { class: 'psp-meter-text' }, els.meterText), els.bar);
+    els.resetText = el('span', { class: 'psp-meter-reset' }, resetText(c));
+    els.topUp = el('button', { class: 'psp-btn psp-btn--sm psp-topup', type: 'button', onclick: () => topUp() });
+    els.meter = el('div', { class: 'psp-meter', 'data-level': level }, el('div', { class: 'psp-meter-text' }, els.meterText), els.bar, els.resetText, els.topUp);
+    syncTopUp();
     return els.meter;
+  }
+
+  // The top-up button sits in the credits display for builder and client logins, whenever top-ups are allowed.
+  function syncTopUp() {
+    if (!els.topUp) return;
+    const st = getState();
+    const show = canTopUp(st.credits);
+    els.topUp.hidden = !show;
+    els.topUp.disabled = busy || toppingUp;
+    if (show) els.topUp.textContent = topUpLabel(st.credits, st.session?.kind);
+    if (els.resetText) els.resetText.hidden = !els.resetText.textContent;
   }
 
   function updateMeter() {
@@ -83,6 +95,8 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     els.fill.style.width = `${Math.round(leftFraction(c) * 100)}%`;
     els.bar.setAttribute('aria-valuemax', String(c?.total ?? 0));
     els.bar.setAttribute('aria-valuenow', String(c?.remaining ?? 0));
+    if (els.resetText) els.resetText.textContent = resetText(c);
+    syncTopUp();
   }
 
   const readOnly = () => isExhausted(getState().credits);
@@ -105,16 +119,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     });
     els.input.addEventListener('input', syncCompose);
     els.compose = el('div', { class: 'psp-compose' }, els.input, el('div', { class: 'psp-compose-row' }, els.hint, els.send));
-    for (const text of EXAMPLE_PROMPTS) {
-      els.prompts.append(el('button', {
-        class: 'psp-prompt', type: 'button',
-        onclick: () => {
-          els.input.value = text;
-          syncCompose();
-          els.input.focus();
-        },
-      }, text));
-    }
+    renderPrompts();
     const out = [
       el('div', { class: 'psp-ai-head' },
         el('h3', { class: 'psp-ai-title' }, icon('spark', 16), 'AI design assistant'),
@@ -129,6 +134,60 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     return out;
   }
 
+  // Chips follow the design: site questions when a real lot is loaded, the usual examples otherwise.
+  function renderPrompts() {
+    if (!els.prompts) return;
+    clear(els.prompts);
+    const { prompts, note } = promptsFor(store.project);
+    if (els.siteNote) els.siteNote.remove();
+    for (const text of prompts) {
+      els.prompts.append(el('button', {
+        class: 'psp-prompt', type: 'button',
+        onclick: () => {
+          els.input.value = text;
+          syncCompose();
+          els.input.focus();
+        },
+      }, text));
+    }
+    els.siteNote = note ? el('p', { class: 'psp-muted psp-site-note' }, note) : null;
+    if (els.siteNote) els.prompts.after(els.siteNote);
+    syncCompose();
+  }
+
+  async function topUp() {
+    const st = getState();
+    const c = st.credits;
+    if (toppingUp || busy || !canTopUp(c) || !st.token) return;
+    const role = st.session?.kind;
+    const ok = await layer.confirmDialog({
+      title: 'Top up AI credits',
+      message: `Add ${c.topUp.credits} credits now for ${formatAud(c.topUp.amountCents / 100)} including GST? It goes on ${role === 'builder' ? 'your' : "your builder's"} monthly invoice, with no card payment. Top-up credits carry over until used and are spent after your monthly credits.`,
+      confirmLabel: `Add ${c.topUp.credits} credits`,
+      cancelLabel: 'Cancel',
+    });
+    if (!ok || disposed) return;
+    toppingUp = true;
+    syncTopUp();
+    try {
+      const res = await api.topUp(st.token);
+      const next = normaliseCredits(res.credits);
+      if (next) actions.setCredits(next);
+      layer.notify(`${c.topUp.credits} credits added.`, 'ok');
+      track('ps_ai_topup', { credits: c.topUp.credits });
+      banners = banners.filter((b) => b.id !== 'exhausted');
+    } catch (e) {
+      layer.notify(friendlyError(e, { area: 'ai', dev: dev() }), 'error', 8000);
+    } finally {
+      toppingUp = false;
+      if (!disposed) {
+        renderBanners();
+        syncCompose();
+        updateMeter();
+      }
+    }
+  }
+
   function renderBanners() {
     if (!els.banners) return;
     clear(els.banners);
@@ -138,7 +197,9 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     for (const b of list) {
       els.banners.append(el('div', { class: `psp-banner${b.kind === 'danger' ? ' psp-banner--danger' : b.kind === 'info' ? ' psp-banner--info' : ''}`, role: 'status' },
         icon(b.kind === 'info' ? 'info' : 'warning', 16),
-        el('span', null, b.text),
+        el('span', null, b.text, b.id === 'exhausted' && canTopUp(c)
+          ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--sm psp-topup', type: 'button', disabled: toppingUp, onclick: () => topUp() }, topUpLabel(c, getState().session?.kind))
+          : null),
         b.sticky ? null : el('button', {
           class: 'psp-btn psp-btn--ghost psp-btn--icon', type: 'button', 'aria-label': 'Dismiss',
           onclick: () => {
@@ -154,11 +215,12 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     if (!els.input) return;
     const locked = readOnly();
     els.input.disabled = locked;
-    els.input.placeholder = locked ? 'The assistant is read-only because all credits are used' : 'Describe a change, for example: make the deck 1 m deeper';
+    els.input.placeholder = locked ? (getState().session?.kind && getState().session.kind !== 'public' ? 'The assistant is read-only until the monthly credits reset' : 'The assistant is read-only because all credits are used') : 'Describe a change, for example: make the deck 1 m deeper';
     els.send.disabled = locked || busy || !els.input.value.trim();
     els.send.replaceChildren(busy ? el('span', { class: 'psp-spin', 'aria-hidden': 'true' }) : icon('send', 14), busy ? 'Working' : 'Send');
     els.send.setAttribute('aria-busy', busy ? 'true' : 'false');
     els.prompts.hidden = locked || messages.length > 0;
+    if (els.siteNote) els.siteNote.hidden = els.prompts.hidden;
     els.lead.hidden = messages.length > 0;
     for (const b of els.prompts.querySelectorAll('button')) b.disabled = locked || busy;
   }
@@ -176,6 +238,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
     if (m.role === 'system') return el('div', { class: `psp-msg psp-msg--system${m.error ? ' psp-msg--error' : ''}` }, m.text);
     const kids = [el('p', null, m.text)];
     if (m.applied?.length) kids.push(el('p', { class: 'psp-changes-title' }, 'Changes made'), changeList(m.applied, false));
+    if (m.notes?.length) kids.push(el('p', { class: 'psp-changes-title' }, 'Site check'), changeList(m.notes, false));
     if (m.failed?.length) kids.push(el('p', { class: 'psp-changes-title' }, 'Could not apply'), changeList(m.failed, true));
     const actionsRow = [];
     if (m.undo?.available) {
@@ -215,11 +278,15 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
 
   // Applying a reply -----------------------------------------------------------------------------------------------------
   function applyReply(res, msg) {
-    const ops = Array.isArray(res.ops) ? res.ops : [];
+    const all = Array.isArray(res.ops) ? res.ops : [];
+    // Site operations are checked against this design first: no lot, or no setbacks loaded, means no guessing.
+    const blocked = all.map((o) => siteCallProblem(o.op, store.project));
+    const ops = all.filter((_, i) => !blocked[i]);
     const names = nameResolver(catalogue);
     const phrases = ops.map((o) => describeOp(o.op, o.args, store.project, names));
     const applied = [];
     const failed = [];
+    const notes = [];
     let label = null;
     if (ops.length) {
       label = `AI: ${summariseOps(phrases)}`;
@@ -234,6 +301,8 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
         label = null;
       } else {
         results.forEach((r, i) => {
+          if (r.ok && typeof r.result?.report === 'string') notes.push(r.result.report);
+          if (r.ok && r.result?.changed === false) return; // a report or a suggestion: nothing to list or undo
           if (r.ok) applied.push(phrases[i]);
           else failed.push(`${opLabel(ops[i].op)}: ${r.error || 'it could not be applied.'}`);
         });
@@ -243,12 +312,14 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
         }
       }
     }
+    all.forEach((o, i) => blocked[i] && failed.push(`${opLabel(o.op)}: ${blocked[i]}`));
     for (const r of Array.isArray(res.rejected) ? res.rejected : []) {
       failed.push(`${opLabel(r.op)}: ${r.error || 'it was not valid.'}`);
     }
     msg.pending = false;
-    msg.text = (res.reply || '').trim() || (applied.length ? 'Done.' : 'I could not work out a change from that. Try describing it a different way.');
+    msg.text = (res.reply || '').trim() || (applied.length || notes.length ? 'Done.' : 'I could not work out a change from that. Try describing it a different way.');
     msg.applied = applied;
+    msg.notes = notes;
     msg.failed = failed;
     msg.credits = Number.isFinite(res.credits?.charged) ? res.credits.charged : null;
     if (label) msg.undo = { label, available: true };
@@ -265,6 +336,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
   // The estimate reports the live balance, so keep the meter honest before the request runs.
   function patchRemaining(remaining) {
     const c = getState().credits;
+    if (c?.kind === 'org') return; // the estimate counts top-up credits too, so it cannot be mapped onto the monthly meter
     if (c && Number.isFinite(remaining)) actions.setCredits({ ...c, remaining, used: Math.max(0, c.total - remaining) });
   }
 
@@ -280,7 +352,16 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
   function fail(msg, e) {
     msg.pending = false;
     msg.error = true;
-    if (e?.code === 'CREDITS_EXHAUSTED' && !(Number(e.details?.remaining) > 0)) {
+    const kind = getState().session?.kind;
+    if (kind && kind !== 'public' && (e?.code === 'UNAUTHORISED' || e?.code === 'NOT_ENTITLED')) {
+      msg.text = 'Your login could not be verified. Sign in again to use the assistant.';
+    } else if (e?.code === 'CREDITS_EXHAUSTED' && kind && kind !== 'public' && !(Number(e.details?.remaining) > 0)) {
+      const c = getState().credits;
+      const next = normaliseCredits({ ...(c || {}), total: c?.total ?? 0, used: c?.total ?? 0, remaining: 0, topUpRemaining: 0, kind: 'org', monthResetsOn: e.details?.monthResetsOn || c?.monthResetsOn, topUp: e.details?.topUp || c?.topUp });
+      if (next) actions.setCredits(next);
+      msg.text = exhaustedText(getState().credits);
+      track('ps_ai_credits_exhausted', {});
+    } else if (e?.code === 'CREDITS_EXHAUSTED' && !(Number(e.details?.remaining) > 0)) {
       const c = getState().credits;
       actions.setCredits({ total: c?.total ?? pack.credits ?? 0, used: c?.total ?? pack.credits ?? 0, remaining: 0, warnLevel: 1 });
       msg.text = 'All AI credits in this Plan Pack have been used, so the assistant is read-only now. Manual editing and exports still work.';
@@ -350,14 +431,14 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       const credits = normaliseCredits(res.credits);
       if (credits) actions.setCredits(credits);
       const w = res.warning;
-      if (w && Number.isFinite(w.level) && claimWarning(pid, w.level)) {
-        banners.push({ id: `w${w.level}`, kind: w.level >= 0.95 ? 'danger' : 'warn', text: warningText(w) });
+      if (w && Number.isFinite(w.level) && claimWarning(getState().credits?.kind === 'org' ? `${pid}.${getState().credits.monthResetsOn || ''}` : pid, w.level)) {
+        banners.push({ id: `w${w.level}`, kind: w.level >= 0.95 ? 'danger' : 'warn', text: warningText(w, getState().credits) });
         track('ps_ai_credits_warning', { level: w.level });
       }
       if (credits && isExhausted(credits)) track('ps_ai_credits_exhausted', {});
     } catch (e) {
       if (disposed) return;
-      if (isAuthLoss(e)) {
+      if (isAuthLoss(e) && !(st.session?.kind && st.session.kind !== 'public')) {
         messages = messages.filter((m) => m !== pending);
         actions.authLost(e);
         return;
@@ -399,6 +480,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       render();
       return;
     }
+    renderPrompts();
     const label = String(info.label || '');
     let changed = false;
     for (const m of messages) {
@@ -419,6 +501,7 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
       updateMeter();
       renderBanners();
       syncCompose();
+      syncTopUp();
     },
     reset() {
       messages = [];

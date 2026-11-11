@@ -8,6 +8,8 @@ export const CONFIG = {
   // Selling entity printed on paid exports. Placeholder until decision 17.1 is made.
   seller: { name: 'Glide Inside', abn: '' },
   apiBase: '/api',
+  // Builder and client logins (portal) get the AI included. Off until the public launch is done.
+  portalEnabled: false,
   premiumEnabled: false, // Phase 1: premium shows as "coming soon" until the back end is live
   planPack: { priceAud: 30, gstInclusive: true, credits: 500, reexportMonths: 12 },
   links: {

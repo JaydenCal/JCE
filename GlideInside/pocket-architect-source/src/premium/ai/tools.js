@@ -2,7 +2,7 @@
 // The same list is sent by the server to the model, and used to check what comes back.
 
 import { toolSchemas, OPS } from '../../model/ops.js';
-import { lotOf, NOT_LOADED } from '../../model/site.js';
+import { lotOf, NOT_LOADED } from '../../model/placement.js';
 
 // Collect every `id` from an array, a palette object ({ steel: [{ id }], ... }) or nested mixes of both.
 export function collectIds(source, out = new Set(), depth = 0) {

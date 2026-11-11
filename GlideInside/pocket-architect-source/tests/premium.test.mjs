@@ -379,6 +379,7 @@ test('system prompt carries the SCOPE 7.7 rules', () => {
   }
   assert.ok(!/[–—]/.test(SYSTEM_PROMPT), 'no en or em dashes');
   assert.ok(estimateTokens(SYSTEM_PROMPT) < 800);
+  assert.ok(!/compliant/i.test(SYSTEM_PROMPT), 'the prompt never invites the word compliant');
 });
 
 test('tools come from the operations registry with catalogue ids injected, and calls are checked', () => {

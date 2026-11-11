@@ -1,6 +1,8 @@
-// Site geometry for real lots (project.site.lot): the building footprint, the setback envelope check, the fall across
-// the lot, and moving or rotating the whole house. Pure functions, no DOM. Plan units are mm (x right, y down); setbacks
-// are in metres as councils quote them. Nothing here invents a setback: when setbacks are null the check says so.
+// House placement on a real lot: the building footprint, the setback envelope check, the fall across the lot, and moving or
+// rotating the whole house. Pure functions, no DOM. It only READS project.site.lot as written by src/site/model.js (branch
+// claude/glide-site-lookup): boundary, terrain { cols, rows, cellMm, x0, y0, values }, contours [{ level, pts: [x, y, ...] }],
+// floorRL and floorRLAuto, plus the setback stage's setbacks, envelope and frontEdges (all null or missing until loaded).
+// Plan units are mm (x right, y down); setbacks and RL are in metres. Nothing here invents a setback.
 
 import * as G from './geometry.js';
 
@@ -36,6 +38,46 @@ export function footprint(project) {
     }
   }
   return points.length ? { solids, points } : null;
+}
+
+// Setback sources and review flags ---------------------------------------------------------------------------------------
+const RULES = ['front', 'side', 'rear', 'secondaryFront', 'garage'];
+const isFlag = (o) => !!o && (o.checkWithCouncil === true || o.check_with_council === true || o.needsReview === true || o.confidence === 'low' || o.flag === 'check_with_council');
+
+/** Plain name of where a rule came from: the council DCP clause, the Codes SEPP Housing Code, or the QDC default. */
+export function sourceLabel(src) {
+  if (!src) return null;
+  const kind = `${src.kind || src.type || src.instrument || ''} ${src.dcp || ''}`;
+  if (/sepp|housing code|codes/i.test(kind)) return 'Codes SEPP Housing Code';
+  if (/qdc|queensland development code/i.test(kind)) return 'QDC default';
+  const name = src.dcp || src.name || 'council DCP';
+  return [name, src.clause && `cl ${src.clause}`, src.page && `p${src.page}`].filter(Boolean).join(' ');
+}
+
+/**
+ * The loaded setback rules with their source and whether they are flagged "check with council" (needsReview or low
+ * confidence). Flagged rules are still used. Reads setbacks.checkWithCouncil (a list of rule names or an object of
+ * booleans), a flag on a source entry (with `rule` naming it) and per rule objects. Returns [{ rule, valueM, flagged, source }].
+ */
+export function setbackNotes(lot) {
+  const sb = lot?.setbacks;
+  if (!sb) return [];
+  const listed = Array.isArray(sb.checkWithCouncil) ? sb.checkWithCouncil : Object.entries(sb.checkWithCouncil || {}).filter(([, v]) => v).map(([k]) => k);
+  const sources = Array.isArray(sb.sources) ? sb.sources : [];
+  return RULES.filter((r) => finite(sb[r]) || finite(sb[r]?.value)).map((rule) => {
+    const src = sources.find((x) => x?.rule === rule) || (sources.length === 1 && !sources[0]?.rule ? sources[0] : null);
+    const own = sb[rule] && typeof sb[rule] === 'object' ? sb[rule] : null;
+    const flagged = listed.includes(rule) || isFlag(own) || (!!src && isFlag(src)) || isFlag(sb);
+    return { rule, valueM: finite(sb[rule]) ? sb[rule] : own.value, flagged, source: sourceLabel(own?.source || src) };
+  });
+}
+
+/** One sentence naming the flagged rules and their sources, or '' when none are flagged. */
+export function flaggedSentence(lot) {
+  const f = setbackNotes(lot).filter((n) => n.flagged);
+  if (!f.length) return '';
+  const name = (r) => (r === 'secondaryFront' ? 'secondary front' : r);
+  return `Flagged check with council: ${f.map((n) => `${name(n.rule)} (${n.source || 'source not recorded'})`).join('; ')}. They are still used.`;
 }
 
 // Lot edges -------------------------------------------------------------------------------------------------------------
@@ -102,7 +144,7 @@ export function classifyEdges(lot) {
 export function requiredFor(kind, setbacks) {
   if (!setbacks) return null;
   const v = kind === 'front' ? setbacks.front : kind === 'secondaryFront' ? setbacks.secondaryFront : kind === 'side' ? setbacks.side : kind === 'rear' ? setbacks.rear : null;
-  return finite(v) ? v : null;
+  return finite(v) ? v : finite(v?.value) ? v.value : null;
 }
 
 // Envelope --------------------------------------------------------------------------------------------------------------
@@ -180,22 +222,45 @@ function boundaryEdgeFor(a, b, edges) {
 function encroachments(points, solids, env) {
   const edges = G.polygonEdges(env);
   const out = new Array(edges.length).fill(0);
-  const nearestEdge = (p) => {
-    let best = 0;
-    let bestD = Infinity;
-    edges.forEach(([a, b], i) => {
-      const d = G.projectToSegment(p, a, b).d;
-      if (d < bestD) {
-        bestD = d;
-        best = i;
-      }
-    });
-    return { index: best, d: bestD };
+  const convex = isConvex(env);
+  const area = G.signedArea(env);
+  // Outside depth of p past edge j (mm, positive when outside). A convex envelope is the intersection of its half planes, so
+  // a corner point is charged to each edge it is past. A concave one only counts points that project onto the edge.
+  const past = (p, j) => {
+    const [a, b] = edges[j];
+    const depth = -G.dot(G.sub(p, a), inwardNormal(a, b, area));
+    if (convex) return depth;
+    const t = G.projectToSegment(p, a, b).tRaw;
+    return t >= 0 && t <= 1 ? depth : -Infinity;
   };
   for (const p of points) {
     if (inPoly(p, env)) continue;
-    const { index, d } = nearestEdge(p);
-    if (d > TOL_MM) out[index] = Math.max(out[index], d);
+    const ds = edges.map((_, j) => past(p, j));
+    if (convex) {
+      ds.forEach((d, j) => {
+        if (d > TOL_MM) out[j] = Math.max(out[j], d);
+      });
+      continue;
+    }
+    // Concave: the point is outside the nearest edge it projects onto, not every edge it happens to be past.
+    let best = -1;
+    ds.forEach((d, j) => {
+      if (d > TOL_MM && (best < 0 || d < ds[best])) best = j;
+    });
+    if (best >= 0) out[best] = Math.max(out[best], ds[best]);
+    else {
+      // A corner region: charge the nearest edge by distance.
+      let bj = 0;
+      let bd = Infinity;
+      edges.forEach(([a, b], j) => {
+        const d = G.projectToSegment(p, a, b).d;
+        if (d < bd) {
+          bd = d;
+          bj = j;
+        }
+      });
+      if (bd > TOL_MM) out[bj] = Math.max(out[bj], bd);
+    }
   }
   env.forEach((v, i) => {
     for (const s of solids) {
@@ -220,6 +285,11 @@ export function worstEncroachment(points, solids, env) {
  * { status: 'ok'|'breach'|'no_lot'|'no_building'|'setbacks_not_loaded'|'envelope_missing', message, breaches, ... }.
  * breaches: [{ edge, kind, label, breachM, requiredM }] sorted deepest first, in metres.
  */
+function ruleInfo(lot, kind) {
+  const n = setbackNotes(lot).find((x) => x.rule === kind);
+  return n ? { flagged: n.flagged, source: n.source } : { flagged: false, source: null };
+}
+
 export function checkSetbacks(project) {
   const lot = lotOf(project);
   if (!lot) return { status: 'no_lot', message: 'No lot is loaded for this design, so there is nothing to check it against.', breaches: [] };
@@ -245,7 +315,7 @@ export function checkSetbacks(project) {
   });
   const breaches = [...byBoundary].map(([index, d]) => {
     const e = edges[index];
-    return { edge: index, kind: e.kind, label: e.label, breachM: m(d), requiredM: requiredFor(e.kind, lot.setbacks) };
+    return { edge: index, kind: e.kind, label: e.label, breachM: m(d), requiredM: requiredFor(e.kind, lot.setbacks), ...ruleInfo(lot, e.kind) };
   });
 
   // Garage to the front boundary, only when the lot carries a garage setback.
@@ -258,16 +328,16 @@ export function checkSetbacks(project) {
           const n = inwardNormal(e.a, e.b, G.signedArea(lot.boundary));
           const gap = Math.min(...r.polygon.map((p) => G.dot(G.sub(p, e.a), n)));
           const short = garageReq * 1000 - gap;
-          if (short > TOL_MM) breaches.push({ edge: e.index, kind: 'garage', label: `garage to ${e.label}`, breachM: m(short), requiredM: garageReq });
+          if (short > TOL_MM) breaches.push({ edge: e.index, kind: 'garage', label: `garage to ${e.label}`, breachM: m(short), requiredM: garageReq, ...ruleInfo(lot, 'garage') });
         }
       }
     }
   }
   breaches.sort((a, b) => b.breachM - a.breachM);
-  const partial = env.missing?.length ? ` Not checked, no setback loaded for: ${env.missing.join(', ')}.` : '';
+  const partial = (env.missing?.length ? ` Not checked, no setback loaded for: ${env.missing.join(', ')}.` : '') + (flaggedSentence(lot) ? ` ${flaggedSentence(lot)}` : '');
   return {
     status: breaches.length ? 'breach' : 'ok',
-    message: breaches.length ? `Outside the setback envelope: ${breaches.map((b) => `${b.label} by ${b.breachM.toFixed(2)} m`).join('; ')}.${partial}` : `Inside the setback envelope.${partial}`,
+    message: breaches.length ? `Outside the indicative setback envelope: ${breaches.map((b) => `${b.label} by ${b.breachM.toFixed(2)} m`).join('; ')}.${partial}` : `Inside the indicative setback envelope.${partial}`,
     breaches,
     envelope: env.polygon,
     envelopeSource: env.source,
@@ -372,17 +442,20 @@ export function suggestPosition(project, align = 'centre') {
 // Fall across the lot -----------------------------------------------------------------------------------------------
 function samples(lot) {
   const out = [];
-  const lv = lot.levels;
-  if (lv && Array.isArray(lv.values) && lv.cols > 0 && lv.rows > 0 && finite(lv.cellMm)) {
-    for (let r = 0; r < lv.rows; r++) {
-      for (let c = 0; c < lv.cols; c++) {
-        const z = lv.values[r * lv.cols + c];
-        if (finite(z)) out.push({ x: lv.originX + c * lv.cellMm, y: lv.originY + r * lv.cellMm, z });
+  const t = lot.terrain;
+  if (t && Array.isArray(t.values) && t.cols > 0 && t.rows > 0 && finite(t.cellMm)) {
+    for (let r = 0; r < t.rows; r++) {
+      for (let c = 0; c < t.cols; c++) {
+        const z = t.values[r * t.cols + c];
+        if (finite(z)) out.push({ x: t.x0 + c * t.cellMm, y: t.y0 + r * t.cellMm, z });
       }
     }
   }
-  if (!out.length && Array.isArray(lot.contours?.lines)) {
-    for (const line of lot.contours.lines) for (const p of line.pts || []) if (finite(line.rl) && finite(p.x) && finite(p.y)) out.push({ x: p.x, y: p.y, z: line.rl });
+  if (!out.length && Array.isArray(lot.contours)) {
+    for (const line of lot.contours) {
+      const pts = line.pts || [];
+      for (let i = 0; i + 1 < pts.length; i += 2) if (finite(line.level) && finite(pts[i]) && finite(pts[i + 1])) out.push({ x: pts[i], y: pts[i + 1], z: line.level });
+    }
   }
   const inside = out.filter((p) => G.pointInPolygon(p, lot.boundary));
   const use = inside.length >= 3 ? inside : out;

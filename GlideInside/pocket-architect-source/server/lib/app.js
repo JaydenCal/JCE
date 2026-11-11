@@ -10,7 +10,7 @@ import { estimateTokens } from '../../src/premium/ai/context.js';
 import { buildTools } from '../../src/premium/ai/tools.js';
 import { readConfig } from './config.js';
 import { HttpError, json, errorResponse, corsHeaders, readJson, readText, clientIp } from './http.js';
-import { authenticate, issueToken } from './entitlement.js';
+import { authenticate, issueToken, readOrgToken as readOrgTokenRaw } from './entitlement.js';
 import * as stripe from './stripe.js';
 import * as credits from './credits.js';
 import * as anthropic from './anthropic.js';
@@ -152,7 +152,107 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     return json({ token: await issueToken(ent, config, nowMs), projectId: ent.projectId, credits: balanceOf(ent), receipt: ent.id, expiresAt: ent.expiresAt });
   }
 
+  // Builder and client logins sit behind PORTAL_ENABLED (the public launch comes first).
+  const readOrgToken = async (request, deps) => {
+    const payload = await readOrgTokenRaw(request, deps);
+    if (payload && !config.portalEnabled) throw new HttpError('NOT_ENTITLED', 'Builder and client logins are not switched on yet.');
+    return payload;
+  };
+
+  // Accounts ----------------------------------------------------------------------------------------
+  // A request is paid for either by a Plan Pack (one entitlement row for the project) or by a builder or client login
+  // (a monthly pool per login per Sydney calendar month, then a carry-over top-up pool). Both expose the same small
+  // interface so the AI handlers do not care which one they have.
+  const TOPUP_OFFER = () => ({ credits: config.topUpCredits, amountCents: config.topUpCents, gstInclusive: true, currency: 'aud' });
+
+  async function topUpAllowed(payload) {
+    if (payload.role === 'builder') return true;
+    return credits.clientTopUpsEnabled(await store.listEvents('org_topup_setting'), payload.oid);
+  }
+
+  async function orgAccount(payload) {
+    const nowMs = now();
+    const month = credits.sydneyMonth(nowMs);
+    const { monthlyId, topUpId } = credits.orgPoolIds(payload.oid, payload.lid, month.key);
+    const cap = Number.isFinite(payload.cap) ? payload.cap : config.orgMonthlyCredits;
+    const base = { projectId: payload.oid, email: null, amountCents: 0, currency: 'aud', status: 'active', createdAt: iso(nowMs) };
+    await store.createEntitlement({ ...base, id: monthlyId, stripeSessionId: `org-m:${monthlyId}`, creditsTotal: cap, expiresAt: iso(month.resetsAtMs) });
+    await store.createEntitlement({ ...base, id: topUpId, stripeSessionId: `org-t:${topUpId}`, creditsTotal: 0, expiresAt: null });
+    const pools = async () => ({ m: await store.getEntitlement(monthlyId), t: await store.getEntitlement(topUpId) });
+    const snapshot = async () => {
+      const { m, t } = await pools();
+      const b = credits.orgBalance(m, t);
+      return {
+        kind: 'org', total: b.total, used: b.used, remaining: b.remaining, reserved: b.reserved,
+        warnLevel: credits.warnLevel(b.used + b.reserved, b.total, config.warnThresholds),
+        topUpRemaining: b.topUpRemaining, available: b.available, monthResetsOn: month.resetsOn,
+        topUp: { allowed: await topUpAllowed(payload), ...TOPUP_OFFER() },
+      };
+    };
+    return {
+      kind: 'org', payload, id: monthlyId, rateKey: `org:${payload.oid}:${payload.lid}`,
+      snapshot,
+      async available() {
+        const { m, t } = await pools();
+        return credits.orgBalance(m, t).available;
+      },
+      async reserve(n, nowIso) {
+        const { m, t } = await pools();
+        const b = credits.orgBalance(m, t);
+        const plan = credits.planSpend(b.remaining, b.topUpRemaining, n);
+        if (!plan) return null;
+        if (plan.fromMonthly && !(await store.reserveCredits(monthlyId, plan.fromMonthly, nowIso))) return null;
+        if (plan.fromTopUp && !(await store.reserveCredits(topUpId, plan.fromTopUp, nowIso))) {
+          if (plan.fromMonthly) await store.releaseCredits(monthlyId, plan.fromMonthly);
+          return null;
+        }
+        return { m: plan.fromMonthly, t: plan.fromTopUp };
+      },
+      async settle(res, charged) {
+        const split = credits.splitCharge(charged, res.m, res.t);
+        if (res.m || split.monthly) await store.settleCredits(monthlyId, res.m, split.monthly);
+        if (res.t || split.topUp) await store.settleCredits(topUpId, res.t, split.topUp);
+        return split;
+      },
+      async release(res) {
+        if (res.m) await store.releaseCredits(monthlyId, res.m);
+        if (res.t) await store.releaseCredits(topUpId, res.t);
+      },
+      // Threshold crossing counts the monthly pool only; top-up credits do not warn.
+      async crossed(res, charged) {
+        const { m } = await pools();
+        const split = credits.splitCharge(charged, res.m, res.t);
+        return credits.crossedThreshold(Math.max(0, m.creditsUsed - split.monthly), m.creditsUsed, m.creditsTotal, config.warnThresholds);
+      },
+      exhaustedDetails: async () => ({ topUp: { allowed: await topUpAllowed(payload), ...TOPUP_OFFER() }, monthResetsOn: month.resetsOn }),
+    };
+  }
+
+  function packAccount(ent) {
+    return {
+      kind: 'pack', id: ent.id, rateKey: ent.projectId,
+      snapshot: async () => balanceOf((await store.getEntitlement(ent.id)) || ent),
+      available: async () => credits.balance((await store.getEntitlement(ent.id)) || ent).remaining,
+      reserve: async (n, nowIso) => ((await store.reserveCredits(ent.id, n, nowIso)) ? { m: n, t: 0 } : null),
+      settle: async (res, charged) => (await store.settleCredits(ent.id, res.m, charged), { monthly: charged, topUp: 0 }),
+      release: (res) => store.releaseCredits(ent.id, res.m),
+      async crossed(res, charged) {
+        const after = await store.getEntitlement(ent.id);
+        return credits.crossedThreshold(Math.max(0, after.creditsUsed - charged), after.creditsUsed, after.creditsTotal, config.warnThresholds);
+      },
+      exhaustedDetails: async () => ({}),
+    };
+  }
+
+  async function accountFor(request) {
+    const org = await readOrgToken(request, { config, now });
+    if (org) return orgAccount(org);
+    return packAccount(await authenticate(request, { store, config, now }));
+  }
+
   async function creditsGet(request, url) {
+    const org = await readOrgToken(request, { config, now });
+    if (org) return json(await (await orgAccount(org)).snapshot());
     const ent = await authenticate(request, { store, config, now });
     const project = url.searchParams.get('project');
     if (project && project !== ent.projectId) throw new HttpError('NOT_ENTITLED', 'This Plan Pack is for a different project.');
@@ -174,43 +274,56 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
 
   async function aiEstimate(request) {
     needAi();
-    const ent = await authenticate(request, { store, config, now });
+    const acct = await accountFor(request);
     const { message, context, body } = await aiBody(request);
     const { systemTokens } = await getTools();
     const est = credits.estimateRequest({ config, context, message, history: anthropic.cleanHistory(body.history), systemTokens });
-    return json({ estimatedCredits: est.credits, remaining: credits.balance(ent).remaining, requiresConfirm: est.credits > config.largeRequestCredits });
+    return json({ estimatedCredits: est.credits, remaining: await acct.available(), requiresConfirm: est.credits > config.largeRequestCredits });
   }
 
   async function aiEdit(request) {
     needAi();
     const started = now();
-    const ent = await authenticate(request, { store, config, now });
+    const acct = await accountFor(request);
     const { message, context, body } = await aiBody(request);
     const activeLevelId = typeof body.activeLevelId === 'string' ? body.activeLevelId.slice(0, 64) : '';
     const history = anthropic.cleanHistory(body.history);
+    const logBase = { id: randomId('req'), entitlementId: acct.id, createdAt: iso(started), model: config.anthropicModel };
 
+    // Organisation budgets come first so one busy builder cannot use up the AI for public buyers.
+    if (acct.kind === 'org') {
+      const orgStop = await credits.orgPause(store, config, acct.payload.oid, started);
+      if (orgStop) {
+        console.warn(JSON.stringify({ event: 'org_budget', org: acct.payload.oid, ...orgStop }));
+        await store.logEvent({ id: `org_budget:${acct.payload.oid}:${orgStop.window}:${credits.orgSpendKeys(acct.payload.oid, started).orgDay}`, type: 'org_budget', detail: { orgId: acct.payload.oid, ...orgStop }, createdAt: iso(started) });
+        await store.logAiRequest({ ...logBase, status: 'org_budget' });
+        throw new HttpError('AI_PAUSED', orgStop.scope === 'org' ? `Your organisation has reached its AI ${orgStop.window === 'day' ? 'daily' : 'monthly'} budget. Your credits are untouched. Try again ${orgStop.window === 'day' ? 'tomorrow' : 'next month'}.` : 'The assistant is paused for now. Your credits are untouched. Try again later.', { scope: orgStop.scope });
+      }
+    }
     const pause = await credits.globalPause(store, config, started);
     if (pause) {
       console.warn(JSON.stringify({ event: 'ai_paused', ...pause }));
       await store.logEvent({ id: `ai_paused:${pause.period}`, type: 'ai_paused', detail: pause, createdAt: iso(started) });
-      await store.logAiRequest({ id: randomId('req'), entitlementId: ent.id, createdAt: iso(started), model: config.anthropicModel, status: 'ai_paused' });
+      await store.logAiRequest({ ...logBase, status: 'ai_paused' });
       throw new HttpError('AI_PAUSED', 'The assistant is paused for now. Your credits are untouched. Try again later.');
     }
-    const limited = await credits.rateLimit(store, config, ent.projectId, started);
+    const limited = await credits.rateLimit(store, config, acct.rateKey, started);
     if (limited) {
       throw new HttpError('RATE_LIMITED', limited.window === 'minute' ? 'You are sending requests quickly. Wait a moment and try again.' : 'The daily limit for AI requests on this project has been reached.', { retryAfter: limited.retryAfter });
     }
 
     const { tools, systemTokens } = await getTools();
     const est = credits.estimateRequest({ config, context, message, history, systemTokens });
-    const bal = credits.balance(ent);
-    if (bal.remaining < est.credits) {
-      throw new HttpError('CREDITS_EXHAUSTED', bal.remaining <= 0 ? 'All AI credits in this Plan Pack have been used.' : `Only ${bal.remaining} AI ${bal.remaining === 1 ? 'credit remains' : 'credits remain'}, which is not enough for another request.`, { remaining: bal.remaining, estimatedCredits: est.credits });
+    const remaining = await acct.available();
+    const what = acct.kind === 'org' ? 'AI credits for this month' : 'AI credits in this Plan Pack';
+    if (remaining < est.credits) {
+      throw new HttpError('CREDITS_EXHAUSTED', remaining <= 0 ? `All ${what} have been used.` : `Only ${remaining} AI ${remaining === 1 ? 'credit remains' : 'credits remain'}, which is not enough for another request.`, { remaining, estimatedCredits: est.credits, ...(await acct.exhaustedDetails()) });
     }
     if (est.credits > config.largeRequestCredits && body.confirmLarge !== true) {
-      throw new HttpError('CONFIRM_REQUIRED', 'This change may use a large number of credits.', { estimatedCredits: est.credits, remaining: bal.remaining });
+      throw new HttpError('CONFIRM_REQUIRED', 'This change may use a large number of credits.', { estimatedCredits: est.credits, remaining });
     }
-    if (!(await store.reserveCredits(ent.id, est.credits, iso(started)))) {
+    const reservation = await acct.reserve(est.credits, iso(started));
+    if (!reservation) {
       throw new HttpError('INSUFFICIENT_CREDITS', 'Your remaining credits are reserved by another request. Try again in a moment.');
     }
 
@@ -219,35 +332,63 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     try {
       data = await anthropic.callAnthropic({ config, fetchImpl: doFetch, body: reqBody });
     } catch (e) {
-      await store.releaseCredits(ent.id, est.credits);
-      await store.logAiRequest({ id: randomId('req'), entitlementId: ent.id, createdAt: iso(started), model: config.anthropicModel, latencyMs: now() - started, status: 'error' });
+      await acct.release(reservation);
+      await store.logAiRequest({ ...logBase, latencyMs: now() - started, status: 'error' });
       throw e;
     }
 
     const parsed = anthropic.parseResponse(data, tools);
     const cost = credits.costMicros(parsed.usage, config);
     const charged = credits.creditsForCost(cost, config);
-    await store.settleCredits(ent.id, est.credits, charged);
-    const { day, month } = credits.periodKeys(started);
-    await store.addSpend(day, cost);
-    await store.addSpend(month, cost);
+    await acct.settle(reservation, charged);
+    if (acct.kind === 'org') await credits.addOrgSpend(store, acct.payload.oid, cost, started);
+    else {
+      const { day, month } = credits.periodKeys(started);
+      await store.addSpend(day, cost);
+      await store.addSpend(month, cost);
+    }
     await store.logAiRequest({
-      id: randomId('req'), entitlementId: ent.id, createdAt: iso(started), model: config.anthropicModel,
+      ...logBase,
       inputTokens: parsed.usage.input_tokens, outputTokens: parsed.usage.output_tokens,
       cacheWriteTokens: parsed.usage.cache_creation_input_tokens, cacheReadTokens: parsed.usage.cache_read_input_tokens,
       costUsdMicros: cost, credits: charged, opsCount: parsed.ops.length, latencyMs: now() - started, status: 'ok',
     });
-    const after = await store.getEntitlement(ent.id);
-    const usedBefore = Math.max(0, after.creditsUsed - charged);
-    const crossed = credits.crossedThreshold(usedBefore, after.creditsUsed, after.creditsTotal, config.warnThresholds);
-    const bal2 = balanceOf(after);
+    const crossed = await acct.crossed(reservation, charged);
+    const snap = await acct.snapshot();
     return json({
       reply: parsed.reply,
       ops: parsed.ops,
       rejected: parsed.rejected,
-      credits: { charged, ...bal2 },
-      warning: crossed ? { level: crossed, usedPercent: Math.round((after.creditsUsed / after.creditsTotal) * 100), remaining: bal2.remaining } : null,
+      credits: { charged, ...snap },
+      warning: crossed ? { level: crossed, usedPercent: Math.round(((snap.used) / snap.total) * 100), remaining: snap.remaining } : null,
     });
+  }
+
+  // Top-ups for builder and client logins. The credits are added at once and the charge is recorded as a billable event for
+  // the builder's end-of-month invoice (no card payment). Builders can switch client top-ups off for their organisation.
+  async function aiTopUp(request) {
+    const org = await readOrgToken(request, { config, now });
+    if (!org) throw new HttpError('NOT_ENTITLED', 'Top-ups are for builder and client logins.');
+    if (!(await topUpAllowed(org))) throw new HttpError('TOPUP_DISABLED', 'Top-ups are turned off for your organisation. Ask your builder.');
+    const nowMs = now();
+    if ((await store.hitRate(`topup:${org.oid}:${org.lid}`, 3600, nowMs)) > 10) throw new HttpError('RATE_LIMITED', 'Too many top-ups in the last hour.', { retryAfter: 600 });
+    const acct = await orgAccount(org);
+    const month = credits.sydneyMonth(nowMs);
+    const { topUpId } = credits.orgPoolIds(org.oid, org.lid, month.key);
+    await store.addCredits(topUpId, config.topUpCredits);
+    const record = { ...credits.topUpRecord({ orgId: org.oid, loginId: org.lid, config, nowMs }), role: org.role };
+    await store.logEvent({ id: randomId('topup'), type: 'ai_topup', detail: record, createdAt: record.createdAt });
+    return json({ credits: await acct.snapshot(), topUp: record });
+  }
+
+  async function aiTopUpSetting(request) {
+    const org = await readOrgToken(request, { config, now });
+    if (!org || org.role !== 'builder') throw new HttpError('NOT_ENTITLED', 'Only a builder login can change this.');
+    const body = await readJson(request, 1024);
+    if (typeof body.enabled !== 'boolean') throw new HttpError('BAD_REQUEST', 'enabled must be true or false.');
+    const createdAt = iso();
+    await store.logEvent({ id: randomId('orgset'), type: 'org_topup_setting', detail: { orgId: org.oid, loginId: org.lid, enabled: body.enabled }, createdAt });
+    return json({ clientTopUps: body.enabled });
   }
 
   async function exportFile(request, type) {
@@ -321,6 +462,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
     if (path === '/credits') return allow('GET'), creditsGet(request, url);
     if (path === '/ai/estimate') return allow('POST'), aiEstimate(request);
     if (path === '/ai/edit') return allow('POST'), aiEdit(request);
+    if (path === '/ai/topup') return allow('POST'), aiTopUp(request);
+    if (path === '/ai/topup-setting') return allow('POST'), aiTopUpSetting(request);
     const exp = /^\/export\/([a-z0-9]+)$/.exec(path);
     if (exp) return allow('POST'), exportFile(request, exp[1]);
     throw new HttpError('NOT_FOUND', 'No such endpoint.');
