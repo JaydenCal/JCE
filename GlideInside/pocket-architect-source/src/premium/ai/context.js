@@ -2,6 +2,7 @@
 // Plain text uses far fewer tokens than JSON. No DOM or Node APIs, so the server can reuse it.
 
 import * as G from '../../model/geometry.js';
+import * as SITE from '../../model/placement.js';
 
 export const DEFAULT_TOKEN_CAP = 40000;
 
@@ -89,6 +90,49 @@ function furnitureLines(level, mode) {
   });
 }
 
+const metre = (v) => (Math.round(v * 100) / 100).toString();
+
+/**
+ * Site summary lines for a real lot (omitted when the project has none). Short on purpose: one line each for the lot,
+ * setbacks, envelope, ground fall and the current setback check. Never prints a setback the lot does not carry.
+ */
+export function siteLines(project) {
+  const lot = SITE.lotOf(project);
+  if (!lot) return [];
+  const out = [];
+  const d = SITE.lotDimensions(lot);
+  const id = [lot.state, lot.address && text(lot.address), lot.lotLabel && `lot ${String(lot.lotLabel).slice(0, 20)}`, lot.planLabel && String(lot.planLabel).slice(0, 20), lot.lga && `lga=${text(lot.lga)}`, lot.zone && `zone=${text(lot.zone)}`].filter(Boolean);
+  const dims = d.hasFront ? `frontage=${metre(d.frontageM)}m depth=${metre(d.depthM)}m` : `width=${metre(d.widthM)}m depth=${metre(d.depthM)}m (front boundary not set)`;
+  out.push(`SITE ${id.join(' ')} area=${metre(d.areaM2)}m2 ${dims}`);
+  if (lot.boundary.length <= 24) out.push(`LOT_BOUNDARY ${lot.boundary.map((p) => pt({ x: Math.round(p.x / 10) * 10, y: Math.round(p.y / 10) * 10 })).join(' ')}${lot.frontEdges?.length ? ` front_edges=${lot.frontEdges.join(',')}` : ''}`);
+  const sb = lot.setbacks;
+  if (!sb) out.push('SETBACKS not loaded (council setbacks are not available for this lot; do not state any)');
+  else {
+    const v = (k) => (typeof sb[k] === 'number' ? metre(sb[k]) : 'n/a');
+    const src = (sb.sources || []).slice(0, 3).map((s) => [s.dcp, s.clause && `cl ${s.clause}`, s.page && `p${s.page}`].filter(Boolean).join(' ')).filter(Boolean);
+    const notes = SITE.setbackNotes(lot);
+    const labels = [...new Set(notes.filter((n) => n.source).map((n) => n.source))];
+    const where = labels.length === 1 ? labels[0] : notes.filter((n) => n.source).map((n) => `${n.rule}=${n.source}`).join('; ');
+    const flagged = notes.filter((n) => n.flagged).map((n) => `${n.rule}(${n.source || 'source not recorded'})`);
+    out.push(`SETBACKS m front=${v('front')} side=${v('side')} rear=${v('rear')} secondary_front=${v('secondaryFront')} garage=${v('garage')}${where ? ` source: ${where.slice(0, 160)}` : src.length ? ` source: ${src.join('; ').slice(0, 160)}` : ''}`);
+    if (flagged.length) out.push(`SETBACKS_CHECK_WITH_COUNCIL ${flagged.join(', ')} (still used; say they are flagged and name the source)`);
+  }
+  if (Array.isArray(lot.envelope) && lot.envelope.length >= 3) {
+    const bb = G.bbox(lot.envelope);
+    out.push(`ENVELOPE x=${range(bb.minX, bb.maxX)} y=${range(bb.minY, bb.maxY)} pts=${lot.envelope.length}${lot.envelope.length <= 12 ? ` ${lot.envelope.map(pt).join(' ')}` : ''}`);
+  }
+  const fall = SITE.fallAcross(project);
+  if (fall) {
+    const dir = fall.direction ? ` falling to the ${fall.direction}` : ' (flat)';
+    out.push(`FALL ${metre(fall.fallM)}m across lot, ${fall.slopePct}%${dir}, RL ${metre(fall.minRL)}..${metre(fall.maxRL)}${typeof lot.floorRL === 'number' ? ` floor_rl=${metre(lot.floorRL)}${lot.floorRLAuto ? '(auto)' : ''}` : ''}`);
+  } else if (typeof lot.floorRL === 'number') out.push(`FALL no level data; floor_rl=${metre(lot.floorRL)}`);
+  const chk = SITE.checkSetbacks(project);
+  if (chk.status === 'ok') out.push('SETBACK_CHECK inside the indicative setback envelope');
+  else if (chk.status === 'breach') out.push(`SETBACK_CHECK breach ${chk.breaches.map((b) => `${b.label} ${b.breachM.toFixed(2)}m`).join(', ') || 'no room to build'}`);
+  else if (chk.status === 'setbacks_not_loaded') out.push('SETBACK_CHECK not possible, setbacks not loaded');
+  return out;
+}
+
 function render(project, activeLevelId, tier) {
   const detail = tier < 1;
   const furnitureMode = tier < 1 ? 'full' : tier < 2 ? 'summary' : 'none';
@@ -98,6 +142,7 @@ function render(project, activeLevelId, tier) {
   lines.push(`PROJECT ${text(project.name)} type=${project.type} units=mm x=right y=down(south)${north ? ` north=${int(north)}deg` : ''}`);
   const bb = G.projectBounds(project);
   if (bb) lines.push(`BOUNDS x=${range(bb.minX, bb.maxX)} y=${range(bb.minY, bb.maxY)}`);
+  lines.push(...siteLines(project));
   lines.push(finishLine(project, detail));
   lines.push(`ACTIVE_LEVEL ${activeLevelId || project.levels[0]?.id}`);
   const levels = [...project.levels].sort((a, b) => a.elevation - b.elevation);

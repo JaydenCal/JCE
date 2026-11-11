@@ -2,6 +2,7 @@
 // The same list is sent by the server to the model, and used to check what comes back.
 
 import { toolSchemas, OPS } from '../../model/ops.js';
+import { lotOf, NOT_LOADED } from '../../model/placement.js';
 
 // Collect every `id` from an array, a palette object ({ steel: [{ id }], ... }) or nested mixes of both.
 export function collectIds(source, out = new Set(), depth = 0) {
@@ -37,6 +38,21 @@ export function buildTools(catalogue) {
 }
 
 export const OP_NAMES = Object.keys(OPS);
+
+/** Operations that need a lot on the site, and those that only report (they change nothing). */
+export const SITE_OP_NAMES = ['move_house', 'rotate_house', 'set_floor_level', 'check_setbacks', 'suggest_site_position'];
+export const REPORT_OP_NAMES = ['check_setbacks'];
+
+/**
+ * Tool calls that make no sense for this design, checked in the browser before anything is applied. Returns an error
+ * text or null. The server only sees the context text, so it cannot do this check; the operations repeat it when they run.
+ */
+export function siteCallProblem(name, project) {
+  if (!SITE_OP_NAMES.includes(name)) return null;
+  if (!lotOf(project)) return 'No lot is loaded for this design.';
+  if ((name === 'check_setbacks' || name === 'suggest_site_position') && !project.site.lot.setbacks && !project.site.lot.envelope) return NOT_LOADED;
+  return null;
+}
 
 const typeOk = (schema, v) => {
   switch (schema.type) {
@@ -74,6 +90,9 @@ export function checkToolCall(name, input, tools = null) {
     }
     if (!typeOk(schema, v)) return { ok: false, error: `${name}: ${key} has the wrong type` };
     if (schema.enum && !schema.enum.includes(v)) return { ok: false, error: `${name}: ${key} must be one of the listed options` };
+    if (schema.type === 'number' && ((schema.minimum != null && v < schema.minimum) || (schema.maximum != null && v > schema.maximum))) {
+      return { ok: false, error: `${name}: ${key} must be between ${schema.minimum ?? '-infinity'} and ${schema.maximum ?? 'infinity'}` };
+    }
     args[key] = v;
   }
   for (const key of op.required || []) {

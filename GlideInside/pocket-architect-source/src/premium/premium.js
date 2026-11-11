@@ -9,6 +9,7 @@
 import { CONFIG as DEFAULT_CONFIG } from '../config.js';
 import { injectStyles } from './styles.js';
 import { createApi } from './api.js';
+import { createMockApi } from './ai/mock.js';
 import { loadToken, saveToken, clearToken, tokenKey } from './entitlement.js';
 import { createLayer } from './ui/modal.js';
 import { createFlows } from './ui/flows.js';
@@ -37,13 +38,24 @@ export function createPremium(store, options = {}) {
     saveFile = undefined,
     checkoutReturn = true,
     probe = true,
+    // { kind: 'public'|'builder'|'client', org, credits, token? }. Builder and client logins include the AI.
+    session = options.config?.session || null,
   } = options;
 
   injectStyles();
   // The back end switches the paid version on: when GET {apiBase}/health answers ok, premiumEnabled is true for this session.
   // A frozen host config is copied so the flag can still change.
   const cfg = Object.isFrozen(config) ? { ...config } : config;
-  const api = apiOverride || createApi({ base: cfg.apiBase, fetchImpl });
+  // Builder and client AI features sit behind CONFIG.portalEnabled; without it every session behaves as a public one.
+  const orgSession = !!cfg.portalEnabled && !!session && (session.kind === 'builder' || session.kind === 'client');
+  const effSession = orgSession ? session : { kind: 'public' };
+  const mockOn = !!cfg.aiMock;
+  const realApi = createApi({ base: cfg.apiBase, fetchImpl });
+  // CONFIG.aiMock: canned assistant replies and credits in the browser, so nothing is spent. Everything else stays real.
+  const mock = !apiOverride && mockOn ? createMockApi({ getProject: () => store.project, session: effSession }) : null;
+  const api = apiOverride || (mock ? { ...realApi, health: mock.health, credits: mock.credits, estimate: mock.estimate, edit: mock.edit, topUp: mock.topUp, setClientTopUps: mock.setClientTopUps } : realApi);
+  // The assistant token: a login's own token, or a placeholder in mock mode. Plan Pack tokens stay in state.token.
+  const aiToken = () => (mockOn ? 'mock.token' : orgSession ? session.token || null : null) || state.token;
   const layer = createLayer(mounts.modalRoot);
   // Developer unlock is honoured on localhost only, whatever the host configuration says (docs/SCOPE.md 4.3).
   const dev = () => !!cfg.devUnlock && isLocalHost();
@@ -57,6 +69,9 @@ export function createPremium(store, options = {}) {
   let assistant = null;
 
   const isEntitled = () => dev() || !!state.token;
+  // Builder and client logins have the AI included; mock mode lets the owner review it for any session.
+  const aiEntitled = () => isEntitled() || orgSession || mockOn;
+  const aiView = () => ({ ...view(), entitled: aiEntitled(), token: aiToken(), session: effSession });
   const view = () => ({ entitled: isEntitled(), token: state.token, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice });
 
   // State ---------------------------------------------------------------------------------------------------------------
@@ -79,17 +94,17 @@ export function createPremium(store, options = {}) {
   }
 
   async function refreshCredits() {
-    const token = state.token;
+    const token = aiToken();
     const pid = state.projectId;
     if (!token) return null;
     try {
       const c = normaliseCredits(await api.credits(token, pid));
-      if (disposed || state.projectId !== pid || state.token !== token) return null;
+      if (disposed || state.projectId !== pid || aiToken() !== token) return null;
       setCredits(c);
       return c;
     } catch (e) {
-      if (disposed || state.projectId !== pid || state.token !== token) return null;
-      if (isAuthLoss(e)) authLost(e);
+      if (disposed || state.projectId !== pid || aiToken() !== token) return null;
+      if (isAuthLoss(e) && !orgSession) authLost(e);
       else {
         state.creditsError = true;
         assistant?.refreshCredits();
@@ -106,7 +121,7 @@ export function createPremium(store, options = {}) {
     state.notice = null;
     assistant?.reset();
     publish();
-    if (state.token) refreshCredits();
+    if (aiToken()) refreshCredits();
   }
 
   // The server said this token no longer works (refunded, expired, unknown). Forget it and offer to restore.
@@ -227,7 +242,7 @@ export function createPremium(store, options = {}) {
       config: cfg,
       catalogue,
       layer,
-      getState: view,
+      getState: aiView,
       actions: {
         unlock: (source) => flows.openUpgrade({ source }),
         restore: () => flows.openRestore(),
@@ -268,7 +283,7 @@ export function createPremium(store, options = {}) {
   function activate() {
     state.token = storedToken(state.projectId);
     publish();
-    if (state.token) refreshCredits();
+    if (aiToken()) refreshCredits();
     if (checkoutReturn) {
       const back = readReturn();
       if (back?.status === 'success' && back.sessionId && back.projectId) return flows.handleReturn({ sessionId: back.sessionId, projectId: back.projectId });
@@ -310,7 +325,8 @@ export function createPremium(store, options = {}) {
   if (live()) ready = Promise.resolve(activate()).then((r) => r);
   else {
     publish();
-    if (probe) ready = probeBackend();
+    if (aiToken()) refreshCredits(); // a login or mock session needs no Plan Pack to show its credits
+    if (probe && !mockOn) ready = probeBackend();
   }
 
   // The app api (window.__ps) is how the PDF import reaches the editor; the store is always ours.
@@ -338,6 +354,7 @@ export function createPremium(store, options = {}) {
     importPdf: () => runImportPdf(psApp(), { isEntitled, openUpgrade: () => flows.openUpgrade({ source: 'pdf-import' }), layer, config: cfg }),
     openRestore: (prefill) => flows.openRestore({ prefill }),
     refreshCredits,
+    mockApi: mock,
     ready,
     get state() {
       return { ...view(), projectId: state.projectId, exporting: state.exporting };

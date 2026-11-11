@@ -9,6 +9,15 @@ import { checkToolCall } from '../../src/premium/ai/tools.js';
 const MAX_HISTORY_MESSAGES = 8;
 const MAX_HISTORY_CHARS = 1500;
 
+const INSIDE = 'inside the indicative setback envelope';
+/** The assistant must not call a design compliant. Any such wording becomes the plain envelope statement. */
+export function scrubClaims(text) {
+  return String(text ?? '')
+    .replace(/\b(?:fully\s+)?compliant(?:\s+with\s+[^.,;:]*)?/gi, INSIDE)
+    .replace(/\bcompl(?:ies|y|iance)\s+with\s+[^.,;:]*/gi, INSIDE)
+    .replace(/\b(meets?|passes|satisfies)\s+(?:all\s+)?(?:the\s+)?(?:council\s+|planning\s+)?(?:setbacks?|requirements|rules|controls)\b/gi, `is ${INSIDE}`);
+}
+
 /** Keep the last turns, user first, roles alternating. */
 export function cleanHistory(history) {
   const out = [];
@@ -54,7 +63,7 @@ export function parseResponse(data, tools) {
       else if (!/^Unknown operation/.test(check.error)) rejected.push({ op: block.name, error: check.error });
     }
   }
-  return { reply: reply.join(' ').trim(), ops, rejected, usage: data?.usage || {}, stopReason: data?.stop_reason || null };
+  return { reply: scrubClaims(reply.join(' ').trim()), ops, rejected, usage: data?.usage || {}, stopReason: data?.stop_reason || null };
 }
 
 /** Call the API. Throws HttpError AI_TIMEOUT or AI_ERROR (nothing is charged for those). */

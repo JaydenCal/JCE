@@ -48,7 +48,7 @@ export async function verifyToken(token, secret, nowSec) {
     const expected = await hmacSha256(secret, body);
     if (!safeEqual(expected, fromB64u(s))) return null;
     const payload = JSON.parse(dec.decode(body));
-    if (!payload?.eid || !payload?.pid) return null;
+    if (!(payload?.eid && payload?.pid) && !(payload?.oid && payload?.lid)) return null;
     if (typeof payload.exp === 'number' && payload.exp <= nowSec) return null;
     return payload;
   } catch {
@@ -68,7 +68,7 @@ export async function issueToken(ent, config, nowMs) {
 export async function authenticate(request, { store, config, now, missing = 'UNAUTHORISED' }) {
   const nowMs = now();
   const payload = await verifyToken(bearerToken(request), config.entitlementSecret, Math.floor(nowMs / 1000));
-  if (!payload) {
+  if (!payload || payload.oid) {
     if (missing === 'NOT_ENTITLED') throw new HttpError('NOT_ENTITLED', 'A Plan Pack is needed for this feature.');
     throw new HttpError('UNAUTHORISED', 'Your Plan Pack could not be verified. Restore your purchase to continue.');
   }
@@ -79,4 +79,21 @@ export async function authenticate(request, { store, config, now, missing = 'UNA
   }
   if (ent.expiresAt && Date.parse(ent.expiresAt) <= nowMs) throw new HttpError('NOT_ENTITLED', 'This Plan Pack has expired.');
   return ent;
+}
+
+/**
+ * Token for a builder or client login: { oid, lid, role, cap?, exp }. The login system that owns the accounts calls this
+ * after it has signed the person in. `cap` optionally overrides the monthly credits for that login.
+ */
+export async function issueOrgToken({ orgId, loginId, role, cap, ttlSeconds = 8 * 3600 }, config, nowMs) {
+  if (!['builder', 'client'].includes(role)) throw new HttpError('BAD_REQUEST', 'role must be builder or client.');
+  const payload = { oid: orgId, lid: loginId, role, exp: Math.floor(nowMs / 1000) + ttlSeconds };
+  if (Number.isFinite(cap) && cap >= 0) payload.cap = Math.round(cap);
+  return signToken(payload, config.entitlementSecret);
+}
+
+/** The payload of a valid org token, or null (a Plan Pack token or no token). */
+export async function readOrgToken(request, { config, now }) {
+  const payload = await verifyToken(bearerToken(request), config.entitlementSecret, Math.floor(now() / 1000));
+  return payload?.oid ? payload : null;
 }

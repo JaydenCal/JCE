@@ -45,10 +45,66 @@ limits), `src/premium/exporters/*` and `src/viewer3d/build.js`. Deploy the whole
 | `GET /api/site/health` | none | Probes each upstream service. `ok` needs the cadastre and address services, `allOk` needs every one |
 | `POST /api/export/:type` | Bearer | `pdf`, `dxf`, `glb`, `obj`. Body `{ project, image? }`. Returns the file |
 
+Builder and client logins use the same AI endpoints plus two more (see "Builder and client logins" below).
+
 Errors are JSON, `{ error: { code, message, ... }, code, message }`, with the codes in docs/SCOPE.md 11.2 plus
 `NOT_FOUND`, `AI_ERROR` (502), `AI_TIMEOUT` (504), `PAYMENTS_UNAVAILABLE` (503), `EXPORT_UNAVAILABLE` (503) and
 `SERVER_NOT_CONFIGURED` (500). The server re-checks the database on every authenticated request, so a token alone
 grants nothing: a refunded, expired or exhausted Plan Pack is refused at once.
+
+## Builder and client logins (org credit pools, top-ups, budgets)
+
+Builder and client logins have the AI included. They are off until `PORTAL_ENABLED=1` (public launch first); with the
+switch off an org token is refused with `NOT_ENTITLED`. The Plan Pack flow (A$35 pack, 500 credits, entitlement token)
+is untouched and its token is still the only one accepted for exports.
+
+**Token.** The login system signs the person in, then calls `issueOrgToken({ orgId, loginId, role, cap? }, config, nowMs)`
+from `lib/entitlement.js`. The payload is `{ oid, lid, role: 'builder'|'client', cap?, exp }` (HMAC signed with
+`ENTITLEMENT_SECRET`, 8 hours by default). `cap` overrides the monthly credits for that login.
+
+**Credit pools.** Each login has two pools, both stored as ordinary entitlement rows so reserve, settle and release keep
+their single guarded write (no schema change):
+
+| Pool | Row id | Size | Resets |
+|---|---|---|---|
+| Monthly | `org:<orgId>:<loginId>:<YYYY-MM>` | `ORG_MONTHLY_CREDITS` (default 300) or the token `cap` | At the start of each calendar month in Australia/Sydney (the row is created lazily, so a new month is a new row) |
+| Top-up | `orgtop:<orgId>:<loginId>` | grows by `TOPUP_CREDITS` per top-up | Never; carries over until used |
+
+Requests are paid from the monthly pool first, then the top-up pool (`planSpend`). The estimate is reserved across both
+pools and the actual charge is settled monthly first (`splitCharge`). The 50, 80 and 95% warnings count the monthly pool
+only. The hard stop (`402 CREDITS_EXHAUSTED`) happens when monthly plus top-up credits cannot cover the estimate; its
+body carries `topUp: { allowed, credits, amountCents, gstInclusive, currency }` and `monthResetsOn` (`YYYY-MM-DD`, the
+first day of next month in Sydney) so the panel can show the reset date and the top-up button.
+
+`GET /api/credits` and the `credits` object of `POST /api/ai/edit` return, for an org token:
+`{ kind: 'org', total, used, remaining, reserved, warnLevel, topUpRemaining, available, monthResetsOn, topUp }`.
+Plan Pack replies keep their original shape.
+
+**Top-ups.** `POST /api/ai/topup` (org token) adds `TOPUP_CREDITS` (default 300) at once and charges nothing by card. The
+charge, `TOPUP_AMOUNT_CENTS` (default 1000, A$10 including GST), goes on the builder's end-of-month invoice. Each top-up is
+logged as a billable event so billing can invoice it: `store.listEvents('ai_topup')` returns rows whose `detail` is
+
+```
+{ orgId, loginId, credits: 300, amountCents: 1000, currency: 'aud', gstInclusive: true, createdAt, role }
+```
+
+Invoice by summing `amountCents` per `orgId` for the month. Top-ups are limited to 10 per login per hour
+(`429 RATE_LIMITED`). Builders always may top up. Clients may unless the builder turned client top-ups off for the
+organisation (default on): `POST /api/ai/topup-setting` `{ enabled }` (builder token only) logs an `org_topup_setting`
+event, the latest per `orgId` wins, and a refused client top-up answers `403 TOPUP_DISABLED`. Plan Pack tokens cannot top up.
+
+**Spend budgets.** The global caps no longer let one busy organisation pause the AI for everyone. An org request is checked in
+this order: the organisation's own daily and monthly US$ budget (`ORG_DAILY_CAP_USD`, default 1, and `ORG_MONTHLY_CAP_USD`,
+default 10, per organisation; override per org with `ORG_BUDGETS='{"<orgId>":{"dailyUsd":2,"monthlyUsd":20}}'`), then the
+share of the global caps that all organisations together may use (global cap times `1 - PUBLIC_RESERVE_SHARE`, default
+0.3 reserved), then the global caps. Public Plan Pack requests only see the global caps, so the reserved share always
+remains for them. Org spend is recorded under `od:`, `om:` (per org) and `oall:` (all orgs) periods using the day and month of
+Sydney; stopped requests answer `503 AI_PAUSED` and log an `org_budget` event. Day and month budgets use the Sydney calendar.
+
+Assistant replies are filtered by `scrubClaims` so the word "compliant" never reaches the person; a design is described as
+"inside the indicative setback envelope".
+
+Store contract addition: `addCredits(id, n)` (D1, memory and Upstash implement it).
 
 ## Deploy on Cloudflare
 

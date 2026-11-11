@@ -81,6 +81,9 @@ export function createD1Store(db) {
         id, reserved, actual,
       );
     },
+    async addCredits(id, n) {
+      return changed(await run('UPDATE entitlements SET credits_total = credits_total + ?2 WHERE id = ?1', id, n));
+    },
     async releaseCredits(id, reserved) {
       await run('UPDATE entitlements SET credits_reserved = MAX(0, credits_reserved - ?2) WHERE id = ?1', id, reserved);
     },
@@ -238,6 +241,12 @@ export function createMemoryStore() {
       if (!e) return;
       e.creditsReserved = Math.max(0, e.creditsReserved - reserved);
       e.creditsUsed = Math.min(e.creditsTotal, e.creditsUsed + actual);
+    },
+    async addCredits(id, n) {
+      const e = ents.get(id);
+      if (!e) return false;
+      e.creditsTotal += n;
+      return true;
     },
     async releaseCredits(id, reserved) {
       const e = ents.get(id);
