@@ -293,7 +293,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
   }
 
   // Each upstream gets 2.5 s and no retry: whatever has arrived by then is returned (a slow service must not hold the dropdown back).
-  const SEARCH_TIMEOUT_MS = 2500;
+  const SEARCH_TIMEOUT_MS = 9000; // the NSW every-word query can take 3 to 6 s; 2.5 s dropped real addresses
   async function searchNsw(tokens, st) {
     const w = buildNswWhere(tokens);
     if (!w) return [];
