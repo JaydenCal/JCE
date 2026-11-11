@@ -152,6 +152,10 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   // Find my block -------------------------------------------------------------------------------------------------------------
   function findMyBlock() {
     if (typeof globalThis.openSiteSearch === 'function') return globalThis.openSiteSearch();
+    // The real Find my block (NSW and QLD cadastre). The sample lot stays as a fallback only if the dialog cannot load.
+    return import('../ui/find-block.js').then((m) => m.openFindBlock(store)).catch(() => sampleLotDialog());
+  }
+  function sampleLotDialog() {
     modal('Find my block', h('div', null,
       h('p', null, 'Searching for your block by address will be available here soon. Until then you can try the tool on a sample lot.'),
       h('p', null, h('small', null, `${SAMPLE_LOT.name}`))),
