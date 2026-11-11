@@ -17,7 +17,9 @@ $Api = "$Site/api/portal"
 $Builders = @(
   @{ slug = 'mcdonald-jones'; name = 'McDonald Jones Homes' }, @{ slug = 'hunter-homes'; name = 'Hunter Homes' },
   @{ slug = 'montgomery'; name = 'Montgomery Homes' }, @{ slug = 'hotondo'; name = 'Hotondo Homes' },
-  @{ slug = 'mojo'; name = 'MOJO Homes' }, @{ slug = 'tulliplan'; name = 'Tulliplan Homes' }
+  @{ slug = 'mojo'; name = 'MOJO Homes' }, @{ slug = 'tulliplan'; name = 'Tulliplan Homes' },
+  @{ slug = 'masterton'; name = 'Masterton Homes' }, @{ slug = 'coral-homes'; name = 'Coral Homes' },
+  @{ slug = 'allworth'; name = 'Allworth Homes' }, @{ slug = 'gj-gardner'; name = 'G.J. Gardner Homes' }
 )
 $lines = New-Object System.Collections.Generic.List[string]
 function Say([string]$s) { Write-Host $s; $lines.Add($s) }
