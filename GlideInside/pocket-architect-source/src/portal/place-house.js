@@ -6,9 +6,11 @@
 // an existing level receives the walls, openings, rooms, furniture and stairs; a missing level is added. Every entity gets
 // a new id, so the same house can be placed twice and everything stays editable with the normal tools afterwards.
 // Pose: (x, y) is where the centre of the house footprint lands (mm, plan coordinates, y down); rotation is degrees
-// clockwise as seen on the plan. Use `previewPlacement` while the person drags, and `placeHouse` inside store.apply to commit.
+// clockwise as seen on the plan; `mirrored: true` flips the house left to right first (a mirrored plan, still the same rooms).
+// Use `previewPlacement` while the person drags, and `placeHouse` inside store.apply to commit.
 
 import { createLevel, uid } from '../model/schema.js';
+import { mirrorPlan } from '../model/ops.js';
 import { lowestLevel } from './house-stats.js';
 
 const ELEV_TOL = 1;
@@ -85,9 +87,15 @@ const sameElevation = (a, b) => Math.abs(a - b) <= ELEV_TOL;
  */
 export function placeHouse(project, house, pose = {}) {
   if (!house?.levels?.length) throw new Error('That house design has no levels.');
+  if (pose.mirrored) {
+    house = structuredClone(house);
+    mirrorPlan(house, 'left_right');
+  }
   const p = { ...defaultPose(project, house), ...pose };
+  delete p.mirrored;
+  if (pose.mirrored) p.mirrored = true;
   const T = transformer(house, p);
-  const record = { id: uid('pl'), houseName: house.name || 'House', pose: p, levels: [], entityIds: [], wallIds: [], tankIds: [] };
+  const record = { id: uid('pl'), houseName: house.name || 'House', pose: p, mirrored: !!pose.mirrored, levels: [], entityIds: [], wallIds: [], tankIds: [] };
   const wasEmpty = !project.levels.some((l) => l.walls.length || l.rooms.length || l.furniture.length || l.stairs.length);
 
   for (const src of [...house.levels].sort((a, b) => a.elevation - b.elevation)) {

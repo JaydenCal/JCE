@@ -51,13 +51,16 @@ export function createPremium(store, options = {}) {
   const live = () => !!cfg.premiumEnabled;
   const storedToken = (projectId) => (live() ? loadToken(projectId) : null);
 
-  const state = { projectId: store.project.id, token: null, credits: null, creditsError: false, notice: null, exporting: null };
+  const state = { projectId: store.project.id, token: null, credits: null, creditsError: false, notice: null, exporting: null, portal: null };
   let disposed = false;
   let topbar = null;
   let assistant = null;
 
-  const isEntitled = () => dev() || !!state.token;
-  const view = () => ({ entitled: isEntitled(), token: state.token, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice });
+  // A builder or client login (src/portal) includes the plans and the AI helper: the builder pays, so there is no A$35 step.
+  // state.portal = { entitled, token (null in the mock), clientExports (mock: build files in this browser), orgName, credits }.
+  const portalOn = () => !!state.portal?.entitled;
+  const isEntitled = () => dev() || !!state.token || portalOn();
+  const view = () => ({ entitled: isEntitled(), token: state.token || state.portal?.token || null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '' } : null });
 
   // State ---------------------------------------------------------------------------------------------------------------
   function publish() {
@@ -151,7 +154,7 @@ export function createPremium(store, options = {}) {
     state.exporting = type;
     topbar?.setBusy(type, `Preparing ${exportLabel(type)}`);
     try {
-      const out = await runExport(type, store.project, { api, token: state.token, devUnlock: dev(), config: cfg, catalogue, getViewer, save: saveFile });
+      const out = await runExport(type, store.project, { api, token: state.token || state.portal?.token || null, devUnlock: dev() || (portalOn() && !!state.portal.clientExports), config: cfg, catalogue, getViewer, save: saveFile });
       track('ps_export', { type });
       layer.notify(`${exportLabel(type)} downloaded as ${out.filename}.`, 'ok');
       topbar?.announce(`${exportLabel(type)} downloaded`);
@@ -212,7 +215,7 @@ export function createPremium(store, options = {}) {
       getState: view,
       actions: {
         unlock: (source) => flows.openUpgrade({ source }),
-        details: () => flows.openDetails(),
+        details: () => (portalOn() ? layer.notify(`Plans and the AI helper are included with your login${state.portal.orgName ? ` by ${state.portal.orgName}` : ''}.`, 'info', 6000) : flows.openDetails()),
         restore: () => flows.openRestore(),
         exportAs,
         previewPdf: () => previewPdf(),
@@ -316,8 +319,21 @@ export function createPremium(store, options = {}) {
   // The app api (window.__ps) is how the PDF import reaches the editor; the store is always ours.
   const psApp = () => ({ ...(typeof window !== 'undefined' ? window.__ps : null), store, premium: self });
 
+  /**
+   * Called by the portal (src/portal/client-mode.js) for a signed in builder or client: plans without the A$35 step, and the AI
+   * helper entitlement with the login's credits. credits: { total, used, remaining } for the month plus any top-up.
+   * Pass null to remove it (sign out). The AI panel is wired by its own module; it reads this through premium.state.
+   */
+  function setPortalEntitlement(ent) {
+    state.portal = ent && ent.entitled ? { ...ent } : null;
+    if (state.portal?.credits) state.credits = normaliseCredits(state.portal.credits);
+    else if (!state.portal) state.credits = null;
+    publish();
+  }
+
   const self = {
     isEntitled,
+    setPortalEntitlement,
     openUpgrade: () => flows.openUpgrade({ source: 'api' }),
     openExports() {
       if (topbar) topbar.open();

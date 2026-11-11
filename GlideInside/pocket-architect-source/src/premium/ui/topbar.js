@@ -66,7 +66,7 @@ export function createTopbarUI({ root, config, getState, actions }) {
     if (st.entitled) {
       const left = st.credits && Number.isFinite(st.credits.remaining) ? ` ${st.credits.remaining} of ${st.credits.total} AI credits left.` : '';
       slot.append(el('button', { class: 'psp-chip', type: 'button', title: `Plan Pack active.${left}`, onclick: () => actions.details() },
-        icon('check', 14), st.token ? 'Plan Pack' : 'Dev unlock'));
+        icon('check', 14), st.portal ? 'Plans included' : st.token ? 'Plan Pack' : 'Dev unlock'));
     } else if (isOn()) {
       slot.append(el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => actions.unlock('topbar') },
         icon('lock', 14), `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`));

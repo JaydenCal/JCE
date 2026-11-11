@@ -21,6 +21,7 @@ export const CONFIG = {
   portalMock: true,
   portal: {
     appUrl: './', // Pocket Architect, relative to the portal page; the site sets GI_CONFIG.portalAppUrl
+    signInUrl: '../../portal/', // the portal sign in page, relative to Pocket Architect; the site sets GI_CONFIG.portalSignInUrl
     clientLoginFeeAud: 20, // per NEW client login in a calendar month, incl. GST
     aiTopUp: { credits: 300, priceAud: 10 }, // incl. GST, charged on the end of month invoice
     aiMonthlyCredits: 150, // per login per month, hard stop at zero

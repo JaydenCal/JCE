@@ -19,3 +19,10 @@ export function appLink(params = {}) {
 }
 
 export const portalUrl = (query = '') => (typeof location !== 'undefined' ? new URL(`portal/${query}`, new URL('../', location.href)).href : `/portal/${query}`);
+
+/** The portal sign in page, as seen from Pocket Architect. `?portal=` works on localhost only. */
+export function signInUrl(query = '') {
+  const q = isLocal() ? new URLSearchParams(location.search).get('portal') : null;
+  const base = q || globalThis.GI_CONFIG?.portalSignInUrl || CONFIG.portal.signInUrl;
+  return new URL(`${base}${query}`, location.href).href;
+}
