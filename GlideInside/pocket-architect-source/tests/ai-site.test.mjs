@@ -351,7 +351,7 @@ function world(env = {}) {
   const store = createMemoryStore();
   const fetchImpl = async (url) => {
     assert.equal(String(url), 'https://api.anthropic.com/v1/messages');
-    return jsonRes({ id: 'm', type: 'message', role: 'assistant', model: 'x', stop_reason: 'end_turn', usage: USAGE, content: [{ type: 'text', text: 'The house is fully compliant with the setbacks.' }] });
+    return jsonRes({ id: 'm', type: 'message', role: 'assistant', model: 'x', stop_reason: 'end_turn', usage: USAGE, content: [{ type: 'text', text: 'The house is fully compliant with the setbacks.' }, { type: 'tool_use', id: 'toolu_1', name: 'set_finish', input: { target: 'roof', colour: 'steel-charcoal' } }] });
   };
   const app = createApp({ store, env: { SITE_URL: 'https://site.test', PORTAL_ENABLED: '1', ENTITLEMENT_SECRET: 'secret', ANTHROPIC_API_KEY: 'k', ...env }, fetchImpl, now: () => clock.t });
   const w = { clock, store, app, config: app.config };

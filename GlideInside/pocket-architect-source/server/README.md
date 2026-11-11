@@ -44,7 +44,7 @@ limits), `src/premium/exporters/*` and `src/viewer3d/build.js`. Deploy the whole
 | `GET /api/credits?project=` | Bearer | `{ total, used, remaining, warnLevel, reserved }` |
 | `POST /api/ai/estimate` | Bearer | No model call. `{ estimatedCredits, remaining, requiresConfirm }` |
 | `POST /api/ai/edit` | Bearer | `{ reply, ops, rejected, credits, warning }` |
-| `GET /api/site/search?q=` | none, rate limited | `{ results: [{ label, state, lon, lat }] }`, max 8. NSW from NSW_Property layers 1 to 4 (`address`), QLD from PlanningCadastre LandParcelPropertyFramework layer 0 (Addresses) |
+| `GET /api/site/search?q=` | none, rate limited | `{ results: [{ label, state, lon, lat }] }`, max 8. NSW from the NSW_Geocoded_Addressing_Theme AddressPoint layer (`address`), QLD from PlanningCadastre LandParcelPropertyFramework layer 0 (Addresses) |
 | `GET /api/site/lot?lon=&lat=&state=` | none, rate limited | Parcel at the point and neighbours within about 60 m in GDA2020 MGA (7854/7855/7856), LGA, NSW zoning, road lines, origin. Cached in D1 `site_cache` |
 | `GET /api/site/aerial?state=&srid=&bbox=` | none, rate limited | Image bytes, georeference in the `x-site-meta` header (URL encoded JSON, includes attribution and capture date) |
 | `GET /api/site/contours?state=&srid=&bbox=&buffer=&origin=` | none, rate limited | Elevation grid, contour lines (minor 0.5 m, major 2.5 m) and provenance |

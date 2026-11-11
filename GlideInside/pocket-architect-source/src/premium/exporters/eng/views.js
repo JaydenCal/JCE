@@ -559,8 +559,8 @@ export function drawSection(doc, ctx, tris, area) {
   doc.line(Math.max(area.x0 + 4, xl - 14), P(0, 0).y + 0.1, Math.min(area.x1 - 4, xr + 14), P(0, 0).y + 0.1);
 
   // Levels at the left: floor and ceiling of each storey, the ridge, with RLs
-  const topZ = -r.bounds.y0;
   const hfs = heightFacts(project, tris, ctx.unalign);
+  const topZ = hfs.topZ || -r.bounds.y0; // one ridge height across elevations, section and roof data
   const marks = [];
   levels.forEach((lv, li) => {
     marks.push({ z: lv.elevation, text: `${li === 0 ? 'FFL GROUND' : 'FFL FIRST'}${rlText(floor, lv.elevation)}` });

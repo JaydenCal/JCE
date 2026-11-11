@@ -159,11 +159,13 @@ CC BY-SA on the QLD imagery and DEM has a share-alike effect on anything derived
 
 Endpoints (all GET, no auth, rate limited per IP with `store.hitRate`: search 60/min, lot and aerial 20/min, contours 12/min, 800 lookups a day):
 
-- `/api/site/search?q=` up to 8 `{ label, state, lon, lat }`. NSW: NSW_Property layers 1 to 4, `address` field, LIKE per word. QLD: LandParcelPropertyFramework layer 0 (Addresses).
+- `/api/site/search?q=` up to 8 `{ label, state, lon, lat }`. NSW: NSW_Geocoded_Addressing_Theme FeatureServer layer 1 (AddressPoint, upper case `address`): `address LIKE 'QUERY%'` first, then `address LIKE '%WORD%'` per word if that is empty, outSR 4326. NSW_Property layers 1 to 4 reject attribute queries live and are not used. The query is upper cased, street type abbreviations expanded (ST, RD, AVE, DR, CRES, PL, CT, LN, HWY, PDE, TCE), commas, the state and a postcode dropped. A query naming NSW or QLD searches only that state. QLD: LandParcelPropertyFramework layer 0 (Addresses), `UPPER(address) LIKE '%WORD%'` per word (a street number range such as 419-433 may miss a query for 421).
 - `/api/site/lot?lon=&lat=&state=` parcel at the point (largest parcel if strata lots stack), neighbours within 60 m (road parcels flagged `isRoad`), LGA, zoning (NSW only), road centrelines (NSW only), `origin` (MGA centroid), all coordinates relative to the origin in metres.
 - `/api/site/aerial?state=&srid=&bbox=` image bytes plus `x-site-meta` (URL encoded JSON: georef, bbox, size, source, attribution, capture date). If the service refuses an MGA export the server returns a web mercator image (`georef: 'web-mercator'`) and the browser re-samples it (`src/site/warp.js`).
 - `/api/site/contours?state=&srid=&bbox=&buffer=&origin=` DEM grid on an MGA grid (NSW 2 m, QLD 1 m, at most about 160k nodes), marching squares contours (minor 0.5 m, major 2.5 m, `minor` and `major` configurable), provenance.
-- `/api/site/health` probes 13 upstream services with an 8 s timeout (memoised 60 s). `ok` is false if a required service (lot or address) is down.
+- `/api/site/health` probes 14 upstream services with an 8 s timeout (memoised 60 s). `ok` is false if a required service (lot or address) is down; NSW_Property is optional.
+
+NSW aerial request that works live (11/11/2026): `NSW_Imagery/MapServer/export?bbox=302768,6558142,302888,6558262&bboxSR=7856&imageSR=7856&size=512,512&format=jpg&f=image` (200, image/jpeg, about 80 kB); `imageSR=3857` also works. The server tries the full size, then half size, in MGA, then web mercator (3857). Any non-image reply (ArcGIS often answers 200 with a JSON error) is logged with the URL and status and counts as a failure.
 
 Raster format: the DEM is requested as TIFF F32 (`exportImage`, `noData=-9999`) in web mercator and decoded by `src/site/tiff.js`, a small pure JS reader
 (uncompressed, LZW, Deflate, strips or tiles, predictors 1, 2, 3). No LERC and no `getSamples` (about 30 s for 40 points in earlier work). Cells are resampled bilinearly onto the MGA grid.

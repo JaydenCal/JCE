@@ -13,9 +13,10 @@
 //  NSW cadastre lots   https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9   CONFIRMED layer "Lot", polygon, maxRecordCount 1000,
 //                      fields lotnumber, sectionnumber, planlabel, planlotarea, lotidstring, stratumlevel, hasstratum. Layer SR 102100.
 //                      NOT CONFIRMED: outSR=7854/7855/7856 and inSR=7844 accepted (the earlier JCE Python client used inSR/outSR 7844 on this layer).
-//  NSW address points  .../public/NSW_Property/MapServer layers 1 to 4 (Large_Rural, Rural, Semi_Rural, Urban) CONFIRMED, fields propid, housenumber, address.
-//                      They are property polygons; the search takes a point well inside the polygon. NOT CONFIRMED: the LIKE queries and the exact
-//                      address text format (the earlier client matched "756 QUIA ROAD GUNNEDAH", no commas, upper case).
+//  NSW address points  https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Geocoded_Addressing_Theme/FeatureServer/1 (AddressPoint) CONFIRMED LIVE 11/11/2026:
+//                      fields address, housenumber, urbanity; address is UPPER CASE ("756 QUIA ROAD GUNNEDAH", "2/454 PEEL STREET TAMWORTH"). address LIKE 'q%'
+//                      answers in about 100 ms, address LIKE '%WORD%' per word in about 600 ms; returnGeometry with outSR=4326 gives x/y as lon/lat.
+//                      (NSW_Property/MapServer layers 1 to 4 reject attribute-only queries live, so they are no longer used for search.)
 //  NSW LGA             .../public/NSW_Administrative_Boundaries/MapServer/1  CONFIRMED layer LocalGovernmentArea, field lganame.
 //  NSW zoning          https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2  CONFIRMED "Land Zoning",
 //                      fields SYM_CODE, LAY_CLASS, EPI_NAME, LGA_NAME.
@@ -52,7 +53,8 @@ import { contourLines, fillGaps, gridRange } from '../../src/site/contours.js';
 
 export const SERVICES = {
   nswLot: 'https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9',
-  nswProperty: 'https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Property/MapServer',
+  nswProperty: 'https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Property/MapServer', // no longer used for search (its layers reject attribute queries); health probe only
+  nswAddresses: 'https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Geocoded_Addressing_Theme/FeatureServer/1',
   nswLga: 'https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Administrative_Boundaries/MapServer/1',
   nswZoning: 'https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2',
   nswRoads: 'https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Transport_Theme/MapServer/5',
@@ -91,6 +93,32 @@ const ddmmyyyy = (ms) => {
   return `${pad2(d.getUTCDate())}/${pad2(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`;
 };
 const titleCase = (s) => String(s || '').toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase());
+
+const ABBREV = { ST: 'STREET', RD: 'ROAD', AVE: 'AVENUE', AV: 'AVENUE', DR: 'DRIVE', CRES: 'CRESCENT', PL: 'PLACE', CT: 'COURT', LN: 'LANE', HWY: 'HIGHWAY', PDE: 'PARADE', TCE: 'TERRACE' };
+
+/** Search words: upper case, state names and a trailing postcode dropped, street type abbreviations expanded ("St" stays when it starts the address or follows a number, as in "5 St Johns Rd"). */
+export function searchWords(tokens, state) {
+  const drop = new Set(['AUSTRALIA', state === 'QLD' ? 'QUEENSLAND' : 'NEW', state === 'QLD' ? 'QLD' : 'NSW', ...(state ? [] : ['QLD', 'NSW', 'QUEENSLAND'])]);
+  let t = tokens.filter((x) => !drop.has(x));
+  if (t.length >= 3 && /^\d{4}$/.test(t[t.length - 1])) t = t.slice(0, -1);
+  return t.map((x, i) => (ABBREV[x] && !(x === 'ST' && (i === 0 || /^\d/.test(t[i - 1]))) ? ABBREV[x] : x)).filter(Boolean);
+}
+
+/** NSW AddressPoint where clauses: { prefix, words } or null. */
+export function buildNswWhere(tokens) {
+  const w = searchWords(tokens, 'NSW');
+  if (!w.length) return null;
+  const prefix = `address LIKE '${sqlText(w.join(' '))}%'`;
+  const words = w.map((x) => `address LIKE '%${sqlText(x)}%'`).join(' AND ');
+  return { prefix, words };
+}
+
+/** QLD Addresses where clause (mixed case address, so UPPER()), or null. */
+export function buildQldWhere(tokens) {
+  const w = searchWords(tokens, 'QLD');
+  if (!w.length) return null;
+  return w.map((t) => (/^\d+[A-Z]?$/.test(t) ? `(UPPER(address) LIKE '${sqlText(t)} %' OR UPPER(address) LIKE '% ${sqlText(t)} %' OR UPPER(address) LIKE '%/${sqlText(t)} %')` : `UPPER(address) LIKE '%${sqlText(t)}%'`)).join(' AND ');
+}
 
 export function parseBbox(text) {
   const p = String(text || '').split(',').map(Number);
@@ -159,18 +187,27 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
   const iso = () => new Date(now()).toISOString();
 
   // Upstream calls ----------------------------------------------------------------------------------------------------------------
-  async function upstream(url, params, { as = 'json', timeoutMs = 25000, retries = 1 } = {}) {
-    const full = params ? `${url}?${new URLSearchParams(params)}` : url;
+  async function upstream(url, params, { as = 'json', timeoutMs = 25000, retries = 1, post = false } = {}) {
+    const full = params && !post ? `${url}?${new URLSearchParams(params)}` : url;
     let last = null;
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
-        const res = await doFetch(full, { headers: { 'user-agent': UA, accept: as === 'json' ? 'application/json' : '*/*' }, signal: typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(timeoutMs) : undefined });
+        const res = await doFetch(full, { ...(post ? { method: 'POST', body: new URLSearchParams(params).toString() } : {}), headers: { 'user-agent': UA, accept: as === 'json' ? 'application/json' : '*/*', ...(post ? { 'content-type': 'application/x-www-form-urlencoded' } : {}) }, signal: typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(timeoutMs) : undefined });
         if (!res.ok) {
           last = new Error(`HTTP ${res.status}`);
           if (res.status < 500 && res.status !== 429) break;
           continue;
         }
-        if (as === 'bytes') return { bytes: new Uint8Array(await res.arrayBuffer()), type: res.headers.get('content-type') || '' };
+        if (as === 'bytes') {
+          const type = res.headers.get('content-type') || '';
+          const bytes = new Uint8Array(await res.arrayBuffer());
+          if (/json|text/i.test(type)) {
+            // ArcGIS reports many failures as HTTP 200 with a JSON or text body: keep the message for the log and treat it as a failure.
+            last = new Error(`HTTP ${res.status} ${type.split(';')[0]}: ${new TextDecoder().decode(bytes.subarray(0, 300))}`);
+            break;
+          }
+          return { bytes, type };
+        }
         const body = await res.json();
         if (body?.error) {
           const code = body.error.code;
@@ -183,6 +220,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         last = e;
       }
     }
+    console.warn(`[site] upstream failed ${url}${params && !post ? `?${new URLSearchParams(params)}` : ''}: ${String(last?.message || last).slice(0, 300)}`);
     throw new HttpError('SITE_UPSTREAM', 'A government map service did not answer. Try again soon, or keep drawing without a lot.', { detail: String(last?.message || last).slice(0, 200) });
   }
 
@@ -225,32 +263,24 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
   }
 
   async function searchNsw(tokens) {
-    const words = tokens.filter((t) => t !== 'NSW' && t !== 'AUSTRALIA');
-    if (!words.length) return [];
-    const clauses = words.map((t) => (/^\d+[A-Z]?$/.test(t) ? `(UPPER(address) LIKE '${sqlText(t)} %' OR UPPER(address) LIKE '% ${sqlText(t)} %' OR UPPER(address) LIKE '%/${sqlText(t)} %')` : `UPPER(address) LIKE '%${sqlText(t)}%'`));
-    const where = clauses.join(' AND ');
-    const layers = await Promise.all([4, 3, 2, 1].map((id) => upstream(`${SERVICES.nswProperty}/${id}/query`, {
-      f: 'json', where, outFields: 'address', returnGeometry: 'true', outSR: '7844', maxAllowableOffset: '0.0001', resultRecordCount: '8',
-    }, { timeoutMs: 12000 }).catch(() => ({ features: [] }))));
-    const out = [];
-    for (const l of layers) {
-      for (const f of l.features || []) {
-        const polys = ringsToPolygons(f.geometry?.rings || []);
-        if (!polys.length || !f.attributes?.address) continue;
-        const best = polys.reduce((a, b) => (polygonArea(b) > polygonArea(a) ? b : a));
-        const pt = interiorPoint(best.outer, best.holes);
-        out.push({ label: `${titleCase(f.attributes.address)} NSW`, state: 'NSW', lon: round(pt[0], 6), lat: round(pt[1], 6) });
-      }
-    }
-    return out;
+    const w = buildNswWhere(tokens);
+    if (!w) return [];
+    const run = (where) => upstream(`${SERVICES.nswAddresses}/query`, {
+      f: 'json', where, outFields: 'address', returnGeometry: 'true', outSR: '4326', resultRecordCount: '8',
+    }, { timeoutMs: 12000 }).catch(() => ({ features: [] }));
+    // Prefix first (fast, index friendly); if it finds nothing, every word anywhere in the address.
+    let body = await run(w.prefix);
+    if (!(body.features || []).length && w.words !== w.prefix) body = await run(w.words);
+    return (body.features || []).filter((f) => f.geometry && Number.isFinite(f.geometry.x) && f.attributes?.address).map((f) => ({
+      label: `${titleCase(f.attributes.address)} NSW`, state: 'NSW', lon: round(f.geometry.x, 6), lat: round(f.geometry.y, 6),
+    }));
   }
 
   async function searchQld(tokens) {
-    const words = tokens.filter((t) => t !== 'QLD' && t !== 'QUEENSLAND' && t !== 'AUSTRALIA');
-    if (!words.length) return [];
-    const clauses = words.map((t) => (/^\d+[A-Z]?$/.test(t) ? `(UPPER(address) LIKE '${sqlText(t)} %' OR UPPER(address) LIKE '% ${sqlText(t)} %' OR UPPER(address) LIKE '%/${sqlText(t)} %')` : `UPPER(address) LIKE '%${sqlText(t)}%'`));
+    const where = buildQldWhere(tokens);
+    if (!where) return [];
     const body = await upstream(`${SERVICES.qldAddresses}/query`, {
-      f: 'json', where: clauses.join(' AND '), outFields: 'address,locality', returnGeometry: 'true', outSR: '7844', resultRecordCount: '8',
+      f: 'json', where, outFields: 'address,locality', returnGeometry: 'true', outSR: '7844', resultRecordCount: '8',
     }, { timeoutMs: 12000 }).catch(() => ({ features: [] }));
     return (body.features || []).filter((f) => f.geometry && f.attributes?.address).map((f) => ({
       label: /\bQLD\b/i.test(f.attributes.address) ? titleCase(f.attributes.address).replace(/\bQld\b/, 'QLD') : `${titleCase(f.attributes.address)} QLD`,
@@ -370,7 +400,11 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
       const roadsCall = state === 'NSW'
         ? upstream(`${SERVICES.nswRoads}/query`, { f: 'json', ...envelope({ minE: lotBox.minE - 40, minN: lotBox.minN - 40, maxE: lotBox.maxE + 40, maxN: lotBox.maxN + 40 }, srid), outFields: 'roadnamebase,roadnametype,roadnamesuffix', returnGeometry: 'true', outSR: String(srid), resultRecordCount: '40' }, { retries: 0, timeoutMs: 10000 })
         : Promise.resolve({ features: [] });
-      const nbCall = upstream(`${layer}/query`, { f: 'json', ...envelope(around, srid), outFields: fields, returnGeometry: 'true', outSR: String(srid), resultRecordCount: '300' });
+      // The NSW cadastre layer rejects resultRecordCount ("Failed to execute query"), so no count is sent; it returns up to its own limit. Big lots
+      // (rural) get simplified geometry so the response stays small; a failed GET is retried once as a form POST.
+      const bigLot = Math.max(lotBox.maxE - lotBox.minE, lotBox.maxN - lotBox.minN) > 600;
+      const nbParams = { f: 'json', ...envelope(around, srid), outFields: fields, returnGeometry: 'true', outSR: String(srid), ...(bigLot ? { maxAllowableOffset: '1', geometryPrecision: '1' } : {}), ...(state === 'QLD' ? { resultRecordCount: '300' } : {}) };
+      const nbCall = upstream(`${layer}/query`, nbParams, { retries: 0 }).catch(() => upstream(`${layer}/query`, nbParams, { post: true, retries: 0 }));
       const notes = [];
       const [lga, zoning, roadsBody, nbBody] = await Promise.all([
         lgaCall.catch(() => { notes.push('Council not found.'); return ''; }),
@@ -521,14 +555,23 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     const baseMeta = { source, attribution, licence, captureDate: capture, retrieved: iso() };
     // First choice: draw directly in MGA so the picture is already north up in the grid.
     let direct = null;
-    try {
-      direct = await upstream(exportUrl, { bbox: `${box.minE},${box.minN},${box.maxE},${box.maxN}`, bboxSR: String(srid), imageSR: String(srid), size: `${w},${h}`, ...fmt }, { as: 'bytes', timeoutMs: 40000, retries: 0 });
-      if (!/^image\//i.test(direct.type) || direct.bytes.length < 200) direct = null;
-    } catch {
+    for (const f of [1, 0.5]) {
+      const dw = Math.max(64, Math.round(w * f));
+      const dh = Math.max(64, Math.round(h * f));
+      try {
+        direct = await upstream(exportUrl, { bbox: `${box.minE},${box.minN},${box.maxE},${box.maxN}`, bboxSR: String(srid), imageSR: String(srid), size: `${dw},${dh}`, ...fmt }, { as: 'bytes', timeoutMs: 40000, retries: 0 });
+        if (/^image\//i.test(direct.type) && direct.bytes.length >= 200) {
+          direct.w = dw;
+          direct.h = dh;
+          break;
+        }
+      } catch {
+        /* logged by upstream; try the smaller size, then web mercator */
+      }
       direct = null;
     }
     if (direct) {
-      const meta = { ...baseMeta, georef: 'mga', srid, zone, bbox: box, widthPx: w, heightPx: h, mmPerPx: round(((box.maxE - box.minE) / w) * 1000, 3) };
+      const meta = { ...baseMeta, georef: 'mga', srid, zone, bbox: box, widthPx: direct.w, heightPx: direct.h, mmPerPx: round(((box.maxE - box.minE) / direct.w) * 1000, 3) };
       return { body: direct.bytes.buffer.slice(direct.bytes.byteOffset, direct.bytes.byteOffset + direct.bytes.byteLength), headers: { 'content-type': direct.type.split(';')[0], 'x-site-meta': encodeURIComponent(JSON.stringify(meta)) } };
     }
     // Fallback: web mercator over a box that covers the MGA box; the browser re-samples it north up (src/site/warp.js).
@@ -536,7 +579,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     const k = 1 / Math.cos((centre.lat * Math.PI) / 180); // web units per ground metre
     const ww = Math.min(maxW, Math.ceil(((wb.maxX - wb.minX) / k) / res));
     const wh = Math.min(maxH, Math.ceil(((wb.maxY - wb.minY) / k) / res));
-    const web = await upstream(exportUrl, { bbox: `${wb.minX},${wb.minY},${wb.maxX},${wb.maxY}`, bboxSR: '102100', imageSR: '102100', size: `${ww},${wh}`, ...fmt }, { as: 'bytes', timeoutMs: 40000 });
+    const web = await upstream(exportUrl, { bbox: `${wb.minX},${wb.minY},${wb.maxX},${wb.maxY}`, bboxSR: '3857', imageSR: '3857', size: `${ww},${wh}`, ...fmt }, { as: 'bytes', timeoutMs: 40000 });
     if (!/^image\//i.test(web.type) || web.bytes.length < 200) throw new HttpError('SITE_UPSTREAM', 'The imagery service did not return a picture.');
     const meta = { ...baseMeta, georef: 'web-mercator', srid, zone, bbox: box, webBbox: { minX: wb.minX, minY: wb.minY, maxX: wb.maxX, maxY: wb.maxY }, widthPx: ww, heightPx: wh, outWidthPx: w, outHeightPx: h, mmPerPx: round(((box.maxE - box.minE) / w) * 1000, 3) };
     return { body: web.bytes.buffer.slice(web.bytes.byteOffset, web.bytes.byteOffset + web.bytes.byteLength), headers: { 'content-type': web.type.split(';')[0], 'x-site-meta': encodeURIComponent(JSON.stringify(meta)) } };
@@ -689,7 +732,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
 
   // Health -------------------------------------------------------------------------------------------------------------------------
   const PROBES = [
-    ['nsw-cadastre', SERVICES.nswLot, true], ['nsw-property', SERVICES.nswProperty, true], ['nsw-lga', SERVICES.nswLga, false], ['nsw-zoning', SERVICES.nswZoning, false],
+    ['nsw-cadastre', SERVICES.nswLot, true], ['nsw-addresses', SERVICES.nswAddresses, true], ['nsw-property', SERVICES.nswProperty, false], ['nsw-lga', SERVICES.nswLga, false], ['nsw-zoning', SERVICES.nswZoning, false],
     ['nsw-roads', SERVICES.nswRoads, false], ['nsw-imagery', SERVICES.nswImagery, false], ['nsw-dem', SERVICES.nswDem, false],
     ['qld-parcels', SERVICES.qldLot, true], ['qld-addresses', SERVICES.qldAddresses, true], ['qld-lga', SERVICES.qldLga, false],
     ['qld-imagery', SERVICES.qldImagery, false], ['qld-dem', SERVICES.qldDem, false], ['qld-lidar-extents', SERVICES.qldLidar, false],

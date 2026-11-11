@@ -311,7 +311,7 @@ test('the AI assistant reserves and settles credits on a migrated live purchase'
   const real = globalThis.fetch;
   globalThis.fetch = async (u) => {
     if (String(u) === 'https://api.anthropic.com/v1/messages') {
-      return new Response(JSON.stringify({ id: 'm', type: 'message', role: 'assistant', content: [{ type: 'text', text: 'Done.' }], stop_reason: 'end_turn', usage: { input_tokens: 5200, output_tokens: 180, cache_read_input_tokens: 5800 } }), { status: 200, headers: { 'content-type': 'application/json' } });
+      return new Response(JSON.stringify({ id: 'm', type: 'message', role: 'assistant', content: [{ type: 'text', text: 'Done.' }, { type: 'tool_use', id: 'toolu_1', name: 'set_finish', input: { target: 'roof', colour: 'steel-charcoal' } }], stop_reason: 'end_turn', usage: { input_tokens: 5200, output_tokens: 180, cache_read_input_tokens: 5800 } }), { status: 200, headers: { 'content-type': 'application/json' } });
     }
     throw new Error(`unexpected fetch ${u}`);
   };

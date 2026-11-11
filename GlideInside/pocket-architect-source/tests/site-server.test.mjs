@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createApp } from '../server/lib/app.js';
 import { createMemoryStore, createD1Store } from '../server/lib/store.js';
-import { createSite, parseBbox, createCache } from '../server/lib/site.js';
+import { createSite, parseBbox, createCache, buildNswWhere, buildQldWhere, searchWords } from '../server/lib/site.js';
 import { lonLatToMga, mgaToLonLat } from '../src/site/geo.js';
 
 let DatabaseSync = null;
@@ -50,6 +50,8 @@ function upstream({ failDirectAerial = false, fail = null, calls = [] } = {}) {
     if (fail && fail.test(`${url.host}${p}`)) return new Response('nope', { status: 503 });
     if (q.get('f') === 'json' && !p.endsWith('/query') && !p.endsWith('/identify')) return j({ name: 'svc', currentVersion: 11.1 });
     if (p.endsWith('NSW_Cadastre/MapServer/9/query')) {
+      // The live NSW cadastre layer answers resultRecordCount with "Failed to execute query" (seen 11/11/2026): the server must not send it.
+      if (q.has('resultRecordCount')) return j({ error: { code: 400, message: 'Failed to execute query.' } });
       const env = q.get('geometryType') === 'esriGeometryEnvelope';
       const feats = [lotFeature(LOT, NSW_LOT_ATTRS)];
       if (env) {
@@ -59,12 +61,10 @@ function upstream({ failDirectAerial = false, fail = null, calls = [] } = {}) {
       }
       return j({ features: feats });
     }
-    if (/NSW_Property\/MapServer\/\d\/query/.test(p)) {
-      const layer = p.match(/MapServer\/(\d)/)[1];
-      if (layer !== '4') return j({ features: [] });
-      const g = (e, n) => { const d = mgaToLonLat(e, n, 56); return [d.lon, d.lat]; };
-      const rg = LOT.map(([e, n]) => g(e, n));
-      return j({ features: [{ attributes: { address: '12 SMITH STREET TAMWORTH' }, geometry: { rings: [rg] } }] });
+    if (p.includes('NSW_Geocoded_Addressing_Theme') && p.endsWith('/query')) {
+      calls.push(`where:${q.get('where')}`);
+      if (!/SMITH STREET/.test(q.get('where'))) return j({ features: [] });
+      return j({ features: [{ attributes: { address: '12 SMITH STREET TAMWORTH' }, geometry: { x: LON, y: LAT } }] });
     }
     if (p.includes('NSW_Administrative_Boundaries')) return j({ features: [{ attributes: { lganame: 'TAMWORTH REGIONAL' } }] });
     if (p.includes('EPI_Primary_Planning_Layers')) return j({ features: [{ attributes: { SYM_CODE: 'R2', LAY_CLASS: 'R2 Low Density Residential', EPI_NAME: 'Tamworth Regional LEP 2010' } }] });
@@ -100,6 +100,17 @@ test('parseBbox validates and limits the area', () => {
   assert.throws(() => parseBbox('1,2,3'));
   assert.throws(() => parseBbox('3,2,1,4'));
   assert.throws(() => parseBbox('0,0,5000,10'));
+});
+
+test('search where builders: abbreviations, state and postcode stripped, prefix and per-word clauses', () => {
+  const tk = (q) => q.toUpperCase().replace(/[,.]/g, ' ').split(/\s+/).filter(Boolean);
+  assert.deepEqual(searchWords(tk('12 Smith St, Tamworth NSW 2340'), 'NSW'), ['12', 'SMITH', 'STREET', 'TAMWORTH']);
+  assert.deepEqual(searchWords(tk('5 St Johns Rd'), 'NSW'), ['5', 'ST', 'JOHNS', 'ROAD']);
+  assert.deepEqual(buildNswWhere(tk('756 Quia Rd Gunnedah')), { prefix: "address LIKE '756 QUIA ROAD GUNNEDAH%'", words: "address LIKE '%756%' AND address LIKE '%QUIA%' AND address LIKE '%ROAD%' AND address LIKE '%GUNNEDAH%'" });
+  assert.equal(buildNswWhere(tk("o'brien st x")).prefix, "address LIKE 'O''BRIEN STREET X%'");
+  assert.equal(buildNswWhere(tk('NSW')), null);
+  assert.equal(buildQldWhere(tk('flinders st townsville qld 4810')), "UPPER(address) LIKE '%FLINDERS%' AND UPPER(address) LIKE '%STREET%' AND UPPER(address) LIKE '%TOWNSVILLE%'");
+  assert.match(buildQldWhere(tk('100 Flinders Street')), /^\(UPPER\(address\) LIKE '100 %'/);
 });
 
 test('search: NSW address returns label, state, lon, lat (max 8)', async () => {
@@ -246,10 +257,10 @@ test('health: probes every upstream and reports ok', async () => {
   const res = await get('/health');
   assert.equal(res.status, 200);
   const b = await res.json();
-  assert.equal(b.upstreams.length, 13);
+  assert.equal(b.upstreams.length, 14);
   assert.equal(b.ok, true);
   assert.ok(b.upstreams.every((u) => u.ok));
-  assert.ok(fetchImpl.calls.length >= 13);
+  assert.ok(fetchImpl.calls.length >= 14);
 });
 
 test('health: a failing required upstream makes ok false, optional ones only allOk', async () => {

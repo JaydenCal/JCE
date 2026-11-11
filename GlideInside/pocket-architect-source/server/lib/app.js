@@ -388,7 +388,8 @@ export function createApp({ store, env = {}, fetchImpl, now = () => Date.now(), 
 
     const parsed = anthropic.parseResponse(data, tools);
     const cost = credits.costMicros(parsed.usage, config);
-    const charged = credits.creditsForCost(cost, config);
+    // A reply with no operations (a refusal or an "I can only do..." answer) is free, as in the mock. The real model cost still counts towards the spend caps.
+    const charged = parsed.ops.length ? credits.creditsForCost(cost, config) : 0;
     await acct.settle(reservation, charged);
     if (acct.kind === 'org') await credits.addOrgSpend(store, acct.payload.oid, cost, started);
     else {

@@ -429,13 +429,13 @@ test('tool calls are checked: unknown names dropped, bad arguments rejected, ext
   assert.deepEqual(r.json.ops, [{ op: 'add_room', args: { type: 'study', x: 0, y: 0, width: 3000, depth: 3000 } }]);
   assert.deepEqual(r.json.rejected.map((x) => x.op), ['set_finish', 'add_room']);
   assert.equal(r.json.reply, 'Added a study.');
-  // A question with no tool call applies nothing and still costs at least one credit.
+  // A question with no tool call applies nothing and is free (a reply with no operations is not charged).
   w.anthropic = () => anthropicOk([{ type: 'text', text: 'Which wall do you mean?' }]);
   w.clock.t += 61000;
   const q = await w.edit(token);
   assert.deepEqual(q.json.ops, []);
   assert.equal(q.json.reply, 'Which wall do you mean?');
-  assert.ok(q.json.credits.charged >= 1);
+  assert.equal(q.json.credits.charged, 0);
 });
 
 test('12. warnings arrive at 50%, 80% and 95% of the allowance (PLAN_PACK_CREDITS=20)', async () => {
@@ -478,7 +478,7 @@ test('13. at the allowance the server refuses AI requests with 402 while exports
   assert.equal((await w.call('POST', '/api/export/dxf', { token, body: { project: sampleProject('p_test1') } })).status, 200);
   // Fewer credits left than the estimate also stops the request.
   const w2 = makeWorld({ PLAN_PACK_CREDITS: '3' });
-  w2.anthropic = () => anthropicOk([{ type: 'text', text: 'Done.' }], COLD);
+  w2.anthropic = () => anthropicOk([{ type: 'text', text: 'Done.' }, ROOF_CALL], COLD);
   const buyer = await w2.buy();
   assert.equal((await w2.edit(buyer.token)).status, 200);
   w2.clock.t += 61000;
@@ -576,7 +576,7 @@ test('credits are reserved before the model call, so parallel requests cannot ov
   const gate = new Promise((r) => (release = r));
   w.anthropic = async () => {
     await gate;
-    return anthropicOk([{ type: 'text', text: 'ok' }], COLD);
+    return anthropicOk([{ type: 'text', text: 'ok' }, ROOF_CALL], COLD);
   };
   const pending = Array.from({ length: 5 }, () => w.edit(token));
   await new Promise((r) => setTimeout(r, 30));
@@ -617,11 +617,31 @@ test('a model failure releases the reservation and charges nothing', async () =>
   assert.equal(t.json.error.code, 'AI_TIMEOUT');
   assert.equal(ent.creditsReserved, 0);
   // Spend is recorded for successful requests only.
-  w.anthropic = () => anthropicOk([{ type: 'text', text: 'ok' }]);
+  w.anthropic = () => anthropicOk([{ type: 'text', text: 'ok' }, ROOF_CALL]);
   w.clock.t += 61000;
   await w.edit(token);
   assert.equal(await w.store.getSpend('d:2026-09-14'), 668);
   assert.equal(await w.store.getSpend('m:2026-09'), 668);
+});
+
+test('a reply with no operations (a refusal) charges no credit, but the model spend is still counted', async () => {
+  const w = makeWorld();
+  const { token } = await w.buy();
+  w.anthropic = () => anthropicOk([{ type: 'text', text: 'I can only change the design on screen.' }]);
+  const r = await w.edit(token);
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.json.ops, []);
+  assert.equal(r.json.credits.charged, 0);
+  assert.equal(r.json.credits.remaining, 500);
+  const ent = [...w.store._ents.values()][0];
+  assert.equal(ent.creditsUsed, 0);
+  assert.equal(ent.creditsReserved, 0);
+  assert.equal((await w.store.listAiRequests(ent.id))[0].credits, 0);
+  assert.equal(await w.store.getSpend('m:2026-09'), 668);
+  // A reply with an operation is still charged.
+  w.anthropic = () => anthropicOk([{ type: 'text', text: 'Done.' }, ROOF_CALL]);
+  w.clock.t += 61000;
+  assert.equal((await w.edit(token)).json.credits.charged, 1);
 });
 
 // Validation, limits and CORS ------------------------------------------------------------------------
