@@ -179,6 +179,7 @@ export function enableRoomCutaway(viewer, projectOrGetter) {
     viewer.invalidate?.();
   }
   cutaways.set(viewer, { exit: () => exit() });
+  try { viewer.inCutaway = () => !!state; } catch { /* frozen viewer */ }
 
   function enter(room, level) {
     if (viewer.mode !== 'orbit') return false;
@@ -222,6 +223,7 @@ export function enableRoomCutaway(viewer, projectOrGetter) {
     if (e.code === 'Escape' && state) {
       exit();
       viewer.snapToRoom?.('aerial', { site: true }); // camera and the Aerial tab agree
+      try { window.dispatchEvent(new CustomEvent('ps:room-aerial')); } catch { /* no window */ }
     }
   };
   if (typeof window !== 'undefined') window.addEventListener('keydown', onKey);
