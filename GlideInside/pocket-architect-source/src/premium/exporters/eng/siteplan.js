@@ -398,7 +398,7 @@ export function drawSitePlan(doc, ctx) {
     const b = T(row.to);
     if (Math.hypot(a.x - b.x, a.y - b.y) < 9) continue;
     const col = row.status === 'outside' ? PEN.envelope : PEN.dim;
-    const bx = dimLine(doc, a, b, `${row.clearanceM.toFixed(2)} m`, { colour: col, size: TXT.body, textSide: 1 });
+    const bx = dimLine(doc, a, b, `${row.clearanceM.toFixed(2)} m`, { colour: col, size: TXT.body, textSide: 1, field });
     field.addSeg(a, b);
     if (bx) field.addBox(bx);
   }
@@ -470,7 +470,7 @@ export function drawSitePlan(doc, ctx) {
       return alongLabel(doc, txt, m, dir, side * off, { size: TXT.label, colour: aerial ? [30, 30, 34] : bcol, bold, halo: HALO });
     };
     const offs = [1.4 + TXT.label * 0.3528 * 0.2, 1.4 + TXT.label * 0.3528 + 0.6];
-    const fr = [0.5, 0.32, 0.68, 0.18, 0.82, 0.42, 0.58, 0.1, 0.9];
+    const fr = [0.5, 0.32, 0.68, 0.18, 0.82, 0.42, 0.58, 0.1, 0.9, 0.25, 0.75, 0.05, 0.95];
     const bearing = []; const length = [];
     for (const off of offs) for (const f of fr) { bearing.push(spec(d.bearing, sideOut, true, off + 1.2)(f)); length.push(spec(`${d.length} m`, -sideOut, false, off + 0.9)(f)); }
     // The length may also go on the bearing side, below it, when its own side is full.
@@ -927,6 +927,7 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
     doc.rect(bx, by - 4.6, tw, 6.8, 'FD');
     doc.setTextColor(...PEN.ink);
     doc.text(txt, bx + 2, by);
+    field.addBox({ x0: bx, y0: by - 4.6, x1: bx + tw, y1: by + 2.2 });
   }
 
   // The ground the site plan sheet covers, on the key plan of a large lot
@@ -942,7 +943,7 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
     doc.setLineDashPattern([], 0);
   }
 
-  // Captions: "LOT 3" and, on the next line one size larger, "DP 263990"
+  // Caption on, or immediately beside, the subject lot: "LOT 3" and, on the next line one size larger, "DP 263990", with a halo
   const ll = lotIdLines(project, lot);
   const sz1 = small;
   const sz2 = small + (key ? 0.8 : 1.6);
@@ -952,12 +953,31 @@ export function drawLocality(doc, box, ctx, { key = false, window: win = null } 
   for (const [t, z] of lines) { doc.setFontSize(z); cw = Math.max(cw, doc.getTextWidth(clean(t))); }
   const lh1 = sz1 * 0.3528 * 1.25;
   const lh2 = sz2 * 0.3528 * 1.25;
-  const ch = (lines[0] ? lh1 : 0) + (lines[1] ? lh2 : 0) + 1.6;
-  doc.setFillColor(255, 255, 255);
-  doc.rect(box.x0 + 1, box.y1 - 1 - ch, cw + 2.4, ch, 'F');
-  doc.setTextColor(...(lot.proposed ? PEN.proposed : pal.boundary));
-  let ty = box.y1 - 1 - ch + 0.8;
-  for (const [t, z] of lines) { doc.setFontSize(z); ty += z * 0.3528 * 1.0; doc.text(clean(t), box.x0 + 2.2, ty); ty += z * 0.3528 * 0.25; }
+  const ch = (lines[0] ? lh1 : 0) + (lines[1] ? lh2 : 0) + 0.8;
+  const lotScr = lot.boundary.map(T);
+  const lbb = G.bbox(lotScr);
+  const lc = { x: (lbb.minX + lbb.maxX) / 2, y: (lbb.minY + lbb.maxY) / 2 };
+  const gap = 1.6;
+  const capCol = lot.proposed ? PEN.proposed : (aerial ? [200, 30, 30] : pal.boundary);
+  const spots = [];
+  // Inside the lot when the lot is large enough for it, else beside it (right, left, above, below, then the corners)
+  spots.push({ x: lc.x, y: lc.y });
+  const hx = cw / 2 + 0.6;
+  const hy = ch / 2;
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, -1], [0, 1], [1, -1], [-1, -1], [1, 1], [-1, 1]]) {
+    for (const extra of [0, 3, 6]) spots.push({ x: lc.x + dx * (lbb.w / 2 + hx + gap + extra), y: lc.y + dy * (lbb.h / 2 + hy + gap + extra) });
+  }
+  const capBox = (p) => ({ x0: p.x - hx, y0: p.y - hy, x1: p.x + hx, y1: p.y + hy });
+  let cap = null;
+  for (const [idx, p] of spots.entries()) {
+    const b = capBox(p);
+    if (idx === 0 && !([{ x: b.x0, y: b.y0 }, { x: b.x1, y: b.y0 }, { x: b.x1, y: b.y1 }, { x: b.x0, y: b.y1 }].every((q) => G.pointInPolygon(q, lotScr)))) continue;
+    if (field.free(b, { lines: false })) { cap = { p, b }; break; }
+  }
+  if (!cap) cap = { p: spots[1], b: capBox(spots[1]) };
+  field.addBox(cap.b);
+  let ty = cap.b.y0 + 0.4;
+  for (const [t, z] of lines) { ty += z * 0.3528 * 1.0; haloText(doc, clean(t), cap.p.x, ty, { size: z, bold: true, colour: capCol, align: 'center', halo: 1.2 }); ty += z * 0.3528 * 0.25; }
   const scaleText = key ? 'NTS' : `1:${view.n} @ ${ctx.paper || 'A3'}`;
   doc.setFont('helvetica', 'normal');
   const sw2 = doc.getTextWidth(scaleText) + 2.4;

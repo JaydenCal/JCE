@@ -10,6 +10,11 @@ export const TRIAL_DXF_LAYER = 'GI-TRIAL-WATERMARK';
 export const TRIAL_NODE = 'GI_TRIAL_WATERMARK';
 export const TRIAL_MATERIAL = 'GI_TRIAL_watermark_red';
 
+// Engineering plan sheet geometry (mirrors eng/frame.js: SW, SH and TB_TOP, the top edge of the title block, in A3 millimetres).
+const ENG_SW = 420;
+const ENG_SH = 297;
+const ENG_TB_TOP = 238;
+
 /** Draw the mark on every page of a jsPDF document (diagonal title, small footer line), at about 22 percent opacity. */
 export function stampPdf(doc) {
   const pages = doc.internal.getNumberOfPages();
@@ -33,13 +38,24 @@ export function stampPdf(doc) {
     const x0 = w / 2 - (tw / 2) * Math.cos(theta);
     const y0 = h / 2 + (tw / 2) * Math.sin(theta);
     doc.text(TRIAL_TITLE, x0, y0, { angle: deg });
-    // Footer line, small, near the bottom edge so the title block is not hidden.
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7);
-    doc.setGState(new doc.GState({ opacity: 0.25 }));
-    doc.setTextColor(150, 60, 60);
-    doc.text(TRIAL_FOOTER, w / 2, h - 2.2, { align: 'center' });
     doc.restoreGraphicsState();
+    // Footer line in dark grey at full strength. On an engineering plan sheet (A3 landscape, or A1 at twice the scale) it sits inside the
+    // sheet frame, just above the title block; other documents keep it near the bottom edge.
+    const ratio = w / h;
+    const eng = Math.abs(ratio - ENG_SW / ENG_SH) < 0.02;
+    const k = eng ? w / ENG_SW : 1;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(eng ? 8 * k : 7);
+    doc.setTextColor(64, 64, 64);
+    if (eng) {
+      const tw = doc.getTextWidth(TRIAL_FOOTER) + 3 * k;
+      const by = (ENG_TB_TOP - 1.3) * k;
+      doc.setFillColor(255, 255, 255);
+      doc.rect(w / 2 - tw / 2, by - 3.4 * k, tw, 4.6 * k, 'F');
+      doc.text(TRIAL_FOOTER, w / 2, by, { align: 'center' });
+    } else {
+      doc.text(TRIAL_FOOTER, w / 2, h - 2.2, { align: 'center' });
+    }
   }
   doc.setPage(1);
 }
