@@ -39,7 +39,7 @@ $WorkerName = 'pocket-architect-api'
 $LiveDbId = 'fccdf1f7-e48c-4c72-8723-b343b3f2fad4'
 $GuidRe = '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
 $RequiredSecrets = @('STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'STRIPE_PRICE_ID', 'RESEND_API_KEY', 'ADMIN_TOKEN', 'ENTITLEMENT_SECRET', 'IP_HASH_SALT', 'ANTHROPIC_API_KEY')
-$RequiredMigrations = @('0009_glide_library_default_off.sql', '0010_org_brand_colours.sql')
+$RequiredMigrations = @('0009_glide_library_default_off.sql', '0010_org_brand_colours.sql', '0011_org_slug.sql')
 $script:Changed = $false         # becomes true at the first step that changes anything live
 $script:PrevVersion = ''
 $script:NewVersion = ''
@@ -80,7 +80,7 @@ function Rollback-Command {
 }
 function Show-Rollback {
   Write-Host ''
-  Write-Host 'IF THE NEW WORKER IS LIVE AND YOU WANT IT UNDONE (the database needs no undo, the migrations only add):' -ForegroundColor Yellow
+  Write-Host 'IF THE NEW WORKER IS LIVE AND YOU WANT IT UNDONE (the database needs no undo: 0009 changes one default, show_glide_to_clients to 0, and 0010 and 0011 only add columns). Do not sell until the new Worker is redeployed:' -ForegroundColor Yellow
   Write-Host ('  ' + (Rollback-Command))
   Write-Host '  or double-click golive\ROLLBACK-LIVE.cmd, or Cloudflare dashboard > Workers and Pages > pocket-architect-api > Deployments > Rollback.'
   Write-Host "  D1 backup taken before the change: $($script:Backup)"
@@ -111,6 +111,19 @@ Ok "node $nodeV"
 $script:WranglerBin = ''
 foreach ($cand in @((Join-Path $Root 'staging\node_modules\.bin\wrangler.cmd'), (Join-Path $Src 'node_modules\.bin\wrangler.cmd'))) {
   if (Test-Path $cand) { $script:WranglerBin = $cand; break }
+}
+if (-not $script:WranglerBin) {
+  $stg = Join-Path $Root 'staging'
+  if (Test-Path (Join-Path $stg 'package.json')) {
+    Warn 'wrangler is not installed in staging. Running npm ci there (this can take a minute).'
+    Push-Location $stg
+    try {
+      & npm ci 2>&1 | Out-Host
+      if ($LASTEXITCODE -ne 0) { Warn 'npm ci failed, trying npm install.'; & npm install 2>&1 | Out-Host }
+    } finally { Pop-Location }
+    $cand = Join-Path $stg 'node_modules\.bin\wrangler.cmd'
+    if (Test-Path $cand) { $script:WranglerBin = $cand }
+  }
 }
 if (-not $script:WranglerBin) { Fail 'wrangler is not installed. Expected staging\node_modules\.bin\wrangler.cmd (run the staging deploy once, or run npm ci in the staging folder).' }
 $wv = Wrangler '--version'
@@ -232,7 +245,7 @@ $mg = Wrangler 'd1' 'migrations' 'apply' 'pocket-architect' '--remote' '--config
 Write-Host $mg
 if ($script:WrExit -ne 0) { Fail 'A migration failed. The Worker was NOT deployed (the old Worker still runs). Send this log to Claude.' }
 $ml = Wrangler 'd1' 'migrations' 'list' 'pocket-architect' '--remote' '--config' $Cfg
-if ($ml -match 'No migrations to apply') { Ok 'every migration is applied (0009 and 0010 included)' }
+if ($ml -match 'No migrations to apply') { Ok 'every migration is applied (0009, 0010 and 0011 included)' }
 else { Write-Host $ml; Warn 'migrations list did not say "No migrations to apply". Check the list above before trusting the deploy.' }
 
 Step '4c. Deploy the Worker'

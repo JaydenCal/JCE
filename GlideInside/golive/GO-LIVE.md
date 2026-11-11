@@ -20,7 +20,7 @@ Night before (optional, changes nothing): double-click `RUN-LIVE-PREFLIGHT.cmd`.
 Before you start: the live Stripe webhook endpoint (`https://glideinside.com.au/api/stripe/webhook`, 5 events, Step 3) exists in Stripe live mode, the Resend domain says Verified (Step 4), and `golive\glideinside-site-upload.zip` is the rebuilt one. Do not send packs or open the ads until step 5 is done: between step 1 and step 2 the OLD Worker holds the live Stripe keys and the new A$30 price, and an old Worker may not unlock a pack for a A$30 payment. Keep that gap to a few minutes.
 
 1. **Keys.** Double-click `SET-LIVE-KEYS-TOMORROW.cmd` (sets `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID` = `price_1UaYNuBd0GFQCpgxUaMDNX4T` and `RESEND_API_KEY`).
-2. **Deploy.** Double-click `RUN-LIVE-DEPLOY.cmd`, check the preflight lines are green, press Enter once. It backs up D1 (to `Downloads\pocket-architect-before-golive-<date>.sql`), applies the migrations still to run (0009 `glide_library_default_off` and 0010 `org_brand_colours`, plus any of 0001 to 0008 not yet recorded), deploys `pocket-architect-api`, waits 10 seconds and runs the smoke test. It ends with `LIVE DEPLOY: PASS` or `FAIL`, the previous version id and the exact rollback command (also written to `ROLLBACK-LIVE.cmd`). The log is `golive-deploy.log`. If it says FAIL, stop and send the log to Claude: do not upload the site. Optional: `RUN-LIVE-DEPLOY.cmd -ShareId <id>` also checks that a share link you already handed out still opens.
+2. **Deploy.** Double-click `RUN-LIVE-DEPLOY.cmd`, check the preflight lines are green, press Enter once. It backs up D1 (to `Downloads\pocket-architect-before-golive-<date>.sql`), applies the migrations still to run (0009 `glide_library_default_off`, 0010 `org_brand_colours` and 0011 `org_slug`, plus any of 0001 to 0008 not yet recorded), deploys `pocket-architect-api`, waits 10 seconds and runs the smoke test. It ends with `LIVE DEPLOY: PASS` or `FAIL`, the previous version id and the exact rollback command (also written to `ROLLBACK-LIVE.cmd`). The log is `golive-deploy.log`. If it says FAIL, stop and send the log to Claude: do not upload the site. Optional: `RUN-LIVE-DEPLOY.cmd -ShareId <id>` also checks that a share link you already handed out still opens.
 3. **Upload the site.** `UPLOAD-STEPS.md` steps 1 to 5 (backup check, analytics.js check, upload the zip, extract over the top, never delete `subdivision/`).
 4. **Reskin /subdivision/.** `UPLOAD-STEPS.md` step 6: download the live `subdivision/index.html` to `Downloads\sub\index.html`, double-click `RUN-RESKIN-SUBDIVISION.cmd`, upload `index.new.html`, rename (Section 9). Then purge the Cloudflare cache once (`UPLOAD-STEPS.md` step 7).
 5. **Smoke.** Double-click `RUN-LIVE-SMOKE.cmd` (API and the 8 key pages). Every line must be PASS. WARN lines do not stop the launch (an optional government service down, or the AI helper paused: read the line).
@@ -179,10 +179,10 @@ npx wrangler deploy --dry-run
 # must list env.DB (pocket-architect), env.FILES (pocket-architect-files) and finish with: --dry-run: exiting now.
 ```
 
-Then the deploy. The script `golive\deploy-golive.ps1` runs the migrations (Step 2), asks only for the new secrets that are missing, and deploys:
+Then the deploy. The script `golive\deploy-live.ps1` (started by `RUN-LIVE-DEPLOY.cmd`) runs the migrations (Step 2), asks only for the new secrets that are missing, and deploys:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File <PATH TO>\golive\deploy-golive.ps1
+powershell -ExecutionPolicy Bypass -File <PATH TO>\golive\deploy-live.ps1
 ```
 
 By hand: `npx wrangler deploy --keep-vars` (`--keep-vars` keeps any variable you set only in the dashboard). Note the version id it prints, you need it for rollback.
@@ -283,7 +283,7 @@ Website:
 
 Worker:
 1. `npx wrangler rollback` (pick the version that was live before, the one printed before your deploy; `npx wrangler deployments list` shows them), or Cloudflare dashboard, **Workers and Pages**, `pocket-architect-api`, **Deployments**, **Rollback to this version**. The old code runs again on the same route.
-2. The database does not need undoing. The migrations only added a column and tables, and the old code ignores them. Entitlements and share links written while the release ran are readable by the old Worker (the release keeps the live column `payment_intent`, the live token format and the live `projects` table and R2 keys). Credits the release had reserved for a request still running at that moment (column `credits_reserved`) are simply ignored by the old code, so nobody loses credits.
+2. The database does not need undoing. Migration 0009 changes one default (`show_glide_to_clients` to 0), and 0010 and 0011 only add columns; the old code ignores the added columns. After a rollback, do not sell until the new Worker is redeployed. Entitlements and share links written while the release ran are readable by the old Worker (the release keeps the live column `payment_intent`, the live token format and the live `projects` table and R2 keys). Credits the release had reserved for a request still running at that moment (column `credits_reserved`) are simply ignored by the old code, so nobody loses credits.
 3. If the release had taken real Stripe payments before the rollback, the old Worker still needs the live Stripe secrets (they are the same secrets), so nothing else changes.
 4. To stop only the new features without a rollback: `npx wrangler secret delete RESEND_API_KEY` (Send to JCE then says it is not configured and nothing else is affected).
 
@@ -315,7 +315,6 @@ Do these in order, after Steps 0 to 7 above:
 - `GO-LIVE.md`: this document.
 - `glideinside-site-upload.zip`: the 152 files to upload. `UPLOAD_FILES.txt` lists them.
 - `glideinside-site-full.zip`: a complete copy of the site, excluding `subdivision/` and the review screenshots.
-- `deploy-golive.ps1`: the older Worker deploy script (superseded by `deploy-live.ps1`).
 - `deploy-live.ps1`, `RUN-LIVE-DEPLOY.cmd`, `RUN-LIVE-PREFLIGHT.cmd`: the live deploy (preflight, backup, migrations, deploy, smoke, rollback command).
 - `smoke-live.ps1`, `RUN-LIVE-SMOKE.cmd`: the live smoke test (`-Pages` also checks the 8 key pages).
 - `wrangler.live.toml`, `build-live-config.mjs`: the live Worker config and the tool that keeps it identical to the source config.
