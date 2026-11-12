@@ -58,16 +58,59 @@ export function groundLevelFn(lot) {
   };
 }
 
-/** Draws the contours under everything else. `S` maps plan mm to sheet mm; `rect` is the viewport. Returns the lines for labelling. */
-export function drawContours(doc, lot, S, rect) {
-  const lines = contourLines(lot).map((c) => ({ ...c, sp: c.pts.map(S) }));
+/** The contours in sheet mm, ready to label and to stroke. `S` maps plan mm to sheet mm. */
+export function prepareContours(lot, S) {
+  return contourLines(lot).map((c) => ({ ...c, sp: c.pts.map(S) }));
+}
+
+const segInter = (a, b, c, d) => {
+  const r = { x: b.x - a.x, y: b.y - a.y };
+  const s = { x: d.x - c.x, y: d.y - c.y };
+  const den = r.x * s.y - r.y * s.x;
+  if (Math.abs(den) < 1e-12) return null;
+  const t = ((c.x - a.x) * s.y - (c.y - a.y) * s.x) / den;
+  const u = ((c.x - a.x) * r.y - (c.y - a.y) * r.x) / den;
+  return t > 0 && t < 1 && u >= 0 && u <= 1 ? t : null;
+};
+
+/** A box as a mask polygon, grown by `pad` mm. */
+export const boxMask = (b, pad = 0.6) => [{ x: b.x0 - pad, y: b.y0 - pad }, { x: b.x1 + pad, y: b.y0 - pad }, { x: b.x1 + pad, y: b.y1 + pad }, { x: b.x0 - pad, y: b.y1 + pad }];
+
+/**
+ * Strokes the contours with gaps: every part of a line that falls inside a mask polygon (label blocks, dimension text, the house
+ * footprint, the driveway) is left out. Lines are first clipped to the viewport `rect`.
+ */
+export function strokeContours(doc, lines, rect, masks) {
+  const bbs = masks.map((m) => G.bbox(m));
   doc.setLineDashPattern([], 0);
   for (const major of [false, true]) {
     doc.setDrawColor(...(major ? PEN.contourMajor : PEN.contourMinor));
     doc.setLineWidth(major ? 0.26 : 0.12);
-    for (const c of lines) if (c.major === major) clippedPolyline(doc, c.sp, rect, false);
+    for (const c of lines) {
+      if (c.major !== major) continue;
+      for (let i = 0; i + 1 < c.sp.length; i++) {
+        const s = clipSegment(c.sp[i], c.sp[i + 1], rect);
+        if (!s) continue;
+        const [p, q] = s;
+        const lo = { x: Math.min(p.x, q.x), y: Math.min(p.y, q.y) };
+        const hi = { x: Math.max(p.x, q.x), y: Math.max(p.y, q.y) };
+        const near = [];
+        masks.forEach((m, k) => { const b = bbs[k]; if (!(hi.x < b.minX || lo.x > b.maxX || hi.y < b.minY || lo.y > b.maxY)) near.push(m); });
+        if (!near.length) { doc.line(p.x, p.y, q.x, q.y); continue; }
+        const ts = [0, 1];
+        for (const m of near) for (let k = 0; k < m.length; k++) { const t = segInter(p, q, m[k], m[(k + 1) % m.length]); if (t != null) ts.push(t); }
+        ts.sort((x, y) => x - y);
+        for (let k = 0; k + 1 < ts.length; k++) {
+          if (ts[k + 1] - ts[k] < 1e-6) continue;
+          const mid = G.lerp(p, q, (ts[k] + ts[k + 1]) / 2);
+          if (near.some((m) => G.pointInPolygon(mid, m))) continue;
+          const a = G.lerp(p, q, ts[k]);
+          const b = G.lerp(p, q, ts[k + 1]);
+          doc.line(a.x, a.y, b.x, b.y);
+        }
+      }
+    }
   }
-  return lines;
 }
 
 /** RL labels along the major contours (and the minor ones when no major reaches the view), in the clear spaces of `field`. */

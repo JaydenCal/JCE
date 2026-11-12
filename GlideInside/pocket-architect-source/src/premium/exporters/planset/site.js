@@ -11,7 +11,7 @@ import { classifyEdges, requiredFor } from '../../../model/placement.js';
 import { boundaryDims, roadReserve, ROAD_DEFAULTS, deriveDriveway, clearances, buildingHull, lotLabelLines, inwardNormalOf } from '../../../site/lotplan.js';
 import { wallShapes } from '../shared.js';
 import { planGeometry, scaleBar } from '../pdf.js';
-import { hasGround, drawContours, placeContourLabels, drawSpotLevels, groundLevelFn, cornersOf, houseCorners } from './contours.js';
+import { hasGround, prepareContours, strokeContours, boxMask, placeContourLabels, drawSpotLevels, groundLevelFn, cornersOf, houseCorners } from './contours.js';
 import { PEN, PHANTOM, clipSegment, hatch, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean } from '../eng/kit.js';
 import { AREA } from './frame.js';
 import { groundLevel, envelopePoly, groundFootprintM2 } from './lot.js';
@@ -244,7 +244,10 @@ export function drawSite(doc, project, lot) {
     polyLine(doc, n.ring.map(S));
   }
   const ground0 = hasGround(lot);
-  const contourLines = ground0 ? drawContours(doc, lot, S, VP) : [];
+  const contourLines = ground0 ? prepareContours(lot, S) : [];
+  // The contours are stroked last (so they can leave gaps around labels and the house) and moved back in the page stream to here.
+  const pageStream = doc.internal.pages[doc.internal.getCurrentPageInfo().pageNumber];
+  const contourMark = pageStream.length;
   const neighbourLabels = [];
   for (const n of lot.neighbours || []) {
     if (!n.ring || n.ring.length < 3 || n.isRoad || (!n.lotNumber && !n.planLabel)) continue;
@@ -583,7 +586,7 @@ export function drawSite(doc, project, lot) {
       for (const p of houseCorners(hullPoly)) spots.push({ p, out: unit(S(p), hc) });
     }
     drawSpotLevels(doc, field, spots, zAt, S);
-    if (hullPoly.length) { const hb = G.bbox(hullPoly.map(S)); field.addBox({ x0: hb.minX, y0: hb.minY, x1: hb.maxX, y1: hb.maxY }); }
+    if (hullPoly.length) { const hb = G.bbox(hullPoly.map(S)); field.addBox({ x0: hb.minX, y0: hb.minY, x1: hb.maxX, y1: hb.maxY, nomask: true }); }
     placeContourLabels(doc, field, contourLines, VP);
   }
 
@@ -635,6 +638,17 @@ export function drawSite(doc, project, lot) {
   doc.setFontSize(7.5);
   doc.setTextColor(...PEN.ink);
   doc.text(`1:${scale} @ A3`, VP.x0 + 6 + barLen + 14, VP.y1 + 6.2);
+
+  // Contours: stroked now with gaps at every label block, dimension text and the house and driveway, then placed under the linework.
+  if (ground0) {
+    const masks = field.boxes.filter((b) => !b.nomask).map((b) => boxMask(b));
+    if (hullPoly.length) masks.push(hullPoly.map(S));
+    if (dw?.ok) for (const poly of [dw.polygon, dw.crossover?.polygon].filter(Boolean)) masks.push(poly.map(S));
+    const before = pageStream.length;
+    strokeContours(doc, contourLines, VP, masks);
+    const added = pageStream.splice(before);
+    pageStream.splice(contourMark, 0, 'q', ...added, 'Q');
+  }
 
   // Facts for the strip.
   const fp = groundFootprintM2(project);
