@@ -182,13 +182,14 @@ test('no room name is drawn twice on a house sheet, and unfit rooms get a number
   }
 });
 
-test('the cover locality plan draws the lot at least 25 mm long', async () => {
+test('the cover locality plan draws the lot at least 10 mm long, at 1:2000 to 1:5000 for ordinary lots', async () => {
   const { localityScale } = await import('../src/premium/exporters/planset/cover.js');
   const { toSiteLot } = await import('../src/premium/exporters/planset/lot.js');
   for (const [w, d] of [[18, 32], [60, 22], [36, 60], [300, 420]]) {
     const l = toSiteLot({ boundaryM: rect(0, 0, w, d), frontEdge: 0 });
     const sc = localityScale(l);
-    assert.ok((Math.max(w, d) * 1000) / sc >= 25, `${w}x${d} at 1:${sc}`);
+    assert.ok((Math.max(w, d) * 1000) / sc >= 10, `${w}x${d} at 1:${sc}`);
+    if (Math.max(w, d) < 100) assert.ok(sc >= 2000 && sc <= 5000, `${w}x${d} at 1:${sc}`);
   }
 });
 
@@ -280,4 +281,64 @@ test('contours: RL labels and spot levels never sit on the lot label, dimensions
       assert.ok(!hit, `${lv.s} overlaps "${o.s}"`);
     }
   }
+});
+
+// ---- Cover locality plan: real aerial, wider cadastre, fallback ----
+const aerialJpeg = new Uint8Array(fs.readFileSync(new URL('./fixtures/aerial-test.jpg', import.meta.url)));
+const imageCount = async (blob) => (Buffer.from(await blob.arrayBuffer()).toString('latin1').match(/\/Subtype\s*\/Image/g) || []).length;
+const aerialFor = { image: aerialJpeg, extentM: { minE: -282, minN: -270, maxE: 318, maxN: 330 }, state: 'NSW' };
+
+test('locality plan: the aerial is embedded under the linework when given, with attribution, scale bar and a red site label', async () => {
+  const none = await run('site', { fetchSite: null });
+  const withAerial = await run('site', { aerial: aerialFor, fetchSite: null });
+  assert.equal((await imageCount(withAerial.r.blob)) - (await imageCount(none.r.blob)), 1);
+  assert.match(withAerial.text, /Imagery and cadastre © NSW Spatial Services/);
+  assert.ok(!/Aerial not available/.test(withAerial.text));
+  assert.match(withAerial.text, /\nSITE\n/);
+  assert.match(withAerial.text, /\d+ m\n/); // scale bar end label
+});
+
+test('locality plan: without an aerial the sheet says so and draws no picture', async () => {
+  const { r, text } = await run('site', { fetchSite: null });
+  assert.match(text, /Aerial not available for this lot/);
+  assert.ok(!/Imagery and cadastre/.test(text));
+  const failing = await run('site', { fetchSite: async () => { throw new Error('offline'); } });
+  assert.match(failing.text, /Aerial not available for this lot/);
+  assert.equal(failing.r.pages, 3);
+  const small = await run('site', { aerial: { image: new Uint8Array([1, 2, 3]), extentM: aerialFor.extentM }, fetchSite: null });
+  assert.match(small.text, /Aerial not available for this lot/);
+  assert.equal(await imageCount(small.r.blob), await imageCount(r.blob));
+});
+
+test('locality plan: the wider fetch asks for about 500 m of aerial (2048 px) and a 300 m cadastre radius, and uses what it returns', async () => {
+  const { localityRequest } = await import('../src/premium/exporters/planset/locality.js');
+  const georef = { ...lot, state: 'NSW', srid: 7856, origin: { e: 380000, n: 6360000 } };
+  const req = localityRequest((await import('../src/premium/exporters/planset/lot.js')).toSiteLot(georef));
+  assert.equal(req.radius, 300);
+  assert.equal(req.aerialParams.maxpx, '2048');
+  assert.equal(req.aerialParams.state, 'NSW');
+  const [e0, n0, e1, n1] = req.aerialParams.bbox.split(',').map(Number);
+  assert.ok(e1 - e0 >= 500 && e1 - e0 <= 900 && n1 - n0 >= 500 && n1 - n0 <= 900, `${e1 - e0} x ${n1 - n0}`);
+  assert.ok(e0 <= 380000 - 250 && e1 >= 380000 + 36 + 250);
+  assert.equal(localityRequest((await import('../src/premium/exporters/planset/lot.js')).toSiteLot(lot)), null, 'no georeference, no request');
+  let seen = null;
+  const hook = async (a) => { seen = a.request; return { aerial: aerialFor, lot: { neighbours: [{ lotNumber: '999', isRoad: false, ring: rect(40000, 0, 60000, 60000).map(([x, y]) => ({ x, y: -y })) }], roads: [{ name: 'Wide Road', pts: [-300000, 70000, 300000, 70000] }] } }; };
+  const { r, text } = await run('site', { fetchSite: hook });
+  assert.ok(seen === null || seen.radius === 300);
+  assert.match(text, /LOT 999|999/);
+  assert.match(text, /WIDE ROAD/);
+  assert.match(text, /Imagery and cadastre/);
+  const g = await run('site', { fetchSite: hook, lot: georef });
+  assert.equal(g.r.pages, 3);
+  assert.equal(seen.radius, 300);
+  assert.ok(await imageCount(r.blob) >= 1);
+});
+
+test('locality plan: the hook is told not to fetch a picture when the aerial in the call already covers the view', async () => {
+  let need = null;
+  const g = { ...lot, state: 'NSW', srid: 7856, origin: { e: 380000, n: 6360000 } };
+  await run('site', { lot: g, aerial: aerialFor, fetchSite: async (a) => { need = a.request.need; return null; } });
+  assert.deepEqual(need, { aerial: false, cadastre: true });
+  await run('site', { lot: g, fetchSite: async (a) => { need = a.request.need; return null; } });
+  assert.deepEqual(need, { aerial: true, cadastre: true });
 });

@@ -75,6 +75,7 @@ const LIMITS = { search: [60, 60], lot: [20, 60], aerial: [20, 60], contours: [1
 const DAY_LIMIT = 800;
 const NEIGHBOUR_M = 60;
 const NEIGHBOUR_MAX_M = 400;
+export const RADIUS_MAX_M = 300;
 
 /** Neighbour search distance in metres: the request's neighbourM (0 to 400) or, when absent, max(60, 15 percent of the lot's bounding box diagonal) capped at 400. */
 export function neighbourDistance(requested, diagonalM) {
@@ -456,8 +457,13 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     if (lat > -9 || lat < -38) throw new HttpError('UNSUPPORTED_AREA', 'That location is outside NSW and Queensland. Site lookup only covers those two states.');
     const wanted = stateParam(url);
     const srid = mgaSrid(zone);
-    const neighbourParam = url.searchParams.get('neighbourM');
-    if (neighbourParam !== null && neighbourParam !== '' && !Number.isFinite(Number(neighbourParam))) throw new HttpError('BAD_REQUEST', 'neighbourM must be a number of metres.');
+    // `radius` (metres, 0 to 300) is the locality plan's name for the same thing; neighbourM wins when both are sent.
+    const radiusParam = url.searchParams.get('radius');
+    if (radiusParam !== null && radiusParam !== '' && !Number.isFinite(Number(radiusParam))) throw new HttpError('BAD_REQUEST', 'radius must be a number of metres.');
+    const radiusClamped = radiusParam === null || radiusParam === '' ? null : Math.min(RADIUS_MAX_M, Math.max(0, Math.round(Number(radiusParam))));
+    const nbRaw = url.searchParams.get('neighbourM');
+    const neighbourParam = nbRaw !== null && nbRaw !== '' ? nbRaw : radiusClamped;
+    if (nbRaw !== null && nbRaw !== '' && !Number.isFinite(Number(nbRaw))) throw new HttpError('BAD_REQUEST', 'neighbourM must be a number of metres.');
     const nbKey = neighbourParam === null || neighbourParam === '' ? 'auto' : String(Math.min(NEIGHBOUR_MAX_M, Math.max(0, Math.round(Number(neighbourParam)))));
     const { value } = await jsonCached(`lot3:${wanted || 'auto'}:${round(lon, 5)}:${round(lat, 5)}:${nbKey}`, TTL.lot, async () => {
       const order = wanted ? [wanted] : lat < -29 ? ['NSW', 'QLD'] : ['QLD', 'NSW'];

@@ -1,7 +1,7 @@
 // Cover sheet (C000): project name and address, drawing index, locality context (DCDB), house thumbnail, revision table and general notes.
 
 import * as G from '../../../model/geometry.js';
-import { clean, PEN, ink, wrap } from '../eng/kit.js';
+import { clean, PEN, ink, wrap, haloText } from '../eng/kit.js';
 import { planGeometry } from '../pdf.js';
 import { wallShapes } from '../shared.js';
 import { groundLevel, areaTotals } from './lot.js';
@@ -9,6 +9,8 @@ import { levelContent } from '../drawing.js';
 import { AREA, ENTITY, ABN, EMAIL, REV_TEXT, fit } from './frame.js';
 
 const GREY = [120, 124, 132];
+/** White wash over the aerial (60 percent): linework, labels and the red boundary read over it. */
+export const WASH = 0.6;
 const LOC = { x0: 206, y0: 24, x1: AREA.x1 - 5, y1: 150 };
 const THUMB = { x0: 206, y0: 156, x1: AREA.x1 - 5, y1: 262 };
 
@@ -24,22 +26,51 @@ const frame = (doc, r, title) => {
 
 const polyPath = (doc, pts, style) => { doc.lines(pts.slice(1).map((p, i) => [p.x - pts[i].x, p.y - pts[i].y]), pts[0].x, pts[0].y, [1, 1], style, true); };
 
-/** Locality scale for the cover: from the lot extent, rounded up to a standard scale. */
+/**
+ * Locality scale for the cover. The plan is zoomed out so the site can be placed in its surroundings: the largest of 1:2000, 1:2500 and
+ * 1:5000 that still draws the lot at least 10 mm long and fits the frame. Lots too big for those fall back to the smaller list below.
+ */
 export function localityScale(lot) {
   if (!lot) return null;
   const bb = G.bbox(lot.boundary);
   const w = LOC.x1 - LOC.x0 - 6;
   const h = LOC.y1 - LOC.y0 - 6;
-  const SC = [250, 500, 1000, 2000, 2500, 5000, 10000, 20000];
   const big = Math.max(bb.w, bb.h);
-  // Largest scale that still draws the lot at least 30 mm long on the sheet (so it is clearly visible), as long as it fits the frame.
   const fits = (n) => bb.w / n <= w * 0.85 && bb.h / n <= h * 0.85;
-  const clear = SC.filter((n) => big / n >= 30 && fits(n));
-  if (clear.length) return clear.at(-1);
-  return SC.find(fits) || 20000;
+  // Prefer the lot about 20 mm or more on paper (so it is easy to find), and never under 10 mm.
+  for (const min of [20, 10]) {
+    const near = [2000, 2500, 5000].filter((n) => big / n >= min && fits(n));
+    if (near.length) return near.at(-1);
+  }
+  const SC = [250, 500, 1000, 2000, 2500, 5000, 10000, 20000, 50000];
+  return SC.find((n) => fits(n) && big / n >= 10 && n >= 2000) || SC.find(fits) || 50000;
 }
 
-function locality(doc, lot, project) {
+/** The ground the locality plan shows: { scale, c (lot centroid), view: plan mm rectangle } with the lot at the frame centre. */
+export function localityView(lot) {
+  const scale = localityScale(lot);
+  const c = G.polygonCentroid(lot.boundary);
+  const hw = ((LOC.x1 - LOC.x0) / 2) * scale;
+  const hh = ((LOC.y1 - LOC.y0) / 2) * scale;
+  return { scale, c, view: { x0: c.x - hw, y0: c.y - hh, x1: c.x + hw, y1: c.y + hh } };
+}
+
+const RED = [200, 24, 28];
+const NO_AERIAL = 'Aerial not available for this lot';
+
+/** "Imagery and cadastre ..." line for the locality plan, as in the site footer credits. */
+export function localityAttribution(lot, aerial) {
+  const qld = (lot.state || aerial?.state) === 'QLD';
+  const nsw = (lot.state || aerial?.state) === 'NSW';
+  if (aerial) return qld ? 'Imagery and cadastre © State of Queensland (Department of Resources)' : 'Imagery and cadastre © NSW Spatial Services';
+  if (qld) return 'Cadastre © State of Queensland (Department of Resources)';
+  if (nsw || (lot.neighbours || []).length) return nsw ? 'Cadastre © NSW Spatial Services' : '';
+  return '';
+}
+
+const niceBar = (metres) => [10, 20, 25, 50, 100, 200, 250, 500, 1000].reduce((b, n) => (n <= metres ? n : b), 10);
+
+function locality(doc, lot, project, loc = {}) {
   frame(doc, LOC, 'LOCALITY PLAN (DCDB CONTEXT)');
   if (!lot) {
     doc.setFont('helvetica', 'normal');
@@ -48,12 +79,33 @@ function locality(doc, lot, project) {
     doc.text('No lot is attached to this concept, so no locality plan is shown.', (LOC.x0 + LOC.x1) / 2, (LOC.y0 + LOC.y1) / 2, { align: 'center' });
     return null;
   }
-  const scale = localityScale(lot);
-  const c = G.polygonCentroid(lot.boundary);
+  const { scale, c } = localityView(lot);
+  const neighbours = loc.neighbours || lot.neighbours || [];
+  const roads = loc.roads || lot.roads || [];
+  const aerial = loc.aerial || null;
   const mx = (LOC.x0 + LOC.x1) / 2;
   const my = (LOC.y0 + LOC.y1) / 2;
   const T = (p) => ({ x: mx + (p.x - c.x) / scale, y: my + (p.y - c.y) / scale });
   const R = { x0: LOC.x0 + 0.5, y0: LOC.y0 + 0.5, x1: LOC.x1 - 0.5, y1: LOC.y1 - 0.5 };
+  const inR = (p, m = 0) => p.x > R.x0 + m && p.x < R.x1 - m && p.y > R.y0 + m && p.y < R.y1 - m;
+
+  // The aerial first, clipped to the frame, then a strong white wash (60 percent) so the linework and labels read over it.
+  if (aerial) {
+    const e = aerial.extent;
+    const a = T({ x: e.x0, y: e.y0 });
+    const b = T({ x: e.x1, y: e.y1 });
+    doc.saveGraphicsState();
+    // Clip to the frame with raw operators (re, W, n): the picture is bigger than the frame.
+    const k = doc.internal.scaleFactor;
+    const H = doc.internal.pageSize.getHeight();
+    const f = (v) => (v * k).toFixed(2);
+    doc.internal.write(f(R.x0), f(H - R.y1), f(R.x1 - R.x0), f(R.y1 - R.y0), 're W n');
+    try { doc.addImage(aerial.data, aerial.format, a.x, a.y, b.x - a.x, b.y - a.y, undefined, 'FAST'); } catch { /* an unreadable image leaves the plain frame */ }
+    doc.setGState(new doc.GState({ opacity: WASH }));
+    doc.setFillColor(255, 255, 255);
+    doc.rect(R.x0, R.y0, R.x1 - R.x0, R.y1 - R.y0, 'F');
+    doc.restoreGraphicsState();
+  }
   const clipPoly = (pts, closed = true) => {
     const n = closed ? pts.length : pts.length - 1;
     for (let i = 0; i < n; i++) {
@@ -71,46 +123,124 @@ function locality(doc, lot, project) {
       if (ok) doc.line(a.x + dx * t0, a.y + dy * t0, a.x + dx * t1, a.y + dy * t1);
     }
   };
-  doc.setLineWidth(0.15);
-  doc.setDrawColor(...GREY);
-  for (const n of lot.neighbours || []) if (n.ring?.length >= 3) clipPoly(n.ring.map(T));
-  // Adjoining lot numbers, where the lot data has them and the ring centre is on the plan.
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6);
-  doc.setTextColor(...GREY);
-  for (const n of lot.neighbours || []) {
-    if (n.isRoad || !n.lotNumber || !(n.ring?.length >= 3)) continue;
+  // Surrounding parcels across the whole view.
+  doc.setLineWidth(0.18);
+  doc.setDrawColor(...(aerial ? [70, 74, 84] : GREY));
+  for (const n of neighbours) if (n.ring?.length >= 3) clipPoly(n.ring.map(T));
+  // Road lines, then their names along the longest visible stretch.
+  const roadPts = (r) => { const pts = []; for (let i = 0; i + 1 < (r.pts || []).length; i += 2) pts.push(T({ x: r.pts[i], y: r.pts[i + 1] })); return pts; };
+  for (const r of roads) {
+    const pts = roadPts(r);
+    if (pts.length > 1) { doc.setLineWidth(0.35); doc.setDrawColor(...(aerial ? [40, 44, 52] : PEN.phantom)); clipPoly(pts, false); }
+  }
+  const named = new Set();
+  const placed = [];
+  const roadLabels = [...roads].filter((r) => r.name).sort((a, b) => roadPts(b).length - roadPts(a).length);
+  for (const r of roadLabels) {
+    const key = r.name.toUpperCase();
+    if (named.has(key)) continue;
+    const pts = roadPts(r);
+    let best = null;
+    for (let i = 0; i + 1 < pts.length; i++) {
+      const p = pts[i];
+      const q = pts[i + 1];
+      const len = Math.hypot(q.x - p.x, q.y - p.y);
+      const mid = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
+      if (len > 14 && inR(mid, 8) && (!best || len > best.len)) best = { len, mid, ang: Math.atan2(q.y - p.y, q.x - p.x) };
+    }
+    if (!best) continue;
+    let deg = (-best.ang * 180) / Math.PI;
+    if (deg > 90) deg -= 180;
+    if (deg < -90) deg += 180;
+    const tw = r.name.length * 1.5;
+    if (placed.some((m) => Math.hypot(m.x - best.mid.x, m.y - best.mid.y) < tw + 10)) continue;
+    placed.push(best.mid);
+    named.add(key);
+    const rad = (deg * Math.PI) / 180;
+    haloText(doc, r.name.toUpperCase(), best.mid.x - (Math.cos(rad) * tw) / 2, best.mid.y + (Math.sin(rad) * tw) / 2 + 0.7, { size: 5.5, bold: true, colour: [40, 44, 52], angle: deg, halo: 0.8 });
+  }
+  // Adjoining lot numbers, where the lot data has them: "LOT n" when it fits inside the parcel, else the number alone, else nothing.
+  // Labels never overlap one another.
+  const taken = [];
+  const sorted = [...neighbours].filter((n) => !n.isRoad && n.lotNumber && n.ring?.length >= 3);
+  for (const n of sorted) {
     const cc = T(G.polygonCentroid(n.ring));
-    const txt = `LOT ${n.lotNumber}`;
+    const pb = G.bbox(n.ring.map(T));
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(5.5);
+    let txt = `LOT ${n.lotNumber}`;
+    if (doc.getTextWidth(txt) > pb.w - 1.5) txt = String(n.lotNumber);
     const tw = doc.getTextWidth(txt);
+    if (tw > pb.w - 1 || pb.h < 3) continue;
     if (cc.x - tw / 2 < R.x0 + 1 || cc.x + tw / 2 > R.x1 - 1 || cc.y < R.y0 + 3 || cc.y > R.y1 - 5) continue;
-    doc.text(txt, cc.x, cc.y, { align: 'center' });
+    const box = { x0: cc.x - tw / 2, x1: cc.x + tw / 2, y0: cc.y - 2.2, y1: cc.y + 0.8 };
+    if (taken.some((t) => box.x0 < t.x1 + 0.5 && box.x1 > t.x0 - 0.5 && box.y0 < t.y1 && box.y1 > t.y0)) continue;
+    taken.push(box);
+    haloText(doc, txt, cc.x, cc.y, { size: 5.5, colour: aerial ? [50, 54, 62] : GREY, align: 'center', halo: aerial ? 0.7 : 0 });
   }
-  doc.setTextColor(...GREY);
-  for (const r of lot.roads || []) {
-    const pts = [];
-    for (let i = 0; i + 1 < (r.pts || []).length; i += 2) pts.push(T({ x: r.pts[i], y: r.pts[i + 1] }));
-    if (pts.length > 1) { doc.setLineWidth(0.3); doc.setDrawColor(...PEN.phantom); clipPoly(pts, false); }
-  }
+  // The subject lot: red boundary (no solid fill over the picture), the house in its fill.
   const lp = lot.boundary.map(T);
-  doc.setFillColor(255, 236, 140);
-  doc.setDrawColor(...PEN.ink);
-  doc.setLineWidth(0.5);
-  polyPath(doc, lp, 'FD');
+  doc.setDrawColor(...(aerial ? RED : PEN.ink));
+  doc.setLineWidth(aerial ? 0.7 : 0.5);
+  if (aerial) polyPath(doc, lp, 'S');
+  else { doc.setFillColor(255, 236, 140); polyPath(doc, lp, 'FD'); }
   const gl = groundLevel(project);
   if (gl) {
     doc.setFillColor(...PEN.proposed);
     for (const r of gl.rooms) if (!r.outdoor && r.polygon?.length >= 3) polyPath(doc, r.polygon.map(T), 'F');
   }
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(7);
-  doc.setTextColor(...PEN.ink);
-  doc.text(lot.proposed ? `PROPOSED LOT ${lot.lotNumber || ''}`.trim() : lot.lotNumber ? `LOT ${lot.lotNumber}` : 'SUBJECT LOT', lp.reduce((a, p) => a + p.x, 0) / lp.length, Math.min(...lp.map((p) => p.y)) - 2, { align: 'center' });
-  // north point and scale text
+  // "SITE" label with a leader from the boundary out to clear ground, on the side with most room (up and left by default).
+  const lc = { x: lp.reduce((a, p) => a + p.x, 0) / lp.length, y: lp.reduce((a, p) => a + p.y, 0) / lp.length };
+  const top = Math.min(...lp.map((p) => p.y));
+  const left = Math.min(...lp.map((p) => p.x));
+  const tag = lot.proposed ? `PROPOSED LOT ${lot.lotNumber || ''}`.trim() : lot.lotNumber ? `LOT ${lot.lotNumber}` : 'SUBJECT LOT';
+  const from = { x: left + (lc.x - left) * 0.15, y: top + (lc.y - top) * 0.1 };
+  const lab = { x: Math.max(R.x0 + 16, Math.min(R.x1 - 30, from.x - 24)), y: Math.max(R.y0 + 12, from.y - 22) };
+  const start = lp.reduce((b, p) => (Math.hypot(p.x - lab.x, p.y - lab.y) < Math.hypot(b.x - lab.x, b.y - lab.y) ? p : b), lp[0]);
+  doc.setDrawColor(...(aerial ? RED : PEN.ink));
+  doc.setLineWidth(0.35);
+  doc.line(lab.x + 6, lab.y + 1.2, start.x, start.y);
+  doc.setFillColor(255, 255, 255);
+  doc.rect(lab.x - 8, lab.y - 4.2, 16, 9.4, 'FD');
+  haloText(doc, 'SITE', lab.x, lab.y, { size: 8, bold: true, colour: aerial ? RED : PEN.ink, align: 'center', halo: 0 });
+  haloText(doc, tag, lab.x, lab.y + 3.6, { size: 5.5, bold: true, colour: PEN.ink, align: 'center', halo: 0 });
+  // scale bar, bottom left on a white plate
+  const bar = niceBar(40 * scale / 1000);
+  const barMm = (bar * 1000) / scale;
+  const bx = LOC.x0 + 4;
+  const by = LOC.y1 - 11;
+  doc.setFillColor(255, 255, 255);
+  doc.rect(bx - 2, by - 5.5, barMm + 14, 9.5, 'F');
+  doc.setDrawColor(...PEN.ink);
+  doc.setLineWidth(0.25);
+  for (let i = 0; i < 4; i++) {
+    doc.setFillColor(...(i % 2 ? [255, 255, 255] : PEN.ink));
+    doc.rect(bx + (i * barMm) / 4, by - 1, barMm / 4, 1.6, 'FD');
+  }
   doc.setFont('helvetica', 'normal');
+  doc.setFontSize(5.5);
+  doc.setTextColor(...PEN.ink);
+  doc.text('0', bx, by - 2, { align: 'center' });
+  doc.text(`${bar / 2}`, bx + barMm / 2, by - 2, { align: 'center' });
+  doc.text(`${bar} m`, bx + barMm, by - 2, { align: 'center' });
+  // scale text, attribution and the no-aerial note, on a white strip so they never sit on the picture
+  doc.setFillColor(255, 255, 255);
+  doc.rect(R.x0, LOC.y1 - 5.4, R.x1 - R.x0, 4.9, 'F');
   doc.setFontSize(6.5);
   doc.setTextColor(...GREY);
   doc.text(`Scale 1:${scale} @ A3. Cadastre (DCDB) context only, not a survey.`, LOC.x0 + 2, LOC.y1 - 2);
+  const attr = localityAttribution(lot, aerial);
+  if (attr) {
+    doc.setFontSize(5.5);
+    doc.setTextColor(...(aerial ? PEN.ink : GREY));
+    doc.text(attr, LOC.x1 - 2, LOC.y1 - 2, { align: 'right' });
+  }
+  if (!aerial) {
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7);
+    doc.setTextColor(...GREY);
+    doc.text(NO_AERIAL, mx, LOC.y1 - 8, { align: 'center' });
+  }
   const a = ((Number(project.site?.northDeg) || 0) * Math.PI) / 180;
   const nx = LOC.x1 - 12;
   const ny = LOC.y0 + 13;
@@ -243,7 +373,7 @@ export function drawCover(doc, ctx) {
     yy += 0.8;
   });
 
-  const locScale = locality(doc, lot, project);
+  const locScale = locality(doc, lot, project, ctx.locality || {});
   thumbnail(doc, project, ctx.catalogue, 'HOUSE PLAN (GROUND FLOOR)');
   return { locScale };
 }

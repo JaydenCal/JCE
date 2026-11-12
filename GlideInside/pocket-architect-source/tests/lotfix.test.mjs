@@ -104,6 +104,23 @@ test('lot: neighbour envelope grows with neighbourM, sends no resultRecordCount 
   assert.equal((await one.get(`/lot?lon=${LON}&lat=${LAT}&state=NSW&neighbourM=abc`)).status, 400);
 });
 
+test('lot: radius is capped at 300 m, sizes the neighbour query, rejects non-numbers and is cached per value', async () => {
+  const lotRing = rect(C.e - 40, C.n - 30, 80, 60);
+  const attrs = { lotnumber: '3', sectionnumber: null, planlabel: 'DP263990', planlotarea: 4800, lotidstring: '3//DP263990' };
+  const big = mk({ pointFeatures: [feat([lotRing], attrs)] });
+  await (await big.get(`/lot?lon=${LON}&lat=${LAT}&state=NSW&radius=9999`)).json();
+  const e = JSON.parse(big.log.find((q) => q.geometryType === 'esriGeometryEnvelope').geometry);
+  assert.ok(e.xmax - e.xmin > 80 + 2 * 299 && e.xmax - e.xmin < 80 + 2 * 301, 'radius 9999 is clamped to 300');
+  assert.equal((await big.get(`/lot?lon=${LON}&lat=${LAT}&state=NSW&radius=abc`)).status, 400);
+  const n = big.log.filter((q) => q.geometryType === 'esriGeometryEnvelope').length;
+  await (await big.get(`/lot?lon=${LON}&lat=${LAT}&state=NSW&radius=9999`)).json();
+  assert.equal(big.log.filter((q) => q.geometryType === 'esriGeometryEnvelope').length, n, 'second identical request is served from the cache');
+  const small = mk({ pointFeatures: [feat([lotRing], attrs)] });
+  await (await small.get(`/lot?lon=${LON}&lat=${LAT}&state=NSW&radius=200`)).json();
+  const e2 = JSON.parse(small.log.find((q) => q.geometryType === 'esriGeometryEnvelope').geometry);
+  assert.ok(e2.xmax - e2.xmin > 80 + 2 * 199 && e2.xmax - e2.xmin < 80 + 2 * 201);
+});
+
 test('title block: a stale auto-filled Lot and DP never overrides the found lot; a typed value does', () => {
   const lot = { lotLabel: 'Lot 3 DP 263990', areaM2: 509264.5 };
   const stale = { titleBlock: { lotDp: 'Lot 3 DP 254' }, site: { lot } };

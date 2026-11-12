@@ -49,7 +49,7 @@ export function clean(s) {
     .replace(/×/g, 'x')
     .replace(/[   ]/g, ' ')
     .normalize('NFC')
-    .replace(/[^\x20-\x7e°±²³·]/g, '')
+    .replace(/[^\x20-\x7e°±²³·©]/g, '')
     .replace(/%%/g, '% %')
     .replace(/\s+/g, ' ')
     .replace(/\bm2\b/g, 'm²')

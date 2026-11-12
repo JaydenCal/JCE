@@ -15,7 +15,8 @@ import { clean, cleanedDoc, withSuperscripts } from '../eng/kit.js';
 import { titleLotDp } from '../../../site/lotplan.js';
 import { prepare } from './lot.js';
 import { drawStrip, drawConceptNote, drawWatermark, ddmmyyyy, ABN, ENTITY } from './frame.js';
-import { drawCover, localityScale } from './cover.js';
+import { drawCover, localityScale, localityView } from './cover.js';
+import { resolveLocality } from './locality.js';
 import { drawSite, siteView } from './site.js';
 import { drawHouseSheet, houseSheets } from './house.js';
 
@@ -61,10 +62,15 @@ export function planSetSheets({ project, lot, kind, catalogue = null }) {
  * @param {boolean} [o.download=true]  Trigger the browser download.
  * @param {Object} [o.jsPDF]  jsPDF class (loaded on demand when omitted).
  * @param {Object} [o.catalogue]  Furniture catalogue for the plan symbols.
+ * @param {Object} [o.aerial]  Real aerial for the cover locality plan: { image, extent | extentM, attribution? } (see ./locality.js). The lot's stored
+ *   aerial (site.lot.aerialWide, then site.lot.aerial) is used when this is omitted and it covers the view.
+ * @param {Function} [o.fetchSite]  async ({ lot, request }) => { aerial?, lot?: { neighbours, roads } } | null: fetches a wider aerial and the cadastre
+ *   within `request.radius` metres (GET /api/site/lot?radius=). A browser export asks the site service itself when this is omitted; pass null to never fetch.
+ * @param {Function} [o.loadImage]  async (key) => Blob, reads the lot's stored aerial (defaults to the browser image store).
  * @param {Date} [o.date]
  * @returns {Promise<{ blob: Blob, filename: string, sheets: Array, pages: number }>}
  */
-export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, jsPDF = null, catalogue = null, date = new Date() } = {}) {
+export async function exportPlanSet({ project, lot = null, kind = 'site', builderName = '', download = true, jsPDF = null, catalogue = null, date = new Date(), aerial = null, fetchSite = undefined, loadImage = null } = {}) {
   if (!project || !Array.isArray(project.levels)) throw new Error('exportPlanSet needs a Pocket Architect project');
   if (kind !== 'site' && kind !== 'house') throw new Error("exportPlanSet kind must be 'site' or 'house'");
   const prep = prepare(project, lot);
@@ -87,13 +93,15 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
   const lotDp = clean(siteLot ? titleLotDp(wp) || siteLot.lotLabel || '' : '');
   const base = { project: wp, client: builder || 'Glide Inside customer', projectTitle: title, address, lotDp, total: sheets.length, dateStr, jobId: id };
   const facts = {};
+  // Real aerial and the wider cadastre for the cover locality plan. Never fatal: without them the sheet says so.
+  const locality = siteLot ? await resolveLocality({ lot: siteLot, aerial, fetchSite, loadImage, view: localityView(siteLot).view }) : { aerial: null };
 
   sheets.forEach((s, i) => {
     if (i > 0) raw.addPage('a3', 'landscape');
     doc.setLineDashPattern([], 0);
     let strip = { n: s.n, no: s.no, title: s.title, scale: s.scale, rev: 'A', kv: [], notes: [] };
     if (s.id === 'cover') {
-      drawCover(doc, { project: wp, lot: siteLot, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
+      drawCover(doc, { project: wp, lot: siteLot, locality, projectTitle: title, address, lotDp, builderName: builder, dateStr, catalogue, index: sheets.map((x) => ({ no: x.no, title: x.title, scale: x.scale })) });
       strip = { ...strip, subtitle: kind === 'site' ? 'Site plan and house plan' : 'House plan', kvTitle: 'SITE DATA', kv: siteLot ? [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`]] : [], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
     } else if (s.id === 'site') {
       Object.assign(facts, drawSite(doc, wp, siteLot));

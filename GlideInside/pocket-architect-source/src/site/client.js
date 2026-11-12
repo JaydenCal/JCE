@@ -14,7 +14,7 @@ export class SiteError extends Error {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const base = () => String(CONFIG.apiBase || '/api').replace(/\/+$/, '');
 
-async function getJson(path, params, { signal, fetchImpl = globalThis.fetch } = {}) {
+export async function getJson(path, params, { signal, fetchImpl = globalThis.fetch } = {}) {
   let res;
   try {
     res = await fetchImpl(`${base()}/site/${path}?${new URLSearchParams(params)}`, { signal, headers: { accept: 'application/json' } });
@@ -155,7 +155,7 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep } = {}) {
   return { lot, aerial, aerialWide, contours, warnings };
 }
 
-async function fetchAerial(params, { signal, fetchImpl = globalThis.fetch }) {
+export async function fetchAerial(params, { signal, fetchImpl = globalThis.fetch }) {
   let res;
   try {
     res = await fetchImpl(`${base()}/site/aerial?${new URLSearchParams(params)}`, { signal });
