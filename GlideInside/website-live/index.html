@@ -18,8 +18,8 @@
 <link rel="icon" href="assets/Glideinside_Favicon_v4.svg">
 <link rel="preload" href="assets/fonts/newsreader-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="framework.css?v=20261112l"><link rel="stylesheet" href="builder-picker.css?v=20261112l"><link rel="stylesheet" href="enquiry-form.css?v=20261112l">
-<script src="site.config.js?v=20261112l"></script><script src="framework.js?v=20261112l" defer></script><script src="analytics.js" defer></script>
+<link rel="stylesheet" href="framework.css?v=20261113a"><link rel="stylesheet" href="builder-picker.css?v=20261113a"><link rel="stylesheet" href="enquiry-form.css?v=20261113a">
+<script src="site.config.js?v=20261113a"></script><script src="framework.js?v=20261113a" defer></script><script src="analytics.js" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Glide Inside","url":"https://glideinside.com.au/","email":"hello@glideinside.com.au","telephone":"0477 207 027","taxID":"29 699 165 663","image":"https://glideinside.com.au/assets/hero-home-1600.webp","areaServed":[{"@type":"AdministrativeArea","name":"Regional New South Wales, Australia"},{"@type":"AdministrativeArea","name":"Queensland, Australia"}],"makesOffer":{"@type":"Offer","name":"Pocket Architect plan pack (per job)","description":"PDF plan set, DXF, 3D model and interactive HTML exports and 500 AI credits for one job. Concept design only.","price":"30","priceCurrency":"AUD","priceSpecification":{"@type":"PriceSpecification","price":"30","priceCurrency":"AUD","valueAddedTaxIncluded":true},"availability":"https://schema.org/InStock","url":"https://glideinside.com.au/plan-studio/"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a granny flat?","acceptedAnswer":{"@type":"Answer","text":"A granny flat is a small self contained home on the same lot as a main house, often called a secondary dwelling. Most have one or two bedrooms, a kitchen, a bathroom and a living area."}},{"@type":"Question","name":"How big can a granny flat be in NSW?","acceptedAnswer":{"@type":"Answer","text":"In NSW a secondary dwelling is generally limited to 60 m² of floor area outside rural zones. Rules vary by zone and council, so check with your council before you build."}},{"@type":"Question","name":"Do I need approval to build a granny flat?","acceptedAnswer":{"@type":"Answer","text":"Yes. In NSW a granny flat needs either a complying development certificate from your council or a private certifier, if it meets all the standards, or a development application. Pocket Architect concept plans help you talk it through, but they are not approval documents."}},{"@type":"Question","name":"Can I design a shed with living quarters?","acceptedAnswer":{"@type":"Answer","text":"Yes. Start from the garage and workshop shed or the farm machinery shed, draw the rooms you want inside and view it in 3D. Whether a shed can be lived in depends on your council and the building code."}},{"@type":"Question","name":"Are these plans approved?","acceptedAnswer":{"@type":"Answer","text":"No. Outputs are concept designs. They are not construction drawings or development application documents, and are not checked against planning controls or the National Construction Code."}},{"@type":"Question","name":"How much does Pocket Architect cost?","acceptedAnswer":{"@type":"Answer","text":"Drawing and viewing are free. A$30 per job (incl. GST) unlocks a PDF plan set, a DXF for CAD, a 3D model file and an interactive HTML file that opens offline. A 3D fly-through add-on is A$10 and complex renderings are A$10, made by the Glide Inside team."}},{"@type":"Question","name":"Do I need an account?","acceptedAnswer":{"@type":"Answer","text":"No account is needed to draw. Your work saves in your browser. When you pay, Stripe collects your email and we use it to restore your purchase."}},{"@type":"Question","name":"Can I design a granny flat, duplex or shed?","acceptedAnswer":{"@type":"Answer","text":"Yes. Pocket Architect has starting plans for granny flats, duplexes, 4 bedroom houses, sheds and extensions. Open any of them from the plan library and change it to suit your site."}},{"@type":"Question","name":"Who is behind the subdivision work?","acceptedAnswer":{"@type":"Answer","text":"Glide Inside's director is a qualified civil engineer and can assist with preliminary subdivision feasibility."}},{"@type":"Question","name":"Can I use both products on one project?","acceptedAnswer":{"@type":"Answer","text":"Yes. A common path is a subdivision concept first, then Pocket Architect for the buildings on each lot."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Pocket Architect","applicationCategory":"DesignApplication","operatingSystem":"Web browser","url":"https://glideinside.com.au/plan-studio/","description":"Browser based site planning and house design tool for regional NSW and Queensland. See your block, place a granny flat, house or shed design, edit it in 2D and 3D and export PDF plans, DXF and a 3D model. Concept designs only.","featureList":["Lot boundary, surrounding lots, aerial and LiDAR contours for an address","Council setbacks drawn on the lot","2D plan editor and 3D model with walk through","AI design helper","PDF plans, DXF and 3D model export"],"offers":[{"@type":"Offer","name":"Draw and view in 3D","price":"0","priceCurrency":"AUD"},{"@type":"Offer","name":"Plan Pack (per job)","price":"30","priceCurrency":"AUD","priceSpecification":{"@type":"PriceSpecification","price":"30","priceCurrency":"AUD","valueAddedTaxIncluded":true}}]}</script>
@@ -36,14 +36,14 @@
     <a href="plans/">Plans</a>
     <a href="pricing/">Pricing</a>
     <div class="nav-logins">
-      <a href="#builder-picker" data-bp-link>Your builder</a>
+      <a href="#builder-access" data-bp-link>Your builder</a>
       <a href="portal/" data-portal hidden>Builder login</a>
       <a href="portal/?client=1" data-portal hidden>Client login</a>
       <a class="btn" data-cfg-href="toolUrl" href="plan-studio/app/">Open Pocket Architect</a>
     </div>
   </nav>
   <div class="head-end">
-    <a class="login" href="#builder-picker" data-bp-link>Your builder</a>
+    <a class="login" href="#builder-access" data-bp-link>Your builder</a>
     <a class="login" href="portal/" data-portal hidden>Builder login</a>
     <a class="login" href="portal/?client=1" data-portal hidden>Client login</a>
     <a class="btn btn-sm" data-cfg-href="toolUrl" href="plan-studio/app/">Open Pocket Architect</a>
@@ -179,26 +179,27 @@
   </div>
 </section>
 
-<section class="bp bp-low" id="builder-picker" aria-labelledby="bp-title">
+<section class="bp bp-low" id="builder-access" aria-labelledby="bp-title">
   <div class="shell">
-    <p class="bp-eyebrow">Select your builder</p>
-    <h2 id="bp-title">Who is building your home?</h2>
-    <p class="bp-sub">Choose your builder to sign in to their house designs, set up for your block.</p>
-    <div class="bp-box">
+    <p class="bp-eyebrow">Your builder</p>
+    <h2 id="bp-title">Your builder&rsquo;s own designs, in a private portal</h2>
+    <p class="bp-sub">Builders invite their clients to a private portal. Use the private link your builder sent you, or enter the access code they gave you.</p>
+    <form class="bp-box bp-code" id="bp-form" novalidate>
       <div class="bp-field">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input class="bp-input" id="bp-input" type="text" role="combobox" aria-label="Select your builder" aria-autocomplete="list" aria-expanded="false" aria-controls="bp-list" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Select your builder">
-        <button class="bp-toggle" type="button" tabindex="-1" aria-label="Show all builders" aria-expanded="false" aria-controls="bp-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <input class="bp-input" id="bp-input" type="text" name="code" aria-label="Builder access code" aria-describedby="bp-msg" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40" placeholder="Builder access code">
+        <button class="bp-go" type="submit">Continue</button>
       </div>
-      <ul class="bp-list" id="bp-list" role="listbox" aria-label="Builders" hidden></ul>
-      <div class="bp-acts" hidden>
-        <a class="bp-btn" data-role="client" href="/portal/?role=client">I'm a client</a>
-        <a class="bp-btn" data-role="builder" href="/portal/?role=builder">I'm a builder representative</a>
+      <p class="bp-msg" id="bp-msg" role="status" aria-live="polite" hidden></p>
+      <div class="bp-links">
+        <a href="/portal/?role=client" data-portal>Client login</a>
+        <a href="/portal/?role=builder" data-portal>Builder login</a>
+        <a href="/plan-studio/app/">Design without a builder</a>
       </div>
-    </div>
+    </form>
   </div>
 </section>
-<script src="builder-picker.js?v=20261112l" defer></script>
+<script src="builder-picker.js?v=20261113a" defer></script>
 
 <section class="sec" id="pricing">
   <div class="shell">
@@ -256,7 +257,7 @@
   <p class="disclaimer">Glide Inside provides concept planning tools only. Setbacks and other planning controls shown are indicative, are not a planning or building approval, and must be checked with the relevant council and a suitably qualified person before you rely on them.</p></div>
 </section>
 
-<script src="enquiry-form.js?v=20261112l" defer></script>
+<script src="enquiry-form.js?v=20261113a" defer></script>
 </main>
 <footer class="site-footer"><div class="shell">
   <div class="brand"><img src="assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"><p>Site planning and house design in 3D for regional New South Wales and Queensland.</p></div>

@@ -4,7 +4,6 @@ import { h, field, busy, toast, errorMessage, icon } from './kit.js';
 import { DEMO_LOGINS } from '../mock-api.js';
 import { CONFIG } from '../../config.js';
 import { MIN_PASSWORD_LENGTH } from '../credentials.js';
-import { builderName } from '../builders.js';
 import { applyBrandTheme } from '../theme-css.js';
 
 const authShell = (title, intro, ...children) =>
@@ -26,15 +25,14 @@ export function signInView({ api, client = false, onSignedIn, goForgot, builder 
     brandBox.replaceChildren(...(brand ? [brand.logoUrl && h('img', { class: 'pp-brandbox-logo', src: brand.logoUrl, alt: '' }), h('p', { class: 'pp-brandbox-name' }, brand.name)].filter(Boolean) : []));
   }
   function renderMissing() {
-    const name = builderName(builder) || 'That builder';
     host.replaceChildren(h('div', { class: 'pp-nobuilder' },
-      h('h2', null, `${name} isn\u2019t\u00a0using Glide Inside yet.`),
+      h('h2', null, 'Check the link your builder sent you'),
       mode === 'client'
-        ? h('p', { class: 'pp-lead pp-lead--sm' }, 'Ask your builder about designing with Glide Inside, or design on your own block now without a builder.')
-        : h('p', { class: 'pp-lead pp-lead--sm' }, 'Builder staff can try it free for 14 days.'),
+        ? h('p', { class: 'pp-lead pp-lead--sm' }, 'We could not find a portal for that link or code. Check the private link or access code your builder sent you, or ask them to send it again. You can also design on your own block now without a builder.')
+        : h('p', { class: 'pp-lead pp-lead--sm' }, 'We could not find a portal for that link or code. Builder staff can try Glide Inside free for 14 days.'),
       h('a', { class: 'pp-btn pp-btn--primary pp-btn--block', href: '/plan-studio/app/' }, 'Design on your block without a builder'),
       mode === 'builder' ? h('a', { class: 'pp-btn pp-btn--block', href: `/for-builders/?builder=${encodeURIComponent(builder)}#trial` }, 'Start a free 14 day trial') : null,
-      h('p', { class: 'pp-center' }, h('a', { href: '/' }, 'Choose a different builder'))));
+      h('p', { class: 'pp-center' }, h('a', { href: '/#builder-access' }, 'Enter a different access code'))));
   }
   if (builder && api.getBrand) {
     api.getBrand(builder).then((b) => { brand = b; applyBrandTheme(b.colours); paintBrand(); }, (e) => {

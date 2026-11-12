@@ -51,3 +51,16 @@
 .bp.bp-low .bp-field{height:56px}
 .bp.bp-low .bp-input{font-size:19px}
 .bp.bp-low .bp-box{max-width:640px}
+
+/* Private builder access (13/11/2026): code field, no builder list. */
+.bp-code .bp-field{padding-right:6px}
+.bp-go{flex:none;height:44px;padding:0 22px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);font:700 17px/1 var(--font);cursor:pointer;transition:background .15s}
+.bp-go:hover{background:var(--accent-hover)}
+.bp-go:focus-visible{outline:3px solid #0f1726;outline-offset:2px}
+.bp-msg{margin:12px 4px 0;color:#f5d9a6;font:500 15px/1.4 var(--font)}
+.bp-msg[hidden]{display:none}
+.bp-links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px;margin-top:18px}
+.bp-links a{color:#fff;font:600 16px/1.2 var(--font);text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(233,182,111,.7)}
+.bp-links a:hover{color:var(--accent)}
+.bp-links a:focus-visible{outline:3px solid #fff;outline-offset:3px;border-radius:4px}
+@media(max-width:640px){.bp-go{padding:0 16px;font-size:16px}.bp-links{gap:10px 18px}}

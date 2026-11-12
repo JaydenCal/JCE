@@ -1,23 +1,24 @@
 // Builder picker: the slug rules, the public brand route (memory and D1), the admin slug route, and the sign in page's query handling.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BUILDERS, builderName, slugify, cleanSlug, readPick } from '../src/portal/builders.js';
+import { slugify, cleanSlug, readPick } from '../src/portal/builders.js';
 import { createMockApi, memoryStorage } from '../src/portal/mock-api.js';
 import fs from 'node:fs';
 
-test('slug rules: the ten picker slugs are clean, names derive slugs, bad values are refused', () => {
-  assert.equal(BUILDERS.length, 10);
-  for (const b of BUILDERS) assert.equal(cleanSlug(b.slug), b.slug);
-  assert.equal(builderName('gj-gardner'), 'G.J. Gardner Homes');
-  assert.equal(builderName('nope'), null);
-  assert.equal(slugify('Hunter Homes Pty Ltd'), 'hunter-homes-pty-ltd');
+test('slug rules: names derive slugs, bad values are refused', () => {
+  assert.equal(cleanSlug('sample-homes'), 'sample-homes');
+  assert.equal(slugify('Sample Homes Pty Ltd'), 'sample-homes-pty-ltd');
   assert.equal(slugify('  A & B  Builders! '), 'a-and-b-builders');
   for (const bad of ['', 'Hunter', 'a b', '-a', 'a-', 'a--b', '../x', '<script>', 'x'.repeat(41), null, 5]) assert.equal(cleanSlug(bad), null, String(bad));
 });
 
+test('short ?b= alias', () => {
+  assert.deepEqual(readPick('?b=sample-homes'), { builder: 'sample-homes', role: null });
+});
+
 test('query handling: ?builder= and ?role= (and the older ?client=1)', () => {
-  assert.deepEqual(readPick('?builder=hotondo&role=client'), { builder: 'hotondo', role: 'client' });
-  assert.deepEqual(readPick('?builder=hotondo&role=builder'), { builder: 'hotondo', role: 'builder' });
+  assert.deepEqual(readPick('?builder=sample-homes&role=client'), { builder: 'sample-homes', role: 'client' });
+  assert.deepEqual(readPick('?builder=sample-homes&role=builder'), { builder: 'sample-homes', role: 'builder' });
   assert.deepEqual(readPick('?client=1'), { builder: null, role: 'client' });
   assert.deepEqual(readPick('?role=client'), { builder: null, role: 'client' });
   assert.deepEqual(readPick(''), { builder: null, role: null });
@@ -28,7 +29,7 @@ test('mock api: getBrand returns only name, logo and colours, and 404s for an un
   const api = createMockApi({ storage: memoryStorage() });
   const b = await api.getBrand('sample-homes');
   assert.deepEqual(Object.keys(b).sort(), ['colours', 'logoUrl', 'name']);
-  await assert.rejects(() => api.getBrand('hotondo'), (e) => e.code === 'NOT_FOUND' && e.status === 404);
+  await assert.rejects(() => api.getBrand('not-a-builder'), (e) => e.code === 'NOT_FOUND' && e.status === 404);
 });
 
 test('migration 0011 is additive and schema.sql has the same column and unique index', () => {
