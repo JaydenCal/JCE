@@ -405,7 +405,7 @@ async function main() {
   track('ps_open', { embedMode: CONFIG.embedMode });
 
   const openFull = () => openFullEditor(store.project);
-  const lotCard = createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openFull, onMini: () => {}, embed: true } : {}) });
+  const lotCard = createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openFull, onFullEditor: openFull, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
   api.lotCard = lotCard;
   createMapCredit(refs.stage, store);
   if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam) createWelcome(refs.stage, store, { onChoose: openNew });

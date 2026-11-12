@@ -13,26 +13,26 @@ export function poseFor(project, house) {
   base.site = { ...(base.site || {}), tanks: [] };
   if (lotOf(base)) {
     const a = autoPose(base, house);
-    if (a.pose) return { pose: a.pose, fits: a.fits };
+    if (a.pose) return { pose: a.pose, fits: a.fits, tooBig: !!a.tooBig };
   }
-  return { pose: defaultPose(base, house), fits: null };
+  return { pose: defaultPose(base, house), fits: null, tooBig: false };
 }
 
 /**
- * swapHouse(store, house, { id, name }) replaces what is on the lot with `house` (a project JSON). Returns { fits } where fits is
- * true, false or null (unknown) as autoPose reports it.
+ * swapHouse(store, house, { id, name }) replaces what is on the lot with `house` (a project JSON). Returns { fits, tooBig } where fits is
+ * true, false or null (unknown) as autoPose reports it and tooBig is true when no position or turn fits the setbacks.
  */
 export function swapHouse(store, house, { id = null, name = '' } = {}) {
   const h = structuredClone(house);
   h.name = name || h.name || 'House';
-  const { pose, fits } = poseFor(store.project, h);
+  const { pose, fits, tooBig } = poseFor(store.project, h);
   store.apply('Change house design', (p) => {
     p.levels = [];
     p.site.tanks = [];
     placeHouse(p, h, pose);
-    p.placedHouse = { id, name: h.name };
+    p.placedHouse = tooBig ? { id, name: h.name, tooBig: true } : { id, name: h.name };
   });
   const first = [...store.project.levels].sort((a, b) => a.elevation - b.elevation)[0];
   if (first) store.setUI({ activeLevelId: first.id, selection: null });
-  return { fits };
+  return { fits, tooBig };
 }

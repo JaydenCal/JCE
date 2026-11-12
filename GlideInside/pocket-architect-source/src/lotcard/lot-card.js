@@ -7,7 +7,9 @@
 // edits the design except through store.apply (colour scheme, change of design), so every change is one undo step and saves with
 // the project. The camera is inset so the card does not sit over the lot (viewer.setInset).
 
-import { h } from '../ui/dom.js';
+import { h, debounce } from '../ui/dom.js';
+import { searchAddresses } from '../site/client.js';
+import { downloadBlob } from '../premium/exporters/download.js';
 import { toast } from '../ui/toast.js';
 import { lotOf, translateHouse, rotateHouse } from '../model/placement.js';
 import * as G from '../model/geometry.js';
@@ -17,7 +19,7 @@ import { buildingRings, buildingHull } from '../site/lotplan.js';
 import { setbackStatusLine } from '../site/lot-checks.js';
 import { SCHEMES, effectiveSchemeId, schemeById, schemeLine, schemeColours } from '../model/colour-schemes.js';
 import { cardStats, lotHeading, lotLine, hasBuilding } from './stats.js';
-import { publicDesigns, currentIndex, pagerText, stepIndex } from './designs.js';
+import { designsFor, currentIndex, pagerText, stepIndex } from './designs.js';
 import { swapHouse } from './swap.js';
 import { LOT_CARD_CSS } from './lot-card-css.js';
 import { icon } from '../ui/icons.js';
@@ -32,7 +34,7 @@ const DOT = { inside: '#6fd39a', outside: '#ff8a7a', check: '#f2b94b' };
 /** The muted header line: "Builder name · Concept only" in the portal, "Concept only" in the public app. */
 export const mutedLine = (builderName) => (builderName ? `${builderName} · Concept only` : 'Concept only');
 
-export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null, onEdit = null, onMini = null, embed = false }) {
+export function createLotCard({ store, host, viewerHost = host, catalogue = null, getApp = () => (typeof window !== 'undefined' ? window.__ps : null), getViewer = () => null, onEdit = null, onMini = null, onFind = null, onFullEditor = null, embed = false }) {
   if (!document.getElementById(STYLE_ID)) {
     const st = document.createElement('style');
     st.id = STYLE_ID;
@@ -51,11 +53,12 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const chips = E('lc-strip', 'div', { role: 'group', 'aria-label': 'Colour schemes' });
   const bWalk = h('button', { class: 'lc-btn lc-pri', type: 'button', dataset: { ps: 'lc-walk' }, onclick: () => store.setUI({ view: 'walk' }) }, 'Walk inside');
   const bEdit = h('button', { class: 'lc-btn', type: 'button', dataset: { ps: 'lc-edit' }, onclick: () => (onEdit ? onEdit() : store.setUI({ view: '2d' })) }, 'Edit floor plan');
-  const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => sitePlanPdf() }, 'Plan set PDF');
+  const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => planSetPdf('site') }, 'Site plan PDF');
+  const bPdfH = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf-house' }, onclick: () => planSetPdf('house') }, 'House plan PDF');
   const fit = E('lc-fit', 'div', { role: 'status', 'aria-live': 'polite', dataset: { ps: 'lc-fit' } });
   const more = h('button', { class: 'lc-more', type: 'button', 'aria-expanded': 'false', onclick: () => { card.classList.toggle('is-open'); more.setAttribute('aria-expanded', String(card.classList.contains('is-open'))); sizeInset(); } }, 'Details');
   const tabsEl = E('lc-tabs', 'div', { role: 'tablist', 'aria-label': 'Rooms', dataset: { ps: 'lc-tabs' } });
-  const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-sp lc-sp-rooms', 'div', null, E('lc-k', 'span', null, 'Rooms'), tabsEl), E('lc-acts', 'div', null, bWalk, bEdit, bPdf), fit);
+  const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-sp lc-sp-rooms', 'div', null, E('lc-k', 'span', null, 'Rooms'), tabsEl), E('lc-acts', 'div', null, bWalk, bEdit, bPdf, bPdfH), fit);
   const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more), body);
 
   const pgP = h('button', { type: 'button', 'aria-label': 'Previous design', onclick: () => step(-1) }, '‹');
@@ -82,9 +85,62 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const mini = h('button', { class: 'lc-mini', type: 'button', title: 'Show or hide the 2D plan', 'aria-label': 'Top view. Click to show or hide the 2D plan', dataset: { ps: 'lc-mini' }, onclick: () => { if (suppressClick) { suppressClick = false; return; } toggle2d(); } }, cv, h('span', { class: 'lc-mini-t' }, 'TOP VIEW'), north, northLabel, h('span', { class: 'lc-mini-hint', 'aria-hidden': 'true' }, 'Drag to move, handle to rotate'));
   let suppressClick = false;
 
-  const findPill = h('button', { class: 'lc-find lc-glass', type: 'button', dataset: { ps: 'lc-find' }, 'aria-label': 'Find another block', onclick: () => import('../ui/find-block.js').then((m) => m.openFindBlock(store)) }, icon('search', { size: 16 }), h('span', null, ''));
-  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, findPill, card, rooms, pager, mini);
+  // The search pill. In the embedded viewer it is the real address search (NSW and QLD, /api/site/search) as an input with suggestions; in the
+  // app it opens the Find my block dialog.
+  const findInput = embed ? h('input', { class: 'lc-find-in', type: 'search', placeholder: 'Search a NSW or QLD address', 'aria-label': 'Street address in NSW or QLD', 'aria-autocomplete': 'list', autocomplete: 'off', spellcheck: 'false', maxlength: '120', dataset: { ps: 'lc-find-input' } }) : null;
+  const findList = embed ? h('ul', { class: 'lc-find-list lc-glass', role: 'listbox', hidden: true }) : null;
+  const findPill = embed
+    ? h('div', { class: 'lc-find lc-glass', dataset: { ps: 'lc-find' } }, icon('search', { size: 16 }), findInput, findList)
+    : h('button', { class: 'lc-find lc-glass', type: 'button', dataset: { ps: 'lc-find' }, 'aria-label': 'Find another block', onclick: () => import('../ui/find-block.js').then((m) => m.openFindBlock(store)) }, icon('search', { size: 16 }), h('span', null, ''));
+  // Compass (resets the view to the whole lot) and the menu, embedded viewer only.
+  const compass = embed ? (() => {
+    const b = h('button', { class: 'lc-compass lc-glass', type: 'button', title: 'Reset the view', 'aria-label': 'Reset the view to the whole lot', dataset: { ps: 'lc-compass' }, onclick: () => { selTab = 'aerial'; bedI = 0; schedule(); go('aerial'); } });
+    b.innerHTML = '<svg viewBox="-20 -20 40 40" aria-hidden="true"><circle r="17" fill="none" stroke="rgba(255,255,255,.6)"/><path d="M0-13 L4 3 L0 0 L-4 3Z" fill="#ffc83d"/><path d="M0 13 L4 3 L0 6 L-4 3Z" fill="rgba(255,255,255,.55)"/></svg>';
+    return b;
+  })() : null;
+  const menuItems = embed ? [
+    ['Open full editor', () => (onFullEditor || onEdit)?.()],
+    ['Site plan PDF', () => planSetPdf('site')],
+    ['House plan PDF', () => planSetPdf('house')],
+    ['Top view larger or smaller', () => toggle2d()],
+  ] : [];
+  const menuList = embed ? h('div', { class: 'lc-menu-list lc-glass', role: 'menu', hidden: true }, ...menuItems.map(([label, fn]) => h('button', { class: 'lc-menu-item', type: 'button', role: 'menuitem', onclick: () => { menuList.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); fn(); } }, label))) : null;
+  const menuBtn = embed ? (() => {
+    const b = h('button', { class: 'lc-menu lc-glass', type: 'button', 'aria-label': 'Menu', 'aria-haspopup': 'menu', 'aria-expanded': 'false', dataset: { ps: 'lc-menu' }, onclick: () => { menuList.hidden = !menuList.hidden; b.setAttribute('aria-expanded', String(!menuList.hidden)); } });
+    b.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
+    return b;
+  })() : null;
+  const foot = embed ? E('lc-foot', 'div', { dataset: { ps: 'lc-foot' } }, 'Concept only · Glide Inside · JCE Infrastructure') : null;
+  const root = E('lc-root', 'div', { dataset: { ps: 'lot-card-root' } }, head, ...(compass ? [compass] : []), findPill, ...(menuBtn ? [menuBtn, menuList] : []), card, rooms, pager, mini, ...(foot ? [foot] : []));
+  if (embed) root.classList.add('lc-embed');
   host.append(root);
+
+  // Address search (embedded viewer) ----------------------------------------------------------------------------------------------
+  let sugg = [];
+  let suggI = -1;
+  const closeSugg = () => { if (findList) { findList.hidden = true; suggI = -1; } };
+  const pickAddress = (label) => { closeSugg(); findInput.value = label; findInput.blur(); if (onFind) onFind(label); };
+  const paintSugg = () => {
+    findList.replaceChildren(...sugg.slice(0, 6).map((r, i) => h('li', { class: 'lc-find-item', role: 'option', 'aria-selected': String(i === suggI), onpointerdown: (e) => { e.preventDefault(); pickAddress(r.label); } }, h('span', null, r.label), h('i', null, r.state || ''))));
+    findList.hidden = !sugg.length;
+  };
+  if (findInput) {
+    const ask = debounce(async () => {
+      const q = findInput.value.trim();
+      if (q.length < 3) { sugg = []; paintSugg(); return; }
+      try { const r = await searchAddresses(q); if (findInput.value.trim() === q) { sugg = Array.isArray(r) ? r : []; suggI = -1; paintSugg(); } } catch { sugg = []; paintSugg(); }
+    }, 220);
+    findInput.addEventListener('input', ask);
+    findInput.addEventListener('focus', () => findInput.select());
+    findInput.addEventListener('blur', () => setTimeout(closeSugg, 120));
+    findInput.addEventListener('keydown', (e) => {
+      const n = Math.min(6, sugg.length);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { if (n) { suggI = (suggI + (e.key === 'ArrowDown' ? 1 : -1) + n) % n; paintSugg(); } e.preventDefault(); }
+      else if (e.key === 'Enter') { e.preventDefault(); const t = suggI >= 0 ? sugg[suggI]?.label : findInput.value.trim(); if (t && t.length >= 3) pickAddress(t); }
+      else if (e.key === 'Escape') { closeSugg(); findInput.blur(); }
+    });
+  }
+  if (menuList) document.addEventListener('pointerdown', (e) => { if (!menuList.hidden && !menuList.contains(e.target) && !menuBtn.contains(e.target)) { menuList.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); } });
 
   // State -------------------------------------------------------------------------------------------------------------------------
   let designs = [];
@@ -108,8 +164,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     if (!key || key === designsKey || loading) return;
     loading = true;
     try {
-      const provider = app().lotDesigns;
-      const list = provider ? await provider(store.project) : publicDesigns(catalogue, store.project);
+      const list = await designsFor({ catalogue, project: store.project, provider: app().lotDesigns });
       if (disposed) return;
       designs = Array.isArray(list) ? list : [];
       designsKey = key;
@@ -131,9 +186,10 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     bedI = 0;
     go('aerial');
     try {
-      const { fits } = swapHouse(store, d.project, { id: d.id, name: d.name });
+      const { fits, tooBig } = swapHouse(store, d.project, { id: d.id, name: d.name });
       store.setUI({ placedDesign: { id: d.id, name: d.name } });
-      if (fits === false) toast(`${d.name} does not fit inside the setbacks on this lot.`, { kind: 'info' });
+      if (tooBig) toast(`${d.name} is too big for this block.`, { kind: 'info' });
+      else if (fits === false) toast(`${d.name} does not fit inside the setbacks on this lot.`, { kind: 'info' });
     } catch (e) {
       toast(e?.message || 'That design could not be placed.', { kind: 'error' });
     }
@@ -144,15 +200,34 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     store.apply('Colour scheme', (p) => { p.colourScheme = id; });
   }
 
-  // The PDF button opens the whole plan set (the engineering exporter has no single sheet output). It goes through the same PDF plan set, entitlement and paywall as the top bar: builder staff are entitled, a client
-  // only when the builder allows PDF exports, the public app needs the Plan Pack (the preview shows the sheets, Unlock opens the offer).
-  function sitePlanPdf() {
-    const prem = app().premium;
-    if (!prem?.previewPdf) { toast('The plan set PDF comes with the Plan Pack.', { kind: 'info' }); return; }
-    const portal = prem.state?.portal;
-    if (portal && Array.isArray(portal.exports) && !portal.exports.includes('pdf')) { toast('Your builder provides the PDF plans. Ask them if you need one.', { kind: 'info' }); return; }
-    prem.previewPdf();
+  // The two PDF buttons call the plan set exporter (src/premium/exporters/planset): "Site plan PDF" is the cover, site plan and house plan,
+  // "House plan PDF" the cover and house plan. A builder or client login has the builder's name watermarked on every sheet.
+  let pdfBusy = false;
+  async function planSetPdf(kind) {
+    if (pdfBusy) return;
+    pdfBusy = true;
+    const btn = kind === 'house' ? bPdfH : bPdf;
+    const label = btn.textContent;
+    btn.textContent = 'Preparing PDF';
+    btn.disabled = true;
+    try {
+      const { exportPlanSet } = await import('../premium/exporters/planset/index.js');
+      const lot = lotOf(store.project);
+      const out = await exportPlanSet({ project: store.project, lot, kind, builderName: builderName() || '' });
+      const bytes = out?.bytes || out?.blob || out?.data || out;
+      if (bytes instanceof Blob || bytes instanceof Uint8Array || bytes instanceof ArrayBuffer) {
+        const slug = String(store.project.placedHouse?.name || store.project.name || 'Design').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'Design';
+        downloadBlob(bytes instanceof Blob ? bytes : new Blob([bytes], { type: 'application/pdf' }), out?.filename || `${kind === 'house' ? 'House_Plan' : 'Site_Plan'}_${slug}.pdf`);
+      }
+    } catch (e) {
+      toast(e?.message || 'The PDF could not be made.', { kind: 'error' });
+    } finally {
+      btn.textContent = label;
+      btn.disabled = false;
+      pdfBusy = false;
+    }
   }
+  const sitePlanPdf = () => planSetPdf('site');
 
   // Tabs come from the room engine (one grouped Bedrooms tab). Bedrooms cycles through the individual bedrooms: master first, then the
   // others, one per click. The engine's own per bedroom tab (master, bed2 ...) supplies the pose and the caption.
@@ -238,7 +313,14 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     const mkTab = (t) => h('button', { class: 'lc-tab', type: 'button', role: 'tab', title: t.caption || '', 'aria-selected': String(t.id === selTab), dataset: { tab: t.id }, onclick: () => pickTab(t.id) }, t.label);
     tabsEl.replaceChildren(...tabs.map(mkTab));
     tabsCompact.replaceChildren(...tabs.map(mkTab));
-    findPill.lastChild.textContent = `${lot.address || lot.lotLabel || 'Find my block'}${lot.areaM2 ? ` · ${Math.round(lot.areaM2).toLocaleString('en-AU')} m²` : ''}`;
+    const sample = lot.demo || lot.lotLabel === 'Sample lot';
+    const lotText = sample ? '' : `${lot.address || lot.lotLabel || ''}${lot.areaM2 ? ` · ${Math.round(lot.areaM2).toLocaleString('en-AU')} m²` : ''}`;
+    if (findInput) {
+      if (document.activeElement !== findInput) {
+        findInput.value = lotText;
+        findInput.placeholder = sample ? `Sample lot · ${lotLine(lot).split(' · ').slice(1).join(' · ') || 'search a NSW or QLD address'}` : 'Search a NSW or QLD address';
+      }
+    } else findPill.lastChild.textContent = lotText || 'Find my block';
     const cur = targetTab() || tabs.find((t) => t.id === 'aerial');
     cap.textContent = cur?.caption || '';
     rooms.hidden = tabs.length < 2;
@@ -496,7 +578,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       const r = el.getBoundingClientRect();
       if (r.right <= vr.left || r.left >= vr.right || r.bottom <= vr.top || r.top >= vr.bottom) continue;
       const cx = (r.left + r.right) / 2 - vr.left;
-      const nearTop = r.top - vr.top < vr.height / 3;
+      const nearTop = (r.top + r.bottom) / 2 - vr.top < vr.height / 3; // by its middle: a tall card whose top edge is high is still a side card
       if (nearTop) inset.top = Math.max(inset.top, r.bottom - vr.top + 6);
       else if (cx < vr.width * 0.3 && r.width < vr.width * 0.6) inset.left = Math.max(inset.left, r.right - vr.left + 16);
       else if (cx > vr.width * 0.75 && r.width < vr.width * 0.4) inset.right = Math.max(inset.right, vr.right - r.left + 16);

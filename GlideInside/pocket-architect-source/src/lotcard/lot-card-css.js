@@ -109,4 +109,51 @@ export const LOT_CARD_CSS = `
 .lc-mini.is-big{width:min(44vw,460px);min-width:0;z-index:5}
 @media (max-width:640px){.lc-plan{width:110px;height:74px}.lc-stats{gap:10px}.lc-btn{height:34px;padding:0 12px!important}}
 @media (prefers-reduced-motion:no-preference){.lc-chip,.lc-btn{transition:background .15s,box-shadow .15s}}
+/* Embedded viewer (the home page frame): the Lot Planner layout. Tag and compass top left, address search and menu top right, the design card
+   bottom left, the design switcher bottom centre, the top view bottom right, microtext along the bottom. */
+.lc-embed .lc-head{left:14px;top:14px;max-width:calc(100% - 430px);padding:10px 14px 11px;border-radius:12px;background:rgba(10,10,12,.5);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);text-shadow:none}
+.lc-embed .lc-head-t{font-size:13px;letter-spacing:.26em}
+.lc-embed .lc-head-s{margin-top:7px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc-compass{position:absolute;left:14px;top:72px;width:38px;height:38px;border-radius:50%;display:flex!important;align-items:center;justify-content:center}
+.lc-compass svg{width:26px;height:26px}
+.lc-compass:hover,.lc-menu:hover{background:rgba(40,40,46,.85)}
+.lc-embed .lc-find{right:64px;top:14px;height:42px;width:min(340px,calc(100% - 520px));max-width:none;padding:0 16px!important;border-radius:21px;gap:10px}
+.lc-embed .lc-find-in{flex:1;min-width:0;height:100%;background:none;border:0;outline:0;color:var(--lc-t1);font:500 13.5px var(--lc-sans);padding:0}
+.lc-embed .lc-find-in::placeholder{color:var(--lc-t1);opacity:.92}
+.lc-embed .lc-find:focus-within{border-color:rgba(255,255,255,.55)}
+.lc-find-list{position:absolute;left:0;right:0;top:48px;margin:0;padding:6px;list-style:none;border-radius:14px;max-height:280px;overflow:auto;z-index:6}
+.lc-find-list[hidden]{display:none}
+.lc-find-item{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;font:500 12.5px var(--lc-sans)}
+.lc-find-item i{font-style:normal;font-size:10px;letter-spacing:.1em;color:var(--lc-t2)}
+.lc-find-item:hover,.lc-find-item[aria-selected=true]{background:rgba(255,255,255,.14)}
+.lc-menu{position:absolute;right:14px;top:14px;width:42px;height:42px;border-radius:50%;display:flex!important;align-items:center;justify-content:center}
+.lc-menu-list{position:absolute;right:14px;top:62px;width:230px;padding:6px;border-radius:14px;z-index:7;display:flex;flex-direction:column}
+.lc-menu-list[hidden]{display:none}
+.lc-menu-item{text-align:left;padding:10px 12px!important;border-radius:9px;font:500 13px var(--lc-sans)}
+.lc-menu-item:hover{background:rgba(255,255,255,.14)}
+.lc-foot{position:absolute;left:16px;bottom:6px;font:400 9.5px/1 var(--lc-sans);letter-spacing:.02em;color:rgba(255,255,255,.62);text-shadow:0 1px 4px rgba(0,0,0,.7);pointer-events:none}
+.lc-embed:not(.is-compact) .lc-card{left:14px;bottom:26px;width:clamp(380px,calc(50% - 168px),590px);padding:20px 24px 0;border-radius:16px}
+.lc-embed:not(.is-compact) .lc-stats{gap:18px;margin:12px 0 8px}
+.lc-embed:not(.is-compact) .lc-stats b{font-size:25px}
+.lc-embed:not(.is-compact) .lc-sp{margin:6px 0 8px}
+.lc-embed:not(.is-compact) .lc-sp .lc-k{width:62px}
+.lc-embed:not(.is-compact) .lc-sp-rooms .lc-tabs{flex-wrap:wrap}
+.lc-embed:not(.is-compact) .lc-tab{height:32px;padding:0 15px!important;font-size:13px}
+.lc-embed:not(.is-compact) .lc-acts{gap:8px 10px}
+.lc-embed:not(.is-compact) .lc-gh{padding:0 4px!important}
+.lc-embed:not(.is-compact) .lc-fit{min-height:40px;margin-top:2px;font-size:12.5px}
+.lc-embed:not(.is-compact) .lc-pager{left:50%;right:auto;transform:translateX(-50%);width:auto;bottom:26px;justify-content:center}
+.lc-embed:not(.is-compact) .lc-pgt{min-width:150px;max-width:300px;flex:none;font-size:10.5px;letter-spacing:.16em}
+.lc-embed:not(.is-compact) .lc-mini{bottom:26px;right:14px;width:min(18%,200px)}
+.lc-embed.is-compact .lc-find{display:flex;left:12px;right:62px;top:12px;width:auto;height:40px}
+.lc-embed.is-compact .lc-menu{right:12px;top:12px;width:40px;height:40px}
+.lc-embed.is-compact .lc-menu-list{top:58px;right:12px}
+.lc-embed.is-compact .lc-head{left:12px;top:60px;max-width:calc(100% - 130px);padding:7px 10px 8px}
+.lc-embed.is-compact .lc-head-t{font-size:11px}
+.lc-embed.is-compact .lc-compass{left:12px;top:104px;width:34px;height:34px}
+.lc-embed.is-compact .lc-rooms{top:150px}
+.lc-embed.is-compact .lc-find-list{top:46px}
+.lc-embed.is-phone .lc-foot{display:none}
+.lc-embed.is-compact .lc-foot{left:12px;bottom:3px}
+.lc-embed.is-compact .lc-card .lc-gh{padding:0 6px!important}
 `;
