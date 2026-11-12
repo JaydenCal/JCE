@@ -6,7 +6,7 @@ import { planGeometry } from '../pdf.js';
 import { wallShapes } from '../shared.js';
 import { groundLevel, areaTotals } from './lot.js';
 import { levelContent } from '../drawing.js';
-import { AREA, ENTITY, ABN, EMAIL, fit } from './frame.js';
+import { AREA, ENTITY, ABN, EMAIL, REV_TEXT, fit } from './frame.js';
 
 const GREY = [120, 124, 132];
 const LOC = { x0: 206, y0: 24, x1: AREA.x1 - 5, y1: 150 };
@@ -30,7 +30,7 @@ export function localityScale(lot) {
   const bb = G.bbox(lot.boundary);
   const w = LOC.x1 - LOC.x0 - 6;
   const h = LOC.y1 - LOC.y0 - 6;
-  const need = Math.max((Math.max(bb.w, bb.h) * 3) / Math.min(w, h), 1);
+  const need = Math.max((Math.max(bb.w, bb.h) * 6) / Math.min(w, h), 1);
   return [500, 1000, 2000, 2500, 5000, 10000].find((n) => n >= need) || 10000;
 }
 
@@ -202,7 +202,7 @@ export function drawCover(doc, ctx) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
   doc.setTextColor(...PEN.ink);
-  ['A', ctx.dateStr, 'Concept issue', 'GI'].forEach((t, i) => doc.text(t, rc[i] + 1.5, vy + 14));
+  ['A', ctx.dateStr, clean(ctx.project.titleBlock?.issuePurpose) || REV_TEXT, 'GI'].forEach((t, i) => doc.text(t, rc[i] + 1.5, vy + 14));
 
   // General notes.
   const ny = vy + 26;
@@ -226,6 +226,6 @@ export function drawCover(doc, ctx) {
   });
 
   const locScale = locality(doc, lot, project);
-  thumbnail(doc, project, ctx.catalogue, lot ? 'HOUSE ON LOT: GROUND FLOOR' : 'HOUSE: GROUND FLOOR');
+  thumbnail(doc, project, ctx.catalogue, 'HOUSE PLAN (GROUND FLOOR)');
   return { locScale };
 }

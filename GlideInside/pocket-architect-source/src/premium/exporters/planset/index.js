@@ -17,7 +17,7 @@ import { prepare } from './lot.js';
 import { drawStrip, drawConceptNote, drawWatermark, ddmmyyyy, ABN, ENTITY } from './frame.js';
 import { drawCover, localityScale } from './cover.js';
 import { drawSite, siteView } from './site.js';
-import { drawHouse, houseLayout } from './house.js';
+import { drawHouseSheet, houseSheets } from './house.js';
 
 void schemeColours;
 
@@ -43,8 +43,12 @@ async function loadJsPDF(given) {
 export function planSetSheets({ project, lot, kind, catalogue = null }) {
   const sheets = [{ id: 'cover', code: 'C000', title: 'COVER SHEET AND DRAWING INDEX', scale: 'AS SHOWN' }];
   if (kind === 'site') sheets.push({ id: 'site', code: 'C100', title: 'SITE PLAN', scale: lot ? `1:${siteView(project, lot).scale} @ A3` : 'NTS' });
-  const hl = houseLayout(alignProject(project).project, catalogue);
-  sheets.push({ id: 'house', code: 'A100', title: kind === 'site' ? 'HOUSE PLAN' : 'FLOOR PLAN', scale: `1:${hl.scale} @ A3` });
+  const hs = houseSheets(alignProject(project).project, catalogue);
+  hs.forEach((h, i) => {
+    const name = `${ascii(h.level.name) || 'Level'} FLOOR PLAN`.toUpperCase();
+    const title = hs.length > 1 ? name : kind === 'site' ? 'HOUSE PLAN' : 'FLOOR PLAN';
+    sheets.push({ id: 'house', code: `A${100 + i}`, title, scale: `1:${h.scale} @ A3`, house: h });
+  });
   return sheets;
 }
 
@@ -69,7 +73,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
   const siteLot = kind === 'site' ? prep.lot : prep.lot; // the house plan also quotes the lot when there is one
   const JsPDF = await loadJsPDF(jsPDF);
   const builder = clean(builderName);
-  const dateStr = ddmmyyyy(date);
+  const dateStr = clean(project.titleBlock?.date) || ddmmyyyy(date);
   const sheets = planSetSheets({ project: wp, lot: kind === 'site' ? siteLot : null, kind, catalogue });
   const aligned = alignProject(wp);
   const id = projectCode(wp);
@@ -93,9 +97,9 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
       strip = { ...strip, subtitle: kind === 'site' ? 'Site plan and house plan' : 'House plan', kvTitle: 'SITE DATA', kv: siteLot ? [['Lot area', `${Math.round(siteLot.areaM2).toLocaleString('en-AU')} m²`], ['Locality scale', `1:${localityScale(siteLot)} @ A3`]] : [], notes: ['Concept only, for discussion.', 'Boundaries are from the cadastre and are not a survey.'] };
     } else if (s.id === 'site') {
       Object.assign(facts, drawSite(doc, wp, siteLot));
-      strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv: facts.kv, notes: ['Boundaries from the cadastre (DCDB), subject to survey.', 'Bearings are grid bearings. Lengths are in metres.', 'Setback lines and dimensions are indicative.', 'Driveway and road reserve are typical values.'] };
+      strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv: facts.kv, notes: facts.notes, blocks: facts.blocks };
     } else {
-      const h = drawHouse(doc, aligned.project, { catalogue, northDeg: Number(aligned.project.site?.northDeg) || 0 });
+      const h = drawHouseSheet(doc, aligned.project, s.house, { catalogue, northDeg: Number(aligned.project.site?.northDeg) || 0 });
       strip = { ...strip, subtitle: ascii(title), kvTitle: 'AREAS (INDICATIVE)', kv: h.kv, notes: ['Dimensions in millimetres.', 'Room areas to internal wall faces.', 'Door swings and window positions are shown as designed.', 'Confirm all dimensions on site before ordering.'] };
     }
     drawConceptNote(doc);

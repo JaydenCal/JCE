@@ -2,8 +2,10 @@
 // metre lot, puts the house on it, and derives the numbers the sheets quote. Pure, Node compatible.
 
 import * as G from '../../../model/geometry.js';
-import { footprint, houseCentre, translateHouse, rotateHouse, suggestPosition, envelopeOf, lotOf } from '../../../model/placement.js';
-import { deriveFrontage } from '../../../site/frontage.js';
+import { footprint, houseCentre, translateHouse, rotateHouse, envelopeOf, lotOf } from '../../../model/placement.js';
+import { deriveFrontage, isCorner } from '../../../site/frontage.js';
+import { autoPose } from '../../../portal/auto-place.js';
+import { placeHouse } from '../../../portal/place-house.js';
 import { faceGarageAngle } from '../../../site/lotplan.js';
 import { levelsSorted } from '../shared.js';
 
@@ -68,7 +70,7 @@ export function toSiteLot(l) {
       out.frontEdges = [best];
     }
   }
-  out.cornerLot = out.frontEdges.length > 1;
+  out.cornerLot = isCorner(out, out.frontEdges);
   return out;
 }
 
@@ -126,17 +128,29 @@ export function prepare(project, lotIn) {
     const c0 = houseCentre(p);
     const fp = footprint(p);
     const inside = fp.points.every((q) => G.pointInPolygon(q, lot.boundary));
-    if (inside && lotOf(p) && G.pointInPolygon(c0, lot.boundary)) out.placed = 'project';
+    if (inside && G.pointInPolygon(c0, lot.boundary)) out.placed = 'project';
     else {
-      const cen = G.polygonCentroid(lot.boundary);
-      translateHouse(p, cen.x - c0.x, cen.y - c0.y);
-      const turn = faceGarageAngle(p);
-      if (turn) rotateHouse(p, turn, houseCentre(p));
+      // The portal's first placement (garage to the street, centred on the frontage, behind the front setback). It works from the
+      // envelope polygon, so it stays quick on a 300 x 420 m block where a grid search would not.
+      let done = false;
       try {
-        const s = suggestPosition(p, 'front');
-        if (s && num(s.dx) && num(s.dy)) translateHouse(p, s.dx, s.dy);
+        const scratch = structuredClone(p);
+        scratch.levels = [];
+        scratch.site = { ...scratch.site, tanks: [] };
+        const r = autoPose(scratch, p);
+        if (r?.pose) {
+          placeHouse(scratch, p, r.pose);
+          p.levels = scratch.levels;
+          done = true;
+        }
       } catch {
-        // keep the centred position
+        done = false;
+      }
+      if (!done) {
+        const cen = G.polygonCentroid(lot.boundary);
+        translateHouse(p, cen.x - c0.x, cen.y - c0.y);
+        const turn = faceGarageAngle(p);
+        if (turn) rotateHouse(p, turn, houseCentre(p));
       }
       out.placed = 'auto';
     }

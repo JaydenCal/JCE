@@ -414,8 +414,8 @@ export function alongText(doc, text, mid, dir, offset, { size = 5.6, colour = PE
   const w = doc.getTextWidth(t);
   let d = dir;
   let ang = (Math.atan2(d.y, d.x) * 180) / Math.PI;
-  if (ang > 90) ang -= 180;
-  if (ang <= -90) ang += 180;
+  if (ang >= 90) ang -= 180; // vertical text reads from the bottom up
+  if (ang < -90) ang += 180;
   const rad = (ang * Math.PI) / 180;
   d = { x: Math.cos(rad), y: Math.sin(rad) };
   const n = { x: d.y, y: -d.x }; // up the page side
@@ -440,8 +440,8 @@ export function alongLabel(doc, text, mid, dir, offset, { size = 8, colour = PEN
   doc.setFontSize(size);
   const w = doc.getTextWidth(t);
   let ang = (Math.atan2(dir.y, dir.x) * 180) / Math.PI;
-  if (ang > 90) ang -= 180;
-  if (ang <= -90) ang += 180;
+  if (ang >= 90) ang -= 180; // vertical text reads from the bottom up
+  if (ang < -90) ang += 180;
   const rad = (ang * Math.PI) / 180;
   const d = { x: Math.cos(rad), y: Math.sin(rad) };
   const n = { x: d.y, y: -d.x };

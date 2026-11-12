@@ -15,6 +15,7 @@ export const ABN = 'ABN 29 699 165 663';
 export const EMAIL = 'hello@glideinside.com.au';
 export const WEBSITE = 'glideinside.com.au';
 export const CONCEPT_NOTE = 'Concept only. Setbacks and planning controls shown are indicative and must be checked with the council and a suitably qualified person.';
+export const REV_TEXT = 'Concept issue';
 export const STAMP = 'CONCEPT ONLY. NOT FOR CONSTRUCTION';
 const NAVY = [20, 48, 74];
 const TEAL = [11, 122, 133];
@@ -175,7 +176,7 @@ export function drawStrip(doc, ctx, sheet) {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(6.2);
   doc.setTextColor(...PEN.ink);
-  [sheet.rev || 'A', date, clean(tb.issuePurpose) || 'Concept issue', 'GI'].forEach((t, i) => doc.text(fit(doc, clean(t), cols[i + 1] - cols[i] - 2), cols[i] + 1.2, yb + (rh / 4) * 1.5 + 1.2));
+  [sheet.rev || 'A', date, clean(tb.issuePurpose) || REV_TEXT, 'GI'].forEach((t, i) => doc.text(fit(doc, clean(t), cols[i + 1] - cols[i] - 2), cols[i] + 1.2, yb + (rh / 4) * 1.5 + 1.2));
 
   // Data and notes in the space between.
   const top = y;
@@ -200,21 +201,33 @@ export function drawStrip(doc, ctx, sheet) {
   }
   const notes = sheet.notes || [];
   if (notes.length && bot - cy > 12) {
-    box(doc, x0, cy, x1, bot);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6);
+    const lines = [];
+    notes.forEach((n, i) => { wrap(doc, `${i + 1}. ${n}`, W - 5).forEach((l, j) => lines.push(j ? `   ${l}` : l)); lines.push(null); });
+    const h = Math.min(bot - cy, 7 + lines.reduce((a, l) => a + (l === null ? 0.8 : 2.7), 0) + 1);
+    box(doc, x0, cy, x1, cy + h);
     label(doc, 'NOTES', x0 + 2, cy + 3.2);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(6);
     doc.setTextColor(...PEN.ink);
     let ny = cy + 7;
-    notes.forEach((n, i) => {
-      for (const [j, l] of wrap(doc, `${i + 1}. ${n}`, W - 5).entries()) {
-        if (ny > bot - 1.5) return;
-        doc.text(j ? `   ${l}` : l, x0 + 2, ny);
-        ny += 2.7;
-      }
-      ny += 0.8;
-    });
-  } else box(doc, x0, cy, x1, bot);
+    for (const l of lines) {
+      if (l === null) { ny += 0.8; continue; }
+      if (ny > cy + h - 0.8) break;
+      doc.text(l, x0 + 2, ny);
+      ny += 2.7;
+    }
+    cy += h;
+  }
+  // Blocks (legend, boundary schedule): each { title, h, draw(doc, x, y, w) }, stacked while they fit.
+  for (const blk of sheet.blocks || []) {
+    if (cy + blk.h > bot) break;
+    box(doc, x0, cy, x1, cy + blk.h);
+    label(doc, blk.title, x0 + 2, cy + 3.2);
+    blk.draw(doc, x0, cy + 4, W);
+    cy += blk.h;
+  }
 }
 
 /** The concept statement along the foot of the drawing area (one line, so it reads as one string). */

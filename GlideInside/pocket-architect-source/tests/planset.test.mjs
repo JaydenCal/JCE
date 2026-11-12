@@ -120,3 +120,43 @@ test('the caller project is not changed and a schema 2 lot is accepted', async (
 test('a site plan needs a lot', async () => {
   await assert.rejects(exportPlanSet({ project, kind: 'site', download: false, jsPDF }), /lot/i);
 });
+
+// ---- Review fixes (planset-pdf2) ----
+const { catalogue } = await import('../src/catalogue/index.js');
+const { migrate } = await import('../src/model/schema.js');
+const tmpl = (id) => migrate(catalogue.createFromTemplate(id));
+const runWith = async (p, l, extra = {}) => {
+  const { Rec, texts } = recorder();
+  const r = await exportPlanSet({ project: p, lot: l, kind: 'site', download: false, jsPDF: Rec, catalogue, date: new Date(2026, 10, 12), ...extra });
+  return { r, text: texts.join('\n') };
+};
+
+test('a two storey house gets one sheet per level and the cover index lists it', async () => {
+  const { r, text } = await runWith(tmpl('house_double'), { boundaryM: rect(0, 0, 18, 32), frontEdge: 0, lotNumber: '5', planLabel: 'DP 270001', setbacks: { front: 4.5, side: 0.9, rear: 3 } });
+  assert.deepEqual(r.sheets.map((s) => s.no.split('-').pop()), ['C000', 'C100', 'A100', 'A101']);
+  assert.equal(r.pages, 4);
+  assert.match(text, /GI-L5DP270001-A101/);
+  assert.match(text, /FIRST FLOOR PLAN/);
+});
+
+test('a house too big for the block gets a red note and no compliance wording', async () => {
+  const { text } = await runWith(project, { boundaryM: rect(0, 0, 12.5, 30), frontEdge: 0, lotNumber: '44', planLabel: 'DP 1', setbacks: { front: 4.5, side: 0.9, rear: 3 } });
+  assert.match(text, /Too big for this block/);
+  assert.ok(!/compliant/i.test(text));
+});
+
+test('a curved frontage gives one road chain and a proposed lot is labelled as proposed', async () => {
+  const l = { frontEdges: [0, 1, 2, 3, 4, 5, 6], boundaryM: [[0, 6], [2, 3.2], [4.5, 1.4], [7.5, 0.4], [10.5, 0.4], [13.5, 1.4], [16, 3.2], [18, 6], [30, 40], [-12, 40]], lotNumber: '9', planLabel: 'DP 5555', proposed: true, setbacks: { front: 4.5, side: 0.9, rear: 3 } };
+  const { text } = await runWith(project, l);
+  assert.match(text, /PROPOSED LOT 9/);
+  const straight = await runWith(project, { boundaryM: rect(0, 0, 18, 32), frontEdge: 0, lotNumber: '9', planLabel: 'DP 5555', setbacks: { front: 4.5, side: 0.9, rear: 3 } });
+  // One set of road labels for the whole curved frontage, the same count as a straight one (cover locality plan plus site plan).
+  assert.equal((text.match(/EXISTING ROAD/g) || []).length, (straight.text.match(/EXISTING ROAD/g) || []).length);
+});
+
+test('a large rural lot prepares quickly and shows an enlarged house', async () => {
+  const t0 = Date.now();
+  const { text } = await runWith(project, { boundaryM: rect(0, 0, 300, 420), frontEdge: 0, lotNumber: '3', planLabel: 'DP 755001', setbacks: { front: 20, side: 10, rear: 10 } });
+  assert.ok(Date.now() - t0 < 15000);
+  assert.match(text, /HOUSE AT 1:\d+/);
+});
