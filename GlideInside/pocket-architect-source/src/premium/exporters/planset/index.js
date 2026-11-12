@@ -100,7 +100,7 @@ export async function exportPlanSet({ project, lot = null, kind = 'site', builde
       strip = { ...strip, subtitle: ascii(title), kvTitle: 'SITE DATA', kv: facts.kv, notes: facts.notes, blocks: facts.blocks };
     } else {
       const h = drawHouseSheet(doc, aligned.project, s.house, { catalogue, northDeg: Number(aligned.project.site?.northDeg) || 0 });
-      strip = { ...strip, subtitle: ascii(title), kvTitle: 'AREAS (INDICATIVE)', kv: h.kv, notes: ['Dimensions in millimetres.', 'Room areas to internal wall faces.', 'Door swings and window positions are shown as designed.', 'Confirm all dimensions on site before ordering.'] };
+      strip = { ...strip, subtitle: ascii(title), kvTitle: 'AREAS (INDICATIVE)', kv: h.kv, blocks: h.blocks, notes: ['Dimensions in millimetres.', 'Room areas to internal wall faces.', 'Door swings and window positions are shown as designed.', 'Confirm all dimensions on site before ordering.'] };
     }
     drawConceptNote(doc);
     drawStrip(doc, base, strip);

@@ -30,8 +30,13 @@ export function localityScale(lot) {
   const bb = G.bbox(lot.boundary);
   const w = LOC.x1 - LOC.x0 - 6;
   const h = LOC.y1 - LOC.y0 - 6;
-  const need = Math.max((Math.max(bb.w, bb.h) * 6) / Math.min(w, h), 1);
-  return [500, 1000, 2000, 2500, 5000, 10000].find((n) => n >= need) || 10000;
+  const SC = [250, 500, 1000, 2000, 2500, 5000, 10000, 20000];
+  const big = Math.max(bb.w, bb.h);
+  // Largest scale that still draws the lot at least 30 mm long on the sheet (so it is clearly visible), as long as it fits the frame.
+  const fits = (n) => bb.w / n <= w * 0.85 && bb.h / n <= h * 0.85;
+  const clear = SC.filter((n) => big / n >= 30 && fits(n));
+  if (clear.length) return clear.at(-1);
+  return SC.find(fits) || 20000;
 }
 
 function locality(doc, lot, project) {
@@ -69,6 +74,19 @@ function locality(doc, lot, project) {
   doc.setLineWidth(0.15);
   doc.setDrawColor(...GREY);
   for (const n of lot.neighbours || []) if (n.ring?.length >= 3) clipPoly(n.ring.map(T));
+  // Adjoining lot numbers, where the lot data has them and the ring centre is on the plan.
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6);
+  doc.setTextColor(...GREY);
+  for (const n of lot.neighbours || []) {
+    if (n.isRoad || !n.lotNumber || !(n.ring?.length >= 3)) continue;
+    const cc = T(G.polygonCentroid(n.ring));
+    const txt = `LOT ${n.lotNumber}`;
+    const tw = doc.getTextWidth(txt);
+    if (cc.x - tw / 2 < R.x0 + 1 || cc.x + tw / 2 > R.x1 - 1 || cc.y < R.y0 + 3 || cc.y > R.y1 - 5) continue;
+    doc.text(txt, cc.x, cc.y, { align: 'center' });
+  }
+  doc.setTextColor(...GREY);
   for (const r of lot.roads || []) {
     const pts = [];
     for (let i = 0; i + 1 < (r.pts || []).length; i += 2) pts.push(T({ x: r.pts[i], y: r.pts[i + 1] }));

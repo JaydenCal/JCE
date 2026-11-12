@@ -1,5 +1,5 @@
 // Room labels for the house plan sheet. Every label is tested against the walls, door swings, furniture, dimension strings, stairs and the
-// labels already placed. Order of attempts: name with area, name only, smaller type, abbreviated name, then a leader out into clear space.
+// labels already placed. Order of attempts: name with area, name only, smaller type, abbreviated name, then a numbered tag in the room with the name in a room schedule.
 // Rooms under 3 m2 carry no area. Nothing is ever drawn across a wall.
 
 import * as G from '../../../model/geometry.js';
@@ -48,12 +48,18 @@ export function drawRoomLabels(doc, { content, T, catalogue, bounds, extra = [] 
   for (const b of doorBoxes) field.addBox(b);
   const rooms = [...(level.rooms || [])].filter((r) => r.polygon?.length >= 3 && r.status !== 'demolish').sort((p, q) => G.polygonArea(p.polygon) - G.polygonArea(q.polygon));
   const polys = rooms.map((r) => r.polygon.map(T));
-  const leaders = [];
+  const tags = [];
+  const schedule = [];
 
   const drawIn = (spec, c, ink = PEN.ink) => {
     doc.setTextColor(...ink);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(spec.ns);
+    if (spec.halo) {
+      haloText(doc, spec.name, c.x, spec.y0 + 0.5 + spec.nameH * 0.8, { size: spec.ns, bold: true, align: 'center', halo: 0.8 });
+      if (spec.area) haloText(doc, spec.area, c.x, spec.y0 + 0.5 + spec.nameH + spec.as * 0.3528 * 0.95, { size: spec.as, bold: false, align: 'center', halo: 0.8 });
+      return;
+    }
     doc.text(spec.name, c.x, spec.y0 + 0.5 + spec.nameH * 0.8, { align: 'center' });
     if (spec.area) {
       doc.setFont('helvetica', 'normal');
@@ -94,55 +100,40 @@ export function drawRoomLabels(doc, { content, T, catalogue, bounds, extra = [] 
       cands.sort((p, q) => p.d - q.d);
       for (const c of cands) {
         const b = { x0: c.x - w / 2, y0: c.y - h / 2, x1: c.x + w / 2, y1: c.y + h / 2 };
-        if (!inRoom(b) || !field.free(b)) continue;
+        const bi = { x0: b.x0 - 0.5, y0: b.y0 - 0.4, x1: b.x1 + 0.5, y1: b.y1 + 0.4 };
+        if (!inRoom(bi) || !field.free(bi)) continue;
         if (at.furn && hit(b, furnBoxes)) continue;
         field.addBox(b);
-        drawIn({ ns, as, name: at.v.name, area: at.v.area, y0: b.y0, nameH }, c);
+        drawIn({ ns, as, name: at.v.name, area: at.v.area, y0: b.y0, nameH, halo: !at.furn }, c);
         return;
       }
     }
-    // Leader out: the abbreviation (or name) in clear space close to the room, joined to it by a thin line.
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6);
-    const text = abbreviate(full) || full;
-    const w = doc.getTextWidth(text) + 1.2;
-    const h = 6 * 0.3528 * 1.3 + 0.6;
-    const ring = [];
-    for (let rad = 6; rad <= 34; rad += 4) for (let a = 0; a < 360; a += 22.5) ring.push({ x: cen.x + rad * Math.cos((a * Math.PI) / 180), y: cen.y + rad * Math.sin((a * Math.PI) / 180), rad });
-    for (const c of ring) {
-      const b = { x0: c.x - w / 2, y0: c.y - h / 2, x1: c.x + w / 2, y1: c.y + h / 2 };
-      if (polys.some((pl) => [[b.x0, b.y0], [b.x1, b.y0], [b.x1, b.y1], [b.x0, b.y1]].some(([x, y]) => G.pointInPolygon({ x, y }, pl)))) continue;
-      if (!field.free(b)) continue;
-      const seg = [cen, { x: Math.min(Math.max(cen.x, b.x0), b.x1), y: Math.min(Math.max(cen.y, b.y0), b.y1) }];
-      if (field.segs.some((s) => !s.soft && segCross(s[0], s[1], seg[0], seg[1])) && c.rad < 30) continue;
-      field.addBox(b);
-      leaders.push({ seg, text, b });
-      return;
-    }
-    // Last resort: the abbreviation on a white patch, so it is at least legible.
-    const b = { x0: cen.x - w / 2, y0: cen.y - h / 2, x1: cen.x + w / 2, y1: cen.y + h / 2 };
-    field.addBox(b);
-    leaders.push({ seg: null, text, b });
+    // No fit: a numbered tag inside the room (never a leader across a wall). The name goes in the room schedule in the strip.
+    const n = tags.length + 1;
+    const rad = 1.9;
+    const tcands = [];
+    for (let y = bb.minY + rad + 0.3; y <= bb.maxY - rad - 0.3; y += 0.8) for (let x = bb.minX + rad + 0.3; x <= bb.maxX - rad - 0.3; x += 0.8) tcands.push({ x, y, d: Math.hypot(x - cen.x, y - cen.y) });
+    tcands.sort((p, q) => p.d - q.d);
+    let tc = tcands.find((c) => {
+      const b2 = { x0: c.x - rad, y0: c.y - rad, x1: c.x + rad, y1: c.y + rad };
+      return inRoom(b2) && field.free(b2);
+    });
+    if (!tc) tc = { x: cen.x, y: cen.y };
+    field.addBox({ x0: tc.x - rad, y0: tc.y - rad, x1: tc.x + rad, y1: tc.y + rad });
+    tags.push({ n, x: tc.x, y: tc.y, rad });
+    schedule.push({ n, name: full, area });
   });
 
-  for (const l of leaders) {
-    if (l.seg) {
-      doc.setDrawColor(...PEN.grey);
-      doc.setLineWidth(0.12);
-      doc.line(l.seg[0].x, l.seg[0].y, l.seg[1].x, l.seg[1].y);
-      doc.setFillColor(...PEN.grey);
-      doc.circle(l.seg[0].x, l.seg[0].y, 0.45, 'F');
-    }
-    haloText(doc, l.text, (l.b.x0 + l.b.x1) / 2, l.b.y1 - 0.9, { size: 6, bold: true, align: 'center', halo: 0.9 });
+  for (const t of tags) {
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(...PEN.ink);
+    doc.setLineWidth(0.15);
+    doc.circle(t.x, t.y, t.rad, 'FD');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(5.6);
+    doc.setTextColor(...PEN.ink);
+    doc.text(String(t.n), t.x, t.y + 0.75, { align: 'center' });
   }
+  field.schedule = schedule;
   return field;
-}
-
-function segCross(a, b, c, d) {
-  const o = (p, q, r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
-  const d1 = o(a, b, c);
-  const d2 = o(a, b, d);
-  const d3 = o(c, d, a);
-  const d4 = o(c, d, b);
-  return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
 }

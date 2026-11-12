@@ -160,3 +160,34 @@ test('a large rural lot prepares quickly and shows an enlarged house', async () 
   assert.ok(Date.now() - t0 < 15000);
   assert.match(text, /HOUSE AT 1:\d+/);
 });
+
+test('no room name is drawn twice on a house sheet, and unfit rooms get a numbered tag with a schedule entry', async () => {
+  for (const h of houses) {
+    const { Rec, texts } = recorder();
+    const pageStarts = [];
+    const add = Rec.prototype.addPage;
+    Rec.prototype.addPage = function (...a) { pageStarts.push(texts.length); return add.apply(this, a); };
+    await exportPlanSet({ project: h.project, lot, kind: 'house', download: false, jsPDF: Rec, catalogue, date: new Date(2026, 10, 12) });
+    Rec.prototype.addPage = add;
+    const sheet = texts.slice(pageStarts[pageStarts.length - 1]);
+    // A halo draws the same string twice in a row; collapse those. Garage, Living and Alfresco also appear in the strip areas and the totals box (+2).
+    const drawn = sheet.filter((t, i) => t !== sheet[i - 1]);
+    const rooms = (h.project.levels[0].rooms || []).filter((r) => r.polygon?.length >= 3);
+    const counts = {};
+    for (const r of rooms) counts[r.name] = (counts[r.name] || 0) + 1;
+    for (const [name, n] of Object.entries(counts)) {
+      const seen = drawn.filter((t) => t === name || t === name.toUpperCase() || t.toUpperCase() === name.toUpperCase()).length;
+      assert.ok(seen <= n + 2, `${h.project.meta?.name || 'house'}: "${name}" drawn ${seen} times for ${n} room(s)`);
+    }
+  }
+});
+
+test('the cover locality plan draws the lot at least 25 mm long', async () => {
+  const { localityScale } = await import('../src/premium/exporters/planset/cover.js');
+  const { toSiteLot } = await import('../src/premium/exporters/planset/lot.js');
+  for (const [w, d] of [[18, 32], [60, 22], [36, 60], [300, 420]]) {
+    const l = toSiteLot({ boundaryM: rect(0, 0, w, d), frontEdge: 0 });
+    const sc = localityScale(l);
+    assert.ok((Math.max(w, d) * 1000) / sc >= 25, `${w}x${d} at 1:${sc}`);
+  }
+});

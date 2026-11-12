@@ -72,7 +72,7 @@ export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 
   const { content, ox, oy, scale: ds, level } = sh;
   const T = (p) => ({ x: ox + (p.x - content.box.minX) / ds, y: oy + (p.y - content.box.minY) / ds });
   planGeometry(doc, { ...content, scale: ds }, T, true, catalogue);
-  drawRoomLabels(doc, { content, T, catalogue, bounds: { x0: AREA.x0 + 2, y0: AREA.y0 + 2, x1: AREA.x1 - 2, y1: AREA.y1 - 8 }, extra: [sh.slot, NORTH_RECT, BAR_RECT] });
+  const lf = drawRoomLabels(doc, { content, T, catalogue, bounds: { x0: AREA.x0 + 2, y0: AREA.y0 + 2, x1: AREA.x1 - 2, y1: AREA.y1 - 8 }, extra: [sh.slot, NORTH_RECT, BAR_RECT] });
   // Dimension strings: overall and running.
   doc.setLineDashPattern([], 0);
   doc.setLineWidth(0.12);
@@ -146,5 +146,16 @@ export function drawHouseSheet(doc, project, sh, { catalogue = null, northDeg = 
   doc.setFontSize(7.5);
   doc.setTextColor(...PEN.ink);
   doc.text(`1:${ds} @ A3`, BAR_RECT.x0 + 4, BAR_RECT.y1 - 19.5);
-  return { scale: ds, scaleLabel: `1:${ds} @ A3`, totals, kv: [['Living', `${totals.living.toFixed(1)} m²`], ['Garage', `${totals.garage.toFixed(1)} m²`], ['Alfresco / porch', `${totals.alfresco.toFixed(1)} m²`], ['Total', `${totals.total.toFixed(1)} m²`]] };
+  const rows = lf.schedule || [];
+  const blocks = rows.length ? [{
+    title: 'ROOM SCHEDULE',
+    h: 4 + rows.length * 3.4 + 1.5,
+    draw(d, x, y, w) {
+      d.setFont('helvetica', 'normal');
+      d.setFontSize(6.4);
+      d.setTextColor(...PEN.ink);
+      rows.forEach((r, i) => { d.text(String(r.n), x + 3, y + 2.6 + i * 3.4); d.text(r.name, x + 8, y + 2.6 + i * 3.4); if (r.area) d.text(r.area, x + w - 3, y + 2.6 + i * 3.4, { align: 'right' }); });
+    },
+  }] : [];
+  return { blocks, scale: ds, scaleLabel: `1:${ds} @ A3`, totals, kv: [['Living', `${totals.living.toFixed(1)} m²`], ['Garage', `${totals.garage.toFixed(1)} m²`], ['Alfresco / porch', `${totals.alfresco.toFixed(1)} m²`], ['Total', `${totals.total.toFixed(1)} m²`]] };
 }

@@ -372,7 +372,7 @@ export function drawSite(doc, project, lot) {
     const w = doc.getTextWidth(lbl);
     let placed = null;
     if (lenOf(a, b) >= w + 3) {
-      const cands = [0.5, 0.35, 0.65].map((f) => () => {
+      const cands = [0.5, 0.35, 0.65, 0.22, 0.78, 0.12, 0.88].filter((f) => f === 0.5 || lenOf(a, b) * Math.min(f, 1 - f) >= w / 2 + 2).map((f) => () => {
         const mid = G.lerp(a, b, f);
         const probe = alongLabel(doc, lbl, mid, dir, 0, { size: bsize });
         const off = G.dot(probe.up, out) > 0 ? 1.4 : -(1.4 + bh);
