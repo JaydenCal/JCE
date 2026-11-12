@@ -15,6 +15,8 @@ import { applySiteLookup } from '../site/apply.js';
 import { demoSite } from '../site/demo-lot.js';
 import { publicDesigns } from '../lotcard/designs.js';
 import { swapHouse, poseFor } from '../lotcard/swap.js';
+import { computeSetbacks } from '../site/setback-stage.js';
+import { setbackStatusLine } from '../site/lot-checks.js';
 
 export const FULL_EDITOR_PATH = '/plan-studio/app/';
 const PREFER = ['house_single', 'house_double', 'duplex', 'granny_flat'];
@@ -101,30 +103,85 @@ export function pickFirstDesign(project, list, wantId = null) {
   return order.find((d) => ok(d) && sits(d)) || order.find(ok) || list[0];
 }
 
-/** Put a design from the pool on the lot. */
-function placeOnce(store, pool, wantId) {
-  const pick = pickFirstDesign(store.project, pool.list, wantId);
+const orderOf = (list, wantId) => [...(wantId ? [wantId] : []), ...PREFER, ...list.map((d) => d.id)].map((id) => list.find((d) => d.id === id)).filter((d, i, a) => d && a.indexOf(d) === i);
+
+/**
+ * The design to place first, judged against the setbacks it would actually have. The setbacks depend on the design (storeys, wall and
+ * building height), so a design is tried against its own envelope, not the one computed for whatever was on the lot before. Every design
+ * in the pool is tried (the one asked for first), each with every turn and position autoPose searches; the first that fits wins. When
+ * none fits the best ranked one is chosen and the card reads "Too big for this block".
+ * Returns { pick, fits, setbacks, envelope, key } (setbacks null when they cannot be worked out, then the placement is judged on what the
+ * lot already carries), or null for an empty pool.
+ */
+export async function chooseDesign(store, pool, wantId = null, { compute = computeSetbacks } = {}) {
+  const list = pool.list;
+  if (!list.length) return null;
+  const lot = store.project.site?.lot;
+  const ok = (d) => !d.fit || d.fit.status !== 'too-big';
+  const order = orderOf(list, wantId);
+  const ranked = [...order.filter(ok), ...order.filter((d) => !ok(d))];
+  const own = !!(lot && lot.source !== 'builder' && lot.frontageConfirmed && (lot.frontEdges || []).length);
+  if (!own) return { pick: pickFirstDesign(store.project, list, wantId), fits: null, setbacks: null, envelope: null, key: null };
+  let first = null;
+  for (const d of ranked) {
+    let r = null;
+    try { r = await compute({ ...store.project, levels: d.project.levels }, lot); } catch { r = null; }
+    if (!r?.setbacks || !r.envelope) { first = first || { pick: d, fits: null, setbacks: null, envelope: null, key: null }; continue; }
+    const tmp = { ...store.project, site: { ...store.project.site, lot: { ...lot, setbacks: r.setbacks, envelope: r.envelope, setbacksKey: r.key } } };
+    let fits = null;
+    try { fits = poseFor(tmp, d.project).fits; } catch { fits = null; }
+    const cand = { pick: d, fits, setbacks: r.setbacks, envelope: r.envelope, key: r.key, attempts: r.attempts };
+    if (fits === true) return cand;
+    first = first || cand;
+  }
+  return first || { pick: ranked[0], fits: null, setbacks: null, envelope: null, key: null };
+}
+
+/** Put the chosen design's own setbacks on the lot (derived data, no undo step), so the placement and the card agree with them. */
+function writeSetbacks(store, choice) {
+  const lot = store.project.site?.lot;
+  if (!lot || !choice?.envelope) return;
+  lot.setbacks = choice.setbacks;
+  lot.envelope = choice.envelope;
+  lot.setbacksKey = choice.key;
+  lot.setbacksStatus = 'ok';
+  lot.setbacksAttempts = [];
+  store.emit('project', { label: 'setbacks' });
+}
+
+/** Put the chosen design on the lot. */
+export function placeChoice(store, choice) {
+  const pick = choice?.pick;
   if (!pick) return null;
+  writeSetbacks(store, choice);
   swapHouse(store, pick.project, { id: pick.id, name: pick.name });
   store.setUI({ placedDesign: { id: pick.id, name: pick.name } });
   return pick;
 }
 
 /**
- * Place a design now so the first frame has a house, then, once the council setbacks have loaded (they arrive a moment later),
- * place it again so it sits inside them. The second pass is skipped when the lot has been replaced in the meantime.
+ * Place a design now so the first frame has a house that fits, judged against the setbacks of each design (see chooseDesign). When the
+ * setbacks could not be worked out yet (they arrive a moment later), place one now and again once they have loaded. The second pass is
+ * skipped when the lot has been replaced in the meantime.
  */
 export async function placeBestDesign(store, catalogue, wantId = null, { after = null } = {}) {
   const id0 = lotId(store);
   const pool = await designPool(store, catalogue);
   if (lotId(store) !== id0) return null; // another lot was loaded while the library came in
   if (pool.empty) toast(EMPTY_LIBRARY, { kind: 'warn', timeout: 7000 });
-  const first = placeOnce(store, pool, wantId);
-  if (hasEnvelope(store)) return first;
+  let choice = null;
+  try { choice = await chooseDesign(store, pool, wantId); } catch (e) { console.warn('[embed] design choice failed', e); }
+  if (lotId(store) !== id0) return null;
+  if (!choice) return null;
+  const first = placeChoice(store, choice);
+  if (choice.envelope || hasEnvelope(store)) return first;
   const id = lotId(store);
   waitForEnvelope(store, 25000).then(async () => {
     if (lotId(store) !== id || !hasEnvelope(store)) return;
-    try { placeOnce(store, await designPool(store, catalogue), store.ui.placedDesign?.id || wantId); after?.(); } catch (e) { console.warn('[embed] placement failed', e); }
+    try {
+      const again = await chooseDesign(store, await designPool(store, catalogue), store.ui.placedDesign?.id || wantId);
+      if (again && lotId(store) === id) { placeChoice(store, again); after?.(); }
+    } catch (e) { console.warn('[embed] placement failed', e); }
   });
   return first;
 }
@@ -226,6 +283,25 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
   window.addEventListener('message', onMessage);
   postToParent({ type: 'gi:ready' }); // the listener is on: a search sent now waits its turn behind the lot that is loading
 
+  // Late setbacks (the council rules, or heights that changed): while the lot is new and the person has not touched it, a house that ends up
+  // outside them is fitted again, at most twice per lot.
+  let refitOff = null;
+  if (viewerMode) {
+    let refitLot = null;
+    let refits = 0;
+    let since = 0;
+    let t = 0;
+    const refit = async () => {
+      const id = lotId(store);
+      if (id !== refitLot) { refitLot = id; refits = 0; since = Date.now(); }
+      if (busy || refits >= 2 || Date.now() - since > 40000 || !store.ui.placedDesign || store.project.placedHouse?.tooBig) return;
+      if (setbackStatusLine(store.project).state !== 'outside') return;
+      refits += 1;
+      try { await placeBestDesign(store, catalogue, store.ui.placedDesign.id); } catch (e) { console.warn('[embed] refit failed', e); }
+    };
+    refitOff = store.on('project', (e) => { if (e?.label === 'setbacks') { clearTimeout(t); t = setTimeout(refit, 400); } });
+  }
+
   if (viewerMode) {
     Promise.resolve(getViewer.ensure?.()).then((v) => v?.setEmbedFraming?.(true)).catch(() => {});
     // The cinematic view is the whole app here: the plan and split views are not reachable.
@@ -233,7 +309,7 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
       if ('view' in patch && patch.view !== '3d' && patch.view !== 'walk') store.setUI({ view: '3d' });
     });
   }
-  return { run, startDemo, dispose: () => { window.removeEventListener('message', onMessage); off?.(); } };
+  return { run, startDemo, dispose: () => { window.removeEventListener('message', onMessage); off?.(); refitOff?.(); } };
 }
 
 /** One-shot handoff slot: the viewer leaves the design here and the editor reads it once and clears it (src/app.js). The visitor's own autosave is never touched. */

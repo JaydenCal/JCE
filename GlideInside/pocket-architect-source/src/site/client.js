@@ -77,11 +77,37 @@ export function wideAerialParams(b) {
   return { bbox: `${w.minE},${w.minN},${w.maxE},${w.maxN}`, res: res.toFixed(3), maxpx: String(WIDE_PX) };
 }
 
+export const CONTOURS_TIMEOUT_MS = 30000;
+const CONTOURS_KEEP_MS = 120000;
+const contoursCache = new Map(); // request -> promise, so an identical request (a second search for the same lot) never goes out twice
+
 /**
- * fetchSite(selection, { fetchImpl, signal, onStep }) -> { lot, aerial: { blob, meta } | null, contours | null, warnings: [] }
+ * The ground levels for a lot (the elevation service can take 20 s or more). Never rejects: a failure or a wait over 30 s gives null and
+ * the caller carries on without ground levels. An identical request already in flight, or answered in the last two minutes, is shared.
+ */
+export function fetchContours(lot, { fetchImpl, timeoutMs = CONTOURS_TIMEOUT_MS } = {}) {
+  const b = lot.lot.bboxMga;
+  const m = margin();
+  const params = { state: lot.state, srid: lot.srid, origin: `${lot.origin.e},${lot.origin.n}`, bbox: `${b.minE},${b.minN},${b.maxE},${b.maxN}`, buffer: m };
+  const key = JSON.stringify(params);
+  if (contoursCache.has(key)) return contoursCache.get(key);
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const timer = setTimeout(() => ctl?.abort(), timeoutMs);
+  const p = getJson('contours', params, { signal: ctl?.signal, fetchImpl }).catch(() => null).then((r) => {
+    clearTimeout(timer);
+    if (!r) contoursCache.delete(key);
+    else { const t = setTimeout(() => contoursCache.delete(key), CONTOURS_KEEP_MS); t.unref?.(); }
+    return r;
+  });
+  contoursCache.set(key, p);
+  return p;
+}
+
+/**
+ * fetchSite(selection, { fetchImpl, signal, onStep, deferContours }) -> { lot, aerial: { blob, meta } | null, contours | null, warnings: [] }
  * selection: { label, state, lon, lat }. The lot is required. A failed aerial or elevation request only adds a warning.
  */
-export async function fetchSite(selection, { fetchImpl, signal, onStep } = {}) {
+export async function fetchSite(selection, { fetchImpl, signal, onStep, deferContours = false } = {}) {
   const warnings = [];
   const step = (s) => onStep?.(s);
   if (CONFIG.siteMock) {
@@ -144,14 +170,12 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep } = {}) {
       if (e?.name === 'AbortError') throw e;
     }
   }
+  // Ground levels come last and slowest. With deferContours the caller gets the lot, the aerial and a promise for the ground levels now.
   step('contours');
-  let contours = null;
-  try {
-    contours = await getJson('contours', { ...common, bbox: `${b.minE},${b.minN},${b.maxE},${b.maxN}`, buffer: m }, opts);
-  } catch (e) {
-    if (e?.name === 'AbortError') throw e;
-    warnings.push(`No contours: ${e.message}`);
-  }
+  const pending = fetchContours(lot, { fetchImpl });
+  if (deferContours) return { lot, aerial, aerialWide, contours: null, contoursPromise: pending, warnings };
+  const contours = await pending;
+  if (!contours) warnings.push('No contours were available for this lot.');
   return { lot, aerial, aerialWide, contours, warnings };
 }
 

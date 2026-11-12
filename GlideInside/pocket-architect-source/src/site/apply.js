@@ -2,7 +2,7 @@
 
 import { fetchSite } from './client.js';
 import { planView } from '../ui/view-mode.js';
-import { buildSiteLot, underlayFor } from './model.js';
+import { buildSiteLot, underlayFor, buildContours, buildTerrain, defaultFloorRL } from './model.js';
 import { faceGarageAngle, buildingHull, orientedBox, roadReserve, AUTO_LOT_DP } from './lotplan.js';
 import { rotateHouse, translateHouse } from '../model/placement.js';
 import * as G from '../model/geometry.js';
@@ -64,8 +64,8 @@ const titleCase = (s) => String(s || '').toLowerCase().replace(/\b[a-z]/g, (c) =
  * applySiteLookup(store, selection, { onStep, signal }) -> { lot, warnings }
  * Throws SiteError (readable message) when the lot cannot be found. A missing aerial or elevation grid only adds warnings.
  */
-export async function applySiteLookup(store, selection, { onStep, signal, fetchImpl, prefetched = null } = {}) {
-  const res = prefetched || (await fetchSite(selection, { onStep, signal, fetchImpl }));
+export async function applySiteLookup(store, selection, { onStep, signal, fetchImpl, prefetched = null, deferContours = true } = {}) {
+  const res = prefetched || (await fetchSite(selection, { onStep, signal, fetchImpl, deferContours }));
   const warnings = [...res.warnings];
   let aerialKey = null;
   if (res.aerial?.blob) {
@@ -115,7 +115,25 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
   if (oldWide && oldWide !== aerialWideKey) removeImage(oldWide);
   // Next the person confirms which edges are the street frontage (setbacks depend on it).
   store.setUI({ view: planView(store.ui.view), frontageEdit: true });
+  // The lot is on screen: the ground levels join it when they arrive (or never, silently, if the service fails or is over 30 s).
+  res.contoursPromise?.then((c) => addContours(store, lot, c)).catch(() => {});
   return { lot, warnings };
+}
+
+/**
+ * Add late ground levels to the lot already on the project (no undo step: derived data, like the setbacks). Skipped when the lot has been
+ * replaced meanwhile. Returns true when they were added. The views redraw their ground and the setbacks stage rechecks on the project event.
+ */
+export function addContours(store, forLot, resp) {
+  const cur = store.project.site?.lot;
+  if (!resp || !cur || !forLot || cur.origin?.e !== forLot.origin?.e || cur.origin?.n !== forLot.origin?.n || cur.lotLabel !== forLot.lotLabel) return false;
+  cur.contours = buildContours(resp);
+  cur.contourInterval = { minor: resp.minor, major: resp.major };
+  cur.terrain = buildTerrain(resp.grid);
+  cur.provenance = { ...(cur.provenance || {}), elevation: resp.provenance || null };
+  if (cur.floorRLAuto !== false) cur.floorRL = defaultFloorRL(cur);
+  store.emit('project', { label: 'contours' });
+  return true;
 }
 
 // Take the lot off the project again (one undo step). The aerial underlay goes with it.
