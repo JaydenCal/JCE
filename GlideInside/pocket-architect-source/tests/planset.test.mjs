@@ -191,3 +191,93 @@ test('the cover locality plan draws the lot at least 25 mm long', async () => {
     assert.ok((Math.max(w, d) * 1000) / sc >= 25, `${w}x${d} at 1:${sc}`);
   }
 });
+
+// ---- Ground levels on the site plan (C100) ----
+// Straight contours with a fall of about 6 m across the 60 m depth of the Hunter sample lot (plan mm, y down, north is -y).
+const fallContours = (lo = 17, hi = 28) => {
+  const out = [];
+  for (let L = lo; L <= hi; L++) {
+    const pts = [];
+    for (let x = -30000; x <= 66000; x += 2000) pts.push(x, Math.round(-((L - 20 - x * 0.00003) / 0.0001)));
+    out.push({ level: L, major: L % 5 === 0, pts });
+  }
+  return out;
+};
+const groundLot = (extra = {}) => ({ ...lot, state: 'NSW', contours: fallContours(), ...extra });
+
+function recorderXY() {
+  const items = [];
+  class Rec extends jsPDF {
+    constructor(...a) {
+      super(...a);
+      const text = this.text.bind(this);
+      this.text = (t, x, y, o = {}) => {
+        const s = Array.isArray(t) ? t.join(' ') : String(t);
+        let w = 0;
+        try { w = this.getTextWidth(s); } catch { w = 0; }
+        items.push({ s, x, y, w, size: this.getFontSize(), angle: o?.angle || 0, align: o?.align || 'left' });
+        return text(t, x, y, o);
+      };
+    }
+  }
+  return { Rec, items };
+}
+
+test('contours: drawn when the lot has ground data, with RL labels, spot levels and the legend entry', async () => {
+  const { text } = await runWith(project, groundLot());
+  assert.match(text, /Contour \(minor, major\)/);
+  assert.match(text, /\b2[05]\.0\b/);
+  assert.ok(!/FFL/i.test(text), 'no floor level is stated');
+  const flat = await runWith(project, { ...lot });
+  assert.ok(!/Contour \(minor, major\)/.test(flat.text));
+});
+
+test('contours: the levels note names the state DEM, and a lot without ground data says so', async () => {
+  const nsw = (await runWith(project, groundLot())).text.replace(/\s+/g, ' ');
+  assert.match(nsw, /Levels are indicative only, from the NSW 5 m DEM, not survey\. Contours at 1\.0 m intervals\. A registered survey is required\./);
+  const qld = (await runWith(project, groundLot({ state: 'QLD' }))).text.replace(/\s+/g, ' ');
+  assert.match(qld, /from the Queensland 5 m DEM, not survey/);
+  const none = (await runWith(project, { ...lot })).text.replace(/\s+/g, ' ');
+  assert.match(none, /No ground levels for this lot\./);
+  assert.ok(!/Levels are indicative only/.test(none));
+  assert.ok(!/[–—]/.test(nsw + qld + none));
+});
+
+test('contours: ground level from the grid and from the contours, whole metre lines only', async () => {
+  const { groundLevelFn, contourLines, hasGround } = await import('../src/premium/exporters/planset/contours.js');
+  const g = groundLot();
+  assert.ok(hasGround(g));
+  assert.equal(contourLines({ contours: [{ level: 20.5, pts: [0, 0, 10, 10] }] }).length, 0);
+  const z = groundLevelFn({ contours: fallContours() });
+  const fall = z({ x: 18000, y: -60000 }) - z({ x: 18000, y: 0 });
+  assert.ok(Math.abs(fall - 6) < 0.5, `fall ${fall}`);
+  const grid = groundLevelFn({ terrain: { cols: 2, rows: 2, cellMm: 1000, x0: 0, y0: 0, values: [10, 10, 12, 12] } });
+  assert.ok(Math.abs(grid({ x: 500, y: 500 }) - 11) < 1e-9);
+});
+
+test('contours: RL labels and spot levels never sit on the lot label, dimensions or other text', async () => {
+  const { Rec, items } = recorderXY();
+  await exportPlanSet({ project, lot: groundLot(), kind: 'site', download: false, jsPDF: Rec, catalogue, date: new Date(2026, 10, 12) });
+  const isLevel = (it) => /^\d{2}\.\d$/.test(it.s) && it.size < 5.5;
+  const levels = items.filter(isLevel);
+  assert.ok(levels.length > 4, 'level labels were drawn');
+  const boxOf = (it) => {
+    const w = Math.max(it.w, 1);
+    const h = (it.size * 0.3528);
+    const rot = Math.abs(it.angle % 180) > 5;
+    const hw = rot ? h : w;
+    const hh = rot ? w : h;
+    const cx = it.align === 'center' ? it.x : it.x + (rot ? 0 : w / 2);
+    return { x0: cx - hw / 2, x1: cx + hw / 2, y0: it.y - hh, y1: it.y };
+  };
+  const others = items.filter((it) => !isLevel(it) && /^(LOT 12|DP 1234567|2,160 m|\d+\.\d\d|[\d.]+ SB|\d+°)/.test(it.s));
+  assert.ok(others.length > 4);
+  for (const lv of levels) {
+    const a = boxOf(lv);
+    for (const o of others) {
+      const b = boxOf(o);
+      const hit = !(a.x1 < b.x0 || a.x0 > b.x1 || a.y1 < b.y0 || a.y0 > b.y1);
+      assert.ok(!hit, `${lv.s} overlaps "${o.s}"`);
+    }
+  }
+});
