@@ -133,35 +133,62 @@ function locality(doc, lot, project, loc = {}) {
     const pts = roadPts(r);
     if (pts.length > 1) { doc.setLineWidth(0.35); doc.setDrawColor(...(aerial ? [40, 44, 52] : PEN.phantom)); clipPoly(pts, false); }
   }
+  // Furniture the labels must keep clear of: the white strip along the bottom, the north point and the scale bar plate.
+  const bar = niceBar(40 * scale / 1000);
+  const barMm = (bar * 1000) / scale;
+  const nxy = { x: LOC.x1 - 12, y: LOC.y0 + 13 };
+  const blocked = [
+    { x0: R.x0, y0: LOC.y1 - 5.6, x1: R.x1, y1: R.y1 + 1 },
+    { x0: nxy.x - 8, y0: nxy.y - 11, x1: nxy.x + 8, y1: nxy.y + 8 },
+    { x0: LOC.x0 + 2, y0: LOC.y1 - 17, x1: LOC.x0 + 4 + barMm + 12, y1: LOC.y1 - 6 },
+  ];
+  const hits = (b, list) => list.some((t) => b.x0 < t.x1 && b.x1 > t.x0 && b.y0 < t.y1 && b.y1 > t.y0);
+  const taken = [];
+  // Road names: along the longest clear stretch, shrunk if need be, else left off. Never cut off by the frame, never over another label.
   const named = new Set();
-  const placed = [];
   const roadLabels = [...roads].filter((r) => r.name).sort((a, b) => roadPts(b).length - roadPts(a).length);
   for (const r of roadLabels) {
     const key = r.name.toUpperCase();
     if (named.has(key)) continue;
     const pts = roadPts(r);
-    let best = null;
-    for (let i = 0; i + 1 < pts.length; i++) {
-      const p = pts[i];
-      const q = pts[i + 1];
-      const len = Math.hypot(q.x - p.x, q.y - p.y);
-      const mid = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
-      if (len > 14 && inR(mid, 8) && (!best || len > best.len)) best = { len, mid, ang: Math.atan2(q.y - p.y, q.x - p.x) };
+    const name = r.name.toUpperCase();
+    let done = false;
+    for (const size of [5.5, 4.8, 4.2]) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(size);
+      const tw = doc.getTextWidth(name);
+      const cands = [];
+      for (let i = 0; i + 1 < pts.length; i++) {
+        const p = pts[i];
+        const q = pts[i + 1];
+        const len = Math.hypot(q.x - p.x, q.y - p.y);
+        if (len < tw + 3) continue;
+        const mid = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
+        const ux = (q.x - p.x) / len;
+        const uy = (q.y - p.y) / len;
+        const e1 = { x: mid.x - (ux * tw) / 2, y: mid.y - (uy * tw) / 2 };
+        const e2 = { x: mid.x + (ux * tw) / 2, y: mid.y + (uy * tw) / 2 };
+        const box = { x0: Math.min(e1.x, e2.x) - 1.2, x1: Math.max(e1.x, e2.x) + 1.2, y0: Math.min(e1.y, e2.y) - 2, y1: Math.max(e1.y, e2.y) + 2 };
+        if (!inR({ x: box.x0, y: box.y0 }, 1) || !inR({ x: box.x1, y: box.y1 }, 1) || hits(box, blocked) || hits(box, taken)) continue;
+        cands.push({ len, mid, ang: Math.atan2(q.y - p.y, q.x - p.x), tw, box });
+      }
+      cands.sort((a, b) => b.len - a.len);
+      const best = cands[0];
+      if (!best) continue;
+      let deg = (-best.ang * 180) / Math.PI;
+      if (deg > 90) deg -= 180;
+      if (deg < -90) deg += 180;
+      const rad = (deg * Math.PI) / 180;
+      taken.push(best.box);
+      named.add(key);
+      haloText(doc, name, best.mid.x - (Math.cos(rad) * best.tw) / 2, best.mid.y + (Math.sin(rad) * best.tw) / 2 + 0.7, { size, bold: true, colour: [40, 44, 52], angle: deg, halo: 0.8 });
+      done = true;
+      break;
     }
-    if (!best) continue;
-    let deg = (-best.ang * 180) / Math.PI;
-    if (deg > 90) deg -= 180;
-    if (deg < -90) deg += 180;
-    const tw = r.name.length * 1.5;
-    if (placed.some((m) => Math.hypot(m.x - best.mid.x, m.y - best.mid.y) < tw + 10)) continue;
-    placed.push(best.mid);
-    named.add(key);
-    const rad = (deg * Math.PI) / 180;
-    haloText(doc, r.name.toUpperCase(), best.mid.x - (Math.cos(rad) * tw) / 2, best.mid.y + (Math.sin(rad) * tw) / 2 + 0.7, { size: 5.5, bold: true, colour: [40, 44, 52], angle: deg, halo: 0.8 });
+    void done;
   }
   // Adjoining lot numbers, where the lot data has them: "LOT n" when it fits inside the parcel, else the number alone, else nothing.
   // Labels never overlap one another.
-  const taken = [];
   const sorted = [...neighbours].filter((n) => !n.isRoad && n.lotNumber && n.ring?.length >= 3);
   for (const n of sorted) {
     const cc = T(G.polygonCentroid(n.ring));
@@ -174,7 +201,7 @@ function locality(doc, lot, project, loc = {}) {
     if (tw > pb.w - 1 || pb.h < 3) continue;
     if (cc.x - tw / 2 < R.x0 + 1 || cc.x + tw / 2 > R.x1 - 1 || cc.y < R.y0 + 3 || cc.y > R.y1 - 5) continue;
     const box = { x0: cc.x - tw / 2, x1: cc.x + tw / 2, y0: cc.y - 2.2, y1: cc.y + 0.8 };
-    if (taken.some((t) => box.x0 < t.x1 + 0.5 && box.x1 > t.x0 - 0.5 && box.y0 < t.y1 && box.y1 > t.y0)) continue;
+    if (hits({ x0: box.x0 - 0.5, x1: box.x1 + 0.5, y0: box.y0, y1: box.y1 }, taken) || hits(box, blocked)) continue;
     taken.push(box);
     haloText(doc, txt, cc.x, cc.y, { size: 5.5, colour: aerial ? [50, 54, 62] : GREY, align: 'center', halo: aerial ? 0.7 : 0 });
   }
@@ -205,8 +232,6 @@ function locality(doc, lot, project, loc = {}) {
   haloText(doc, 'SITE', lab.x, lab.y, { size: 8, bold: true, colour: aerial ? RED : PEN.ink, align: 'center', halo: 0 });
   haloText(doc, tag, lab.x, lab.y + 3.6, { size: 5.5, bold: true, colour: PEN.ink, align: 'center', halo: 0 });
   // scale bar, bottom left on a white plate
-  const bar = niceBar(40 * scale / 1000);
-  const barMm = (bar * 1000) / scale;
   const bx = LOC.x0 + 4;
   const by = LOC.y1 - 11;
   doc.setFillColor(255, 255, 255);
@@ -242,8 +267,8 @@ function locality(doc, lot, project, loc = {}) {
     doc.text(NO_AERIAL, mx, LOC.y1 - 8, { align: 'center' });
   }
   const a = ((Number(project.site?.northDeg) || 0) * Math.PI) / 180;
-  const nx = LOC.x1 - 12;
-  const ny = LOC.y0 + 13;
+  const nx = nxy.x;
+  const ny = nxy.y;
   const d = { x: Math.sin(a), y: -Math.cos(a) };
   const p = { x: -d.y, y: d.x };
   doc.setFillColor(255, 255, 255);
