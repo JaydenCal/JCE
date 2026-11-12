@@ -68,14 +68,43 @@ function confirmFrontage(store, viewer = false) {
 const hasEnvelope = (store) => { const e = store.project.site?.lot?.envelope; return Array.isArray(e) && e.length >= 3; };
 const lotId = (store) => { const l = store.project.site?.lot; return l ? `${l.origin?.e}|${l.origin?.n}|${l.lotLabel}` : null; };
 
-/** Put a Glide library design on the lot: the one named by `wantId` when it sits inside the setbacks, else the first house, duplex or granny flat that does. */
-function placeOnce(store, catalogue, wantId) {
-  const list = publicDesigns(catalogue, store.project);
+export const EMPTY_LIBRARY = 'Your builder has not added house designs yet. Ask them to add one, or draw your own with Edit floor plan.';
+const PORTAL_WAIT_MS = 5000;
+
+/**
+ * The designs the first placement chooses from. A signed in builder or client gets their own library, so the viewer opens on their own
+ * first design (it waits for the sign in check and the library before placing anything). An empty library falls back to the generic
+ * samples (`empty: true`, the caller says so). Anonymous visitors get the generic samples at once.
+ */
+export async function designPool(store, catalogue, app = typeof window !== 'undefined' ? window.__ps : null) {
+  if (app?.portalReady) {
+    let t;
+    await Promise.race([Promise.resolve(app.portalReady).catch(() => null), new Promise((r) => { t = setTimeout(r, PORTAL_WAIT_MS); })]);
+    clearTimeout(t);
+  }
+  if (app?.lotDesigns) {
+    try {
+      const own = await app.lotDesigns(store.project);
+      if (Array.isArray(own) && own.length) return { list: own, own: true, empty: false };
+      return { list: publicDesigns(catalogue, store.project), own: false, empty: true };
+    } catch (e) { console.warn('[embed] the design library could not be loaded', e?.message); }
+  }
+  return { list: publicDesigns(catalogue, store.project), own: false, empty: false };
+}
+
+/** The design to place first from a ranked list: the one named by `wantId` when it sits inside the setbacks, else the best that does. */
+export function pickFirstDesign(project, list, wantId = null) {
   if (!list.length) return null;
   const ok = (d) => !d.fit || d.fit.status !== 'too-big';
-  const sits = (d) => { try { return poseFor(store.project, d.project).fits === true; } catch { return false; } };
+  const sits = (d) => { try { return poseFor(project, d.project).fits === true; } catch { return false; } };
   const order = [...(wantId ? [wantId] : []), ...PREFER, ...list.map((d) => d.id)].map((id) => list.find((d) => d.id === id)).filter(Boolean);
-  const pick = order.find((d) => ok(d) && sits(d)) || order.find(ok) || list[0];
+  return order.find((d) => ok(d) && sits(d)) || order.find(ok) || list[0];
+}
+
+/** Put a design from the pool on the lot. */
+function placeOnce(store, pool, wantId) {
+  const pick = pickFirstDesign(store.project, pool.list, wantId);
+  if (!pick) return null;
   swapHouse(store, pick.project, { id: pick.id, name: pick.name });
   store.setUI({ placedDesign: { id: pick.id, name: pick.name } });
   return pick;
@@ -86,12 +115,16 @@ function placeOnce(store, catalogue, wantId) {
  * place it again so it sits inside them. The second pass is skipped when the lot has been replaced in the meantime.
  */
 export async function placeBestDesign(store, catalogue, wantId = null, { after = null } = {}) {
-  const first = placeOnce(store, catalogue, wantId);
+  const id0 = lotId(store);
+  const pool = await designPool(store, catalogue);
+  if (lotId(store) !== id0) return null; // another lot was loaded while the library came in
+  if (pool.empty) toast(EMPTY_LIBRARY, { kind: 'warn', timeout: 7000 });
+  const first = placeOnce(store, pool, wantId);
   if (hasEnvelope(store)) return first;
   const id = lotId(store);
-  waitForEnvelope(store, 25000).then(() => {
+  waitForEnvelope(store, 25000).then(async () => {
     if (lotId(store) !== id || !hasEnvelope(store)) return;
-    try { placeOnce(store, catalogue, store.ui.placedDesign?.id || wantId); after?.(); } catch (e) { console.warn('[embed] placement failed', e); }
+    try { placeOnce(store, await designPool(store, catalogue), store.ui.placedDesign?.id || wantId); after?.(); } catch (e) { console.warn('[embed] placement failed', e); }
   });
   return first;
 }

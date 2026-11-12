@@ -421,6 +421,8 @@ async function main() {
   }
   if (VIEWER) {
     mountViewerChrome(refs.stage, store);
+    // Signed in? The first placement waits for this (src/ui/embed-viewer.js designPool), so the viewer opens on the person's own first design.
+    if (!demoMode() && CONFIG.portalEnabled) api.portalReady = import('./portal/viewer-mode.js').then((m) => m.initPortalViewer(api)).catch((e) => { console.warn('[portal] viewer mode not available', e); return null; });
     const ev = initEmbedViewer({ store, catalogue, shell: refs.shell, viewerMode: true, getViewer });
     api.embedViewer = ev;
     if (addressParam) ev.run(addressParam);
@@ -436,7 +438,6 @@ async function main() {
   // Plan Pack (optional). Loaded after the first frame; the tool works without it.
   if (!demoMode()) await mountPremium();
   if (!demoMode() && !VIEWER && CONFIG.portalEnabled) await import('./portal/client-mode.js').then((m) => m.initPortalMode(window.__ps)).catch((e) => console.warn('[portal] client mode not available', e));
-  if (VIEWER && !demoMode() && CONFIG.portalEnabled) import('./portal/viewer-mode.js').then((m) => m.initPortalViewer(window.__ps)).catch((e) => console.warn('[portal] viewer mode not available', e));
   if (!VIEWER) import('./ui/onboarding/index.js').then((m) => m.initOnboarding?.(window.__ps)).catch(() => {});
   return api;
 }
