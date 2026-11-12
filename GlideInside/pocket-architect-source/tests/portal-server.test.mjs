@@ -929,7 +929,7 @@ for (const [label, d1] of stores) {
   t('admin house import: the shipped builder-houses files import cleanly, each builder only gets its own', async () => {
     const dir = new URL('../../golive/builder-houses/', import.meta.url);
     const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
-    assert.deepEqual(files.sort(), ['hotondo.json', 'hunter-homes.json', 'mcdonald-jones.json', 'mojo.json', 'montgomery.json', 'tulliplan.json']);
+    assert.deepEqual(files.sort(), ['allworth.json', 'coral-homes.json', 'gj-gardner.json', 'hotondo.json', 'hunter-homes.json', 'masterton.json', 'mcdonald-jones.json', 'mojo.json', 'montgomery.json', 'tulliplan.json']);
     const w = makeWorld({ d1 });
     const orgs = {};
     for (const f of files) orgs[f] = await w.makeOrg(`${f.replace('.json', '')} Homes`, 'Priya');

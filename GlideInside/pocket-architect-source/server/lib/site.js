@@ -292,7 +292,8 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     return q.toUpperCase().replace(/[,.]/g, ' ').replace(/[^A-Z0-9'/\- ]/g, ' ').split(/\s+/).filter(Boolean);
   }
 
-  // Each upstream gets 2.5 s and no retry: whatever has arrived by then is returned (a slow service must not hold the dropdown back).
+  // Each upstream gets 9 s and no retry; once either state has results the other only gets SEARCH_GRACE_MS more.
+  const SEARCH_GRACE_MS = 1200;
   const SEARCH_TIMEOUT_MS = 9000; // the NSW every-word query can take 3 to 6 s; 2.5 s dropped real addresses
   async function searchNsw(tokens, st) {
     const w = buildNswWhere(tokens);
@@ -301,8 +302,10 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
       f: 'json', where, outFields: 'address', returnGeometry: 'true', outSR: '4326', resultRecordCount: '8',
     }, { timeoutMs: SEARCH_TIMEOUT_MS, retries: 0 }).catch(() => { st.partial = true; return { features: [] }; });
     // The prefix query (index friendly) and the every-word query run together; the prefix result wins when it found anything.
-    const [pre, any] = await Promise.all([run(w.prefix), w.words !== w.prefix ? run(w.words) : Promise.resolve({ features: [] })]);
-    const body = (pre.features || []).length ? pre : any;
+    // The prefix query usually answers in well under a second; when it finds anything we do not wait for the slow every-word query.
+    const anyP = w.words !== w.prefix ? run(w.words) : Promise.resolve({ features: [] });
+    const pre = await run(w.prefix);
+    const body = (pre.features || []).length ? pre : await anyP;
     return (body.features || []).filter((f) => f.geometry && Number.isFinite(f.geometry.x) && f.attributes?.address).map((f) => ({
       label: `${titleCase(f.attributes.address)} NSW`, state: 'NSW', lon: round(f.geometry.x, 6), lat: round(f.geometry.y, 6),
     }));
@@ -343,7 +346,12 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     }
     const st = { partial: false };
     const { value } = await jsonCached(key, TTL.search, async () => {
-      const [a, b] = await Promise.all([wantNsw ? searchNsw(tokens, st) : [], wantQld ? searchQld(tokens, st) : []]);
+      // Once one state has answered with results, the other state gets SEARCH_GRACE_MS more and is then left out of this answer.
+      const pa = wantNsw ? searchNsw(tokens, st) : Promise.resolve([]);
+      const pb = wantQld ? searchQld(tokens, st) : Promise.resolve([]);
+      const graceAfter = (p) => p.then((r) => (r.length ? new Promise((res) => setTimeout(() => res(null), SEARCH_GRACE_MS)) : new Promise(() => {})));
+      const cut = Promise.race([graceAfter(pa), graceAfter(pb)]).then(() => []);
+      const [a, b] = await Promise.all([Promise.race([pa, cut]), Promise.race([pb, cut])]);
       // Interleave so both states show, shortest label first inside each (closest to what was typed).
       const byLen = (x, y) => x.label.length - y.label.length || x.label.localeCompare(y.label);
       a.sort(byLen);

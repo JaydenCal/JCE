@@ -430,6 +430,23 @@ test('search: a slow upstream is cut off and an answer that arrived is still ret
   assert.equal(body.results[0].label, '12 Smith Street Tamworth NSW');
 });
 
+test('search: once NSW has results a slow QLD lookup is not waited for (under 3 s, NSW answer returned)', async () => {
+  const j = (b) => new Response(JSON.stringify(b), { status: 200, headers: { 'content-type': 'application/json' } });
+  const impl = (input, init) => {
+    const u = String(input);
+    if (/qld|QLD|Qld|spatial-gis\.information\.qld|qldspatial/i.test(u) && !/six\.nsw/i.test(u)) {
+      return new Promise((res, rej) => { init?.signal?.addEventListener('abort', () => rej(new Error('aborted'))); });
+    }
+    return Promise.resolve(j({ features: [{ attributes: { address: '454 PEEL STREET TAMWORTH' }, geometry: { x: LON, y: LAT } }] }));
+  };
+  const app = createApp({ store: createMemoryStore(), env: {}, fetchImpl: impl, now: () => T0 });
+  const t = Date.now();
+  const res = await app.fetch(new Request('https://api.test/api/site/search?q=454+peel+street+tamworth', { headers: { 'cf-connecting-ip': '4.4.4.4' } }));
+  const body = await res.json();
+  assert.ok(Date.now() - t < 3000, `took ${Date.now() - t} ms`);
+  assert.equal(body.results[0].label, '454 Peel Street Tamworth NSW');
+});
+
 test('aerial: wide request with maxpx caps the picture at 2048 px, separately cached; the old default is unchanged', async () => {
   const sizes = [];
   const inner = upstream();
