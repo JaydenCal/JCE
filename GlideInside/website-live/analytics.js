@@ -142,6 +142,7 @@
     var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
     if (!a) return;
     var h = a.getAttribute("href") || "";
+    if (/book-a-demo\/?(\?|#|$)/i.test(h)) { send("book_demo", { page: location.pathname, button: "book_demo", link_text: (a.textContent || "").trim().slice(0, 60) }); }
     if (/^mailto:/i.test(h)) {
       // "Book a demo" and "Register interest" buttons (builder accounts): their own event, plus the generic lead below.
       var label = (a.textContent || "").trim();

@@ -1,0 +1,24 @@
+/* Enquiry and demo booking forms (12/11/2026). Same look as the builder trial form. */
+.ef-wrap{max-width:860px}
+.ef-form{background:#fff;border:1px solid var(--line);border-radius:24px;padding:clamp(20px,3.5vw,40px);box-shadow:var(--shadow-soft);color:var(--ink)}
+.ef-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 20px}
+.ef-f{display:grid;gap:7px;font-weight:700;font-size:14px}.ef-f.ef-wide{grid-column:1/-1}.ef-f small{font-weight:400;color:var(--muted)}
+.ef-l{display:block}.ef-req{color:#a4651b}
+.ef-f input[type=text],.ef-f input[type=tel],.ef-f input[type=email],.ef-f input[type=date],.ef-f textarea{width:100%;margin:0;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#f8f9fb;font:500 16px var(--font);color:var(--ink)}
+.ef-f textarea{resize:vertical;min-height:120px}
+.ef-f input:focus-visible,.ef-f textarea:focus-visible,.ef-check input:focus-visible,.ef-opts input:focus-visible+span{outline:3px solid var(--survey);outline-offset:2px;background:#fff}
+.ef-opts{display:flex;gap:12px;flex-wrap:wrap}
+.ef-opts label{position:relative;flex:1 1 140px}
+.ef-opts input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.ef-opts span{display:block;text-align:center;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#f8f9fb;font:600 16px var(--font);color:var(--ink)}
+.ef-opts input:checked+span{background:var(--night);border-color:var(--night);color:#fff}
+.ef-check{display:flex;gap:10px;align-items:flex-start;margin:22px 0 6px;font-size:15px}.ef-check input{flex:none;margin-top:3px;width:18px;height:18px;accent-color:var(--night)}
+.ef-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.ef-error{background:#fbeeea;border:1px solid #e4b3a3;color:#7a2a14;border-radius:12px;padding:10px 14px;margin:12px 0 0;font-size:14px}
+.ef-error[hidden],.ef-done[hidden],.ef-form[hidden]{display:none}
+.ef-error .ef-mail{display:inline-block;margin-top:4px;font-weight:700;-webkit-user-select:all;user-select:all;background:#fff;border:1px solid #e4b3a3;border-radius:8px;padding:2px 8px}
+.ef-actions{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:20px}.ef-note{font-size:13px;color:var(--muted);max-width:46ch}
+.ef-done{background:#e6f4ec;border:1px solid #b6d9c3;border-radius:24px;padding:clamp(20px,4vw,40px);text-align:center;color:#17402a}.ef-done h3{margin:0 0 8px}.ef-done p{margin:0;color:#27593a}
+.ef-done .ef-ref{font-size:1.25em;letter-spacing:.04em;-webkit-user-select:all;user-select:all}
+.ef-promise{display:inline-block;margin:0 0 18px;padding:8px 16px;border-radius:999px;background:#f5ead6;color:#5c3b08;font:700 15px var(--font)}
+@media (max-width:640px){.ef-grid{grid-template-columns:1fr}}

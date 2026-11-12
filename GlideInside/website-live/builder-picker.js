@@ -73,7 +73,7 @@
     acts.classList.toggle("one", none);
     if (none) {
       btnClient.hidden = true; btnRep.hidden = false;
-      btnRep.innerHTML = "Start designing<span>Open the free design app. No account needed.</span>";
+      btnRep.innerHTML = "Open Pocket Architect<span>Free to draw. No account needed.</span>";
       btnRep.href = route("none", "client"); btnRep.className = "bp-btn primary";
       return;
     }
@@ -110,6 +110,13 @@
     var a = ev.target.closest("a"); if (!a || !chosen) return;
     var role = a.getAttribute("data-role") || "client";
     save({ slug: chosen.slug, role: role }); track(chosen.slug, role);
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-bp-link]"), function (a) {
+    a.addEventListener("click", function (ev) {
+      ev.preventDefault(); root.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(function () { try { input.focus({ preventScroll: true }); } catch (_) {} }, 450);
+    });
   });
 
   var prev = load();
