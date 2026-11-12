@@ -17,6 +17,7 @@ import { publicDesigns } from '../lotcard/designs.js';
 import { swapHouse, poseFor } from '../lotcard/swap.js';
 import { computeSetbacks } from '../site/setback-stage.js';
 import { setbackStatusLine } from '../site/lot-checks.js';
+import { defaultEnvelope } from '../site/default-setbacks.js';
 
 export const FULL_EDITOR_PATH = '/plan-studio/app/';
 const PREFER = ['house_single', 'house_double', 'duplex', 'granny_flat'];
@@ -126,11 +127,17 @@ export async function chooseDesign(store, pool, wantId = null, { compute = compu
   for (const d of ranked) {
     let r = null;
     try { r = await compute({ ...store.project, levels: d.project.levels }, lot); } catch { r = null; }
-    if (!r?.setbacks || !r.envelope) { first = first || { pick: d, fits: null, setbacks: null, envelope: null, key: null }; continue; }
-    const tmp = { ...store.project, site: { ...store.project.site, lot: { ...lot, setbacks: r.setbacks, envelope: r.envelope, setbacksKey: r.key } } };
+    // No council rule loaded (none for the zone, or the data would not read): fit against the default indicative envelope instead, so the
+    // house is never left over a boundary. It is flagged `defaulted` and never shown as a confirmed setback.
+    const defaulted = !r?.setbacks || !r.envelope;
+    const envelope = defaulted ? defaultEnvelope(lot) : r.envelope;
+    if (!envelope) { first = first || { pick: d, fits: null, setbacks: null, envelope: null, key: null }; continue; }
+    const setbacks = defaulted ? null : r.setbacks;
+    const key = r?.key || null;
+    const tmp = { ...store.project, site: { ...store.project.site, lot: { ...lot, setbacks, envelope, setbacksKey: key } } };
     let fits = null;
     try { fits = poseFor(tmp, d.project).fits; } catch { fits = null; }
-    const cand = { pick: d, fits, setbacks: r.setbacks, envelope: r.envelope, key: r.key, attempts: r.attempts };
+    const cand = { pick: d, fits, setbacks, envelope, key, defaulted, attempts: r?.attempts || [] };
     if (fits === true) return cand;
     first = first || cand;
   }
@@ -144,8 +151,9 @@ function writeSetbacks(store, choice) {
   lot.setbacks = choice.setbacks;
   lot.envelope = choice.envelope;
   lot.setbacksKey = choice.key;
-  lot.setbacksStatus = 'ok';
-  lot.setbacksAttempts = [];
+  lot.setbacksDefault = !!choice.defaulted;
+  lot.setbacksStatus = choice.defaulted ? 'none' : 'ok';
+  lot.setbacksAttempts = choice.defaulted ? (choice.attempts || []).map((a) => ({ basis: a.basis || null, reason: String(a.reason || '').slice(0, 400) })) : [];
   store.emit('project', { label: 'setbacks' });
 }
 

@@ -104,8 +104,11 @@ export function attachSetbacks(store, { fetchImpl = null, base = null, delayMs =
   function setSilently(setbacks, envelope, key, attempts, error = null) {
     const lot = store.project.site?.lot;
     if (!lot) return;
+    // A default indicative envelope (no council rule loaded, see site/default-setbacks.js) stays while there are still no setbacks.
+    const keepDefault = !setbacks && lot.setbacksDefault && key != null && Array.isArray(lot.envelope);
+    lot.setbacksDefault = keepDefault;
     lot.setbacks = setbacks;
-    lot.envelope = envelope;
+    if (!keepDefault) lot.envelope = envelope;
     lot.setbacksKey = key;
     lot.setbacksStatus = setbacks ? 'ok' : error ? 'error' : 'none';
     lot.setbacksAttempts = setbacks ? [] : (attempts || []).map((a) => ({ basis: a.basis || null, reason: String(a.reason || '').slice(0, 400) }));

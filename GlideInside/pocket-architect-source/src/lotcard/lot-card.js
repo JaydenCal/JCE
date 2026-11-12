@@ -7,6 +7,7 @@
 // edits the design except through store.apply (colour scheme, change of design), so every change is one undo step and saves with
 // the project. The camera is inset so the card does not sit over the lot (viewer.setInset).
 
+import { zoneDwellingNote } from '../site/default-setbacks.js';
 import { h, debounce } from '../ui/dom.js';
 import { searchAddresses } from '../site/client.js';
 import { downloadBlob } from '../premium/exporters/download.js';
@@ -56,9 +57,10 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => planSetPdf('site') }, 'Site plan PDF');
   const bPdfH = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf-house' }, onclick: () => planSetPdf('house') }, 'House plan PDF');
   const fit = E('lc-fit', 'div', { role: 'status', 'aria-live': 'polite', dataset: { ps: 'lc-fit' } });
+  const zoneNote = E('lc-zone', 'div', { role: 'note', hidden: true, dataset: { ps: 'lc-zone-note' } });
   const more = h('button', { class: 'lc-more', type: 'button', 'aria-expanded': 'false', onclick: () => { card.classList.toggle('is-open'); more.setAttribute('aria-expanded', String(card.classList.contains('is-open'))); sizeInset(); } }, 'Details');
   const tabsEl = E('lc-tabs', 'div', { role: 'tablist', 'aria-label': 'Rooms', dataset: { ps: 'lc-tabs' } });
-  const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-sp lc-sp-rooms', 'div', null, E('lc-k', 'span', null, 'Rooms'), tabsEl), E('lc-acts', 'div', null, bWalk, bEdit, E('lc-links', 'span', null, bPdf, E('lc-dotsep', 'span', { 'aria-hidden': 'true' }, '\u00b7'), bPdfH)), fit);
+  const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-sp lc-sp-rooms', 'div', null, E('lc-k', 'span', null, 'Rooms'), tabsEl), E('lc-acts', 'div', null, bWalk, bEdit, E('lc-links', 'span', null, bPdf, E('lc-dotsep', 'span', { 'aria-hidden': 'true' }, '\u00b7'), bPdfH)), fit, zoneNote);
   const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more), body);
 
   const pgP = h('button', { type: 'button', 'aria-label': 'Previous design', onclick: () => step(-1) }, '‹');
@@ -360,6 +362,9 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     fit.hidden = line.state === 'none';
     fit.dataset.state = line.state;
     fit.replaceChildren(h('span', { class: 'lc-dot', style: { background: DOT[line.state] || 'transparent' } }), line.text);
+    const zn = zoneDwellingNote(lot);
+    zoneNote.hidden = !zn;
+    zoneNote.textContent = zn;
 
     tabs = listRoomTabs(p, null, { groupBedrooms: true });
     if (!tabs.some((t) => t.id === selTab)) selTab = 'aerial';

@@ -157,6 +157,7 @@ export const LOT_CARD_CSS = `
 .lc-embed.is-compact .lc-foot{left:12px;bottom:3px}
 .lc-embed.is-compact .lc-card .lc-gh{padding:0 6px!important}
 /* The two PDF links share one row. */
+.lc-zone{margin-top:4px;padding:6px 10px;border-radius:8px;background:rgba(245,166,35,.14);border:1px solid rgba(245,166,35,.45);color:#ffd68a;font:500 11.5px var(--lc-sans)}.lc-zone[hidden]{display:none}
 .lc-links{display:inline-flex;align-items:center;flex-wrap:nowrap;white-space:nowrap}
 .lc-dotsep{color:var(--lc-t2);padding:0 2px}
 .lc-links .lc-gh{padding:0 4px!important}

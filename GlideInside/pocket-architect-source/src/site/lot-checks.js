@@ -103,6 +103,15 @@ export function setbackStatusLine(project) {
   const crosses = c.rows.some((r) => r.clearanceM < -TOL_M);
   const outside = c.rows.filter((r) => r.status === 'outside');
   if ((crosses || outside.length) && project.placedHouse?.tooBig) return { state: 'outside', text: TOO_BIG };
+  if (lot.setbacksDefault && !lot.setbacks) {
+    // Only the default indicative envelope is known: red only when the house truly crosses a boundary, otherwise amber.
+    if (crosses) {
+      const words = [...new Set(c.rows.filter((r) => r.clearanceM < -TOL_M).map((r) => KIND_WORD[r.kind] || 'boundary'))];
+      return { state: 'outside', text: `Outside the setbacks: ${words.join(', ')}` };
+    }
+    if (project.placedHouse?.tooBig && checkSetbacks(project).status === 'breach') return { state: 'outside', text: TOO_BIG };
+    return { state: 'check', text: 'Setbacks not confirmed, check with council' };
+  }
   if (crosses || outside.length) {
     const words = [...new Set(c.rows.filter((r) => r.status === 'outside' || r.clearanceM < -TOL_M).map((r) => KIND_WORD[r.kind] || 'boundary'))];
     return { state: 'outside', text: `Outside the setbacks: ${words.join(', ')}` };
