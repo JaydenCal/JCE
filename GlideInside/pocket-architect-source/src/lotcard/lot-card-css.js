@@ -156,4 +156,20 @@ export const LOT_CARD_CSS = `
 .lc-embed.is-phone .lc-foot{display:none}
 .lc-embed.is-compact .lc-foot{left:12px;bottom:3px}
 .lc-embed.is-compact .lc-card .lc-gh{padding:0 6px!important}
+/* The two PDF links share one row. */
+.lc-links{display:inline-flex;align-items:center;flex-wrap:nowrap;white-space:nowrap}
+.lc-dotsep{color:var(--lc-t2);padding:0 2px}
+.lc-links .lc-gh{padding:0 4px!important}
+/* Busy states: the pager while a design is placed, the search pill while an address loads. */
+.lc-pager.is-busy{opacity:.78}
+.lc-pager.is-busy button{cursor:progress}
+.lc-find.is-busy{opacity:.8}
+/* Phone and compact: the switcher rides just above the card (open or closed) so it is never hidden or covered; the room pills fade at a clipped edge. */
+.lc-embed.is-compact .lc-pager{bottom:calc(var(--lc-card-h, 100px) + 12px)}
+.lc-embed.is-compact:has(.lc-card.is-open) .lc-pager:not([hidden]){display:flex}
+.lc-embed.is-compact .lc-rooms .lc-tabs{scrollbar-width:none;padding-right:2px}
+.lc-embed.is-compact .lc-rooms .lc-tabs::-webkit-scrollbar{display:none}
+.lc-embed.is-compact .lc-rooms .lc-tabs.has-more{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}
+.lc-embed.is-compact .lc-rooms .lc-tabs.has-more.has-less{-webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 36px),transparent)}
+.lc-embed.is-compact .lc-rooms .lc-tabs.has-less:not(.has-more){-webkit-mask-image:linear-gradient(90deg,transparent,#000 24px);mask-image:linear-gradient(90deg,transparent,#000 24px)}
 `;

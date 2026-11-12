@@ -7,7 +7,9 @@
 //   app -> parent   { type: 'gi:status', state: 'loading' | 'done' | 'error', message?, address? }
 
 import { h } from './dom.js';
+import { toast } from './toast.js';
 import { CONFIG } from '../config.js';
+import { migrate } from '../model/schema.js';
 import { searchAddresses } from '../site/client.js';
 import { applySiteLookup } from '../site/apply.js';
 import { demoSite } from '../site/demo-lot.js';
@@ -125,12 +127,13 @@ export async function loadDemo(store, catalogue, { after = null } = {}) {
 export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer = () => null }) {
   let busy = false;
   let pending = null;
+  let pendingNotify = false;
   let off = null;
 
   const settle = () => {
     busy = false;
     delete shell.dataset.embedBusy;
-    if (pending != null) { const a = pending; pending = null; run(a); }
+    if (pending != null) { const a = pending; const n = pendingNotify; pending = null; pendingNotify = false; run(a, { notify: n }); }
   };
 
   // The whole lot from above (the lot card's Aerial pill), the first frame of the cinematic view.
@@ -144,8 +147,10 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
 
   const settleAerial = () => setTimeout(aerial, 900);
 
-  async function run(address) {
-    if (busy) { pending = address; return; }
+  /** Load an address. Resolves true when it loaded, false when it failed, null when it was queued behind a lookup in progress.
+   *  `notify`: the search came from the viewer's own pill, so a failure is shown here (a search sent by the page around it is reported to that page). */
+  async function run(address, { notify = false } = {}) {
+    if (busy) { pending = address; pendingNotify = notify; return null; }
     busy = true;
     shell.dataset.embedBusy = '1';
     postToParent({ type: 'gi:status', state: 'loading', address });
@@ -153,8 +158,12 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
       const r = await loadAddress(store, catalogue, address, { viewer: viewerMode, after: viewerMode ? settleAerial : null });
       if (viewerMode) { store.setUI({ view: '3d' }); await aerial(); }
       postToParent({ type: 'gi:status', state: 'done', address: r.lot?.address || address });
+      return true;
     } catch (e) {
-      postToParent({ type: 'gi:status', state: 'error', message: e?.message || 'The address could not be loaded.', address });
+      const message = e?.message || 'The address could not be loaded.';
+      postToParent({ type: 'gi:status', state: 'error', message, address });
+      if (notify) toast(message, { kind: 'error' });
+      return false;
     } finally {
       settle();
     }
@@ -194,13 +203,47 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
   return { run, startDemo, dispose: () => { window.removeEventListener('message', onMessage); off?.(); } };
 }
 
+/** One-shot handoff slot: the viewer leaves the design here and the editor reads it once and clears it (src/app.js). The visitor's own autosave is never touched. */
+export const HANDOFF_KEY = 'ps.handoff.v1';
+
+const HANDOFF_MAX_AGE_MS = 10 * 60 * 1000;
+const PREV_AUTOSAVE_KEY = 'ps.autosave.prev.v1';
+
+/**
+ * The design the home page viewer left for this editor (Edit floor plan, Open full editor). Read once and cleared. It never replaces the
+ * visitor's own autosave silently: an earlier design with content is kept under PREV_AUTOSAVE_KEY and offered back in a toast.
+ */
+export function takeHandoff(storage = typeof localStorage !== 'undefined' ? localStorage : null) {
+  if (!storage) return null;
+  let raw = null;
+  try {
+    raw = storage.getItem(HANDOFF_KEY);
+    if (raw == null) return null;
+    storage.removeItem(HANDOFF_KEY);
+    const { at, project } = JSON.parse(raw);
+    if (!project || !Array.isArray(project.levels) || Date.now() - Number(at || 0) > HANDOFF_MAX_AGE_MS) return null;
+    const incoming = migrate(project);
+    let previous = null;
+    try {
+      const old = storage.getItem(CONFIG.autosaveKey);
+      if (old) {
+        const prev = migrate(JSON.parse(old));
+        if (prev.levels.some((l) => l.rooms.length || l.walls.length)) { storage.setItem(PREV_AUTOSAVE_KEY, old); previous = prev; }
+      }
+    } catch { /* an unreadable earlier autosave is not worth keeping */ }
+    return { project: incoming, previous };
+  } catch {
+    try { storage?.removeItem(HANDOFF_KEY); } catch { /* storage blocked */ }
+    return null;
+  }
+}
+
 /** Open the full editor in the top window (a new tab when the frame is not allowed to navigate the page). */
 export function openFullEditor(project) {
-  // Hand the design over: the editor restores the autosave slot, so it opens with this lot and this house on it (not a fresh lookup).
   let url = fullEditorUrl(project);
   try {
     if (project?.site?.lot && project.levels?.length) {
-      localStorage.setItem(CONFIG.autosaveKey, JSON.stringify(project));
+      localStorage.setItem(HANDOFF_KEY, JSON.stringify({ at: Date.now(), project }));
       url = FULL_EDITOR_PATH;
     }
   } catch { /* storage blocked: the address link still brings the lot */ }
