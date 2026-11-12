@@ -57,4 +57,14 @@ export function currentIndex(designs, project, uiPlaced = null) {
 /** The carousel title: "NAME · 1 / 4". When the placed house is not one of the designs (i < 0) it is the placed house's own name and the count. */
 export const pagerText = (designs, i, placedName = '') => (!designs.length ? '' : i < 0 ? `${placedName ? `${placedName} · ` : ''}${designs.length} designs` : `${designs[i].name} · ${i + 1} / ${designs.length}`);
 
-export const stepIndex = (n, i, dir) => (!n ? 0 : i < 0 ? (dir > 0 ? 0 : n - 1) : (((i + dir) % n) + n) % n);
+/**
+ * The designs the carousel cycles. A signed in builder or client has a provider (client-mode.js, from GET /api/portal/houses) that returns
+ * their own organisation's library and nothing else. Anonymous visitors get the public sample designs (the generic templates), never a
+ * builder's brand or designs.
+ */
+export async function designsFor({ catalogue, project, provider = null }) {
+  const list = provider ? await provider(project) : publicDesigns(catalogue, project);
+  return Array.isArray(list) ? list : [];
+}
+
+export const stepIndex =(n, i, dir) => (!n ? 0 : i < 0 ? (dir > 0 ? 0 : n - 1) : (((i + dir) % n) + n) % n);

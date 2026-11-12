@@ -7,6 +7,7 @@
 //   app -> parent   { type: 'gi:status', state: 'loading' | 'done' | 'error', message?, address? }
 
 import { h } from './dom.js';
+import { CONFIG } from '../config.js';
 import { searchAddresses } from '../site/client.js';
 import { applySiteLookup } from '../site/apply.js';
 import { demoSite } from '../site/demo-lot.js';
@@ -195,7 +196,14 @@ export function initEmbedViewer({ store, catalogue, shell, viewerMode, getViewer
 
 /** Open the full editor in the top window (a new tab when the frame is not allowed to navigate the page). */
 export function openFullEditor(project) {
-  const url = fullEditorUrl(project);
+  // Hand the design over: the editor restores the autosave slot, so it opens with this lot and this house on it (not a fresh lookup).
+  let url = fullEditorUrl(project);
+  try {
+    if (project?.site?.lot && project.levels?.length) {
+      localStorage.setItem(CONFIG.autosaveKey, JSON.stringify(project));
+      url = FULL_EDITOR_PATH;
+    }
+  } catch { /* storage blocked: the address link still brings the lot */ }
   try {
     (window.top || window).location.assign(url);
   } catch {

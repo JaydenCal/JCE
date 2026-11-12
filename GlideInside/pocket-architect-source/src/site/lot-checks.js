@@ -94,6 +94,7 @@ const KIND_WORD = { front: 'front', secondaryFront: 'secondary front', side: 'si
  * setback rule is loaded or the rule is flagged for council confirmation ("check with council"); it never reads as a pass or a fail.
  * The envelope is indicative, council decides, so the wording never claims approval.
  */
+export const TOO_BIG = 'Too big for this block';
 export function setbackStatusLine(project) {
   const lot = lotOf(project);
   if (!lot) return { state: 'none', text: '' };
@@ -101,6 +102,7 @@ export function setbackStatusLine(project) {
   if (c.status === 'no_building' || c.status === 'no_lot') return { state: 'none', text: '' };
   const crosses = c.rows.some((r) => r.clearanceM < -TOL_M);
   const outside = c.rows.filter((r) => r.status === 'outside');
+  if ((crosses || outside.length) && project.placedHouse?.tooBig) return { state: 'outside', text: TOO_BIG };
   if (crosses || outside.length) {
     const words = [...new Set(c.rows.filter((r) => r.status === 'outside' || r.clearanceM < -TOL_M).map((r) => KIND_WORD[r.kind] || 'boundary'))];
     return { state: 'outside', text: `Outside the setbacks: ${words.join(', ')}` };
@@ -111,6 +113,7 @@ export function setbackStatusLine(project) {
     if (Array.isArray(lot.envelope) && lot.envelope.length >= 3) {
       const chk = checkSetbacks(project);
       if (chk.status === 'ok') return { state: 'inside', text: 'Fits the setbacks' };
+      if (chk.status === 'breach' && project.placedHouse?.tooBig) return { state: 'outside', text: TOO_BIG };
       if (chk.status === 'breach' && chk.breaches.length) {
         const words = [...new Set(chk.breaches.map((b) => KIND_WORD[b.kind] || 'boundary'))];
         return { state: 'outside', text: `Outside the setbacks: ${words.join(', ')}` };

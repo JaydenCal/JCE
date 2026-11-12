@@ -98,7 +98,53 @@ export function autoPose(project, house) {
   }
   if (!tried.length) return { pose: null, facing: false, fits: null, reason: 'no_footprint' };
   const best = tried.find((t) => t.fits === true) || tried[0];
+  if (best.fits === false && envPoly) {
+    // The garage to the street pose does not fit. Search every position and the four square turns, mirrored or not, for a pose that does.
+    const found = searchFit(project, house, lot, envPoly, front, frontReq, hasGarage);
+    if (found) return { pose: found.pose, facing: found.facing, fits: true, reason: '', size: { widthMm: b.width, depthMm: b.depth } };
+    return { pose: best.pose, facing: best.facing, fits: false, tooBig: true, reason: 'too_big', size: { widthMm: b.width, depthMm: b.depth } };
+  }
   return { pose: best.pose, facing: best.facing, fits: best.fits, reason: best.fits === false ? 'does_not_fit_envelope' : '', size: { widthMm: b.width, depthMm: b.depth } };
+}
+
+const SEARCH_STEP_MM = 500;
+
+/**
+ * Exhaustive fallback for autoPose: every turn that is square to the front edge (and the garage facing turn), mirrored or not, and every
+ * position on a 500 mm grid over the envelope. Returns the pose that fits the envelope nearest the front and the middle of the frontage,
+ * preferring a garage that faces the street, or null when the house cannot fit at all (too big for this block).
+ */
+export function searchFit(project, house, lot, envPoly, front, frontReq, hasGarage) {
+  const n = inwardNormalOf(lot, front.index);
+  const u = G.norm(G.sub(front.b, front.a));
+  const mid = G.lerp(front.a, front.b, 0.5);
+  const eb = G.bbox(envPoly);
+  const frontAngle = (Math.atan2(u.y, u.x) * 180) / Math.PI;
+  let best = null;
+  for (const mirrored of [false, true]) {
+    const at0 = placed(project, house, { x: 0, y: 0, rotation: 0, mirrored });
+    const face = hasGarage ? faceGarageAngle(at0) : null;
+    const turns = [...(face != null ? [face, face + 90, face + 180, face + 270] : [0, 90, 180, 270]), frontAngle, frontAngle + 90].map(normDeg);
+    for (const [ti, rotation] of turns.entries()) {
+      const hull = buildingHull(placed(project, house, { x: 0, y: 0, rotation, mirrored }));
+      if (hull.length < 3) continue;
+      const hb = G.bbox(hull);
+      if (hb.maxX - hb.minX > eb.maxX - eb.minX + 1 || hb.maxY - hb.minY > eb.maxY - eb.minY + 1) continue;
+      for (let y = eb.minY - hb.minY; y <= eb.maxY - hb.maxY + 1; y += SEARCH_STEP_MM) {
+        for (let x = eb.minX - hb.minX; x <= eb.maxX - hb.maxX + 1; x += SEARCH_STEP_MM) {
+          const moved = hull.map((p) => ({ x: p.x + x, y: p.y + y }));
+          if (worstEncroachment(moved, [], envPoly) > 5) continue;
+          const hc = G.polygonCentroid(moved);
+          const depth = G.dot(G.sub(hc, front.a), n);
+          const across = Math.abs(G.dot(G.sub(hc, mid), u));
+          const faces = face != null && ti < 4 && ti === 0 ? 0 : face != null ? 1 : 0;
+          const score = faces * 1e6 + (mirrored ? 5e4 : 0) + ti * 1e5 + Math.abs(depth - ((frontReq || 0) * 1000 + 4000)) * 0.5 + across;
+          if (!best || score < best.score) best = { score, pose: { x: Math.round(x), y: Math.round(y), rotation, mirrored }, facing: faces === 0 && face != null };
+        }
+      }
+    }
+  }
+  return best;
 }
 
 /** The footprint points of a placed design, for callers that want to check it themselves. */
