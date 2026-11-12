@@ -216,7 +216,7 @@ function recorderXY() {
         const s = Array.isArray(t) ? t.join(' ') : String(t);
         let w = 0;
         try { w = this.getTextWidth(s); } catch { w = 0; }
-        items.push({ s, x, y, w, size: this.getFontSize(), angle: o?.angle || 0, align: o?.align || 'left' });
+        items.push({ page: this.internal.getCurrentPageInfo().pageNumber, s, x, y, w, size: this.getFontSize(), angle: o?.angle || 0, align: o?.align || 'left' });
         return text(t, x, y, o);
       };
     }
@@ -258,7 +258,8 @@ test('contours: ground level from the grid and from the contours, whole metre li
 
 test('contours: RL labels and spot levels never sit on the lot label, dimensions or other text', async () => {
   const { Rec, items } = recorderXY();
-  await exportPlanSet({ project, lot: groundLot(), kind: 'site', download: false, jsPDF: Rec, catalogue, date: new Date(2026, 10, 12) });
+  await exportPlanSet({ project, lot: groundLot(), kind: 'site', download: false, jsPDF: Rec, catalogue, date: new Date(2026, 10, 12), fetchSite: null });
+  for (let i = items.length - 1; i >= 0; i--) if (items[i].page !== 2) items.splice(i, 1); // the site plan sheet only
   const isLevel = (it) => /^\d{2}\.\d$/.test(it.s) && it.size < 5.5;
   const levels = items.filter(isLevel);
   assert.ok(levels.length > 4, 'level labels were drawn');

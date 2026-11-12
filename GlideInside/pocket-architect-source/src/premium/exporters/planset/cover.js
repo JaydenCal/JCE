@@ -143,6 +143,26 @@ function locality(doc, lot, project, loc = {}) {
     { x0: LOC.x0 + 2, y0: LOC.y1 - 17, x1: LOC.x0 + 4 + barMm + 12, y1: LOC.y1 - 6 },
   ];
   const hits = (b, list) => list.some((t) => b.x0 < t.x1 && b.x1 > t.x0 && b.y0 < t.y1 && b.y1 > t.y0);
+  // The SITE box goes first: the spot around the lot with the fewest lot centres under it, clear of the north point, bar and strip.
+  const lp = lot.boundary.map(T);
+  const lc = { x: lp.reduce((a, p) => a + p.x, 0) / lp.length, y: lp.reduce((a, p) => a + p.y, 0) / lp.length };
+  const lb = { x0: Math.min(...lp.map((p) => p.x)), x1: Math.max(...lp.map((p) => p.x)), y0: Math.min(...lp.map((p) => p.y)), y1: Math.max(...lp.map((p) => p.y)) };
+  const tag = lot.proposed ? `PROPOSED LOT ${lot.lotNumber || ''}`.trim() : lot.lotNumber ? `LOT ${lot.lotNumber}` : 'SUBJECT LOT';
+  const centres = neighbours.filter((n) => !n.isRoad && n.lotNumber && n.ring?.length >= 3).map((n) => T(G.polygonCentroid(n.ring)));
+  let lab = null;
+  let bestScore = Infinity;
+  for (const [dx, dy] of [[-1, -1], [1, -1], [-1, 0], [1, 0], [0, -1], [-1, 1], [1, 1], [0, 1], [-1.8, -1], [1.8, -1], [-1.8, 0.4], [1.8, 0.4], [-1, -1.8], [1, -1.8]]) {
+    const cx = dx < 0 ? lb.x0 + 3 + dx * 28 : dx > 0 ? lb.x1 - 3 + dx * 28 : lc.x;
+    const cy = dy < 0 ? lb.y0 + 3 + dy * 24 : dy > 0 ? lb.y1 - 3 + dy * 24 : lc.y;
+    const box = { x0: cx - 8, x1: cx + 8, y0: cy - 4.2, y1: cy + 5.2 };
+    if (box.x0 < R.x0 + 1 || box.x1 > R.x1 - 1 || box.y0 < R.y0 + 1 || box.y1 > R.y1 - 1 || hits(box, blocked)) continue;
+    if (box.x0 < lb.x1 && box.x1 > lb.x0 && box.y0 < lb.y1 && box.y1 > lb.y0) continue;
+    const score = centres.filter((q) => q.x > box.x0 - 4 && q.x < box.x1 + 4 && q.y > box.y0 - 2 && q.y < box.y1 + 2).length * 10 + Math.hypot(cx - lc.x, cy - lc.y) / 20;
+    if (score < bestScore) { bestScore = score; lab = { x: cx, y: cy, box }; }
+  }
+  if (!lab) lab = { x: Math.max(R.x0 + 10, lb.x0 - 12), y: Math.max(R.y0 + 8, lb.y0 - 10), box: null };
+  const start = lp.reduce((b, p) => (Math.hypot(p.x - lab.x, p.y - lab.y) < Math.hypot(b.x - lab.x, b.y - lab.y) ? p : b), lp[0]);
+  blocked.push({ x0: lab.x - 8.5, x1: lab.x + 8.5, y0: lab.y - 4.7, y1: lab.y + 5.7 });
   const taken = [];
   // Road names: along the longest clear stretch, shrunk if need be, else left off. Never cut off by the frame, never over another label.
   const named = new Set();
@@ -206,7 +226,6 @@ function locality(doc, lot, project, loc = {}) {
     haloText(doc, txt, cc.x, cc.y, { size: 5.5, colour: aerial ? [50, 54, 62] : GREY, align: 'center', halo: aerial ? 0.7 : 0 });
   }
   // The subject lot: red boundary (no solid fill over the picture), the house in its fill.
-  const lp = lot.boundary.map(T);
   doc.setDrawColor(...(aerial ? RED : PEN.ink));
   doc.setLineWidth(aerial ? 0.7 : 0.5);
   if (aerial) polyPath(doc, lp, 'S');
@@ -216,14 +235,7 @@ function locality(doc, lot, project, loc = {}) {
     doc.setFillColor(...PEN.proposed);
     for (const r of gl.rooms) if (!r.outdoor && r.polygon?.length >= 3) polyPath(doc, r.polygon.map(T), 'F');
   }
-  // "SITE" label with a leader from the boundary out to clear ground, on the side with most room (up and left by default).
-  const lc = { x: lp.reduce((a, p) => a + p.x, 0) / lp.length, y: lp.reduce((a, p) => a + p.y, 0) / lp.length };
-  const top = Math.min(...lp.map((p) => p.y));
-  const left = Math.min(...lp.map((p) => p.x));
-  const tag = lot.proposed ? `PROPOSED LOT ${lot.lotNumber || ''}`.trim() : lot.lotNumber ? `LOT ${lot.lotNumber}` : 'SUBJECT LOT';
-  const from = { x: left + (lc.x - left) * 0.15, y: top + (lc.y - top) * 0.1 };
-  const lab = { x: Math.max(R.x0 + 16, Math.min(R.x1 - 30, from.x - 24)), y: Math.max(R.y0 + 12, from.y - 22) };
-  const start = lp.reduce((b, p) => (Math.hypot(p.x - lab.x, p.y - lab.y) < Math.hypot(b.x - lab.x, b.y - lab.y) ? p : b), lp[0]);
+  // "SITE" label with a leader (the box was placed before any other label, see above).
   doc.setDrawColor(...(aerial ? RED : PEN.ink));
   doc.setLineWidth(0.35);
   doc.line(lab.x + 6, lab.y + 1.2, start.x, start.y);
