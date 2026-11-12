@@ -37,7 +37,7 @@ import { backTarget, backLabel } from './ui/back-target.js';
 import { startView, readLastView } from './ui/view-mode.js';
 import { portalUrl } from './portal/links.js';
 import { createLotCard } from './lotcard/lot-card.js';
-import { viewerEmbedRequested, addressFromSearch, openFullEditor, initEmbedViewer, loadAddress, mountViewerChrome } from './ui/embed-viewer.js';
+import { viewerEmbedRequested, addressFromSearch, openFullEditor, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
 
 const demoMode = () => CONFIG.embedMode === 'demo';
 // ?embed=1 or ?view=viewer: the cinematic single lot 3D view only (the home page frame). See src/ui/embed-viewer.js.
@@ -70,6 +70,8 @@ const hasContent = (p) => p.levels.some((l) => l.rooms.length || l.walls.length)
 
 function initialProject(catalogue) {
   if (!demoMode() && !VIEWER) {
+    const handed = takeHandoff();
+    if (handed) return { project: handed.project, fromAutosave: true, previous: handed.previous };
     const saved = loadAutosave(CONFIG.autosaveKey);
     if (saved) return { project: saved, fromAutosave: true };
   }
@@ -105,6 +107,7 @@ async function main() {
   const catalogue = await loadCatalogue();
   const start = initialProject(catalogue);
   const state = { fromAutosave: start.fromAutosave };
+  let earlierDesign = start.previous || null;
   const narrow = window.matchMedia?.('(max-width: 899.98px)').matches;
   // On small screens the properties panel starts as a collapsed bottom sheet so the plan keeps the room.
   if (narrow) refs.panel.dataset.open = 'false';
@@ -411,8 +414,15 @@ async function main() {
   if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam) createWelcome(refs.stage, store, { onChoose: openNew });
 
   embed.ready();
+  if (earlierDesign) {
+    const prev = earlierDesign;
+    earlierDesign = null;
+    toast('Your earlier design is kept in this browser.', { kind: 'info', timeout: 12000, action: { label: 'Open earlier design', onClick: () => replaceProject(prev) } });
+  }
   if (VIEWER) {
     mountViewerChrome(refs.stage, store);
+    // Signed in? The first placement waits for this (src/ui/embed-viewer.js designPool), so the viewer opens on the person's own first design.
+    if (!demoMode() && CONFIG.portalEnabled) api.portalReady = import('./portal/viewer-mode.js').then((m) => m.initPortalViewer(api)).catch((e) => { console.warn('[portal] viewer mode not available', e); return null; });
     const ev = initEmbedViewer({ store, catalogue, shell: refs.shell, viewerMode: true, getViewer });
     api.embedViewer = ev;
     if (addressParam) ev.run(addressParam);

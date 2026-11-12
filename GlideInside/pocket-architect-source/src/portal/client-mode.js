@@ -26,7 +26,7 @@ import { lotOf } from '../model/placement.js';
 import { orientedBox } from '../site/lotplan.js';
 import { projectToSvg, svgDataUri } from './thumbnail.js';
 import { createProject } from '../model/schema.js';
-import { builderDesigns } from '../lotcard/designs.js';
+import { createDesignSource } from './design-source.js';
 
 const LOGO_KEY = 'ps.logo';
 const AUTOSAVE = () => CONFIG.autosaveKey;
@@ -205,19 +205,11 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   store.on?.('project', paintLot);
 
   // House designs -------------------------------------------------------------------------------------------------------------
-  async function loadDesigns() {
-    const [mine, glide] = await Promise.all([api.listHouses(), (wantsGlide(me, params) ? api.listGlideLibrary().catch(() => []) : Promise.resolve([]))]);
-    const full = async (list, getter, group) => Promise.all(list.map(async (x) => {
-      const r = await getter(x.id);
-      return { id: x.id, name: x.name, group, project: r.project, meta: x, source: group === 'glide' ? 'glide' : 'house' };
-    }));
-    return [...(await full(mine, (id) => api.getHouse(id), 'builder')), ...(await full(glide, (id) => api.getGlideModel(id), 'glide'))];
-  }
+  // Cached per session: a lot change re-ranks these, it does not refetch them (src/portal/design-source.js).
+  const designSource = createDesignSource({ api, me, params, clientLike });
+  const loadDesigns = () => designSource.load();
   // The lot card carousel: the builder's own library ranked by fit on the client's lot (never other builders' designs).
-  app.lotDesigns = async (project) => {
-    const all = await loadDesigns();
-    return builderDesigns(project || store.project, all, { allowGlide: !clientLike });
-  };
+  app.lotDesigns = (project) => designSource.lotDesigns(project || store.project);
   async function openPicker() {
     const list = h('div', { class: 'pas-list' }, h('p', { class: 'pas-empty' }, 'Loading designs...'));
     // A client with no block yet is asked to find it first: designs are never ranked against a sample lot.
@@ -295,6 +287,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   async function saveToLibrary() {
     try {
       await api.saveHouse({ name: store.project.name || 'Untitled house', project: store.project });
+      designSource.invalidate();
       toast('Saved to the house library.', { kind: 'ok' });
     } catch (e) { toast(e.message || 'Could not save.', { kind: 'error' }); }
   }
