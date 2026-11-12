@@ -447,6 +447,25 @@ test('search: once NSW has results a slow QLD lookup is not waited for (under 3 
   assert.equal(body.results[0].label, '454 Peel Street Tamworth NSW');
 });
 
+test('search: a house number that does not exist shows the nearest numbers on that street, nearest first', async () => {
+  const j = (b) => new Response(JSON.stringify(b), { status: 200, headers: { 'content-type': 'application/json' } });
+  const have = new Set([27, 29, 33]);
+  const impl = async (input) => {
+    const u = new URL(String(input));
+    const where = u.searchParams.get('where') || '';
+    if (/qld/i.test(u.host)) return j({ features: [] });
+    const m = /^address LIKE '(\d+) HENRYS LANE TAMWORTH%'$/.exec(where);
+    if (m && have.has(Number(m[1]))) return j({ features: [{ attributes: { address: `${m[1]} HENRYS LANE TAMWORTH` }, geometry: { x: LON, y: LAT } }] });
+    return j({ features: [] });
+  };
+  const app = createApp({ store: createMemoryStore(), env: {}, fetchImpl: impl, now: () => T0 });
+  const res = await app.fetch(new Request('https://api.test/api/site/search?q=30+henrys+lane+tamworth', { headers: { 'cf-connecting-ip': '5.5.5.5' } }));
+  const body = await res.json();
+  const labels = body.results.map((r) => r.label);
+  assert.equal(labels[0], '29 Henrys Lane Tamworth NSW');
+  assert.deepEqual([...labels].sort(), ['27 Henrys Lane Tamworth NSW', '29 Henrys Lane Tamworth NSW', '33 Henrys Lane Tamworth NSW']);
+});
+
 test('aerial: wide request with maxpx caps the picture at 2048 px, separately cached; the old default is unchanged', async () => {
   const sizes = [];
   const inner = upstream();

@@ -292,35 +292,69 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     return q.toUpperCase().replace(/[,.]/g, ' ').replace(/[^A-Z0-9'/\- ]/g, ' ').split(/\s+/).filter(Boolean);
   }
 
-  // Each upstream gets 9 s and no retry; once either state has results the other only gets SEARCH_GRACE_MS more.
+  // Timing (the NSW layer only has an index on the full address string, so only "starts with" queries are fast):
+  //   1. exact prefix query, up to 4 s; a hit is returned straight away;
+  //   2. otherwise, in parallel for up to 3.5 s: the same street with the nearest house numbers (prefix queries, two at a time)
+  //      and the slow every-word query; nearest numbers come first.
+  // Once either state has results the other only gets SEARCH_GRACE_MS more.
   const SEARCH_GRACE_MS = 1200;
-  const SEARCH_TIMEOUT_MS = 9000; // the NSW every-word query can take 3 to 6 s; 2.5 s dropped real addresses
+  const byLen = (x, y) => x.label.length - y.label.length || x.label.localeCompare(y.label); // shortest first: closest to what was typed
+  const SEARCH_TIMEOUT_MS = 4000;
+  const SEARCH_FALLBACK_MS = 3500;
+  const NEAR_STEPS = 8;
   async function searchNsw(tokens, st) {
     const w = buildNswWhere(tokens);
     if (!w) return [];
-    const run = (where) => upstream(`${SERVICES.nswAddresses}/query`, {
-      f: 'json', where, outFields: 'address', returnGeometry: 'true', outSR: '4326', resultRecordCount: '8',
-    }, { timeoutMs: SEARCH_TIMEOUT_MS, retries: 0 }).catch(() => { st.partial = true; return { features: [] }; });
-    // The prefix query (index friendly) and the every-word query run together; the prefix result wins when it found anything.
-    // The prefix query usually answers in well under a second; when it finds anything we do not wait for the slow every-word query.
-    const anyP = w.words !== w.prefix ? run(w.words) : Promise.resolve({ features: [] });
-    const pre = await run(w.prefix);
-    const body = (pre.features || []).length ? pre : await anyP;
-    return (body.features || []).filter((f) => f.geometry && Number.isFinite(f.geometry.x) && f.attributes?.address).map((f) => ({
+    const run = (where, timeoutMs = SEARCH_TIMEOUT_MS, n = '8') => upstream(`${SERVICES.nswAddresses}/query`, {
+      f: 'json', where, outFields: 'address', returnGeometry: 'true', outSR: '4326', resultRecordCount: n,
+    }, { timeoutMs, retries: 0 }).catch(() => { st.partial = true; return { features: [] }; });
+    const toRows = (body) => (body.features || []).filter((f) => f.geometry && Number.isFinite(f.geometry.x) && f.attributes?.address).map((f) => ({
       label: `${titleCase(f.attributes.address)} NSW`, state: 'NSW', lon: round(f.geometry.x, 6), lat: round(f.geometry.y, 6),
     }));
+    const pre = toRows(await run(w.prefix)).sort(byLen);
+    if (pre.length) return pre;
+    const words = searchWords(tokens, 'NSW');
+    const nearP = nearNumbers(words, run);
+    const anyP = w.words !== w.prefix ? run(w.words, SEARCH_FALLBACK_MS).then(toRows) : Promise.resolve([]);
+    const [near, any] = await Promise.all([nearP.then((b) => b.flatMap(toRows)), anyP]);
+    const seen = new Set();
+    return [...near, ...any].filter((r) => !seen.has(r.label) && seen.add(r.label)).slice(0, 8);
   }
 
-  async function searchQld(tokens, st) {
+  // Same street, nearest house numbers first (an address that does not exist, e.g. 30 Henrys Lane, shows 29 and 31).
+  async function nearNumbers(words, run) {
+    if (words.length < 2 || !/^\d+$/.test(words[0])) return [];
+    const n = Number(words[0]);
+    const rest = sqlText(words.slice(1).join(' '));
+    const order = [];
+    for (let d = 1; d <= NEAR_STEPS; d++) {
+      if (n - d > 0) order.push(n - d);
+      order.push(n + d);
+    }
+    const found = [];
+    const t0 = Date.now();
+    let i = 0;
+    const worker = async () => {
+      while (i < order.length && found.length < 4 && Date.now() - t0 < SEARCH_FALLBACK_MS) {
+        const k = order[i++];
+        const body = await run(`address LIKE '${k} ${rest}%'`, SEARCH_FALLBACK_MS, '2');
+        if ((body.features || []).length) found.push({ k, body });
+      }
+    };
+    await Promise.all([worker(), worker()]);
+    return found.sort((a, b) => Math.abs(a.k - n) - Math.abs(b.k - n)).map((x) => x.body);
+  }
+
+  async function searchQld(tokens, st, timeoutMs = SEARCH_TIMEOUT_MS) {
     const where = buildQldWhere(tokens);
     if (!where) return [];
     const body = await upstream(`${SERVICES.qldAddresses}/query`, {
       f: 'json', where, outFields: 'address,locality', returnGeometry: 'true', outSR: '7844', resultRecordCount: '8',
-    }, { timeoutMs: SEARCH_TIMEOUT_MS, retries: 0 }).catch(() => { st.partial = true; return { features: [] }; });
+    }, { timeoutMs, retries: 0 }).catch(() => { st.partial = true; return { features: [] }; });
     return (body.features || []).filter((f) => f.geometry && f.attributes?.address).map((f) => ({
       label: /\bQLD\b/i.test(f.attributes.address) ? titleCase(f.attributes.address).replace(/\bQld\b/, 'QLD') : `${titleCase(f.attributes.address)} QLD`,
       state: 'QLD', lon: round(f.geometry.x, 6), lat: round(f.geometry.y, 6),
-    }));
+    })).sort(byLen);
   }
 
   async function search(request, url) {
@@ -348,14 +382,11 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     const { value } = await jsonCached(key, TTL.search, async () => {
       // Once one state has answered with results, the other state gets SEARCH_GRACE_MS more and is then left out of this answer.
       const pa = wantNsw ? searchNsw(tokens, st) : Promise.resolve([]);
-      const pb = wantQld ? searchQld(tokens, st) : Promise.resolve([]);
+      const pb = wantQld ? searchQld(tokens, st, only === 'QLD' ? 9000 : SEARCH_TIMEOUT_MS) : Promise.resolve([]);
       const graceAfter = (p) => p.then((r) => (r.length ? new Promise((res) => setTimeout(() => res(null), SEARCH_GRACE_MS)) : new Promise(() => {})));
       const cut = Promise.race([graceAfter(pa), graceAfter(pb)]).then(() => []);
       const [a, b] = await Promise.all([Promise.race([pa, cut]), Promise.race([pb, cut])]);
-      // Interleave so both states show, shortest label first inside each (closest to what was typed).
-      const byLen = (x, y) => x.label.length - y.label.length || x.label.localeCompare(y.label);
-      a.sort(byLen);
-      b.sort(byLen);
+      // Interleave so both states show; each state's list is already in best-first order.
       const seen = new Set();
       const merged = [];
       for (let i = 0; merged.length < 8 && (i < a.length || i < b.length); i++) {
@@ -812,7 +843,7 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     await rateLimit(request, 'health');
     if (healthMemo && healthMemo.until > now()) return json(healthMemo.body, 200, { 'cache-control': 'no-store' });
     const checks = await Promise.all(PROBES.map(async ([id, url, required]) => {
-      const t0 = now();
+      const t0 = Date.now();
       try {
         const body = await upstream(url, { f: 'json' }, { timeoutMs: 8000, retries: 0 });
         const ok = !!(body && (body.name || body.currentVersion || body.fields || body.layers || body.serviceDescription !== undefined || body.type));
