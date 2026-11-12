@@ -112,11 +112,12 @@ export async function sendViaResend({ config, fetchImpl, enquiry, reference }) {
 }
 
 /**
- * The endpoint. Order: configured? (503 when RESEND_API_KEY is missing) -> validate -> rate limit -> save -> email -> mark.
- * Returns { ok: true, reference }. If the email fails the enquiry is already saved and EMAIL_FAILED carries the reference.
+ * The endpoint. Order: validate -> rate limit -> SAVE -> email (only when RESEND_API_KEY is set) -> mark.
+ * A request is never refused because email is not set up: it is saved first, so the owner can read it from the admin route.
+ * Returns { ok: true, reference, emailed }. If saving fails the error is returned. If the email fails the enquiry is already
+ * saved and EMAIL_FAILED carries the reference (the person is still told it was saved).
  */
 export async function handleEnquiry({ body, request, store, config, fetchImpl, now, clientIp }) {
-  if (!config.resendApiKey) throw new HttpError('ENQUIRY_NOT_CONFIGURED', 'Sending to JCE is not set up yet.', {}, 503);
   const enquiry = parseEnquiry(body, { maxProjectBytes: config.exportMaxProjectBytes, maxPdfBytes: config.enquiryMaxPdfBytes });
   const t = now();
   const byIp = await store.hitRate(`enquiry:ip:${clientIp(request)}`, 3600, t);
@@ -124,12 +125,21 @@ export async function handleEnquiry({ body, request, store, config, fetchImpl, n
   if (byIp > 5 || byEmail > 3) throw new HttpError('RATE_LIMITED', 'You have sent several requests already. Please wait before sending another.', { retryAfter: 3600 });
   const reference = randomRef();
   const projectJson = enquiry.project ? JSON.stringify({ ...enquiry.project, site: { ...enquiry.project.site, underlay: null } }) : null;
+  const emailOn = !!config.resendApiKey;
   await store.saveEnquiry({
     id: reference, reference, createdAt: new Date(t).toISOString(), name: enquiry.name, phone: enquiry.phone, email: enquiry.email, need: enquiry.need,
     notes: enquiry.notes, lot: enquiry.lot, source: enquiry.source, orgName: enquiry.orgName, projectName: enquiry.projectName,
     projectJson: projectJson && projectJson.length <= 1_800_000 ? projectJson : null, pdfBytes: enquiry.pdfBase64 ? Math.floor((enquiry.pdfBase64.length * 3) / 4) : 0,
-    consent: true, emailStatus: 'pending',
+    consent: true, emailStatus: emailOn ? 'pending' : 'not_configured',
   });
+  if (enquiry.pdfBase64) {
+    try {
+      await store.saveEnquiryPdf(reference, enquiry.pdfBase64);
+    } catch {
+      // The request itself is saved. The PDF is also in the email when email is on; the person can resend it otherwise.
+    }
+  }
+  if (!emailOn) return { ok: true, reference, emailed: false };
   try {
     const sent = await sendViaResend({ config, fetchImpl, enquiry, reference });
     await store.markEnquiry(reference, { emailStatus: 'sent', emailId: sent.id, emailedAt: new Date(now()).toISOString() });
@@ -137,5 +147,5 @@ export async function handleEnquiry({ body, request, store, config, fetchImpl, n
     await store.markEnquiry(reference, { emailStatus: 'failed', emailError: `${e.message}${e.extra?.upstreamStatus ? ` (${e.extra.upstreamStatus})` : ''}` });
     throw e;
   }
-  return { ok: true, reference };
+  return { ok: true, reference, emailed: true };
 }

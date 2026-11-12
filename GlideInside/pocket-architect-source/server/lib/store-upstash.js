@@ -179,6 +179,12 @@ export function createUpstashStore({ url, token, fetchImpl } = {}) {
       const rows = await Promise.all(refs.map((r) => cmd('GET', `ps:enq:${r}`)));
       return rows.filter(Boolean).map((r) => JSON.parse(r));
     },
+    async saveEnquiryPdf(reference, base64) {
+      await cmd('SET', `ps:enqpdf:${reference}`, base64);
+    },
+    async getEnquiryPdf(reference) {
+      return (await cmd('GET', `ps:enqpdf:${reference}`)) || null;
+    },
     async logEvent({ id, type, detail, createdAt }) {
       const first = (await cmd('SET', `ps:evt:${id}`, '1', 'NX', 'EX', 90 * DAY)) === 'OK';
       if (!first) return false;

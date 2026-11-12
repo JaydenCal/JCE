@@ -222,7 +222,20 @@ export function createD1Store(db) {
       await run('UPDATE jce_enquiries SET email_status = ?2, email_id = ?3, emailed_at = ?4, email_error = ?5 WHERE reference = ?1', reference, patch.emailStatus, patch.emailId ?? null, patch.emailedAt ?? null, patch.emailError ?? null);
     },
     async listEnquiries() {
-      return (await all('SELECT * FROM jce_enquiries ORDER BY created_at, id')).map((r) => ({ reference: r.reference, createdAt: r.created_at, name: r.name, email: r.email, need: r.need, emailStatus: r.email_status, emailError: r.email_error ?? null, hasProject: !!r.project_json }));
+      return (await all('SELECT * FROM jce_enquiries ORDER BY created_at, id')).map((r) => ({
+        reference: r.reference, createdAt: r.created_at, name: r.name, phone: r.phone, email: r.email, need: r.need, notes: r.notes ?? '',
+        lot: (() => { try { return JSON.parse(r.lot_json || '{}'); } catch { return {}; } })(), source: r.source, orgName: r.org_name ?? '', projectName: r.project_name ?? '',
+        pdfBytes: r.pdf_bytes || 0, emailStatus: r.email_status, emailError: r.email_error ?? null, emailedAt: r.emailed_at ?? null, hasProject: !!r.project_json,
+      }));
+    },
+    async saveEnquiryPdf(reference, base64) {
+      const size = 500_000;
+      for (let i = 0, seq = 0; i < base64.length; i += size, seq += 1) await run('INSERT OR REPLACE INTO jce_enquiry_pdfs (reference, seq, chunk) VALUES (?1, ?2, ?3)', reference, seq, base64.slice(i, i + size));
+    },
+    /** The saved PDF as base64, or null. */
+    async getEnquiryPdf(reference) {
+      const rows = await all('SELECT chunk FROM jce_enquiry_pdfs WHERE reference = ?1 ORDER BY seq', reference);
+      return rows.length ? rows.map((r) => r.chunk).join('') : null;
     },
     async logEvent({ id, type, detail, createdAt }) {
       return changed(await run('INSERT OR IGNORE INTO events (id, type, detail, created_at) VALUES (?1, ?2, ?3, ?4)', id, type, detail ? JSON.stringify(detail) : null, createdAt));
@@ -238,6 +251,7 @@ export function createD1Store(db) {
 export function createMemoryStore() {
   const ents = new Map();
   const enquiries = new Map();
+  const enquiryPdfs = new Map();
   const requests = [];
   const spend = new Map();
   const hooks = new Map();
@@ -440,7 +454,13 @@ export function createMemoryStore() {
       if (row) Object.assign(row, structuredClone(patch));
     },
     async listEnquiries() {
-      return [...enquiries.values()].map((r) => structuredClone(r));
+      return [...enquiries.values()].map((r) => { const { pdfBase64, projectJson, ...rest } = structuredClone(r); return { ...rest, hasProject: !!projectJson }; });
+    },
+    async saveEnquiryPdf(reference, base64) {
+      enquiryPdfs.set(reference, base64);
+    },
+    async getEnquiryPdf(reference) {
+      return enquiryPdfs.get(reference) ?? null;
     },
     async logEvent({ id, type, detail, createdAt }) {
       if (events.has(id)) return false;

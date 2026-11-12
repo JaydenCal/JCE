@@ -173,4 +173,11 @@ export const LOT_CARD_CSS = `
 .lc-embed.is-compact .lc-rooms .lc-tabs.has-more{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}
 .lc-embed.is-compact .lc-rooms .lc-tabs.has-more.has-less{-webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 36px),transparent)}
 .lc-embed.is-compact .lc-rooms .lc-tabs.has-less:not(.has-more){-webkit-mask-image:linear-gradient(90deg,transparent,#000 24px);mask-image:linear-gradient(90deg,transparent,#000 24px)}
+/* Send the plans to a registered engineer: a clear button under the PDF links (desktop and phone). */
+.lc-send{margin-top:8px}.lc-send[hidden],.lc-sendbtn[hidden]{display:none}
+.lc-sendbtn{border-color:rgba(255,200,61,.75)!important;color:#ffd77a!important;height:38px}
+.lc-sendbtn:hover{background:rgba(255,200,61,.14)}
+.lc-root.is-phone .lc-send{margin-top:6px}.lc-root.is-phone .lc-sendbtn{width:100%;white-space:normal;line-height:1.15;height:auto;min-height:36px;padding:6px 12px!important}
+.lc-root[data-room="1"]:not(.is-compact) .lc-card .lc-send{display:none}
+.ps-toast button{white-space:normal}
 `;

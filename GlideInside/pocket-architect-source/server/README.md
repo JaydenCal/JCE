@@ -49,7 +49,7 @@ limits), `src/premium/exporters/*` and `src/viewer3d/build.js`. Deploy the whole
 | `GET /api/site/aerial?state=&srid=&bbox=` | none, rate limited | Image bytes, georeference in the `x-site-meta` header (URL encoded JSON, includes attribution and capture date) |
 | `GET /api/site/contours?state=&srid=&bbox=&buffer=&origin=` | none, rate limited | Elevation grid, contour lines (minor 0.5 m, major 2.5 m) and provenance |
 | `GET /api/site/health` | none | Probes each upstream service. `ok` needs the cadastre and address services, `allOk` needs every one |
-| `POST /api/enquiry/jce` | none, rate limited | "Send to JCE for engineering and DA plans". Body `{ name, phone, email, need, notes, consent: true, lot, project, pdfBase64, source }`. Emails JCE through Resend with the PDF attached, keeps a copy in `jce_enquiries`, returns `{ ok, reference }`. `503 ENQUIRY_NOT_CONFIGURED` until `RESEND_API_KEY` is set |
+| `POST /api/enquiry/jce` | none, rate limited | "Send plans to a registered engineer". Body `{ name, phone, email, need, notes, consent: true, lot, project, pdfBase64, source }`. Validates, SAVES the request (`jce_enquiries`, plus the PDF in `jce_enquiry_pdfs`), then emails JCE through Resend with the PDF attached when `RESEND_API_KEY` is set. Returns `{ ok, reference, emailed }`; `emailed` is false until the key is set (the request is kept either way). Owner routes (bearer `ADMIN_TOKEN`): `GET /api/portal/admin/enquiries` (newest first, no PDF bytes) and `GET /api/portal/admin/enquiries/<ref>/pdf` |
 | `POST /api/export/:type` | Bearer | `pdf`, `dxf`, `glb`, `obj`, `html` (interactive plan and 3D, one offline file). Body `{ project, image? }`. Returns the file |
 
 Builder and client logins use the same AI endpoints plus two more (see "Builder and client logins" below).
@@ -205,11 +205,12 @@ Live mode needs the live Stripe key, the live webhook secret and written approva
 
 ### Send to JCE enquiries (Resend email)
 
-The "Send to JCE for engineering and DA plans" button posts to `POST /api/enquiry/jce`. The Worker emails
+The "Send plans to a registered engineer" button (lot viewer card, after a plan set PDF download, full editor menu and portal client menu) posts to `POST /api/enquiry/jce`. The Worker emails
 `ENQUIRY_TO` (default enquiries@jceinfrastructure.com.au) with the PDF plan set and the design file attached, using the
 Resend REST API. Nothing is sent until the person clicks Send and ticks the consent box. A copy of each enquiry is kept in
-the `jce_enquiries` table, so nothing is lost if the email fails (the PDF itself is not stored; it can be rebuilt from the
-saved design). Until the key is set, the endpoint answers `503` and the app says the service is not set up yet.
+the `jce_enquiries` table and the PDF in `jce_enquiry_pdfs` (migration 0013), before any email is attempted, so nothing is lost if
+the email fails or the key is not set yet. Until the key is set the endpoint answers `{ ok: true, emailed: false }` and the owner reads the
+requests with `GET /api/portal/admin/enquiries` (`Authorization: Bearer <ADMIN_TOKEN>`) and downloads a PDF from `.../enquiries/<ref>/pdf`.
 
 1. Create a Resend account at resend.com (the free tier is enough to start).
 2. In Resend, Domains, add `glideinside.com.au`. Add the DNS records Resend shows (SPF and DKIM TXT or CNAME records, and the

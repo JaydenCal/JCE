@@ -23,7 +23,7 @@ import { el, track } from './util.js';
 import { icon } from './icons.js';
 import { importPdf as runImportPdf } from './pdf-import.js';
 import { openPdfPreview } from './pdf-preview.js';
-import { openEnquiry } from './ui/enquiry.js';
+import { openEnquiry, lotPrefill } from './ui/enquiry.js';
 
 export function createPremium(store, options = {}) {
   const {
@@ -76,6 +76,9 @@ export function createPremium(store, options = {}) {
   const allowedExports = () => (portalOn() && Array.isArray(state.portal.exports) ? state.portal.exports : EXPORT_ITEMS.map((i) => i.type));
   // "Send to JCE": public Plan Pack users, builder staff, and clients when the builder allows it.
   const canEnquire = () => (portalOn() ? state.portal.enquiry !== false : isEntitled());
+  // "Send plans to a registered engineer" on the lot viewer card: open to anyone who can see the plan set PDFs (the PDFs are free), except a
+  // client login whose builder has turned sending off (allowClientEnquiries).
+  const canSendPlans = () => (portalOn() ? state.portal.enquiry !== false : true);
   const isEntitled = () => dev() || !!state.token || portalOn();
   const view = () => ({ entitled: isEntitled(), token: state.token || state.portal?.token || null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire() });
   // Builder and client logins have the AI included; mock mode lets the owner review it for any session.
@@ -208,28 +211,21 @@ export function createPremium(store, options = {}) {
     return btoa(bin);
   }
   function openEnquiryForm(extra = {}) {
-    if (!canEnquire()) {
+    const { anyone = false, ...rest } = extra;
+    if (!(anyone ? canSendPlans() : canEnquire())) {
       layer.notify(portalOn() ? 'Your builder has turned off sending to JCE.' : 'Sending to JCE comes with the Plan Pack.', 'info', 6000);
       return null;
     }
     const send = state.portal?.sendEnquiry || ((body) => api.enquiryJce(body));
     // The found lot (site.lot) first, then whatever the builder portal knows; the person fills in any gaps.
     const portalLot = (typeof window !== 'undefined' && window.__ps?.portal?.getLot?.()) || {};
-    const sl = store.project.site?.lot || {};
-    const pick = (...v) => v.find((x) => x != null && String(x).trim() !== '') || '';
-    const lot = {
-      address: pick(sl.address, portalLot.address),
-      lot: pick(sl.lotNumber, portalLot.lot),
-      dp: pick(sl.planLabel, portalLot.dp),
-      lga: pick(sl.lga, portalLot.lga),
-      zone: pick(sl.zoning?.code && `${sl.zoning.code}${sl.zoning.name ? ` ${sl.zoning.name}` : ''}`, portalLot.zone),
-    };
+    const lot = lotPrefill(store.project, portalLot);
     const user = (typeof window !== 'undefined' && window.__ps?.portal?.me?.user) || {};
     const prefill = { name: user.name || '', email: user.email || '', phone: user.phone || '' };
     track('ps_enquiry_open');
     return openEnquiry({
       layer, send, buildPdf: pdfBase64, project: store.project, lot, prefill,
-      source: portalOn() ? (state.portal.role === 'client' ? 'client' : 'builder') : 'public', orgName: portalOn() ? state.portal.orgName || '' : '', ...extra,
+      source: portalOn() ? (state.portal.role === 'client' ? 'client' : 'builder') : 'public', orgName: portalOn() ? state.portal.orgName || '' : '', ...rest,
     });
   }
 
@@ -428,6 +424,7 @@ export function createPremium(store, options = {}) {
     previewPdf,
     openEnquiry: openEnquiryForm,
     canEnquire,
+    canSendPlans,
     importPdf: () => runImportPdf(psApp(), { isEntitled, openUpgrade: () => flows.openUpgrade({ source: 'pdf-import' }), layer, config: cfg }),
     openRestore: (prefill) => flows.openRestore({ prefill }),
     refreshCredits,

@@ -124,7 +124,7 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
     ...(!isClient ? [['Save to house library', () => saveToLibrary()]] : []),
     ...(designMode ? [['Open full editor', () => { loc.href = fullEditorHref(loc.href); }]] : []),
     ...(!isClient && !designMode ? [['Design on a lot', () => { loc.href = designNewHref(loc.href); }]] : []),
-    ...(me.enquiry ? [['Send to JCE for engineering and DA plans', () => premium?.openEnquiry?.()]] : []),
+    ...(me.enquiry ? [['Send plans to a registered engineer', () => premium?.openEnquiry?.()]] : []),
     ...(!isClient ? [['Builder dashboard', () => { loc.href = portalUrl(); }]] : []),
     ['Sign out', signOut],
   ]);

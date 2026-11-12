@@ -6,6 +6,19 @@ import { el } from '../util.js';
 export const CONSENT_TEXT = 'I agree to my plans and details being sent to JCE Infrastructure Pty Ltd to prepare a quote';
 const NEEDS = [['engineering', 'Engineering'], ['da', 'DA plans'], ['both', 'Both engineering and DA plans']];
 
+/** The lot details for the form: the found lot (project.site.lot) first, then whatever the builder portal knows. The person fills in any gaps. */
+export function lotPrefill(project, portalLot = {}) {
+  const sl = project?.site?.lot || {};
+  const pick = (...v) => v.find((x) => x != null && String(x).trim() !== '') || '';
+  return {
+    address: pick(sl.address, portalLot.address),
+    lot: pick(sl.lotNumber, portalLot.lot),
+    dp: pick(sl.planLabel, portalLot.dp),
+    lga: pick(sl.lga, portalLot.lga),
+    zone: pick(sl.zoning?.code && `${sl.zoning.code}${sl.zoning.name ? ` ${sl.zoning.name}` : ''}`, portalLot.zone),
+  };
+}
+
 /**
  * openEnquiry({ layer, send, buildPdf, project, lot, source, orgName, prefill })
  *   send(body)    posts the enquiry; resolves { ok, reference }. Throws on failure (error.status 503 means not set up yet).
@@ -36,9 +49,9 @@ export function openEnquiry({ layer, send, buildPdf, project, lot = {}, source =
     ...NEEDS.map(([v, label]) => el('label', { style: { display: 'block', padding: '2px 0' } }, el('input', { type: 'radio', name: 'jce-need', value: v, checked: v === need, onchange: () => { need = v; } }), ` ${label}`)));
   const consent = el('input', { type: 'checkbox', id: 'jce-consent' });
   const status = el('p', { role: 'status', 'aria-live': 'polite', style: { margin: '8px 0 0' } });
-  const sendBtn = el('button', { class: 'psp-btn psp-btn--primary', type: 'submit' }, 'Send to JCE');
+  const sendBtn = el('button', { class: 'psp-btn psp-btn--primary', type: 'submit' }, 'Send to JCE Infrastructure');
   const form = el('form', { novalidate: true },
-    el('p', { style: { marginTop: 0 } }, `We send your design, the PDF plans and the lot details to JCE Infrastructure Pty Ltd. They will be in touch with a quote.${orgName ? ` Sent from ${orgName}.` : ''}`),
+    el('p', { style: { marginTop: 0 } }, `Your plans, the design and the lot details go to JCE Infrastructure Pty Ltd, civil engineers, for a quote on engineering and DA plans.${orgName ? ` Sent from ${orgName}.` : ''}`),
     f.name.row, f.phone.row, f.email.row, needRow, f.address.row,
     el('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 10px' } }, f.lot.row, f.dp.row, f.lga.row, f.zone.row),
     f.notes.row,
@@ -64,17 +77,16 @@ export function openEnquiry({ layer, send, buildPdf, project, lot = {}, source =
         project, pdfBase64, source, orgName,
       });
       form.replaceWith(el('div', { class: 'psp-enquiry-done' },
-        el('p', { style: { fontWeight: '600' } }, `Sent to JCE Infrastructure, reference ${out.reference}; JCE will be in touch.`),
-        el('p', null, 'Keep the reference in case you call or email them.'),
+        el('p', { style: { fontWeight: '600' } }, `Sent. Your reference is ${out.reference}. JCE will be in touch.`),
+        el('p', null, 'Keep the reference in case you call or email JCE.'),
         el('button', { class: 'psp-btn psp-btn--primary', type: 'button', onclick: () => modal.close('done') }, 'Close')));
     } catch (err) {
       sendBtn.disabled = false;
-      if (err?.status === 503 || err?.code === 'ENQUIRY_NOT_CONFIGURED') status.textContent = 'Sending to JCE is not set up yet. Please try again later.';
-      else if (err?.status === 429 || err?.code === 'RATE_LIMITED') status.textContent = 'You have sent several requests already. Please wait a while before sending another.';
+      if (err?.status === 429 || err?.code === 'RATE_LIMITED') status.textContent = 'You have sent several requests already. Please wait a while before sending another.';
       else if (err?.status === 502 && err?.details?.reference) status.textContent = `Your request was saved (reference ${err.details.reference}) but the email did not go through. JCE can still pick it up; please contact them quoting the reference.`;
       else status.textContent = err?.message || 'That could not be sent. Please try again.';
     }
   });
-  modal = layer.openModal({ title: 'Send to JCE for engineering and DA plans', body: () => form });
+  modal = layer.openModal({ title: 'Send your plans to a registered engineer', body: () => form });
   return modal;
 }

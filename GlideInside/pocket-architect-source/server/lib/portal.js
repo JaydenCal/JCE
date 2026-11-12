@@ -743,6 +743,28 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     return json((await pstore.listTrialRequests(status || null)).map(requestView));
   }
 
+  // Saved "send plans to a registered engineer" requests, newest first, without the PDF bytes (so the owner can read them before email is set up).
+  async function adminEnquiries(r) {
+    await adminAuth(r.request);
+    const rows = (await store.listEnquiries()).map((e) => ({
+      reference: e.reference, createdAt: e.createdAt, name: e.name, phone: e.phone, email: e.email, need: e.need, notes: e.notes || '', lot: e.lot || {},
+      source: e.source, orgName: e.orgName || '', projectName: e.projectName || '', pdfBytes: e.pdfBytes || 0, hasProject: !!(e.hasProject),
+      emailStatus: e.emailStatus, emailError: e.emailError ?? null, emailedAt: e.emailedAt ?? null,
+    }));
+    rows.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)) || String(b.reference).localeCompare(String(a.reference)));
+    return json(rows);
+  }
+  async function adminEnquiryPdf(r, ref) {
+    await adminAuth(r.request);
+    const row = (await store.listEnquiries()).find((e) => e.reference === ref);
+    const b64 = row ? await store.getEnquiryPdf(ref) : null;
+    if (!b64) throw new HttpError('NOT_FOUND', 'No plan set PDF is saved for that reference.');
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i += 1) bytes[i] = bin.charCodeAt(i);
+    return new Response(bytes, { status: 200, headers: { 'content-type': 'application/pdf', 'content-disposition': `attachment; filename="${ref}-plans.pdf"`, 'content-length': String(bytes.byteLength), 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' } });
+  }
+
   async function adminApprove(r, id) {
     await adminAuth(r.request);
     const q = await pstore.getTrialRequest(id);
@@ -1019,6 +1041,7 @@ export function createPortal({ store, pstore, config, fetchImpl, env = {}, now =
     ['POST', '/billing/setup', billingSetup], ['POST', '/billing/setup/confirm', billingSetupConfirm],
     ['POST', '/trial-request', trialRequest, { noCsrf: true }], ['GET', `/brand/${ID}`, brandBySlug, { noCsrf: true }], ['POST', `/admin/orgs/${ID}/slug`, adminSlug, { token: true }],
     ['GET', '/admin/trial-requests', adminRequests, { token: true }], ['POST', `/admin/trial-requests/${ID}/approve`, adminApprove, { token: true }], ['POST', `/admin/trial-requests/${ID}/decline`, adminDecline, { token: true }],
+    ['GET', '/admin/enquiries', adminEnquiries, { token: true }], ['GET', `/admin/enquiries/${ID}/pdf`, adminEnquiryPdf, { token: true }],
     ['GET', '/admin/orgs', adminOrgs, { token: true }], ['POST', `/admin/orgs/${ID}/extend-trial`, adminExtend, { token: true }], ['POST', `/admin/orgs/${ID}/convert`, adminConvert, { token: true }], ['POST', `/admin/orgs/${ID}/login-rate`, adminLoginRate, { token: true }], ['POST', `/admin/orgs/${ID}/brand-colours`, adminBrandColours, { token: true }], ['POST', `/admin/orgs/${ID}/reset-admin`, adminResetAdmin, { token: true }],
     ['POST', `/admin/orgs/${ID}/houses`, adminImportHouses, { token: true }],
   ].map(([method, p, handler, opts]) => ({ method, re: new RegExp(`^${p}$`), handler, opts: opts || {} }));

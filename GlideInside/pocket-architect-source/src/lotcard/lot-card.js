@@ -26,6 +26,7 @@ import { LOT_CARD_CSS } from './lot-card-css.js';
 import { icon } from '../ui/icons.js';
 import { listRoomTabs } from '../viewer3d/rooms.js';
 import { roomsPlanModel } from './rooms-plan.js';
+import { createSendToEngineer, SEND_LABEL } from './send-engineer.js';
 
 const STYLE_ID = 'lc-style';
 const COMPACT_W = 980;
@@ -56,11 +57,14 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   const bEdit = h('button', { class: 'lc-btn', type: 'button', dataset: { ps: 'lc-edit' }, onclick: () => (onEdit ? onEdit() : store.setUI({ view: '2d' })) }, 'Edit floor plan');
   const bPdf = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf' }, onclick: () => planSetPdf('site') }, 'Site plan PDF');
   const bPdfH = h('button', { class: 'lc-btn lc-gh', type: 'button', dataset: { ps: 'lc-pdf-house' }, onclick: () => planSetPdf('house') }, 'House plan PDF');
+  // Under the PDF links: send the plans to a registered engineer (hidden until the premium layer is loaded and sending is allowed).
+  const bSend = h('button', { class: 'lc-btn lc-sendbtn', type: 'button', hidden: true, dataset: { ps: 'lc-send-engineer' }, onclick: () => engineer.open() }, SEND_LABEL);
+  const sendRow = E('lc-send', 'div', { hidden: true }, bSend);
   const fit = E('lc-fit', 'div', { role: 'status', 'aria-live': 'polite', dataset: { ps: 'lc-fit' } });
   const zoneNote = E('lc-zone', 'div', { role: 'note', hidden: true, dataset: { ps: 'lc-zone-note' } });
   const more = h('button', { class: 'lc-more', type: 'button', 'aria-expanded': 'false', onclick: () => { card.classList.toggle('is-open'); more.setAttribute('aria-expanded', String(card.classList.contains('is-open'))); sizeInset(); } }, 'Details');
   const tabsEl = E('lc-tabs', 'div', { role: 'tablist', 'aria-label': 'Rooms', dataset: { ps: 'lc-tabs' } });
-  const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-sp lc-sp-rooms', 'div', null, E('lc-k', 'span', null, 'Rooms'), tabsEl), E('lc-acts', 'div', null, bWalk, bEdit, E('lc-links', 'span', null, bPdf, E('lc-dotsep', 'span', { 'aria-hidden': 'true' }, '\u00b7'), bPdfH)), fit, zoneNote);
+  const body = E('lc-body', 'div', null, stats, E('lc-sp', 'div', null, E('lc-k', 'span', null, 'Colours'), chips), E('lc-sp lc-sp-rooms', 'div', null, E('lc-k', 'span', null, 'Rooms'), tabsEl), E('lc-acts', 'div', null, bWalk, bEdit, E('lc-links', 'span', null, bPdf, E('lc-dotsep', 'span', { 'aria-hidden': 'true' }, '\u00b7'), bPdfH)), sendRow, fit, zoneNote);
   const card = E('lc-card lc-glass', 'section', { 'aria-label': 'House design', dataset: { ps: 'lot-card' } }, E('lc-hd', 'div', null, E('lc-hd-in', 'div', null, title, sub), more), body);
 
   const pgP = h('button', { type: 'button', 'aria-label': 'Previous design', onclick: () => step(-1) }, '‹');
@@ -111,6 +115,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     ['Open full editor', () => (onFullEditor || onEdit)?.()],
     ['Site plan PDF', () => planSetPdf('site')],
     ['House plan PDF', () => planSetPdf('house')],
+    [SEND_LABEL, () => engineer.open()],
     ['Enlarge top view', () => toggle2d()],
   ] : [];
   const menuList = embed ? h('div', { class: 'lc-menu-list lc-glass', role: 'menu', hidden: true }, ...menuItems.map(([label, fn]) => h('button', { class: 'lc-menu-item', type: 'button', role: 'menuitem', onclick: () => { menuList.hidden = true; menuBtn.setAttribute('aria-expanded', 'false'); fn(); paintMenu(); } }, label))) : null;
@@ -183,6 +188,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
 
   const app = () => getApp() || {};
   const builderName = () => app().builder?.name || '';
+  const engineer = createSendToEngineer({ getApp: app, getProject: () => store.project, getLot: () => lotOf(store.project), getBuilderName: builderName });
   const uiPlaced = () => store.ui.placedDesign || null;
 
   function lotKey() {
@@ -274,6 +280,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
       if (bytes instanceof Blob || bytes instanceof Uint8Array || bytes instanceof ArrayBuffer) {
         const slug = String(store.project.placedHouse?.name || store.project.name || 'Design').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'Design';
         downloadBlob(bytes instanceof Blob ? bytes : new Blob([bytes], { type: 'application/pdf' }), out?.filename || `${kind === 'house' ? 'House_Plan' : 'Site_Plan'}_${slug}.pdf`);
+        engineer.offerAfterExport(kind);
       }
     } catch (e) {
       toast(e?.message || 'The PDF could not be made.', { kind: 'error' });
@@ -344,6 +351,9 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     viewerHost.classList.toggle('lc-full', show && view === '3d');
     layoutClasses();
     if (!show) { getViewer()?.setInset?.({}); app().editor?.setInset?.({}); return; }
+    const canSend = engineer.available();
+    bSend.hidden = !canSend;
+    sendRow.hidden = !canSend;
     loadDesigns();
 
     const idx = currentIndex(designs, p, uiPlaced());

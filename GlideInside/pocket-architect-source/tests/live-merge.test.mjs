@@ -180,7 +180,7 @@ test('migrations: a fresh database built by the migrations has the same shape as
   assert.throws(() => live.exec(rd(`${MIG}0011_org_slug.sql`)), /duplicate column/i, '0011 adds orgs.slug once');
   assert.throws(() => live.exec(rd(`${MIG}0012_project_staff_edits.sql`)), /duplicate column/i, '0012 adds the portal_projects.edited_by_* columns once');
   // numbering is continuous, so "d1 migrations apply" runs them in the intended order
-  assert.deepEqual(migrationFiles().map((f) => f.slice(0, 4)), ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012']);
+  assert.deepEqual(migrationFiles().map((f) => f.slice(0, 4)), ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013']);
 });
 
 test('migrations: nothing destructive in any release migration', opts, () => {
@@ -222,6 +222,10 @@ test('the release store runs its queries on the migrated live database', opts, a
   assert.equal(await store.getSiteCache('k', Date.now()), 'v');
   await store.saveEnquiry({ id: 'e1', reference: 'GI-AAAAA', createdAt: 'x', name: 'n', phone: 'p', email: 'e@x.co', need: 'da', lot: {} });
   assert.equal((await store.listEnquiries()).length, 1);
+  const bigPdf = 'JVBERi0'.padEnd(1_200_000, 'A'); // chunked across D1 rows (0013_enquiry_pdfs)
+  await store.saveEnquiryPdf('GI-AAAAA', bigPdf);
+  assert.equal(await store.getEnquiryPdf('GI-AAAAA'), bigPdf);
+  assert.equal(await store.getEnquiryPdf('GI-ZZZZZ'), null);
   assert.equal((await store.getSharedProject(LIVE_SHARE)).editKeyHash, sha256('live-edit-key'));
   assert.equal(await store.hasWebhookEvent('refund:pi_ref'), true);
 });

@@ -57,7 +57,7 @@ export function createTopbarUI({ root, config, getState, actions }) {
     }
     if (st.enquiry && actions.enquiry) {
       menu.append(el('button', { class: 'psp-menu-item', type: 'button', role: 'menuitem', tabindex: '-1', dataset: { type: 'enquiry' }, onclick: () => { closeMenu(false); actions.enquiry(); } },
-        el('span', null, 'Send to JCE for engineering and DA plans'), icon('check', 16), el('small', null, 'Get a quote from JCE Infrastructure')));
+        el('span', null, 'Send plans to a registered engineer'), icon('check', 16), el('small', null, 'Quote from JCE Infrastructure, civil engineers')));
     }
     if (st.portal?.watermark) menu.append(trialNote());
     const info = tokenInfo(st.token);
