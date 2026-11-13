@@ -7,6 +7,6 @@ const root = resolve(dirname(new URL(import.meta.url).pathname), '..');
 const out = resolve(root, '../website-live/portal/src');
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
-const files = ['src/portal', 'src/config.js', 'src/ui/dom.js', 'src/ui/design-file.js', 'src/model/schema.js', 'src/premium/api.js'];
+const files = ['src/portal', 'src/config.js', 'src/ui/dom.js', 'src/ui/design-file.js', 'src/model/schema.js', 'src/commercial/schema.js', 'src/commercial/rules.js', 'src/premium/api.js'];
 for (const f of files) cpSync(resolve(root, f), resolve(out, f.replace(/^src\//, '')), { recursive: true, filter: (s) => !/client-mode|placement|app-strip/.test(s) });
 console.log(`Synced ${files.length} entries to ${out}`);

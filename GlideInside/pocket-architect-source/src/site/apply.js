@@ -6,6 +6,7 @@ import { buildSiteLot, underlayFor, buildContours, buildTerrain, defaultFloorRL 
 import { faceGarageAngle, buildingHull, orientedBox, roadReserve, AUTO_LOT_DP } from './lotplan.js';
 import { rotateHouse, translateHouse } from '../model/placement.js';
 import * as G from '../model/geometry.js';
+import { offerCommercial } from '../commercial/mode.js';
 import { saveImage, loadBitmap, removeImage, underlayKey } from '../editor2d/underlay.js';
 
 // Move the whole design so the middle of its footprint sits on the lot centroid (plan 0, 0). Only for the first lot.
@@ -116,6 +117,7 @@ export async function applySiteLookup(store, selection, { onStep, signal, fetchI
   // Next the person confirms which edges are the street frontage (setbacks depend on it).
   store.setUI({ view: planView(store.ui.view), frontageEdit: true });
   // The lot is on screen: the ground levels join it when they arrive (or never, silently, if the service fails or is over 30 s).
+  try { offerCommercial(store); } catch { /* the offer is a convenience */ }
   res.contoursPromise?.then((c) => addContours(store, lot, c)).catch(() => {});
   return { lot, warnings };
 }

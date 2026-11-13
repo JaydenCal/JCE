@@ -1,10 +1,13 @@
+import { normaliseCommercial } from '../commercial/schema.js';
+
 // Plan Studio project schema, version 1. All lengths in millimetres, angles in degrees.
 // Plan coordinates: x to the right, y down the screen. See docs/SCOPE.md section 9.
 
 // Version 2 adds site.lot (the real block from "Find my block", or null). Version 1 projects load unchanged with site.lot = null.
 export const SCHEMA_VERSION = 2;
 
-export const PROJECT_TYPES = ['house', 'unit', 'shed', 'extension'];
+export const PROJECT_TYPES = ['house', 'unit', 'shed', 'extension', 'commercial'];
+// Commercial mode (project.mode === 'commercial' with project.commercial, src/commercial/) is additive: SCHEMA_VERSION stays 2.
 export const STATUS = ['new', 'existing', 'demolish'];
 export const ROOF_TYPES = ['hip', 'gable', 'skillion', 'flat'];
 export const OPENING_KINDS = ['window', 'door', 'sliding_door', 'garage_door', 'roller_door', 'opening'];
@@ -82,7 +85,7 @@ export function uid(prefix = 'e') {
 const pt = (p) => ({ x: Number(p.x), y: Number(p.y) });
 
 export function roofDefaults(type) {
-  return { enabled: true, ...(type === 'shed' ? DEFAULTS.roof.shed : DEFAULTS.roof.house) };
+  return { enabled: true, ...(type === 'shed' || type === 'commercial' ? DEFAULTS.roof.shed : DEFAULTS.roof.house) };
 }
 
 export function tankSize(capacityL) {
@@ -112,7 +115,7 @@ export function createLevel(opts = {}) {
 export function createProject(opts = {}) {
   const type = PROJECT_TYPES.includes(opts.type) ? opts.type : 'house';
   const now = new Date().toISOString();
-  const shed = type === 'shed';
+  const shed = type === 'shed' || type === 'commercial';
   return {
     schema: SCHEMA_VERSION,
     id: opts.id || uid('p'),
@@ -220,7 +223,7 @@ export function migrate(input) {
   if (!p.schema) throw new Error('Not a Plan Studio project file (no schema version)');
   if (p.schema > SCHEMA_VERSION) throw new Error('This project was saved by a newer version of Plan Studio');
   p.settings = { ...createProject({ type: p.type }).settings, ...(p.settings || {}) };
-  p.finishes = { ...structuredClone(p.type === 'shed' ? DEFAULT_FINISHES_SHED : DEFAULT_FINISHES), ...(p.finishes || {}) };
+  p.finishes = { ...structuredClone(p.type === 'shed' || p.type === 'commercial' ? DEFAULT_FINISHES_SHED : DEFAULT_FINISHES), ...(p.finishes || {}) };
   p.titleBlock = { ...defaultTitleBlock(), ...(p.titleBlock || {}) };
   p.drawing = { scale: 'auto', paper: 'A3', ...(p.drawing || {}) };
   p.site = { northDeg: 0, underlay: null, tanks: [], lot: null, ...(p.site || {}) };
@@ -231,6 +234,8 @@ export function migrate(input) {
     for (const key of ['walls', 'openings', 'rooms', 'furniture', 'stairs']) if (!Array.isArray(l[key])) l[key] = [];
     l.roof = { ...roofDefaults(p.type), ...(l.roof || {}) };
   }
+  if (p.mode === 'commercial') p.commercial = normaliseCommercial(p.commercial);
+  else if (p.mode) delete p.mode;
   return p;
 }
 

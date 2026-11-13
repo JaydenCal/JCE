@@ -4,6 +4,8 @@
 
 import { siteLotSetbacks } from './setbacks.js';
 import { loadRuleSet } from './setback-data.js';
+import { computeCommercialSetbacks } from '../commercial/setbacks.js';
+import { effectiveClass } from '../commercial/zones.js';
 
 const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
 const r2 = (v) => Math.round(v * 100) / 100;
@@ -48,19 +50,29 @@ export function setbackInputsFor(project, lot) {
   return {
     storeys: storeys.value, wallHeightM: wall.value, buildingHeightM: height.value, streetType: ov.streetType || null,
     auto: { storeys: storeys.auto, wallHeightM: wall.auto, buildingHeightM: height.auto },
+    // Commercial mode uses its own rule path (never the housing fallbacks); the key follows the mode and the zone class in use.
+    mode: project.mode === 'commercial' ? `commercial:${effectiveClass(project) || ''}` : null,
   };
 }
 
 // Change key: when this is the same, the stored setbacks are still right.
 export function setbackKey(lot, inputs) {
   return JSON.stringify([lot.origin?.e, lot.origin?.n, lot.lotLabel, lot.lga, lot.state, lot.zoning?.code || null, lot.frontEdges || [], !!lot.frontageConfirmed,
-    inputs.storeys, inputs.wallHeightM, inputs.buildingHeightM, inputs.streetType, lot.boundary?.length || 0]);
+    inputs.storeys, inputs.wallHeightM, inputs.buildingHeightM, inputs.streetType, lot.boundary?.length || 0, inputs.mode, lot.zoning?.name || null]);
 }
 
 /** Compute for one lot. Returns { setbacks, envelope, attempts, key, error? }. Never throws. */
 export async function computeSetbacks(project, lot, { fetchImpl = null, base = null } = {}) {
   const inputs = setbackInputsFor(project, lot);
   const key = setbackKey(lot, inputs);
+  if (project.mode === 'commercial') {
+    try {
+      const r = await computeCommercialSetbacks(project, lot, { fetchImpl, base });
+      return { setbacks: r.setbacks ? { ...r.setbacks, designInputs: null } : null, envelope: r.envelope, attempts: r.attempts || [], key, councilNotFound: r.councilNotFound };
+    } catch (e) {
+      return { setbacks: null, envelope: null, attempts: [{ basis: null, reason: e?.message || 'Setback data could not be loaded.' }], key, error: e?.message || 'failed' };
+    }
+  }
   try {
     const ruleSet = await loadRuleSet(lot, { fetchImpl, base });
     const design = { storeys: inputs.storeys ?? undefined, wallHeightM: inputs.wallHeightM ?? undefined, buildingHeightM: inputs.buildingHeightM ?? undefined };
