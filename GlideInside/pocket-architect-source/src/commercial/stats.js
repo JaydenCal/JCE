@@ -2,7 +2,7 @@
 
 import { layoutUnits, mezzanineOf } from './layout.js';
 import { parkingLayout } from './parking.js';
-import { DEFAULT_PARKING_RATE } from './rules.js';
+import { DEFAULT_PARKING_RATE, DEFAULT_OFFICE_RATE } from './rules.js';
 
 const r1 = (v) => Math.round(v * 10) / 10;
 
@@ -24,10 +24,12 @@ export function commercialStats(project) {
   const mix = new Map();
   let ground = 0;
   let mezz = 0;
+  let office = 0;
   for (const u of units) {
     const label = `${(u.w / 1000).toFixed(1)} x ${(u.d / 1000).toFixed(1)} m`;
     mix.set(label, (mix.get(label) || 0) + 1);
     ground += (u.w * u.d) / 1e6;
+    if (u.spec.office.enabled) office += (u.w * Math.min(u.spec.office.depthMm, u.d)) / 1e6;
     const m = mezzanineOf(u.spec);
     if (m.enabled) mezz += m.areaM2;
   }
@@ -35,6 +37,9 @@ export function commercialStats(project) {
   const lotM2 = lotAreaM2(project.site?.lot);
   const rate = Number.isFinite(c?.rates?.parkingPerM2Gfa) ? c.rates.parkingPerM2Gfa : DEFAULT_PARKING_RATE;
   const park = parkingLayout(c);
+  const officeRate = Number.isFinite(c?.rates?.officePerM2) ? c.rates.officePerM2 : DEFAULT_OFFICE_RATE;
+  const split = office > 0 && c?.rates?.officeSeparate !== false;
+  const required = split ? Math.ceil((gfa - office) * rate - 1e-9) + Math.ceil(office * officeRate - 1e-9) : Math.ceil(gfa * rate - 1e-9);
   return {
     units: units.length,
     mix: [...mix].map(([label, count]) => ({ label, count })),
@@ -42,8 +47,9 @@ export function commercialStats(project) {
     mezzGfaM2: r1(mezz),
     gfaM2: r1(gfa),
     footprintM2: r1(ground),
+    officeM2: r1(office),
     lotM2: lotM2 == null ? null : Math.round(lotM2),
     coveragePct: lotM2 ? r1((ground / lotM2) * 100) : null,
-    parking: { ratePerM2: rate, required: Math.ceil(gfa * rate - 1e-9), provided: park.totalBays, accessible: park.accessible },
+    parking: { ratePerM2: rate, officeRatePerM2: officeRate, officeSplit: split, required, provided: park.totalBays, accessible: park.accessible },
   };
 }

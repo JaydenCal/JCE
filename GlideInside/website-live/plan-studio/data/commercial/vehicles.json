@@ -1,0 +1,349 @@
+{
+  "_meta": {
+    "dataset": "commercial-rules",
+    "generated": "13/11/2026",
+    "status_legend": {
+      "VERIFIED_PRIMARY": "Read from the primary or official text itself (NCC page, council DCP text in the JCE library)",
+      "VERIFIED_SECONDARY": "Read from a council guideline, government agency page or other document that quotes a standard; the owner must check against the standard",
+      "UNVERIFIED": "Could not be confirmed from an accessible primary or official source; do not rely on the value"
+    },
+    "topic": "AS/NZS 2890.1 car parking and AS 2890.2 commercial vehicle design data"
+  },
+  "standards_status": {
+    "as_nzs_2890_1": {
+      "value": "Edition 2004 (with Amendment 1) is the current revision; a draft revision proposing larger bays was dropped (Standards Australia update, March 2026)",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.standards.org.au/news/revised-standard-recommends-larger-parking-bays-across-the-country",
+      "clause": "n/a",
+      "note": "Both the standard and its dimension tables are paywalled; a public preview shows front matter only (https://www.saiglobal.com/PDFTemp/Previews/OSH/as/as2000/2800/2890.1-2004(+A1).pdf)."
+    },
+    "as_2890_2": {
+      "value": "AS 2890.2:2018 (supersedes 2002); one council guide and one consultancy blog still cite 2002 values",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://store.standards.org.au/product/as-2890-2-2018",
+      "clause": "n/a",
+      "note": "Values below come from council documents quoting the standard. Edition used by each is stated where known."
+    }
+  },
+  "user_classes": {
+    "employee_parking_industrial": {
+      "value": "User Class 1 or 1A (long-term staff parking)",
+      "status": "UNVERIFIED",
+      "source_url": "https://www.mltraffic.com.au/articles/as-2890-1-car-park-design-the-definitive-guide-to-australian-compliance-2026/",
+      "clause": "AS/NZS 2890.1 Table 1.1 (not read)",
+      "note": "Consultancy blog links Class 1/1A with staff parking. Table 1.1 itself not retrieved."
+    },
+    "visitor_customer_parking": {
+      "value": "User Class 2 (medium term) or 3 / 3A (short term, higher turnover)",
+      "status": "UNVERIFIED",
+      "source_url": "same",
+      "clause": "AS/NZS 2890.1 Table 1.1 (not read)"
+    },
+    "council_practice_visitor_bay": {
+      "value": {
+        "width_m": 2.6,
+        "length_m": 5.4
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.cumberland.nsw.gov.au/sites/default/files/inline-files/Parking-and-Loading.pdf",
+      "clause": "Cumberland DCP Parking and Loading s3.4 D3 note 2, p6",
+      "note": "Council minimum for visitor bays."
+    }
+  },
+  "bay_90_degree": {
+    "standard_bay_2_4_by_5_4": {
+      "value": {
+        "width_m": 2.4,
+        "length_m": 5.4,
+        "basis": "B85 front door open service level; length 5.2 m B99 plus 0.2 m"
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://images.carexpert.com.au/app/uploads/2023/04/Australian-Car-Park-Standard-Document-AS-NZS-28901-2004.pdf (extract of AS/NZS 2890.1:2004 Appendix B)",
+      "clause": "Appendix B Table B1, cl B4.2",
+      "note": "Appendix extract; Table 2.2 not read."
+    },
+    "bay_width_all_doors_open": {
+      "value": {
+        "width_m": 2.6
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "same",
+      "clause": "Table B1"
+    },
+    "staff_bay_council_example": {
+      "value": {
+        "width_m": 2.4,
+        "length_m": 5.4
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.cumberland.nsw.gov.au/sites/default/files/inline-files/Parking-and-Loading.pdf",
+      "clause": "Cumberland s8.1.1 D2, p23"
+    },
+    "extra_clearance_beside_wall_or_column": {
+      "value": {
+        "extra_m": 0.3
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://images.carexpert.com.au/app/uploads/2023/04/Australian-Car-Park-Standard-Document-AS-NZS-28901-2004.pdf",
+      "clause": "cl B4.1",
+      "note": "Where a wall, column, shrubs or landscaping adjoins a space."
+    },
+    "front_overhang_length_note": {
+      "value": "Length may reduce to 4.8 m with a front overhang provision (blog)",
+      "status": "UNVERIFIED",
+      "source_url": "https://linemarkingaustralia.com.au/blog/carpark-line-marking-rules-australia-as-nzs-2890",
+      "clause": "see source"
+    }
+  },
+  "aisle_90_degree": {
+    "bay_2_4": {
+      "value": {
+        "aisle_m": 6.2
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://images.carexpert.com.au/app/uploads/2023/04/Australian-Car-Park-Standard-Document-AS-NZS-28901-2004.pdf ; https://linemarkingaustralia.com.au/blog/carpark-line-marking-rules-australia-as-nzs-2890",
+      "clause": "Appendix B Table B2"
+    },
+    "bay_2_5": {
+      "value": {
+        "aisle_m": 5.8
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "same",
+      "clause": "Appendix B Table B2"
+    },
+    "bay_2_6": {
+      "value": {
+        "aisle_m": 5.8,
+        "note": "Table B2 shows 5.4 m for one-way, but 90 degree aisles are always two-way so 5.8 m governs"
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://images.carexpert.com.au/app/uploads/2023/04/Australian-Car-Park-Standard-Document-AS-NZS-28901-2004.pdf",
+      "clause": "Appendix B Table B2 note"
+    },
+    "class_3A_busy_retail": {
+      "value": {
+        "aisle_m": 6.6
+      },
+      "status": "UNVERIFIED",
+      "source_url": "https://linemarkingaustralia.com.au/blog/carpark-line-marking-rules-australia-as-nzs-2890",
+      "clause": "blog only"
+    },
+    "note": "Aisle widths follow bay width, not one-way or two-way use (blog)."
+  },
+  "end_bay_and_dead_end": {
+    "dead_end_aisle_extension": {
+      "value": {
+        "extension_m": 1.0,
+        "text": "Aisle extends at least 1 m beyond the last bay; where a dead end cannot be avoided allow for forward exit"
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.mltraffic.com.au/articles/as-2890-1-car-park-design-the-definitive-guide-to-australian-compliance-2026/ ; Melton Car Parking Guidelines 2015 p19 (dead end aisle length max six bays plus 1 m)",
+      "clause": "AS/NZS 2890.1 cl 2.4.2 (clause number not confirmed)",
+      "note": "Standard text not read."
+    },
+    "end_bay_next_to_wall_or_fence": {
+      "value": {
+        "widen_by_mm": 300
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.melton.vic.gov.au/files/assets/public/services/building-planning-amp-transport/engineering/infrastructure-planning/car_parking_guidelines_-_2015.pdf",
+      "clause": "p19 Figure 18",
+      "note": "Last space widened by 300 mm where bounded by a wall or fence. Council guideline."
+    }
+  },
+  "b85_b99": {
+    "b99_length_m": {
+      "value": 5.2,
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://images.carexpert.com.au/app/uploads/2023/04/Australian-Car-Park-Standard-Document-AS-NZS-28901-2004.pdf",
+      "clause": "cl B4.2"
+    },
+    "b99_min_turn_radius_m": {
+      "value": 6.3,
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.bayside.nsw.gov.au/sites/default/files/2023-04/traffic_parking_and_access_technical_specification.PDF",
+      "clause": "Bayside s6.2.2(b)",
+      "note": "B85 min turn radius 5.8 m (same source)."
+    },
+    "tamworth_requirement": {
+      "value": "Manoeuvring areas must accommodate a B99 vehicle under AS2890.1",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 3, Industrial Parking, p40"
+    }
+  },
+  "design_vehicles_as_2890_2": {
+    "_warning": "Lengths and heights are from a council technical specification quoting AS 2890.2 Table. Turning radii were not available from any reliable source and conflict between sources; they are UNVERIFIED. Owner must read AS 2890.2:2018 Section 2 before use.",
+    "SRV": {
+      "length_m": {
+        "value": 6.4,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "https://www.bayside.nsw.gov.au/sites/default/files/2023-04/traffic_parking_and_access_technical_specification.PDF",
+        "clause": "Bayside s3.3.1 Table 2"
+      },
+      "width_m": {
+        "value": 2.3,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "same",
+        "clause": "Table 2"
+      },
+      "height_m": {
+        "value": 3.5,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "same",
+        "clause": "Table 2"
+      },
+      "turning_radius_m": {
+        "value": null,
+        "status": "UNVERIFIED",
+        "source_url": "candidates: 8.25 (turn template notes https://dafinder.blob.core.windows.net/dadocuments/DOCs/TURNTEMPLATE-202443248-NOTES-01.pdf), 10.0 (mltraffic blog, which also gives a different SRV length of 8.8 m)",
+        "clause": "AS 2890.2 Table 2.1 not read",
+        "note": "Conflicting."
+      }
+    },
+    "MRV": {
+      "length_m": {
+        "value": 8.8,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "https://www.bayside.nsw.gov.au/sites/default/files/2023-04/traffic_parking_and_access_technical_specification.PDF",
+        "clause": "Table 2"
+      },
+      "width_m": {
+        "value": 2.5,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "same",
+        "clause": "Table 2"
+      },
+      "height_m": {
+        "value": 4.5,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "same",
+        "clause": "Table 2 (turn template notes show 3.633 m; conflict)"
+      },
+      "turning_radius_m": {
+        "value": null,
+        "status": "UNVERIFIED",
+        "source_url": "candidate 10.0 (turn template notes)",
+        "clause": "AS 2890.2 not read"
+      }
+    },
+    "HRV": {
+      "length_m": {
+        "value": 12.5,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "https://www.bayside.nsw.gov.au/sites/default/files/2023-04/traffic_parking_and_access_technical_specification.PDF ; https://www.mltraffic.com.au/articles/as-2890-2-explained-a-developers-guide-to-commercial-vehicle-facilities/",
+        "clause": "Bayside Table 2; blog"
+      },
+      "width_m": {
+        "value": 2.5,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "same",
+        "clause": "Table 2"
+      },
+      "height_m": {
+        "value": 4.5,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "same",
+        "clause": "Bayside Table 2 (turn template notes show 4.3 m)"
+      },
+      "turning_radius_m": {
+        "value": null,
+        "status": "UNVERIFIED",
+        "source_url": "candidates: 12.5 (turn template notes), 13.0 (mltraffic blog)",
+        "clause": "AS 2890.2 not read"
+      }
+    },
+    "AV": {
+      "length_m": {
+        "value": 19.0,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "https://www.mltraffic.com.au/articles/as-2890-2-explained-a-developers-guide-to-commercial-vehicle-facilities/ ; Griffith DCP No 20 cl 1.9.7 (semi-trailer dock depth 19.0 m)",
+        "clause": "blog; Griffith",
+        "note": "Bayside lists 20.0 m; the 2002 edition is generally quoted as 19.0 m. Conflict."
+      },
+      "width_m": {
+        "value": 2.5,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "https://www.bayside.nsw.gov.au/sites/default/files/2023-04/traffic_parking_and_access_technical_specification.PDF",
+        "clause": "Table 2"
+      },
+      "height_m": {
+        "value": 4.5,
+        "status": "VERIFIED_SECONDARY",
+        "source_url": "same",
+        "clause": "Table 2 (turn template notes show 4.3 m)"
+      },
+      "turning_radius_m": {
+        "value": null,
+        "status": "UNVERIFIED",
+        "source_url": "candidates: 13.0 (blog), 15.0 (turn template notes)",
+        "clause": "AS 2890.2 not read"
+      }
+    },
+    "B_double": {
+      "length_m": {
+        "value": 26.0,
+        "status": "UNVERIFIED",
+        "source_url": "https://dafinder.blob.core.windows.net/dadocuments/DOCs/TURNTEMPLATE-202443248-NOTES-01.pdf",
+        "clause": "turn template notes",
+        "note": "No standard cited."
+      }
+    },
+    "tamworth_and_gunnedah_requirement": {
+      "value": "Traffic assessment must show safe on-site manoeuvring for the largest design vehicle; all vehicles must enter and exit in forward direction",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf) ; Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Tamworth Step 3 Traffic and Access p40; Gunnedah DCP 2025 F.3(d) p58 and B.2(c),(d) p14"
+    },
+    "camden_design_vehicle_rule_example": {
+      "value": "GFA under 300 m2: MRV minimum; over 300 m2: HRV minimum; consider B-double",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://dcp.camden.nsw.gov.au/employment-zones-development/industrial-land-uses/parking-and-access",
+      "clause": "Camden DCP 5.5.11 Table 5-4",
+      "note": "Not a Tamworth or Gunnedah rule. Neither Tamworth nor Gunnedah DCP states a design vehicle by GFA; the tool should let the user choose."
+    }
+  },
+  "service_area_and_loading": {
+    "griffith_dcp_loading_bay_minimums": {
+      "value": {
+        "single_dock_width_m": 3.5,
+        "multi_dock_width_per_bay_m": 4.0,
+        "dock_depth_non_semi_m": 12.5,
+        "dock_depth_semi_trailer_m": 19.0,
+        "dock_handling_area_depth_m": 3.0,
+        "free_clearance_over_dock_and_movement_area_m": 3.6
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.griffith.nsw.gov.au/files/sharedassets/public/v/1/cm-documents/dcp-no.-20-parking-2011.pdf",
+      "clause": "Griffith DCP No 20 Parking 2011 cl 1.9.7",
+      "note": "Regional NSW council, written against AS 2890.2:2002."
+    },
+    "cumberland_b_double_loading_area": {
+      "value": {
+        "length_m": 25,
+        "width_m": 3.5
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.cumberland.nsw.gov.au/sites/default/files/inline-files/Parking-and-Loading.pdf",
+      "clause": "Cumberland s7.0 note, p22"
+    },
+    "mltraffic_blog_loading_bay": {
+      "value": {
+        "width_m": "3.5 generally, up to 4.0 for larger vehicles",
+        "vertical_clearance_hrv_typical_m": 4.5,
+        "max_ramp_grade": "1 in 4 typical"
+      },
+      "status": "UNVERIFIED",
+      "source_url": "https://www.mltraffic.com.au/articles/as-2890-2-explained-a-developers-guide-to-commercial-vehicle-facilities/",
+      "clause": "blog",
+      "note": "Blog; page states internal inconsistency on edition."
+    },
+    "as_2890_2_service_bay_dimensions_section": {
+      "value": "AS 2890.2 Section 4.2 Dimensions of service bays (values not retrievable; preview shows only the contents list)",
+      "status": "UNVERIFIED",
+      "source_url": "https://www.saiglobal.com/PDFTemp/Previews/OSH/as/as2000/2800/28902.pdf",
+      "clause": "Section 4.2"
+    }
+  }
+}

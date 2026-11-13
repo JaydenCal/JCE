@@ -1,0 +1,272 @@
+{
+  "_meta": {
+    "dataset": "commercial-rules",
+    "generated": "13/11/2026",
+    "status_legend": {
+      "VERIFIED_PRIMARY": "Read from the primary or official text itself (NCC page, council DCP text in the JCE library)",
+      "VERIFIED_SECONDARY": "Read from a council guideline, government agency page or other document that quotes a standard; the owner must check against the standard",
+      "UNVERIFIED": "Could not be confirmed from an accessible primary or official source; do not rely on the value"
+    },
+    "topic": "NCC 2022 Volume One (NSW) provisions relevant to mezzanines in Class 7b and 8 buildings"
+  },
+  "edition_note": "NCC 2022 in force in NSW until adoption of NCC 2025 (reported as 1 May 2027). NSW variations exist for D3 (see NCC_D3 source).",
+  "definitions": {
+    "mezzanine": {
+      "value": "An intermediate floor within a room",
+      "status": "UNVERIFIED",
+      "source_url": "https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/1-definitions/glossary",
+      "clause": "Schedule 3 Definitions, Mezzanine",
+      "note": "Definition entry itself not retrieved; wording is the long-standing NCC definition and is shown as UNVERIFIED. The Storey definition read does exclude mezzanines."
+    },
+    "storey_excludes_mezzanine": {
+      "value": "A storey is the space between one floor level and the next above (or the ceiling or roof if none), but not a space containing only a lift shaft, stairway, meter room, sanitary space, parking for not more than three vehicles or combinations of these, or a mezzanine",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/1-definitions/glossary",
+      "clause": "Schedule 3 Definitions, Storey",
+      "note": "Read through a summary of the glossary page; the Storey definition is the basis for the exclusion but C2D3(4) sets when a mezzanine counts."
+    },
+    "floor_area_includes_mezzanine": {
+      "value": "Floor area of a storey includes the area of a mezzanine within the storey, measured within the finished surfaces of external walls",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/1-definitions/glossary",
+      "clause": "Schedule 3 Definitions, Floor area",
+      "note": "Relevant to GFA based parking rates."
+    }
+  },
+  "storey_counting": {
+    "single_mezzanine_counts_as_storey": {
+      "value": {
+        "rule": "A mezzanine is regarded as a storey in that part of the building if its floor area exceeds 200 m2 or one-third of the floor area of the room in which it is situated, whichever is the lesser",
+        "area_threshold_m2": 200,
+        "fraction_of_room": "1/3",
+        "use_lesser_of": true
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c2-fire-resistance-and-stability",
+      "clause": "C2D3(4)(a)",
+      "note": "Read through the ABCB mirror page. A room of 300 m2 gives a threshold of 100 m2; a room of 900 m2 gives 200 m2."
+    },
+    "multiple_mezzanines": {
+      "value": "Two or more mezzanines at or near the same level count as one storey if their combined floor area exceeds the same threshold",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c2-fire-resistance-and-stability",
+      "clause": "C2D3(4)(b)"
+    },
+    "pharmout_cross_check": {
+      "value": "Consultancy article gives the same 200 m2 or one-third rule",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.pharmout.net/news/rise-in-storeys-definition-of-storeys-and-how-to-calculate/",
+      "clause": "n/a"
+    },
+    "class_7_8_high_storey": {
+      "value": "A storey with average internal height over 6 m counts as one storey if it is the only storey above ground, otherwise as two storeys",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c2-fire-resistance-and-stability",
+      "clause": "C2D3(3)"
+    },
+    "rise_in_storeys_general": {
+      "value": "Greatest number of storeys at any part of the external walls plus storeys in roof space; top plant-only storey and storeys with ceiling not more than 1 m above average ground level excluded",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c2-fire-resistance-and-stability",
+      "clause": "C2D3(1),(2)"
+    },
+    "minimum_type_of_construction_class_7_8": {
+      "value": {
+        "1_storey": "Type C",
+        "2_storeys": "Type C",
+        "3_storeys": "Type B",
+        "4_or_more": "Type A"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c2-fire-resistance-and-stability",
+      "clause": "Table C2D2"
+    },
+    "compartment_size_limits_and_fire_separation": {
+      "value": null,
+      "status": "UNVERIFIED",
+      "source_url": "n/a",
+      "clause": "Table C3D3 etc.",
+      "note": "Not researched. A mezzanine that counts as a storey changes rise in storeys and may alter fire compartment limits and exit requirements."
+    }
+  },
+  "ceiling_heights_ncc_2022": {
+    "class_5_6_7_8_general_rooms": {
+      "value": {
+        "min_m": 2.4
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights (ABCB mirror: https://abcb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights)",
+      "clause": "F5D2(3)(a) (Class 5, 6, 7, 8)"
+    },
+    "class_5_6_7_8_corridors": {
+      "value": {
+        "min_m": 2.1
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights (ABCB mirror: https://abcb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights)",
+      "clause": "F5D2 (corridors)"
+    },
+    "bathrooms_storerooms_garages_car_parks_and_similar_any_building": {
+      "value": {
+        "min_m": 2.1
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights (ABCB mirror: https://abcb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights)",
+      "clause": "F5D2 group \"bathroom, shower, sanitary compartment, airlock, pantry, store room, garage, car parking area or the like\""
+    },
+    "above_stairway_ramp_landing": {
+      "value": {
+        "min_m": 2.0
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights (ABCB mirror: https://abcb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights)",
+      "clause": "F5D2(8)(c)"
+    },
+    "commercial_kitchen": {
+      "value": {
+        "min_m": 2.4
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights (ABCB mirror: https://abcb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights)",
+      "clause": "F5D2"
+    },
+    "floor_finish": {
+      "value": "Allow for floor finishes such as tiles or carpet when measuring so the minimum is still met",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights (ABCB mirror: https://abcb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights)",
+      "clause": "F5D2 commentary"
+    },
+    "mezzanine_specific_above_and_below": {
+      "value": {
+        "above_mezzanine_min_m": null,
+        "below_mezzanine_min_m": null,
+        "commonly_applied": "2.4 m above and 2.1 m below for storage use, treating the space below as a storeroom or the like"
+      },
+      "status": "UNVERIFIED",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights (ABCB mirror: https://abcb.gov.au/editions/ncc-2022/adopted/volume-one/f-health-and-amenity/part-f5-room-heights)",
+      "clause": "F5D2 text read does not mention mezzanines",
+      "note": "No mezzanine specific ceiling height clause found. Treat as an interpretation to be confirmed by the certifier. The 2.4 m (occupied rooms) and 2.1 m (storerooms and similar) values are verified; their application to the space above and below a mezzanine is not."
+    }
+  },
+  "stairs_and_barriers": {
+    "risers_per_flight": {
+      "value": {
+        "min": 2,
+        "max": 18
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/5-new-south-wales/d3-construction-exits",
+      "clause": "NSW D3D14(1)(a)"
+    },
+    "open_riser_opening_max_mm": {
+      "value": 125,
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/5-new-south-wales/d3-construction-exits",
+      "clause": "NSW D3D14(1)(d)",
+      "note": "125 mm sphere must not pass between treads."
+    },
+    "riser_going_variation": {
+      "value": {
+        "adjacent_max_mm": 5,
+        "across_flight_max_mm": 10
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/5-new-south-wales/d3-construction-exits",
+      "clause": "NSW D3D14(1)(c)"
+    },
+    "table_d3d14_goings_and_risers": {
+      "value": {
+        "max_riser_mm": null,
+        "min_riser_mm": null,
+        "max_going_mm": null,
+        "min_going_mm": null,
+        "quantity_2R_plus_G": null
+      },
+      "status": "UNVERIFIED",
+      "source_url": "https://ncc.abcb.gov.au/guide/d3d14-goings-and-risers",
+      "clause": "Table D3D14",
+      "note": "Table values not available from any page read. D3D14 says goings and risers must comply with AS 4586 and Table D3D14 (https://www.midwestern.nsw.gov.au/files/assets/public/v/2/das-on-exhibition/14-oct-december-24/da0682025/da0068-2025-building-code-of-australia-report.pdf)."
+    },
+    "barrier_height_stairs_and_ramps_1_in_20_or_steeper": {
+      "value": {
+        "min_mm": 865
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/5-new-south-wales/d3-construction-exits",
+      "clause": "NSW D3D18(1)(a)"
+    },
+    "barrier_height_landing_inside_edge_not_over_500mm_long": {
+      "value": {
+        "min_mm": 865
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/5-new-south-wales/d3-construction-exits",
+      "clause": "NSW D3D18(1)(b)"
+    },
+    "barrier_height_all_other_locations": {
+      "value": {
+        "min_mm": 1000
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/5-new-south-wales/d3-construction-exits",
+      "clause": "NSW D3D18(1)(e)",
+      "note": "A mezzanine edge falls in this category."
+    },
+    "barrier_required_where_fall_exceeds": {
+      "value": {
+        "fall_m": 1.0
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.midwestern.nsw.gov.au/files/assets/public/v/2/das-on-exhibition/14-oct-december-24/da0682025/da0068-2025-building-code-of-australia-report.pdf",
+      "clause": "D3D17 balustrades; D3D22 handrails (via a council BCA report)",
+      "note": "Clause text itself not read."
+    },
+    "handrail_height_and_balustrade_opening": {
+      "value": {
+        "handrail_height_mm": null,
+        "balustrade_opening_max_mm": 125
+      },
+      "status": "UNVERIFIED",
+      "source_url": "n/a",
+      "clause": "D3D22 or similar",
+      "note": "125 mm opening rule read only for riser openings (D3D14). Handrail height not confirmed; the 865 mm figure is the barrier height above nosings."
+    },
+    "exit_unobstructed_height": {
+      "value": {
+        "min_mm": 2000,
+        "doorway_min_mm": 1980
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/d-access-and-egress/part-d2-provision-escape",
+      "clause": "D2D7"
+    },
+    "exit_width": {
+      "value": {
+        "min_mm": 1000
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/d-access-and-egress/part-d2-provision-escape",
+      "clause": "D2D8(1)"
+    },
+    "stair_width_headroom": {
+      "value": {
+        "headroom_above_nosings_mm": 2000
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/d-access-and-egress/part-d2-provision-escape",
+      "clause": "D2D11(a)(ii)"
+    },
+    "occupant_numbers_for_mezzanine": {
+      "value": "Occupant numbers are calculated per storey, room or mezzanine using the floor area per person table; Class 9 buildings with a mezzanine accommodating more than 50 persons need two exits",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "https://cpd.nccb.gov.au/editions/ncc-2022/adopted/volume-one/d-access-and-egress/part-d2-provision-escape",
+      "clause": "D2D18; D2D3(4)(a)(vi)",
+      "note": "Class 9 clause; Class 7 and 8 table values (m2 per person) not retrieved: UNVERIFIED."
+    }
+  },
+  "design_tool_flags": [
+    "If mezzanine area is more than the lesser of 200 m2 and one third of the room floor area, treat as an additional storey for rise in storeys, fire construction type and exits.",
+    "Mezzanine area counts toward floor area and therefore toward Tamworth parking GFA (\"including mezzanine storage\").",
+    "Confirm ceiling height treatment above and below with the certifier."
+  ]
+}

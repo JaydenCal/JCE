@@ -11,16 +11,24 @@ import { zoneClass, effectiveClass, RESIDENTIAL_NOTE } from './zones.js';
 import { defaultRulesFor } from './rules.js';
 import { bollardsFor, pointInPoly, BOLLARD_NOTE } from './bollards.js';
 import { ACCESSIBLE_BAY } from './rules.js';
+import { facts } from './dataset.js';
 
 const m = (mm) => (mm / 1000).toFixed(2);
 export const ACCESS_CHECK = 'Accessible bay count below the indicative requirement, check with council and an access consultant';
+
+/** The dataset status and tooltip for a check that rests on a dataset value. */
+function tipFor(key) {
+  if (!key) return {};
+  const f = facts(key);
+  return { status: f.status, tip: f.tip };
+}
 
 /** commercialChecks(project) -> [{ id, kind: 'warn' | 'info', text }]. Warnings first. */
 export function commercialChecks(project) {
   const c = project.commercial;
   const out = [];
-  const warn = (id, text) => out.push({ id, kind: 'warn', text });
-  const info = (id, text) => out.push({ id, kind: 'info', text });
+  const warn = (id, text, key = null) => out.push({ id, kind: 'warn', text, ...tipFor(key) });
+  const info = (id, text, key = null) => out.push({ id, kind: 'info', text, ...tipFor(key) });
   if (!c) return out;
   const lot = lotOf(project);
   const units = layoutUnits(c);
@@ -58,8 +66,12 @@ export function commercialChecks(project) {
     const mz = mezzanineOf(s);
     if (mz.enabled) {
       const min = mz.minClear;
-      if (mz.clearBelow < min) warn(`u${u.n}-mzlow`, `Unit ${u.n}: clear height under the mezzanine is ${m(mz.clearBelow)} m, below the ${m(min)} m minimum, check with council and the NCC`);
-      if (mz.clearAbove < min) warn(`u${u.n}-mzhigh`, `Unit ${u.n}: clear height above the mezzanine is ${m(mz.clearAbove)} m, below the ${m(min)} m minimum, check with council and the NCC`);
+      const minB = mz.minClearBelow;
+      const unv = facts('mezzClear').status === 'UNVERIFIED' ? ', unverified minimum' : '';
+      if (mz.clearBelow < minB) warn(`u${u.n}-mzlow`, `Unit ${u.n}: clear height under the mezzanine is ${m(mz.clearBelow)} m, below the ${m(minB)} m minimum${unv}, check with council and the NCC`, 'mezzClear');
+      if (mz.clearAbove < min) warn(`u${u.n}-mzhigh`, `Unit ${u.n}: clear height above the mezzanine is ${m(mz.clearAbove)} m, below the ${m(min)} m minimum, check with council and the NCC`, 'ceilingRoom');
+      const limit = Math.min(200, (u.w * u.d) / 1e6 / 3);
+      if (mz.areaM2 > limit) warn(`u${u.n}-mzstorey`, `Unit ${u.n}: the ${mz.areaM2.toFixed(1)} m² mezzanine is above ${limit.toFixed(1)} m² (the lesser of 200 m² and one third of the room), so it may count as a storey, check with council and the NCC`, 'mezzStorey');
       if (mz.position === 'front' && ds && ds.h > mz.clearBelow) warn(`u${u.n}-mzdoor`, `Unit ${u.n}: roller door head at ${m(ds.h)} m is above the front mezzanine soffit at ${m(mz.clearBelow)} m, move the mezzanine to the rear or lower the door`);
       const stairRun = mz.stair.lengthMm;
       if (mz.depthMm + stairRun + (s.office.enabled && mz.position === 'rear' ? s.office.depthMm : 0) > u.d) warn(`u${u.n}-stair`, `Unit ${u.n}: the ${mz.stair.type === 'L' ? 'L' : 'straight'} stair does not fit beside a ${m(mz.depthMm)} m deep mezzanine in a ${m(u.d)} m deep unit`);
@@ -77,15 +89,16 @@ export function commercialChecks(project) {
   const park = parkingLayout(c);
   if (c.parking?.enabled !== false && units.length) {
     const need = park.accessible.required;
-    if (park.accessible.provided < need) warn('accessible', `${ACCESS_CHECK} (${park.accessible.provided} of ${need})`);
-    else if (need > 0) info('accessible', `Accessible bays: ${park.accessible.provided} provided against ${need} indicative. Each has a ${m(ACCESSIBLE_BAY.sharedZoneMm)} m shared zone and needs ${m(ACCESSIBLE_BAY.headroomMm)} m headroom, check AS 2890.6 and an access consultant`);
-    if (stats.parking.provided < stats.parking.required) warn('parking', `Bays shown (${stats.parking.provided}) are fewer than the ${stats.parking.required} indicated at the rate in use, check with council`);
+    if (park.accessible.provided < need) warn('accessible', `${ACCESS_CHECK} (${park.accessible.provided} of ${need})`, 'accessibleClass8');
+    else if (need > 0) info('accessible', `Accessible bays: ${park.accessible.provided} provided against ${need} indicative. Each has a ${m(ACCESSIBLE_BAY.sharedZoneMm)} m shared zone and needs ${m(ACCESSIBLE_BAY.headroomMm)} m headroom, check AS 2890.6 and an access consultant`, 'bay');
+    if (stats.parking.provided < stats.parking.required) warn('parking', `Bays shown (${stats.parking.provided}) are fewer than the ${stats.parking.required} indicated at the rate in use, check with council`, 'parkingUnits');
     for (const pr of park.rows) {
       const bad = pr.slots.some((sl) => sl.poly.some((q) => lot && !pointInPoly(q, lot.boundary)));
       if (bad) warn(`park-lot-${pr.rowId}`, 'A parking row extends outside the lot boundary, check the layout');
       if (pr.slots.some((sl) => units.some((u) => G.convexOverlap(sl.poly, u.poly, 100)))) warn(`park-unit-${pr.rowId}`, 'A parking row overlaps a unit, increase the aisle or move the row');
     }
   }
+  if (units.some((u) => mezzanineOf(u.spec).enabled)) info('barrier', 'Barrier height at the mezzanine edge is 1000 mm and at the stair 865 mm, check the NCC', 'barrier');
   const awc = units.filter((u) => u.spec.office.enabled && u.spec.office.accessibleWc);
   if (awc.length) info('awc', `Accessible WC shown in the office of ${awc.map((u) => `unit ${u.n}`).join(', ')}, internal layout to be confirmed with an access consultant`);
   if (c.bollards?.enabled !== false && units.length) info('bollards', `${bollardsFor(c).length} bollards placed. ${BOLLARD_NOTE}`);

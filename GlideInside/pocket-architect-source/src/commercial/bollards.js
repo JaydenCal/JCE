@@ -6,7 +6,7 @@
 //   parkingEnd at the end of a parking row that sits next to a building (within 3 m of a unit)
 //   waste      around the waste enclosure
 //   hydrant    around the hydrant or booster
-//   accessible protecting the aisle end of each accessible shared zone
+//   accessible one bollard central in each accessible shared zone, 800 mm from its entry (AS/NZS 2890.6, verify the edition)
 
 import { layoutUnits, rowFrame, rowLength, rowPoint, facadeLayout } from './layout.js';
 import { parkingLayout } from './parking.js';

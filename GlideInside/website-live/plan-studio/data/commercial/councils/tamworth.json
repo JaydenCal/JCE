@@ -1,0 +1,395 @@
+{
+  "_meta": {
+    "dataset": "commercial-rules",
+    "generated": "13/11/2026",
+    "status_legend": {
+      "VERIFIED_PRIMARY": "Read from the primary or official text itself (NCC page, council DCP text in the JCE library)",
+      "VERIFIED_SECONDARY": "Read from a council guideline, government agency page or other document that quotes a standard; the owner must check against the standard",
+      "UNVERIFIED": "Could not be confirmed from an accessible primary or official source; do not rely on the value"
+    },
+    "council": "Tamworth Regional Council",
+    "instrument": "Tamworth Regional Development Control Plan 2010, Amendment No. 20 (adopted 12/10/2010; consolidated amendment 20 as held in the JCE council library)",
+    "currency_note": "The JCE library also holds an older consolidation (Amendment 17, 2024) at /__JCE/05_Standards_Codes/Local_Councils/Tamworth/DCP2010_Amdt17_Consolidated_2024.pdf. Amendment 20 was used. Owner should confirm Amendment 20 is the latest on the council website (not checked).",
+    "page_refs": "Page numbers are the DCP printed page \"Page n of 144\"."
+  },
+  "applies_to": "Industrial (general and light) zones per Step 2 Industrial Development Controls; local distribution and warehouse units in E3, E4 and E5 zones per the Parking Requirements Schedule; commercial and retail per Step 2 Commercial and Retail Controls.",
+  "parking_rates": {
+    "industry_general_light_heavy": {
+      "value": {
+        "rate": "1 space per 100 m2 industrial floor space (including mezzanine storage)",
+        "per_m2": 100,
+        "truck_note": "On-site truck parking spaces for each vehicle present at any one time excluding vehicles in loading docks; no truck parking on public streets"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule, Industry (includes light industry and heavy industry), p47"
+    },
+    "warehouse": {
+      "value": {
+        "rate": "1 space per 300 m2 (including mezzanine storage)",
+        "per_m2": 300
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule, Warehouse, p47"
+    },
+    "local_distribution_warehouse_units_e3_e4_e5": {
+      "value": {
+        "rate": "1 space per 75 m2 (including mezzanine storage)",
+        "per_m2": 75,
+        "example": "Industrial unit complex or business park complex in E3, E4 and E5 zones"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule, p47",
+      "note": "This is the rate for workshop and warehouse unit complexes."
+    },
+    "ancillary_office": {
+      "value": {
+        "rate": "minimum 1 space per 40 m2",
+        "per_m2": 40
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule, Ancillary office space, p47"
+    },
+    "ancillary_retail": {
+      "value": {
+        "rate": "minimum 1 space per 30 m2",
+        "per_m2": 30
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule, Ancillary retail space, p47"
+    },
+    "speciality_retail_and_industrial_retail_premises": {
+      "value": {
+        "rate": "1 space per 45 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule p42"
+    },
+    "commercial_business_premises_office": {
+      "value": {
+        "rate": "minimum 1 space per 40 m2 GFA (unmapped areas)"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule, Commercial / Business Premises, p44"
+    },
+    "retail_shops_under_1000": {
+      "value": {
+        "rate": "1 space per 25 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule, Retail Premises (a), p51"
+    },
+    "retail_shops_over_1000": {
+      "value": {
+        "rate": "1 space per 16 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule, Retail Premises (b), p51"
+    },
+    "vehicle_sales_or_hire": {
+      "value": {
+        "rate": "minimum 0.75 space per 100 m2 site area plus 4 spaces per work bay"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule p43"
+    },
+    "service_station_or_vehicle_repair": {
+      "value": {
+        "rate": "4 spaces per work bay (stack parking acceptable for vehicle repair workshop)"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule, Service Station, p50"
+    },
+    "rounding": {
+      "value": "Fractions round up to the next whole space",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 3 Industrial Parking, p40"
+    },
+    "redevelopment_or_change_of_use": {
+      "value": "Required spaces for proposal minus spaces required for previous or existing premises; difference is added on-site or as cash-in-lieu where applicable",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 3 Industrial Parking, p40"
+    },
+    "accessible_parking_note": {
+      "value": "Accessible parking must be provided in accordance with the BCA, AS/NZS 2890.6 and AS 1428",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule Notes, p51"
+    },
+    "bicycle_end_of_trip": {
+      "value": {
+        "rate": "1 space per 15 car parking spaces (new industrial development or use); staff bike parking near entries; bike rack, storage, shower and changing facilities"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 3, End of Trip Facilities (industrial) p41; AS2890.3"
+    },
+    "ev_charging": {
+      "value": "Provide EV charger provision as required by the NCC and show on plans",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 3, Electric Vehicle Charging, p41"
+    },
+    "standards_cited": {
+      "value": "Comply with AS2890.1 and AS2890.6; manoeuvring areas to accommodate a B99 vehicle",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 3 Industrial Parking p40"
+    }
+  },
+  "setbacks": {
+    "street_front": {
+      "value": {
+        "min_m": 5
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 2 Industrial Development Controls, Building Setbacks, p23"
+    },
+    "secondary_frontage": {
+      "value": "No concession for secondary frontage (same 5 m applies)",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p23"
+    },
+    "side_and_rear": {
+      "value": "Meet BCA requirements (no DCP minimum)",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p23"
+    },
+    "tamworth_business_park": {
+      "value": {
+        "New Winton Road_m": 15,
+        "Country Road_m": 5,
+        "all_other_roads_m": 5,
+        "new_winton_landscape_buffer_m": 7.5
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 4 Tamworth Business Park, Building Setbacks and Design, p74"
+    },
+    "commercial_retail_zones": {
+      "value": "No minimum street setback specified; side and rear to meet BCA",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 2 Commercial and Retail, Building Setbacks, p33"
+    }
+  },
+  "landscaping": {
+    "required_in": {
+      "value": [
+        "front 5 m of street setback",
+        "side and rear setbacks where visible from a public place or adjoining residential area",
+        "areas adjacent to building entrances and customer access points"
+      ],
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Industrial Landscaping, p23"
+    },
+    "front_width_m": {
+      "value": 5,
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p23"
+    },
+    "reduced_front_width": {
+      "value": {
+        "min_m": 3,
+        "condition": "car parking provided immediately behind the landscaped area"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p23"
+    },
+    "percentage_of_site": {
+      "value": null,
+      "status": "UNVERIFIED",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "No percentage of site area is stated in the industrial controls",
+      "note": "Tamworth sets landscaped width, not a percentage."
+    },
+    "car_park_shade": {
+      "value": "Landscaping or shade structures in outdoor car parking areas where more than 10 spaces are required",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p23; Tamworth Business Park p74"
+    },
+    "plan_and_species": {
+      "value": "Landscape plan required; low maintenance, drought and frost tolerant species; retain mature trees; on-site stormwater capture and reuse for landscaping",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p23"
+    },
+    "business_park_bond": {
+      "value": {
+        "bond_aud": 2500,
+        "duration": "two years from Occupation Certificate",
+        "condition": "may be imposed where water conservation measures do not prevent establishment"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Tamworth Business Park Landscaping p74"
+    }
+  },
+  "building_materials_and_design": {
+    "facade": {
+      "value": "Street elevations or elevations visible from public road, reserve, railway or adjoining residential area to vary facade treatments, roof lines and building materials",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Industrial Design p23"
+    },
+    "low_scale_front_elements": {
+      "value": "Display areas, offices and staff amenities at the front, built in brick or finished concrete or light weight cladding",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p23"
+    },
+    "roofing": {
+      "value": "Non-reflective where pitch exceeds 17 degrees or visible from a public road",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p23"
+    },
+    "business_park_materials": {
+      "value": "Low scale elements in brick, painted finished concrete or light weight architectural cladding with large windows; roofing and walls non-reflective; schedule of colours and materials with the DA; corner buildings address both frontages; services concealed or screened",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Tamworth Business Park Design p74"
+    },
+    "fencing": {
+      "value": "Open work or storage visible from a public place must be fenced in masonry or pre-coloured metal cladding, minimum 2 m high, behind the setback; security fencing behind the setback unless decorative and in the landscaped area",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Industrial Fencing p23"
+    },
+    "signage": {
+      "value": "Single occupant: one freestanding sign in the 5 m landscaped setback and one on the facade below roof line. Multiple unit site: one index board near the entrance or in the landscaped setback and one sign on each unit facade below roof line",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Industrial Outdoor Signage p24"
+    },
+    "lighting": {
+      "value": "AS4282 obtrusive effects of outdoor lighting",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p24"
+    },
+    "noise": {
+      "value": "Openings arranged to minimise noise to residences within 400 m of a residential zone; external plant enclosed where adjoining residential",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p24"
+    }
+  },
+  "loading_and_manoeuvring": {
+    "on_site": {
+      "value": "Adequate loading space wholly within the site; bays enter and exit in forward direction; bays line marked and signposted and not used for customer parking or materials storage",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 3 Loading / unloading Facilities, p41"
+    },
+    "access": {
+      "value": {
+        "forward_entry_exit": true,
+        "access_points_per_frontage": "1 ingress and 1 egress",
+        "separate_entry_exit_over_spaces": 50,
+        "driveways_to": "AS2890.1"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Step 3 Traffic and Access, p40"
+    },
+    "surfacing": {
+      "value": "Areas with regular vehicle movement (customer and staff parking) must be sealed; laydown or outdoor storage areas need not be sealed but need permanent sediment and erosion control",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p40"
+    },
+    "traffic_assessment": {
+      "value": "Required to show adequacy of road network, intersections, site access, loading and safe manoeuvring for the largest design vehicle",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p40"
+    },
+    "truck_parking": {
+      "value": "On-site truck parking for each vehicle present at one time, excluding vehicles in loading docks; no truck parking on public streets",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Parking Requirements Schedule p47"
+    }
+  },
+  "waste": {
+    "rwmp": {
+      "value": "Resource and Waste Management Plan with every DA for construction of industrial development, covering construction and operational waste",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Industrial Construction and Operational Waste Management, p25"
+    },
+    "per_unit_storage": {
+      "value": "For multi-use and industrial units, waste storage and recycling areas must be provided within each industrial unit with space for separation of recyclables and garbage",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Ongoing Waste Storage p25"
+    },
+    "drawings_show": {
+      "value": "Bin and skip storage layout, collection points, access path for users and collection vehicles, and layout and dimensions for collection vehicles when on-site collection is required",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p25"
+    },
+    "enclosures": {
+      "value": "Bin enclosures ventilated, fire protected, drained to sewer, lit and with water supply; step free unobstructed access to collection point",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p25"
+    },
+    "liquid_trade_waste": {
+      "value": "Liquid Trade Waste Application and facilities where liquid wastes other than domestic waste are discharged to sewer",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Utilities and Services p23"
+    }
+  },
+  "other": {
+    "sewer_offset": {
+      "value": "Structures minimum 1 m plus equivalent invert depth from centreline of sewer main",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p23"
+    },
+    "stormwater": {
+      "value": "Detention may be required; on-site stormwater capture and reuse for landscaping; reuse not counted in stormwater calculations",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "p23"
+    },
+    "subdivision_industrial_lot": {
+      "value": {
+        "min_frontage_and_square_width_m": 24,
+        "min_area_m2": 1000
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.txt (extracted text of Tamworth Regional DCP 2010, Amendment No. 20; PDF /_JCESite/NSW-Councils/councils/tamworth-regional-council/DCP/TRDCP-2010---Amendment-20.pdf)",
+      "clause": "Subdivision controls (line \"Industrial lots shall have a minimum street frontage and square width of 24m and an area of 1,000m2\")",
+      "note": "Page number not recorded."
+    }
+  },
+  "unconfirmed": [
+    "Whether any later amendment than No. 20 applies",
+    "Council-published design vehicle size (the DCP sets B99 for manoeuvring areas and \"largest design vehicle\" in traffic assessments only)",
+    "Tamworth Regional LEP 2010 height, FSR and minimum lot size controls (not in the DCP)"
+  ]
+}

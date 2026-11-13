@@ -21,6 +21,7 @@ import { commercialEdit, enterCommercial, offerCommercial, convertToCommercial }
 import { addRow, mirrorRow, deleteRow } from '../src/commercial/ui/row-ops.js';
 import { turnAngle, snapRowOrigin, rowAt, sourceId } from '../src/commercial/ui/tool-commercial.js';
 import { designTypeOf, buildDesignType } from '../src/ui/design-type.js';
+import { facts, statusText, accessibleBaysFor, mrvDefaults, DATASET, PARKING_M2_PER_SPACE, OFFICE_M2_PER_SPACE } from '../src/commercial/dataset.js';
 import { conadillyProject } from './helpers/conadilly-lot.mjs';
 import { commercialProject } from './helpers/commercial-fixture.mjs';
 
@@ -91,10 +92,10 @@ test('zones: a residential zone with a commercial project says so', () => {
 });
 
 // Rules and setbacks -----------------------------------------------------------------------------------------------------------
-test('rules: default tables are indicative and parking defaults to 1 space per 100 m2', () => {
+test('rules: default tables are indicative and parking defaults to 1 space per 75 m2 (unit complexes)', () => {
   for (const cls of ['industrial', 'commercial']) {
     const r = DEFAULT_RULES[cls];
-    assert.equal(r.parkingPerM2Gfa, 0.01);
+    assert.equal(r.parkingPerM2Gfa, 1 / 75);
     assert.match(r.note, /indicative/);
     assert.match(r.note, /check with council/);
     for (const k of ['front', 'secondaryFront', 'side', 'rear']) assert.equal(typeof r.setbacks[k], 'number');
@@ -375,9 +376,11 @@ test('mezzanine: depth or percent, position, stair type, level and separate GFA'
 test('mezzanine: clear height checks above and below, configurable minimum, stair fit', () => {
   const p = commercialProject();
   const row = p.commercial.rows[0];
-  row.perUnit = { 0: { mezzanine: { enabled: true, levelMm: 2500 } } };
+  row.perUnit = { 0: { mezzanine: { enabled: true, levelMm: 2200 } } };
   let w = warnTexts(p);
-  assert.ok(w.some((t) => /Unit 1: clear height under the mezzanine is 2\.35 m, below the 2\.40 m minimum, check with council and the NCC/.test(t)));
+  assert.ok(w.some((t) => /Unit 1: clear height under the mezzanine is 2\.05 m, below the 2\.10 m minimum, unverified minimum, check with council and the NCC/.test(t)));
+  row.perUnit = { 0: { mezzanine: { enabled: true, levelMm: 2500 } } };
+  assert.ok(!warnTexts(p).some((t) => /clear height under/.test(t)), '2.35 m under the mezzanine meets the 2.1 m storeroom minimum');
   row.perUnit = { 0: { mezzanine: { enabled: true, levelMm: 4000 } } };
   assert.ok(warnTexts(p).some((t) => /Unit 1: clear height above the mezzanine is 2\.00 m, below the 2\.40 m minimum/.test(t)));
   row.perUnit = { 0: { mezzanine: { enabled: true, levelMm: 4000, minClearMm: 2000 } } };
@@ -391,10 +394,14 @@ test('mezzanine: clear height checks above and below, configurable minimum, stai
 // Accessible parking -------------------------------------------------------------------------------------------------------------
 test('accessible parking: the rate table is data, 1 per 100 bays or part thereof', () => {
   assert.equal(ACCESSIBLE_RATE.perBays, 100);
-  assert.match(ACCESSIBLE_RATE.basis, /owner to verify against NCC Part D4 and AS 2890\.6/);
+  assert.match(ACCESSIBLE_RATE.basis, /D4D6/);
+  assert.match(ACCESSIBLE_RATE.basis, /verify/);
   const want = [[0, 0], [1, 1], [20, 1], [100, 1], [101, 2], [200, 2], [201, 3], [450, 5]];
   for (const [bays, n] of want) assert.equal(accessibleRequired(bays), n, `${bays} bays`);
   assert.equal(accessibleRequired(60, { perBays: 50 }), 2, 'a different table is honoured');
+  assert.equal(accessibleRequired(60, 'class_6'), 2, 'Class 6 is 1 per 50');
+  assert.equal(accessibleRequired(1000, 'class_6'), 20);
+  assert.equal(accessibleRequired(101, 'class_7'), 2);
 });
 
 test('accessible parking: bays and shared zone placed nearest the accessible entry, path of travel line', () => {
@@ -523,8 +530,8 @@ test('stats: golden numbers for two mirrored rows of 8 units 6 x 15 m', () => {
   assert.equal(s.gfaM2, 1440);
   assert.equal(s.lotM2, 9000);
   assert.equal(s.coveragePct, 16);
-  assert.equal(s.parking.ratePerM2, 0.01);
-  assert.equal(s.parking.required, 15);
+  assert.equal(s.parking.ratePerM2, 1 / 75);
+  assert.equal(s.parking.required, 20, '1440 m2 at 1 per 75 m2, rounded up');
   assert.equal(s.parking.provided, 39);
   assert.deepEqual([s.parking.accessible.required, s.parking.accessible.provided], [1, 1]);
   p.commercial.rows[0].perUnit = { 0: { widthMm: 7000 }, 1: { widthMm: 7000 } };
@@ -614,4 +621,86 @@ test('wording lint: src/commercial has no em dash, en dash, the word compliant o
     assert.doesNotMatch(src, /compliant/i, `compliant in ${f}`);
     assert.doesNotMatch(src, brands, `builder brand in ${f}`);
   }
+});
+
+// Dataset ------------------------------------------------------------------------------------------------------------------------
+test('dataset: values come from the cited files with their status, UNVERIFIED is never softened', () => {
+  assert.equal(PARKING_M2_PER_SPACE, 75);
+  assert.equal(OFFICE_M2_PER_SPACE, 40);
+  assert.equal(facts('parkingUnits').status, 'VERIFIED_PRIMARY');
+  assert.equal(facts('accessibleClass8').status, 'VERIFIED_PRIMARY');
+  assert.equal(facts('bay').status, 'VERIFIED_SECONDARY');
+  assert.deepEqual([facts('bay').value.width_mm, facts('bay').value.length_mm], [2400, 5400]);
+  assert.equal(facts('sharedZone').value.width_mm, 2400);
+  assert.equal(facts('headroom').value.over_dedicated_and_shared_mm, 2500);
+  assert.equal(facts('mezzStorey').status, 'VERIFIED_PRIMARY');
+  assert.equal(facts('ceilingRoom').value.min_m, 2.4);
+  assert.equal(facts('ceilingStore').value.min_m, 2.1);
+  assert.equal(facts('barrier').value.min_mm, 1000);
+  assert.equal(facts('barrierStair').value.min_mm, 865);
+  assert.equal(facts('accessibleBollardOffset').status, 'VERIFIED_SECONDARY');
+  assert.equal(facts('mezzClear').status, 'UNVERIFIED');
+  assert.match(statusText('UNVERIFIED'), /unverified, do not rely/);
+  assert.match(statusText('VERIFIED_SECONDARY'), /indicative, verify/);
+  assert.match(facts('bay').tip, /indicative, verify against the standard/);
+  assert.equal(facts('nothing').status, 'UNVERIFIED');
+  assert.ok(DATASET.councils.tamworth && DATASET.councils.gunnedah);
+  assert.equal(accessibleBaysFor(150, 'class_8'), 2);
+  assert.equal(accessibleBaysFor(150, 'class_6'), 3);
+});
+
+test('dataset: the website copy of the dataset matches the app copy', () => {
+  for (const f of ['accessible', 'rates', 'mezzanine', 'bollards', 'vehicles', 'councils/tamworth', 'councils/gunnedah']) {
+    const a = readFileSync(resolve(here, `../src/commercial/data/${f}.json`), 'utf8');
+    const b = readFileSync(resolve(here, `../../website-live/plan-studio/data/commercial/${f}.json`), 'utf8');
+    assert.equal(a, b, f);
+  }
+});
+
+test('dataset: the MRV turning radius is null in the data and stays an editable field', () => {
+  const v = mrvDefaults();
+  assert.deepEqual([v.lengthM, v.widthM, v.heightM, v.turningRadiusM], [8.8, 2.5, 4.5, null]);
+  const p = commercialProject();
+  assert.equal(p.commercial.vehicle.turningRadiusM, null);
+  const s = store(p);
+  commercialEdit(s, 'Set MRV turning radius', (c) => { c.vehicle = { ...c.vehicle, turningRadiusM: 12.5 }; });
+  assert.equal(s.project.commercial.vehicle.turningRadiusM, 12.5);
+  assert.equal(s.undoLabel(), 'Set MRV turning radius');
+});
+
+test('dataset: mezzanine storey trigger is the lesser of 200 m2 and one third of the room', () => {
+  const p = commercialProject();
+  const row = p.commercial.rows[0];
+  // Unit 6 x 15 = 90 m2, one third is 30 m2. A 6 x 6 m mezzanine (36 m2) is over it.
+  row.perUnit = { 0: { mezzanine: { enabled: true, depthMm: 6000 } } };
+  const t = warnTexts(p).find((x) => /counts? as a storey|count as a storey/.test(x));
+  assert.match(t, /Unit 1: the 36\.0 m² mezzanine is above 30\.0 m² \(the lesser of 200 m² and one third of the room\), so it may count as a storey, check with council and the NCC/);
+  row.perUnit = { 0: { mezzanine: { enabled: true, depthMm: 4000 } } };
+  assert.ok(!warnTexts(p).some((x) => /count as a storey/.test(x)), '24 m2 is under 30 m2');
+  const tip = commercialChecks(p).find((c) => c.id === 'barrier');
+  assert.match(tip.text, /Barrier height at the mezzanine edge is 1000 mm and at the stair 865 mm/);
+  // Checks resting on an unverified value say so and carry the status.
+  row.perUnit = { 0: { mezzanine: { enabled: true, depthMm: 4000, levelMm: 2200 } } };
+  const low = commercialChecks(p).find((c) => c.id === 'u1-mzlow');
+  assert.equal(low.status, 'UNVERIFIED');
+  assert.match(low.text, /unverified minimum/);
+  assert.match(low.tip, /unverified, do not rely on this value/);
+});
+
+test('dataset: parking counts the office area at 1 per 40 m2 and the accessible bollard sits 800 mm into the shared zone', () => {
+  const p = commercialProject();
+  p.commercial.rows[0].perUnit = { 0: { office: { enabled: true, depthMm: 3000 } } };
+  const s = commercialStats(p);
+  assert.equal(s.officeM2, 18);
+  assert.equal(s.parking.required, Math.ceil((1440 - 18) / 75) + Math.ceil(18 / 40));
+  p.commercial.rates.officeSeparate = false;
+  assert.equal(commercialStats(p).parking.required, 20);
+  const park = parkingLayout(p.commercial);
+  const zone = park.rows.flatMap((r) => r.slots).find((x) => x.kind === 'zone');
+  const near = park.rows.find((r) => r.slots.includes(zone));
+  const front = near.frame;
+  const bol = bollardsFor(p.commercial).find((b) => b.kind === 'accessible');
+  const d = (bol.x - zone.poly[0].x) * front.f.x + (bol.y - zone.poly[0].y) * front.f.y;
+  assert.ok(Math.abs(d - 800) < 2, `bollard is ${d} mm from the shared zone entry`);
+  assert.ok(Math.abs((bol.x - zone.centre.x) * front.u.x + (bol.y - zone.centre.y) * front.u.y) < 2, 'central across the zone');
 });

@@ -3,7 +3,7 @@
 // (roller doors) faces down the screen. A row with mirrorOf is the back to back partner of that source row: same origin, same
 // unit widths and count, v reversed, so its fronts face the other way and the two rear walls are one shared party wall.
 
-import { unitSpec, doorSize, PERSONNEL_DOOR, SLAB_MM, MIN_CLEAR_MM } from './schema.js';
+import { unitSpec, doorSize, PERSONNEL_DOOR, SLAB_MM, MIN_CLEAR_MM, MIN_CLEAR_BELOW_MM } from './schema.js';
 
 const rad = (d) => (d * Math.PI) / 180;
 const add = (a, b) => ({ x: a.x + b.x, y: a.y + b.y });
@@ -95,7 +95,7 @@ export function mezzanineOf(spec) {
   const stair = m.stairType === 'L' ? { type: 'L', widthMm: 1000, lengthMm: 2400, runMm: 2400 } : { type: 'straight', widthMm: 1000, lengthMm: 3600, runMm: 3600 };
   return {
     enabled: true, depthMm, areaM2, position: m.position, level: m.levelMm,
-    clearBelow: m.levelMm - (m.slabMm ?? SLAB_MM), clearAbove: spec.heightMm - m.levelMm, minClear: m.minClearMm ?? MIN_CLEAR_MM, stair,
+    clearBelow: m.levelMm - (m.slabMm ?? SLAB_MM), clearAbove: spec.heightMm - m.levelMm, minClear: m.minClearMm ?? MIN_CLEAR_MM, minClearBelow: m.minClearBelowMm ?? MIN_CLEAR_BELOW_MM, stair,
   };
 }
 

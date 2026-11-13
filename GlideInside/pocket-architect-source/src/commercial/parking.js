@@ -41,13 +41,13 @@ export function parkingLayout(commercial) {
       const a = i * bayW;
       const near = d + aisleMm;
       const poly = [rowPoint(fr, a, near), rowPoint(fr, a + bayW, near), rowPoint(fr, a + bayW, near + bayL), rowPoint(fr, a, near + bayL)];
-      slots.push({ index: i, kind: 'bay', poly, centre: rowPoint(fr, a + bayW / 2, near + bayL / 2), aisleEnd: rowPoint(fr, a + bayW / 2, near + 300) });
+      slots.push({ index: i, kind: 'bay', poly, centre: rowPoint(fr, a + bayW / 2, near + bayL / 2), aisleEnd: rowPoint(fr, a + bayW / 2, near + ACCESSIBLE_BAY.bollardFromEntryMm) });
     }
     slotsTotal += n;
     out.push({ rowId: row.id, frame: fr, length: L, depth: d, slots });
   }
   // Required accessible bays: fixpoint, because the shared zones take slots that are not bays.
-  const table = commercial.accessibleRate;
+  const table = commercial.buildingClass || 'class_8';
   const override = Number.isInteger(commercial.parking.accessibleOverride) ? commercial.parking.accessibleOverride : null;
   let req = slotsTotal >= 2 ? 1 : 0;
   const zonesFor = (a) => Math.floor(a / 2) + (a % 2);

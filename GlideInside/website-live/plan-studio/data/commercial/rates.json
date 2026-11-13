@@ -1,0 +1,94 @@
+{
+  "_meta": {
+    "dataset": "commercial-rules",
+    "generated": "13/11/2026",
+    "status_legend": {
+      "VERIFIED_PRIMARY": "Read from the primary or official text itself (NCC page, council DCP text in the JCE library)",
+      "VERIFIED_SECONDARY": "Read from a council guideline, government agency page or other document that quotes a standard; the owner must check against the standard",
+      "UNVERIFIED": "Could not be confirmed from an accessible primary or official source; do not rely on the value"
+    },
+    "topic": "Car parking rates for workshop and industrial unit design, Tamworth and Gunnedah, with reference rates from other NSW councils"
+  },
+  "note": "Council rates are repeated from councils/tamworth.json and councils/gunnedah.json. Use the council files for citations. GFA basis: Tamworth says \"including mezzanine storage\" for industry, warehouse and unit rates.",
+  "tamworth": {
+    "workshop_unit_complex_e3_e4_e5": {
+      "per_m2": 75,
+      "basis": "including mezzanine storage"
+    },
+    "industry": {
+      "per_m2": 100
+    },
+    "warehouse": {
+      "per_m2": 300
+    },
+    "ancillary_office_min": {
+      "per_m2": 40
+    },
+    "ancillary_retail_min": {
+      "per_m2": 30
+    },
+    "status": "VERIFIED_PRIMARY",
+    "source": "councils/tamworth.json parking_rates"
+  },
+  "gunnedah_dcp_2025": {
+    "industry": {
+      "per_m2": 75,
+      "or_per_employees": 2,
+      "whichever": "greater"
+    },
+    "warehouse": {
+      "per_m2": 300,
+      "plus_office_per_m2": 40,
+      "or_per_employee": 1,
+      "whichever": "greater"
+    },
+    "vehicle_repair_workshop": {
+      "per_m2": 40,
+      "or_per_bay": 3,
+      "whichever": "greater"
+    },
+    "office": {
+      "per_m2": 40
+    },
+    "industrial_retail": {
+      "per_m2": 45
+    },
+    "status": "VERIFIED_PRIMARY",
+    "source": "councils/gunnedah.json parking_rates_dcp_2025"
+  },
+  "derived_example_for_tool": {
+    "note": "Calculation only, not quoted. Workshop unit complex in Tamworth E4: spaces = ceil(GFA/75) plus office ceil(office GFA/40) is NOT stated as additive; Tamworth lists ancillary office as a separate minimum line, so adding is a conservative reading and is UNVERIFIED. Confirm with Council.",
+    "status": "UNVERIFIED"
+  },
+  "reference_other_councils": {
+    "griffith_dcp_20_2011": {
+      "value": {
+        "industry": "1 per 100 m2 GFA, minimum 2 per industrial unit",
+        "warehouse": "1 per 300 m2",
+        "office_outside_cbd": "1 per 40 m2"
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.griffith.nsw.gov.au/files/sharedassets/public/v/1/cm-documents/dcp-no.-20-parking-2011.pdf",
+      "clause": "Table 1.7.1",
+      "note": "Regional NSW comparison only."
+    },
+    "cumberland_dcp": {
+      "value": {
+        "factories": "1.3 per 100 m2 GFA",
+        "warehouses": "1 per 300 m2",
+        "ancillary_office": "1 per 40 m2"
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.cumberland.nsw.gov.au/sites/default/files/inline-files/Parking-and-Loading.pdf",
+      "clause": "Table 7, s6.1.3 (mapping inferred from layout)",
+      "note": "Comparison only."
+    },
+    "tfnsw_guide_to_transport_impact_assessment": {
+      "value": "Rates for industry not retrieved; Gunnedah DCP 2025 cites this guide for major retail (generally 1 per 20 m2)",
+      "status": "UNVERIFIED",
+      "source_url": "https://www.transport.nsw.gov.au/ (Guide to Transport Impact Assessment)",
+      "clause": "n/a",
+      "note": "Not read."
+    }
+  }
+}

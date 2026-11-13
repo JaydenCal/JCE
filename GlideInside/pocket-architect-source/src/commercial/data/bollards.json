@@ -1,0 +1,122 @@
+{
+  "_meta": {
+    "dataset": "commercial-rules",
+    "generated": "13/11/2026",
+    "status_legend": {
+      "VERIFIED_PRIMARY": "Read from the primary or official text itself (NCC page, council DCP text in the JCE library)",
+      "VERIFIED_SECONDARY": "Read from a council guideline, government agency page or other document that quotes a standard; the owner must check against the standard",
+      "UNVERIFIED": "Could not be confirmed from an accessible primary or official source; do not rely on the value"
+    },
+    "topic": "Protective bollards: accessible bays, hydrant boosters, building corners and roller doors"
+  },
+  "summary": "No Australian standard or guideline was found that sets bollard dimensions for roller doors or building corners. Accessible shared zones and hydrant boosters have requirements, mostly stated in secondary documents. All bollard geometry for roller doors and corners below is a design default to be set by the engineer and is not sourced.",
+  "accessible_shared_zone": {
+    "requirement": {
+      "value": "One bollard, central in the shared area (Australia only), positions per Figures 2.2 and 2.3 of AS/NZS 2890.6",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://aphref.aph.gov.au/house/committee/laca/disabilitystandards/exhibits/exhibit11.pdf",
+      "clause": "AS/NZS 2890.6:2009 cl 2.2.1(e) (draft)",
+      "note": "Details in accessible.json bollard_in_shared_area and bollard_height_candidates."
+    },
+    "position_offset_800_pm_50": {
+      "value": "800 mm plus or minus 50 mm from the entry point of the shared space",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://businesspapers.parracity.nsw.gov.au/Open/2023/12/LPP_19122023_AGN_873_AT_files/LPP_19122023_AGN_873_AT_Attachment_11869_13.PDF",
+      "clause": "2009 edition per NSW access report"
+    },
+    "height_and_diameter": {
+      "value": {
+        "min_height_mm": 1300,
+        "min_diameter_mm": 100
+      },
+      "status": "UNVERIFIED",
+      "source_url": "https://australiandisabilitynetwork.org.au/DFD/dfd-06-05-car-parking.html ; https://www-prod.karratha.wa.gov.au/system/files/cks-600_-_parking_guidelines_-_rev_0_final.pdf",
+      "clause": "secondary only"
+    },
+    "purpose": {
+      "value": "Prevents vehicles parking in the shared area; keep the zone clear of signposts, garden beds and drainage grates",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://linemarkingaustralia.com.au/blog/carpark-line-marking-rules-australia-as-nzs-2890",
+      "clause": "blog"
+    }
+  },
+  "hydrant_booster_as_2419_1": {
+    "standard": "AS 2419.1-2021 Fire hydrant installations, Part 1: System design, installation and commissioning (https://store.standards.org.au/product/as-2419-1-2021)",
+    "vehicle_impact_protection_clause": {
+      "value": "Clause for protection of booster assemblies from vehicle impact not identified",
+      "status": "UNVERIFIED",
+      "source_url": "https://store.standards.org.au/product/as-2419-1-2021",
+      "clause": "not read",
+      "note": "AS 2419.1 text is paywalled. Owner must read the booster location and protection clauses (Section 7 and clause 11.2 for plinth and 11.3 for enclosures are the ones cited by Fire and Rescue Victoria)."
+    },
+    "qfes_statement": {
+      "value": "External hydrants should be protected by bollards where they may be damaged by vehicles",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://fire.qld.gov.au/sites/default/files/2021-06/Physical-protection-of-pillar-hydrants.pdf",
+      "clause": "QFES position (Queensland, not NSW)",
+      "note": "No clause number or dimensions given."
+    },
+    "frv_guideline_gl22": {
+      "value": {
+        "bollards": "to keep the booster area free of obstructions and vehicles blocking access (no dimensions)",
+        "clear_radius_m": 2,
+        "no_standing_hardstand": "11.5 m long by 6 m wide in front of the booster marked NO STANDING with yellow hatching",
+        "as_2419_1_clauses_cited": "6.11, 7.6, 11.2 and 11.3 for enclosures; 11.2 and figure 11.2.1.1 for the concrete plinth"
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://app.production.firerescue-vic-gov-au.sdp3.sdp.vic.gov.au/sites/default/files/2024-09/GL-22-Feed-Hydrant-and-Booster-Assembly-Enclosures.pdf",
+      "clause": "FRV GL-22 Sections 3 and 4",
+      "note": "Victorian agency, not binding in NSW; shown as guidance on typical clearances."
+    },
+    "nsw_position": {
+      "value": "Fire and Rescue NSW position statements and tech info sheets reviewed list booster pressure, signage and suction connections but give no bollard requirement; no NSW source found for booster bollards",
+      "status": "UNVERIFIED",
+      "source_url": "https://www.fire.nsw.gov.au/page.php?id=9256",
+      "clause": "n/a"
+    },
+    "tool_handling": "Place a bollard set to protect any booster, hydrant pillar or fire panel located in a trafficked area; flag the geometry as engineer defined."
+  },
+  "general_bollard_guidance": {
+    "act_mis_10_clause_2_3_4": {
+      "value": {
+        "height_m": "1.0 minimum to 1.5 maximum",
+        "clear_opening_m": "1.4 desirable, 1.2 minimum, 1.5 maximum",
+        "from_driveways_min_m": 1.2,
+        "reflective_panel_height_m": 1.3
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.cityservices.act.gov.au/__data/assets/pdf_file/0004/1378525/Municipal-Infrastructure-Standard-10-Fences,-guardrails-and-barriers-1-1.pdf",
+      "clause": "ACT Municipal Infrastructure Standard 10, cl 2.3.4",
+      "note": "ACT public domain standard, not NSW or workplace. Useful as a spacing reference only."
+    },
+    "melton_guideline": {
+      "value": {
+        "typical_spacing_from_kerb_m": 0.6,
+        "height_m": 0.8,
+        "max_spacing_m": 1.5,
+        "standard": "AS 3845.2:2017"
+      },
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.melton.vic.gov.au/files/assets/public/services/building-planning-amp-transport/engineering/infrastructure-planning/car_parking_guidelines_-_2015.pdf",
+      "clause": "Section 3.2",
+      "note": "Extract from a Victorian council guideline; the 2017 standard date appears alongside a 2015 document, so the cited edition is UNVERIFIED."
+    },
+    "safe_work_australia_warehousing_traffic_guide": {
+      "value": "Recommends physical separation by barriers, bollards or railings to prevent pedestrians stepping into traffic from blind spots, high impact barriers and containment fences where forklifts and pedestrians cannot be separated, and separate pedestrian doors at vehicle entries. No dimensions given. No guidance on protecting building corners, racking or roller doors.",
+      "status": "VERIFIED_SECONDARY",
+      "source_url": "https://www.safeworkaustralia.gov.au/system/files/documents/1703/traffic-management-guide-warehousing.pdf",
+      "clause": "pp2-4"
+    }
+  },
+  "roller_doors_and_building_corners": {
+    "standard_or_guideline_found": false,
+    "status": "UNVERIFIED",
+    "design_default_not_sourced": {
+      "height_mm": "engineer to set",
+      "spacing_mm": "engineer to set; ensure clear opening is not wider than a vehicle can pass, and that a forklift cannot pass between bollards",
+      "distance_from_door_or_corner": "engineer to set",
+      "impact_rating": "engineer to set against expected vehicle mass and speed"
+    },
+    "note": "Impact loads are a design matter (AS/NZS 1170.1 and the forklift or truck mass and speed); no value is asserted here."
+  }
+}

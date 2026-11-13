@@ -8,6 +8,7 @@ import { addRow, mirrorRow, deleteRow } from './row-ops.js';
 import { analyse } from '../analyse.js';
 import { effectiveClass, zoneClass, ZONE_CLASS_LABEL } from '../zones.js';
 import { rowLength } from '../layout.js';
+import { facts, NCC_CLASSES, PARKING_M2_PER_SPACE } from '../dataset.js';
 
 const getPath = (o, path) => path.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
 function setPath(o, path, v) {
@@ -77,6 +78,16 @@ export function createCommercialPanel({ store, host, editor }) {
     const input = h('input', { type: 'checkbox', checked: !!get(), onchange: () => edit(`Set ${label.toLowerCase()}`, (c) => set(c, input.checked)) });
     return h('label', { class: 'cm-chk' }, input, h('span', null, label));
   };
+  function classField(c) {
+    const sel = h('select', { dataset: { ps: 'ncc-class' }, title: facts('accessibleClass8').tip, onchange: () => edit('Set NCC class', (cc) => { cc.buildingClass = sel.value; }) }, NCC_CLASSES.map(([v, t]) => h('option', { value: v }, t)));
+    sel.value = c.buildingClass || 'class_8';
+    return field('NCC class (accessible bays)', sel, 'Indicative, verify against NCC Part D4');
+  }
+  function mrvField(c) {
+    const v = c.vehicle || {};
+    const input = h('input', { type: 'number', min: 3, max: 30, step: 0.1, value: v.turningRadiusM ?? '', placeholder: 'Not set', dataset: { ps: 'mrv-radius' }, title: facts('mrvRadius').tip, onchange: () => edit('Set MRV turning radius', (cc) => { cc.vehicle = { ...cc.vehicle, turningRadiusM: input.value === '' ? null : Number(input.value) }; }) });
+    return field(`${v.code || 'MRV'} turning radius`, h('span', { class: 'cm-in' }, input, h('i', null, 'm')), `${v.lengthM} x ${v.widthM} m, verify the radius against AS 2890.2`);
+  }
   const section = (title, ...kids) => {
     const d = h('details', { class: 'cm-sec', open: open[title] === true, ontoggle: () => { open[title] = d.open; } }, h('summary', null, title), h('div', { class: 'cm-body' }, ...kids));
     return d;
@@ -159,15 +170,19 @@ export function createCommercialPanel({ store, host, editor }) {
           selField('Stair side', 'mezzanine.stairSide', [['left', 'Left wall'], ['right', 'Right wall']]),
           chkField('Balustrade', 'mezzanine.balustrade'),
           numField('Mezzanine floor level', 'mezzanine.levelMm', { min: 2400, max: 8000, step: 50 }),
-          numField('Minimum clear height', 'mezzanine.minClearMm', { min: 2000, max: 3500, step: 50, hint: 'Check with council and the NCC' })),
+          numField('Min clear height above', 'mezzanine.minClearMm', { min: 2000, max: 3500, step: 50, hint: '2.4 m for rooms, check with council and the NCC' }),
+          numField('Min clear height below', 'mezzanine.minClearBelowMm', { min: 1800, max: 3500, step: 50, hint: '2.1 m for storerooms, unverified for mezzanines' })),
       );
     }
     dock.append(section('Site',
       siteChk('Parking rows (indicative)', () => c.parking.enabled, (cc, v) => { cc.parking.enabled = v; }),
       siteNum('Aisle width', () => c.parking.aisleMm, (cc, v) => { cc.parking.aisleMm = v; }, { unit: 'mm', min: 3000, max: 30000, step: 500 }),
-      siteNum('Parking rate per 100 m2 GFA', () => Math.round(c.rates.parkingPerM2Gfa * 1000) / 10, (cc, v) => { cc.rates.parkingPerM2Gfa = v / 100; }, { min: 0, max: 20, step: 0.5 }),
+      siteNum('GFA per parking space', () => Math.round(1 / c.rates.parkingPerM2Gfa), (cc, v) => { cc.rates.parkingPerM2Gfa = 1 / Math.max(10, v); }, { unit: 'm²', min: 10, max: 500, step: 5 }),
+      siteChk('Count office area at 1 per 40 m²', () => c.rates.officeSeparate !== false, (cc, v) => { cc.rates.officeSeparate = v; }),
+      classField(c),
       siteNum('Accessible bays', () => c.parking.accessibleOverride, (cc, v) => { cc.parking.accessibleOverride = v == null ? null : Math.round(v); }, { min: 0, max: 50, step: 1, blank: true }),
       siteChk('Bollards', () => c.bollards.enabled, (cc, v) => { cc.bollards.enabled = v; }),
+      mrvField(c),
       siteNum('Downpipe every N units', () => c.bollards.downpipeEvery, (cc, v) => { cc.bollards.downpipeEvery = Math.round(v); }, { min: 0, max: 20, step: 1 }),
       siteChk('Waste enclosure', () => !!c.waste, (cc, v) => {
         const r0 = cc.rows[0];
@@ -179,23 +194,23 @@ export function createCommercialPanel({ store, host, editor }) {
       })));
     // Checks and schedule
     const checks = h('div', { class: 'cm-checks', dataset: { ps: 'commercial-checks' } }, h('b', null, 'Checks'),
-      ...(a.checks.length ? a.checks.map((k) => h('p', { class: `cm-check cm-${k.kind}`, dataset: { id: k.id } }, k.text)) : [h('p', { class: 'cm-check' }, 'Nothing to flag yet.')]));
+      ...(a.checks.length ? a.checks.map((k) => h('p', { class: `cm-check cm-${k.kind}`, dataset: { id: k.id, status: k.status || '' }, title: k.tip || null }, k.text)) : [h('p', { class: 'cm-check' }, 'Nothing to flag yet.')]));
     const sched = h('details', { class: 'cm-sec', dataset: { ps: 'bollard-schedule' } }, h('summary', null, `Bollard schedule (${a.schedule.total})`),
       h('div', { class: 'cm-body' }, ...a.schedule.byKind.map((r) => h('p', { class: 'cm-line' }, h('span', null, r.label), h('b', null, String(r.count)))), h('p', { class: 'cm-hint' }, a.schedule.note)));
     dock.append(sched, checks);
 
     // Stats strip
     const s = a.stats;
-    const cell = (k, v, l) => h('div', { class: 'cm-cell', dataset: { stat: k } }, h('b', null, v), h('i', null, l));
+    const cell = (k, v, l, tip) => h('div', { class: 'cm-cell', dataset: { stat: k }, title: tip || null }, h('b', null, v), h('i', null, l));
     clear(strip);
     strip.title = 'Bays shown are indicative. The full parking layout is added in the next stage.';
     strip.append(
       cell('units', String(s.units), s.mix.map((x) => `${x.count} x ${x.label}`).join(', ') || 'units'),
       cell('gfa', `${s.gfaM2.toLocaleString('en-AU')} m²`, s.mezzGfaM2 ? `GFA incl. ${s.mezzGfaM2} m² mezzanine` : 'GFA'),
       cell('coverage', s.coveragePct == null ? 'n/a' : `${s.coveragePct}%`, 'site coverage'),
-      cell('parking', String(s.parking.required), `bays needed at ${Math.round(s.parking.ratePerM2 * 1000) / 10} per 100 m²`),
+      cell('parking', String(s.parking.required), `bays needed, 1 per ${Math.round(1 / s.parking.ratePerM2)} m²${s.parking.officeSplit ? ', office 1 per 40 m²' : ''}`, `${facts('parkingUnits').tip}. ${s.parking.officeSplit ? 'Counting the office separately is a conservative reading, unverified. ' : ''}Indicative, check with council`),
       cell('provided', String(s.parking.provided), 'bays shown, indicative'),
-      cell('accessible', `${s.parking.accessible.provided} / ${s.parking.accessible.required}`, 'accessible bays'));
+      cell('accessible', `${s.parking.accessible.provided} / ${s.parking.accessible.required}`, 'accessible bays', `${facts('accessibleClass8').tip}. Bay 2.4 x 5.4 m with a 2.4 m shared zone, ${facts('bay').tip}`));
   }
 
   function inset() {

@@ -1,0 +1,389 @@
+{
+  "_meta": {
+    "dataset": "commercial-rules",
+    "generated": "13/11/2026",
+    "status_legend": {
+      "VERIFIED_PRIMARY": "Read from the primary or official text itself (NCC page, council DCP text in the JCE library)",
+      "VERIFIED_SECONDARY": "Read from a council guideline, government agency page or other document that quotes a standard; the owner must check against the standard",
+      "UNVERIFIED": "Could not be confirmed from an accessible primary or official source; do not rely on the value"
+    },
+    "council": "Gunnedah Shire Council",
+    "instrument_current": "Gunnedah Shire Council Development Control Plan 2025, version 1.0, adopted 18/06/2025, Resolution 17.6/25",
+    "instrument_requested": "Gunnedah DCP 2012 (commenced 20/12/2012, amended 18/03/2020). The JCE library file name states it was repealed 18 June 2025. The 2025 DCP is therefore the instrument now in force; 2012 values are given for comparison only.",
+    "page_refs": "DCP 2025 page numbers are the printed page numbers (footer \"Gunnedah Shire Council n\"); 2012 page numbers are \"Page n of 51\"."
+  },
+  "parking_rates_dcp_2025": {
+    "warehouse_or_distribution_centre": {
+      "value": {
+        "rate": "1 space per 300 m2 GFA plus 1 space per 40 m2 GFA for any office component, OR 1 space per employee, whichever is greater",
+        "per_m2": 300,
+        "office_per_m2": 40
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "B.1.2 Table 1 Industrial, p9",
+      "note": "Comment: adequate provision for manoeuvring, loading and unloading on site."
+    },
+    "industry_light_and_heavy": {
+      "value": {
+        "rate": "1 space per 75 m2 GFA OR 1 space per 2 employees, whichever is greater",
+        "per_m2": 75,
+        "per_employees": 2,
+        "comment": "May increase when retailing is permitted on site or office space exceeds 20% of floor area; on-site truck parking for each vehicle present at one time excluding docks"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "B.1.2 Table 1, p10"
+    },
+    "vehicle_repair_station_or_workshop": {
+      "value": {
+        "rate": "1 space per 40 m2 GFA OR 3 spaces per workshop bay, whichever is greater"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Table 1, p9"
+    },
+    "industrial_retail_premises": {
+      "value": {
+        "rate": "1 space per 45 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Table 1, p9"
+    },
+    "transport_or_truck_depot": {
+      "value": {
+        "rate": "1 space for each vehicle present at time of peak accumulation"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Table 1, p9"
+    },
+    "highly_automated_industry": {
+      "value": {
+        "rate": "0.2 spaces per 100 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Table 1, p10"
+    },
+    "office_premises": {
+      "value": {
+        "rate": "1 space per 40 m2 GFA, includes staff parking"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Table 1, p7"
+    },
+    "business_premises": {
+      "value": {
+        "rate": "1 space per 40 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Table 1, p7"
+    },
+    "retail_shops_under_1000": {
+      "value": {
+        "rate": "1 space per 25 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Table 1, p6"
+    },
+    "retail_shops_over_1000": {
+      "value": {
+        "rate": "1 space per 16 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Table 1, p6"
+    },
+    "bulky_goods": {
+      "value": {
+        "rate": "1 space per 50 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Table 1, p5"
+    },
+    "rounding": {
+      "value": "Fractions round up to next whole number",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "B.1.2(b)"
+    },
+    "accessible": {
+      "value": "Dedicated spaces for disabled persons at the rate in NCC Volume One",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "B.1.2(c)"
+    },
+    "layout": {
+      "value": "Parking layout to comply with AS 2890 series; tandem spaces only for commercial staff parking where no alternative and clearly marked",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "B.1.1(b),(c)"
+    }
+  },
+  "parking_rates_dcp_2012_repealed": {
+    "industrial": {
+      "value": {
+        "rate": "1 space per 75 m2 GFA OR 1 space per 2 employees, whichever is greater"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gunnedah-development-control-plan-2012-repealed-18-june-2025.txt (Gunnedah DCP 2012, amended 18/03/2020, file name states repealed 18 June 2025)",
+      "clause": "4.5 Parking, Page 22 of 51"
+    },
+    "warehouses": {
+      "value": {
+        "rate": "1 space per 300 m2 GFA OR 1 space per employee, whichever is greater"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gunnedah-development-control-plan-2012-repealed-18-june-2025.txt (Gunnedah DCP 2012, amended 18/03/2020, file name states repealed 18 June 2025)",
+      "clause": "4.5, p22"
+    },
+    "vehicle_body_repair_workshop": {
+      "value": {
+        "rate": "1 space per 40 m2 GFA OR 3 spaces per workshop bay, whichever is greater"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gunnedah-development-control-plan-2012-repealed-18-june-2025.txt (Gunnedah DCP 2012, amended 18/03/2020, file name states repealed 18 June 2025)",
+      "clause": "4.5, p22"
+    },
+    "industrial_retail": {
+      "value": {
+        "rate": "1 space per 45 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gunnedah-development-control-plan-2012-repealed-18-june-2025.txt (Gunnedah DCP 2012, amended 18/03/2020, file name states repealed 18 June 2025)",
+      "clause": "4.5, p22"
+    },
+    "business_premises": {
+      "value": {
+        "rate": "1 space per 40 m2 GFA"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gunnedah-development-control-plan-2012-repealed-18-june-2025.txt (Gunnedah DCP 2012, amended 18/03/2020, file name states repealed 18 June 2025)",
+      "clause": "Section 3 business zone parking table (page not recorded)"
+    }
+  },
+  "setbacks_dcp_2025": {
+    "primary_frontage": {
+      "value": {
+        "Mullaley Road (Oxley Highway)_m": 10,
+        "Farrar Road_m": 10,
+        "Quia Road_m": 10,
+        "Blackjack Road_m": 10,
+        "other_streets_m": 7.5
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.1 Table 10, p56"
+    },
+    "secondary_street": {
+      "value": {
+        "min_m": 3,
+        "condition": "non-classified road"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.1(b), p56",
+      "note": "Change from 2012, which applied the primary setback to secondary frontages."
+    },
+    "side_and_rear": {
+      "value": "BCA",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "Table 10, p56"
+    },
+    "commercial_business_zones": {
+      "value": "No minimum setbacks specified; justify by location and adjacent uses; side and rear per BCA and servicing",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "E.1, p44"
+    }
+  },
+  "setbacks_dcp_2012_repealed": {
+    "primary_and_secondary_frontage": {
+      "value": {
+        "Mullaley Road (Oxley Highway)_m": 10,
+        "Farrar Road_m": 10,
+        "Quia Road_m": 10,
+        "Blackjack Road_m": 10,
+        "other_m": 7.5,
+        "note": "street setback must be landscaped"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gunnedah-development-control-plan-2012-repealed-18-june-2025.txt (Gunnedah DCP 2012, amended 18/03/2020, file name states repealed 18 June 2025)",
+      "clause": "4.1, Page 20 of 51"
+    }
+  },
+  "landscaping_dcp_2025": {
+    "required_in": {
+      "value": [
+        "front 3 m of street setback",
+        "side and rear setbacks where visible from a public place or adjoining residential area",
+        "areas adjacent to building entrances and customer access points"
+      ],
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.4(a), p58"
+    },
+    "front_width_m": {
+      "value": 3,
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.4(a)(i), p58"
+    },
+    "percentage_of_site": {
+      "value": null,
+      "status": "UNVERIFIED",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "No percentage stated in Part F",
+      "note": "Part F sets widths only. General landscaping in B.4 was not read in detail."
+    },
+    "car_park_shade_trees": {
+      "value": "Landscaping for shading where more than 5 outdoor spaces are required",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.4(c), p58",
+      "note": "2012 DCP used more than 10 spaces."
+    },
+    "shade_structures": {
+      "value": {
+        "share_of_spaces_percent": 30,
+        "trigger": "outdoor car park of 30 spaces or more"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.4(d), p58"
+    },
+    "species": {
+      "value": "Low maintenance, drought and frost tolerant; multi-functional placement",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.4(e),(f), p58"
+    },
+    "farrar_road_2012": {
+      "value": "Landscaping on all lot boundaries for properties in Farrar Road (2012 DCP only)",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gunnedah-development-control-plan-2012-repealed-18-june-2025.txt (Gunnedah DCP 2012, amended 18/03/2020, file name states repealed 18 June 2025)",
+      "clause": "4.6, p22"
+    }
+  },
+  "building_materials_and_design_dcp_2025": {
+    "facade": {
+      "value": "Varied facade treatments, roof lines and materials on street, road, reserve, railway or residential-facing elevations",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.2(a), p57"
+    },
+    "sun_shading": {
+      "value": "Sun shading devices, screens and canopies to every window in a new building facing between north and north-east or north and west",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.2(b), p57"
+    },
+    "front_low_scale_elements": {
+      "value": "Offices, display and staff amenities at the front, in materials other than steel cladding or with an architectural feature for street variety and passive surveillance",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.2(c), p57",
+      "note": "2012 DCP required brick or finished concrete (4.2, p20)."
+    },
+    "roofing": {
+      "value": "Non-reflective where pitch exceeds 17 degrees or visible from a public road",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.2(d), p57"
+    },
+    "storage": {
+      "value": "Open work and storage areas at the rear and screened by landscaping",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.2(f), p57"
+    },
+    "fencing": {
+      "value": "Security fencing behind the building setback unless decorative and integrated in the landscaping",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.5(a), p59",
+      "note": "2012 DCP also required masonry or pre-coloured metal cladding, minimum 2 m, for visible open storage (4.7)."
+    },
+    "surface_finishes": {
+      "value": {
+        "site_access": "Concrete",
+        "vehicle_manoeuvring_areas": "Concrete, bitumen seal or asphaltic concrete",
+        "car_spaces": "Concrete, bitumen seal or asphaltic concrete",
+        "loading_unloading_areas": "Concrete, bitumen seal or asphaltic concrete",
+        "accessible_path_of_travel": "Concrete, bitumen seal or asphaltic concrete"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.3 Table 11, p57"
+    },
+    "unsealed_areas": {
+      "value": "Generally not acceptable; may be considered only where behind the building, serviced by tracked or heavy vehicles with tight turning circles, and no impacts demonstrated",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.3(b), p57-58"
+    },
+    "frontage_works": {
+      "value": "Kerb and gutter, sealed shoulder, footway formation and paving and road drainage for the full site frontage",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.3(c), p58"
+    }
+  },
+  "loading_and_manoeuvring_dcp_2025": {
+    "on_site_loading": {
+      "value": "Adequate space wholly within the site; forward entry and exit; bays not passing the building front or crossing the dominant pedestrian entrance, not used for customer parking or storage; bays line marked and signposted",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.6, p59"
+    },
+    "general_loading": {
+      "value": "Number and dimensions of bays assessed by Council on delivery vehicle type and frequency; turning paths of appropriate service vehicles accommodated; vehicles stand entirely within the site",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "B.2 Controls (a) to (e), p15"
+    },
+    "access": {
+      "value": {
+        "forward_entry_exit": true,
+        "separate_entry_exit_over_spaces": 50,
+        "standard": "AS 2890 series"
+      },
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.3(d),(f),(g), p58"
+    },
+    "design_vehicle": {
+      "value": "Not stated by size; safe manoeuvring for large design vehicles required (objective)",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "F.3 Objective 2, p57"
+    }
+  },
+  "waste_dcp_2025": {
+    "rule": {
+      "value": "Waste storage and collection for retail, industrial and commercial uses must be of sufficient size for all ongoing waste, complement the public domain, avoid noise, hygiene, odour and safety impacts, be easily accessed by occupants and collectors, be protected from theft, vandalism and vermin, and be flexible for future tenancies",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "B.8 Controls (d), p22"
+    },
+    "waste_management_plan": {
+      "value": "Waste management details (volume and type, storage and treatment, disposal) to accompany the application; optimise recycling",
+      "status": "VERIFIED_PRIMARY",
+      "source_url": "Dropbox /_JCESite/NSW-Councils/_database/text/gunnedah-shire-council/DCP/gsc-development-control-plan-2025-adopted-18-june-2025.txt (Gunnedah Shire Council DCP 2025, adopted 18/06/2025, Resolution 17.6/25)",
+      "clause": "B.8 Controls (a),(b), p21-22",
+      "note": "Whether a formal WMP form is mandated for industrial DAs was not confirmed."
+    }
+  },
+  "unconfirmed": [
+    "Gunnedah Local Environmental Plan 2012 zone, height and lot controls (not in the DCP)",
+    "Whether Council has published a design vehicle by GFA (DCP 2025 does not state one)",
+    "B.4 general landscaping controls that may add a site percentage"
+  ]
+}
