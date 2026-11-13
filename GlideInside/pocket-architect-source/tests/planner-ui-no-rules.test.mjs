@@ -86,8 +86,8 @@ test('no rules: a house that truly crosses a boundary reads red, a block that no
 
 test('zone note: a non residential zone may not permit a dwelling, a residential one says nothing', () => {
   const note = 'This zone may not permit a dwelling, check with council';
-  for (const code of ['E3', 'E1', 'IN1', 'B2', 'B4', 'RU1', 'RU4', 'SP2']) assert.equal(zoneDwellingNote({ zoning: { code } }), note, code);
-  for (const code of ['R1', 'R2', 'R3', 'R5', 'RU5', 'E4']) assert.equal(zoneDwellingNote({ zoning: { code } }), '', code);
+  for (const code of ['E3', 'E1', 'E4', 'E5', 'IN1', 'B2', 'B4', 'RU1', 'RU4', 'SP2']) assert.equal(zoneDwellingNote({ zoning: { code } }), note, code);
+  for (const code of ['R1', 'R2', 'R3', 'R5', 'RU5', 'C4', 'MU1']) assert.equal(zoneDwellingNote({ zoning: { code } }), '', code);
   assert.equal(zoneDwellingNote({ zoning: { code: '', name: 'Low density residential' } }), '');
   assert.equal(zoneDwellingNote({ zoning: null }), '', 'no zone known: no note');
   assert.equal(zoneDwellingNote(conadilly().site.lot), note, 'the Conadilly Street lot is E3');

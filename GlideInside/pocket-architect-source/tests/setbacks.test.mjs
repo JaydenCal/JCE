@@ -382,3 +382,21 @@ test('siteLotSetbacks: site.lot in, setbacks (with edgeKinds and inputs) and env
   assert.ok(qq.envelope);
   assert.equal(siteLotSetbacks({ ...lot, frontEdges: [] }, ALL, {}).setbacks, null);
 });
+
+// Zone classification (NSW 2022 employment zones reform): E4 is General Industrial, C4 is Environmental Living.
+import { classifyZone, isNonResidentialZone } from '../src/site/zone-class.js';
+import { zoneDwellingNote as _zdn } from '../src/site/default-setbacks.js';
+test('zone class: E4 General Industrial is employment, a legacy E4 Environmental Living name stays residential, C4 is residential', () => {
+  const note = 'This zone may not permit a dwelling, check with council';
+  assert.equal(classifyZone('E4', 'General Industrial'), 'employment');
+  assert.equal(_zdn({ zoning: { code: 'E4', name: 'General Industrial' } }), note);
+  assert.equal(classifyZone('E4', 'Environmental Living'), 'residential');
+  assert.equal(_zdn({ zoning: { code: 'E4', name: 'Environmental Living' } }), '');
+  assert.equal(classifyZone('C4', 'Environmental Living'), 'residential');
+  assert.equal(_zdn({ zoning: { code: 'C4' } }), '');
+  assert.equal(classifyZone('E4', ''), 'employment', 'code only: E1 to E5 are employment zones');
+  assert.equal(classifyZone('C2', ''), 'environmental');
+  assert.equal(isNonResidentialZone('E4', 'General Industrial'), true);
+  assert.equal(isNonResidentialZone('E4', 'Environmental Living'), false);
+  assert.equal(isNonResidentialZone('R2', 'Low Density Residential'), false);
+});

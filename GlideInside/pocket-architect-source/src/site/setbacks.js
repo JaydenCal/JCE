@@ -14,18 +14,18 @@
 export const BASIS_LABELS = Object.freeze({ council: 'Council DCP', NSW: 'Codes SEPP Housing Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)', QLD: 'QDC MP1.1 (default; council planning scheme or the Queensland Housing Code may vary)',
   NSW_INLAND: 'Codes SEPP Inland Code (complying development pathway; exclusions such as bushfire, flood and heritage apply)' });
 const SLOTS = ['front', 'secondaryFront', 'side', 'rear', 'garage'];
-const NON_RESIDENTIAL_ZONE = /^(B\d|IN\d|MU1|E1|E2|E5|SP\d|RE\d|W\d)$/;
+import { isNonResidentialZone } from './zone-class.js';
 
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
 const norm = (s) => String(s || '').trim().toUpperCase();
 
-export function zoneMatches(ruleZones, zone) {
+export function zoneMatches(ruleZones, zone, zoneName) {
   const z = norm(zone);
   let explicit = false;
   let any = false;
   for (const rz of ruleZones || []) {
     if (rz === '*') {
-      if (!NON_RESIDENTIAL_ZONE.test(z)) any = true;
+      if (!isNonResidentialZone(z, zoneName)) any = true;
     } else if (rz.endsWith('*')) {
       if (z.startsWith(rz.slice(0, -1))) { any = true; explicit = true; }
     } else if (norm(rz) === z) { any = true; explicit = true; }
@@ -111,7 +111,7 @@ function resolveSlot(rules, slot, input, zone, use) {
   const entries = [];
   const levelsNeeded = isNum(input.storeys) && input.storeys >= 2 ? ['ground', 'upper'] : ['ground'];
   for (const rule of rules) {
-    const zm = zoneMatches(rule.zones, zone);
+    const zm = zoneMatches(rule.zones, zone, input.zoneName);
     if (!zm) continue;
     const um = useMatches(rule.appliesTo, use);
     if (!um) continue;
@@ -602,6 +602,7 @@ export function siteLotSetbacks(lot, ruleSet, design = {}) {
     lotAreaM2: isNum(lot.areaM2) ? lot.areaM2 : undefined,
     lotWidthM: Math.round(widthMm) / 1000, // primary street frontage, used as the lot width
     cornerLot: edgeKinds.includes('secondaryFront'),
+    zoneName: (lot.zoning && lot.zoning.name) || null,
     use: 'dwelling',
     ...design,
   };
