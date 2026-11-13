@@ -1,7 +1,8 @@
 // project.commercial: the parametric spec, the source of truth for commercial mode. Additive: SCHEMA_VERSION stays 2 and a project
 // without project.mode is a normal housing project. Lengths in millimetres, angles in degrees, plan y down.
 
-import { DEFAULT_PARKING_RATE } from './rules.js';
+// Kept free of the JSON dataset so the portal copy of the schema stays small; the rate is 1 per 75 m2 (see rules.js and dataset.js).
+const DEFAULT_PARKING_RATE = 1 / 75;
 
 export const COMMERCIAL_VERSION = 1;
 
@@ -18,7 +19,8 @@ export const STAIR_TYPES = Object.freeze(['straight', 'L']);
 
 export const PERSONNEL_DOOR = Object.freeze({ widthMm: 920, heightMm: 2040 });
 export const SLAB_MM = 150;
-export const MIN_CLEAR_MM = 2400;
+export const MIN_CLEAR_MM = 2400; // above the mezzanine: general rooms, NCC 2022 ceiling height
+export const MIN_CLEAR_BELOW_MM = 2100; // under the mezzanine: storerooms and the like (commonly applied, unverified in the dataset)
 
 export const defaultUnit = () => ({
   widthMm: 6000,
@@ -27,7 +29,7 @@ export const defaultUnit = () => ({
   doors: { count: 1, presetId: '3.6x4.0', widthMm: 3600, heightMm: 4000, offsetMm: 0, motorised: true, rear: false, personnel: true },
   windows: { front: 'none', rear: 'none', widthMm: 1800, heightMm: 1200, sillMm: 900, side: false },
   office: { enabled: false, depthMm: 3000, accessibleWc: false },
-  mezzanine: { enabled: false, mode: 'depth', depthMm: 6000, percent: 40, position: 'rear', stairType: 'straight', stairSide: 'left', balustrade: true, levelMm: 3000, slabMm: SLAB_MM, minClearMm: MIN_CLEAR_MM },
+  mezzanine: { enabled: false, mode: 'depth', depthMm: 6000, percent: 40, position: 'rear', stairType: 'straight', stairSide: 'left', balustrade: true, levelMm: 3000, slabMm: SLAB_MM, minClearMm: MIN_CLEAR_MM, minClearBelowMm: MIN_CLEAR_BELOW_MM },
   roof: 'skillion',
   cladding: 'metal',
 });
@@ -41,7 +43,9 @@ export const defaultCommercial = (useClass = 'industrial') => ({
   bollards: { enabled: true, downpipeEvery: 4 },
   waste: null, // { x, y, widthMm, depthMm, rotationDeg }
   hydrant: null, // { x, y }
-  rates: { parkingPerM2Gfa: DEFAULT_PARKING_RATE, source: 'Indicative default of 1 space per 100 m2 of GFA, check with council' },
+  buildingClass: 'class_8', // NCC class for the accessible bay rate: class_5, class_6, class_7 or class_8
+  vehicle: { code: 'MRV', lengthM: 8.8, widthM: 2.5, heightM: 4.5, turningRadiusM: null }, // radius is null in the dataset: edit it and verify against AS 2890.2
+  rates: { parkingPerM2Gfa: DEFAULT_PARKING_RATE, officePerM2: 1 / 40, officeSeparate: true, source: 'Indicative: 1 space per 75 m2 GFA including mezzanine for unit complexes (Tamworth DCP, Gunnedah DCP 2025), office 1 per 40 m2, check with council' },
 });
 
 let n = 0;
