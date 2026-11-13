@@ -6,6 +6,10 @@ import market from './data/market.json' with { type: 'json' };
 import portal from './data/market-portal.json' with { type: 'json' };
 import { layoutUnits, mezzanineOf } from './layout.js';
 import { lotAreaM2 } from './stats.js';
+import { parkingLayout } from './parking.js';
+import { rowPoint } from './layout.js';
+import { bayOffsetMm } from './schema.js';
+import * as G from '../model/geometry.js';
 
 export const DATA_DATE = '13/11/2026';
 export const MIN_N = 4; // portal medians from fewer listings than this are weak evidence and are not used
@@ -46,6 +50,51 @@ export const AREAS = Object.freeze([
 ]);
 const AREA_BY_KEY = new Map(AREAS.map((a) => [a.key, a]));
 export const DEFAULT_AREA = 'default';
+export const LANDSCAPE_RATE = Object.freeze({ low: 10, high: 25, value: 15 }); // owner allowance 13/11/2026, $/m2 of the lot outside the developed area
+
+/**
+ * The developed area in m2: building footprint plus hardstand (the truck apron, car aisles, bays and accessible zones as one paved block
+ * per parking row, and the waste pad). Overlaps count once (grid sample at 250 mm), never more than the lot. Driveways are not modelled.
+ */
+export function developedAreaM2(commercial, lot) {
+  const units = layoutUnits(commercial);
+  const polys = units.map((u) => u.poly);
+  const park = parkingLayout(commercial);
+  const off = bayOffsetMm(commercial.parking);
+  for (const pr of park.rows) {
+    if (!pr.slots.length) continue;
+    const fr = pr.frame;
+    const far = pr.depth + off + commercial.parking.bayL;
+    polys.push([rowPoint(fr, 0, pr.depth), rowPoint(fr, pr.length, pr.depth), rowPoint(fr, pr.length, far), rowPoint(fr, 0, far)]);
+  }
+  const w = commercial.waste;
+  if (w) {
+    const a = ((w.rotationDeg || 0) * Math.PI) / 180;
+    const ax = { x: Math.cos(a), y: Math.sin(a) };
+    const ay = { x: -Math.sin(a), y: Math.cos(a) };
+    const c = (sx, sy) => ({ x: w.x + ax.x * sx * w.widthMm / 2 + ay.x * sy * w.depthMm / 2, y: w.y + ax.y * sx * w.widthMm / 2 + ay.y * sy * w.depthMm / 2 });
+    polys.push([c(-1, -1), c(1, -1), c(1, 1), c(-1, 1)]);
+  }
+  if (!polys.length) return 0;
+  const bbs = polys.map((q) => G.bbox(q));
+  const x0 = Math.min(...bbs.map((b) => b.minX)); const x1 = Math.max(...bbs.map((b) => b.maxX));
+  const y0 = Math.min(...bbs.map((b) => b.minY)); const y1 = Math.max(...bbs.map((b) => b.maxY));
+  const step = 250;
+  let n = 0;
+  for (let y = y0 + step / 2; y < y1; y += step) {
+    for (let x = x0 + step / 2; x < x1; x += step) {
+      const pt = { x, y };
+      for (let i = 0; i < polys.length; i++) {
+        const b = bbs[i];
+        if (x < b.minX || x > b.maxX || y < b.minY || y > b.maxY) continue;
+        if (G.pointInPolygon(pt, polys[i])) { n++; break; }
+      }
+    }
+  }
+  const m2 = (n * step * step) / 1e6;
+  const lotM2 = lotAreaM2(lot);
+  return lotM2 ? Math.min(m2, lotM2) : m2;
+}
 
 const norm = (s) => String(s || '').toUpperCase().replace(/\b(CITY|SHIRE|COUNCIL|MUNICIPAL|OF|THE)\b/g, ' ').replace(/-/g, ' ').replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
 
@@ -121,7 +170,8 @@ export function areaDefaults(areaKey, { avgUnitGfaM2 = 0 } = {}) {
     yieldPct: { value: Math.round(((yr.low + yr.high) / 2) * 100) / 100, ...yr, status: 'ESTIMATE', chip: `Estimate, published range ${yr.low} to ${yr.high}`, note: 'No regional NSW net yield was published, the range is an assumption.' },
     landRate: est(lr, 5, 'Serviced industrial land prices are not published for most areas.'),
     buildRate: est(bR, 50, 'Secondary cost guides, not a quantity survey. Excludes fees and site works.'),
-    siteRate: est(sw, 5, 'Pavements, drainage, services, landscaping and detention, per m² of site.'),
+    siteRate: est(sw, 5, 'Pavements, drainage, services and detention, per m² of the developed area (building footprint plus hardstand).'),
+    landscapeRate: { value: LANDSCAPE_RATE.value, low: LANDSCAPE_RATE.low, high: LANDSCAPE_RATE.high, status: 'ESTIMATE', chip: `Estimate, allowance ${LANDSCAPE_RATE.low} to ${LANDSCAPE_RATE.high}`, note: 'Clearing and landscaping, per m² of the rest of the lot.' },
     feesPct: { value: Math.round(((fe.low + fe.high) / 2) * 100) / 100, ...fe, status: 'ESTIMATE', chip: `Estimate, published range ${fe.low} to ${fe.high}`, note: 'Percent of construction cost (build plus site works).' },
     contPct: { value: Math.round(((co.low + co.high) / 2) * 100) / 100, ...co, status: 'ESTIMATE', chip: `Estimate, published range ${co.low} to ${co.high}`, note: 'Percent of construction cost (build plus site works).' },
   };
@@ -138,7 +188,7 @@ export function unitGfas(commercial) {
   });
 }
 
-const INPUT_KEYS = ['saleRate', 'rentRate', 'yieldPct', 'landRate', 'buildRate', 'siteRate', 'feesPct', 'contPct'];
+const INPUT_KEYS = ['saleRate', 'rentRate', 'yieldPct', 'landRate', 'buildRate', 'siteRate', 'landscapeRate', 'feesPct', 'contPct'];
 
 /** The effective values: the person's overrides (project.commercial.feasibility.v) on top of the defaults. */
 export function effectiveInputs(defaults, overrides = {}) {
@@ -157,7 +207,7 @@ export function effectiveInputs(defaults, overrides = {}) {
 const r0 = (v) => Math.round(v);
 
 /** One scenario. side: 'mid' (the values in use), 'low' (low revenue, high cost) or 'high' (high revenue, low cost). */
-function scenario(inp, { gfa, siteM2, lotM2 }, side) {
+function scenario(inp, { gfa, devM2, restM2, lotM2 }, side) {
   const pick = (k, revenue) => {
     const x = inp[k];
     if (side === 'mid') return x.value;
@@ -172,7 +222,9 @@ function scenario(inp, { gfa, siteM2, lotM2 }, side) {
   const landFixed = inp.landPrice.value;
   const land = landFixed != null ? landFixed : (lotM2 || 0) * pick('landRate', false);
   const build = gfa * pick('buildRate', false);
-  const site = siteM2 * pick('siteRate', false);
+  const siteDev = devM2 * pick('siteRate', false);
+  const siteRest = restM2 * pick('landscapeRate', false);
+  const site = siteDev + siteRest;
   const construction = build + site;
   const fees = (construction * pick('feesPct', false)) / 100;
   const contingency = (construction * pick('contPct', false)) / 100;
@@ -183,7 +235,7 @@ function scenario(inp, { gfa, siteM2, lotM2 }, side) {
   const marginSale = realisation - cost;
   const marginHold = endValue - cost;
   return {
-    saleRate: sale, rentRate: rent, yieldPct, land, build, siteWorks: site, fees, contingency, cost,
+    saleRate: sale, rentRate: rent, yieldPct, land, build, siteWorks: site, siteDev, siteRest, fees, contingency, cost,
     realisation, grossRent, endValue, marginSale, marginHold,
     marginSalePct: cost > 0 ? (marginSale / cost) * 100 : 0,
     marginHoldPct: cost > 0 ? (marginHold / cost) * 100 : 0,
@@ -204,12 +256,14 @@ export function feasibility(commercial, lot, opts = {}) {
   const lotM2 = lotAreaM2(lot) || 0;
   const defaults = areaDefaults(areaKey, { avgUnitGfaM2: units.length ? gfa / units.length : 0 });
   const inputs = effectiveInputs(defaults, opts.overrides || fz.v || {});
-  const ctx = { gfa, siteM2: lotM2, lotM2 };
+  const devM2 = developedAreaM2(commercial, lot);
+  const restM2 = Math.max(0, lotM2 - devM2);
+  const ctx = { gfa, devM2, restM2, lotM2 };
   const mid_ = scenario(inputs, ctx, 'mid');
   const low = scenario(inputs, ctx, 'low');
   const high = scenario(inputs, ctx, 'high');
   const perUnit = units.map((u) => ({ n: u.n, gfa: u.gfa, price: u.gfa * mid_.saleRate, rent: u.gfa * mid_.rentRate }));
-  return { areaKey, detectedKey: detected, areaLabel: defaults.label, confidence: defaults.confidence, units, perUnit, gfa, lotM2, inputs, defaults, mid: mid_, low, high, landFromPrice: inputs.landPrice.value != null, dataDate: DATA_DATE };
+  return { areaKey, detectedKey: detected, areaLabel: defaults.label, confidence: defaults.confidence, units, perUnit, gfa, lotM2, devM2, restM2, inputs, defaults, mid: mid_, low, high, landFromPrice: inputs.landPrice.value != null, dataDate: DATA_DATE };
 }
 
 // Formatting, shared by the panel and the C103 section --------------------------------------------------------------------------
@@ -239,7 +293,8 @@ export function costRows(f) {
   return [
     [f.landFromPrice ? 'Land (listing or purchase price)' : `Land (${money(f.inputs.landRate.value)} per m² x ${Math.round(f.lotM2).toLocaleString('en-AU')} m²)`, money(m.land)],
     [`Building (${money(f.inputs.buildRate.value)} per m² x ${m2(f.gfa)} m² GFA)`, money(m.build)],
-    [`Site works (${money(f.inputs.siteRate.value)} per m² x ${Math.round(f.lotM2).toLocaleString('en-AU')} m² site)`, money(m.siteWorks)],
+    [`Site works, developed area (${money(f.inputs.siteRate.value)} per m² x ${m2(f.devM2)} m² of footprint and hardstand)`, money(m.siteDev)],
+    [`Clearing and landscaping, rest of lot (${money(f.inputs.landscapeRate.value)} per m² x ${m2(f.restM2)} m²)`, money(m.siteRest)],
     [`Fees (${f.inputs.feesPct.value}% of building and site works)`, money(m.fees)],
     [`Contingency (${f.inputs.contPct.value}% of building and site works)`, money(m.contingency)],
     ['Total development cost', money(m.cost)],

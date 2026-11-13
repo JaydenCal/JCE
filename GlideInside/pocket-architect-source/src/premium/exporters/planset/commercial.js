@@ -1184,8 +1184,8 @@ export function drawFeasibility(doc, model, x, y, w) {
   const ev = f.defaults.inputs.saleRate.evidence;
   const items = [
     `Sale rate ${money(i.saleRate.value)} per m² GFA, rent ${money(i.rentRate.value)} per m² per year, net yield ${i.yieldPct.value}%. Status: ${i.saleRate.chip}; ${i.rentRate.chip}; yield ${i.yieldPct.chip.toLowerCase()}.${ev.askMedPsm || ev.soldMedPsm ? ` Portal asking median ${ev.askMedPsm ? money(ev.askMedPsm) : 'none'} (n ${ev.askN}), sold median ${ev.soldMedPsm ? money(ev.soldMedPsm) : 'none'} (n ${ev.soldN}).` : ''}`,
-    `Cost basis: ${costRows(f).slice(0, 5).map(([k, v]) => `${k.replace(/ \(.*$/, '').toLowerCase()} ${v}`).join(', ')}. Build, site works, fees, contingency and land rates are estimates from published ranges.`,
-    `${RENT_NOTE} Site works are charged on the whole lot area. Low to high uses the ends of the published ranges: low revenue with high cost, and high revenue with low cost.`,
+    `Cost basis: ${costRows(f).slice(0, 6).map(([k, v]) => `${k.replace(/ \(.*$/, '').toLowerCase()} ${v}`).join(', ')}. Build, site works, fees, contingency and land rates are estimates from published ranges.`,
+    `${RENT_NOTE} Developed area ${m2f(f.devM2)} m² (building footprint plus hardstand) at the site works rate, rest of the lot ${m2f(f.restM2)} m² at the clearing and landscaping rate; driveways are not modelled. Low to high uses the ends of the published ranges: low revenue with high cost, and high revenue with low cost.`,
     SOURCES_TEXT,
   ];
   y = paragraphs(doc, x, y, w, items, { size: 5.9, lead: 2.7 });

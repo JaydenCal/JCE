@@ -156,10 +156,11 @@ export function createCommercialPanel({ store, host, editor }) {
       field('Land price', h('span', { class: 'cm-in' }, priceInput, h('i', null, '$')), f.landFromPrice ? 'Listing or purchase price, used instead of the land rate' : 'Listing price if known, else land rate x lot area'),
       inRow('landRate', 'Land rate', '$/m²', 5),
       inRow('buildRate', 'Build rate (GFA)', '$/m²', 50),
-      inRow('siteRate', 'Site works (lot)', '$/m²', 5),
+      inRow('siteRate', 'Site works (developed)', '$/m²', 5),
+      inRow('landscapeRate', 'Clearing, landscaping (rest)', '$/m²', 1),
       inRow('feesPct', 'Fees', '%', 0.5),
       inRow('contPct', 'Contingency', '%', 0.5),
-      h('p', { class: 'cm-hint' }, `${GST_NOTE} ${RENT_NOTE}`),
+      h('p', { class: 'cm-hint' }, `${GST_NOTE} ${RENT_NOTE} Developed area ${Math.round(f.devM2).toLocaleString('en-AU')} m² (building footprint plus hardstand), rest of lot ${Math.round(f.restM2).toLocaleString('en-AU')} m².`),
       h('b', { class: 'cm-fz-h' }, 'Cost build up'), ...costs,
       h('b', { class: 'cm-fz-h' }, 'Per unit'), unitTable,
       h('p', { class: 'cm-hint' }, `Low to high uses the ends of the published ranges: low revenue with high cost, and high revenue with low cost. ${SOURCES_TEXT}`));

@@ -135,6 +135,8 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
   await load('commercial.json');
   await page.evaluate(() => { const d = document.querySelector('.cm-dock'); d.querySelectorAll('details').forEach((x) => { x.open = x.querySelector('summary').textContent.trim() === 'Indicative yield and value'; }); const sec = [...d.querySelectorAll('details')].find((x) => x.open); d.scrollTop = sec.offsetTop - 70; });
   await shot('20-feasibility');
+  await page.evaluate(() => { const d = document.querySelector('.cm-dock'); const h = [...d.querySelectorAll('.cm-fz-h')].find((x) => x.textContent === 'Cost build up'); d.scrollTop = h.offsetTop - 60; });
+  await shot('20b-feasibility-costs');
   // landing page
   const land = await mk({ width: 1440, height: 900 });
   await land.goto(`${ORIGIN}/commercial/`); await land.waitForTimeout(1200);

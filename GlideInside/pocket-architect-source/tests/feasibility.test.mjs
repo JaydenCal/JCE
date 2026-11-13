@@ -90,10 +90,18 @@ test('totals: golden numbers for the commercial fixture in Tamworth', () => {
   near(m.endValue, (1627.2 * 115) / 0.0725, 0.5); // 2,581,076
   near(m.land, 900000, 0.01);
   near(m.build, 1627.2 * 1950, 0.5); // 3,173,040
-  near(m.siteWorks, 9000 * 185, 0.01); // 1,665,000
-  near(m.fees, (3173040 + 1665000) * 0.1, 0.5);
-  near(m.contingency, (3173040 + 1665000) * 0.0875, 0.5);
-  near(m.cost, 900000 + 3173040 + 1665000 + 483804 + 423328.5, 1);
+  // site works on the developed area only: footprint 1,440 m2 plus the paved block of each parking row (truck apron, aisle, bays)
+  near(f.devM2, 3108, 1);
+  near(f.restM2, 9000 - f.devM2, 0.001);
+  assert.ok(f.devM2 > 1440 && f.devM2 < f.lotM2);
+  near(m.siteDev, f.devM2 * 185, 0.01);
+  near(m.siteRest, f.restM2 * 15, 0.01);
+  near(m.siteWorks, m.siteDev + m.siteRest, 0.01);
+  const construction = m.build + m.siteWorks;
+  near(m.fees, construction * 0.1, 0.5);
+  near(m.contingency, construction * 0.0875, 0.5);
+  near(m.cost, m.land + construction + m.fees + m.contingency, 0.5);
+  near(m.cost, 5455725, 5); // golden
   near(m.marginSale, m.realisation - m.cost, 0.01);
   near(m.marginSalePct, (m.marginSale / m.cost) * 100, 1e-6);
   near(m.grossYieldOnCostPct, (m.grossRent / m.cost) * 100, 1e-6);
@@ -104,7 +112,11 @@ test('totals: golden numbers for the commercial fixture in Tamworth', () => {
   near(f.perUnit.reduce((s, u) => s + u.price, 0), m.realisation, 0.5);
   near(f.perUnit.reduce((s, u) => s + u.rent, 0), m.grossRent, 0.5);
   assert.equal(summaryRows(f)[1][1], '$3,941,078');
-  assert.equal(costRows(f).at(-1)[1], '$6,645,173');
+  assert.equal(feasibility({ ...p.commercial, feasibility: { area: null, v: { landscapeRate: 30 } } }, p.site.lot).mid.siteRest, f.restM2 * 30);
+  assert.equal(costRows(f).at(-1)[1], '$5,455,725');
+  assert.equal(costRows(f).length, 7, 'land, building, site works, landscaping, fees, contingency, total');
+  assert.match(costRows(f)[3][0], /Clearing and landscaping, rest of lot \(\$15 per m²/);
+  assert.equal(f.inputs.landscapeRate.status, 'ESTIMATE');
 });
 
 test('overrides: listing price replaces land rate x area, edits flow through, the band always holds the value in use', () => {
