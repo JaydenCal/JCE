@@ -43,7 +43,9 @@ export const defaultCommercial = (useClass = 'industrial') => ({
   bollards: { enabled: true, downpipeEvery: 4 },
   waste: null, // { x, y, widthMm, depthMm, rotationDeg }
   hydrant: null, // { x, y }
-  buildingClass: 'class_8', // NCC class for the accessible bay rate: class_5, class_6, class_7 or class_8
+  // NCC class for the accessible bay rate: class_5, class_6, class_7 or class_8. A commercial (business) zone starts on Class 6, the
+  // more demanding rate (1 per 50 bays); an industrial zone on Class 8. The person can change it.
+  buildingClass: useClass === 'commercial' ? 'class_6' : 'class_8',
   vehicle: { code: 'MRV', lengthM: 8.8, widthM: 2.5, heightM: 4.5, turningRadiusM: null }, // radius is null in the dataset: edit it and verify against AS 2890.2
   rates: { parkingPerM2Gfa: DEFAULT_PARKING_RATE, officePerM2: 1 / 40, officeSeparate: true, source: 'Indicative: 1 space per 75 m2 GFA including mezzanine for unit complexes (Tamworth DCP, Gunnedah DCP 2025), office 1 per 40 m2, check with council' },
 });
