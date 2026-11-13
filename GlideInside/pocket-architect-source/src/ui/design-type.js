@@ -3,12 +3,14 @@
 
 import { migrate } from '../model/schema.js';
 import { toast } from './toast.js';
+import { convertToCommercial } from '../commercial/mode.js';
 
 export const DESIGN_TYPES = [
   { id: 'house', label: 'House', template: 'house_single', generic: 'a generic 4 bedroom house' },
   { id: 'granny_flat', label: 'Granny flat', template: 'granny_flat', generic: 'a generic 2 bedroom granny flat' },
   { id: 'duplex', label: 'Duplex', template: 'duplex', generic: 'a generic duplex with two 3 bedroom units' },
   { id: 'shed', label: 'Shed', template: 'shed_workshop', generic: 'a generic garage and workshop shed' },
+  { id: 'commercial', label: 'Commercial', template: null, generic: 'a row of industrial or commercial units (Beta)' },
 ];
 const BY_TEMPLATE = Object.fromEntries(DESIGN_TYPES.map((d) => [d.template, d.id]));
 BY_TEMPLATE.house_double = 'house';
@@ -16,6 +18,7 @@ BY_TEMPLATE.shed_farm = 'shed';
 
 /** The design type of a project: its stored designType, else read from its type and name. 'extension' is its own. */
 export function designTypeOf(project) {
+  if (project?.mode === 'commercial') return 'commercial';
   if (DESIGN_TYPES.some((d) => d.id === project?.designType)) return project.designType;
   if (project?.type === 'shed') return 'shed';
   if (project?.type === 'extension') return 'extension';
@@ -34,6 +37,7 @@ const hasContent = (p) => p.levels.some((l) => l.rooms.length || l.walls.length 
 export function buildDesignType(current, typeId, catalogue) {
   const type = DESIGN_TYPES.find((d) => d.id === typeId);
   if (!type) throw new Error(`Unknown design type ${typeId}`);
+  if (typeId === 'commercial') return migrate(convertToCommercial(structuredClone(current)));
   const tpl = catalogue?.templates?.find((t) => t.id === type.template);
   if (!tpl) throw new Error('That design type is not available.');
   const fresh = migrate(catalogue.createFromTemplate ? catalogue.createFromTemplate(tpl.id) : tpl.create());
@@ -41,6 +45,8 @@ export function buildDesignType(current, typeId, catalogue) {
   const keepName = current.name && current.name !== 'Untitled design' && !templateNames.has(current.name);
   const next = {
     ...fresh,
+    mode: undefined,
+    commercial: undefined,
     id: current.id,
     name: keepName ? current.name : fresh.name,
     designType: type.id,

@@ -344,13 +344,13 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     const lot = lotOf(p);
     const view = store.ui.view;
     // Not while the placement panel is open (it uses the bottom of the stage), nor in walk mode.
-    const show = !!lot && hasBuilding(p) && view !== 'walk' && !host.querySelector('.pas-pose');
+    const show = !!lot && hasBuilding(p) && p.mode !== 'commercial' && view !== 'walk' && !host.querySelector('.pas-pose');
     root.hidden = !show;
     root.dataset.view = view;
     viewerHost.classList.toggle('lc-on', show && (view === '3d' || view === 'split'));
     viewerHost.classList.toggle('lc-full', show && view === '3d');
     layoutClasses();
-    if (!show) { getViewer()?.setInset?.({}); app().editor?.setInset?.({}); return; }
+    if (!show) { getViewer()?.setInset?.({}); if (p.mode !== 'commercial') app().editor?.setInset?.({}); return; }
     const canSend = engineer.available();
     bSend.hidden = !canSend;
     sendRow.hidden = !canSend;

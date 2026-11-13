@@ -37,6 +37,9 @@ import { backTarget, backLabel } from './ui/back-target.js';
 import { startView, readLastView } from './ui/view-mode.js';
 import { portalUrl } from './portal/links.js';
 import { createLotCard } from './lotcard/lot-card.js';
+import { createCommercialPanel } from './commercial/ui/panel-commercial.js';
+import { enterCommercial, offerCommercial } from './commercial/mode.js';
+import { effectiveClass } from './commercial/zones.js';
 import { viewerEmbedRequested, addressFromSearch, openFullEditor, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
 
 const demoMode = () => CONFIG.embedMode === 'demo';
@@ -377,6 +380,8 @@ async function main() {
   // Start state ------------------------------------------------------------------------------------------------------------------
   const params = new URLSearchParams(location.search);
   const addressParam = addressFromSearch();
+  // ?mode=commercial[&address=...]: the commercial landing page hands off here. The switch is the person's own request, so it is made without a toast.
+  const wantCommercial = new URLSearchParams(location.search).get('mode') === 'commercial' && !VIEWER && !demoMode();
   const phone = window.matchMedia?.('(max-width: 599.98px)').matches;
   let owner = null;
   try {
@@ -397,6 +402,12 @@ async function main() {
   let lotSeen = null;
   const lotKeyOf = (p) => { const l = p.site?.lot; return l ? `${l.address || ''}|${l.lotLabel || ''}|${l.boundary?.length || 0}` : null; };
   const defaultTool = () => {
+    if (store.project.mode === 'commercial') {
+      if (store.ui.tool === 'select' || store.ui.tool === 'movehouse') store.setUI({ tool: 'commercial', toolArg: null });
+      if (!store.ui.commercialRow && store.project.commercial?.rows.length) store.ui.commercialRow = store.project.commercial.rows[0].id;
+      return;
+    }
+    if (store.ui.tool === 'commercial') store.setUI({ tool: 'select', toolArg: null });
     const key = lotKeyOf(store.project);
     if (key === lotSeen) return;
     lotSeen = key;
@@ -410,8 +421,9 @@ async function main() {
   const openFull = () => openFullEditor(store.project);
   const lotCard = createLotCard({ store, host: refs.stage, viewerHost: refs.host3d, catalogue, getViewer, ...(VIEWER ? { onEdit: openFull, onFullEditor: openFull, onFind: (a) => api.embedViewer?.run(a), onMini: () => {}, embed: true } : {}) });
   api.lotCard = lotCard;
+  if (!VIEWER && !demoMode()) api.commercial = createCommercialPanel({ store, host: refs.stage, editor });
   createMapCredit(refs.stage, store);
-  if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam) createWelcome(refs.stage, store, { onChoose: openNew });
+  if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam && !wantCommercial) createWelcome(refs.stage, store, { onChoose: openNew });
 
   embed.ready();
   if (earlierDesign) {
@@ -430,9 +442,13 @@ async function main() {
   } else if (addressParam) {
     initEmbedViewer({ store, catalogue, shell: refs.shell, viewerMode: false }); // also answers gi:find-address
     loadAddress(store, catalogue, addressParam)
-      .then(({ lot }) => toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' }))
+      .then(({ lot }) => {
+        toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });
+        if (wantCommercial) { enterCommercial(store, { useClass: effectiveClass(store.project) || 'industrial' }); offerCommercial(store); }
+      })
       .catch((e) => toast(e?.message || 'That address could not be loaded.', { kind: 'warn' }));
   }
+  if (wantCommercial && !addressParam) enterCommercial(store);
   if (shareId) await share.openLink(shareId);
 
   // Plan Pack (optional). Loaded after the first frame; the tool works without it.

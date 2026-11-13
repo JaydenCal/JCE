@@ -16,6 +16,8 @@ import { clashIds, createClashNotifier } from './clash.js';
 import { KEY_TO_TOOL } from './tools-meta.js';
 import { createSelectTool } from './tool-select.js';
 import { createMoveHouseTool } from './tool-movehouse.js';
+import { createCommercialTool } from '../commercial/ui/tool-commercial.js';
+import { drawCommercial } from '../commercial/draw2d.js';
 import { createDrawTools } from './tool-draw.js';
 import { createPlaceTools } from './tool-place.js';
 import { createMiscTools } from './tool-misc.js';
@@ -270,6 +272,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
       underlayBitmap: state.underlayBitmap,
       frontageEdit: !!store.ui.frontageEdit,
       overlay: state.overlay,
+      selectedRow: state.selectedRow || store.ui.commercialRow || null,
       furnSize: ed.furnSize,
       scaleRight: !!document.querySelector('.lc-root:not([hidden])'),
     };
@@ -285,6 +288,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     drawRooms(ctx, st, scene);
     drawWalls(ctx, st, scene);
     drawSchemeTint(ctx, st);
+    drawCommercial(ctx, st);
     drawOpenings(ctx, st, scene);
     drawStairs(ctx, st, level);
     drawFurniture(ctx, st, level, catalogue, clashes);
@@ -811,6 +815,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
   tools = {
     ...createSelectTool(ed),
     ...createMoveHouseTool(ed),
+    ...createCommercialTool(ed),
     ...createDrawTools(ed),
     ...createPlaceTools(ed),
     ...createMiscTools(ed, { onCalibrated: () => { state.calibrating = false; store.emit('plan:calibrating', false); } }),
