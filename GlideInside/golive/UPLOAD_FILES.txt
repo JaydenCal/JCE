@@ -1,4 +1,4 @@
-# Files in glideinside-site-upload.zip, built 13/11/2026 from 608eff8 (base a7e153a).
+# Files in glideinside-site-upload.zip, built 13/11/2026 from 6ca7685 (base a7e153a).
 # Extract into public_html. Do not upload subdivision/, .htaccess, .user.ini or contact-config.php.
 3d-floor-plan-maker/index.html
 analytics.js
@@ -44,6 +44,14 @@ framework.js
 granny-flat-designs/index.html
 index.html
 plan-studio/app/index.html
+plan-studio/data/commercial/README.md
+plan-studio/data/commercial/accessible.json
+plan-studio/data/commercial/bollards.json
+plan-studio/data/commercial/councils/gunnedah.json
+plan-studio/data/commercial/councils/tamworth.json
+plan-studio/data/commercial/mezzanine.json
+plan-studio/data/commercial/rates.json
+plan-studio/data/commercial/vehicles.json
 plan-studio/index.html
 plan-studio/launch/index.html
 plans/1-bedroom-granny-flat-plans/index.html
@@ -56,6 +64,7 @@ plans/shed-house-plans/index.html
 portal/admin/index.html
 portal/index.html
 portal/portal.css
+portal/src/commercial/schema.js
 portal/src/config.js
 portal/src/model/schema.js
 portal/src/portal/admin-api.js
