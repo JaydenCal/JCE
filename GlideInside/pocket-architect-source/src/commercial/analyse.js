@@ -10,7 +10,7 @@ let last = { key: '', value: null };
 export function analyse(project) {
   if (!project?.commercial) return null;
   const lot = project.site?.lot;
-  const key = JSON.stringify([project.commercial, lot?.envelope?.length, lot?.setbacksKey, lot?.boundary?.length, lot?.lotLabel, lot?.areaM2, lot?.zoning?.code, project.levels.length, project.levels[0]?.walls.length]);
+  const key = JSON.stringify([project.commercial, lot?.envelope, lot?.setbacks, lot?.setbacksKey, lot?.boundary, lot?.frontEdges, lot?.lotLabel, lot?.areaM2, lot?.zoning, project.levels.length, project.levels[0]?.walls.length]);
   if (last.key === key) return last.value;
   const bollards = bollardsFor(project.commercial);
   const value = { units: layoutUnits(project.commercial), parking: parkingLayout(project.commercial), bollards, schedule: bollardSchedule(bollards), stats: commercialStats(project), checks: commercialChecks(project) };

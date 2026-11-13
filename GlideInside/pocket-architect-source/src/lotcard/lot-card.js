@@ -663,7 +663,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
   function sizeInset() {
     const v = getViewer();
     const ed = app().editor;
-    if (root.hidden) { ed?.setInset?.({}); return; }
+    if (root.hidden) { if (store.project.mode !== 'commercial') ed?.setInset?.({}); return; } // commercial mode: the dock and the strip set the plan inset
     root.style.setProperty('--lc-card-h', `${Math.round(card.getBoundingClientRect().height)}px`);
     const els = [card, rooms, pager, mini, head];
     // 3D: framed in what the cards leave clear. 2D and split: the plan is framed the same way, so the lot is not under the card.

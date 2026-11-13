@@ -186,6 +186,7 @@ export function buildToolPanel(ctx, tool) {
     else if (tool === 'wall') body.append(helpCard('Wall', ['Click to start, click again for each corner.', 'Double click, Enter or Esc finishes.', 'Hold Shift to lock to 15 degree steps.', 'Type a length and press Enter to set it exactly.', 'Backspace removes the last wall.']));
     else if (tool === 'stairs') body.append(helpCard('Stairs', ['Drag a rectangle along the run, from the bottom step to the top.', 'Click once for a standard 1.0 by 3.6 m flight.', 'The arrow shows the way up.']));
     else if (tool === 'measure') body.append(helpCard('Measure', ['Click two points to read a distance.', 'Or right click anywhere on the plan to start, then click to finish.', 'Nothing is saved to the design.', 'Esc clears the measurement.']));
+    else if (tool === 'commercial') body.append(helpCard('Commercial layout', ['Drag a unit to slide its row.', 'Drag the gold ring to turn the row. Hold Shift for 15 degree steps.', 'Arrow keys nudge the row 0.1 m, Shift for 1 m. Q and E turn it 1 degree.', 'Unit sizes, doors, offices, mezzanines and parking are set in the panel on the left.', 'Figures are indicative, check with council.']));
     else body.append(helpCard(toolLabel(tool), ['Press V to go back to Select.']));
   }
 

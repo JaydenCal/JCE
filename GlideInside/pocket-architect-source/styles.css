@@ -962,12 +962,14 @@ svg { display: block; }
 .cm-danger { color: var(--ps-danger, #b52828); }
 .cm-field { display: grid; grid-template-columns: 1fr 118px; gap: 8px; align-items: center; margin: 5px 0; }
 .cm-field .cm-hint { grid-column: 1 / -1; }
+.cm-field.cm-stack { grid-template-columns: 1fr; gap: 3px; }
+.cm-dock input:disabled, .cm-dock select:disabled { opacity: .55; }
 .cm-l { color: var(--ps-text); }
 .cm-in { display: flex; align-items: center; gap: 4px; }
 .cm-in i { font-style: normal; color: var(--ps-muted); font-size: 11px; min-width: 20px; }
 .cm-dock input[type="number"], .cm-dock select { width: 100%; box-sizing: border-box; font: inherit; padding: 4px 6px; border: 1px solid var(--ps-border-strong, #c9ccd2); border-radius: 6px; background: var(--ps-panel); color: inherit; }
-.cm-chk { display: flex; align-items: center; gap: 8px; margin: 5px 0; }
-.cm-chk .cm-hint { color: var(--ps-muted); font-size: 11.5px; }
+.cm-chk { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; margin: 5px 0; }
+.cm-chk .cm-hint { color: var(--ps-muted); font-size: 11.5px; flex-basis: 100%; padding-left: 24px; }
 .cm-hint { color: var(--ps-muted); font-size: 11.5px; }
 .cm-sec { border-top: 1px solid var(--ps-border, #e1e3e7); padding: 6px 0 2px; }
 .cm-sec > summary { cursor: pointer; font-weight: 600; padding: 3px 0; }
@@ -980,5 +982,11 @@ svg { display: block; }
 .cm-cell { padding: 8px 14px; display: grid; gap: 1px; border-right: 1px solid var(--ps-border, #e1e3e7); min-width: 84px; align-content: start; }
 .cm-cell:last-child { border-right: 0; }
 .cm-cell b { font-size: 17px; color: var(--ps-text); white-space: nowrap; }
-.cm-cell i { font-style: normal; font-size: 11px; color: var(--ps-muted); max-width: 150px; }
+.cm-cell i { font-style: normal; font-size: 11px; color: var(--ps-muted); max-width: 150px; overflow-wrap: anywhere; }
+/* 3D and walk: the dock steps aside so the model is clear, and the strip moves to the top between the view buttons. */
+.ps-shell:is([data-view="3d"],[data-view="walk"]) .cm-dock { display: none; }
+.ps-shell:is([data-view="3d"],[data-view="walk"]) .cm-strip { top: 12px; bottom: auto; left: 176px; max-width: calc(100% - 370px); overflow-x: auto; }
+/* The "Map data" chip sits above the strip, not on it. */
+.ps-shell .ps-stage[data-commercial="1"] .ps-credit { bottom: 112px; }
+.ps-shell:is([data-view="3d"],[data-view="walk"]) .ps-stage[data-commercial="1"] .ps-credit { bottom: 50px; }
 @media (max-width: 899.98px) { .cm-dock { width: calc(100% - 24px); max-height: 46%; } .cm-strip { left: 12px; right: 12px; transform: none; max-width: none; overflow-x: auto; } }

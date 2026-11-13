@@ -147,7 +147,29 @@ export function drawEnvelope(ctx, st) {
       const at = { x: mid.x + inward.x * (row.requiredM * 500), y: mid.y + inward.y * (row.requiredM * 500) };
       const s = S(st, at);
       if (Math.hypot(S(st, a).x - S(st, b).x, S(st, a).y - S(st, b).y) < 90) continue;
-      halo(ctx, `${names[row.kind] || ''} ${row.requiredM.toFixed(1)} m${row.flagged ? ' (check)' : ''}`, s.x, s.y, st.theme);
+      const text = `${names[row.kind] || ''} ${row.requiredM.toFixed(1)} m${row.flagged ? ' (check)' : ''}`;
+      if (st.project.mode === 'commercial') {
+        // Commercial lots are large and drawn small, so half way across the setback strip lands on the boundary bearing and
+        // distance. The label runs along the edge, a third of the way along it (the bearing sits at the middle), and steps
+        // inside the envelope line when the strip is too thin on screen to hold it.
+        const sa = S(st, a); const sb = S(st, b);
+        const stripPx = row.requiredM * 1000 * st.view.scale;
+        const offPx = Math.max(30, stripPx >= 60 ? stripPx / 2 : stripPx + 10); // always clear of the bearing text, which sits within 20 px of the edge
+        const m3 = { x: sa.x + (sb.x - sa.x) / 3, y: sa.y + (sb.y - sa.y) / 3 };
+        const n = S(st, { x: mid.x + inward.x * 1000, y: mid.y + inward.y * 1000 });
+        const sm = S(st, mid);
+        const nl = Math.hypot(n.x - sm.x, n.y - sm.y) || 1;
+        let ang = Math.atan2(sb.y - sa.y, sb.x - sa.x);
+        if (ang > Math.PI / 2) ang -= Math.PI;
+        if (ang < -Math.PI / 2) ang += Math.PI;
+        ctx.save();
+        ctx.translate(m3.x + ((n.x - sm.x) / nl) * offPx, m3.y + ((n.y - sm.y) / nl) * offPx);
+        ctx.rotate(ang);
+        halo(ctx, text, 0, 0, st.theme);
+        ctx.restore();
+        continue;
+      }
+      halo(ctx, text, s.x, s.y, st.theme);
     }
   }
   ctx.restore();

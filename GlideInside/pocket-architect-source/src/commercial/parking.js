@@ -2,7 +2,7 @@
 // away from its front facade. This is NOT the full parking design (aisles, circulation and swept paths come in the next stage): it
 // gives a bay count and a place for the accessible bays. Bay 2.4 x 5.4 m, accessible bay with a 2.4 m shared zone beside it.
 
-import { layoutUnits, rowFrame, rowLength, rowPoint, facadeLayout } from './layout.js';
+import { layoutUnits, rowFrame, rowLength, rowPoint, facadeLayout, onFacade } from './layout.js';
 import { accessibleRequired, ACCESSIBLE_BAY } from './rules.js';
 
 const add = (a, b) => ({ x: a.x + b.x, y: a.y + b.y });
@@ -13,7 +13,7 @@ export function accessibleEntry(units) {
   const pick = units.find((u) => u.spec.office.enabled && u.spec.office.accessibleWc) || units.find((u) => u.spec.office.enabled) || units[0];
   if (!pick) return null;
   const fl = facadeLayout(pick.spec);
-  const along = pick.x0 + (fl.personnel ? fl.personnel.offset : pick.w / 2);
+  const along = pick.x0 + (onFacade(fl.personnel, pick.w) ? fl.personnel.offset : pick.w / 2);
   const fr = pick.frame;
   return { unit: pick, rowId: pick.rowId, along, point: rowPoint(fr, along, pick.d) };
 }

@@ -17,7 +17,7 @@ import { KEY_TO_TOOL } from './tools-meta.js';
 import { createSelectTool } from './tool-select.js';
 import { createMoveHouseTool } from './tool-movehouse.js';
 import { createCommercialTool } from '../commercial/ui/tool-commercial.js';
-import { drawCommercial } from '../commercial/draw2d.js';
+import { drawCommercial, commercialExtents } from '../commercial/draw2d.js';
 import { createDrawTools } from './tool-draw.js';
 import { createPlaceTools } from './tool-place.js';
 import { createMiscTools } from './tool-misc.js';
@@ -314,6 +314,7 @@ export function createEditor2D(element, store, { catalogue } = {}) {
     const pts = [...G.levelPoints(level)];
     if (ed.isGround(level)) for (const t of project.site?.tanks || []) pts.push({ x: t.x - t.diameter / 2, y: t.y - t.diameter / 2 }, { x: t.x + t.diameter / 2, y: t.y + t.diameter / 2 });
     if (!pts.length) pts.push(...project.levels.flatMap(G.levelPoints));
+    pts.push(...commercialExtents(project));
     const lot = project.site?.lot;
     if (lot?.boundary?.length) {
       // With a lot, frame the lot (and the design) rather than the whole aerial image around it.

@@ -4,7 +4,7 @@
 import { lotChecks } from '../site/lot-checks.js';
 import { lotOf } from '../model/placement.js';
 import * as G from '../model/geometry.js';
-import { layoutUnits, facadeLayout, mezzanineOf } from './layout.js';
+import { layoutUnits, facadeLayout, mezzanineOf, officeOf, OFFICE_MIN_WIDTH_MM } from './layout.js';
 import { parkingLayout } from './parking.js';
 import { commercialStats } from './stats.js';
 import { zoneClass, effectiveClass, RESIDENTIAL_NOTE } from './zones.js';
@@ -14,6 +14,7 @@ import { ACCESSIBLE_BAY } from './rules.js';
 import { facts } from './dataset.js';
 
 const m = (mm) => (mm / 1000).toFixed(2);
+const ACCESS_FACT = { class_5: 'accessibleClass5', class_6: 'accessibleClass6', class_7: 'accessibleClass7', class_8: 'accessibleClass8' };
 export const ACCESS_CHECK = 'Accessible bay count below the indicative requirement, check with council and an access consultant';
 
 /** The dataset status and tooltip for a check that rests on a dataset value. */
@@ -62,7 +63,12 @@ export function commercialChecks(project) {
     const d = s.doors;
     const ds = fl.doors[0];
     if (ds && ds.h + 400 > s.heightMm) warn(`u${u.n}-shutter`, `Unit ${u.n}: roller door head at ${m(ds.h)} m leaves under 0.40 m for the shutter at a ${m(s.heightMm)} m unit height, check with the door supplier`);
-    if (d.rear && (u.mirrored || u.row.id && c.rows.some((r) => r.mirrorOf === u.row.id))) warn(`u${u.n}-reardoor`, `Unit ${u.n}: no rear door, the rear wall is a shared party wall`);
+    const partyRear = u.mirrored || c.rows.some((r) => r.mirrorOf === u.row.id);
+    if (d.rear && partyRear) warn(`u${u.n}-reardoor`, `Unit ${u.n}: no rear door, the rear wall is a shared party wall`);
+    if (s.windows.rear !== 'none' && partyRear) info(`u${u.n}-rearwin`, `Unit ${u.n}: no rear window, the rear wall is a shared party wall`);
+    const of = officeOf(s);
+    if (of.enabled && !of.fits) warn(`u${u.n}-office`, `Unit ${u.n}: no room for the office beside the roller doors, widen the unit or shrink the door set`);
+    else if (of.enabled && of.widthMm < OFFICE_MIN_WIDTH_MM) warn(`u${u.n}-office`, `Unit ${u.n}: the office beside the roller door is only ${m(of.widthMm)} m wide, widen the unit or shrink the door set`);
     const mz = mezzanineOf(s);
     if (mz.enabled) {
       const min = mz.minClear;
@@ -70,7 +76,8 @@ export function commercialChecks(project) {
       const unv = facts('mezzClear').status === 'UNVERIFIED' ? ', unverified minimum' : '';
       if (mz.clearBelow < minB) warn(`u${u.n}-mzlow`, `Unit ${u.n}: clear height under the mezzanine is ${m(mz.clearBelow)} m, below the ${m(minB)} m minimum${unv}, check with council and the NCC`, 'mezzClear');
       if (mz.clearAbove < min) warn(`u${u.n}-mzhigh`, `Unit ${u.n}: clear height above the mezzanine is ${m(mz.clearAbove)} m, below the ${m(min)} m minimum, check with council and the NCC`, 'ceilingRoom');
-      const limit = Math.min(200, (u.w * u.d) / 1e6 / 3);
+      // The room the mezzanine sits in is the unit less the enclosed office.
+      const limit = Math.min(200, ((u.w * u.d) / 1e6 - of.areaM2) / 3);
       if (mz.areaM2 > limit) warn(`u${u.n}-mzstorey`, `Unit ${u.n}: the ${mz.areaM2.toFixed(1)} m² mezzanine is above ${limit.toFixed(1)} m² (the lesser of 200 m² and one third of the room), so it may count as a storey, check with council and the NCC`, 'mezzStorey');
       if (mz.position === 'front' && ds && ds.h > mz.clearBelow) warn(`u${u.n}-mzdoor`, `Unit ${u.n}: roller door head at ${m(ds.h)} m is above the front mezzanine soffit at ${m(mz.clearBelow)} m, move the mezzanine to the rear or lower the door`);
       const stairRun = mz.stair.lengthMm;
@@ -89,7 +96,7 @@ export function commercialChecks(project) {
   const park = parkingLayout(c);
   if (c.parking?.enabled !== false && units.length) {
     const need = park.accessible.required;
-    if (park.accessible.provided < need) warn('accessible', `${ACCESS_CHECK} (${park.accessible.provided} of ${need})`, 'accessibleClass8');
+    if (park.accessible.provided < need) warn('accessible', `${ACCESS_CHECK} (${park.accessible.provided} of ${need})`, ACCESS_FACT[c.buildingClass] || 'accessibleClass8');
     else if (need > 0) info('accessible', `Accessible bays: ${park.accessible.provided} provided against ${need} indicative. Each has a ${m(ACCESSIBLE_BAY.sharedZoneMm)} m shared zone and needs ${m(ACCESSIBLE_BAY.headroomMm)} m headroom, check AS 2890.6 and an access consultant`, 'bay');
     if (stats.parking.provided < stats.parking.required) warn('parking', `Bays shown (${stats.parking.provided}) are fewer than the ${stats.parking.required} indicated at the rate in use, check with council`, 'parkingUnits');
     for (const pr of park.rows) {

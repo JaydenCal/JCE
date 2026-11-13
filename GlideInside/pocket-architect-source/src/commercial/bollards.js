@@ -1,6 +1,7 @@
 // Automatic bollard placement. Indicative only: bollard locations are for concept layout, to be confirmed in design.
 // Rules (each bollard carries the rule that placed it):
-//   door       each side of every roller door opening, in front of the facade
+//   door       each side of every roller door opening, in front of the facade: 450 mm off the jamb, or in the middle of the pier
+//              when another door (a second roller door or the personnel door) is closer than that, so no bollard stands in a doorway
 //   corner     in front of each exposed front corner of a row (the corners face the aisle)
 //   downpipe   in front of a downpipe facing the aisle (a downpipe every Nth party wall, spec.bollards.downpipeEvery)
 //   parkingEnd at the end of a parking row that sits next to a building (within 3 m of a unit)
@@ -8,7 +9,7 @@
 //   hydrant    around the hydrant or booster
 //   accessible one bollard central in each accessible shared zone, 800 mm from its entry (AS/NZS 2890.6, verify the edition)
 
-import { layoutUnits, rowFrame, rowLength, rowPoint, facadeLayout } from './layout.js';
+import { layoutUnits, rowFrame, rowLength, rowPoint, facadeLayout, onFacade } from './layout.js';
 import { parkingLayout } from './parking.js';
 
 export const BOLLARD_NOTE = 'Bollard locations, indicative';
@@ -66,11 +67,20 @@ export function bollardsFor(commercial) {
     if (!us.length) continue;
     const d = us[0].d;
     const L = rowLength(row, rows);
+    // Every front opening of the row as [from, to] along the facade, so a door bollard can be kept out of the next doorway.
+    const rollers = [];
+    const openings = [];
     for (const u of us) {
       const fl = facadeLayout(u.spec);
-      for (const dr of fl.doors) {
-        for (const s of [-1, 1]) push(rowPoint(fr, u.x0 + dr.offset + s * (dr.w / 2 + DOOR_SIDE_MM), d + OFFSET_MM), 'door');
-      }
+      for (const dr of fl.doors) { if (!onFacade(dr, u.w)) continue; const o = [u.x0 + dr.offset - dr.w / 2, u.x0 + dr.offset + dr.w / 2]; rollers.push(o); openings.push(o); }
+      if (onFacade(fl.personnel, u.w)) openings.push([u.x0 + fl.personnel.offset - fl.personnel.w / 2, u.x0 + fl.personnel.offset + fl.personnel.w / 2]);
+    }
+    for (const o of rollers) {
+      // The clear wall (pier) on each side of this door before the next opening starts.
+      const left = Math.min(...openings.filter((q) => q !== o && q[1] <= o[0] + 1).map((q) => o[0] - q[1]), Infinity);
+      const right = Math.min(...openings.filter((q) => q !== o && q[0] >= o[1] - 1).map((q) => q[0] - o[1]), Infinity);
+      push(rowPoint(fr, o[0] - Math.min(DOOR_SIDE_MM, Math.max(0, left) / 2), d + OFFSET_MM), 'door');
+      push(rowPoint(fr, o[1] + Math.min(DOOR_SIDE_MM, Math.max(0, right) / 2), d + OFFSET_MM), 'door');
     }
     push(rowPoint(fr, -DOOR_SIDE_MM, d + OFFSET_MM), 'corner');
     push(rowPoint(fr, L + DOOR_SIDE_MM, d + OFFSET_MM), 'corner');

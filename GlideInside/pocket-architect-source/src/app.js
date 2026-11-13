@@ -38,7 +38,7 @@ import { startView, readLastView } from './ui/view-mode.js';
 import { portalUrl } from './portal/links.js';
 import { createLotCard } from './lotcard/lot-card.js';
 import { createCommercialPanel } from './commercial/ui/panel-commercial.js';
-import { enterCommercial, offerCommercial } from './commercial/mode.js';
+import { enterCommercial, offerCommercial, commercialUi } from './commercial/mode.js';
 import { effectiveClass } from './commercial/zones.js';
 import { viewerEmbedRequested, addressFromSearch, openFullEditor, initEmbedViewer, loadAddress, mountViewerChrome, takeHandoff } from './ui/embed-viewer.js';
 
@@ -106,6 +106,7 @@ async function main() {
   mountModals(refs.modalRoot);
   refs.shell.dataset.mode = demoMode() ? 'demo' : 'full';
   if (VIEWER) refs.shell.dataset.embedViewer = '1';
+  commercialUi.enabled = !VIEWER && !demoMode();
 
   const catalogue = await loadCatalogue();
   const start = initialProject(catalogue);
@@ -425,6 +426,14 @@ async function main() {
   createMapCredit(refs.stage, store);
   if (!state.fromAutosave && !demoMode() && !narrow && !shareId && !VIEWER && !addressParam && !wantCommercial) createWelcome(refs.stage, store, { onChoose: openNew });
 
+  // The commercial handoff. A layout already in commercial mode is left as it is (the link must not reset its rows). A design kept
+  // from an earlier visit is switched as one undo step and the person is told how to get it back; a starter design is renamed.
+  const goCommercial = (opts = {}) => {
+    if (store.project.mode === 'commercial') return;
+    const kept = state.fromAutosave;
+    enterCommercial(store, { ...opts, name: kept ? null : 'Commercial units' });
+    if (kept) toast('Your design was switched to a commercial layout. Undo brings it back.', { kind: 'info', timeout: 15000, action: { label: 'Undo', onClick: () => store.undo() } });
+  };
   embed.ready();
   if (earlierDesign) {
     const prev = earlierDesign;
@@ -444,11 +453,11 @@ async function main() {
     loadAddress(store, catalogue, addressParam)
       .then(({ lot }) => {
         toast(`${lot.lotLabel} added to your design (${Math.round(lot.areaM2)} m²).`, { kind: 'ok' });
-        if (wantCommercial) { enterCommercial(store, { useClass: effectiveClass(store.project) || 'industrial' }); offerCommercial(store); }
+        if (wantCommercial) { goCommercial({ useClass: effectiveClass(store.project) || 'industrial' }); offerCommercial(store); }
       })
       .catch((e) => toast(e?.message || 'That address could not be loaded.', { kind: 'warn' }));
   }
-  if (wantCommercial && !addressParam) enterCommercial(store);
+  if (wantCommercial && !addressParam) goCommercial();
   if (shareId) await share.openLink(shareId);
 
   // Plan Pack (optional). Loaded after the first frame; the tool works without it.

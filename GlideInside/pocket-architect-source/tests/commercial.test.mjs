@@ -484,7 +484,8 @@ test('bollards: each side of every roller door, corners, downpipes, parking row 
   const list = bollardsFor(c);
   const by = (k) => list.filter((b) => b.kind === k);
   assert.equal(by('door').length, 8 * 2, 'two per roller door');
-  // Each door bollard is 450 mm off the jamb and 700 mm out from the facade (front facade at y = 55000).
+  // Each door bollard is 450 mm off the jamb and 700 mm out from the facade (front facade at y = 55000). At this door offset the
+  // personnel door no longer fits on the unit, so it is not cut in and both jambs are free.
   const fl = facadeLayout(unitSpec(row, 0));
   const dr = fl.doors[0];
   const jambs = by('door').filter((b) => Math.abs(b.x - (20000 + dr.offset - dr.w / 2 - 450)) < 2 || Math.abs(b.x - (20000 + dr.offset + dr.w / 2 + 450)) < 2);
@@ -691,8 +692,12 @@ test('dataset: parking counts the office area at 1 per 40 m2 and the accessible 
   const p = commercialProject();
   p.commercial.rows[0].perUnit = { 0: { office: { enabled: true, depthMm: 3000 } } };
   const s = commercialStats(p);
-  assert.equal(s.officeM2, 18);
-  assert.equal(s.parking.required, Math.ceil((1440 - 18) / 75) + Math.ceil(18 / 40));
+  // The office is the front bay beside the 3.6 m roller door: 6.0 - (0.3 + 3.6 + 0.15) = 1.95 m wide by 3 m deep.
+  const office = (1950 * 3000) / 1e6;
+  assert.ok(Math.abs(s.officeM2 - office) < 0.06);
+  // Fractions round up once, on the total.
+  assert.equal(s.parking.required, Math.ceil((1440 - office) / 75 + office / 40));
+  assert.equal(s.parking.required, 20);
   p.commercial.rates.officeSeparate = false;
   assert.equal(commercialStats(p).parking.required, 20);
   const park = parkingLayout(p.commercial);
@@ -703,4 +708,154 @@ test('dataset: parking counts the office area at 1 per 40 m2 and the accessible 
   const d = (bol.x - zone.poly[0].x) * front.f.x + (bol.y - zone.poly[0].y) * front.f.y;
   assert.ok(Math.abs(d - 800) < 2, `bollard is ${d} mm from the shared zone entry`);
   assert.ok(Math.abs((bol.x - zone.centre.x) * front.u.x + (bol.y - zone.centre.y) * front.u.y) < 2, 'central across the zone');
+});
+
+// Review fixes ------------------------------------------------------------------------------------------------------------------
+import { zoneCandidates } from '../src/commercial/setbacks.js';
+import { officeOf } from '../src/commercial/layout.js';
+
+test('setbacks: an E4 General Industrial lot picks up the council rule written for IN zones, a legacy E4 Environmental Living lot does not', () => {
+  const council = { lga_slug: 'tamworth-regional-council', council: 'Tamworth Regional Council', dcp: 'Test DCP', status: 'ok', rules: [
+    { id: 'a', zones: ['IN*'], appliesTo: ['industrial'], conditions: {}, front: { minM: 5 } },
+    { id: 'b', zones: ['B5'], appliesTo: ['commercial'], conditions: {}, front: { minM: 4 } },
+  ] };
+  const lot = commercialProject({ zoning: { code: 'E4', name: 'General Industrial' } }).site.lot;
+  assert.deepEqual(zoneCandidates('E4', 'General Industrial'), ['E4', 'IN1', 'IN2']);
+  const r = siteLotCommercialSetbacks(lot, { councils: [council] }, { cls: 'industrial' });
+  assert.equal(r.setbacks.front.minM, 5);
+  assert.equal(r.setbacks.front.zoneUsed, 'IN1');
+  assert.equal(r.setbacks.front.flag, 'check_with_council');
+  // E3 Productivity Support reads the rule written for B5.
+  const e3 = commercialProject({ zoning: { code: 'E3', name: 'Productivity Support' } }).site.lot;
+  assert.equal(siteLotCommercialSetbacks(e3, { councils: [council] }, { cls: 'commercial' }).setbacks.front.minM, 4);
+  // A legacy E4 Environmental Living lot (the person chose the class by hand) never reads an IN rule.
+  assert.deepEqual(zoneCandidates('E4', 'Environmental Living'), ['E4']);
+  const old = commercialProject({ zoning: { code: 'E4', name: 'Environmental Living' } }).site.lot;
+  const o = siteLotCommercialSetbacks(old, { councils: [council] }, { cls: 'industrial' });
+  assert.equal(o.setbacks.front.minM, DEFAULT_RULES.industrial.setbacks.front);
+  assert.equal(o.setbacks.sources.front, 'default');
+  // A rule for the lot's own code still wins over an equivalent one.
+  council.rules.unshift({ id: 'c', zones: ['E4'], appliesTo: ['industrial'], conditions: {}, front: { minM: 7.5 } });
+  assert.equal(siteLotCommercialSetbacks(lot, { councils: [council] }, { cls: 'industrial' }).setbacks.front.minM, 7.5);
+});
+
+test('setbacks: switching a lot with housing setbacks to commercial replaces them at once, the first row never sits on a housing envelope', () => {
+  const p = conadillyProject({ corner: false, width: 90000, depth: 100000 });
+  const lot = p.site.lot;
+  lot.zoning = { code: 'E4', name: 'General Industrial' };
+  // The lot as the housing stage leaves it: Housing Code basis, 0.9 m sides, and a key that says the setbacks are current.
+  lot.setbacks = { basis: 'Codes SEPP Housing Code', front: { minM: 4.5 }, side: { minM: 0.9 }, rear: { minM: 3 }, edgeKinds: ['front', 'side', 'rear', 'side'] };
+  lot.envelope = [{ x: 900, y: 4500 }, { x: 89100, y: 4500 }, { x: 89100, y: 97000 }, { x: 900, y: 97000 }];
+  lot.setbacksKey = 'housing';
+  convertToCommercial(p);
+  assert.doesNotMatch(JSON.stringify(lot.setbacks), /Housing Code|Inland Code|QDC/);
+  assert.equal(lot.setbacks.commercial, true);
+  assert.equal(lot.setbacks.front.minM, DEFAULT_RULES.industrial.setbacks.front);
+  assert.equal(lot.setbacks.side.minM, DEFAULT_RULES.industrial.setbacks.side);
+  assert.equal(lot.setbacksKey, null, 'the setback stage runs again and reads the council file');
+  const xs = lot.envelope.map((q) => q.x);
+  assert.ok(Math.min(...xs) >= 3000 - 1 && Math.max(...xs) <= 87000 + 1, 'the envelope is the commercial one');
+  // Every unit of the first row is inside the commercial envelope.
+  for (const u of layoutUnits(p.commercial)) for (const q of u.poly) assert.ok(q.x >= 3000 - 60 && q.x <= 87000 + 60 && q.y >= 10000 - 60 && q.y <= 97000 + 60, `unit ${u.n} corner ${q.x},${q.y}`);
+});
+
+test('bollards: no door bollard stands in a doorway, with one or two roller doors and a personnel door', () => {
+  for (const count of [1, 2]) {
+    const p = commercialProject({ rows: 'single' });
+    const row = p.commercial.rows[0];
+    row.unit.widthMm = count === 2 ? 10000 : 6000;
+    row.unit.doors.count = count;
+    const list = bollardsFor(p.commercial).filter((b) => b.kind === 'door');
+    assert.ok(list.length >= 8 * 2);
+    const spans = [];
+    for (const u of layoutUnits(p.commercial)) {
+      const fl = facadeLayout(u.spec);
+      for (const o of [...fl.doors, fl.personnel]) spans.push([row.x + u.x0 + o.offset - o.w / 2, row.x + u.x0 + o.offset + o.w / 2]);
+    }
+    for (const b of list) assert.ok(!spans.some(([a, z]) => b.x > a + 50 && b.x < z - 50), `${count} door(s): bollard at ${b.x} is in a doorway`);
+  }
+});
+
+test('office: sits in the front bay beside the roller door, the workshop room is the rest of the unit, and a narrow bay is flagged', () => {
+  const p = commercialProject({ rows: 'single' });
+  const row = p.commercial.rows[0];
+  row.perUnit = { 0: { office: { enabled: true, depthMm: 3000 } } };
+  materialise(p);
+  const u = layoutUnits(p.commercial)[0];
+  const of = officeOf(u.spec);
+  const dr = facadeLayout(u.spec).doors[0];
+  assert.ok(of.fits);
+  assert.ok(of.x0 >= dr.offset + dr.w / 2, 'the roller door does not open into the office');
+  assert.equal(of.widthMm, 1950);
+  const rooms = p.levels[0].rooms;
+  const office = rooms.find((r) => r.name === 'PROPOSED UNIT 1 OFFICE');
+  const shop = rooms.find((r) => r.name === 'PROPOSED UNIT 1');
+  assert.equal(shop.polygon.length, 6, 'an L shaped workshop');
+  assert.ok(Math.abs(polyArea(office.polygon) / 1e6 - 5.85) < 0.001);
+  assert.ok(Math.abs((polyArea(office.polygon) + polyArea(shop.polygon)) / 1e6 - 90) < 0.001, 'office and workshop make up the unit, counted once');
+  // The roller door is on the workshop part of the facade, the personnel door on the office part.
+  const xs = office.polygon.map((q) => q.x);
+  const pd = facadeLayout(u.spec).personnel;
+  assert.ok(row.x + dr.offset + dr.w / 2 <= Math.min(...xs));
+  assert.ok(row.x + pd.offset > Math.min(...xs) && row.x + pd.offset < Math.max(...xs));
+  // 1.95 m is over the 1.8 m minimum: no warning. A 4.5 m door leaves a 1.05 m bay: flagged. A 5 m door leaves no bay: flagged and nothing drawn.
+  assert.ok(!warnTexts(p).some((t) => /office/i.test(t)));
+  row.perUnit = { 0: { office: { enabled: true }, doors: { presetId: '4.5x5.0' } } };
+  assert.ok(warnTexts(p).some((t) => /Unit 1: the office beside the roller door is only 1\.05 m wide/.test(t)));
+  row.perUnit = { 0: { office: { enabled: true }, doors: { presetId: 'custom', widthMm: 5000, heightMm: 4000, personnel: false } } };
+  materialise(p);
+  assert.ok(warnTexts(p).some((t) => /Unit 1: no room for the office beside the roller doors/.test(t)));
+  assert.ok(!p.levels[0].rooms.some((r) => /OFFICE/.test(r.name)));
+  assert.equal(commercialStats(p).officeM2, 0);
+  // The storey trigger uses the room the mezzanine sits in: the unit less the office.
+  row.perUnit = { 0: { office: { enabled: true, depthMm: 3000 }, mezzanine: { enabled: true, depthMm: 4800 } } };
+  const t = warnTexts(p).find((x) => /count as a storey/.test(x));
+  assert.match(t, /Unit 1: the 28\.8 m² mezzanine is above 28\.1 m²/, '(90 - 5.85) / 3 = 28.05, shown to one place');
+});
+
+test('row outline: follows the row depth, not a unit override', () => {
+  const p = commercialProject({ rows: 'single' });
+  const row = p.commercial.rows[0];
+  row.perUnit = { 0: { depthMm: 30000 } };
+  const ys = rowPoly(row, p.commercial.rows).map((q) => q.y);
+  assert.equal(Math.max(...ys) - Math.min(...ys), 15000);
+});
+
+test('party wall: a back to back pair has no door or window in the shared rear wall, and a door set wider than its unit is not cut in', () => {
+  const p = commercialProject();
+  const row = p.commercial.rows[0];
+  row.unit.doors.rear = true;
+  row.unit.windows.rear = 'highlight';
+  materialise(p);
+  const l = p.levels[0];
+  const party = new Set(l.walls.filter((w) => w.kind === 'interior').map((w) => w.id));
+  assert.equal(l.openings.filter((o) => party.has(o.wallId)).length, 0);
+  assert.ok(warnTexts(p).some((t) => /no rear door, the rear wall is a shared party wall/.test(t)));
+  assert.ok(commercialChecks(p).some((c) => /no rear window, the rear wall is a shared party wall/.test(c.text)));
+  // A single row keeps its rear door and window.
+  const s = commercialProject({ rows: 'single' });
+  s.commercial.rows[0].unit.doors.rear = true;
+  materialise(s);
+  assert.equal(s.levels[0].openings.filter((o) => o.kind === 'roller_door').length, 16);
+  // Two 3.6 m roller doors on a 6 m unit: flagged, and only what fits on each unit is cut in, with no opening over another.
+  const q = commercialProject({ rows: 'single' });
+  q.commercial.rows[0].unit.doors.count = 2;
+  materialise(q);
+  assert.ok(warnTexts(q).some((t) => /Door set is 9\.32 m wide on a 6\.00 m unit/.test(t)));
+  const front = q.levels[0].walls[0];
+  const spans = q.levels[0].openings.filter((o) => o.wallId === front.id).map((o) => [o.offset - o.width / 2, o.offset + o.width / 2]).sort((a, b) => a[0] - b[0]);
+  assert.equal(spans.length, 8);
+  assert.ok(spans.every(([a, z]) => a >= 0 && z <= 48000));
+  for (let i = 1; i < spans.length; i++) assert.ok(spans[i][0] >= spans[i - 1][1]);
+});
+
+test('zones: no switch is offered where there is no commercial dock (the embedded viewer and the demo)', () => {
+  const p = conadillyProject({ corner: false, width: 90000, depth: 100000 });
+  p.site.lot.zoning = { code: 'E4', name: 'General Industrial' };
+  const s = store(p);
+  const seen = [];
+  assert.equal(offerCommercial(s, { toast: (...a) => { seen.push(a); return {}; }, available: false }), null);
+  assert.equal(seen.length, 0);
+  assert.ok(offerCommercial(s, { toast: (...a) => { seen.push(a); return {}; } }));
+  assert.match(seen[0][0], /E4 General Industrial/);
 });

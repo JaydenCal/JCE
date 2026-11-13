@@ -311,10 +311,20 @@ export function drawScaleBar(ctx, st) {
   ctx.font = `500 10.5px ${theme.f.mono}`;
   ctx.textBaseline = 'bottom';
   ctx.textAlign = 'center';
+  // The end labels are always drawn; a middle label is dropped when it would run into the one before it or the last one.
+  const lastStop = stops[stops.length - 1];
+  const lastLeft = lastStop ? x + lastStop.x + 1 - (ctx.measureText?.(`${lastStop.label} m`)?.width ?? 0) : Infinity;
+  let usedTo = -Infinity;
   stops.forEach((s, i) => {
-    ctx.textAlign = i === 0 ? 'left' : i === stops.length - 1 ? 'right' : 'center';
-    const tx = x + s.x + (i === 0 ? -1 : i === stops.length - 1 ? 1 : 0);
-    ctx.fillText(i === stops.length - 1 ? `${s.label} m` : s.label, tx, y - barH - 4);
+    const end = i === stops.length - 1;
+    ctx.textAlign = i === 0 ? 'left' : end ? 'right' : 'center';
+    const tx = x + s.x + (i === 0 ? -1 : end ? 1 : 0);
+    const text = end ? `${s.label} m` : s.label;
+    const w = ctx.measureText?.(text)?.width ?? 0;
+    const left = i === 0 ? tx : end ? tx - w : tx - w / 2;
+    if (i > 0 && !end && (left < usedTo + 4 || left + w > lastLeft - 4)) return;
+    ctx.fillText(text, tx, y - barH - 4);
+    usedTo = left + w;
   });
   ctx.restore();
 }

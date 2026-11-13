@@ -3,7 +3,7 @@
 // the next run replaces it and anything the person drew by hand is left alone. Call inside store.apply so one edit is one undo step.
 
 import * as S from '../model/schema.js';
-import { layoutUnits, facadeLayout, rearWindow, mezzanineOf, rowFrame, rowLength, PARTY_WALL_MM } from './layout.js';
+import { layoutUnits, facadeLayout, rearWindow, mezzanineOf, officeOf, onFacade, rowFrame, rowLength, PARTY_WALL_MM } from './layout.js';
 import { SLAB_MM } from './schema.js';
 
 export const GEN = 'commercial';
@@ -89,13 +89,16 @@ export function materialise(p) {
     us.forEach((u, i) => {
       const spec = u.spec;
       const fl = facadeLayout(spec);
-      for (const dr of fl.doors) addOpening(front.id, 'roller_door', u.x0 + dr.offset, dr.w, dr.h, 0, { motorised: !!spec.doors.motorised });
-      if (fl.personnel) addOpening(front.id, 'door', u.x0 + fl.personnel.offset, fl.personnel.w, fl.personnel.h, 0);
-      for (const wd of [fl.window, fl.highlight]) if (wd) addOpening(front.id, 'window', u.x0 + wd.offset, wd.w, wd.h, wd.sill, { style: 'fixed' });
-      if (rear && !fr.mirrored) {
-        if (spec.doors.rear) addOpening(rear.id, 'roller_door', u.x0 + u.w / 2, fl.doors[0]?.w || 3000, fl.doors[0]?.h || 3500, 0, { motorised: !!spec.doors.motorised });
+      // Only items that lie wholly on this unit's facade are cut in (the checks flag the rest).
+      for (const dr of fl.doors) if (onFacade(dr, u.w)) addOpening(front.id, 'roller_door', u.x0 + dr.offset, dr.w, dr.h, 0, { motorised: !!spec.doors.motorised });
+      if (onFacade(fl.personnel, u.w)) addOpening(front.id, 'door', u.x0 + fl.personnel.offset, fl.personnel.w, fl.personnel.h, 0);
+      for (const wd of [fl.window, fl.highlight]) if (onFacade(wd, u.w)) addOpening(front.id, 'window', u.x0 + wd.offset, wd.w, wd.h, wd.sill, { style: 'fixed' });
+      // Rear openings only where the rear wall is an outside wall: a party wall shared with a back to back row has none.
+      if (rear && !fr.mirrored && !mirrorOfThis) {
+        const rd = { offset: u.w / 2, w: fl.doors[0]?.w || 3000, h: fl.doors[0]?.h || 3500 };
+        if (spec.doors.rear && onFacade(rd, u.w)) addOpening(rear.id, 'roller_door', u.x0 + rd.offset, rd.w, rd.h, 0, { motorised: !!spec.doors.motorised });
         const rw = rearWindow(spec);
-        if (rw) addOpening(rear.id, 'window', u.x0 + rw.offset, rw.w, rw.h, rw.sill, { style: 'fixed' });
+        if (onFacade(rw, u.w)) addOpening(rear.id, 'window', u.x0 + rw.offset, rw.w, rw.h, rw.sill, { style: 'fixed' });
       }
       // Side windows only on end units, on the exterior end wall (never a party wall).
       if (spec.windows.side) {
@@ -104,22 +107,28 @@ export function materialise(p) {
         for (const w of [sw, ew]) if (w) addOpening(w.id, 'window', d / 2, 1800, 1200, 900, { style: 'sliding' });
       }
       // Rooms
-      const poly = u.poly.map((q) => ({ ...q }));
+      // The office sits in the front bay beside the roller doors; the workshop room is the rest of the unit (an L shape).
+      const of = officeOf(spec);
+      const od = of.depthMm;
+      const ox = u.x0 + of.x0;
+      const poly = of.fits
+        ? [u.poly[0], u.poly[1], at(fr, u.x0 + u.w, d - od), at(fr, ox, d - od), ...(of.x0 > 0 ? [at(fr, ox, d), u.poly[3]] : [at(fr, u.x0, d - od)])].map((q) => ({ ...q }))
+        : u.poly.map((q) => ({ ...q }));
       const room = S.createRoom({ name: `PROPOSED UNIT ${u.n}`, type: 'workshop', polygon: poly });
       room.auto = true;
       mark(room);
       level.rooms.push(room);
       summary.rooms += 1;
-      if (spec.office.enabled) {
-        const od = Math.min(spec.office.depthMm, d - 1000);
-        const oc = [at(fr, u.x0, d - od), at(fr, u.x0 + u.w, d - od), at(fr, u.x0 + u.w, d), at(fr, u.x0, d)];
+      if (of.fits) {
+        const oc = [at(fr, ox, d - od), at(fr, u.x0 + u.w, d - od), at(fr, u.x0 + u.w, d), at(fr, ox, d)];
         const o = S.createRoom({ name: `PROPOSED UNIT ${u.n} OFFICE${spec.office.accessibleWc ? ' AND ACCESSIBLE WC' : ''}`, type: 'other', polygon: oc });
         o.auto = true;
         mark(o);
         level.rooms.push(o);
         summary.rooms += 1;
-        // Office partition
-        addWall(wall(at(fr, u.x0, d - od), at(fr, u.x0 + u.w, d - od), { kind: 'interior', outside: 0, thickness: 100 }));
+        // Office partitions: across the back of the office and, beside the roller door, along its side.
+        addWall(wall(at(fr, ox, d - od), at(fr, u.x0 + u.w, d - od), { kind: 'interior', outside: 0, thickness: 100 }));
+        if (of.x0 > 0) addWall(wall(at(fr, ox, d - od), at(fr, ox, d), { kind: 'interior', outside: 0, thickness: 100 }));
       }
     });
   }

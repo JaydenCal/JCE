@@ -76,6 +76,27 @@ export function facadeLayout(spec) {
   return { doors, personnel, window: win, highlight, issues };
 }
 
+/** True when a facade item ({ offset, w } from the unit's left edge) lies wholly on a unit of width W. An item that does not is flagged by the checks and never cut into the wall, so it cannot run into the next unit or past the end of the row. */
+export const onFacade = (item, W) => !!item && item.offset - item.w / 2 >= -0.5 && item.offset + item.w / 2 <= W + 0.5;
+
+export const OFFICE_MIN_WIDTH_MM = 1800;
+
+/**
+ * The office of a unit: at the front, in the bay beside the roller doors, so a roller door never opens into it and the personnel
+ * door (when there is one) is its entry. { enabled, fits, x0 (from the unit's left edge), widthMm, depthMm, areaM2 }.
+ * fits is false when the bay beside the doors is under 0.9 m wide: nothing is drawn and the checks say so.
+ */
+export function officeOf(spec) {
+  if (!spec.office?.enabled) return { enabled: false, fits: false, x0: 0, widthMm: 0, depthMm: 0, areaM2: 0 };
+  const fl = facadeLayout(spec);
+  const last = fl.doors.filter((x) => onFacade(x, spec.widthMm)).pop();
+  const x0 = Math.min(spec.widthMm, Math.max(0, last ? last.offset + last.w / 2 + GAP_MM / 2 : 0));
+  const widthMm = spec.widthMm - x0;
+  const depthMm = Math.max(0, Math.min(spec.office.depthMm, spec.depthMm - 1000));
+  const fits = widthMm >= 900 && depthMm > 0;
+  return { enabled: true, fits, x0, widthMm, depthMm, areaM2: fits ? (widthMm * depthMm) / 1e6 : 0 };
+}
+
 /** The rear window of a unit, or null. High light strip or a small office window. */
 export function rearWindow(spec) {
   const kind = spec.windows.rear;
@@ -144,6 +165,6 @@ export function rowPoint(fr, along, depth) {
 export function rowPoly(row, rows) {
   const fr = rowFrame(row, rows);
   const L = rowLength(row, rows);
-  const d = unitSpec(row, 0).depthMm;
+  const d = row.unit.depthMm; // one depth per row, as layoutUnits
   return [rowPoint(fr, 0, 0), rowPoint(fr, L, 0), rowPoint(fr, L, d), rowPoint(fr, 0, d)];
 }

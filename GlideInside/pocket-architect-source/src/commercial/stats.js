@@ -1,6 +1,6 @@
 // Live numbers for the stats strip: unit count and size mix, GFA (ground and mezzanine separately), site coverage, parking required.
 
-import { layoutUnits, mezzanineOf } from './layout.js';
+import { layoutUnits, mezzanineOf, officeOf } from './layout.js';
 import { parkingLayout } from './parking.js';
 import { DEFAULT_PARKING_RATE, DEFAULT_OFFICE_RATE } from './rules.js';
 
@@ -29,7 +29,7 @@ export function commercialStats(project) {
     const label = `${(u.w / 1000).toFixed(1)} x ${(u.d / 1000).toFixed(1)} m`;
     mix.set(label, (mix.get(label) || 0) + 1);
     ground += (u.w * u.d) / 1e6;
-    if (u.spec.office.enabled) office += (u.w * Math.min(u.spec.office.depthMm, u.d)) / 1e6;
+    office += officeOf(u.spec).areaM2;
     const m = mezzanineOf(u.spec);
     if (m.enabled) mezz += m.areaM2;
   }
@@ -39,7 +39,8 @@ export function commercialStats(project) {
   const park = parkingLayout(c);
   const officeRate = Number.isFinite(c?.rates?.officePerM2) ? c.rates.officePerM2 : DEFAULT_OFFICE_RATE;
   const split = office > 0 && c?.rates?.officeSeparate !== false;
-  const required = split ? Math.ceil((gfa - office) * rate - 1e-9) + Math.ceil(office * officeRate - 1e-9) : Math.ceil(gfa * rate - 1e-9);
+  // Fractions round up once, on the total (Tamworth DCP, Step 3 Industrial Parking: fractions round up to the next whole space).
+  const required = split ? Math.ceil((gfa - office) * rate + office * officeRate - 1e-9) : Math.ceil(gfa * rate - 1e-9);
   return {
     units: units.length,
     mix: [...mix].map(([label, count]) => ({ label, count })),

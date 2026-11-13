@@ -3,7 +3,7 @@
 
 import * as G from '../model/geometry.js';
 
-export const MIN_SCALE = 0.006; // px per mm
+export const MIN_SCALE = 0.0015; // px per mm: far enough out to frame a commercial or rural lot several hundred metres across
 export const MAX_SCALE = 1.6;
 export const DEFAULT_SCALE = 0.08;
 

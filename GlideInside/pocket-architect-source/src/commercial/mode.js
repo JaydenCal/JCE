@@ -6,6 +6,7 @@ import { defaultCommercial, defaultRow, normaliseCommercial, isCommercial } from
 import { materialise } from './materialise.js';
 import { zoneClass, effectiveClass, RESIDENTIAL_NOTE } from './zones.js';
 import { defaultRulesFor } from './rules.js';
+import { siteLotCommercialSetbacks } from './setbacks.js';
 import { toast as realToast } from '../ui/toast.js';
 
 export { isCommercial };
@@ -50,15 +51,29 @@ export function firstRow(p, cls = 'industrial') {
 }
 
 /** Turn project p (mutated in place) into a commercial layout. Keeps the lot, the title block and the drawing setup. */
-export function convertToCommercial(p, { useClass } = {}) {
+export function convertToCommercial(p, { useClass, name = null } = {}) {
   const cls = useClass || effectiveClass(p) || 'industrial';
   p.mode = 'commercial';
   p.type = 'commercial';
   p.designType = 'commercial';
+  if (name) p.name = name;
   p.finishes = { ...structuredClone(S.DEFAULT_FINISHES_SHED) };
   p.levels = [S.createLevel({ name: 'Ground', elevation: 0, height: 6000, roof: S.roofDefaults('commercial') })];
   p.site.tanks = [];
   delete p.placedHouse;
+  // The lot may still carry housing setbacks (a council dwelling rule, the Housing Code or the default housing envelope). They are
+  // replaced at once by the indicative commercial table so the first row is never placed against a housing envelope; the setback
+  // stage then loads the council file (setbacksKey is cleared so it runs).
+  const lot = lotOf(p) ? p.site.lot : null;
+  if (lot) {
+    const r = siteLotCommercialSetbacks(lot, { councils: [] }, { cls });
+    lot.setbacks = r.setbacks;
+    lot.envelope = r.envelope;
+    lot.setbacksKey = null;
+    lot.setbacksDefault = false;
+    lot.setbacksStatus = r.setbacks ? 'ok' : 'none';
+    lot.setbacksAttempts = [];
+  }
   p.commercial = defaultCommercial(cls);
   p.commercial.rows = [firstRow(p, cls)];
   materialise(p);
@@ -86,11 +101,15 @@ export function regenerate(p) {
   return p;
 }
 
+/** Whether this screen has the commercial dock. The app switches it off for the embedded viewer and the demo, where a lot lookup must not offer the switch. */
+export const commercialUi = { enabled: true };
+
 /**
  * After a lot lookup: on an industrial or commercial zone, offer the switch (never switch silently). On a residential zone with a
  * commercial project, say so. Returns the toast handle or null.
  */
-export function offerCommercial(store, { toast = realToast } = {}) {
+export function offerCommercial(store, { toast = realToast, available = commercialUi.enabled } = {}) {
+  if (!available) return null; // no commercial dock on this screen (the embedded viewer, the demo): nothing to offer
   const p = store.project;
   const z = zoneClass(lotOf(p) ? p.site.lot : null);
   if (isCommercial(p)) {

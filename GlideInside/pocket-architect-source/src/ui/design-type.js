@@ -37,7 +37,13 @@ const hasContent = (p) => p.levels.some((l) => l.rooms.length || l.walls.length 
 export function buildDesignType(current, typeId, catalogue) {
   const type = DESIGN_TYPES.find((d) => d.id === typeId);
   if (!type) throw new Error(`Unknown design type ${typeId}`);
-  if (typeId === 'commercial') return migrate(convertToCommercial(structuredClone(current)));
+  if (typeId === 'commercial') {
+    const next = migrate(convertToCommercial(structuredClone(current)));
+    // A starter template's name ("Single storey, 4 bedroom") does not carry over to a unit layout; the person's own name does.
+    const names = new Set((catalogue?.templates || []).map((t) => t.name));
+    if (!current.name || current.name === 'Untitled design' || names.has(current.name)) next.name = 'Commercial units';
+    return next;
+  }
   const tpl = catalogue?.templates?.find((t) => t.id === type.template);
   if (!tpl) throw new Error('That design type is not available.');
   const fresh = migrate(catalogue.createFromTemplate ? catalogue.createFromTemplate(tpl.id) : tpl.create());

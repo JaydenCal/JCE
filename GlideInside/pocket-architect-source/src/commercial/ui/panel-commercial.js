@@ -18,6 +18,7 @@ function setPath(o, path, v) {
   t[ks.at(-1)] = v;
 }
 const m1 = (v) => (v / 1000).toFixed(1);
+const ACCESS_FACT = { class_5: 'accessibleClass5', class_6: 'accessibleClass6', class_7: 'accessibleClass7', class_8: 'accessibleClass8' };
 
 export function createCommercialPanel({ store, host, editor }) {
   const dock = h('aside', { class: 'cm-dock', hidden: true, 'aria-label': 'Commercial layout', dataset: { ps: 'commercial-dock' } });
@@ -25,6 +26,7 @@ export function createCommercialPanel({ store, host, editor }) {
   host.append(dock, strip);
   let scope = 'all';
   let raf = 0;
+  let wasOn = false;
   let open = { Doors: true, Unit: true };
   const rowOf = () => { const c = store.project.commercial; return c?.rows.find((r) => r.id === store.ui.commercialRow) || c?.rows[0] || null; };
 
@@ -39,10 +41,11 @@ export function createCommercialPanel({ store, host, editor }) {
     row.perUnit[k] ??= {};
     return row.perUnit[k];
   }
-  const unitValue = (path) => { const r = rowOf(); return getPath(unitSpec(r, scope === 'all' ? 0 : Number(scope)), path); };
+  // The whole row shows the row's own settings (not unit 1 with its overrides); one unit shows its settings with its overrides.
+  const unitValue = (path) => { const r = rowOf(); return getPath(scope === 'all' ? r.unit : unitSpec(r, Number(scope)), path); };
 
-  const numField = (label, path, { unit = 'mm', min = 0, max = 1e6, step = 50, scale = 1, hint } = {}) => {
-    const input = h('input', { type: 'number', min, max, step, value: Math.round(unitValue(path) / scale * 100) / 100, dataset: { path }, onchange: () => {
+  const numField = (label, path, { unit = 'mm', min = 0, max = 1e6, step = 50, scale = 1, hint, disabled = false } = {}) => {
+    const input = h('input', { type: 'number', min, max, step, disabled, value: Math.round(unitValue(path) / scale * 100) / 100, dataset: { path }, onchange: () => {
       const v = Math.min(max, Math.max(min, Number(input.value) || 0)) * scale;
       edit(`Set ${label.toLowerCase()}`, (c) => setPath(unitTarget(c), path, v));
     } });
@@ -67,7 +70,7 @@ export function createCommercialPanel({ store, host, editor }) {
   };
   const siteNum = (label, get, set, { unit = '', min = 0, max = 1e6, step = 1, blank = false } = {}) => {
     const cur = get();
-    const input = h('input', { type: 'number', min, max, step, value: cur == null ? '' : cur, placeholder: blank ? 'Auto' : null, onchange: () => {
+    const input = h('input', { type: 'number', min, max, step, value: cur == null ? '' : cur, placeholder: blank ? 'Auto' : null, dataset: { k: label }, onchange: () => {
       const raw = input.value;
       const v = raw === '' && blank ? null : Math.min(max, Math.max(min, Number(raw) || 0));
       edit(`Set ${label.toLowerCase()}`, (c) => set(c, v));
@@ -75,11 +78,11 @@ export function createCommercialPanel({ store, host, editor }) {
     return field(label, h('span', { class: 'cm-in' }, input, unit ? h('i', null, unit) : null));
   };
   const siteChk = (label, get, set) => {
-    const input = h('input', { type: 'checkbox', checked: !!get(), onchange: () => edit(`Set ${label.toLowerCase()}`, (c) => set(c, input.checked)) });
+    const input = h('input', { type: 'checkbox', checked: !!get(), dataset: { k: label }, onchange: () => edit(`Set ${label.toLowerCase()}`, (c) => set(c, input.checked)) });
     return h('label', { class: 'cm-chk' }, input, h('span', null, label));
   };
   function classField(c) {
-    const sel = h('select', { dataset: { ps: 'ncc-class' }, title: facts('accessibleClass8').tip, onchange: () => edit('Set NCC class', (cc) => { cc.buildingClass = sel.value; }) }, NCC_CLASSES.map(([v, t]) => h('option', { value: v }, t)));
+    const sel = h('select', { dataset: { ps: 'ncc-class' }, title: facts(ACCESS_FACT[c.buildingClass] || 'accessibleClass8').tip, onchange: () => edit('Set NCC class', (cc) => { cc.buildingClass = sel.value; }) }, NCC_CLASSES.map(([v, t]) => h('option', { value: v }, t)));
     sel.value = c.buildingClass || 'class_8';
     return field('NCC class (accessible bays)', sel, 'Indicative, verify against NCC Part D4');
   }
@@ -101,22 +104,34 @@ export function createCommercialPanel({ store, host, editor }) {
     dock.hidden = !on;
     strip.hidden = !on;
     host.dataset.commercial = on ? '1' : '0';
+    // Entering commercial mode from the split view goes to the plan: the dock would cover most of the half width plan, and the
+    // parking, bays and bollards are drawn on the plan only at this stage. The person can still choose Split afterwards.
+    if (on && !wasOn && store.ui.view === 'split') store.setUI({ view: '2d' });
+    wasOn = on;
     if (!on) return;
     const c = p.commercial;
     const row = rowOf();
     const a = analyse(p);
+    // The dock is rebuilt on every change: keep the scroll position and put the focus back on the same control, so tabbing through
+    // the form and editing far down the list are not thrown back to the top.
+    const keep = { top: dock.scrollTop, sel: null };
+    const act = document.activeElement;
+    if (act && dock.contains(act)) {
+      const d = act.dataset || {};
+      keep.sel = d.path ? `[data-path="${d.path}"]` : d.k ? `[data-k="${d.k}"]` : d.ps ? `[data-ps="${d.ps}"]` : null;
+    }
     clear(dock);
     // Header
     const z = zoneClass(p.site?.lot);
     const cls = effectiveClass(p);
     const lot = p.site?.lot;
     const zoneSel = h('select', { 'aria-label': 'Zone class', dataset: { ps: 'zone-class' }, onchange: () => edit('Set zone class', (cc) => { cc.zoneClass = zoneSel.value || null; }) },
-      h('option', { value: '' }, z.employment ? `${ZONE_CLASS_LABEL[z.cls]} (from the zone)` : 'Choose zone class'), h('option', { value: 'industrial' }, 'Industrial'), h('option', { value: 'commercial' }, 'Commercial'));
+      h('option', { value: '' }, z.employment ? `${ZONE_CLASS_LABEL[z.cls]} (from the zone)` : 'Choose the zone class'), h('option', { value: 'industrial' }, 'Industrial'), h('option', { value: 'commercial' }, 'Commercial'));
     zoneSel.value = c.zoneClass || '';
     dock.append(h('header', { class: 'cm-head' },
       h('div', { class: 'cm-title' }, h('b', null, 'Commercial and industrial layout'), h('span', { class: 'cm-beta' }, 'Beta')),
       h('div', { class: 'cm-sub' }, lot ? `${lot.lotLabel || 'Lot'}${lot.zoning ? ` · ${lot.zoning.code || ''} ${lot.zoning.name || ''}` : ' · zone not looked up'}` : 'Find an address to place units on a lot'),
-      h('div', { class: 'cm-zone' }, field('Zone class', zoneSel))));
+      h('label', { class: 'cm-field cm-stack' }, h('span', { class: 'cm-l' }, 'Zone class'), zoneSel)));
     // Rows
     const rowsBox = h('div', { class: 'cm-rows', role: 'tablist', 'aria-label': 'Rows' });
     c.rows.forEach((r, i) => {
@@ -131,15 +146,16 @@ export function createCommercialPanel({ store, host, editor }) {
       const mirrored = !!row.mirrorOf;
       const count = mirrored ? c.rows.find((r) => r.id === row.mirrorOf)?.count : row.count;
       const countInput = h('input', { type: 'number', min: 1, max: 40, step: 1, value: count, disabled: mirrored, dataset: { path: 'count' }, onchange: () => edit('Set units per row', (cc) => { cc.rows.find((r) => r.id === row.id).count = Math.max(1, Math.min(40, Math.round(Number(countInput.value) || 1))); }) });
-      const scopeSel = h('select', { 'aria-label': 'Applies to', dataset: { ps: 'unit-scope' }, onchange: () => { scope = scopeSel.value; schedule(); } }, h('option', { value: 'all' }, 'All units in the row'),
+      if (scope !== 'all' && !(Number(scope) < count)) scope = 'all';
+      const scopeSel = h('select', { 'aria-label': 'Applies to', title: 'Which units the settings below change', dataset: { ps: 'unit-scope' }, onchange: () => { scope = scopeSel.value; schedule(); } }, h('option', { value: 'all' }, 'Whole row'),
         ...Array.from({ length: count }, (_, i) => h('option', { value: String(i) }, `Unit ${i + 1} only`)));
       scopeSel.value = scope;
       dock.append(
         field(`Units per row${mirrored ? ' (follows the first row)' : ''}`, h('span', { class: 'cm-in' }, countInput)),
-        field('Edit', scopeSel),
+        field('Settings apply to', scopeSel),
         section('Unit',
-          numField('Unit width', 'widthMm', { min: 2500, max: 30000, step: 100, hint: mirrored ? 'Widths follow the first row' : null }),
-          numField('Unit depth', 'depthMm', { min: 4000, max: 80000, step: 500, hint: 'One depth per row' }),
+          numField('Unit width', 'widthMm', { min: 2500, max: 30000, step: 100, disabled: mirrored, hint: mirrored ? 'Widths follow the row it mirrors' : null }),
+          numField('Unit depth', 'depthMm', { min: 4000, max: 80000, step: 500, disabled: scope !== 'all', hint: scope !== 'all' ? 'One depth per row, choose Whole row to change it' : 'One depth per row' }),
           numField('Unit height', 'heightMm', { min: 3000, max: 15000, step: 100 })),
         section('Doors',
           selField('Roller doors', 'doors.count', [[1, '1 at the front'], [2, '2 at the front']]),
@@ -158,7 +174,7 @@ export function createCommercialPanel({ store, host, editor }) {
           numField('Window sill', 'windows.sillMm', { min: 0, max: 4000, step: 50 }),
           chkField('Side windows on end units', 'windows.side', 'No windows on party walls')),
         section('Office',
-          chkField('Office at the front', 'office.enabled'),
+          chkField('Office at the front', 'office.enabled', 'Beside the roller door'),
           numField('Office depth', 'office.depthMm', { min: 2000, max: 8000, step: 100 }),
           chkField('Accessible WC in the office', 'office.accessibleWc', 'Layout to be confirmed with an access consultant')),
         section('Mezzanine',
@@ -198,6 +214,8 @@ export function createCommercialPanel({ store, host, editor }) {
     const sched = h('details', { class: 'cm-sec', dataset: { ps: 'bollard-schedule' } }, h('summary', null, `Bollard schedule (${a.schedule.total})`),
       h('div', { class: 'cm-body' }, ...a.schedule.byKind.map((r) => h('p', { class: 'cm-line' }, h('span', null, r.label), h('b', null, String(r.count)))), h('p', { class: 'cm-hint' }, a.schedule.note)));
     dock.append(sched, checks);
+    dock.scrollTop = keep.top;
+    if (keep.sel) { try { dock.querySelector(keep.sel)?.focus({ preventScroll: true }); } catch { /* the control is gone */ } }
 
     // Stats strip
     const s = a.stats;
@@ -210,19 +228,23 @@ export function createCommercialPanel({ store, host, editor }) {
       cell('coverage', s.coveragePct == null ? 'n/a' : `${s.coveragePct}%`, 'site coverage'),
       cell('parking', String(s.parking.required), `bays needed, 1 per ${Math.round(1 / s.parking.ratePerM2)} m²${s.parking.officeSplit ? ', office 1 per 40 m²' : ''}`, `${facts('parkingUnits').tip}. ${s.parking.officeSplit ? 'Counting the office separately is a conservative reading, unverified. ' : ''}Indicative, check with council`),
       cell('provided', String(s.parking.provided), 'bays shown, indicative'),
-      cell('accessible', `${s.parking.accessible.provided} / ${s.parking.accessible.required}`, 'accessible bays', `${facts('accessibleClass8').tip}. Bay 2.4 x 5.4 m with a 2.4 m shared zone, ${facts('bay').tip}`));
+      cell('accessible', `${s.parking.accessible.provided} / ${s.parking.accessible.required}`, 'accessible bays', `${facts(ACCESS_FACT[c.buildingClass] || 'accessibleClass8').tip}. Bay 2.4 x 5.4 m with a 2.4 m shared zone, ${facts('bay').tip}`));
   }
 
   function inset() {
     const el = editor?.element;
     if (!el || dock.hidden) return;
     const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return; // the plan is not on screen (3D or walk)
     const d = dock.getBoundingClientRect();
     const sr = strip.getBoundingClientRect();
-    editor.setInset({ left: Math.max(0, d.right - r.left + 8), bottom: Math.max(0, r.bottom - sr.top + 8) });
+    // Only what really lies over the plan counts: the dock on its left, the strip along its bottom.
+    const left = d.width && d.left < r.right ? Math.max(0, Math.min(d.right, r.right) - r.left + 8) : 0;
+    const bottom = sr.height && sr.top > r.top + r.height / 2 && sr.left < r.right ? Math.max(0, r.bottom - sr.top + 8) : 0;
+    editor.setInset({ left: left < r.width - 160 ? left : 0, bottom });
   }
   const schedule = () => { if (!raf) raf = requestAnimationFrame(() => { render(); inset(); }); };
-  const offs = [store.on('project', schedule), store.on('ui', (p = {}) => { if ('commercialRow' in p) schedule(); })];
+  const offs = [store.on('project', schedule), store.on('ui', (p = {}) => { if ('commercialRow' in p || 'view' in p) schedule(); })];
   render();
   requestAnimationFrame(inset);
   window.addEventListener('resize', inset);
