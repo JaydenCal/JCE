@@ -165,7 +165,7 @@ export function createLotCard({ store, host, viewerHost = host, catalogue = null
     const ask = debounce(async () => {
       const q = findInput.value.trim();
       if (q.length < 3) { sugg = []; paintSugg(); return; }
-      try { const r = await searchAddresses(q); if (findInput.value.trim() === q) { sugg = Array.isArray(r) ? r : []; suggI = -1; paintSugg(); } } catch { sugg = []; paintSugg(); }
+      try { const r = await searchAddresses(q, { onRetry: () => { findList.replaceChildren(h('li', { class: 'lc-find-item lc-find-busy', role: 'status' }, h('span', null, 'Busy, trying again'))); findList.hidden = false; } }); if (findInput.value.trim() === q) { sugg = Array.isArray(r) ? r : []; suggI = -1; paintSugg(); } } catch { sugg = []; paintSugg(); }
     }, 220);
     findInput.addEventListener('input', ask);
     findInput.addEventListener('focus', () => findInput.select());

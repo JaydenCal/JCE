@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createApp } from '../server/lib/app.js';
 import { createMemoryStore, createD1Store } from '../server/lib/store.js';
-import { createSite, parseBbox, createCache, buildNswWhere, buildQldWhere, searchWords, inferState } from '../server/lib/site.js';
+import { createSite, parseBbox, createCache, normalizeQuery, buildNswWhere, buildQldWhere, searchWords, inferState } from '../server/lib/site.js';
 import { lonLatToMga, mgaToLonLat } from '../src/site/geo.js';
 
 let DatabaseSync = null;
@@ -290,12 +290,87 @@ test('health: a failing required upstream makes ok false, optional ones only all
   assert.equal(b2.allOk, false);
 });
 
-test('rate limit: search is limited per IP and other IPs are unaffected', async () => {
-  const { get } = mk();
-  let last = 0;
-  for (let i = 0; i < 61; i++) last = (await get('/search?q=12+smith+street', '9.9.9.9')).status;
-  assert.equal(last, 429);
-  assert.equal((await get('/search?q=12+smith+street', '8.8.8.8')).status, 200);
+const okUpstream = (calls = []) => async () => { calls.push(1); return new Response(JSON.stringify({ features: [{ attributes: { address: '12 SMITH STREET TAMWORTH' }, geometry: { x: LON, y: LAT } }] }), { status: 200, headers: { 'content-type': 'application/json' } }); };
+const mkOk = (calls = []) => {
+  let now = T0;
+  const app = createApp({ store: createMemoryStore(), env: {}, fetchImpl: okUpstream(calls), now: () => now });
+  return { app, get: (path, ip = '1.1.1.1') => app.fetch(new Request(`https://api.test/api/site${path}`, { headers: { 'cf-connecting-ip': ip } })), tick: (ms) => { now += ms; } };
+};
+
+test('rate limit: search burst of 30 per 10 s then 60 per minute, per IP (distinct queries; cache hits are not counted)', async () => {
+  const { get, tick } = mkOk();
+  const ask = (i, ip) => get(`/search?q=${12 + i}+smith+street`, ip).then((r) => r.status);
+  const first = [];
+  for (let i = 0; i < 31; i++) first.push(await ask(i, '9.9.9.9'));
+  assert.equal(first.slice(0, 30).every((c) => c === 200), true);
+  assert.equal(first[30], 429);
+  assert.equal(await ask(100, '8.8.8.8'), 200); // other IPs unaffected
+  tick(10000);
+  for (let i = 31; i < 60; i++) assert.equal(await ask(i, '7.7.7.7'), 200); // sanity on another IP
+  const c = [];
+  for (let i = 0; i < 30; i++) c.push(await ask(200 + i, '6.6.6.6'));
+  tick(10000);
+  for (let i = 0; i < 30; i++) c.push(await ask(300 + i, '6.6.6.6'));
+  tick(10000);
+  assert.equal(c.every((x) => x === 200), true);
+  assert.equal(await ask(400, '6.6.6.6'), 429); // 61st inside the minute
+  const hits = [];
+  for (let i = 0; i < 80; i++) hits.push(await get('/search?q=12+smith+street', '5.5.5.5').then((r) => r.status));
+  assert.equal(hits.every((x) => x === 200), true, 'the same query repeated is answered from cache and never rate limited');
+});
+
+test('normalizeQuery: trim, collapse spaces, uppercase, strip punctuation', () => {
+  assert.equal(normalizeQuery('  12  Smith St,   Tamworth. '), '12 SMITH ST TAMWORTH');
+  assert.equal(normalizeQuery("o'brien st (x)"), "O'BRIEN ST X");
+  assert.equal(normalizeQuery('12 smith st tamworth'), normalizeQuery('12 SMITH ST, TAMWORTH!'));
+  assert.equal(normalizeQuery(null), '');
+});
+
+test('search cache: second identical (differently written) query is a cache hit with no upstream calls; header says so', async () => {
+  const calls = [];
+  const { get } = mkOk(calls);
+  const r1 = await get('/search?q=12+Smith+Street+Tamworth');
+  assert.equal(r1.headers.get('x-search-cache'), 'miss');
+  const n = calls.length;
+  assert.ok(n > 0);
+  const r2 = await get('/search?q=%2012%20%20smith%20street,%20TAMWORTH.', '2.2.2.2');
+  assert.equal(r2.headers.get('x-search-cache'), 'memory');
+  assert.equal(calls.length, n);
+  assert.deepEqual(await r2.json(), await r1.json());
+});
+
+test('search cache: an empty result is never cached (a later success is not shadowed)', async () => {
+  let up = false;
+  const j = (b) => new Response(JSON.stringify(b), { status: 200, headers: { 'content-type': 'application/json' } });
+  let calls = 0;
+  const impl = async () => { calls++; return j({ features: up ? [{ attributes: { address: '12 SMITH STREET TAMWORTH' }, geometry: { x: LON, y: LAT } }] : [] }); };
+  const store = createMemoryStore();
+  const app = createApp({ store, env: {}, fetchImpl: impl, now: () => T0 });
+  const g = (ip) => app.fetch(new Request('https://api.test/api/site/search?q=12+smith+street+tamworth', { headers: { 'cf-connecting-ip': ip } }));
+  const a = await (await g('1.0.0.1')).json();
+  assert.equal(a.results.length, 0);
+  const before = calls;
+  up = true;
+  const res = await g('1.0.0.2');
+  assert.notEqual(res.headers.get('x-search-cache'), 'memory');
+  assert.ok(calls > before, 'the empty answer did not stop the next request reaching the upstream');
+  assert.ok((await res.json()).results.length >= 1);
+});
+
+test('search coalescing: identical concurrent searches make one upstream round', async () => {
+  const j = (b) => new Response(JSON.stringify(b), { status: 200, headers: { 'content-type': 'application/json' } });
+  let calls = 0;
+  const impl = async () => { calls++; await new Promise((r) => setTimeout(r, 40)); return j({ features: [{ attributes: { address: '12 SMITH STREET TAMWORTH' }, geometry: { x: LON, y: LAT } }] }); };
+  const single = createApp({ store: createMemoryStore(), env: {}, fetchImpl: impl, now: () => T0 });
+  await single.fetch(new Request('https://api.test/api/site/search?q=12+smith+street+tamworth', { headers: { 'cf-connecting-ip': '1.2.3.4' } }));
+  const perSearch = calls;
+  calls = 0;
+  const app = createApp({ store: createMemoryStore(), env: {}, fetchImpl: impl, now: () => T0 });
+  const rs = await Promise.all(Array.from({ length: 12 }, (_, i) => app.fetch(new Request(`https://api.test/api/site/search?q=${i % 2 ? '12 Smith Street Tamworth' : '12  smith street, tamworth'}`, { headers: { 'cf-connecting-ip': `10.0.0.${i}` } }))));
+  assert.equal(calls, perSearch, 'one upstream round for 12 identical searches');
+  assert.ok(rs.every((r) => r.status === 200));
+  assert.ok(rs.some((r) => r.headers.get('x-search-cache') === 'coalesced'));
+  for (const r of rs) assert.equal((await r.json()).results[0].label, '12 Smith Street Tamworth NSW');
 });
 
 test('unknown site endpoint is 404 and POST is 405', async () => {

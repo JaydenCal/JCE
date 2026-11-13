@@ -27,9 +27,10 @@ export function exportPayload(project) {
 
 const DEFAULT_JSPDF = new URL('../../vendor/jspdf/dist/jspdf.umd.min.js', import.meta.url).href;
 let jspdfLoading = null;
+const jspdfUrl = () => (typeof window !== 'undefined' && window.__PS_JSPDF__) || DEFAULT_JSPDF; // set by the page when jsPDF is a sibling file (tools/build-single.mjs)
 
 /** Inject the jsPDF UMD build once and resolve the jsPDF class (window.jspdf.jsPDF). */
-export function loadJsPDF(src = DEFAULT_JSPDF) {
+export function loadJsPDF(src = jspdfUrl()) {
   if (window.jspdf?.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
   if (!jspdfLoading) {
     jspdfLoading = new Promise((resolve, reject) => {

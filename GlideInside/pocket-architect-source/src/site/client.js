@@ -44,6 +44,46 @@ function friendly(body, status) {
   return body?.message || 'The lookup failed. You can keep drawing without a lot.';
 }
 
+export const RETRY_DELAY_MS = 1500;
+export const SEARCH_TIMEOUT_MS = 12000;
+export const BUSY_MESSAGE = 'Busy, trying again';
+
+// A failure worth one more try: the network, a timeout or a 5xx. Never a 4xx, a rate limit or the user's own abort.
+export const isRetryable = (e) => e?.name !== 'AbortError' && (e?.code === 'NETWORK' || e?.code === 'TIMEOUT' || /^HTTP_5\d\d$/.test(e?.code || '') || e?.code === 'SITE_UPSTREAM');
+
+// Sleep that ends early (rejecting with an AbortError) when the caller's signal aborts.
+function wait(ms, signal, sleepImpl = sleep) {
+  if (signal?.aborted) return Promise.reject(Object.assign(new Error('aborted'), { name: 'AbortError' }));
+  return new Promise((resolve, reject) => {
+    const onAbort = () => reject(Object.assign(new Error('aborted'), { name: 'AbortError' }));
+    signal?.addEventListener?.('abort', onAbort, { once: true });
+    sleepImpl(ms).then(() => { signal?.removeEventListener?.('abort', onAbort); resolve(); });
+  });
+}
+
+// getJson with a per attempt timeout (TIMEOUT error) that still honours the caller's own abort signal.
+async function getJsonTimed(path, params, { signal, fetchImpl, timeoutMs = SEARCH_TIMEOUT_MS } = {}) {
+  const ctl = new AbortController();
+  let timedOut = false;
+  const onAbort = () => ctl.abort();
+  if (signal?.aborted) ctl.abort();
+  else signal?.addEventListener?.('abort', onAbort, { once: true });
+  const timer = timeoutMs ? setTimeout(() => { timedOut = true; ctl.abort(); }, timeoutMs) : null;
+  try {
+    return await getJson(path, params, { signal: ctl.signal, fetchImpl });
+  } catch (e) {
+    if (timedOut && e?.name === 'AbortError') throw new SiteError('The address lookup took too long. Try again.', 'TIMEOUT');
+    throw e;
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener?.('abort', onAbort);
+  }
+}
+
+/**
+ * Address search. An empty answer or a timeout / network / 5xx failure is retried once after retryDelayMs (about 1.5 s) while onRetry()
+ * lets the UI show "Busy, trying again" instead of "no match". A second empty answer is a genuine no match ([]).
+ */
 export async function searchAddresses(q, opts = {}) {
   const text = String(q || '').trim();
   if (text.length < 3) return [];
@@ -51,8 +91,30 @@ export async function searchAddresses(q, opts = {}) {
     const { mockSearch } = await import('./fixtures/index.js');
     return mockSearch(text);
   }
-  const body = await getJson('search', { q: text }, opts);
-  return body.results || [];
+  const { onRetry, retryDelayMs = RETRY_DELAY_MS, sleepImpl, signal, fetchImpl, timeoutMs } = opts;
+  const once = async () => ((await getJsonTimed('search', { q: text }, { signal, fetchImpl, timeoutMs }))?.results || []);
+  let first;
+  try {
+    first = await once();
+    if (first.length) return first;
+  } catch (e) {
+    if (!isRetryable(e)) throw e;
+  }
+  onRetry?.();
+  await wait(retryDelayMs, signal, sleepImpl);
+  return once();
+}
+
+/** The lot lookup with one retry after about 1.5 s on a 5xx, timeout or network failure (onRetry shows "Busy, trying again"). */
+export async function getLot(params, { signal, fetchImpl, onRetry, retryDelayMs = RETRY_DELAY_MS, sleepImpl } = {}) {
+  try {
+    return await getJson('lot', params, { signal, fetchImpl });
+  } catch (e) {
+    if (!isRetryable(e)) throw e;
+  }
+  onRetry?.();
+  await wait(retryDelayMs, signal, sleepImpl);
+  return getJson('lot', params, { signal, fetchImpl });
 }
 
 // Metres of margin around the lot for the aerial and the elevation grid.
@@ -107,7 +169,7 @@ export function fetchContours(lot, { fetchImpl, timeoutMs = CONTOURS_TIMEOUT_MS 
  * fetchSite(selection, { fetchImpl, signal, onStep, deferContours }) -> { lot, aerial: { blob, meta } | null, contours | null, warnings: [] }
  * selection: { label, state, lon, lat }. The lot is required. A failed aerial or elevation request only adds a warning.
  */
-export async function fetchSite(selection, { fetchImpl, signal, onStep, deferContours = false } = {}) {
+export async function fetchSite(selection, { fetchImpl, signal, onStep, deferContours = false, retryDelayMs, sleepImpl } = {}) {
   const warnings = [];
   const step = (s) => onStep?.(s);
   if (CONFIG.siteMock) {
@@ -147,7 +209,7 @@ export async function fetchSite(selection, { fetchImpl, signal, onStep, deferCon
 
   const opts = { signal, fetchImpl };
   step('lot');
-  const lot = await getJson('lot', { lon: selection.lon, lat: selection.lat, ...(selection.state ? { state: selection.state } : {}) }, opts);
+  const lot = await getLot({ lon: selection.lon, lat: selection.lat, ...(selection.state ? { state: selection.state } : {}) }, { ...opts, retryDelayMs, sleepImpl, onRetry: () => step('busy') });
   const m = margin();
   const b = lot.lot.bboxMga;
   const bbox = `${b.minE - m},${b.minN - m},${b.maxE + m},${b.maxN + m}`;

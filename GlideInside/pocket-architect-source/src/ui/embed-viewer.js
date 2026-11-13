@@ -201,7 +201,7 @@ export async function placeBestDesign(store, catalogue, wantId = null, { after =
 export async function loadAddress(store, catalogue, address, { onStep, viewer = false, after = null } = {}) {
   const q = String(address || '').trim();
   if (q.length < 3) throw new Error('Type a street address first.');
-  const results = await searchAddresses(q);
+  const results = await searchAddresses(q, { onRetry: () => onStep?.('busy') });
   const pick = results[0];
   if (!pick) throw new Error('No matching address found. Check the spelling, or try the street name and suburb.');
   const wantId = store.ui.placedDesign?.id || null;

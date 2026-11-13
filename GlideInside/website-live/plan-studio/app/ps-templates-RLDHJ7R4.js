@@ -1,0 +1,1 @@
+import{b as a,c as b}from"./ps-chunk-XPUSKV37.js";import"./ps-chunk-EEYH6L35.js";import"./ps-chunk-OEDRPOWO.js";import"./ps-chunk-BEG73HI5.js";import"./ps-chunk-FYM43IIJ.js";import"./ps-chunk-2NDQRQNN.js";import"./ps-chunk-YUABBF4N.js";import"./ps-chunk-F4D5FBML.js";import"./ps-chunk-E4XECTYR.js";export{a as TEMPLATES,b as createFromTemplate};

@@ -72,7 +72,13 @@ export const SERVICES = {
 
 const TTL = { search: 86400, lot: 7 * 86400, aerial: 7 * 86400, contours: 7 * 86400, health: 60 };
 const LIMITS = { search: [60, 60], lot: [20, 60], aerial: [20, 60], contours: [12, 60], health: [10, 60] }; // [hits, window seconds] per IP
+// Search is the one endpoint shared offices hit in bursts, so it gets a second, short window on top of the 60 per minute: a burst of
+// up to 30 requests in any 10 second window (approximating a token bucket of 60 per minute, burst 30), then at most 60 per minute.
+// Requests answered from a cache cost the upstream nothing and are not counted at all. Abuse protection stays: 60 per minute and the
+// per IP daily cap (counted for upstream bound searches only) apply as before.
+export const SEARCH_BURST = [30, 10]; // [hits, window seconds] per IP
 const DAY_LIMIT = 800;
+export const SEARCH_MEM_MAX = 300; // per isolate LRU entries
 const NEIGHBOUR_M = 60;
 const NEIGHBOUR_MAX_M = 400;
 export const RADIUS_MAX_M = 300;
@@ -208,6 +214,11 @@ export function createCache({ now = () => Date.now(), max = 200 } = {}) {
   };
 }
 
+/** Normalised search query: trimmed, punctuation stripped (keeping ' / -), spaces collapsed, uppercase. Equal queries share one cache entry. */
+export function normalizeQuery(q) {
+  return String(q ?? '').toUpperCase().replace(/[,.]/g, ' ').replace(/[^A-Z0-9'/\- ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export function createSite({ store = null, fetchImpl, now = () => Date.now(), cache = null } = {}) {
   const doFetch = fetchImpl || ((...a) => globalThis.fetch(...a));
   const bytesCache = cache || createCache({ now });
@@ -256,6 +267,11 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     const ip = clientIp(request);
     const [max, win] = LIMITS[kind];
     const nowMs = now();
+    if (kind === 'search') {
+      const [bMax, bWin] = SEARCH_BURST;
+      const b = await store.hitRate(`site:searchburst:${ip}`, bWin, nowMs);
+      if (b > bMax) throw new HttpError('RATE_LIMITED', 'Too many lookups. Wait a few seconds and try again.', { retryAfter: bWin });
+    }
     const n = await store.hitRate(`site:${kind}:${ip}`, win, nowMs);
     if (n > max) throw new HttpError('RATE_LIMITED', 'Too many lookups. Wait a minute and try again.', { retryAfter: win });
     const day = await store.hitRate(`site:day:${ip}`, 86400, nowMs);
@@ -358,29 +374,31 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
     })).sort(byLen);
   }
 
-  async function search(request, url) {
-    await rateLimit(request, 'search');
-    const q = (url.searchParams.get('q') || '').trim();
-    if (q.length < 3) return json({ results: [] });
-    if (q.length > 120) throw new HttpError('BAD_REQUEST', 'q is too long.');
-    const tokens = searchTokens(q);
-    const only = inferState(tokens);
+  // Per isolate LRU (Map insertion order) of finished searches, and the in flight searches by normalised query.
+  const searchMem = new Map(); // key -> { value, expires }
+  const searchInflight = new Map(); // key -> Promise<{ value, partial }>
+  const memGet = (key) => {
+    const hit = searchMem.get(key);
+    if (!hit) return null;
+    if (hit.expires <= now()) { searchMem.delete(key); return null; }
+    searchMem.delete(key);
+    searchMem.set(key, hit); // refresh recency
+    return hit.value;
+  };
+  const memPut = (key, value, ttlSec) => {
+    searchMem.delete(key);
+    searchMem.set(key, { value, expires: now() + ttlSec * 1000 });
+    while (searchMem.size > SEARCH_MEM_MAX) searchMem.delete(searchMem.keys().next().value);
+  };
+  const edgeApi = () => (typeof caches !== 'undefined' && caches?.default ? caches.default : null);
+  const searchHeaders = (tag) => ({ 'cache-control': 'public, max-age=300', 'x-search-cache': tag });
+  const usable = (v) => Array.isArray(v?.results) && v.results.length > 0;
+
+  async function runSearch(key, tokens, only) {
     const wantNsw = only !== 'QLD';
     const wantQld = only !== 'NSW';
-    const key = `search:${tokens.join(' ')}`;
-    // Workers Cache API (1 day) in front of the store cache; a partial answer (an upstream timed out) is never cached.
-    const edge = typeof caches !== 'undefined' && caches?.default ? caches.default : null;
-    const edgeUrl = `https://site-cache.invalid/${encodeURIComponent(key)}`;
-    if (edge) {
-      try {
-        const hit = await edge.match(edgeUrl);
-        if (hit) return json(await hit.json(), 200, { 'cache-control': 'public, max-age=300', 'x-search-cache': 'edge' });
-      } catch {
-        /* cache unavailable */
-      }
-    }
     const st = { partial: false };
-    const { value } = await jsonCached(key, TTL.search, async () => {
+    const { value, cached } = await jsonCached(key, TTL.search, async () => {
       // Once one state has answered with results, the other state gets SEARCH_GRACE_MS more and is then left out of this answer.
       const pa = wantNsw ? searchNsw(tokens, st) : Promise.resolve([]);
       const pb = wantQld ? searchQld(tokens, st, only === 'QLD' ? 9000 : SEARCH_TIMEOUT_MS) : Promise.resolve([]);
@@ -399,11 +417,52 @@ export function createSite({ store = null, fetchImpl, now = () => Date.now(), ca
         }
       }
       return { results: merged.slice(0, 8) };
-    }, { ttlFor: (v, ttl) => (st.partial || !v.results.length ? 0 : ttl), accept: (v) => Array.isArray(v?.results) && v.results.length > 0 });
-    if (edge && !st.partial && value.results.length) {
-      try { await edge.put(edgeUrl, new Response(JSON.stringify(value), { headers: { 'content-type': 'application/json', 'cache-control': `public, max-age=${TTL.search}` } })); } catch { /* ignore */ }
+    }, { ttlFor: (v, ttl) => (st.partial || !v.results.length ? 0 : ttl), accept: usable });
+    const partial = !cached && st.partial;
+    // Only a successful, complete, non-empty answer is ever cached (in memory, the Workers cache and the store above); empty never is.
+    if (usable(value) && !partial) {
+      memPut(key, value, TTL.search);
+      const edge = edgeApi();
+      if (edge && !cached) {
+        try { await edge.put(`https://site-cache.invalid/${encodeURIComponent(key)}`, new Response(JSON.stringify(value), { headers: { 'content-type': 'application/json', 'cache-control': `public, max-age=${TTL.search}` } })); } catch { /* ignore */ }
+      }
     }
-    return json(value, 200, { 'cache-control': 'public, max-age=300' });
+    return { value, cached };
+  }
+
+  async function search(request, url) {
+    const q = (url.searchParams.get('q') || '').trim();
+    if (q.length < 3) { await rateLimit(request, 'search'); return json({ results: [] }); }
+    if (q.length > 120) { await rateLimit(request, 'search'); throw new HttpError('BAD_REQUEST', 'q is too long.'); }
+    const norm = normalizeQuery(q);
+    const tokens = searchTokens(q);
+    const only = inferState(tokens);
+    const key = `search:${norm}`;
+    // 1. per isolate LRU, 2. Workers Cache API (24 h): both skip the rate limit, they cost the upstream nothing.
+    const mem = memGet(key);
+    if (mem) return json(mem, 200, searchHeaders('memory'));
+    const edge = edgeApi();
+    if (edge) {
+      try {
+        const hit = await edge.match(`https://site-cache.invalid/${encodeURIComponent(key)}`);
+        if (hit) {
+          const v = await hit.json();
+          if (usable(v)) { memPut(key, v, TTL.search); return json(v, 200, searchHeaders('edge')); }
+        }
+      } catch {
+        /* cache unavailable */
+      }
+    }
+    await rateLimit(request, 'search');
+    // 3. identical in flight searches share one upstream request (per isolate).
+    let p = searchInflight.get(key);
+    const joined = !!p;
+    if (!p) {
+      p = runSearch(key, tokens, only).finally(() => searchInflight.delete(key));
+      searchInflight.set(key, p);
+    }
+    const { value, cached } = await p;
+    return json(value, 200, searchHeaders(joined ? 'coalesced' : cached ? 'store' : 'miss'));
   }
 
   // Lot ----------------------------------------------------------------------------------------------------------------------------

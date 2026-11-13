@@ -9,7 +9,7 @@ import { CONFIG } from '../config.js';
 import { searchAddresses } from '../site/client.js';
 import { applySiteLookup } from '../site/apply.js';
 
-const STEPS = { lot: 'Finding the lot', aerial: 'Loading the aerial image', contours: 'Loading ground levels' };
+const STEPS = { lot: 'Finding the lot', aerial: 'Loading the aerial image', contours: 'Loading ground levels', busy: 'Busy, trying again' };
 let seq = 0;
 const searchCache = new Map(); // normalised query -> results, for this page view
 
@@ -73,7 +73,7 @@ export function createFindBlock(store, { onDone, autofocus = false, compact = fa
     controller = new AbortController();
     say('Searching...'); // the previous suggestions stay up meanwhile
     try {
-      results = await searchAddresses(q, { signal: controller.signal });
+      results = await searchAddresses(q, { signal: controller.signal, onRetry: () => say('Busy, trying again') });
       if (results.length) cache.set(ck, results);
       active = -1;
       paint();

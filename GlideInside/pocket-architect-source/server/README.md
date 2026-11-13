@@ -369,3 +369,9 @@ This server also serves everything the live Worker `pocket-architect-api` (15/10
 - Tokens use the live format (HMAC over the base64url payload text); the first release format is still accepted.
 - Kept from live: friends code (`TEST_CODES`), the one-PDF-set-per-job rule (`pdf/<entitlement>.pdf`, now off by default: `PDF_SET_LIMIT="0"` lets a paid job re-export, `"1"` restores it), per IP and per pack limits, dispute and out-of-order refund handling, `metadata.app`, A$30 minimum and AUD check.
 - Tests: `tests/live-merge.test.mjs` (migrations on a live shaped SQLite database, live links and tokens, ported live share and payment suites).
+
+## Site search cache, coalescing and rate limit (r16)
+
+- `GET /api/site/search` normalises the query (`normalizeQuery`: trim, strip punctuation, collapse spaces, uppercase) and caches a successful, complete, non-empty answer for 24 h in three layers: a per isolate LRU (300 entries), the Workers Cache API (`caches.default`) and the D1 `site_cache` table. Empty or partial (an upstream timed out) answers are never cached. No new bindings or migrations.
+- Response header `x-search-cache`: `memory`, `edge`, `store`, `miss` or `coalesced` (joined an identical search already in flight in the same isolate: one upstream round per normalised query).
+- Rate limit (per IP, D1 `rate_limits`): burst 30 per 10 s window (`SEARCH_BURST`) plus 60 per minute (`LIMITS.search`), plus the 800 per day cap. Answers served from the memory or edge cache are not counted, so a shared office repeating popular searches is not throttled. Lot, aerial, contours and health limits are unchanged.
