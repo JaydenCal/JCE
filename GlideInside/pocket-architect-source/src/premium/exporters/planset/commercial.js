@@ -16,6 +16,7 @@ import { bayOffsetMm, doorSize } from '../../../commercial/schema.js';
 import { ACCESSIBLE_BAY, defaultRulesFor } from '../../../commercial/rules.js';
 import { factsByStatus, facts, statusText } from '../../../commercial/dataset.js';
 import { zoneClass, effectiveClass } from '../../../commercial/zones.js';
+import { feasibility, summaryRows, costRows, money, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT } from '../../../commercial/feasibility.js';
 import { scaleBar } from '../pdf.js';
 import { PEN, PHANTOM, clipSegment, hatch, hatchSegments, dimLine, haloText, alongLabel, LabelField, boxOfPts, clean, wrap, polygon } from '../eng/kit.js';
 import { AREA, fit } from './frame.js';
@@ -1165,6 +1166,32 @@ export function unitScheduleRows(model) {
   return rows;
 }
 
+
+/** The feasibility section of C103: same figures and wording as the editor panel. Returns the y after it. */
+export function drawFeasibility(doc, model, x, y, w) {
+  const f = feasibility(model.c, model.lot);
+  y = sectionTitle(doc, 'INDICATIVE YIELD AND VALUE', x, y, w);
+  setText(doc, 6.4, true);
+  doc.text(clean(CAVEAT), x, y);
+  y += 4;
+  setText(doc, 6.2, false, [90, 94, 102]);
+  doc.text(clean(`Area: ${f.areaLabel}${f.areaKey === f.detectedKey ? ' (from the lot)' : ' (chosen)'}. Data as at ${f.dataDate}. ${GST_NOTE}`), x, y);
+  y += 4.4;
+  const cols = [{ w: 62 }, { w: 46, align: 'right' }, { w: w - 108, align: 'right' }];
+  y = table(doc, x, y, cols, ['ITEM', 'AT THE VALUES IN USE', 'LOW TO HIGH'], summaryRows(f).map(([k, v, b]) => [k, v, b]), { rh: 4.1, size: 6.4 });
+  y += 1.5;
+  const i = f.inputs;
+  const ev = f.defaults.inputs.saleRate.evidence;
+  const items = [
+    `Sale rate ${money(i.saleRate.value)} per m² GFA, rent ${money(i.rentRate.value)} per m² per year, net yield ${i.yieldPct.value}%. Status: ${i.saleRate.chip}; ${i.rentRate.chip}; yield ${i.yieldPct.chip.toLowerCase()}.${ev.askMedPsm || ev.soldMedPsm ? ` Portal asking median ${ev.askMedPsm ? money(ev.askMedPsm) : 'none'} (n ${ev.askN}), sold median ${ev.soldMedPsm ? money(ev.soldMedPsm) : 'none'} (n ${ev.soldN}).` : ''}`,
+    `Cost basis: ${costRows(f).slice(0, 5).map(([k, v]) => `${k.replace(/ \(.*$/, '').toLowerCase()} ${v}`).join(', ')}. Build, site works, fees, contingency and land rates are estimates from published ranges.`,
+    `${RENT_NOTE} Site works are charged on the whole lot area. Low to high uses the ends of the published ranges: low revenue with high cost, and high revenue with low cost.`,
+    SOURCES_TEXT,
+  ];
+  y = paragraphs(doc, x, y, w, items, { size: 5.9, lead: 2.7 });
+  return y + 1;
+}
+
 export function drawYield(doc, model) {
   const { c, lot, stats, a, rules } = model;
   const rows = unitScheduleRows(model);
@@ -1184,6 +1211,7 @@ export function drawYield(doc, model) {
   setText(doc, 5.8, false, [90, 94, 102]);
   doc.text('Ground area is to the outside of the walls. OFFICE is the ground floor office or amenity plus any mezzanine office.', X0, yL);
   yL += 6;
+  yL = drawFeasibility(doc, model, X0, yL, 162);
 
   // Right column: site summary.
   const XR = X0 + 172;

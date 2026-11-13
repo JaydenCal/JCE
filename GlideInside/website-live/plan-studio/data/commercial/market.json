@@ -1,0 +1,1771 @@
+{
+  "schema": "market.v1",
+  "generated": "13/11/2026",
+  "currency": "AUD ex GST",
+  "scope": "Small strata workshop/warehouse units, 100 to 400 m2, regional NSW",
+  "statusKey": {
+    "VERIFIED_LISTING": "Direct listing with price and size",
+    "VERIFIED_REPORT": "Published report figure",
+    "ESTIMATE": "Analyst judgement, not verified"
+  },
+  "areas": {
+    "Tamworth": {
+      "fallbackTo": null,
+      "confidence": "medium",
+      "saleRatePerM2GFA": {
+        "low": 2200,
+        "high": 3400,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://www.commercialrealestate.com.au/for-sale/tamworth-greater-region-nsw"
+        ],
+        "status": "ESTIMATE",
+        "note": "Range is an estimate; listing comps shown are evidence only."
+      },
+      "saleComps": [
+        {
+          "suburb": "Tamworth",
+          "address": "Unit 12/12 Industrial Close",
+          "gfa_m2": 72,
+          "price": 235000,
+          "price_basis": "ex GST (going concern)",
+          "per_m2": 3264,
+          "date": "listed as at 13/11/2026",
+          "source": "https://www.commercialrealestate.com.au/for-sale/tamworth-greater-region-nsw"
+        },
+        {
+          "suburb": "Tamworth",
+          "address": "Unit 23/12 Industrial Close",
+          "gfa_m2": 72,
+          "price": 245000,
+          "price_basis": "plus GST",
+          "per_m2": 3403,
+          "date": "listed as at 13/11/2026",
+          "source": "https://www.commercialrealestate.com.au/for-sale/tamworth-greater-region-nsw"
+        },
+        {
+          "suburb": "Tamworth",
+          "address": "Unit 17/12 Industrial Close",
+          "gfa_m2": 48,
+          "price": 175000,
+          "price_basis": "plus GST",
+          "per_m2": 3646,
+          "date": "listed as at 13/11/2026",
+          "source": "https://www.commercialrealestate.com.au/for-sale/tamworth-greater-region-nsw"
+        },
+        {
+          "suburb": "Tamworth",
+          "address": "Units 29-37/12 Industrial Close (9 units, whole building)",
+          "gfa_m2": 884,
+          "price": 2950000,
+          "price_basis": "ex GST (going concern)",
+          "per_m2": 3337,
+          "date": "listed as at 13/11/2026",
+          "source": "https://www.commercialrealestate.com.au/for-sale/tamworth-greater-region-nsw"
+        }
+      ],
+      "saleCompNotes": [
+        "All four comps are under 100 m2 units or a whole building; small units price higher per m2 than 150 to 400 m2 units, so the Tamworth range is set below these.",
+        "Curtiss Close sold records (units 117 to 497 m2 complex): unit prices $460,000, $515,000, $905,000 but unit sizes and sale dates not shown. Not usable for $/m2. Sources: https://realcommercial.com.au/sold/property-6-10-curtiss-close-tamworth-nsw-2340-504658756 ; https://realcommercial.com.au/sold/property-5-10-curtiss-close-tamworth-nsw-2340-504424456 ; https://realcommercial.com.au/sold/property-8-10-curtiss-close-tamworth-nsw-2340-504563692",
+        "Units 1-15/33 Goddard Lane (off the plan, 173 to 356 m2): priced from $580,000 plus GST, last updated 12/07/2024. Unit to price mapping not stated; if the from price is the smallest unit it is about $3,353/m2 (derived, unverified). https://realcommercial.com.au/for-sale/property-units-1-15-33-goddard-lane-tamworth-nsw-2340-504638024"
+      ],
+      "grossRentPerM2PerYr": {
+        "low": 120,
+        "high": 180,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [
+        "20 leased industrial listings in Tamworth were seen (e.g. Unit 10/10 Curtiss Close 156 m2, 4 and 5/19 Wallamore Road 245 m2 leased 10/11/2026) but the portal page shows no rent figures. https://www.commercialrealestate.com.au/leased/tamworth-nsw-2340/industrial-warehouse/"
+      ],
+      "netYieldPct": {
+        "low": 6.5,
+        "high": 8.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 70,
+        "high": 130,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [
+        {
+          "suburb": "Tamworth (Global Gateway Park)",
+          "address": "Lot 107 Goddard Lane",
+          "note": "Sold $498,690, land area and sale date not shown. Not usable for $/m2.",
+          "source": "https://www.realcommercial.com.au/sold/property-lot-107-goddard-lane-tamworth-nsw-2340-504313952"
+        },
+        {
+          "suburb": "Tamworth (Global Gateway Park)",
+          "address": "Lots 108, 110, 111 Bandaar Drive",
+          "note": "E5 Heavy Industrial, 19,600 / 17,600 / 10,700 m2, price on application.",
+          "source": "https://tamworth.eldersrealestate.com.au/commercial/sale/tamworth-global-gateway-park-tamworth-nsw-2340-L37533470/"
+        },
+        {
+          "suburb": "Tamworth (Global Gateway Park)",
+          "address": "Park guidance",
+          "note": "E4 lots typically 8,000 to 30,000 m2, E2 under 5,000 m2; town water, sewer, power, gas and NBN connected. Prices not published.",
+          "source": "https://www.tamworthregion.com.au/invest/industrial/tamworth-global-gateway-park"
+        }
+      ],
+      "vacancyDemand": "Strong demand for small strata units and Global Gateway Park take-up; 20 recent leased listings on one portal suggest steady turnover. (qualitative, unverified)"
+    },
+    "Gunnedah": {
+      "fallbackTo": null,
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 1400,
+        "high": 2400,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "Range is an estimate; listing comps shown are evidence only."
+      },
+      "saleComps": [
+        {
+          "suburb": "Gunnedah",
+          "address": "26-28 Barber Street (older light industrial shed, not strata)",
+          "gfa_m2": 1012,
+          "price": 575000,
+          "price_basis": "as listed",
+          "per_m2": 568,
+          "date": "listed as at 13/11/2026",
+          "source": "https://www.commercialrealestate.com.au/for-sale/new-england-nsw/?pn=3"
+        }
+      ],
+      "saleCompNotes": [
+        "Large older shed; not a strata comparable. It shows regional lower bound for non-new stock."
+      ],
+      "grossRentPerM2PerYr": {
+        "low": 90,
+        "high": 140,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "Estimate; comps shown are evidence only."
+      },
+      "rentComps": [
+        {
+          "suburb": "Gunnedah",
+          "address": "90-108 Kamilaroi Highway (ARTC, 16-bay workshop)",
+          "gfa_m2": 2240,
+          "rent_pa": 240000,
+          "basis": "net passing, ex GST, 3% fixed increases; price undisclosed",
+          "per_m2_pa": 107,
+          "source": "https://realcommercial.com.au/for-sale/property-90-108-kamilaroi-highway-gunnedah-nsw-2380-504735524"
+        }
+      ],
+      "rentCompNotes": [
+        "Specialised rail tenant, large GFA; floor not ceiling for small strata units."
+      ],
+      "netYieldPct": {
+        "low": 7.0,
+        "high": 9.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 40,
+        "high": 90,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Thin market; owner-occupier driven, mining and agri services demand. (qualitative, unverified)"
+    },
+    "Narrabri": {
+      "fallbackTo": "Moree",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 1200,
+        "high": 2200,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Moree. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 90,
+        "high": 140,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 7.5,
+        "high": 9.5,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 40,
+        "high": 90,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Thin market; agri and resources service demand. (qualitative, unverified)"
+    },
+    "Moree": {
+      "fallbackTo": null,
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 1400,
+        "high": 2200,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "Range is an estimate; listing comps shown are evidence only."
+      },
+      "saleComps": [
+        {
+          "suburb": "Moree",
+          "address": "4-5/113 Balo Street (showroom/bulky goods type, tenanted)",
+          "gfa_m2": 200,
+          "price": 340000,
+          "price_basis": "plus GST if applicable",
+          "per_m2": 1700,
+          "date": "listed as at 13/11/2026",
+          "source": "https://www.commercialrealestate.com.au/for-sale/new-england-nsw/?pn=3"
+        }
+      ],
+      "saleCompNotes": [
+        "Bulky goods showroom classification, not a pure workshop; treat as indicative only."
+      ],
+      "grossRentPerM2PerYr": {
+        "low": 110,
+        "high": 160,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "Estimate; comps shown are evidence only."
+      },
+      "rentComps": [
+        {
+          "suburb": "Moree",
+          "address": "4-5/113 Balo Street",
+          "gfa_m2": 200,
+          "rent_pa": 31200,
+          "basis": "$31,200 incl GST stated, about $28,364 ex GST",
+          "per_m2_pa": 142,
+          "gross_yield_pct": 8.3,
+          "source": "https://www.commercialrealestate.com.au/for-sale/new-england-nsw/?pn=3"
+        }
+      ],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 7.5,
+        "high": 9.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 40,
+        "high": 90,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Thin market; one listed comparable only, agri service demand. (qualitative, unverified)"
+    },
+    "Armidale": {
+      "fallbackTo": "Tamworth",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 1800,
+        "high": 2800,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Tamworth. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [
+        "Unit 4, 270 Mann Street listed at $559,000 (GST not applicable) but no floor area shown, so unusable for $/m2. https://www.commercialrealestate.com.au/for-sale/new-england-nsw/?pn=3"
+      ],
+      "grossRentPerM2PerYr": {
+        "low": 110,
+        "high": 160,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 7.0,
+        "high": 8.5,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 70,
+        "high": 130,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Moderate demand, university and health driven; thin supply of strata units. (qualitative, unverified)"
+    },
+    "Glen Innes": {
+      "fallbackTo": "Armidale",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 1100,
+        "high": 1900,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Armidale. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 80,
+        "high": 120,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 8.0,
+        "high": 10.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 35,
+        "high": 80,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Very thin market. (qualitative, unverified)"
+    },
+    "Inverell": {
+      "fallbackTo": "Armidale",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 1300,
+        "high": 2200,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Armidale. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 90,
+        "high": 130,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 7.5,
+        "high": 9.5,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 40,
+        "high": 90,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Thin market; agri service demand. (qualitative, unverified)"
+    },
+    "Dubbo": {
+      "fallbackTo": "Tamworth",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2200,
+        "high": 3400,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Tamworth. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 130,
+        "high": 190,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.5,
+        "high": 8.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 90,
+        "high": 160,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [
+        {
+          "suburb": "Dubbo (Westview Business Park)",
+          "address": "Lot 14, 12R Narromine Road",
+          "note": "About 13,922 m2, fully serviced industrial estate, EOI closing 04/03/2026, price undisclosed.",
+          "source": "https://www.realcommercial.com.au/for-sale/property-lot-14-12-r-narromine-road-dubbo-nsw-2830-505052324"
+        }
+      ],
+      "vacancyDemand": "Strong regional centre; large estate land releases (e.g. Westview Business Park) support supply. (qualitative, unverified)"
+    },
+    "Orange": {
+      "fallbackTo": "Dubbo",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2400,
+        "high": 3600,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Dubbo. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 130,
+        "high": 190,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.5,
+        "high": 8.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 120,
+        "high": 220,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Tight supply of small units; steady owner-occupier demand. (qualitative, unverified)"
+    },
+    "Bathurst": {
+      "fallbackTo": "Orange",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2400,
+        "high": 3600,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Orange. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 130,
+        "high": 190,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.5,
+        "high": 8.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 120,
+        "high": 220,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Steady demand; proximity to Sydney supports values. (qualitative, unverified)"
+    },
+    "Mudgee": {
+      "fallbackTo": "Orange",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2200,
+        "high": 3400,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Orange. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 130,
+        "high": 190,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.5,
+        "high": 8.2,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 100,
+        "high": 180,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Limited supply; demand tied to mining, wine and tourism services. (qualitative, unverified)"
+    },
+    "Wagga Wagga": {
+      "fallbackTo": "Dubbo",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2400,
+        "high": 3600,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Dubbo. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 130,
+        "high": 190,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.5,
+        "high": 8.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 110,
+        "high": 200,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Large regional centre; steady demand for small units. (qualitative, unverified)"
+    },
+    "Albury": {
+      "fallbackTo": "Wagga Wagga",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2400,
+        "high": 3600,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Wagga Wagga. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 130,
+        "high": 190,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.3,
+        "high": 7.8,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 140,
+        "high": 240,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Cross-border (Wodonga) demand supports small industrial. (qualitative, unverified)"
+    },
+    "Kempsey": {
+      "fallbackTo": "Port Macquarie",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 1800,
+        "high": 2800,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Port Macquarie. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 110,
+        "high": 160,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 7.0,
+        "high": 8.8,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 80,
+        "high": 150,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Thin market; owner-occupier driven. (qualitative, unverified)"
+    },
+    "Port Macquarie": {
+      "fallbackTo": "Coffs Harbour",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2800,
+        "high": 4200,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Coffs Harbour. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 150,
+        "high": 220,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.0,
+        "high": 7.5,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 200,
+        "high": 380,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Low vacancy typical of coastal small industrial; limited land supply. (qualitative, unverified)"
+    },
+    "Coffs Harbour": {
+      "fallbackTo": "Port Macquarie",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2800,
+        "high": 4200,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Port Macquarie. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 150,
+        "high": 220,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.0,
+        "high": 7.5,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 220,
+        "high": 400,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Low vacancy typical of coastal small industrial; limited land supply. (qualitative, unverified)"
+    },
+    "Grafton (Clarence Valley)": {
+      "fallbackTo": "Coffs Harbour",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 1800,
+        "high": 2800,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Coffs Harbour. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 110,
+        "high": 160,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 7.0,
+        "high": 8.8,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 90,
+        "high": 160,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Moderate demand; flood-affected land discounts apply. (qualitative, unverified)"
+    },
+    "Lismore": {
+      "fallbackTo": "Ballina",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2200,
+        "high": 3400,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Ballina. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 120,
+        "high": 170,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.8,
+        "high": 8.5,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 110,
+        "high": 200,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Post-flood recovery demand; flood risk affects value. (qualitative, unverified)"
+    },
+    "Ballina": {
+      "fallbackTo": null,
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 3000,
+        "high": 4800,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "Range is an estimate; listing comps shown are evidence only."
+      },
+      "saleComps": [
+        {
+          "suburb": "Byron Bay",
+          "address": "3/6 Wollongbar Street (IN2, ground plus mezzanine)",
+          "gfa_m2": 130,
+          "price": 800000,
+          "price_basis": "as listed",
+          "per_m2": 6154,
+          "date": "listed as at 13/11/2026",
+          "source": "https://www.realcommercial.com.au/for-sale/property-3-6-wollongbar-street-byron-bay-nsw-2481-504763680",
+          "yield_stated_pct": 5.0
+        }
+      ],
+      "saleCompNotes": [
+        "Byron Bay is a different LGA with a tourism premium. Upper bound reference only, not used to set the Ballina range directly."
+      ],
+      "grossRentPerM2PerYr": {
+        "low": 160,
+        "high": 240,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 5.5,
+        "high": 7.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 250,
+        "high": 420,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Tight supply, Northern Rivers premium; Byron Bay listing is a high-end upper bound only. (qualitative, unverified)"
+    },
+    "Muswellbrook": {
+      "fallbackTo": "Singleton",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 1800,
+        "high": 2800,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Singleton. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 110,
+        "high": 170,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 7.0,
+        "high": 8.8,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 70,
+        "high": 140,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Mining cycle sensitive; transition to energy projects. (qualitative, unverified)"
+    },
+    "Singleton": {
+      "fallbackTo": "Cessnock",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2000,
+        "high": 3000,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Cessnock. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 120,
+        "high": 180,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.8,
+        "high": 8.5,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 90,
+        "high": 160,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Mining and defence related demand; limited stock. (qualitative, unverified)"
+    },
+    "Cessnock": {
+      "fallbackTo": "Maitland",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2200,
+        "high": 3400,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Maitland. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 130,
+        "high": 190,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.5,
+        "high": 8.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 130,
+        "high": 230,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Hunter spill-over demand. (qualitative, unverified)"
+    },
+    "Maitland": {
+      "fallbackTo": "Lake Macquarie",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 2600,
+        "high": 3800,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Lake Macquarie. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 150,
+        "high": 220,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 6.0,
+        "high": 7.5,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 180,
+        "high": 300,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Strong Hunter demand; small units trade at high $/m2. (qualitative, unverified)"
+    },
+    "Lake Macquarie": {
+      "fallbackTo": null,
+      "confidence": "medium",
+      "saleRatePerM2GFA": {
+        "low": 2700,
+        "high": 4200,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "Range is an estimate; listing comps shown are evidence only."
+      },
+      "saleComps": [
+        {
+          "suburb": "Beresfield",
+          "address": "10/13 Balook Drive",
+          "gfa_m2": 60,
+          "price": 270000,
+          "price_basis": "GST n/a",
+          "per_m2": 4500,
+          "date": "listed as at 13/11/2026",
+          "source": "https://www.commercialrealestate.com.au/property/unit-1-15-billbrooke-close-cameron-park-nsw-2285-13568528"
+        },
+        {
+          "suburb": "Beresfield",
+          "address": "20/13 Balook Drive",
+          "gfa_m2": 62,
+          "price": 270000,
+          "price_basis": "GST n/a",
+          "per_m2": 4355,
+          "date": "listed as at 13/11/2026",
+          "source": "same page"
+        },
+        {
+          "suburb": "Tomago",
+          "address": "Unit 2, 10 Kennington Drive (under offer)",
+          "gfa_m2": 92,
+          "price": 325000,
+          "price_basis": "plus GST",
+          "per_m2": 3533,
+          "date": "listed as at 13/11/2026",
+          "source": "same page"
+        },
+        {
+          "suburb": "Cameron Park",
+          "address": "Unit 3, 77 Stenhouse Drive",
+          "gfa_m2": 376,
+          "price": 1000000,
+          "price_basis": "offers above, plus GST (asking floor)",
+          "per_m2": 2660,
+          "date": "listed as at 13/11/2026",
+          "source": "same page"
+        }
+      ],
+      "saleCompNotes": [
+        "Beresfield and Tomago sit in Newcastle and Port Stephens catchments; used as Lake Macquarie and Newcastle region evidence for lack of better. Sub 100 m2 units are above the 100 to 400 m2 scope and price high per m2."
+      ],
+      "grossRentPerM2PerYr": {
+        "low": 160,
+        "high": 240,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "Estimate; comps shown are evidence only."
+      },
+      "rentComps": [
+        {
+          "suburb": "Cardiff",
+          "address": "39b Munibung Road (site 3,026 m2, auction 17/12/2026)",
+          "gfa_m2": 930,
+          "rent_pa": 153000,
+          "basis": "net pa plus GST from settlement, 12 month leaseback",
+          "per_m2_pa": 165,
+          "source": "same page"
+        },
+        {
+          "suburb": "Thornton",
+          "address": "52 Sandringham Avenue (site 1,812 m2)",
+          "gfa_m2": 510,
+          "rent_pa": 120000,
+          "basis": "income stated, fully leased, new 2+2 lease",
+          "per_m2_pa": 235,
+          "source": "same page"
+        }
+      ],
+      "rentCompNotes": [
+        "Cardiff and Thornton are whole freehold buildings with land, so rents are not strata unit rents."
+      ],
+      "netYieldPct": {
+        "low": 5.8,
+        "high": 7.3,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 220,
+        "high": 380,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Strong demand, low vacancy; small strata units priced high per m2 (60 to 92 m2 units asking $3,500 to $4,500/m2). (qualitative, unverified)"
+    },
+    "Newcastle": {
+      "fallbackTo": "Lake Macquarie",
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 3000,
+        "high": 4800,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; falls back to Lake Macquarie. Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 170,
+        "high": 260,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 5.5,
+        "high": 7.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 280,
+        "high": 500,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Low vacancy, strong owner-occupier demand for small strata units. (qualitative, unverified)"
+    },
+    "Regional NSW default": {
+      "fallbackTo": null,
+      "confidence": "low",
+      "saleRatePerM2GFA": {
+        "low": 1800,
+        "high": 2800,
+        "unit": "AUD per m2 GFA ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No area evidence found; Estimate by analyst judgement relative to regional tiering."
+      },
+      "saleComps": [],
+      "saleCompNotes": [],
+      "grossRentPerM2PerYr": {
+        "low": 100,
+        "high": 150,
+        "unit": "AUD per m2 per year ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No rent evidence found."
+      },
+      "rentComps": [],
+      "rentCompNotes": [],
+      "netYieldPct": {
+        "low": 7.0,
+        "high": 9.0,
+        "unit": "percent net yield",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area",
+          "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf"
+        ],
+        "status": "ESTIMATE",
+        "note": "Anchored loosely to Opteon national industrial median net yield of about 4.8% (April 2026, series ambiguous) plus a regional small strata premium assumed by the analyst."
+      },
+      "industrialLandPerM2": {
+        "low": 70,
+        "high": 140,
+        "unit": "AUD per m2 serviced E4/E5/IN1 land ex GST",
+        "asAt": "13/11/2026",
+        "sources": [
+          "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+        ],
+        "status": "ESTIMATE",
+        "note": "No published lot prices found; Council and agent pages say price on application."
+      },
+      "landEvidence": [],
+      "vacancyDemand": "Use for areas with no evidence; small regional centres run thinner and higher yielding. (qualitative, unverified)"
+    }
+  },
+  "buildCost": {
+    "constructionPerM2GFA_regionalNSW_strataWorkshopWithMezzanineOffice": {
+      "low": 1500,
+      "high": 2400,
+      "unit": "AUD per m2 GFA ex GST, excl fees and site works",
+      "asAt": "13/11/2026",
+      "sources": [
+        "https://www.feasly.com.au/guides/construction-cost-per-square-metre-australia",
+        "https://www.bsgcommercial.com.au/commercial-building/cost-of-commercial-building-the-ultimate-guide-2025-26/",
+        "https://www.cushmanwakefield.com/en/australia/insights/the-cost-to-build-industrial"
+      ],
+      "status": "ESTIMATE",
+      "note": "Small scale (100 to 400 m2 units), mezzanine office and regional loading pushed above large-shed rates. Analyst estimate."
+    },
+    "referenceMetalCladLargeShedSydney_Q4_2025": {
+      "low": 1060,
+      "high": 1340,
+      "unit": "AUD per m2 GFA ex GST (4,500 m2 metal clad)",
+      "asAt": "13/11/2026",
+      "sources": [
+        "https://www.feasly.com.au/guides/construction-cost-per-square-metre-australia"
+      ],
+      "status": "VERIFIED_REPORT",
+      "note": "Secondary guide, not Rawlinsons directly."
+    },
+    "referencePrecastLargeSydney_Q4_2025": {
+      "low": 1160,
+      "high": 1740,
+      "unit": "AUD per m2 GFA ex GST",
+      "asAt": "13/11/2026",
+      "sources": [
+        "https://www.feasly.com.au/guides/construction-cost-per-square-metre-australia"
+      ],
+      "status": "VERIFIED_REPORT"
+    },
+    "referenceIndustrialWarehousesAustralia_2025": {
+      "low": 1300,
+      "high": 2800,
+      "unit": "AUD per m2 (Matrix Estimating via BSG)",
+      "asAt": "13/11/2026",
+      "sources": [
+        "https://www.bsgcommercial.com.au/commercial-building/cost-of-commercial-building-the-ultimate-guide-2025-26/"
+      ],
+      "status": "VERIFIED_REPORT"
+    },
+    "referenceWarehouseNational_May2026": {
+      "low": 1150,
+      "high": 1150,
+      "unit": "AUD per m2 (Cushman and Wakefield, national indicative)",
+      "asAt": "13/11/2026",
+      "sources": [
+        "https://www.cushmanwakefield.com/en/australia/insights/the-cost-to-build-industrial"
+      ],
+      "status": "VERIFIED_REPORT",
+      "note": "Dated 28/05/2026; reports a 6.5% quarterly rise."
+    },
+    "escalationSydney": {
+      "low": 6.0,
+      "high": 6.0,
+      "unit": "percent for 2026 (4.5% for 2027)",
+      "asAt": "13/11/2026",
+      "sources": [
+        "https://www.altusgroup.com/insights/australian-construction-price-outlook-q2-2026/"
+      ],
+      "status": "VERIFIED_REPORT",
+      "note": "Sydney only; no regional NSW forecast found."
+    },
+    "civilSiteWorksPerM2Site": {
+      "low": 120,
+      "high": 250,
+      "unit": "AUD per m2 of site area ex GST (pavements, drainage, services, landscaping, detention)",
+      "asAt": "13/11/2026",
+      "sources": [
+        "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+      ],
+      "status": "ESTIMATE",
+      "note": "No public source found for per-m2-of-site allowance."
+    },
+    "professionalFeesPct": {
+      "low": 8,
+      "high": 12,
+      "unit": "percent of construction cost",
+      "asAt": "13/11/2026",
+      "sources": [
+        "Analyst judgement anchored to the cited listings and reports; no direct verified source for this area"
+      ],
+      "status": "ESTIMATE",
+      "note": "Architect, engineers, certifier, surveyor, project management. Feasly states fees, external works, infrastructure charges, contingency, finance together add 30 to 50 percent to multi-unit projects (VERIFIED_REPORT, not itemised)."
+    },
+    "contingencyPct": {
+      "low": 7.5,
+      "high": 10,
+      "unit": "percent of construction cost",
+      "asAt": "13/11/2026",
+      "sources": [
+        "https://www.feasly.com.au/guides/construction-cost-per-square-metre-australia"
+      ],
+      "status": "ESTIMATE",
+      "note": "Feasly recommends stress testing cost at 5, 10 and 15 percent; the allowance itself is an analyst estimate."
+    },
+    "softCostsCombinedAllowance": {
+      "low": 30,
+      "high": 50,
+      "unit": "percent on top of building cost (demolition, external works, infrastructure charges, fees, contingency, finance)",
+      "asAt": "13/11/2026",
+      "sources": [
+        "https://www.feasly.com.au/guides/construction-cost-per-square-metre-australia"
+      ],
+      "status": "VERIFIED_REPORT"
+    }
+  },
+  "generalSources": [
+    "https://opteonsolutions.com/hubfs/Industrial%20Pulse%20check%20dashboard_Apr%202026.pdf",
+    "https://www.commercialrealestate.com.au/news/industrial-investors-move-back-into-growth-mode-as-yields-tighten-again-1478703/",
+    "https://htw.com.au/australias-industrial-market-enters-a-new-phase-of-stabilisation/"
+  ],
+  "caveats": [
+    "Every area range for sale, rent, yield and land is ESTIMATE; only individual comps are listing evidence.",
+    "Listing dates were not shown; comps are as at the retrieval date 13/11/2026 and are asking prices, not sales.",
+    "No regional NSW yield figures were found in CBRE, Colliers, JLL, Knight Frank, Opteon or HTW public pages; those cover Sydney or national only.",
+    "No rents were shown on leased listing pages; rents are estimates except Moree, Gunnedah, Cardiff and Thornton income figures.",
+    "No published serviced industrial lot prices were found (Tamworth Global Gateway Park, Dubbo Westview: price on application).",
+    "Several portal pages (commercialrealestate.com.au and realcommercial.com.au search pages for Dubbo, Orange, Wagga Wagga, Port Macquarie, Maitland, Coffs Harbour) were blocked by the fetch permission system and not read.",
+    "Build costs are secondary guides, not Rawlinsons or Cordell directly."
+  ]
+}

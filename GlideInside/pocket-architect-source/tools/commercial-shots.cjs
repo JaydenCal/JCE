@@ -131,6 +131,10 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
   await page.waitForTimeout(2500);
   await shot('16-3d-roof-off');
   await page.evaluate(() => window.__ps.store.setUI({ showRoof: true }));
+  // 20 the indicative yield and value panel (feasibility) in the dock, opened and scrolled to its heading
+  await load('commercial.json');
+  await page.evaluate(() => { const d = document.querySelector('.cm-dock'); d.querySelectorAll('details').forEach((x) => { x.open = x.querySelector('summary').textContent.trim() === 'Indicative yield and value'; }); const sec = [...d.querySelectorAll('details')].find((x) => x.open); d.scrollTop = sec.offsetTop - 70; });
+  await shot('20-feasibility');
   // landing page
   const land = await mk({ width: 1440, height: 900 });
   await land.goto(`${ORIGIN}/commercial/`); await land.waitForTimeout(1200);

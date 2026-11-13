@@ -9,6 +9,7 @@ import { analyse } from '../analyse.js';
 import { effectiveClass, zoneClass, ZONE_CLASS_LABEL } from '../zones.js';
 import { rowLength } from '../layout.js';
 import { facts, NCC_CLASSES, PARKING_M2_PER_SPACE } from '../dataset.js';
+import { feasibility, AREAS, CAVEAT, GST_NOTE, RENT_NOTE, SOURCES_TEXT, DATA_DATE, money, band, pct1, summaryRows, costRows } from '../feasibility.js';
 
 const getPath = (o, path) => path.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
 function setPath(o, path, v) {
@@ -110,6 +111,59 @@ export function createCommercialPanel({ store, host, editor }) {
     const d = h('details', { class: 'cm-sec', open: open[title] === true, ontoggle: () => { open[title] = d.open; } }, h('summary', null, title), h('div', { class: 'cm-body' }, ...kids));
     return d;
   };
+
+
+  // Indicative yield and value: inputs prefilled from the portal and market data, each with its source chip; outputs live with the layout.
+  function feasibilitySection(c, p) {
+    const f = feasibility(c, p.site?.lot);
+    const setFz = (label, fn) => edit(label, (cc) => { cc.feasibility ??= { area: null, v: {} }; cc.feasibility.v ??= {}; fn(cc.feasibility); });
+    const areaSel = h('select', { 'aria-label': 'Area', dataset: { ps: 'fz-area' }, onchange: () => setFz('Set feasibility area', (z) => { z.area = areaSel.value === '' ? null : areaSel.value; z.v = {}; }) },
+      h('option', { value: '' }, `${AREAS.find((x) => x.key === f.detectedKey)?.label} (auto)`), ...AREAS.map((x) => h('option', { value: x.key }, x.label)));
+    areaSel.value = c.feasibility?.area || '';
+    const chip = (inp) => h('span', { class: `cm-chip2 cm-chip-${String(inp.status).toLowerCase()}`, title: inp.note || null }, inp.chip);
+    const inRow = (key, label, unit, step) => {
+      const inp = f.inputs[key];
+      const input = h('input', { type: 'number', min: 0, step, value: inp.value, dataset: { k: `fz-${key}` }, onchange: () => {
+        const raw = input.value;
+        setFz(`Set ${label.toLowerCase()}`, (z) => { if (raw === '') delete z.v[key]; else z.v[key] = Math.max(0, Number(raw) || 0); });
+      } });
+      return h('div', { class: 'cm-fz-in' }, field(label, h('span', { class: 'cm-in' }, input, h('i', null, unit))), h('div', { class: 'cm-fz-chip' }, chip(inp), inp.edited ? h('button', { type: 'button', class: 'cm-link', onclick: () => setFz(`Reset ${label.toLowerCase()}`, (z) => { delete z.v[key]; }) }, `Reset to ${inp.defaultValue.toLocaleString('en-AU')}`) : null));
+    };
+    const ev = f.defaults.inputs.saleRate.evidence;
+    const priceInput = h('input', { type: 'number', min: 0, step: 10000, value: f.inputs.landPrice.value ?? '', placeholder: 'Auto', dataset: { k: 'fz-landPrice' }, onchange: () => {
+      const raw = priceInput.value;
+      setFz('Set land price', (z) => { if (raw === '' || Number(raw) <= 0) delete z.v.landPrice; else z.v.landPrice = Number(raw); });
+    } });
+    const sale = f.defaults.inputs.saleRate;
+    const evLine = ev.askMedPsm || ev.soldMedPsm
+      ? `Portal asking median ${ev.askMedPsm ? `$${ev.askMedPsm.toLocaleString('en-AU')}` : 'none'} per m² (n ${ev.askN}${ev.askUsed ? '' : ', not used'}), sold median ${ev.soldMedPsm ? `$${ev.soldMedPsm.toLocaleString('en-AU')}` : 'none'} per m² (n ${ev.soldN}${ev.soldUsed ? '' : ', not used'}).`
+      : 'No portal listings for this area.';
+    const out = summaryRows(f).map(([k, v, b]) => h('div', { class: 'cm-fz-out', dataset: { fz: k } }, h('span', null, k), h('b', null, v), b ? h('i', null, `Low to high: ${b}`) : null));
+    const costs = costRows(f).map(([k, v], i, a) => h('p', { class: `cm-line${i === a.length - 1 ? ' cm-fz-total' : ''}` }, h('span', null, k), h('b', null, v)));
+    const unitTable = h('table', { class: 'cm-fz-units', dataset: { ps: 'fz-units' } }, h('thead', null, h('tr', null, ...['Unit', 'GFA m²', 'Price', 'Rent per year'].map((t) => h('th', null, t)))),
+      h('tbody', null, ...f.perUnit.map((u) => h('tr', null, h('td', null, String(u.n)), h('td', null, (Math.round(u.gfa * 10) / 10).toFixed(1)), h('td', null, money(u.price)), h('td', null, money(u.rent)))),
+        h('tr', { class: 'cm-fz-total' }, h('td', null, 'Total'), h('td', null, (Math.round(f.gfa * 10) / 10).toFixed(1)), h('td', null, money(f.mid.realisation)), h('td', null, money(f.mid.grossRent)))));
+    const title = 'Indicative yield and value';
+    return section(title,
+      h('p', { class: 'cm-hint cm-fz-caveat', dataset: { ps: 'fz-caveat' } }, CAVEAT),
+      field('Area', areaSel, f.detectedKey === (c.feasibility?.area || f.detectedKey) ? `Portal data ${DATA_DATE}` : 'Chosen by you'),
+      h('div', { class: 'cm-fz-outs', dataset: { ps: 'fz-outputs' } }, ...out),
+      h('b', { class: 'cm-fz-h' }, 'Inputs'),
+      h('p', { class: 'cm-hint' }, evLine),
+      inRow('saleRate', 'Sale rate', '$/m²', 50),
+      inRow('rentRate', 'Rent per year', '$/m²', 5),
+      inRow('yieldPct', 'Net yield', '%', 0.25),
+      field('Land price', h('span', { class: 'cm-in' }, priceInput, h('i', null, '$')), f.landFromPrice ? 'Listing or purchase price, used instead of the land rate' : 'Listing price if known, else land rate x lot area'),
+      inRow('landRate', 'Land rate', '$/m²', 5),
+      inRow('buildRate', 'Build rate (GFA)', '$/m²', 50),
+      inRow('siteRate', 'Site works (lot)', '$/m²', 5),
+      inRow('feesPct', 'Fees', '%', 0.5),
+      inRow('contPct', 'Contingency', '%', 0.5),
+      h('p', { class: 'cm-hint' }, `${GST_NOTE} ${RENT_NOTE}`),
+      h('b', { class: 'cm-fz-h' }, 'Cost build up'), ...costs,
+      h('b', { class: 'cm-fz-h' }, 'Per unit'), unitTable,
+      h('p', { class: 'cm-hint' }, `Low to high uses the ends of the published ranges: low revenue with high cost, and high revenue with low cost. ${SOURCES_TEXT}`));
+  }
 
   // Render ---------------------------------------------------------------------------------------------------------------
   function render() {
@@ -234,7 +288,7 @@ export function createCommercialPanel({ store, host, editor }) {
       ...(a.checks.length ? a.checks.map((k) => h('p', { class: `cm-check cm-${k.kind}`, dataset: { id: k.id, status: k.status || '' }, title: k.tip || null }, k.text)) : [h('p', { class: 'cm-check' }, 'Nothing to flag yet.')]));
     const sched = h('details', { class: 'cm-sec', dataset: { ps: 'bollard-schedule' } }, h('summary', null, `Bollard schedule (${a.schedule.total})`),
       h('div', { class: 'cm-body' }, ...a.schedule.byKind.map((r) => h('p', { class: 'cm-line' }, h('span', null, r.label), h('b', null, String(r.count)))), h('p', { class: 'cm-hint' }, a.schedule.note)));
-    dock.append(sched, checks);
+    dock.append(feasibilitySection(c, p), sched, checks);
     dock.scrollTop = keep.top;
     if (keep.sel) { try { dock.querySelector(keep.sel)?.focus({ preventScroll: true }); } catch { /* the control is gone */ } }
 
