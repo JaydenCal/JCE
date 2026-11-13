@@ -47,6 +47,10 @@ export function commercialChecks(project) {
     for (const msg of lc.messages) warn(`lot-${msg.kind}-${msg.edge}`, msg.text.replace(/^House /, 'Building '));
   }
 
+  // Side and rear setbacks that the council leaves to the BCA (Tamworth and Gunnedah industrial): 0 m shown, never an invented 3 m.
+  const sbs = lot?.setbacks;
+  if (sbs && (sbs.side?.bca || sbs.rear?.bca)) info('setbacks-bca', `Side and rear setbacks: ${sbs.side?.basis || sbs.rear?.basis}. ${sbs.side?.note || sbs.rear?.note}`);
+
   // Rows overlapping each other (mirrored partners share a wall and are not overlaps).
   for (let i = 0; i < units.length; i++) {
     for (let j = i + 1; j < units.length; j++) {
@@ -79,10 +83,12 @@ export function commercialChecks(project) {
       // The room the mezzanine sits in is the unit less the enclosed office.
       const limit = Math.min(200, ((u.w * u.d) / 1e6 - of.areaM2) / 3);
       if (mz.areaM2 > limit) warn(`u${u.n}-mzstorey`, `Unit ${u.n}: the ${mz.areaM2.toFixed(1)} m² mezzanine is above ${limit.toFixed(1)} m² (the lesser of 200 m² and one third of the room), so it may count as a storey, check with council and the NCC`, 'mezzStorey');
-      if (mz.position === 'front' && ds && ds.h > mz.clearBelow) warn(`u${u.n}-mzdoor`, `Unit ${u.n}: roller door head at ${m(ds.h)} m is above the front mezzanine soffit at ${m(mz.clearBelow)} m, move the mezzanine to the rear or lower the door`);
+      if (mz.fellBack) info(`u${u.n}-mzbay`, `Unit ${u.n}: the bay beside the roller doors is under ${m(OFFICE_MIN_WIDTH_MM)} m wide, so the mezzanine is shown at the rear across the full width`);
       const stairRun = mz.stair.lengthMm;
-      if (mz.depthMm + stairRun + (s.office.enabled && mz.position === 'rear' ? s.office.depthMm : 0) > u.d) warn(`u${u.n}-stair`, `Unit ${u.n}: the ${mz.stair.type === 'L' ? 'L' : 'straight'} stair does not fit beside a ${m(mz.depthMm)} m deep mezzanine in a ${m(u.d)} m deep unit`);
-      if (mz.stair.widthMm + 600 > u.w) warn(`u${u.n}-stairw`, `Unit ${u.n}: the unit is too narrow for the mezzanine stair`);
+      // A front mezzanine has its stair behind it in the same bay; a rear one has the stair in front of it, past the ground office.
+      const need = mz.position === 'front' ? mz.depthMm + stairRun : mz.depthMm + stairRun + (s.office.enabled ? s.office.depthMm : 0);
+      if (need > u.d) warn(`u${u.n}-stair`, `Unit ${u.n}: the ${mz.stair.type === 'L' ? 'L' : 'straight'} stair does not fit ${mz.position === 'front' ? 'behind' : 'beside'} a ${m(mz.depthMm)} m deep mezzanine in a ${m(u.d)} m deep unit`);
+      if (mz.stair.widthMm + 600 > mz.widthMm) warn(`u${u.n}-stairw`, `Unit ${u.n}: the mezzanine bay is too narrow for the stair`);
     }
     if (s.windows.side && !(u.first || u.last)) info(`u${u.n}-sidewin`, `Unit ${u.n}: side windows apply to end units only, none drawn on party walls`);
   }

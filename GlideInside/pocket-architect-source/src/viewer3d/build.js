@@ -17,7 +17,7 @@ import { makeMesh, modelBounds } from './model-util.js';
 import { addSiteTerrain } from './terrain.js';
 import { siteReady } from './site-geom.js';
 import { rotateHouse } from '../model/placement.js';
-import { addFloorPoly, addGround, addDeck, addStair, addTank, addFurniture, shade } from './site.js';
+import { addFloorPoly, addGround, addDeck, addRoomBalustrade, addStair, addTank, addFurniture, shade } from './site.js';
 
 export { disposeModel, modelBounds } from './model-util.js';
 
@@ -231,6 +231,7 @@ export function buildModel(project, opts = {}) {
       addFloorPoly(b, 'floor', room.polygon, elev + 0.0004 * (ri % 8));
       const mesh = makeMesh(b.build(), { floor: lib.get(f.material, f.hex, { tint: tint(room.status) }) }, { kind: 'floor', id: room.id, levelId: level.id, finish: { material: f.material, colour: f.colour } }, { cast: false, name: `floor:${room.id}` });
       if (mesh) group.add(mesh);
+      if (room.balustrade && !room.outdoor) addRoomBalustrade(ctx, group, level, room, levels.flatMap((l) => l.walls));
     });
     if (fp.any) {
       const leftover = new Uint8Array(grid.nx * grid.ny);

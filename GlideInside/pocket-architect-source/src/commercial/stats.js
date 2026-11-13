@@ -25,13 +25,14 @@ export function commercialStats(project) {
   let ground = 0;
   let mezz = 0;
   let office = 0;
+  let officeMezz = 0;
   for (const u of units) {
     const label = `${(u.w / 1000).toFixed(1)} x ${(u.d / 1000).toFixed(1)} m`;
     mix.set(label, (mix.get(label) || 0) + 1);
     ground += (u.w * u.d) / 1e6;
     office += officeOf(u.spec).areaM2;
     const m = mezzanineOf(u.spec);
-    if (m.enabled) mezz += m.areaM2;
+    if (m.enabled) { mezz += m.areaM2; if (m.use === 'office') { office += m.areaM2; officeMezz += m.areaM2; } }
   }
   const gfa = ground + mezz;
   const lotM2 = lotAreaM2(project.site?.lot);
@@ -40,7 +41,10 @@ export function commercialStats(project) {
   const officeRate = Number.isFinite(c?.rates?.officePerM2) ? c.rates.officePerM2 : DEFAULT_OFFICE_RATE;
   const split = office > 0 && c?.rates?.officeSeparate !== false;
   // Fractions round up once, on the total (Tamworth DCP, Step 3 Industrial Parking: fractions round up to the next whole space).
-  const required = split ? Math.ceil((gfa - office) * rate + office * officeRate - 1e-9) : Math.ceil(gfa * rate - 1e-9);
+  // The office area is the ground office/amenity plus the mezzanine offices; the rest of the GFA is at the general rate.
+  const otherRaw = (split ? gfa - office : gfa) * rate;
+  const officeRaw = split ? office * officeRate : 0;
+  const required = Math.ceil(otherRaw + officeRaw - 1e-9);
   return {
     units: units.length,
     mix: [...mix].map(([label, count]) => ({ label, count })),
@@ -49,8 +53,9 @@ export function commercialStats(project) {
     gfaM2: r1(gfa),
     footprintM2: r1(ground),
     officeM2: r1(office),
+    officeMezzM2: r1(officeMezz),
     lotM2: lotM2 == null ? null : Math.round(lotM2),
     coveragePct: lotM2 ? r1((ground / lotM2) * 100) : null,
-    parking: { ratePerM2: rate, officeRatePerM2: officeRate, officeSplit: split, required, provided: park.totalBays, accessible: park.accessible },
+    parking: { ratePerM2: rate, officeRatePerM2: officeRate, officeSplit: split, split: { officeM2: r1(split ? office : 0), otherM2: r1(split ? gfa - office : gfa), officeSpaces: Math.round(officeRaw * 100) / 100, otherSpaces: Math.round(otherRaw * 100) / 100 }, required, provided: park.totalBays, accessible: park.accessible },
   };
 }

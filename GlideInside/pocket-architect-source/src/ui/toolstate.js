@@ -12,6 +12,7 @@ export function toolArgFor(tool) {
 
 // Switch tool. `arg` overrides the remembered argument.
 export function setTool(store, tool, arg) {
+  if (tool === 'movehouse' && store.project?.mode === 'commercial') tool = 'commercial'; // Move house is Move units in a commercial layout
   if (arg !== undefined) remembered[tool] = arg;
   const patch = { tool, toolArg: toolArgFor(tool) };
   if (!hasPlan(store.ui.view)) patch.view = '2d';

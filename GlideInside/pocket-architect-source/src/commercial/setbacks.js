@@ -50,6 +50,28 @@ function councilSlot(council, slot, use, zoneCode, zoneName) {
   return null;
 }
 
+export const BCA_BASIS = 'Per the BCA, check with council';
+export const BCA_FIRE_NOTE = 'No DCP minimum for this edge, it is set by the BCA (NCC). A wall on or near a boundary needs fire rated construction and the neighbour\'s wall and openings count, check with council and the certifier.';
+
+/**
+ * True when the council's rule for this use and zone leaves a side or rear slot to the BCA: the slot is empty in the data and the rule's
+ * own text says so ("side and rear per BCA", or a table cell reading BCA). Tamworth and Gunnedah industrial are written this way.
+ */
+function bcaSlot(council, slot, use, zoneCode, zoneName) {
+  if (slot !== 'side' && slot !== 'rear') return false;
+  const [own, ...legacy] = zoneCandidates(zoneCode, zoneName);
+  for (const code of [own, ...legacy]) {
+    for (const rule of council?.rules || []) {
+      if (!(rule.appliesTo || []).includes(use)) continue;
+      if (!zoneMatches(rule.zones, code, code === own ? zoneName : null)) continue;
+      if (rule[slot] && isNum(rule[slot].minM)) continue;
+      const text = [rule.front?.note, rule.quote, rule.conditionText, ...(rule.evidence || []).map((e) => e.quote)].filter(Boolean).join(' ');
+      if (/\bBCA\b|building code of australia|\bNCC\b/i.test(text)) return true;
+    }
+  }
+  return false;
+}
+
 /**
  * siteLotCommercialSetbacks(lot, ruleSet, { cls }) -> { setbacks, envelope, attempts }. Pure. `ruleSet` is { councils: [council] }.
  * `cls` is 'industrial' or 'commercial'. Never reads ruleSet.fallbacks.
@@ -67,11 +89,17 @@ export function siteLotCommercialSetbacks(lot, ruleSet, { cls = 'industrial' } =
   for (const s of SLOTS) {
     const c = council ? councilSlot(council, s, cls, lot.zoning?.code, lot.zoning?.name) : null;
     if (c) { picked[s] = c; sources[s] = 'council'; continue; }
+    if (council && bcaSlot(council, s, cls, lot.zoning?.code, lot.zoning?.name)) {
+      // The council gives no figure here: it defers to the BCA. A 3 m default would be invented, so the minimum is 0 m with the fire wall note.
+      picked[s] = { minM: 0, basis: BCA_BASIS, flag: 'check_with_council', bca: true, note: BCA_FIRE_NOTE };
+      sources[s] = 'bca';
+      continue;
+    }
     const m = def.setbacks[s];
     picked[s] = isNum(m) ? { minM: m, basis: COMMERCIAL_BASIS.default, flag: 'check_with_council', note: def.note } : null;
     sources[s] = 'default';
   }
-  if (Object.values(sources).includes('council')) picked.basis = COMMERCIAL_BASIS.council;
+  if (Object.values(sources).some((v) => v === 'council' || v === 'bca')) picked.basis = COMMERCIAL_BASIS.council;
   picked.sources = sources;
   picked.flag = 'check_with_council';
   picked.flagReason = 'Commercial setbacks are indicative, check with council';

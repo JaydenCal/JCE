@@ -15,6 +15,7 @@ export const DOOR_PRESETS = Object.freeze([
 ]);
 export const FRONT_WINDOWS = Object.freeze(['none', 'highlight', 'office', 'shopfront']);
 export const REAR_WINDOWS = Object.freeze(['none', 'highlight', 'office']);
+export const MEZZ_USES = Object.freeze(['office', 'storage']);
 export const STAIR_TYPES = Object.freeze(['straight', 'L']);
 
 export const PERSONNEL_DOOR = Object.freeze({ widthMm: 920, heightMm: 2040 });
@@ -28,8 +29,10 @@ export const defaultUnit = () => ({
   heightMm: 6000,
   doors: { count: 1, presetId: '3.6x4.0', widthMm: 3600, heightMm: 4000, offsetMm: 0, motorised: true, rear: false, personnel: true },
   windows: { front: 'none', rear: 'none', widthMm: 1800, heightMm: 1200, sillMm: 900, side: false },
-  office: { enabled: false, depthMm: 3000, accessibleWc: false },
-  mezzanine: { enabled: false, mode: 'depth', depthMm: 6000, percent: 40, position: 'rear', stairType: 'straight', stairSide: 'left', balustrade: true, levelMm: 3000, slabMm: SLAB_MM, minClearMm: MIN_CLEAR_MM, minClearBelowMm: MIN_CLEAR_BELOW_MM },
+  // Default office layout (owner decision 13/11/2026): a small ground floor office/amenity beside the roller door in the front bay,
+  // plus the main office on a mezzanine over that front bay, with the stair at the back of it in the same bay.
+  office: { enabled: true, depthMm: 3000, accessibleWc: false },
+  mezzanine: { enabled: true, use: 'office', mode: 'depth', depthMm: 6000, percent: 40, position: 'front', stairType: 'straight', stairSide: 'left', balustrade: true, levelMm: 3000, slabMm: SLAB_MM, minClearMm: MIN_CLEAR_MM, minClearBelowMm: MIN_CLEAR_BELOW_MM },
   roof: 'skillion',
   cladding: 'metal',
 });
@@ -39,7 +42,9 @@ export const defaultCommercial = (useClass = 'industrial') => ({
   useClass,
   zoneClass: null, // the person's choice (needed for Queensland lots); null follows the looked up zone
   rows: [],
-  parking: { enabled: true, bayW: 2400, bayL: 5400, aisleMm: 8000, accessibleOverride: null },
+  // aisleMm is the car aisle in front of the bays (5.8 m for 90 degree bays, AS/NZS 2890.1); apronMm is the truck apron in front of the roller
+  // doors, the clear depth from the facade to the bays (12 m, editable).
+  parking: { enabled: true, bayW: 2400, bayL: 5400, aisleMm: 5800, apronMm: 12000, accessibleOverride: null },
   bollards: { enabled: true, downpipeEvery: 4 },
   waste: null, // { x, y, widthMm, depthMm, rotationDeg }
   hydrant: null, // { x, y }
@@ -99,5 +104,8 @@ export function normaliseCommercial(c) {
   });
   return out;
 }
+
+/** Distance from a facade to the near edge of its bay row: the truck apron, or the car aisle when that is wider. */
+export const bayOffsetMm = (parking) => Math.max(Number(parking?.aisleMm) || 0, Number(parking?.apronMm) || 0);
 
 export const isCommercial = (project) => project?.mode === 'commercial' && !!project.commercial;

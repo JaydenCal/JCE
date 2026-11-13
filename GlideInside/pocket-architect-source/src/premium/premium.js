@@ -80,7 +80,7 @@ export function createPremium(store, options = {}) {
   // client login whose builder has turned sending off (allowClientEnquiries).
   const canSendPlans = () => (portalOn() ? state.portal.enquiry !== false : true);
   const isEntitled = () => dev() || !!state.token || portalOn();
-  const view = () => ({ entitled: isEntitled(), token: state.token || state.portal?.token || null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire() });
+  const view = () => ({ entitled: isEntitled(), token: state.token || state.portal?.token || null, devUnlock: dev(), credits: state.credits, creditsError: state.creditsError, notice: state.notice, portal: portalOn() ? { orgName: state.portal.orgName || '', exports: allowedExports(), enquiry: state.portal.enquiry !== false, watermark: !!state.portal.watermark } : null, enquiry: canEnquire(), commercial: store.project?.mode === 'commercial' });
   // Builder and client logins have the AI included; mock mode lets the owner review it for any session.
   const aiEntitled = () => isEntitled() || orgSession || mockOn;
   const aiView = () => ({ ...view(), entitled: aiEntitled(), token: aiToken(), session: effSession });
@@ -298,8 +298,11 @@ export function createPremium(store, options = {}) {
   }
 
   // Events ----------------------------------------------------------------------------------------------------------------------
+  let wasCommercialMode = store.project?.mode === 'commercial';
   const offProject = store.on('project', () => {
     if (store.project.id !== state.projectId) loadProjectState();
+    const comm = store.project?.mode === 'commercial';
+    if (comm !== wasCommercialMode) { wasCommercialMode = comm; topbar?.render(); assistant?.render?.(); } // Exports and Unlock plans change wording in commercial mode
   });
   const onStorage = (e) => {
     if (e.key === tokenKey(state.projectId)) loadProjectState();

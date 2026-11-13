@@ -4,6 +4,7 @@
 
 import { layoutUnits, rowFrame, rowLength, rowPoint, facadeLayout, onFacade } from './layout.js';
 import { accessibleRequired, ACCESSIBLE_BAY } from './rules.js';
+import { bayOffsetMm } from './schema.js';
 
 const add = (a, b) => ({ x: a.x + b.x, y: a.y + b.y });
 const mul = (a, k) => ({ x: a.x * k, y: a.y * k });
@@ -25,7 +26,8 @@ export function accessibleEntry(units) {
 export function parkingLayout(commercial) {
   const empty = { rows: [], totalBays: 0, accessible: { required: 0, provided: 0, override: null }, path: null, entry: null, slotsTotal: 0 };
   if (!commercial || commercial.parking?.enabled === false || !commercial.rows?.length) return empty;
-  const { bayW, bayL, aisleMm } = commercial.parking;
+  const { bayW, bayL } = commercial.parking;
+  const offsetMm = bayOffsetMm(commercial.parking); // the truck apron in front of the roller doors, or the car aisle when that is wider
   const units = layoutUnits(commercial);
   const rows = commercial.rows;
   const entry = accessibleEntry(units);
@@ -39,7 +41,7 @@ export function parkingLayout(commercial) {
     const slots = [];
     for (let i = 0; i < n; i++) {
       const a = i * bayW;
-      const near = d + aisleMm;
+      const near = d + offsetMm;
       const poly = [rowPoint(fr, a, near), rowPoint(fr, a + bayW, near), rowPoint(fr, a + bayW, near + bayL), rowPoint(fr, a, near + bayL)];
       slots.push({ index: i, kind: 'bay', poly, centre: rowPoint(fr, a + bayW / 2, near + bayL / 2), aisleEnd: rowPoint(fr, a + bayW / 2, near + ACCESSIBLE_BAY.bollardFromEntryMm) });
     }

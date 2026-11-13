@@ -106,6 +106,39 @@ export function addDeck(ctx, parent, level, room, walls) {
   if (mesh) parent.add(mesh);
 }
 
+/**
+ * A 1000 mm balustrade (glass with a top rail and posts) along the open edges of an indoor room that has one, e.g. a mezzanine. An edge that
+ * runs against a wall (`walls`, from any level) is left open. Floors are drawn elsewhere.
+ */
+export function addRoomBalustrade(ctx, parent, level, room, walls) {
+  const poly = room.polygon;
+  const n = poly.length;
+  if (n < 3) return;
+  const top = level.elevation / 1000;
+  const b = new GeoBuilder();
+  for (let i = 0; i < n; i++) {
+    const e0 = poly[i];
+    const e1 = poly[(i + 1) % n];
+    const len = G.dist(e0, e1) / 1000;
+    const cnt = Math.max(1, Math.ceil(len / 1.2));
+    const ang = Math.atan2(e1.y - e0.y, e1.x - e0.x);
+    // Piece by piece, so the part of an edge that runs against a wall stays open and the rest is guarded.
+    for (let k = 0; k < cnt; k++) {
+      const p = G.lerp(e0, e1, k / cnt);
+      const q = G.lerp(e0, e1, (k + 1) / cnt);
+      if (G.dist(p, q) < 300 || edgeAgainstWall(p, q, walls)) continue;
+      const plen = G.dist(p, q) / 1000;
+      const mx = (p.x + q.x) / 2000;
+      const mz = (p.y + q.y) / 2000;
+      addOrientedBox(b, mx, mz, plen / 2, 0.02, ang, top + 0.95, top + 1.0, 'rail');
+      addOrientedBox(b, mx, mz, plen / 2, 0.006, ang, top + 0.1, top + 0.95, { pu: 'glass', nu: 'glass', pv: 'glass', nv: 'glass', py: null, ny: null });
+      for (const t of [p, q]) addBox(b, t.x / 1000 - 0.03, t.x / 1000 + 0.03, top, top + 1.0, t.y / 1000 - 0.03, t.y / 1000 + 0.03, 'rail');
+    }
+  }
+  const mesh = makeMesh(b.build(), { rail: ctx.lib.frame(ctx.hex(ctx.fin.frames.colour), { tint: ctx.tint(room.status) }), glass: ctx.lib.glass({ tint: ctx.tint(room.status) }) }, { decor: true, levelId: level.id }, { name: `balustrade:${room.id}` });
+  if (mesh) parent.add(mesh);
+}
+
 function outwardNormal(poly, p, q) {
   const d = G.norm(G.sub(q, p));
   const nrm = { x: d.y, y: -d.x };

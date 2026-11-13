@@ -261,7 +261,7 @@ svg { display: block; }
   .ps-shell .ps-topbar [data-action="find-block"] .ps-btn-text { display: none !important; }
   .ps-shell .ps-topbar [data-action="find-block"].ps-btn--wide:has(.ps-btn-text) { width: 32px !important; padding: 0 !important; }
   .ps-topbar .ps-levels { gap: 3px; flex-wrap: nowrap; }
-  .ps-topbar .ps-level-tab { height: 28px; padding: 0 8px; max-width: 84px; }
+  .ps-topbar .ps-level-tab { height: 28px; padding: 0 8px; max-width: 112px; } /* wide enough for Mezzanine */
   .ps-topbar .ps-level-tab:not(.ps-level-add) { min-width: 0; }
   .ps-topbar .ps-seg-btn { padding: 0 9px; }
   .ps-premium-slot { gap: 6px; }
@@ -989,4 +989,25 @@ svg { display: block; }
 /* The "Map data" chip sits above the strip, not on it. */
 .ps-shell .ps-stage[data-commercial="1"] .ps-credit { bottom: 112px; }
 .ps-shell:is([data-view="3d"],[data-view="walk"]) .ps-stage[data-commercial="1"] .ps-credit { bottom: 50px; }
-@media (max-width: 899.98px) { .cm-dock { width: calc(100% - 24px); max-height: 46%; } .cm-strip { left: 12px; right: 12px; transform: none; max-width: none; overflow-x: auto; } }
+.cm-short { display: none; }
+.cm-sheet-toggle { display: none; margin-left: auto; border: 1px solid var(--ps-border-strong, #c9ccd2); background: var(--ps-panel-2); color: inherit; border-radius: 8px; padding: 3px 12px; font: inherit; font-weight: 600; cursor: pointer; }
+/* Phone width: the dock is a bottom sheet that collapses to its title bar, and the strip runs along the top of the plan, so neither covers the other or the Demo tips chip. */
+@media (max-width: 899.98px) {
+  .cm-dock { left: 0; right: 0; bottom: 0; top: auto; width: auto; max-height: 58%; border-radius: 14px 14px 0 0; border-bottom: 0; padding-bottom: 14px; box-shadow: 0 -6px 24px rgba(0,0,0,.18); }
+  .cm-dock::before { content: ''; display: block; width: 36px; height: 4px; border-radius: 4px; background: var(--ps-border-strong, #c9ccd2); margin: 0 auto 8px; }
+  .cm-sheet-toggle { display: inline-block; }
+  .cm-full { display: none; }
+  .cm-short { display: inline; }
+  .cm-dock[data-sheet="closed"] { overflow: hidden; max-height: none; padding-bottom: 8px; }
+  .cm-dock[data-sheet="closed"] > :not(.cm-head) { display: none; }
+  .cm-dock[data-sheet="closed"] .cm-head { margin-bottom: 0; }
+  .cm-dock[data-sheet="closed"] .cm-head > :not(.cm-title) { display: none; }
+  .ps-shell:is([data-view="3d"],[data-view="walk"]) .cm-strip { left: 8px; right: 8px; max-width: none; }
+  .cm-strip { left: 8px; right: 8px; top: 8px; bottom: auto; transform: none; max-width: none; overflow-x: auto; border-radius: 10px; }
+  .cm-cell { padding: 5px 10px; min-width: 64px; flex: none; }
+  .cm-cell b { font-size: 14px; }
+  .cm-cell i { font-size: 10px; max-width: 110px; }
+  .ps-stage[data-commercial="1"] .ps-credit { bottom: 62px; }
+  .ps-stage[data-commercial="1"] .pso-dock { bottom: 62px; }
+  .ps-stage[data-commercial="1"][data-sheet="open"] .pso-dock, .ps-stage[data-commercial="1"][data-sheet="open"] .ps-credit { display: none; }
+}

@@ -82,16 +82,24 @@ export const onFacade = (item, W) => !!item && item.offset - item.w / 2 >= -0.5 
 export const OFFICE_MIN_WIDTH_MM = 1800;
 
 /**
- * The office of a unit: at the front, in the bay beside the roller doors, so a roller door never opens into it and the personnel
- * door (when there is one) is its entry. { enabled, fits, x0 (from the unit's left edge), widthMm, depthMm, areaM2 }.
+ * The front bay of a unit: the strip beside the roller doors, from the end of the last door to the unit's right edge.
+ * { x0 (from the unit's left edge), widthMm }. Both the ground office and the front mezzanine sit in it, so a roller door never opens into them.
+ */
+export function frontBay(spec) {
+  const fl = facadeLayout(spec);
+  const last = fl.doors.filter((x) => onFacade(x, spec.widthMm)).pop();
+  const x0 = Math.min(spec.widthMm, Math.max(0, last ? last.offset + last.w / 2 + GAP_MM / 2 : 0));
+  return { x0, widthMm: spec.widthMm - x0 };
+}
+
+/**
+ * The office/amenity of a unit: at the front, on the ground floor, in the bay beside the roller doors, so a roller door never opens into
+ * it and the personnel door (when there is one) is its entry. { enabled, fits, x0 (from the unit's left edge), widthMm, depthMm, areaM2 }.
  * fits is false when the bay beside the doors is under 0.9 m wide: nothing is drawn and the checks say so.
  */
 export function officeOf(spec) {
   if (!spec.office?.enabled) return { enabled: false, fits: false, x0: 0, widthMm: 0, depthMm: 0, areaM2: 0 };
-  const fl = facadeLayout(spec);
-  const last = fl.doors.filter((x) => onFacade(x, spec.widthMm)).pop();
-  const x0 = Math.min(spec.widthMm, Math.max(0, last ? last.offset + last.w / 2 + GAP_MM / 2 : 0));
-  const widthMm = spec.widthMm - x0;
+  const { x0, widthMm } = frontBay(spec);
   const depthMm = Math.max(0, Math.min(spec.office.depthMm, spec.depthMm - 1000));
   const fits = widthMm >= 900 && depthMm > 0;
   return { enabled: true, fits, x0, widthMm, depthMm, areaM2: fits ? (widthMm * depthMm) / 1e6 : 0 };
@@ -106,16 +114,29 @@ export function rearWindow(spec) {
   return null;
 }
 
-/** The mezzanine of a unit: { enabled, areaM2, depthMm, level, clearBelow, clearAbove, stair } (nothing when off). */
+/**
+ * The mezzanine of a unit (nothing when off). A front mezzanine sits over the front bay beside the roller doors (the ground
+ * office/amenity is under its front part) with the stair behind it in the same bay, so it never closes in a roller door. When the bay
+ * is under 1.8 m wide it moves to the rear and spans the full width (fellBack). { enabled, use, position, x0Mm, widthMm, depthMm, areaM2,
+ * level, clearBelow, clearAbove, minClear, minClearBelow, stair, fellBack }.
+ */
 export function mezzanineOf(spec) {
   const m = spec.mezzanine;
   if (!m.enabled) return { enabled: false };
   const D = spec.depthMm;
+  let position = m.position === 'rear' ? 'rear' : 'front';
+  let x0Mm = 0;
+  let widthMm = spec.widthMm;
+  let fellBack = false;
+  if (position === 'front') {
+    const bay = frontBay(spec);
+    if (bay.widthMm >= OFFICE_MIN_WIDTH_MM) { x0Mm = bay.x0; widthMm = bay.widthMm; } else { position = 'rear'; fellBack = true; }
+  }
   const depthMm = m.mode === 'percent' ? Math.round((D * Math.min(90, Math.max(5, m.percent))) / 100) : Math.min(D, m.depthMm);
-  const areaM2 = (spec.widthMm * depthMm) / 1e6;
+  const areaM2 = (widthMm * depthMm) / 1e6;
   const stair = m.stairType === 'L' ? { type: 'L', widthMm: 1000, lengthMm: 2400, runMm: 2400 } : { type: 'straight', widthMm: 1000, lengthMm: 3600, runMm: 3600 };
   return {
-    enabled: true, depthMm, areaM2, position: m.position, level: m.levelMm,
+    enabled: true, use: m.use === 'storage' ? 'storage' : 'office', position, fellBack, x0Mm, widthMm, depthMm, areaM2, level: m.levelMm,
     clearBelow: m.levelMm - (m.slabMm ?? SLAB_MM), clearAbove: spec.heightMm - m.levelMm, minClear: m.minClearMm ?? MIN_CLEAR_MM, minClearBelow: m.minClearBelowMm ?? MIN_CLEAR_BELOW_MM, stair,
   };
 }

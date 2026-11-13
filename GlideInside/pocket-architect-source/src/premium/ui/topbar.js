@@ -74,9 +74,17 @@ export function createTopbarUI({ root, config, getState, actions }) {
       el('span', null, ' Exports are watermarked during your free trial. ', el('a', { href: billingHref() }, 'Add a card in Billing')));
   }
 
+  const SOON = 'Commercial plan set coming soon';
   function renderSlot() {
     const st = getState();
     clear(slot);
+    // Commercial layouts have no plan set or exports yet (they come with a later stage): say so rather than offer a purchase.
+    menuBtn.style.display = st.commercial ? 'none' : '';
+    if (st.commercial) {
+      closeMenu(false);
+      slot.append(el('button', { class: 'psp-btn', type: 'button', disabled: true, dataset: { ps: 'commercial-soon' }, title: 'Plans and exports for commercial layouts are not available yet' }, icon('lock', 14), SOON));
+      return;
+    }
     if (st.portal?.watermark) slot.append(el('span', { class: 'psp-trial-badge', title: 'Exports are watermarked during your free trial' }, 'Trial'));
     if (st.entitled) {
       const left = st.credits && Number.isFinite(st.credits.remaining) ? ` ${st.credits.remaining} of ${st.credits.total} AI credits left.` : '';

@@ -154,7 +154,7 @@ export function openFindBlock(store, { onDone } = {}) {
     body: () => {
       box = createFindBlock(store, { autofocus: true, large: true, onDone: (lot) => { found = lot; modal.close('done'); } });
       return h('div', null,
-        h('p', { class: 'ps-hint', style: { margin: '0 0 8px' } }, 'Type your street address. The lot boundary, neighbouring lots, an aerial image and ground contours are drawn to scale so you can place the house on the real block.'),
+        h('p', { class: 'ps-hint', style: { margin: '0 0 8px' } }, `Type your street address. The lot boundary, neighbouring lots, an aerial image and ground contours are drawn to scale so you can place the ${store.project?.mode === 'commercial' ? 'units' : 'house'} on the real block.`),
         box.el);
     },
     onClose: (reason) => { box?.dispose(); if (reason === 'done' && found) onDone?.(found); },

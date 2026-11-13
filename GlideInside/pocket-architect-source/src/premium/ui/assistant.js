@@ -53,10 +53,12 @@ export function createAssistant({ root, store, api, config, catalogue, layer, ge
         EXAMPLE_PROMPTS.map((text) => el('button', { class: 'psp-prompt', type: 'button', disabled: true, role: 'listitem', title: 'Unlock the Plan Pack to use the assistant' }, icon('lock', 12), text))),
       el('div', { class: 'psp-locked-box' },
         el('p', { class: 'psp-muted' }, `${pack.credits ?? 500} AI credits per job, plus PDF, DXF and 3D model exports. Drawing, the 3D view and walking through your design stay free.`),
-        isOn()
+        st.commercial
+          ? el('button', { class: 'psp-btn psp-btn--block', type: 'button', disabled: true, dataset: { ps: 'commercial-soon' } }, icon('lock', 14), 'Commercial plan set coming soon')
+          : isOn()
           ? el('button', { class: 'psp-btn psp-btn--primary psp-btn--block', type: 'button', onclick: () => actions.unlock('assistant') }, icon('lock', 14), `Unlock plans, ${formatAud(pack.priceAud ?? 30)}`)
           : el('button', { class: 'psp-btn psp-btn--block', type: 'button', disabled: true }, icon('lock', 14), 'Plan Pack unavailable, try again'),
-        isOn() ? el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => actions.restore() }, 'Already bought? Restore purchase') : null),
+        isOn() && !st.commercial ? el('button', { class: 'psp-btn psp-btn--link', type: 'button', onclick: () => actions.restore() }, 'Already bought? Restore purchase') : null),
     ];
   }
 

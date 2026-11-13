@@ -160,7 +160,8 @@ export function buildSiteSection(ctx) {
       const flag = slot.flag === 'check_with_council' || sb.flag === 'check_with_council';
       rows.push(h('tr', null,
         h('td', null, label, slot.clause ? h('div', { class: 'ps-hint', style: { margin: 0 } }, slot.clause) : null),
-        h('td', { class: 'num', style: { textAlign: 'right' } }, fmtM(slot.minM, slot), flag ? h('div', { class: 'ps-hint', style: { margin: 0 } }, 'check with council') : null)));
+        h('td', { class: 'num', style: { textAlign: 'right' } }, fmtM(slot.minM, slot), flag ? h('div', { class: 'ps-hint', style: { margin: 0 } }, slot.bca ? slot.basis : 'check with council') : null,
+          slot.bca && slot.note ? h('div', { class: 'ps-hint', style: { margin: 0 }, dataset: { ps: 'setbacks-bca-note' } }, slot.note) : null)));
     }
     box.append(h('table', { class: 'ps-table ps-site-facts', dataset: { ps: 'setbacks-table' } }, h('tbody', null, ...rows)));
     const src = sb.source?.kind === 'council' ? (sb.source.dcp || sb.council || 'Council DCP') : `${sb.source?.name || sb.basis}${sb.source?.edition ? `, ${sb.source.edition}` : ''}`;

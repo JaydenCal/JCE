@@ -2,7 +2,7 @@
 
 import { h } from './dom.js';
 import { openModal } from './modal.js';
-import { DESIGN_TYPES } from './design-type.js';
+import { designTypesFor } from './design-type.js';
 
 const TYPE_LABEL = { house: 'House', unit: 'Unit', shed: 'Shed', extension: 'Extension' };
 
@@ -63,7 +63,7 @@ export function openTemplatePicker({ templates = [], hasEdits = false, designNam
         ? h('div', { class: 'ps-field ps-field--chips', style: { margin: '0 0 12px' } },
           h('span', { class: 'ps-field-label' }, 'Design type'),
           h('span', { class: 'ps-seg ps-seg--sm', role: 'group', 'aria-label': 'Design type' },
-            DESIGN_TYPES.map((d) => h('button', {
+            designTypesFor({ mode: currentType === 'commercial' ? 'commercial' : null }).map((d) => h('button', {
               class: 'ps-seg-btn', type: 'button', dataset: { designType: d.id }, 'aria-pressed': String(d.id === currentType),
               onclick: () => {
                 if (d.id === currentType) return;

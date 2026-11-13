@@ -402,12 +402,16 @@ async function main() {
   // when a lot first appears on the design; wall and room reshaping stays one click away on Edit (B).
   let lotSeen = null;
   const lotKeyOf = (p) => { const l = p.site?.lot; return l ? `${l.address || ''}|${l.lotLabel || ''}|${l.boundary?.length || 0}` : null; };
+  let wasCommercial = false;
   const defaultTool = () => {
     if (store.project.mode === 'commercial') {
-      if (store.ui.tool === 'select' || store.ui.tool === 'movehouse') store.setUI({ tool: 'commercial', toolArg: null });
+      // The commercial tool becomes active when a design enters commercial mode, not after every edit: a person who picked Select keeps it.
+      if (!wasCommercial && (store.ui.tool === 'select' || store.ui.tool === 'movehouse')) store.setUI({ tool: 'commercial', toolArg: null });
+      wasCommercial = true;
       if (!store.ui.commercialRow && store.project.commercial?.rows.length) store.ui.commercialRow = store.project.commercial.rows[0].id;
       return;
     }
+    wasCommercial = false;
     if (store.ui.tool === 'commercial') store.setUI({ tool: 'select', toolArg: null });
     const key = lotKeyOf(store.project);
     if (key === lotSeen) return;

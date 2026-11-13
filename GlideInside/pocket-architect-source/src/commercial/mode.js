@@ -2,7 +2,7 @@
 
 import * as S from '../model/schema.js';
 import { lotOf } from '../model/placement.js';
-import { defaultCommercial, defaultRow, normaliseCommercial, isCommercial } from './schema.js';
+import { defaultCommercial, defaultRow, normaliseCommercial, isCommercial, bayOffsetMm } from './schema.js';
 import { materialise } from './materialise.js';
 import { zoneClass, effectiveClass, RESIDENTIAL_NOTE } from './zones.js';
 import { defaultRulesFor } from './rules.js';
@@ -41,7 +41,7 @@ export function firstRow(p, cls = 'industrial') {
   const unit = row.unit;
   const count = Math.max(1, Math.min(8, Math.floor((sMax - sMin) / unit.widthMm)));
   row.count = count;
-  const room = tMax - tMin - 13400; // front aisle (8 m) and a row of bays (5.4 m)
+  const room = tMax - tMin - (bayOffsetMm(defaultCommercial(cls).parking) + 5400); // truck apron (12 m) and a row of bays (5.4 m)
   unit.depthMm = Math.max(6000, Math.min(18000, round(room, 500)));
   const o = { x: u.x * sMin + nrm.x * tMax, y: u.y * sMin + nrm.y * tMax };
   row.x = round(o.x, 50);

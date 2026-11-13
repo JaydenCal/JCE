@@ -3,7 +3,7 @@
 
 import { migrate } from '../model/schema.js';
 import { toast } from './toast.js';
-import { convertToCommercial } from '../commercial/mode.js';
+import { convertToCommercial, commercialUi } from '../commercial/mode.js';
 
 export const DESIGN_TYPES = [
   { id: 'house', label: 'House', template: 'house_single', generic: 'a generic 4 bedroom house' },
@@ -12,6 +12,8 @@ export const DESIGN_TYPES = [
   { id: 'shed', label: 'Shed', template: 'shed_workshop', generic: 'a generic garage and workshop shed' },
   { id: 'commercial', label: 'Commercial', template: null, generic: 'a row of industrial or commercial units (Beta)' },
 ];
+/** The design types this screen offers. Commercial is left out where the commercial dock is off (the builder portal client view, the embedded viewer, the demo), unless the design already is commercial. */
+export const designTypesFor = (project) => DESIGN_TYPES.filter((d) => d.id !== 'commercial' || commercialUi.enabled || project?.mode === 'commercial');
 const BY_TEMPLATE = Object.fromEntries(DESIGN_TYPES.map((d) => [d.template, d.id]));
 BY_TEMPLATE.house_double = 'house';
 BY_TEMPLATE.shed_farm = 'shed';

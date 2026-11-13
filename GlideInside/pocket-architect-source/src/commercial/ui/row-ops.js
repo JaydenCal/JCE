@@ -1,6 +1,6 @@
 // Row operations on the spec: add a row, mirror a row, delete a row. Each is one undo step and regenerates the model.
 
-import { defaultRow, deepMerge } from '../schema.js';
+import { defaultRow, deepMerge, bayOffsetMm } from '../schema.js';
 import { rowFrame, rowLength } from '../layout.js';
 import { commercialEdit } from '../mode.js';
 
@@ -14,7 +14,7 @@ export function addRow(store, fromId = null) {
       row.unit = structuredClone(base.unit);
       row.rotationDeg = base.rotationDeg;
       const fr = rowFrame(base, c.rows);
-      const step = base.unit.depthMm + c.parking.aisleMm + c.parking.bayL + 6000;
+      const step = base.unit.depthMm + bayOffsetMm(c.parking) + c.parking.bayL + 6000;
       row.x = Math.round(base.x + fr.v.x * step);
       row.y = Math.round(base.y + fr.v.y * step);
     }

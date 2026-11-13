@@ -4,7 +4,8 @@ import { convertToCommercial } from '../../src/commercial/mode.js';
 import { defaultRow } from '../../src/commercial/schema.js';
 import { materialise } from '../../src/commercial/materialise.js';
 
-export function commercialProject({ width = 90000, depth = 100000, zoning = { code: 'IN1', name: 'General Industrial' }, rows = 'pair', setbacks = null } = {}) {
+export function commercialProject({ width = 90000, depth = 100000, zoning = { code: 'IN1', name: 'General Industrial' }, rows = 'pair', setbacks = null, plain = true } = {}) {
+  // plain: the layout before the 13/11/2026 default (no ground office, no mezzanine, 8 m aisle, no truck apron) so the older figures hold; plain: false is the new default.
   const p = conadillyProject({ corner: false, width, depth, setbacks: setbacks || { front: 10, secondaryFront: null, side: 3, rear: 3, edgeKinds: ['front', 'side', 'rear', 'side'] } });
   p.site.lot.zoning = zoning;
   p.site.lot.lga = 'TAMWORTH REGIONAL';
@@ -13,10 +14,14 @@ export function commercialProject({ width = 90000, depth = 100000, zoning = { co
   const base = p.commercial.rows[0];
   Object.assign(base, { x: 20000, y: 40000, rotationDeg: 0, count: 8 });
   base.unit.depthMm = 15000;
+  const flat = (row) => { if (plain) { row.unit.office.enabled = false; row.unit.mezzanine.enabled = false; } };
+  if (plain) Object.assign(p.commercial.parking, { aisleMm: 8000, apronMm: 0 });
+  flat(base);
   materialise(p);
   if (rows === 'pair') {
     p.commercial.rows = [base, defaultRow({ mirrorOf: base.id, count: 8 })];
     p.commercial.rows[1].unit.depthMm = 15000;
+    flat(p.commercial.rows[1]);
     materialise(p);
   }
   return p;

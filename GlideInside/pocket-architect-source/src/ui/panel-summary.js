@@ -12,7 +12,7 @@ import { WALL_PRESETS } from './wall-presets.js';
 import { openTitleBlockForm } from './titleblock.js';
 import { DRAWING_SCALES, PAPER_SIZES } from '../model/schema.js';
 import { deleteLevelWithConfirm } from './level-actions.js';
-import { DESIGN_TYPES, designTypeOf, changeDesignType } from './design-type.js';
+import { designTypesFor, designTypeOf, changeDesignType } from './design-type.js';
 import { buildSiteSection } from './panel-site.js';
 import { lotChecks } from '../site/lot-checks.js';
 
@@ -28,7 +28,7 @@ export function buildSummary(ctx) {
   // Design type: swaps the design for a generic template of that type after an in-page confirmation (one undo step).
   function designTypeField() {
     const extension = () => designTypeOf(store.project) === 'extension';
-    const options = [...DESIGN_TYPES.map((d) => [d.id, d.label]), ...(extension() ? [['extension', 'Extension']] : [])];
+    const options = [...designTypesFor(store.project).map((d) => [d.id, d.label]), ...(extension() ? [['extension', 'Extension']] : [])];
     const field = selectField({
       label: 'Design type', options, get: () => designTypeOf(store.project),
       commit: (v) => {

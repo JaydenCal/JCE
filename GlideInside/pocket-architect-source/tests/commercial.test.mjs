@@ -280,14 +280,16 @@ test('doors: door set clearance against the unit width and the door offset in th
   assert.ok(warnTexts(p).some((t) => /^Unit 1: Door set is/.test(t)));
 });
 
-test('doors: roller door against the mezzanine edge and the unit height', () => {
+test('doors: a front mezzanine sits beside the roller door so it never closes it in, and the shutter clearance is checked', () => {
   const p = commercialProject();
   const row = p.commercial.rows[0];
   row.unit.mezzanine = { ...row.unit.mezzanine, enabled: true, position: 'front', levelMm: 3000 };
   row.unit.doors = { ...row.unit.doors, presetId: '3.6x4.0', widthMm: 3600, heightMm: 4000 };
-  assert.ok(warnTexts(p).some((t) => /roller door head at 4\.00 m is above the front mezzanine soffit at 2\.85 m/.test(t)));
-  row.unit.mezzanine.position = 'rear';
-  assert.ok(!warnTexts(p).some((t) => /front mezzanine soffit/.test(t)));
+  assert.ok(!warnTexts(p).some((t) => /front mezzanine soffit/.test(t)), 'the 4.0 m roller door is not under the 2.85 m soffit');
+  const u = layoutUnits(p.commercial)[0];
+  const m = mezzanineOf(u.spec);
+  const dr = facadeLayout(u.spec).doors[0];
+  assert.ok(m.x0Mm >= dr.offset + dr.w / 2, 'the mezzanine starts beside the roller door');
   row.unit.heightMm = 4200;
   assert.ok(warnTexts(p).some((t) => /leaves under 0\.40 m for the shutter/.test(t)));
 });
@@ -335,21 +337,24 @@ test('windows: side windows on end units only, never on a party wall', () => {
 // Mezzanines ---------------------------------------------------------------------------------------------------------------------
 test('mezzanine: depth or percent, position, stair type, level and separate GFA', () => {
   const spec = defaultUnit();
-  spec.mezzanine = { ...spec.mezzanine, enabled: true, mode: 'depth', depthMm: 6000 };
+  spec.mezzanine = { ...spec.mezzanine, enabled: true, mode: 'depth', depthMm: 6000, position: 'rear' };
   let m = mezzanineOf(spec);
-  assert.equal(m.areaM2, 36);
+  assert.equal(m.areaM2, 36, 'a rear mezzanine spans the full width');
+  assert.equal(mezzanineOf({ ...spec, mezzanine: { ...spec.mezzanine, position: 'front' } }).areaM2, 11.7, 'a front mezzanine is over the 1.95 m bay beside the roller door');
   assert.equal(m.clearBelow, 2850);
   assert.equal(m.clearAbove, 3000);
   spec.mezzanine.mode = 'percent'; spec.mezzanine.percent = 40;
   m = mezzanineOf(spec);
   assert.equal(m.depthMm, 7200);
   assert.ok(Math.abs(m.areaM2 - 6 * 7.2) < 1e-9);
-  assert.equal(mezzanineOf(defaultUnit()).enabled, false);
+  assert.equal(mezzanineOf(defaultUnit()).enabled, true, 'on by default, 13/11/2026');
+  assert.equal(mezzanineOf(defaultUnit()).use, 'office');
+  assert.equal(mezzanineOf(defaultUnit()).position, 'front');
   assert.equal(mezzanineOf({ ...spec, mezzanine: { ...spec.mezzanine, stairType: 'L' } }).stair.type, 'L');
 
   const p = commercialProject();
   const row = p.commercial.rows[0];
-  row.perUnit = { 2: { mezzanine: { enabled: true, position: 'front' } } };
+  row.perUnit = { 2: { mezzanine: { enabled: true, position: 'front', use: 'storage', depthMm: 6000 } } };
   materialise(p);
   assert.equal(p.levels.length, 2);
   const lvl = p.levels[1];
@@ -365,8 +370,8 @@ test('mezzanine: depth or percent, position, stair type, level and separate GFA'
   // Separate GFA.
   const s = commercialStats(p);
   assert.equal(s.groundGfaM2, 1440);
-  assert.equal(s.mezzGfaM2, 36);
-  assert.equal(s.gfaM2, 1476);
+  assert.equal(s.mezzGfaM2, 11.7);
+  assert.equal(s.gfaM2, 1451.7);
   // Off again: the level goes.
   row.perUnit = {};
   materialise(p);
@@ -464,7 +469,7 @@ test('accessible amenities: an accessible WC in the office is listed with a note
   const p = commercialProject();
   p.commercial.rows[0].perUnit = { 0: { office: { enabled: true, accessibleWc: true } } };
   materialise(p);
-  assert.ok(p.levels[0].rooms.some((r) => r.name === 'PROPOSED UNIT 1 OFFICE AND ACCESSIBLE WC'));
+  assert.ok(p.levels[0].rooms.some((r) => r.name === 'PROPOSED UNIT 1 OFFICE/AMENITY WITH ACCESSIBLE WC'));
   const note = commercialChecks(p).find((c) => c.id === 'awc');
   assert.match(note.text, /Accessible WC shown in the office of unit 1/);
   assert.match(note.text, /access consultant/);
@@ -673,15 +678,15 @@ test('dataset: mezzanine storey trigger is the lesser of 200 m2 and one third of
   const p = commercialProject();
   const row = p.commercial.rows[0];
   // Unit 6 x 15 = 90 m2, one third is 30 m2. A 6 x 6 m mezzanine (36 m2) is over it.
-  row.perUnit = { 0: { mezzanine: { enabled: true, depthMm: 6000 } } };
+  row.perUnit = { 0: { mezzanine: { enabled: true, depthMm: 6000, position: 'rear' } } };
   const t = warnTexts(p).find((x) => /counts? as a storey|count as a storey/.test(x));
   assert.match(t, /Unit 1: the 36\.0 m² mezzanine is above 30\.0 m² \(the lesser of 200 m² and one third of the room\), so it may count as a storey, check with council and the NCC/);
-  row.perUnit = { 0: { mezzanine: { enabled: true, depthMm: 4000 } } };
+  row.perUnit = { 0: { mezzanine: { enabled: true, depthMm: 4000, position: 'rear' } } };
   assert.ok(!warnTexts(p).some((x) => /count as a storey/.test(x)), '24 m2 is under 30 m2');
   const tip = commercialChecks(p).find((c) => c.id === 'barrier');
   assert.match(tip.text, /Barrier height at the mezzanine edge is 1000 mm and at the stair 865 mm/);
   // Checks resting on an unverified value say so and carry the status.
-  row.perUnit = { 0: { mezzanine: { enabled: true, depthMm: 4000, levelMm: 2200 } } };
+  row.perUnit = { 0: { mezzanine: { enabled: true, depthMm: 4000, levelMm: 2200, position: 'rear' } } };
   const low = commercialChecks(p).find((c) => c.id === 'u1-mzlow');
   assert.equal(low.status, 'UNVERIFIED');
   assert.match(low.text, /unverified minimum/);
@@ -788,7 +793,7 @@ test('office: sits in the front bay beside the roller door, the workshop room is
   assert.ok(of.x0 >= dr.offset + dr.w / 2, 'the roller door does not open into the office');
   assert.equal(of.widthMm, 1950);
   const rooms = p.levels[0].rooms;
-  const office = rooms.find((r) => r.name === 'PROPOSED UNIT 1 OFFICE');
+  const office = rooms.find((r) => r.name === 'PROPOSED UNIT 1 OFFICE/AMENITY');
   const shop = rooms.find((r) => r.name === 'PROPOSED UNIT 1');
   assert.equal(shop.polygon.length, 6, 'an L shaped workshop');
   assert.ok(Math.abs(polyArea(office.polygon) / 1e6 - 5.85) < 0.001);
@@ -808,7 +813,7 @@ test('office: sits in the front bay beside the roller door, the workshop room is
   assert.ok(!p.levels[0].rooms.some((r) => /OFFICE/.test(r.name)));
   assert.equal(commercialStats(p).officeM2, 0);
   // The storey trigger uses the room the mezzanine sits in: the unit less the office.
-  row.perUnit = { 0: { office: { enabled: true, depthMm: 3000 }, mezzanine: { enabled: true, depthMm: 4800 } } };
+  row.perUnit = { 0: { office: { enabled: true, depthMm: 3000 }, mezzanine: { enabled: true, depthMm: 4800, position: 'rear' } } };
   const t = warnTexts(p).find((x) => /count as a storey/.test(x));
   assert.match(t, /Unit 1: the 28\.8 m² mezzanine is above 28\.1 m²/, '(90 - 5.85) / 3 = 28.05, shown to one place');
 });
@@ -858,4 +863,156 @@ test('zones: no switch is offered where there is no commercial dock (the embedde
   assert.equal(seen.length, 0);
   assert.ok(offerCommercial(s, { toast: (...a) => { seen.push(a); return {}; } }));
   assert.match(seen[0][0], /E4 General Industrial/);
+});
+
+// 13/11/2026 owner decision: default unit layout, parking split, aisle and apron, BCA setbacks, tool and premium wording ------------
+test('default layout: a ground office/amenity beside the roller door plus a mezzanine office over the front bay with the stair behind it', () => {
+  const p = commercialProject({ plain: false, rows: 'single' });
+  const u = layoutUnits(p.commercial)[0];
+  assert.equal(u.spec.office.enabled, true);
+  assert.equal(u.spec.mezzanine.enabled, true);
+  assert.equal(u.spec.mezzanine.use, 'office');
+  assert.equal(u.spec.mezzanine.position, 'front');
+  assert.equal(u.spec.mezzanine.balustrade, true);
+  const ground = p.levels[0].rooms.map((r) => r.name);
+  assert.ok(ground.includes('PROPOSED UNIT 1 OFFICE/AMENITY'));
+  const mz = p.levels.find((l) => l.id === MEZZ_LEVEL_ID);
+  assert.ok(mz, 'the mezzanine level exists by default');
+  const room = mz.rooms.find((r) => r.name === 'PROPOSED UNIT 1 MEZZANINE OFFICE');
+  assert.ok(room, 'named as a mezzanine office');
+  assert.equal(room.balustrade, true);
+  // The mezzanine is over the front bay: right of the roller door, front 6 m of the unit.
+  const m = mezzanineOf(u.spec);
+  assert.equal(m.position, 'front');
+  assert.equal(m.widthMm, 1950);
+  const xs = room.polygon.map((q) => q.x);
+  const ys = room.polygon.map((q) => q.y);
+  assert.ok(Math.abs(Math.min(...xs) - (20000 + 4050)) < 1 && Math.abs(Math.max(...xs) - 26000) < 1);
+  assert.ok(Math.abs(Math.min(...ys) - (55000 - 6000)) < 1 && Math.abs(Math.max(...ys) - 55000) < 1);
+  // The stair is on the ground level behind the mezzanine, in the same bay, and its run points at the mezzanine (+y after the turn).
+  const st = p.levels[0].stairs[0];
+  assert.ok(st.x > 20000 + 4050 && st.x < 26000);
+  assert.ok(st.y < 55000 - 6000, 'behind the mezzanine edge');
+  const run = { x: -Math.sin((st.rotation * Math.PI) / 180), y: Math.cos((st.rotation * Math.PI) / 180) };
+  assert.ok(run.y > 0.99, 'the run climbs toward the front, where the mezzanine is');
+  // Nothing to warn about for the default unit: clear heights, storey trigger, stair fit.
+  assert.deepEqual(warnTexts(p).filter((t) => /mezzanine|stair|clear height/i.test(t)), []);
+  assert.ok(commercialChecks(p).some((c) => c.id === 'barrier'));
+});
+
+test('default layout: a bay too narrow for the mezzanine moves it to the rear with a note, and a storage mezzanine is not an office', () => {
+  const p = commercialProject({ plain: false, rows: 'single' });
+  const row = p.commercial.rows[0];
+  row.perUnit = { 0: { doors: { presetId: '4.5x5.0' } } };
+  materialise(p);
+  const m = mezzanineOf(layoutUnits(p.commercial)[0].spec);
+  assert.equal(m.position, 'rear');
+  assert.equal(m.fellBack, true);
+  assert.ok(commercialChecks(p).some((c) => c.id === 'u1-mzbay'));
+  row.perUnit = { 1: { mezzanine: { use: 'storage' } } };
+  materialise(p);
+  assert.ok(p.levels.find((l) => l.id === MEZZ_LEVEL_ID).rooms.some((r) => r.name === 'PROPOSED UNIT 2 MEZZANINE'));
+});
+
+test('parking: the mezzanine office counts at 1 per 40 m2, the rest of the GFA at 1 per 75 m2, rounded once on the total, split shown', () => {
+  const p = commercialProject({ plain: false, rows: 'single' });
+  const s = commercialStats(p);
+  const ground = 8 * 6 * 15;
+  const mezz = 8 * 1.95 * 6;
+  const office = 8 * (1.95 * 3) + mezz;
+  assert.ok(Math.abs(s.mezzGfaM2 - mezz) < 0.1);
+  assert.ok(Math.abs(s.officeMezzM2 - mezz) < 0.1);
+  const raw = (ground + mezz - office) / 75 + office / 40;
+  assert.equal(s.parking.required, Math.ceil(raw));
+  assert.ok(Math.abs(s.parking.split.officeSpaces + s.parking.split.otherSpaces - raw) < 0.05);
+  assert.ok(Math.abs(s.parking.split.officeM2 - office) < 0.1);
+  // A storage mezzanine is at the general rate: the office is only the ground office.
+  p.commercial.rows[0].unit.mezzanine.use = 'storage';
+  const t = commercialStats(p);
+  assert.ok(Math.abs(t.parking.split.officeM2 - 8 * 1.95 * 3) < 0.1);
+});
+
+test('mezzanine storey trigger: the lesser of 200 m2 and one third of the room, the ground office left out', () => {
+  const p = commercialProject({ plain: false, rows: 'single' });
+  const row = p.commercial.rows[0];
+  row.unit.mezzanine.depthMm = 15000; // 1.95 x 15 = 29.25 m2, room (90 - 5.85) / 3 = 28.05
+  assert.ok(warnTexts(p).some((t) => /Unit 1: the 29\.3 m² mezzanine is above 28\.1 m²/.test(t)));
+  row.unit.mezzanine.depthMm = 6000;
+  assert.ok(!warnTexts(p).some((t) => /count as a storey/.test(t)));
+  row.unit.mezzanine.levelMm = 2200; // 2.05 m below: under 2.1 m
+  assert.ok(warnTexts(p).some((t) => /clear height under the mezzanine is 2\.05 m/.test(t)));
+  row.unit.mezzanine.levelMm = 3000; row.unit.heightMm = 5000; // 2.0 m above
+  assert.ok(warnTexts(p).some((t) => /clear height above the mezzanine is 2\.00 m/.test(t)));
+});
+
+test('parking: the car aisle is 5.8 m, a separate truck apron of 12 m sits in front of the roller doors, both editable', () => {
+  const p = commercialProject({ plain: false, rows: 'single' });
+  assert.equal(p.commercial.parking.aisleMm, 5800);
+  assert.equal(p.commercial.parking.apronMm, 12000);
+  const near = (pl) => Math.min(...pl.rows[0].slots.flatMap((s) => s.poly.map((q) => q.y)));
+  assert.ok(Math.abs(near(parkingLayout(p.commercial)) - (55000 + 12000)) < 1, 'bays start at the apron depth');
+  p.commercial.parking.apronMm = 0;
+  assert.ok(Math.abs(near(parkingLayout(p.commercial)) - (55000 + 5800)) < 1, 'no apron: the car aisle');
+  p.commercial.parking.apronMm = 15000; p.commercial.parking.aisleMm = 6500;
+  assert.ok(Math.abs(near(parkingLayout(p.commercial)) - (55000 + 15000)) < 1);
+  // A new row steps clear of the apron and the bays.
+  const q = commercialProject({ plain: false, rows: 'single' });
+  addRow(store(q), null);
+});
+
+test('setbacks: side and rear that the council leaves to the BCA show 0 m with the BCA wording, never an invented 3 m', () => {
+  const lot = commercialProject().site.lot;
+  const tamworth = { lga_slug: 'tamworth-regional-council', council: 'Tamworth Regional Council', dcp: 'TRDCP 2010', status: 'ok', rules: [
+    { id: 't', zones: ['IN*'], appliesTo: ['industrial'], conditions: {}, front: { minM: 5, basis: 'fixed', note: '5 m street setback; no concession for secondary frontage; side and rear per BCA' }, secondaryFront: null, side: null, rear: null, quote: 'Street setback must be a minimum of 5m.' },
+  ] };
+  const gunnedah = { lga_slug: 'gunnedah-shire-council', council: 'Gunnedah Shire Council', status: 'ok', rules: [
+    { id: 'g', zones: ['IN*'], appliesTo: ['industrial'], conditions: {}, front: { minM: 7.5, basis: 'fixed' }, secondaryFront: null, side: null, rear: null, evidence: [{ quote: 'Other 7.5m BCA' }] },
+  ] };
+  for (const council of [tamworth, gunnedah]) {
+    lot.lga = council === tamworth ? 'TAMWORTH REGIONAL' : 'GUNNEDAH';
+    const r = siteLotCommercialSetbacks(lot, { councils: [council] }, { cls: 'industrial' });
+    for (const k of ['side', 'rear']) {
+      assert.equal(r.setbacks[k].minM, 0, `${council.council} ${k}`);
+      assert.equal(r.setbacks[k].basis, 'Per the BCA, check with council');
+      assert.match(r.setbacks[k].note, /fire rated/);
+      assert.equal(r.setbacks.sources[k], 'bca');
+    }
+    assert.equal(r.setbacks.front.minM, council === tamworth ? 5 : 7.5);
+  }
+  // A council with no BCA wording keeps the indicative default table.
+  lot.lga = 'TAMWORTH REGIONAL';
+  const other = { lga_slug: 'tamworth-regional-council', council: 'Tamworth Regional Council', rules: [{ id: 'a', zones: ['IN*'], appliesTo: ['industrial'], conditions: {}, front: { minM: 5 }, side: null, rear: null }] };
+  assert.equal(siteLotCommercialSetbacks(lot, { councils: [other] }, { cls: 'industrial' }).setbacks.side.minM, 3);
+  // The checks list carries the note.
+  const p = commercialProject();
+  const r = siteLotCommercialSetbacks(p.site.lot, { councils: [tamworth] }, { cls: 'industrial' });
+  p.site.lot.setbacks = r.setbacks; p.site.lot.envelope = r.envelope;
+  const note = commercialChecks(p).find((c) => c.id === 'setbacks-bca');
+  assert.match(note.text, /Per the BCA, check with council/);
+  assert.match(note.text, /fire rated/);
+});
+
+test('tools: Move house is Move units in commercial mode, so Select stays selected and the commercial tool is one click away', async () => {
+  const { setTool } = await import('../src/ui/toolstate.js');
+  const ui = { view: '2d', tool: 'select' };
+  const fake = (mode) => ({ project: { mode }, ui, setUI: (patch) => Object.assign(ui, patch) });
+  setTool(fake('commercial'), 'movehouse');
+  assert.equal(ui.tool, 'commercial');
+  setTool(fake('commercial'), 'select');
+  assert.equal(ui.tool, 'select');
+  setTool(fake(undefined), 'movehouse');
+  assert.equal(ui.tool, 'movehouse');
+});
+
+test('design type: Commercial is not offered where the commercial dock is off (portal client view), unless the design already is commercial', async () => {
+  const { designTypesFor } = await import('../src/ui/design-type.js');
+  const { commercialUi } = await import('../src/commercial/mode.js');
+  const was = commercialUi.enabled;
+  try {
+    commercialUi.enabled = true;
+    assert.ok(designTypesFor({}).some((d) => d.id === 'commercial'));
+    commercialUi.enabled = false;
+    assert.ok(!designTypesFor({}).some((d) => d.id === 'commercial'));
+    assert.ok(designTypesFor({ mode: 'commercial' }).some((d) => d.id === 'commercial'));
+  } finally { commercialUi.enabled = was; }
 });

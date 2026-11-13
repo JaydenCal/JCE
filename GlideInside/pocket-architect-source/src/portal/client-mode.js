@@ -27,6 +27,7 @@ import { orientedBox } from '../site/lotplan.js';
 import { projectToSvg, svgDataUri } from './thumbnail.js';
 import { createProject } from '../model/schema.js';
 import { createDesignSource } from './design-source.js';
+import { commercialUi } from '../commercial/mode.js';
 
 const LOGO_KEY = 'ps.logo';
 const AUTOSAVE = () => CONFIG.autosaveKey;
@@ -61,6 +62,8 @@ export async function initPortalMode(app, { api = getPortalApi(), location: loc 
   // gets (the builder's branding and own houses only, Find my block, place, colours, rooms, walk inside, lot card, send, exports), plus the staff extras.
   const designMode = isDesignMode(me.user.role, params);
   const clientLike = isClientLike(me.user.role, params);
+  // A client login (or a builder using Design on a lot) is not offered the commercial switch: that is a JCE tool, not part of the builder's house design service.
+  if (clientLike) commercialUi.enabled = false;
   let reviewOwner = null; // the client whose saved project staff opened as that client sees it
   const brand = me.org.branding || {};
   applyBrandTheme(brand.colours); // builder colour scheme over the app chrome; the 3D scene, aerial and setback states keep their own colours

@@ -5,6 +5,7 @@
 import { worldToScreen } from '../editor2d/math.js';
 import { analyse } from './analyse.js';
 import { rowFrame, rowLength, rowPoly } from './layout.js';
+import { bayOffsetMm } from './schema.js';
 
 const GOLD = '#c7a256';
 const BLUE = '#1b5fbf';
@@ -49,6 +50,8 @@ export function drawCommercial(ctx, st) {
   // Pavement: the aisle between each facade and its bay row, then the bay row itself, so the parking reads as a paved area with an
   // aisle and marked bays (2.4 x 5.4 m by default) and not as loose rectangles. The aisle carries its width and a centre line.
   const { aisleMm, bayW, bayL } = c.parking;
+  const off = bayOffsetMm(c.parking); // facade to the near edge of the bays: the truck apron, or the car aisle when that is wider
+  const apron = Math.max(0, off - aisleMm); // the part of the apron in front of the car aisle
   const lw = Math.max(1.2, Math.min(3, st.view.scale * 100)); // a 100 mm marking line, never under 1.2 px
   const labels = [];
   for (const pr of a.parking.rows) {
@@ -57,27 +60,36 @@ export function drawCommercial(ctx, st) {
     const L = pr.length;
     const B = pr.slots.length * bayW;
     const pt = (x, d) => ({ x: fr.o.x + fr.u.x * x + fr.f.x * d, y: fr.o.y + fr.u.y * x + fr.f.y * d });
+    if (apron > 0) {
+      ctx.beginPath();
+      tracePoly(ctx, st, [pt(0, pr.depth), pt(L, pr.depth), pt(L, pr.depth + apron), pt(0, pr.depth + apron)]);
+      ctx.fillStyle = 'rgba(96,102,112,0.13)';
+      ctx.fill();
+      const t0 = S(st, pt(0, pr.depth + apron / 2));
+      const t1 = S(st, pt(L, pr.depth + apron / 2));
+      labels.push({ a: t0, b: t1, text: `TRUCK APRON ${(off / 1000).toFixed(1)} m FROM THE ROLLER DOORS`, off: 0, t: 0.5 });
+    }
     ctx.beginPath();
-    tracePoly(ctx, st, [pt(0, pr.depth), pt(L, pr.depth), pt(L, pr.depth + aisleMm), pt(0, pr.depth + aisleMm)]);
+    tracePoly(ctx, st, [pt(0, pr.depth + apron), pt(L, pr.depth + apron), pt(L, pr.depth + off), pt(0, pr.depth + off)]);
     ctx.fillStyle = 'rgba(96,102,112,0.20)';
     ctx.fill();
     ctx.beginPath();
-    tracePoly(ctx, st, [pt(0, pr.depth + aisleMm), pt(B, pr.depth + aisleMm), pt(B, pr.depth + aisleMm + bayL), pt(0, pr.depth + aisleMm + bayL)]);
+    tracePoly(ctx, st, [pt(0, pr.depth + off), pt(B, pr.depth + off), pt(B, pr.depth + off + bayL), pt(0, pr.depth + off + bayL)]);
     ctx.fillStyle = 'rgba(96,102,112,0.11)';
     ctx.fill();
-    // Aisle centre line
-    const c0 = S(st, pt(0, pr.depth + aisleMm / 2));
-    const c1 = S(st, pt(L, pr.depth + aisleMm / 2));
+    // Car aisle centre line
+    const c0 = S(st, pt(0, pr.depth + off - aisleMm / 2));
+    const c1 = S(st, pt(L, pr.depth + off - aisleMm / 2));
     ctx.beginPath(); ctx.moveTo(c0.x, c0.y); ctx.lineTo(c1.x, c1.y);
     ctx.setLineDash([10, 8]); ctx.strokeStyle = 'rgba(96,102,112,0.55)'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
     // Kerb line along the back of the bays
-    const k0 = S(st, pt(0, pr.depth + aisleMm + bayL));
-    const k1 = S(st, pt(B, pr.depth + aisleMm + bayL));
+    const k0 = S(st, pt(0, pr.depth + off + bayL));
+    const k1 = S(st, pt(B, pr.depth + off + bayL));
     ctx.beginPath(); ctx.moveTo(k0.x, k0.y); ctx.lineTo(k1.x, k1.y);
     ctx.strokeStyle = st.theme.c.line; ctx.lineWidth = lw + 0.6; ctx.stroke();
     const bays = pr.slots.filter((x) => x.kind !== 'zone').length;
-    labels.push({ a: c0, b: c1, text: `AISLE ${(aisleMm / 1000).toFixed(1)} m`, off: -8, t: 0.25 }); // a quarter of the way along, clear of the row dimension and the turn handle
-    labels.push({ a: k0, b: k1, text: `${bays} BAY${bays === 1 ? '' : 'S'} ${(bayW / 1000).toFixed(1)} x ${(bayL / 1000).toFixed(1)} m, INDICATIVE`, off: null, out: S(st, pt(B / 2, pr.depth + aisleMm + bayL + 1)) });
+    labels.push({ a: c0, b: c1, text: `CAR AISLE ${(aisleMm / 1000).toFixed(1)} m`, off: -8, t: 0.25 }); // a quarter of the way along, clear of the row dimension and the turn handle
+    labels.push({ a: k0, b: k1, text: `${bays} BAY${bays === 1 ? '' : 'S'} ${(bayW / 1000).toFixed(1)} x ${(bayL / 1000).toFixed(1)} m, INDICATIVE`, off: null, out: S(st, pt(B / 2, pr.depth + off + bayL + 1)) });
   }
   // Bays: marked on both sides and open to the aisle, as line marking is.
   for (const pr of a.parking.rows) {

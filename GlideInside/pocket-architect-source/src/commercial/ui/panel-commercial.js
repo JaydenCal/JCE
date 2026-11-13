@@ -17,6 +17,13 @@ function setPath(o, path, v) {
   for (const k of ks.slice(0, -1)) t = t[k] ??= {};
   t[ks.at(-1)] = v;
 }
+/** The tooltip split of the parking figure: office area (ground office/amenity and mezzanine offices) at the office rate, the rest at the general rate, rounded once. */
+const parkingSplitTip = (s) => {
+  const p = s.parking;
+  const per = (r) => Math.round(1 / r);
+  if (!p.officeSplit) return `All ${s.gfaM2} m² GFA at 1 per ${per(p.ratePerM2)} m² = ${p.split.otherSpaces} spaces, rounded up once to ${p.required}. `;
+  return `Office area ${p.split.officeM2} m² (ground office/amenity ${Math.round((s.officeM2 - s.officeMezzM2) * 10) / 10} m² plus mezzanine office ${s.officeMezzM2} m²) at 1 per ${per(p.officeRatePerM2)} m² = ${p.split.officeSpaces} spaces. Remaining GFA ${p.split.otherM2} m² at 1 per ${per(p.ratePerM2)} m² = ${p.split.otherSpaces} spaces. Rounded up once on the total (${p.split.officeSpaces} + ${p.split.otherSpaces}) to ${p.required}. `;
+};
 const m1 = (v) => (v / 1000).toFixed(1);
 const ACCESS_FACT = { class_5: 'accessibleClass5', class_6: 'accessibleClass6', class_7: 'accessibleClass7', class_8: 'accessibleClass8' };
 
@@ -28,6 +35,8 @@ export function createCommercialPanel({ store, host, editor }) {
   let raf = 0;
   let wasOn = false;
   let open = { Doors: true, Unit: true };
+  // At phone width the dock is a bottom sheet: collapsed to its title bar so the plan is visible, opened with the toggle. Wide screens ignore it.
+  let sheetOpen = !(typeof matchMedia === 'function' && matchMedia('(max-width: 899.98px)').matches);
   const rowOf = () => { const c = store.project.commercial; return c?.rows.find((r) => r.id === store.ui.commercialRow) || c?.rows[0] || null; };
 
   // Field builders ------------------------------------------------------------------------------------------------------
@@ -91,6 +100,12 @@ export function createCommercialPanel({ store, host, editor }) {
     const input = h('input', { type: 'number', min: 3, max: 30, step: 0.1, value: v.turningRadiusM ?? '', placeholder: 'Not set', dataset: { ps: 'mrv-radius' }, title: facts('mrvRadius').tip, onchange: () => edit('Set MRV turning radius', (cc) => { cc.vehicle = { ...cc.vehicle, turningRadiusM: input.value === '' ? null : Number(input.value) }; }) });
     return field(`${v.code || 'MRV'} turning radius`, h('span', { class: 'cm-in' }, input, h('i', null, 'm')), `${v.lengthM} x ${v.widthM} m, verify the radius against AS 2890.2`);
   }
+  // Drops the per unit overrides of the unit being edited, so it follows the row settings again. One undo step.
+  const clearButton = (row) => {
+    const k = Number(scope);
+    const has = Object.keys((row.perUnit || {})[k] || {}).length > 0;
+    return h('button', { type: 'button', class: 'cm-btn cm-clear', dataset: { action: 'clear-unit' }, disabled: !has, title: has ? 'Put this unit back to the row settings' : 'This unit has no changes of its own', onclick: () => edit(`Clear unit ${k + 1} changes`, (c) => { const r = c.rows.find((x) => x.id === row.id); if (r?.perUnit) delete r.perUnit[k]; }) }, `Clear this unit's changes`);
+  };
   const section = (title, ...kids) => {
     const d = h('details', { class: 'cm-sec', open: open[title] === true, ontoggle: () => { open[title] = d.open; } }, h('summary', null, title), h('div', { class: 'cm-body' }, ...kids));
     return d;
@@ -121,6 +136,8 @@ export function createCommercialPanel({ store, host, editor }) {
       keep.sel = d.path ? `[data-path="${d.path}"]` : d.k ? `[data-k="${d.k}"]` : d.ps ? `[data-ps="${d.ps}"]` : null;
     }
     clear(dock);
+    dock.dataset.sheet = sheetOpen ? 'open' : 'closed';
+    host.dataset.sheet = sheetOpen ? 'open' : 'closed';
     // Header
     const z = zoneClass(p.site?.lot);
     const cls = effectiveClass(p);
@@ -129,7 +146,8 @@ export function createCommercialPanel({ store, host, editor }) {
       h('option', { value: '' }, z.employment ? `${ZONE_CLASS_LABEL[z.cls]} (from the zone)` : 'Choose the zone class'), h('option', { value: 'industrial' }, 'Industrial'), h('option', { value: 'commercial' }, 'Commercial'));
     zoneSel.value = c.zoneClass || '';
     dock.append(h('header', { class: 'cm-head' },
-      h('div', { class: 'cm-title' }, h('b', null, 'Commercial and industrial layout'), h('span', { class: 'cm-beta' }, 'Beta')),
+      h('div', { class: 'cm-title' }, h('b', null, h('span', { class: 'cm-full' }, 'Commercial and industrial layout'), h('span', { class: 'cm-short' }, 'Commercial layout')), h('span', { class: 'cm-beta' }, 'Beta'),
+        h('button', { type: 'button', class: 'cm-sheet-toggle', dataset: { action: 'sheet-toggle' }, 'aria-expanded': String(sheetOpen), 'aria-label': sheetOpen ? 'Collapse the layout panel' : 'Open the layout panel', onclick: () => { sheetOpen = !sheetOpen; schedule(); } }, sheetOpen ? 'Hide' : 'Edit')),
       h('div', { class: 'cm-sub' }, lot ? `${lot.lotLabel || 'Lot'}${lot.zoning ? ` · ${lot.zoning.code || ''} ${lot.zoning.name || ''}` : ' · zone not looked up'}` : 'Find an address to place units on a lot'),
       h('label', { class: 'cm-field cm-stack' }, h('span', { class: 'cm-l' }, 'Zone class'), zoneSel)));
     // Rows
@@ -153,6 +171,7 @@ export function createCommercialPanel({ store, host, editor }) {
       dock.append(
         field(`Units per row${mirrored ? ' (follows the first row)' : ''}`, h('span', { class: 'cm-in' }, countInput)),
         field('Settings apply to', scopeSel),
+        ...(scope !== 'all' ? [clearButton(row)] : []),
         section('Unit',
           numField('Unit width', 'widthMm', { min: 2500, max: 30000, step: 100, disabled: mirrored, hint: mirrored ? 'Widths follow the row it mirrors' : null }),
           numField('Unit depth', 'depthMm', { min: 4000, max: 80000, step: 500, disabled: scope !== 'all', hint: scope !== 'all' ? 'One depth per row, choose Whole row to change it' : 'One depth per row' }),
@@ -174,14 +193,15 @@ export function createCommercialPanel({ store, host, editor }) {
           numField('Window sill', 'windows.sillMm', { min: 0, max: 4000, step: 50 }),
           chkField('Side windows on end units', 'windows.side', 'No windows on party walls')),
         section('Office',
-          chkField('Office at the front', 'office.enabled', 'Beside the roller door'),
-          numField('Office depth', 'office.depthMm', { min: 2000, max: 8000, step: 100 }),
+          chkField('Ground office/amenity at the front', 'office.enabled', 'Beside the roller door, under the mezzanine'),
+          numField('Office/amenity depth', 'office.depthMm', { min: 2000, max: 8000, step: 100 }),
           chkField('Accessible WC in the office', 'office.accessibleWc', 'Layout to be confirmed with an access consultant')),
         section('Mezzanine',
-          chkField('Mezzanine', 'mezzanine.enabled'),
+          chkField('Mezzanine', 'mezzanine.enabled', 'Over the front bay, stair behind it'),
+          selField('Mezzanine use', 'mezzanine.use', [['office', 'Office'], ['storage', 'Storage']]),
           selField('Sized by', 'mezzanine.mode', [['depth', 'Depth'], ['percent', 'Percent of floor']]),
           unitValue('mezzanine.mode') === 'percent' ? numField('Mezzanine floor share', 'mezzanine.percent', { unit: '%', min: 5, max: 90, step: 5 }) : numField('Mezzanine depth', 'mezzanine.depthMm', { min: 2000, max: 40000, step: 500 }),
-          selField('Position', 'mezzanine.position', [['rear', 'Rear'], ['front', 'Front']]),
+          selField('Position', 'mezzanine.position', [['front', 'Front, over the bay beside the roller door'], ['rear', 'Rear, full width']]),
           selField('Stair type', 'mezzanine.stairType', [['straight', 'Straight'], ['L', 'L shaped']]),
           selField('Stair side', 'mezzanine.stairSide', [['left', 'Left wall'], ['right', 'Right wall']]),
           chkField('Balustrade', 'mezzanine.balustrade'),
@@ -192,7 +212,8 @@ export function createCommercialPanel({ store, host, editor }) {
     }
     dock.append(section('Site',
       siteChk('Parking rows (indicative)', () => c.parking.enabled, (cc, v) => { cc.parking.enabled = v; }),
-      siteNum('Aisle width', () => c.parking.aisleMm, (cc, v) => { cc.parking.aisleMm = v; }, { unit: 'mm', min: 3000, max: 30000, step: 500 }),
+      siteNum('Car aisle width', () => c.parking.aisleMm, (cc, v) => { cc.parking.aisleMm = v; }, { unit: 'mm', min: 3000, max: 30000, step: 100 }),
+      siteNum('Truck apron depth', () => c.parking.apronMm, (cc, v) => { cc.parking.apronMm = v; }, { unit: 'mm', min: 0, max: 40000, step: 500 }),
       siteNum('GFA per parking space', () => Math.round(1 / c.rates.parkingPerM2Gfa), (cc, v) => { cc.rates.parkingPerM2Gfa = 1 / Math.max(10, v); }, { unit: 'm²', min: 10, max: 500, step: 5 }),
       siteChk('Count office area at 1 per 40 m²', () => c.rates.officeSeparate !== false, (cc, v) => { cc.rates.officeSeparate = v; }),
       classField(c),
@@ -226,7 +247,7 @@ export function createCommercialPanel({ store, host, editor }) {
       cell('units', String(s.units), s.mix.map((x) => `${x.count} x ${x.label}`).join(', ') || 'units'),
       cell('gfa', `${s.gfaM2.toLocaleString('en-AU')} m²`, s.mezzGfaM2 ? `GFA incl. ${s.mezzGfaM2} m² mezzanine` : 'GFA'),
       cell('coverage', s.coveragePct == null ? 'n/a' : `${s.coveragePct}%`, 'site coverage'),
-      cell('parking', String(s.parking.required), `bays needed, 1 per ${Math.round(1 / s.parking.ratePerM2)} m²${s.parking.officeSplit ? ', office 1 per 40 m²' : ''}`, `${facts('parkingUnits').tip}. ${s.parking.officeSplit ? 'Counting the office separately is a conservative reading, unverified. ' : ''}Indicative, check with council`),
+      cell('parking', String(s.parking.required), `bays needed, 1 per ${Math.round(1 / s.parking.ratePerM2)} m²${s.parking.officeSplit ? ', office 1 per 40 m²' : ''}`, `${parkingSplitTip(s)}${facts('parkingUnits').tip}. ${s.parking.officeSplit ? 'Counting the office separately is a conservative reading, unverified. ' : ''}Indicative, check with council`),
       cell('provided', String(s.parking.provided), 'bays shown, indicative'),
       cell('accessible', `${s.parking.accessible.provided} / ${s.parking.accessible.required}`, 'accessible bays', `${facts(ACCESS_FACT[c.buildingClass] || 'accessibleClass8').tip}. Bay 2.4 x 5.4 m with a 2.4 m shared zone, ${facts('bay').tip}`));
   }
@@ -238,10 +259,22 @@ export function createCommercialPanel({ store, host, editor }) {
     if (!r.width || !r.height) return; // the plan is not on screen (3D or walk)
     const d = dock.getBoundingClientRect();
     const sr = strip.getBoundingClientRect();
-    // Only what really lies over the plan counts: the dock on its left, the strip along its bottom.
-    const left = d.width && d.left < r.right ? Math.max(0, Math.min(d.right, r.right) - r.left + 8) : 0;
-    const bottom = sr.height && sr.top > r.top + r.height / 2 && sr.left < r.right ? Math.max(0, r.bottom - sr.top + 8) : 0;
-    editor.setInset({ left: left < r.width - 160 ? left : 0, bottom });
+    const mid = r.top + r.height / 2;
+    // Only what really lies over the plan counts. Wide: the dock on its left and the strip along the bottom. Phone: the dock is a sheet along
+    // the bottom and the strip moves to the top.
+    const sheet = d.width > r.width * 0.8;
+    let left = 0;
+    let top = 0;
+    let bottom = 0;
+    if (d.width && d.left < r.right) {
+      if (sheet) bottom = Math.max(0, r.bottom - d.top + 8);
+      else left = Math.max(0, Math.min(d.right, r.right) - r.left + 8);
+    }
+    if (sr.height && sr.left < r.right) {
+      if (sr.top > mid) bottom = Math.max(bottom, r.bottom - sr.top + 8);
+      else top = Math.max(0, sr.bottom - r.top + 8);
+    }
+    editor.setInset({ left: left < r.width - 160 ? left : 0, top, bottom });
   }
   const schedule = () => { if (!raf) raf = requestAnimationFrame(() => { render(); inset(); }); };
   const offs = [store.on('project', schedule), store.on('ui', (p = {}) => { if ('commercialRow' in p || 'view' in p) schedule(); })];

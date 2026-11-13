@@ -14,9 +14,10 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
   const { createApp } = await import('../server/lib/app.js');
   const { createMemoryStore } = await import('../server/lib/store.js');
   const app = createApp({ store: createMemoryStore(), env: { SITE_URL: ORIGIN, ENTITLEMENT_SECRET: 'x', PORTAL_ENABLED: '1' } });
-  // The fixtures: a 90 x 100 m IN1 lot with two back to back rows of 8 units (tests/helpers/commercial-fixture.mjs).
+  // The fixtures: a 90 x 100 m IN1 lot with two back to back rows of 8 units in the default layout, i.e. ground office/amenity plus a
+  // mezzanine office over the front bay (tests/helpers/commercial-fixture.mjs, plain: false).
   const { commercialProject } = await import('../tests/helpers/commercial-fixture.mjs');
-  const FIX = { 'commercial.json': JSON.stringify(commercialProject({ zoning: { code: 'E4', name: 'General Industrial' } })) };
+  const FIX = { 'commercial.json': JSON.stringify(commercialProject({ zoning: { code: 'E4', name: 'General Industrial' }, plain: false })) };
   const server = http.createServer(async (req, res) => {
     const u = new URL(req.url, ORIGIN);
     if (u.pathname.startsWith('/api/')) {
@@ -78,12 +79,18 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
   await page.waitForTimeout(300);
   await strip.screenshot({ path: path.join(OUT, '03-stats-strip.png') }); console.log('shot 03-stats-strip');
   // 07 detail: mezzanine, doors, office, bays, zoomed to the first units and their bays
-  await page.evaluate(() => { const s = window.__ps.store; s.apply('Detail', (p) => { const r = p.commercial.rows[0]; r.perUnit = { 0: { office: { enabled: true, accessibleWc: true }, windows: { front: 'office' } }, 1: { mezzanine: { enabled: true, depthMm: 4000 } }, 2: { mezzanine: { enabled: true, depthMm: 4000 } } }; }); });
+  await page.evaluate(() => { const s = window.__ps.store; s.apply('Detail', (p) => { const r = p.commercial.rows[0]; r.perUnit = { 0: { office: { accessibleWc: true } }, 3: { mezzanine: { use: 'storage', position: 'rear', depthMm: 4000 } } }; }); });
   await page.evaluate(() => { const s = window.__ps.store; s.apply('Regenerate', (p) => { p.commercial.parking.aisleMm = p.commercial.parking.aisleMm; }); });
-  await page.locator('.cm-dock input[data-path="heightMm"]').evaluate((el) => { el.value = '6000'; el.dispatchEvent(new Event('change', { bubbles: true })); });
   await page.waitForTimeout(400);
   await zoomTo({ x0: 19000, y0: 39000, x1: 40000, y1: 70000 }, 24);
   await shot('07-detail-mezz-doors-bays');
+  // 13 the mezzanine level plan: the mezzanine offices over the front bays with the open edges (balustrade) and the stair below
+  await page.evaluate(() => { const s = window.__ps.store; const lv = s.project.levels.find((l) => /Mezz/i.test(l.name)); s.setUI({ activeLevelId: lv.id }); });
+  await page.waitForTimeout(400);
+  await zoomTo({ x0: 19500, y0: 46000, x1: 35000, y1: 57000 }, 24);
+  await shot('13-mezzanine-level');
+  await page.locator('.ps-topbar').screenshot({ path: path.join(OUT, '14-level-tabs.png') }); console.log('shot 14-level-tabs');
+  await page.evaluate(() => { const s = window.__ps.store; s.setUI({ activeLevelId: s.project.levels[0].id }); });
   // 08 dock fields (scrolled to office and mezzanine)
   await page.evaluate(() => window.__ps.editor.zoomToFit());
   await page.evaluate(() => { document.querySelectorAll('.cm-dock details').forEach((d) => { d.open = true; }); const d = document.querySelector('.cm-dock'); d.scrollTop = 330; });
@@ -91,6 +98,16 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
   // 09 checks list
   await page.evaluate(() => { const d = document.querySelector('.cm-dock'); d.querySelectorAll('details').forEach((x) => { x.open = false; }); d.scrollTop = d.scrollHeight; });
   await shot('09-checks-list');
+  // 15 one unit only: the "Clear this unit's changes" action (enabled once the unit has changes of its own)
+  await page.evaluate(() => { const d = document.querySelector('.cm-dock'); d.scrollTop = 0; const sel = d.querySelector('[data-ps="unit-scope"]'); sel.value = '1'; sel.dispatchEvent(new Event('change', { bubbles: true })); });
+  await page.waitForTimeout(300);
+  await page.locator('.cm-dock input[data-path="widthMm"]').evaluate((el) => { el.value = '7000'; el.dispatchEvent(new Event('change', { bubbles: true })); });
+  await page.waitForTimeout(300);
+  await page.locator('.cm-dock').screenshot({ path: path.join(OUT, '15-dock-unit-clear.png') }); console.log('shot 15-dock-unit-clear');
+  const had = await page.evaluate(() => !!window.__ps.store.project.commercial.rows[0].perUnit[1]);
+  await page.locator('.cm-dock [data-action="clear-unit"]').click(); await page.waitForTimeout(300);
+  const has = await page.evaluate(() => !!window.__ps.store.project.commercial.rows[0].perUnit[1]);
+  console.log(`clear unit changes: had overrides ${had}, after clear ${has}`);
   // 04 setback breach: slide the row over the front setback
   await load('commercial.json');
   await page.evaluate(() => { const s = window.__ps.store; const id = s.project.commercial.rows[0].id; s.setUI({ commercialRow: id }); });
@@ -108,6 +125,12 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
   await page.evaluate(() => window.__ps.store.setUI({ view: '3d' }));
   await page.waitForTimeout(3500);
   await shot('10-3d-view');
+  // 16 3D with the roof off from above: the mezzanine floors and their 1000 mm balustrades inside the unit walls
+  await page.evaluate(() => window.__ps.store.setUI({ showRoof: false }));
+  await page.evaluate(() => [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Aerial')?.click());
+  await page.waitForTimeout(2500);
+  await shot('16-3d-roof-off');
+  await page.evaluate(() => window.__ps.store.setUI({ showRoof: true }));
   // landing page
   const land = await mk({ width: 1440, height: 900 });
   await land.goto(`${ORIGIN}/commercial/`); await land.waitForTimeout(1200);
@@ -118,8 +141,15 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
   // 12 phone width, plan view with the dock
   const small = await mk({ width: 390, height: 844 });
   await small.goto(`${ORIGIN}/plan-studio/app/index.html?mode=commercial&view=2d`); await small.waitForTimeout(2500);
-  await small.evaluate(() => document.querySelectorAll('button').forEach((b) => { if (b.textContent.trim() === 'Skip') b.click(); }));
-  await shot('12-phone-390', small);
+  await small.evaluate(() => document.querySelectorAll('button').forEach((b) => { if (['Skip', 'Got it'].includes(b.textContent.trim())) b.click(); }));
+  await small.evaluate((j) => { window.__ps.replaceProject(JSON.parse(j)); window.__ps.store.setUI({ view: '2d' }); }, FIX['commercial.json']);
+  await small.waitForTimeout(2500); // the tour card shows after a moment: put it away
+  await small.evaluate(() => document.querySelectorAll('button').forEach((b) => { if (['Skip', 'Got it'].includes(b.textContent.trim())) b.click(); }));
+  await small.evaluate(() => window.__ps.editor.zoomToFit()); await small.waitForTimeout(500);
+  await shot('12-phone-390', small); // the sheet starts collapsed to its title bar, the strip runs along the top, the tips chip sits clear above the sheet
+  await small.evaluate(() => document.querySelector('.cm-dock [data-action="sheet-toggle"]')?.click());
+  await shot('12b-phone-390-sheet-open', small);
+  await small.evaluate(() => document.querySelector('.cm-dock [data-action="sheet-toggle"]')?.click());
   // 11 the handoff: ?mode=commercial
   const hand = await mk({ width: 1440, height: 900 });
   await hand.goto(`${ORIGIN}/plan-studio/app/index.html?mode=commercial`); await hand.waitForTimeout(2500);

@@ -46,13 +46,21 @@ export function createToolbox(el, store, { onWheel } = {}) {
   function sync() {
     const tool = store.ui.tool;
     for (const def of TOOL_DEFS) {
-      const on = def.id === tool || !!def.family?.includes(tool);
-      buttons.get(def.id)?.setAttribute('aria-pressed', String(on));
+      const comm = store.project?.mode === 'commercial';
+      const on = def.id === tool || !!def.family?.includes(tool) || (comm && def.id === 'movehouse' && tool === 'commercial');
+      const btn = buttons.get(def.id);
+      btn?.setAttribute('aria-pressed', String(on));
+      if (def.id === 'movehouse' && btn) {
+        const label = comm ? 'Move units' : def.label;
+        btn.title = `${label} (${def.key})`;
+        btn.setAttribute('aria-label', label);
+      }
     }
   }
   const off = store.on('ui', (patch = {}) => {
     if ('tool' in patch) sync();
   });
+  const offProject = store.on('project', sync);
   sync();
-  return { sync, dispose: off };
+  return { sync, dispose: () => { off(); offProject(); } };
 }

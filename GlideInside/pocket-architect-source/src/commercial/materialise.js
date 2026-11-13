@@ -121,7 +121,7 @@ export function materialise(p) {
       summary.rooms += 1;
       if (of.fits) {
         const oc = [at(fr, ox, d - od), at(fr, u.x0 + u.w, d - od), at(fr, u.x0 + u.w, d), at(fr, ox, d)];
-        const o = S.createRoom({ name: `PROPOSED UNIT ${u.n} OFFICE${spec.office.accessibleWc ? ' AND ACCESSIBLE WC' : ''}`, type: 'other', polygon: oc });
+        const o = S.createRoom({ name: `PROPOSED UNIT ${u.n} OFFICE/AMENITY${spec.office.accessibleWc ? ' WITH ACCESSIBLE WC' : ''}`, type: 'other', polygon: oc });
         o.auto = true;
         mark(o);
         level.rooms.push(o);
@@ -142,20 +142,25 @@ export function materialise(p) {
     for (const { u, m } of mezz) {
       const fr = u.frame;
       const [a0, a1] = m.position === 'front' ? [u.d - m.depthMm, u.d] : [0, m.depthMm];
-      const poly = [at(fr, u.x0, a0), at(fr, u.x0 + u.w, a0), at(fr, u.x0 + u.w, a1), at(fr, u.x0, a1)];
-      const r = S.createRoom({ name: `PROPOSED UNIT ${u.n} MEZZANINE`, type: 'store', polygon: poly, balustrade: !!u.spec.mezzanine.balustrade });
+      const x0 = u.x0 + m.x0Mm;
+      const x1 = x0 + m.widthMm;
+      const poly = [at(fr, x0, a0), at(fr, x1, a0), at(fr, x1, a1), at(fr, x0, a1)];
+      const isOffice = m.use === 'office';
+      const r = S.createRoom({ name: `PROPOSED UNIT ${u.n} MEZZANINE${isOffice ? ' OFFICE' : ''}`, type: isOffice ? 'other' : 'store', polygon: poly, balustrade: !!u.spec.mezzanine.balustrade });
       r.auto = true;
       mark(r);
       lvl.rooms.push(r);
       summary.rooms += 1;
       summary.mezzanines += 1;
-      // Stair on the ground level beside the mezzanine edge, along the chosen side wall.
+      // Stair on the ground level, in the same bay as a front mezzanine (at the back of it, rising toward it) or along the chosen side
+      // wall in front of a rear mezzanine. The stair's local +y is its run, so it is turned a quarter turn from the row's front direction.
       const sd = m.stair;
-      const sideX = u.spec.mezzanine.stairSide === 'right' ? u.x0 + u.w - 300 - sd.widthMm / 2 : u.x0 + 300 + sd.widthMm / 2;
-      const edge = m.position === 'front' ? u.d - m.depthMm : m.depthMm;
-      const centreDepth = m.position === 'front' ? edge - sd.lengthMm / 2 : edge + sd.lengthMm / 2;
+      const sideX = u.spec.mezzanine.stairSide === 'right' ? x1 - 300 - sd.widthMm / 2 : x0 + 300 + sd.widthMm / 2;
+      const front = m.position === 'front';
+      const edge = front ? u.d - m.depthMm : m.depthMm;
+      const centreDepth = front ? edge - sd.lengthMm / 2 : edge + sd.lengthMm / 2;
       const ctr = at(fr, sideX, centreDepth);
-      const ang = (Math.atan2(fr.f.y, fr.f.x) * 180) / Math.PI;
+      const ang = (Math.atan2(fr.f.y, fr.f.x) * 180) / Math.PI + (front ? -90 : 90);
       const st = S.createStair({ x: ctr.x, y: ctr.y, width: sd.widthMm, length: sd.lengthMm, rotation: ang });
       mark(st);
       level.stairs.push(st);
