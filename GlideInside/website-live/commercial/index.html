@@ -2,15 +2,32 @@
 <html lang="en-AU">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Commercial Subdivision Modelling | Glide Inside</title>
-<meta name="description" content="Subdivision modelling has moved to the Subdivisions page.">
-<meta name="robots" content="noindex,follow">
-<link rel="canonical" href="https://glideinside.com.au/subdivision/">
-<meta http-equiv="refresh" content="0; url=/subdivision/">
+<title>Commercial and Industrial Layouts (Beta) | Glide Inside</title>
+<meta name="description" content="Lay out rows of industrial or commercial units on a real lot in 3D: unit sizes, roller doors, mezzanines, parking and accessible bays. Concept layouts only. Beta.">
+<link rel="canonical" href="https://glideinside.com.au/commercial/">
+<meta property="og:title" content="Commercial and Industrial Layouts (Beta) | Glide Inside">
+<meta property="og:description" content="Lay out rows of industrial or commercial units on a real lot in 3D. Concept layouts only. Beta.">
+<meta property="og:url" content="https://glideinside.com.au/commercial/">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#12231c">
 <link rel="icon" href="../assets/Glideinside_Favicon_v4.svg">
 <link rel="stylesheet" href="../framework.css?v=20261113a">
 <script src="../site.config.js?v=20261113a"></script><script src="../framework.js?v=20261113a" defer></script><script src="../analytics.js" defer></script>
+<style>
+.cm-land{padding-block:clamp(48px,7vw,96px)}
+.cm-land .eyebrow{margin-top:18px}
+.cm-land .beta{display:inline-block;font:700 12px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:99px;background:var(--accent-soft);color:var(--deep);vertical-align:middle;margin-left:10px}
+.cm-form{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0 8px;max-width:640px}
+.cm-form label{flex:1 1 280px;display:block}
+.cm-form input{width:100%;font:500 17px/1.2 var(--font);padding:15px 16px;border:1px solid var(--line);border-radius:var(--r);background:var(--card);color:var(--ink)}
+.cm-form input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.cm-points{list-style:none;margin:36px 0 0;padding:0;display:grid;gap:14px;max-width:62ch}
+.cm-points li{padding-left:22px;position:relative}
+.cm-points li:before{content:"";position:absolute;left:0;top:.7em;width:10px;height:2px;background:var(--accent)}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
 </head>
+<body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header"><div class="shell">
   <a class="logo" href="../index.html" aria-label="Glide Inside home"><img src="../assets/Glideinside_Logo_ink_v4.svg" width="438" height="90" alt="Glide Inside"></a>
@@ -34,9 +51,22 @@
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 </div></header>
 <main id="main">
-<div class="shell" style="padding-block:72px">
-<h1>This page has moved</h1>
-<p class="lead">Subdivision modelling now lives on the <a class="link" href="/subdivision/">Subdivisions page</a>. You will be taken there automatically.</p>
+<div class="shell cm-land">
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../index.html">Home</a><span>/</span>Commercial and industrial layouts</nav>
+<p class="eyebrow">Pocket Architect, regional NSW and Queensland</p>
+<h1>Commercial and industrial layouts<span class="beta">Beta</span></h1>
+<p class="lead">Enter the address of an industrial or commercial lot and lay out rows of units on it. Set the unit size, roller doors, mezzanines and parking, and see the unit count, floor area and site coverage as you go.</p>
+<form class="cm-form" action="../plan-studio/app/" method="get" data-cm-form>
+  <input type="hidden" name="mode" value="commercial">
+  <label><span class="visually-hidden">Lot address</span><input type="text" name="address" required maxlength="120" autocomplete="street-address" placeholder="Search your address in NSW or QLD" aria-label="Lot address"></label>
+  <button class="btn" type="submit">Lay out units</button>
+</form>
+<p class="fineprint">Concept layouts only. Setbacks, parking rates and other controls are indicative and must be checked with council.</p>
+<ul class="cm-points">
+  <li>Back to back rows of units that share a party wall, with the unit count and size mix updating as you change the layout.</li>
+  <li>Roller doors, personnel doors, windows, offices and mezzanines for each unit, with clear height checks.</li>
+  <li>Indicative parking and accessible bays, and bollard locations at doors, corners and bays.</li>
+</ul>
 </div>
 </main>
 <footer class="site-footer"><div class="shell">
